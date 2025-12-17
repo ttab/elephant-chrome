@@ -3,6 +3,7 @@ import { cn } from '@ttab/elephant-ui/utils'
 import type { Session } from 'next-auth'
 import { Avatar } from '../Avatar'
 import { signOut } from 'next-auth/react'
+import type { JSX } from 'react'
 
 const BASE_URL = import.meta.env.BASE_URL
 const hasUserDoc = (obj: object | undefined) => obj && Object.keys(obj).length > 0

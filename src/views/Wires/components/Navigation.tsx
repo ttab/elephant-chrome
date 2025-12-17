@@ -1,3 +1,4 @@
+import type { JSX } from 'react'
 import { useHistory } from '@/hooks/index'
 import type { HistoryState } from '@/navigation/hooks/useHistory'
 import type { ContentState } from '@/types/index'

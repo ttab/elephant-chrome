@@ -2,7 +2,7 @@ import type { MouseEvent } from 'react'
 import { useLink } from '@/hooks/useLink'
 import { type DefaultValueOption } from '@/types'
 import { Button, Tooltip } from '@ttab/elephant-ui'
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, type JSX } from 'react'
 import { cn } from '@ttab/elephant-ui/utils'
 
 export const Type = ({ data, deliverableId, className }: {

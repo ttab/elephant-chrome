@@ -15,7 +15,7 @@ import { Newsvalues } from '@/defaults/newsvalues'
 import { AssignmentTypes } from '@/defaults/assignmentTypes'
 import type { FilterProps } from '@/components/Filter'
 import { DatePicker } from '@/components/Datepicker'
-import { useMemo } from 'react'
+import { useMemo, type JSX } from 'react'
 import type { SearchKeys } from '@/hooks/index/useDocuments/queries/views/search'
 import { parseDate } from '@/shared/datetime'
 

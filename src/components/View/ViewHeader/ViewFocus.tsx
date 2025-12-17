@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, type JSX } from 'react'
 import { Button } from '@ttab/elephant-ui'
 import { Maximize2Icon, Minimize2Icon } from '@ttab/elephant-ui/icons'
 

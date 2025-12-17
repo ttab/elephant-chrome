@@ -1,6 +1,6 @@
 import { WifiOffIcon, type LucideIcon } from '@ttab/elephant-ui/icons'
 import { cva } from 'class-variance-authority'
-import { useEffect, useRef, useState, type PropsWithChildren } from 'react'
+import { useEffect, useRef, useState, type PropsWithChildren, type JSX } from 'react'
 import { applicationMenu } from '@/defaults/applicationMenuItems'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'

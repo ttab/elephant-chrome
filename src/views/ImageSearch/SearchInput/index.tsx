@@ -1,6 +1,6 @@
 import { SearchInput } from '@/components/SearchInput'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@ttab/elephant-ui'
-import React, { useState, useRef, type Dispatch, type SetStateAction } from 'react'
+import React, { useState, useRef, type Dispatch, type SetStateAction, type JSX } from 'react'
 import type { MediaTypes } from '..'
 
 export const ImageSearchInput = ({ setQueryString, setMediaType }: {

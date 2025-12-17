@@ -1,5 +1,6 @@
 import { CommandItem } from '@ttab/elephant-ui'
 import { XIcon } from '@ttab/elephant-ui/icons'
+import type { JSX } from 'react'
 
 export const ClearFilter = ({ hasFilter, onClear }: {
   hasFilter: boolean

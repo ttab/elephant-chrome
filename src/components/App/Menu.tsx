@@ -14,7 +14,7 @@ import { MenuItem } from './MenuItem'
 import { useSession } from 'next-auth/react'
 import { applicationMenu, type ApplicationMenuItem, type MenuGroups } from '@/defaults/applicationMenuItems'
 import { useUserTracker } from '@/hooks/useUserTracker'
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useRef, useState, type JSX } from 'react'
 import { UserInfo } from './UserInfo'
 import { MenuItemSubSheet } from './MenuItemSubSheet'
 

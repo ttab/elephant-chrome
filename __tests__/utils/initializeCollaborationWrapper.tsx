@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { type JSX } from 'react'
 import { CollaborationContext } from '@/contexts/CollaborationProvider'
 import { newHocuspocusProvider } from './newHocuspocusProvider'
 import { newHocuspocus } from './newHocuspocus'

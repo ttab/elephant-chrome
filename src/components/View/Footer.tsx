@@ -1,6 +1,6 @@
 import { useView } from '@/hooks/useView'
 import { cn } from '@ttab/elephant-ui/utils'
-import type { PropsWithChildren } from 'react'
+import type { PropsWithChildren, JSX } from 'react'
 
 export const Footer = ({ children, className }: {
   className?: string
@@ -17,4 +17,3 @@ export const Footer = ({ children, className }: {
     </footer>
   )
 }
-

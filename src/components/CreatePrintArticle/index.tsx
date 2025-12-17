@@ -5,7 +5,7 @@ import type { ViewProps } from '@/types/index'
 import { useRegistry } from '@/hooks/useRegistry'
 import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
-import { Button, Select, SelectContent, SelectItem, SelectTrigger } from '@ttab/elephant-ui'
+import { Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@ttab/elephant-ui'
 import { useState } from 'react'
 import { LoadingText } from '../LoadingText'
 import { DatePicker } from '../Datepicker'
@@ -13,13 +13,15 @@ import { parseDate } from '@/shared/datetime'
 import { useDocuments } from '@/hooks/index/useDocuments'
 import { fields } from '@/shared/schemas/printFlow'
 import type { PrintFlow, PrintFlowFields } from '@/shared/schemas/printFlow'
+import { addDays } from 'date-fns'
+import { ToastAction } from '@/views/Wire/ToastAction'
 
-const fallbackDate = new Date()
 
 export const CreatePrintArticle = ({ id, asDialog, onDialogClose, className }: ViewProps) => {
+  const initDate = addDays(new Date(), 1)
   const [printFlow, setPrintFlow] = useState<string>()
   const [articleName, setArticleName] = useState<string>()
-  const [dateString, setDateString] = useState<string>()
+  const [dateString, setDateString] = useState<string>(initDate.toISOString().split('T')[0])
   const { baboon } = useRegistry()
   const { data: session } = useSession()
 
@@ -33,7 +35,7 @@ export const CreatePrintArticle = ({ id, asDialog, onDialogClose, className }: V
     toast.error('Något gick fel när flöden skulle hämtas')
   }
 
-  const date = dateString ? parseDate(dateString) || fallbackDate : fallbackDate
+  const date = parseDate(dateString) || initDate
 
   const allPrintFlows = data?.map((hit) => ({
     value: hit.id,
@@ -46,7 +48,7 @@ export const CreatePrintArticle = ({ id, asDialog, onDialogClose, className }: V
 
   const selectedPrintFlow = allPrintFlows?.find((flow) => flow.value === printFlow)
 
-  const isSubmitDisabled = !printFlow || !articleName || !dateString || !id
+  const isSubmitDisabled = !printFlow || !articleName || !id
 
   const handleCreatePrintArticle = async () => {
     if (!session?.accessToken) {
@@ -68,7 +70,19 @@ export const CreatePrintArticle = ({ id, asDialog, onDialogClose, className }: V
       }, session.accessToken)
 
       if (response?.status.code === 'OK') {
-        toast.success('Printartikel skapad')
+        toast.success('Printartikel skapad', {
+          classNames: {
+            title: 'whitespace-nowrap'
+          },
+          action: (
+            <ToastAction
+              documentId={response.response.uuid}
+              withView='PrintEditor'
+              label='Öppna printartikel'
+              Icon={LibraryIcon}
+            />
+          )
+        })
 
         if (onDialogClose) {
           onDialogClose()
@@ -101,15 +115,19 @@ export const CreatePrintArticle = ({ id, asDialog, onDialogClose, className }: V
                 <Form.Content>
                   <Form.Group icon={TagIcon}>
                     <Select
-                      value={selectedPrintFlow?.value}
+                      value={selectedPrintFlow?.value || ''}
                       onValueChange={(option) => {
                         setPrintFlow(option)
                       }}
                     >
                       <SelectTrigger>
-                        {selectedPrintFlow?.label || 'Välj printflöde'}
+                        <SelectValue placeholder='Välj printflöde'>{selectedPrintFlow?.label}</SelectValue>
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent
+                        style={{
+                          width: 'var(--radix-select-trigger-width)',
+                          maxHeight: 'var(--radix-select-content-available-height)' }}
+                      >
                         {allPrintFlows.map((flow) => (
                           <SelectItem value={flow.value} key={flow.value}>
                             {flow.label}
@@ -121,15 +139,21 @@ export const CreatePrintArticle = ({ id, asDialog, onDialogClose, className }: V
                   <Form.Group icon={TagIcon}>
                     <Select
                       disabled={!printFlow}
-                      value={articleName}
+                      value={articleName || ''}
                       onValueChange={(option) => {
                         setArticleName(option)
                       }}
                     >
                       <SelectTrigger>
-                        {articleName || 'Välj namn'}
+
+                        <SelectValue placeholder='Välj namn'>{articleName}</SelectValue>
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent
+                        style={{
+                          width: 'var(--radix-select-trigger-width)',
+                          maxHeight: 'var(--radix-select-content-available-height)' }}
+                      >
+
                         {allArticleNames.map((type) => (
                           <SelectItem value={type} key={type}>
                             {type}

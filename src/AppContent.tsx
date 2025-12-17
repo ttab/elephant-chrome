@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, type JSX } from 'react'
 import { useHistory, useNavigation, useResize } from '@/hooks'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@ttab/elephant-ui'
 import { calculateViewWidths, minimumSpaceRequired } from '@/navigation/lib'

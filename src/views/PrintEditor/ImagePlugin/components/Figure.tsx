@@ -1,10 +1,11 @@
-import type { TBElement, Plugin, TBText } from '@ttab/textbit'
+import type { TBElement, TBText, TBComponentProps } from '@ttab/textbit'
 import { FocusBlock } from './FocusBlock'
 import { type BaseEditor, Transforms } from 'slate'
 import { cn } from '@ttab/elephant-ui/utils'
 import { XIcon } from '@ttab/elephant-ui/icons'
+import type { JSX } from 'react'
 
-export const Figure = ({ editor, children, element }: Plugin.ComponentProps & { editor: BaseEditor, element: TBElement }): JSX.Element => {
+export const Figure = ({ editor, children, element }: TBComponentProps & { editor: BaseEditor, element: TBElement }): JSX.Element => {
   return (
     <FocusBlock className='my-2'>
       <figure

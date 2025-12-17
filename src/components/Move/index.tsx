@@ -11,7 +11,7 @@ import {
   GanttChartSquareIcon
 } from '@ttab/elephant-ui/icons'
 import { useSession } from 'next-auth/react'
-import { useMemo, useState } from 'react'
+import { useMemo, useState, type JSX } from 'react'
 import type { Doc } from 'yjs'
 import { View, ViewHeader } from '../View'
 import type { ViewProps } from '@/types/index'

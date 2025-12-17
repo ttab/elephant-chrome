@@ -1,9 +1,13 @@
+import type { LinkHandlerFunction } from '@/hooks/useLink'
 import { TextSearchIcon } from '@ttab/elephant-ui/icons'
-import { useLink } from '@/hooks'
-import { type Plugin } from '@ttab/textbit'
+import type { TBPluginInitFunction } from '@ttab/textbit'
 
-export const FactboxPlugin: Plugin.InitFunction = () => {
-  const openFactboxes = useLink('Factboxes')
+type FactboxPluginOptions = {
+  openFactboxes: LinkHandlerFunction
+}
+
+export const FactboxPlugin: TBPluginInitFunction<FactboxPluginOptions> = (options) => {
+  const openFactboxes = options?.openFactboxes
 
   return {
     class: 'block',
@@ -18,7 +22,7 @@ export const FactboxPlugin: Plugin.InitFunction = () => {
         title: 'Faktarutor',
         tool: () => <TextSearchIcon style={{ width: '1em', height: '1em' }} />,
         handler: () => {
-          openFactboxes(undefined, {})
+          openFactboxes?.(undefined, {})
         },
         visibility: () => {
           return [

@@ -1,5 +1,6 @@
 import { cva } from 'class-variance-authority'
 import { type FormProps } from './Root'
+import type { JSX } from 'react'
 
 export const Table = ({ children, asDialog, className }: FormProps & {
   className?: string

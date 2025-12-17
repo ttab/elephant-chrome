@@ -1,4 +1,4 @@
-
+import type { JSX } from 'react'
 import { type MouseEvent } from 'react'
 import { TableRow, TableCell } from '@ttab/elephant-ui'
 import { type Row as RowType, flexRender } from '@tanstack/react-table'

@@ -2,6 +2,7 @@ import { Base } from '@/components/Filter/Base'
 import { BaseSelected } from '@/components/Filter/BaseSelected'
 import type { FilterProps } from '@/components/Filter'
 import type { LucideIcon } from '@ttab/elephant-ui/icons'
+import type { JSX } from 'react'
 
 export const OptionsFilter = (props: FilterProps & {
   options: {

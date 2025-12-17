@@ -1,8 +1,9 @@
-import React from 'react'
+import { type JSX } from 'react'
 import { type FormProps } from './Root'
 import { cn } from '@ttab/elephant-ui/utils'
+import { cloneChildrenWithProps } from './lib/cloneChildren'
 
-export const Footer = ({ children, asDialog, setValidateForm, validateStateRef, className }:
+export const Footer = ({ children, asDialog, setValidateForm, validateStateRef, className, onValidation }:
   FormProps & {
     className?: string
   }): JSX.Element | null => {
@@ -10,14 +11,12 @@ export const Footer = ({ children, asDialog, setValidateForm, validateStateRef, 
 
   return (
     <div className={cn('border-t p-5', className)}>
-      {React.Children.map(children, (child: React.ReactNode): React.ReactNode =>
-        React.isValidElement<FormProps>(child)
-          ? React.cloneElement(child, {
-            setValidateForm,
-            validateStateRef
-          })
-          : child
-      )}
+      {cloneChildrenWithProps<FormProps>(children, {
+        setValidateForm,
+        validateStateRef,
+        asDialog,
+        onValidation
+      })}
     </div>
   )
 }

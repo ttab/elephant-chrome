@@ -5,6 +5,7 @@ import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMe
 import { MessageSquarePlusIcon } from '@ttab/elephant-ui/icons'
 import { cn } from '@ttab/elephant-ui/utils'
 import type * as Y from 'yjs'
+import type { JSX } from 'react'
 
 type NoteRole = 'internal' | 'public'
 

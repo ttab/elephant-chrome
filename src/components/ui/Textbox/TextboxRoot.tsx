@@ -1,8 +1,11 @@
+import type { JSX } from 'react'
 import { Textbit } from '@ttab/textbit'
 import type * as Y from 'yjs'
 import { LocalizedQuotationMarks, Text } from '@ttab/textbit-plugins'
 import { TextboxEditable } from './TextboxEditable'
-import type { YDocument } from '@/modules/yjs/hooks'
+import { useYValue, type YDocument } from '@/modules/yjs/hooks'
+import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
+import { cn } from '@ttab/elephant-ui/utils'
 
 export const TextboxRoot = ({
   value,
@@ -11,10 +14,11 @@ export const TextboxRoot = ({
   placeholder,
   singleLine = false,
   countCharacters = false,
-  autoFocus = false,
+  autoFocus,
   spellcheck = true,
   onBlur,
-  onFocus
+  onFocus,
+  className
 }: {
   value: Y.XmlText
   ydoc: YDocument<Y.Map<unknown>>
@@ -26,13 +30,18 @@ export const TextboxRoot = ({
   spellcheck?: boolean
   onBlur: React.FocusEventHandler<HTMLDivElement>
   onFocus: React.FocusEventHandler<HTMLDivElement>
+  className?: string
 }): JSX.Element => {
+  const [documentLanguage] = useYValue<string>(ydoc.ele, 'root.language')
+  const onSpellcheck = useOnSpellcheck(documentLanguage)
+
   return (
     <Textbit.Root
+      value={value}
+      lang={documentLanguage}
       debounce={0}
-      autoFocus={autoFocus}
-      onBlur={onBlur}
-      onFocus={onFocus}
+      onSpellcheck={spellcheck ? onSpellcheck : undefined}
+      readOnly={disabled}
       placeholder={placeholder}
       plugins={[
         LocalizedQuotationMarks(),
@@ -44,14 +53,14 @@ export const TextboxRoot = ({
           }
         })
       ]}
-      className='h-min-2 w-full'
+      className={cn('h-min-2 w-full', className)}
     >
       <TextboxEditable
-        disabled={disabled}
-        value={value}
-        ydoc={ydoc}
-        singleLine={singleLine}
         spellcheck={spellcheck}
+        autoFocus={autoFocus}
+        onFocus={onFocus}
+        onBlur={onBlur}
+        singleLine={singleLine}
       />
     </Textbit.Root>
   )

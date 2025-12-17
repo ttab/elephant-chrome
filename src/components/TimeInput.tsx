@@ -1,5 +1,5 @@
 import type { MouseEvent, KeyboardEvent, Dispatch, SetStateAction } from 'react'
-import { useState, type ChangeEventHandler } from 'react'
+import { useState, type ChangeEventHandler, type JSX } from 'react'
 import {
   Input
 } from '@ttab/elephant-ui'

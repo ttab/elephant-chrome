@@ -1,4 +1,4 @@
-import type { Dispatch, PropsWithChildren, SetStateAction } from 'react'
+import type { Dispatch, PropsWithChildren, SetStateAction, JSX } from 'react'
 import { useEffect, useRef } from 'react'
 import { Tabs } from '@ttab/elephant-ui'
 import { cn } from '@ttab/elephant-ui/utils'

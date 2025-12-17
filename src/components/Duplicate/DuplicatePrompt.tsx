@@ -8,7 +8,7 @@ import {
   DialogFooter,
   DialogTitle
 } from '@ttab/elephant-ui'
-import { useMemo, type MouseEvent } from 'react'
+import { useMemo, type MouseEvent, type JSX } from 'react'
 import { fromYjsNewsDoc, toYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc'
 import { fromGroupedNewsDoc, toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
 import { Block, type Document } from '@ttab/elephant-api/newsdoc'

@@ -1,6 +1,6 @@
 import { useRepositoryEvents } from '@/hooks/useRepositoryEvents'
 import { GanttChartSquareIcon, PlusIcon } from '@ttab/elephant-ui/icons'
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState, useEffect, type JSX } from 'react'
 import { NewItems } from '@/components/Table/NewItems'
 import type { FormProps } from '@/components/Form/Root'
 import { Button, Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger, Separator } from '@ttab/elephant-ui'

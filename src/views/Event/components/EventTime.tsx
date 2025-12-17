@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, type JSX } from 'react'
 import {
   Calendar,
   type CalendarTypes,
@@ -254,6 +254,7 @@ export const EventTimeMenu = ({ ydoc, onChange }: {
       <div className='p-2'>
         <Calendar
           mode='range'
+          locale={locale.module}
           required={false}
           selected={selected}
           weekStartsOn={1}

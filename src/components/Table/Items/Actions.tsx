@@ -1,5 +1,6 @@
 import { ActionMenu } from '@/components/DataItem/ActionMenu'
 import { useMemo } from 'react'
+import type { JSX } from 'react'
 
 export const Actions = ({ deliverableUuids, planningId }: { deliverableUuids: string[], planningId: string }): JSX.Element => {
   return useMemo(() => (

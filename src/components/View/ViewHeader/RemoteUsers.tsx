@@ -1,4 +1,4 @@
-import { type PropsWithChildren } from 'react'
+import type { PropsWithChildren, JSX } from 'react'
 import { AvatarGroup } from '@/components/AvatarGroup'
 import { Avatar } from '@/components/Avatar'
 import { useYAwareness, type YDocument } from '@/modules/yjs/hooks'

@@ -22,7 +22,7 @@ export function flashDocumentTemplate(id: string, payload?: TemplatePayload): Do
       Block.create({
         type: 'core/text',
         data: {
-          text: payload?.title || ''
+          text: ''
         },
         role: 'heading-1'
       }),

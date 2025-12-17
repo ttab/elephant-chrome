@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useRef, type JSX } from 'react'
 import { ComboBox } from '@ttab/elephant-ui'
 import { Newsvalues } from '@/defaults'
 import { Awareness } from '@/components'

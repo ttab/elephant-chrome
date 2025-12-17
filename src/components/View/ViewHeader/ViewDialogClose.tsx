@@ -4,7 +4,7 @@ import type { YDocument } from '@/modules/yjs/hooks'
 import { Button } from '@ttab/elephant-ui'
 import type { LucideIcon } from '@ttab/elephant-ui/icons'
 import { XIcon } from '@ttab/elephant-ui/icons'
-import { useState } from 'react'
+import { useState, type JSX } from 'react'
 import type * as Y from 'yjs'
 
 export const ViewDialogClose = ({ ydoc, onClick, Icon = XIcon, asDialog }: {

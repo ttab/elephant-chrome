@@ -1,5 +1,6 @@
 import { isVisualAssignmentType } from '@/defaults/assignmentTypes'
 import { StatusSpecifications, WorkflowSpecifications } from '@/defaults/workflowSpecification'
+import type { JSX } from 'react'
 import { selectableStatuses } from '@/views/Planning/components/AssignmentStatus'
 
 export const DocumentStatus = ({ type, status }: {
