@@ -9,7 +9,7 @@ import { CircleXIcon, TagsIcon, GanttChartSquareIcon, NewspaperIcon, ZapIcon } f
 import { useRegistry, useSections } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import type { Dispatch, SetStateAction } from 'react'
-import { type JSX, useRef, useState } from 'react'
+import { type JSX, useMemo, useRef, useState } from 'react'
 import { UserMessage } from '@/components/UserMessage'
 import { Form } from '@/components/Form'
 import { fetch } from '@/lib/index/fetch-plannings-twirp'
@@ -160,6 +160,17 @@ export const FlashDialog = (props: {
     props.onDialogClose?.()
   }
 
+  const configs = useMemo(() => promptConfig({
+    type: 'flash',
+    savePrompt,
+    sendPrompt,
+    donePrompt,
+    setSavePrompt,
+    setSendPrompt,
+    setDonePrompt,
+    selectedPlanning
+  }), [donePrompt, savePrompt, sendPrompt, selectedPlanning, setDonePrompt, setSavePrompt, setSendPrompt])
+
   const handleCreationErrors = (ex: Error) => {
     console.error(ex)
 
@@ -176,46 +187,6 @@ export const FlashDialog = (props: {
       })
     }
   }
-
-  const promptConfig: PromptConfig[] = [
-    {
-      visible: sendPrompt,
-      key: 'send',
-      title: 'Skapa och skicka flash?',
-      description: !selectedPlanning
-        ? 'En ny planering med tillhörande uppdrag för denna flash kommer att skapas åt dig.'
-        : `Denna flash kommer att läggas i ett nytt uppdrag i planeringen "${selectedPlanning.label}".`,
-      secondaryDescription: 'I samma planering kommer även ett textuppdrag med flashinnehållet att läggas till.',
-      secondaryLabel: 'Avbryt',
-      primaryLabel: 'Skicka',
-      documentStatus: 'usable' as CreateFlashDocumentStatus,
-      setPrompt: setSendPrompt
-    },
-    {
-      visible: donePrompt,
-      key: 'done',
-      title: 'Skapa och klarmarkera flash?',
-      description: !selectedPlanning
-        ? 'En ny planering med tillhörande uppdrag för denna flash kommer att skapas åt dig.'
-        : `Denna flash kommer att läggas i ett nytt uppdrag i planeringen "${selectedPlanning.label}". Med status klar.`,
-      secondaryLabel: 'Avbryt',
-      primaryLabel: 'Klarmarkera',
-      documentStatus: 'done' as CreateFlashDocumentStatus,
-      setPrompt: setDonePrompt
-    },
-    {
-      visible: savePrompt,
-      key: 'save',
-      title: 'Spara flash?',
-      description: !selectedPlanning
-        ? 'En ny planering med tillhörande uppdrag för denna flash kommer att skapas åt dig.'
-        : `Denna flash kommer att läggas i ett nytt uppdrag i planeringen "${selectedPlanning.label}"`,
-      secondaryLabel: 'Avbryt',
-      primaryLabel: 'Spara',
-      documentStatus: undefined,
-      setPrompt: setSavePrompt
-    }
-  ]
 
   if (!ydoc.provider?.isSynced) {
     return <></>
@@ -333,7 +304,7 @@ export const FlashDialog = (props: {
           </Form.Content>
 
           {
-            promptConfig.map((config) =>
+            configs.map((config) =>
               config.visible && (
                 <CreatePrompt
                   key={config.key}

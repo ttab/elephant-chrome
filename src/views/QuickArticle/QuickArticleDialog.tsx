@@ -8,7 +8,7 @@ import { Button, Checkbox, ComboBox, Label } from '@ttab/elephant-ui'
 import { CircleXIcon, TagsIcon, GanttChartSquareIcon, NewspaperIcon } from '@ttab/elephant-ui/icons'
 import { useRegistry, useSections } from '@/hooks'
 import { useSession } from 'next-auth/react'
-import { useEffect, useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { UserMessage } from '@/components/UserMessage'
 import { Form } from '@/components/Form'
 import { fetch } from '@/lib/index/fetch-plannings-twirp'
@@ -18,7 +18,7 @@ import { toast } from 'sonner'
 import { useYDocument, useYValue, type YDocument } from '@/modules/yjs/hooks'
 import { ToastAction } from '@/components/ToastAction'
 import { SluglineEditable } from '@/components/DataItem/SluglineEditable'
-import { type CreateArticleDocumentStatus, createQuickArticle } from './lib/createQuickArticle'
+import { createQuickArticle } from './lib/createQuickArticle'
 import type { DefaultValueOption, ViewProps } from '@/types'
 import type { Dispatch, JSX, SetStateAction } from 'react'
 import type { EleDocumentResponse } from '@/shared/types'
@@ -26,19 +26,7 @@ import type * as Y from 'yjs'
 import { DocumentHeader } from '@/components/QuickDocument/DocumentHeader'
 import { DialogEditor } from '@/components/QuickDocument/DialogEditor'
 import { toSlateYXmlText } from '@/shared/yUtils'
-import type { FormProps } from '@/components/Form/Root'
-
-type PromptConfig = {
-  visible: boolean
-  key: string
-  title: string
-  description: string
-  secondaryDescription?: string
-  secondaryLabel: string
-  primaryLabel: string
-  documentStatus: CreateArticleDocumentStatus
-  setPrompt: Dispatch<SetStateAction<boolean>>
-}
+import { type PromptConfig, promptConfig } from '@/components/QuickDocument/dialogConfig'
 import { ValidateNow } from '@/components/ValidateNow'
 
 export const QuickArticleDialog = (props: {
@@ -78,45 +66,16 @@ export const QuickArticleDialog = (props: {
     props.onDialogClose?.()
   }
 
-  const promptConfig: PromptConfig[] = [
-    {
-      visible: sendPrompt,
-      key: 'send',
-      title: 'Skapa och skicka artikel?',
-      description: !selectedPlanning
-        ? 'En ny planering med tillhörande uppdrag för denna artikel kommer att skapas åt dig.'
-        : `Denna artikel kommer att läggas i ett nytt uppdrag i planeringen "${selectedPlanning.label}".`,
-      secondaryDescription: 'I samma planering kommer även ett textuppdrag med artikelinnehållet att läggas till.',
-      secondaryLabel: 'Avbryt',
-      primaryLabel: 'Publicera',
-      documentStatus: 'usable' as CreateArticleDocumentStatus,
-      setPrompt: setSendPrompt
-    },
-    {
-      visible: donePrompt,
-      key: 'done',
-      title: 'Skapa och klarmarkera artikel?',
-      description: !selectedPlanning
-        ? 'En ny planering med tillhörande uppdrag för denna artikel kommer att skapas åt dig.'
-        : `Denna artikel kommer att läggas i ett nytt uppdrag i planeringen "${selectedPlanning.label}". Med status klar.`,
-      secondaryLabel: 'Avbryt',
-      primaryLabel: 'Klarmarkera',
-      documentStatus: 'done' as CreateArticleDocumentStatus,
-      setPrompt: setDonePrompt
-    },
-    {
-      visible: savePrompt,
-      key: 'save',
-      title: 'Spara artikel?',
-      description: !selectedPlanning
-        ? 'En ny planering med tillhörande uppdrag för denna artikel kommer att skapas åt dig.'
-        : `Denna artikel kommer att läggas i ett nytt uppdrag i planeringen "${selectedPlanning.label}"`,
-      secondaryLabel: 'Avbryt',
-      primaryLabel: 'Spara',
-      documentStatus: undefined,
-      setPrompt: setSavePrompt
-    }
-  ]
+  const configs = useMemo(() => promptConfig({
+    type: 'article',
+    savePrompt,
+    sendPrompt,
+    donePrompt,
+    setSavePrompt,
+    setSendPrompt,
+    setDonePrompt,
+    selectedPlanning
+  }), [donePrompt, savePrompt, sendPrompt, selectedPlanning, setDonePrompt, setSavePrompt, setSendPrompt])
 
   if (!ydoc.provider?.isSynced) {
     return <></>
@@ -253,7 +212,7 @@ export const QuickArticleDialog = (props: {
           </Form.Content>
 
           {
-            promptConfig.map((config) =>
+            configs.map((config) =>
               config.visible && (
                 <CreatePrompt
                   key={config.key}
