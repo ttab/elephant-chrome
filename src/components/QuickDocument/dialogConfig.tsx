@@ -65,7 +65,7 @@ export const promptConfig = ({
     {
       visible: savePrompt,
       key: 'save',
-      title: 'Spara artikel?',
+      title: `Spara ${documentType}?`,
       description: !selectedPlanning
         ? `En ny planering med tillhörande uppdrag för denna ${documentType} kommer att skapas åt dig.`
         : `Denna ${documentType} kommer att läggas i ett nytt uppdrag i planeringen "${selectedPlanning.label}"`,
@@ -82,7 +82,7 @@ export const getLabel = (documentStatus: CreateFlashDocumentStatus, type: 'artic
 
   switch (documentStatus) {
     case 'usable': {
-      return `${documentType} skickad`
+      return `${documentType} ${type === 'flash' ? 'skickad' : 'publicerad'}`
     }
     case 'done': {
       return `${documentType} godkänd`
