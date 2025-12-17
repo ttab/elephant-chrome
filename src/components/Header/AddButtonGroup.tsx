@@ -20,6 +20,7 @@ import {
 import { documentTypeValueFormat } from '@/defaults/documentTypeFormats'
 import type { buttonVariants } from '@ttab/elephant-ui'
 import type { VariantProps } from 'class-variance-authority'
+import type { QueryParams } from '@/hooks/useQuery'
 
 type Variant = VariantProps<typeof buttonVariants>['variant']
 
@@ -30,9 +31,11 @@ const AddButton = ({
   className,
   showModal,
   hideModal,
-  docType
+  docType,
+  query
 }: {
   type: View
+  query: QueryParams
   withNew?: boolean
   variant?: Variant
   className?: string
@@ -50,7 +53,8 @@ const AddButton = ({
       className={!withNew ? '' : cn('h-8 pr-4', className)}
       onClick={() => {
         const id = crypto.randomUUID()
-        const initialDocument = getTemplateFromView(type)(id)
+        const initialDocument = getTemplateFromView(type)(id, { query })
+
         if (showModal) {
           showModal(
             <ViewDialog
@@ -69,7 +73,7 @@ const AddButton = ({
   )
 }
 
-export const AddButtonGroup = ({ type, docType }: { type: View, docType?: string }) => {
+export const AddButtonGroup = ({ type, docType, query }: { type: View, query: QueryParams, docType?: string }) => {
   const { showModal, hideModal } = useModal()
   const ArticleViewDialog = Views['QuickArticle' as View]
   return (
@@ -80,6 +84,7 @@ export const AddButtonGroup = ({ type, docType }: { type: View, docType?: string
         showModal={showModal}
         hideModal={hideModal}
         docType={docType}
+        query={query}
       />
       <ButtonGroupSeparator />
       <DropdownMenu>
@@ -102,6 +107,7 @@ export const AddButtonGroup = ({ type, docType }: { type: View, docType?: string
               showModal={showModal}
               hideModal={hideModal}
               docType={docType}
+              query={query}
             />
           </DropdownMenuItem>
           <DropdownMenuSeparator />

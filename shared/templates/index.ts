@@ -10,6 +10,7 @@ export { editorialInfoDocumentTemplate as editorialInfo } from './editorialInfoD
 export { quickArticleDocumentTemplate as quickArticle } from './quickArticleDocumentTemplate.js'
 
 export interface TemplatePayload {
+  query?: Record<string, string | string[] | undefined>
   title?: string
   text?: string
   meta?: {
