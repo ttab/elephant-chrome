@@ -42,7 +42,6 @@ export function planningDocumentTemplate(documentId: string, payload?: TemplateP
       ...payload?.meta?.['core/planning-item'] || [Block.create({
         type: 'core/planning-item',
         data: {
-          public: 'true',
           // FIXME: Send end and start date from event to planning
           end_date: makeDate(),
           tentative: 'false',
