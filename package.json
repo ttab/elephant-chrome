@@ -44,7 +44,7 @@
     "@hocuspocus/extension-logger": "^3.4.0",
     "@hocuspocus/extension-redis": "^3.4.0",
     "@hocuspocus/provider": "^3.4.0",
-    "@hocuspocus/server": "^3.4.0",
+    "@hocuspocus/server": "^3.4.3",
     "@microsoft/fetch-event-source": "^2.0.1",
     "@protobuf-ts/twirp-transport": "^2.9.6",
     "@pyroscope/nodejs": "^0.4.7",
