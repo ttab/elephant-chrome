@@ -72,7 +72,7 @@
     "pino": "^10.1.0",
     "pino-http": "^11.0.0",
     "react": "^19.2.3",
-    "react-dom": "^19.2.0",
+    "react-dom": "^19.2.3",
     "redis": "^4.7.0",
     "slate": "^0.118.1",
     "slate-history": "^0.113.1",
