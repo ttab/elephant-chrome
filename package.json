@@ -103,7 +103,7 @@
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.1",
-    "@vitest/coverage-v8": "^4.0.4",
+    "@vitest/coverage-v8": "^4.0.16",
     "concurrently": "^9.2.1",
     "eslint": "^9.39.1",
     "fake-indexeddb": "^6.2.5",
