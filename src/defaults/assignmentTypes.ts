@@ -6,7 +6,7 @@ import {
   ApertureIcon,
   ZapIcon,
   FileWarningIcon,
-  PenToolIcon
+  ChartPieIcon
 } from '@ttab/elephant-ui/icons'
 
 const iconProps = {
@@ -37,7 +37,7 @@ export const AssignmentTypes: DefaultValueOption[] = [
   {
     label: 'Grafik',
     value: 'graphic',
-    icon: PenToolIcon,
+    icon: ChartPieIcon,
     iconProps
   },
   {
