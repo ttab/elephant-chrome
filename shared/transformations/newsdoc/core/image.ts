@@ -26,7 +26,8 @@ export const transformImage = (element: Block): TBElement => {
     properties,
     children: [
       {
-        class: 'text',
+        id: '',
+        class: 'void',
         type: 'core/image/image',
         children: [{ text: '' }]
       },
