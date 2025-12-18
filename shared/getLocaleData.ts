@@ -1,12 +1,11 @@
 import type { Locale } from 'date-fns'
-import { getUserLocales } from 'get-user-locale'
 import type { LocaleData } from '@/types'
 import { defaultLocale } from '@/defaults/locale'
 
 export { defaultLocale } from '@/defaults/locale'
 
 export const getLocaleData = async (): Promise<LocaleData> => {
-  const [full, short] = getUserLocales() || defaultLocale.code.full
+  const [full, short] = defaultLocale.code.full
   // Without -, ie enGB
   const long = full.replace('-', '')
 
