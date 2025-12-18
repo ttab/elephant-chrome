@@ -124,7 +124,7 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
                     !props.asDialog ? 'ms-[13px]' : 'ms-6 me-5'
                   )}
                   label='Titel'
-                  placeholder='Planeringstitel'
+                  placeholder='Titel'
                 />
               </Form.Title>
             </Form.Content>
