@@ -116,7 +116,7 @@ export const consume = async (
                   children: [
                     {
                       type: 'core/image/image',
-                      class: 'text',
+                      class: 'void',
                       children: [{ text: '' }]
                     },
                     {

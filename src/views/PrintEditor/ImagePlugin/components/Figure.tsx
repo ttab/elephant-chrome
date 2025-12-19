@@ -10,7 +10,6 @@ export const Figure = ({ editor, children, element }: TBComponentProps & { edito
     <FocusBlock className='my-2'>
       <figure
         className="flex gap-1 flex-col my-2 min-h-10 group-data-[state='active']:ring-1 ring-offset-4 rounded-sm relative"
-        draggable={false}
       >
         <div contentEditable={false} className='absolute hidden right-1 top-2 size-8 w-fit text-slate-900 justify-between items-center group-hover:block z-50'>
           <div
