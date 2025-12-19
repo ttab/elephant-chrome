@@ -21,7 +21,7 @@ export const Content = ({ children, variant = 'default', columns = 0, className 
     case 'grid':
       return (
         <div
-          className={cn('grid h-full w-full overflow-scroll snap-x snap-mandatory', className)}
+          className={cn('grid self-center h-full w-full overflow-scroll snap-x snap-mandatory', className)}
           style={{ gridTemplateColumns: gridFractions }}
         >
           {children}
