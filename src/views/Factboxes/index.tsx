@@ -47,7 +47,7 @@ export const Factboxes = (): JSX.Element => {
         <ViewHeader.Root>
           <ViewHeader.Content>
             <ViewHeader.Title name='Factboxes' title='Faktarutor' />
-            <Header type='Factbox' />
+            <Header type='Factbox' docType='core/factbox' />
           </ViewHeader.Content>
 
           <ViewHeader.Action />

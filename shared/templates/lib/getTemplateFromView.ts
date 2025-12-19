@@ -2,7 +2,7 @@ import { type View } from '@/types/index'
 import type { Document } from '@ttab/elephant-api/newsdoc'
 import * as Templates from '@/shared/templates'
 
-export function getTemplateFromView(type: View): (id: string, payload?: Templates.TemplatePayload) => Document {
+export function getTemplateFromView(type: View): (id: string, payload?: Templates.TemplatePayload, text?: string) => Document {
   switch (type) {
     case 'Planning':
       return Templates.planning
@@ -12,6 +12,8 @@ export function getTemplateFromView(type: View): (id: string, payload?: Template
       return Templates.factbox
     case 'Flash':
       return Templates.flash
+    case 'QuickArticle':
+      return Templates.quickArticle
     default:
       throw new Error(`No template for ${type}`)
   }

@@ -15,6 +15,7 @@ import { useState } from 'react'
 export const CreatePrompt = ({
   title,
   description,
+  secondaryDescription,
   primaryLabel,
   secondaryLabel,
   onPrimary,
@@ -23,6 +24,7 @@ export const CreatePrompt = ({
 }: {
   title?: string
   description: string
+  secondaryDescription?: string
   primaryLabel: string
   secondaryLabel?: string
   onPrimary: () => void
@@ -56,6 +58,12 @@ export const CreatePrompt = ({
         <DialogDescription>
           {description}
         </DialogDescription>
+
+        {secondaryDescription && (
+          <DialogDescription>
+            {secondaryDescription}
+          </DialogDescription>
+        )}
 
         {children}
         <DialogFooter className='flex flex-col gap-2 pt-4'>
