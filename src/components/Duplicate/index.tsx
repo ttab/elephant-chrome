@@ -38,6 +38,7 @@ const SingleOrRangedCalendar = ({
           mode='range'
           locale={locale.module}
           selected={duplicateDate}
+          defaultMonth={duplicateDate.from}
           onSelect={(selectedDate) => {
             if (!selectedDate?.from || !selectedDate?.to) {
               return
@@ -59,6 +60,7 @@ const SingleOrRangedCalendar = ({
       mode='single'
       locale={locale.module}
       selected={duplicateDate?.from}
+      defaultMonth={duplicateDate.from}
       onSelect={(selectedDate) => {
         if (!selectedDate) {
           return

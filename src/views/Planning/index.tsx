@@ -21,9 +21,8 @@ import { SluglineEditable } from '@/components/DataItem/SluglineEditable'
 import { Button } from '@ttab/elephant-ui'
 import { useSession } from 'next-auth/react'
 import { PlanningHeader } from './components/PlanningHeader'
-import React, { type SetStateAction, useMemo, useState, type JSX } from 'react'
+import React, { type SetStateAction, useMemo, type JSX } from 'react'
 import type { NewItem } from '../Event/components/PlanningTable'
-import { MoveDialog } from './components/MoveDialog'
 import { RelatedEvents } from './components/RelatedEvents'
 import type { Block, Document } from '@ttab/elephant-api/newsdoc'
 import { CopyGroup } from '../../components/CopyGroup'
@@ -116,7 +115,6 @@ const PlanningViewContent = (props: ViewProps & {
   const [copyGroupId] = useYValue<string | undefined>(document, 'meta.core/copy-group[0].uuid')
   const [newTitle] = useYValue(document, ['root', 'title'])
   const [relatedEvents] = useYValue<Block[]>(document, 'links.core/event')
-  const [newDate, setNewDate] = useState<string | undefined>(undefined)
 
   const [title] = useYValue<Y.XmlText>(document, 'root.title', true)
   const [slugline] = useYValue<Y.XmlText>(document, 'meta.tt/slugline[0].value', true)
@@ -212,19 +210,7 @@ const PlanningViewContent = (props: ViewProps & {
             />
 
             <Form.Group icon={CalendarIcon}>
-              {props.asDialog !== true
-                ? <PlanDate planningItem={ydoc.ele} onValueChange={setNewDate} />
-                : <PlanDate planningItem={ydoc.ele} />}
-
-              {newDate && props.asDialog !== true && (
-                <MoveDialog
-                  ydoc={ydoc}
-                  newDate={newDate}
-                  onClose={() => {
-                    setNewDate(undefined)
-                  }}
-                />
-              )}
+              <PlanDate ydoc={ydoc} asDialog={!!props.asDialog} />
             </Form.Group>
 
             <Form.Group icon={TagsIcon}>

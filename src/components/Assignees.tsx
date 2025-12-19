@@ -11,8 +11,9 @@ import { type FormProps } from './Form/Root'
 import { type YDocument, useYValue } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 
-export const Assignees = ({ ydoc, path, placeholder, asDialog, onChange }: {
+export const Assignees = ({ ydoc, path, rootMap, placeholder, asDialog, onChange }: {
   ydoc: YDocument<Y.Map<unknown>>
+  rootMap?: Y.Map<unknown>
   placeholder: string
   path: string
 } & FormProps): JSX.Element | undefined => {
@@ -22,7 +23,7 @@ export const Assignees = ({ ydoc, path, placeholder, asDialog, onChange }: {
       label: _.name
     }
   })
-  const [assignees, setAssignees] = useYValue<EleBlock[]>(ydoc.ele, path)
+  const [assignees, setAssignees] = useYValue<EleBlock[]>(rootMap || ydoc.ele, path)
   const selectedOptions = ((assignees || [])?.map((a) => {
     return {
       value: a.uuid,
