@@ -38,7 +38,7 @@ export const normalizeImage = (editor: Editor, nodeEntry: NodeEntry): boolean | 
       // If image is gone, delete the whole block
       Transforms.removeNodes(editor, { at: path })
       return true
-    } else if (!hasText) {
+    } else if (!hasText || !hasByline) {
       // If either text is missing, add empty text node in the right position
       const [addType, atPos] = (!hasByline) ? ['core/image/byline', 2] : ['core/image/text', 1]
       Transforms.insertNodes(
@@ -58,7 +58,7 @@ export const normalizeImage = (editor: Editor, nodeEntry: NodeEntry): boolean | 
 
   let n = 0
   for (const [child, childPath] of children) {
-    if (TextbitElement.isBlock(child) || TextbitElement.isText(child)) {
+    if (TextbitElement.isBlock(child)) {
       // Unwrap block node children (move text element children upwards in tree)
       Transforms.unwrapNodes(editor, {
         at: childPath,

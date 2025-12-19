@@ -103,6 +103,7 @@ export const Assignment = ({ ydoc, assignment, onAbort, onClose }: {
             />
             <Assignees
               ydoc={ydoc}
+              rootMap={!assignmentInProgress ? ydoc.ele : ydoc.ctx}
               path={`${path}.links.core/author`}
               placeholder='Lägg till uppdragstagare'
             />

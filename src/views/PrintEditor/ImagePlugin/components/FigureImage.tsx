@@ -48,7 +48,7 @@ export const FigureImage = ({ editor, children, rootNode, options }: TBComponent
   }, [session, repository, uploadId])
 
   return (
-    <div contentEditable={false} draggable={false}>
+    <div contentEditable={false}>
       <div ref={imgContainerRef} className='relative rounded-xs overflow-hidden'>
         <img width='100%' src={attachmentDetails?.downloadLink} />
 
