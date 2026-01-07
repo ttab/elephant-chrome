@@ -133,7 +133,18 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
       cell: ({ row }) => {
         const assignmentTitle = row.getValue<string[]>('title')?.join(' ') || ''
         const planningTitle = row.original.fields['document.title'].values[0] || ''
-        return <AssignmentTitles planningTitle={planningTitle} assignmentTitle={assignmentTitle} />
+        const assignees = (row.getValue<string[]>('assignees') || []).map((assigneeId) => {
+          return authors.find((author) => author.id === assigneeId)?.name || ''
+        })
+
+        return (
+          <>
+            <AssignmentTitles planningTitle={planningTitle} assignmentTitle={assignmentTitle} />
+            <div className='display:revert @5xl/view:[display:none] pt-2'>
+              <Assignees assignees={assignees} />
+            </div>
+          </>
+        )
       },
       enableGrouping: false
     },
