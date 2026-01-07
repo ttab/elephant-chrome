@@ -23,15 +23,18 @@ export const Thumbnail = ({ hit }: {
   const proxyUrl = `${BASE_URL}/api/${mediaType}/${id}`
 
   return (
-    <Dialog modal={false}>
-      <DialogTrigger>
-        <div className='flex place-content-center bg-gray-200 min-h-[144px]'>
-          <img
-            ref={imageRef}
-            src={thumbnail.href}
-            className='max-h-[176px] object-contain m-width-auto'
-            onDragStartCapture={(e) => {
-              e.stopPropagation()
+    <Dialog open={isOpen}>
+      <div
+        className='flex place-content-center bg-gray-200 dark:bg-table-focused min-h-[144px] cursor-pointer'
+        onClick={() => setIsOpen((prev) => !prev)}
+      >
+        <img
+          ref={imageRef}
+          src={thumbnail.href}
+          title={hit?.description_text}
+          className='max-h-[176px] object-contain m-width-auto'
+          onDragStartCapture={(e) => {
+            e.stopPropagation()
 
             if (!imageRef.current) {
               return
