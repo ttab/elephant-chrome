@@ -1,12 +1,14 @@
 import { type ttninjs } from '@ttab/api-client'
 import { DialogDescription, DialogTitle } from '@ttab/elephant-ui'
 import { toast } from 'sonner'
-import type { JSX } from 'react'
+import type { Dispatch, JSX, SetStateAction } from 'react'
+import { XIcon } from 'lucide-react'
 
 const BASE_URL = import.meta.env.BASE_URL || ''
 
-export const Preview = ({ ttninjs }: {
+export const Preview = ({ ttninjs, setOpen }: {
   ttninjs: ttninjs
+  setOpen: Dispatch<SetStateAction<boolean>>
 }): JSX.Element => {
   const id = new URL(ttninjs.uri).pathname.split('/').filter(Boolean).pop()
 
@@ -21,7 +23,12 @@ export const Preview = ({ ttninjs }: {
 
   return (
     <div className='flex flex-col'>
-      <DialogTitle className='pb-2'>{ttninjs.headline}</DialogTitle>
+      <div className='flex items-center justify-between'>
+        <DialogTitle className='pb-2'>{ttninjs.headline}</DialogTitle>
+        <div className='cursor-pointer hover:bg-slate-200 dark:hover:bg-table-focused p-2 rounded-md' onClick={() => setOpen((prev) => !prev)}>
+          <XIcon size={16} strokeWidth={1.75} className='text-black dark:text-white' />
+        </div>
+      </div>
       <img
         src={url}
       />
