@@ -303,6 +303,8 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
         pb-4
         ring-inset
         hover:bg-muted
+        dark:hover:bg-table-focused
+        transition-all
         focus:outline-none
         focus-visible:rounded-sm
         focus-visible:ring-2
@@ -344,7 +346,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
             disabled={!onSelect}
             variant='ghost'
             size='sm'
-            className='w-9 px-0 hover:bg-accent2 hover:bg-gray-200'
+            className='w-9 px-0 hover:bg-accent2 hover:bg-gray-200 dark:hover:bg-table-focused'
             onClick={(event) => {
               event.preventDefault()
               event.stopPropagation()

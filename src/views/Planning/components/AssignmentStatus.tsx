@@ -118,7 +118,7 @@ export const selectableStatuses: DefaultValueOption[] = [
     label: 'Påbörjad',
     icon: CircleArrowUpIcon,
     iconProps: {
-      className: 'bg-done text-white rounded-full',
+      className: 'bg-done text-white dark:text-black rounded-full',
       size: 18,
       strokeWidth: 1.75
     }
@@ -128,7 +128,7 @@ export const selectableStatuses: DefaultValueOption[] = [
     label: 'Klar',
     icon: CircleCheckIcon,
     iconProps: {
-      className: 'bg-usable text-white fill-usable rounded-full',
+      className: 'bg-usable text-white dark:text-black fill-usable rounded-full',
       size: 18,
       strokeWidth: 1.75
     }
