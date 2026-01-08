@@ -1,7 +1,7 @@
 import { type ttninjs } from '@ttab/api-client'
 import { DialogDescription, DialogTitle } from '@ttab/elephant-ui'
 import { toast } from 'sonner'
-import type { Dispatch, JSX, SetStateAction } from 'react'
+import { useEffect, useRef, type Dispatch, type JSX, type SetStateAction } from 'react'
 import { XIcon } from 'lucide-react'
 
 const BASE_URL = import.meta.env.BASE_URL || ''
@@ -11,6 +11,22 @@ export const Preview = ({ ttninjs, setOpen }: {
   setOpen: Dispatch<SetStateAction<boolean>>
 }): JSX.Element => {
   const id = new URL(ttninjs.uri).pathname.split('/').filter(Boolean).pop()
+  const previewRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (previewRef.current && !previewRef.current.contains(e.target as Node)) {
+        setOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleOutsideClick)
+
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick)
+    }
+  }, [])
+
 
   if (!id) {
     console.error('No id found in ttninjs.uri')
@@ -22,7 +38,7 @@ export const Preview = ({ ttninjs, setOpen }: {
   const url = `${BASE_URL}/api/${mediaType}/${id}_NormalPreview.jpg`
 
   return (
-    <div className='flex flex-col'>
+    <div className='flex flex-col' ref={previewRef}>
       <div className='flex items-center justify-between'>
         <DialogTitle className='pb-2'>{ttninjs.headline}</DialogTitle>
         <div className='cursor-pointer hover:bg-slate-200 dark:hover:bg-table-focused p-2 rounded-md' onClick={() => setOpen((prev) => !prev)}>
