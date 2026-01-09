@@ -28,8 +28,7 @@ export const TextboxEditable = ({ singleLine, autoFocus, onFocus, onBlur }: {
         whitespace-nowrap
         **:data-spelling-error:border-b-2
         **:data-spelling-error:border-dotted
-        **:data-spelling-error:border-red-500
-        dark:bg-input`
+        **:data-spelling-error:border-red-500`
       )}
     >
       <ContextMenu className='z-9999' />

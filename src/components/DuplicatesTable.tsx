@@ -85,7 +85,7 @@ export const DuplicatesTable = ({ documentId, type }: {
         const dateFormatted = `(${(start === end) || (start && !end) ? start : `${start} - ${end}`})`
 
         return (
-          <div key={duplicate.id} className='py-1 hover:bg-gray-100 dark:hover:bg-gray-700'>
+          <div key={duplicate.id} className='py-1 hover:bg-gray-100 dark:hover:bg-table-focused'>
             <Link to={type === 'core/event' ? 'Event' : 'Planning'} props={{ id: duplicate.id }} target='last'>
               <div className='flex items-center gap-2 text-sm'>
                 <CalendarPlus2Icon strokeWidth={1.75} size={18} className='text-muted-foreground' />

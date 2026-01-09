@@ -33,7 +33,7 @@ export const ViewDialogClose = ({ ydoc, onClick, Icon = XIcon, asDialog }: {
     <>
       <Button
         variant='ghost'
-        className='w-9 h-9 p-0 hover:bg-gray-200 dark:hover:bg-gray-700'
+        className='w-9 h-9 p-0 hover:bg-gray-200 dark:hover:bg-table-focused'
         onClick={() => {
           if (ydoc?.isChanged) {
             setShowVerifyDialog(true)

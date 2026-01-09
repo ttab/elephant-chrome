@@ -37,7 +37,7 @@ export const AddNote = ({ ydoc, text = '', role }: {
         variant='ghost'
         onClick={() => handleClick(role)}
       >
-        <MessageSquarePlusIcon size={18} strokeWidth={1.75} />
+        <MessageSquarePlusIcon size={18} strokeWidth={1.75} className='text-white dark:text-black' />
         {text && <span className='text-muted-foreground'>{text}</span>}
       </Button>
     )
@@ -46,12 +46,12 @@ export const AddNote = ({ ydoc, text = '', role }: {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        className={cn('flex flex-row items-center justify-center gap-1 h-9 p-0 m-0 min-w-9 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md px-1',
+        className={cn('flex flex-row items-center justify-center gap-1 h-9 p-0 m-0 min-w-9 hover:bg-gray-200 dark:hover:bg-table-focused rounded-md px-1',
           text
             ? 'text-muted-foreground text-xs border rounded-md'
             : '')}
       >
-        <MessageSquarePlusIcon size={18} strokeWidth={1.75} />
+        <MessageSquarePlusIcon size={18} strokeWidth={1.75} className='text-black dark:text-white' />
         {text && <span className='text-muted-foreground'>{text}</span>}
       </DropdownMenuTrigger>
 
