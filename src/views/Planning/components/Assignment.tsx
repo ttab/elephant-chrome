@@ -57,7 +57,7 @@ export const Assignment = ({ ydoc, assignment, onAbort, onClose }: {
   }
 
   return (
-    <div className='flex flex-col rounded-md border shadow-xl -mx-1 -my-1 z-10 bg-background' ref={formRef}>
+    <div className='flex flex-col rounded-md border shadow-xl -mx-1 -my-1 z-10 bg-background dark:bg-table-focused' ref={formRef}>
       <Form.Root asDialog={true}>
         <Form.Content>
           <Form.Title>
