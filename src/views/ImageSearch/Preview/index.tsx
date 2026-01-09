@@ -25,7 +25,7 @@ export const Preview = ({ ttninjs, setOpen }: {
     return () => {
       document.removeEventListener('mousedown', handleOutsideClick)
     }
-  }, [])
+  }, [setOpen])
 
 
   if (!id) {
