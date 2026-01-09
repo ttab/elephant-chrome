@@ -90,7 +90,7 @@ export const Search = (): JSX.Element => {
         <View.Content>
           {!Object.keys(params).length
             ? (
-                <div className='w-3/4 h-fit mt-10 bg-slate-200 p-6 m-auto'>
+                <div className='w-3/4 h-fit mt-10 bg-slate-200 dark:bg-slate-800 p-6 m-auto'>
                   <div className='flex flex-col gap-2 w-full items-center'>
                     <SearchBar width='w-full' searchType={searchType} page={0} />
                     <div className='flex gap-2 w-full justify-center'>

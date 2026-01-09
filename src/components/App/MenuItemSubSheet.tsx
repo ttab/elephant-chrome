@@ -41,7 +41,7 @@ export const MenuItemSubSheet = ({
           <SheetDescription className='sr-only' />
 
           <div className='flex flex-row gap-4 justify-between justify-items-center items-center h-14 px-4 border-b'>
-            <SheetClose className='rounded-md hover:bg-gray-100 w-9 h-9 flex items-center justify-center'>
+            <SheetClose className='rounded-md hover:bg-gray-100 dark:hover:bg-table-focused w-9 h-9 flex items-center justify-center'>
               <XIcon strokeWidth={2.25} />
             </SheetClose>
 

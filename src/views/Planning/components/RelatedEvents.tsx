@@ -28,7 +28,7 @@ export const RelatedEvents = ({ events = [] }: { events: Block[] | undefined }) 
               props={{ id: ev.uuid }}
               target='last'
               key={ev.uuid}
-              className='w-fit text-sm flex items-center gap-2 hover:bg-gray-100'
+              className='w-fit text-sm flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-table-focused p-1 rounded-sm'
             >
               {ev.title}
             </Link>
