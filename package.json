@@ -54,7 +54,7 @@
     "@ttab/api-client": "^2.11.1",
     "@ttab/elephant-api": "^0.18.2",
     "@ttab/elephant-tt-api": "^0.1.8",
-    "@ttab/elephant-ui": "^1.2.0",
+    "@ttab/elephant-ui": "^1.2.1",
     "@ttab/textbit": "^1.0.7",
     "@ttab/textbit-plugins": "^1.1.0",
     "class-variance-authority": "^0.7.1",
