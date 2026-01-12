@@ -1,15 +1,15 @@
-import type { TBElement, Plugin, TBText } from '@ttab/textbit'
+import type { TBElement, TBText, TBComponentProps } from '@ttab/textbit'
 import { FocusBlock } from './FocusBlock'
 import { type BaseEditor, Transforms } from 'slate'
 import { cn } from '@ttab/elephant-ui/utils'
 import { XIcon } from '@ttab/elephant-ui/icons'
+import type { JSX } from 'react'
 
-export const Figure = ({ editor, children, element }: Plugin.ComponentProps & { editor: BaseEditor, element: TBElement }): JSX.Element => {
+export const Figure = ({ editor, children, element }: TBComponentProps & { editor: BaseEditor, element: TBElement }): JSX.Element => {
   return (
     <FocusBlock className='my-2'>
       <figure
         className="flex gap-1 flex-col my-2 min-h-10 group-data-[state='active']:ring-1 ring-offset-4 rounded-sm relative"
-        draggable={false}
       >
         <div contentEditable={false} className='absolute hidden right-1 top-2 size-8 w-fit text-slate-900 justify-between items-center group-hover:block z-50'>
           <div

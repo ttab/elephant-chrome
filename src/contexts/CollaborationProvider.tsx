@@ -1,6 +1,7 @@
 import {
   createContext,
-  type PropsWithChildren
+  type PropsWithChildren,
+  type JSX
 } from 'react'
 import { useSession } from 'next-auth/react'
 import type { HocuspocusProvider } from '@hocuspocus/provider'

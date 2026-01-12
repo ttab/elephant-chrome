@@ -4,7 +4,7 @@ import { createNewAssignment } from '@/shared/createYItem'
 import { useAuthors, useNavigationKeys } from '@/hooks'
 import { Assignment } from './Assignment'
 import type { MouseEvent, KeyboardEvent } from 'react'
-import { useMemo, useState } from 'react'
+import { useMemo, useState, type JSX } from 'react'
 import { Button } from '@ttab/elephant-ui'
 import { useActiveAuthor } from '@/hooks/useActiveAuthor'
 import { snapshotDocument } from '@/lib/snapshotDocument'
@@ -136,6 +136,7 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId }: {
             onKeyDown={(event: KeyboardEvent<HTMLButtonElement>) => event.key === 'Enter'
               && handleNewAssignment(event)}
             onClick={(event: MouseEvent<HTMLButtonElement>) => handleNewAssignment(event)}
+            className='hover:bg-slate-200 dark:hover:bg-table-focused'
           >
 
             <div className='flex flex-row items-center gap-2'>
@@ -143,8 +144,7 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId }: {
                 <PlusIcon
                   size={15}
                   strokeWidth={2.25}
-                  color='#FFFFFF'
-                  className='absolute inset-0 m-auto'
+                  className='text-white dark:text-black absolute inset-0 m-auto'
                 />
               </div>
               Lägg till uppdrag

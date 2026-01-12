@@ -2,6 +2,7 @@ import { CommandList } from '@ttab/elephant-ui'
 import { ClearFilter } from '@/components/Filter/ClearFilter'
 import { TextFilter, ColumnFilter } from './Items'
 import { useTable } from '@/hooks/useTable'
+import type { JSX } from 'react'
 
 export const Commands = (): JSX.Element => {
   const { table } = useTable()

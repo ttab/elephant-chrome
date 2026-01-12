@@ -1,5 +1,5 @@
 import { useNavigation } from '@/hooks'
-import { createContext, useMemo } from 'react'
+import { createContext, useMemo, type JSX } from 'react'
 import { type ViewProviderState } from '@/types'
 
 interface ViewProviderProps {

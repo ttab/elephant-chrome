@@ -1,14 +1,16 @@
 import type { EleDocument, EleDocumentResponse } from '@/shared/types'
-import Textbit, { type TBElement } from '@ttab/textbit'
+import { Textbit, type Element } from '@ttab/textbit'
 import useSWR from 'swr'
 import { LoadingText } from './LoadingText'
 import { Bold, Italic, Link, Text, OrderedList, UnorderedList, TTVisual, Factbox, Table } from '@ttab/textbit-plugins'
 import { PreVersion } from './Version/PreVersion'
 import type { Status as DocumentStatuses } from '@ttab/elephant-api/repository'
 import { PreVersionInfo } from './Version/PreVersionInfo'
+import type { JSX } from 'react'
+
 const BASE_URL = import.meta.env.BASE_URL || ''
 
-const fetcher = async (url: string): Promise<TBElement[] | EleDocument | undefined> => {
+const fetcher = async (url: string): Promise<Element[] | EleDocument | undefined> => {
   const response = await fetch(url)
   if (!response.ok) {
     throw new Error('Network response was not ok')
@@ -43,12 +45,7 @@ export const Editor = ({ id, version, textOnly = false, direct, versionStatusHis
     const basePlugins = [Text, UnorderedList, OrderedList, Bold, Italic, Link, Table]
     return [
       ...basePlugins.map((initPlugin) => initPlugin()),
-      Text({
-        classNames: {
-          'heading-1': 'text-lg font-bold py-2',
-          'heading-2': 'text-md font-bold py-1'
-        }
-      }),
+      Text(),
       TTVisual({
         removable: false
       }),
@@ -58,7 +55,7 @@ export const Editor = ({ id, version, textOnly = false, direct, versionStatusHis
     ]
   }
 
-  const { data: content, error } = useSWR<TBElement[] | EleDocument | undefined, Error>(
+  const { data: content, error } = useSWR<Element[] | EleDocument | undefined, Error>(
     documentUrl,
     fetcher,
     { revalidateOnFocus: false, revalidateOnReconnect: false }
@@ -92,11 +89,25 @@ export const Editor = ({ id, version, textOnly = false, direct, versionStatusHis
       {versionStatusHistory && version && (
         <PreVersionInfo version={version} versionStatusHistory={versionStatusHistory} />
       )}
-      <Textbit.Root plugins={getPlugins()}>
+      <Textbit.Root
+        key={id}
+        value={filterText(content, textOnly)}
+        plugins={getPlugins()}
+        readOnly
+      >
         <Textbit.Editable
-          key={id}
-          readOnly
-          value={filterText(content, textOnly)}
+          className={`outline-none
+            pt-4
+            pb-4
+            ps-12
+            pe-12
+            dark:text-slate-100
+            **:data-spelling-error:border-b-2
+            **:data-spelling-error:border-dotted
+            **:data-spelling-error:border-red-500
+            grow
+            pr-12
+            max-w-(--breakpoint-xl)`}
         />
       </Textbit.Root>
     </div>
@@ -104,7 +115,7 @@ export const Editor = ({ id, version, textOnly = false, direct, versionStatusHis
   )
 }
 
-function filterText(content: TBElement[], textOnly: boolean): TBElement[] {
+function filterText(content: Element[], textOnly: boolean): Element[] {
   if (!textOnly) {
     return content
   }

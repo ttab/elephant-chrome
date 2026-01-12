@@ -4,7 +4,7 @@ import { DotDropdownMenu } from '@/components/ui/DotMenu'
 import type { FilterProps } from '@/components/Filter'
 import { Filter } from '@/components/Filter'
 import { Commands } from './Commands'
-import { useState } from 'react'
+import { useState, type JSX } from 'react'
 
 export const Toolbar = (): JSX.Element => {
   const [pages, setPages] = useState<string[]>([])

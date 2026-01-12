@@ -6,7 +6,7 @@ import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
 import { Button } from '@ttab/elephant-ui'
 import type { LucideIcon } from '@ttab/elephant-ui/icons'
 import { XIcon } from '@ttab/elephant-ui/icons'
-import { useState } from 'react'
+import { useState, type JSX } from 'react'
 import type * as Y from 'yjs'
 
 export const ViewDialogClose = ({ ydoc, onClick, Icon = XIcon, asDialog }: {
@@ -44,8 +44,8 @@ export const ViewDialogClose = ({ ydoc, onClick, Icon = XIcon, asDialog }: {
     <>
       <Button
         variant='ghost'
-        className='w-9 h-9 p-0 hover:bg-gray-200 dark:hover:bg-gray-700'
         onClick={handleClose}
+        className='w-9 h-9 p-0 hover:bg-gray-200 dark:hover:bg-table-focused'
       >
         <Icon size={18} strokeWidth={1.75} />
       </Button>

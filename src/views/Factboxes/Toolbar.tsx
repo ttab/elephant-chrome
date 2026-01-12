@@ -1,6 +1,7 @@
 import { Command } from '@ttab/elephant-ui'
 import { DebouncedCommandInput } from '@/components/Commands/Menu/DebouncedCommandInput'
 import { useQuery } from '@/hooks/useQuery'
+import type { JSX } from 'react'
 
 export const Toolbar = (): JSX.Element => {
   const [filter, setFilter] = useQuery(['query'])

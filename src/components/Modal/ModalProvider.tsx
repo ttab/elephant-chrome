@@ -1,7 +1,8 @@
 import {
   useState,
   type PropsWithChildren,
-  type ReactNode
+  type ReactNode,
+  type JSX
 } from 'react'
 import type { ModalData, ModalSide } from './ModalContext'
 import { ModalContext } from './ModalContext'

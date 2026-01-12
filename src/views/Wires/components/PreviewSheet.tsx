@@ -7,7 +7,7 @@ import { useNavigationKeys } from '@/hooks/useNavigationKeys'
 import { useModal } from '@/components/Modal/useModal'
 import type { Wire as WireType } from '@/shared/schemas/wire'
 import type { Status as DocumentStatuses } from '@ttab/elephant-api/repository'
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, type JSX } from 'react'
 import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
 import { decodeString } from '@/lib/decodeString'
 import { getWireStatus } from '@/components/Table/lib/getWireStatus'
@@ -141,6 +141,7 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, 
                 <ToggleGroup
                   type='single'
                   size='xs'
+                  tabIndex={-1}
                   disabled={documentStatus?.name === 'used'}
                   value={documentStatus?.version === currentVersion
                     ? documentStatus?.name

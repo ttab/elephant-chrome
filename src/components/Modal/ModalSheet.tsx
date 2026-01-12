@@ -1,5 +1,5 @@
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@ttab/elephant-ui'
-import type { PropsWithChildren } from 'react'
+import type { PropsWithChildren, JSX } from 'react'
 import { useModal } from './useModal'
 import { cn } from '@ttab/elephant-ui/utils'
 import type { ModalSide } from './ModalContext'

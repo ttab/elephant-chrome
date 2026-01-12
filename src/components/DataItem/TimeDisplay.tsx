@@ -1,6 +1,7 @@
 import { dateToReadableTime } from '@/shared/datetime'
 import { useRegistry } from '@/hooks'
 import { cn } from '@ttab/elephant-ui/utils'
+import type { JSX } from 'react'
 
 export const TimeDisplay = ({ date, className }: { date: Date, className?: string }): JSX.Element => {
   const { locale, timeZone } = useRegistry()

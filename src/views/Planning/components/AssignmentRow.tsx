@@ -16,7 +16,7 @@ import {
   PenIcon,
   type LucideProps
 } from '@ttab/elephant-ui/icons'
-import { type MouseEvent, useMemo, useState, useCallback, useEffect, useRef } from 'react'
+import { type MouseEvent, useMemo, useState, useCallback, useEffect, useRef, type JSX } from 'react'
 import { SluglineButton } from '@/components/DataItem/Slugline'
 import { useLink } from '@/hooks/useLink'
 import { Prompt } from '@/components'
@@ -35,7 +35,7 @@ import type * as Y from 'yjs'
 import { useRegistry } from '@/hooks/useRegistry'
 import { useSession } from 'next-auth/react'
 import { getDeliverableType } from '@/shared/templates/lib/getDeliverableType'
-import { AssignmentTypes } from '@/defaults/assignmentTypes'
+import { AssignmentTypes, isVisualAssignmentType } from '@/defaults/assignmentTypes'
 import { CreatePrintArticle } from '@/components/CreatePrintArticle'
 import { snapshotDocument } from '@/lib/snapshotDocument'
 import { timeSlotTypes } from '@/defaults/assignmentTimeConstants'
@@ -97,7 +97,6 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
 
   const openDocument = assignmentType === 'flash' ? openFlash : openArticle
   const { showModal, hideModal } = useModal()
-  const isVisualAssignment = ['picture', 'video'].includes(assignmentType || '')
 
   const assignmentTime = useMemo(() => {
     if (typeof assignmentType !== 'string') {
@@ -105,7 +104,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
     }
     const endAndStartAreNotEqual = endTime && startTime && endTime !== startTime
 
-    if (isVisualAssignment && startTime) {
+    if (isVisualAssignmentType(assignmentType) && startTime) {
       if (endAndStartAreNotEqual) {
         return {
           time: [new Date(startTime), new Date(endTime)],
@@ -153,7 +152,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
         type: assignmentType
       }
     }
-  }, [publishTime, assignmentType, startTime, endTime, publishSlot, isVisualAssignment])
+  }, [publishTime, assignmentType, startTime, endTime, publishSlot])
 
   const TimeIcon = useMemo(() => {
     const timeIcons: Record<string, React.FC<LucideProps>> = {
@@ -304,6 +303,8 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
         pb-4
         ring-inset
         hover:bg-muted
+        dark:hover:bg-table-focused
+        transition-all
         focus:outline-none
         focus-visible:rounded-sm
         focus-visible:ring-2
@@ -345,7 +346,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
             disabled={!onSelect}
             variant='ghost'
             size='sm'
-            className='w-9 px-0 hover:bg-accent2 hover:bg-gray-200'
+            className='w-9 px-0 hover:bg-accent2 hover:bg-gray-200 dark:hover:bg-table-focused'
             onClick={(event) => {
               event.preventDefault()
               event.stopPropagation()
@@ -364,7 +365,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
       <div className='flex flex-row text-[15px] font-medium justify-between pr-2'>
         <div className='flex items-center gap-2 px-2'>
           <AssignmentStatus
-            isVisualAssignment={isVisualAssignment}
+            isVisualAssignment={isVisualAssignmentType(assignmentType)}
             ydoc={ydoc}
             path={`meta.core/assignment[${index}].data.status`}
             workflowState={workflowState}

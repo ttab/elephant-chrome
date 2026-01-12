@@ -1,4 +1,4 @@
-import type { CSSProperties, PropsWithChildren } from 'react'
+import type { CSSProperties, PropsWithChildren, JSX } from 'react'
 import { ScrollArea } from '@ttab/elephant-ui'
 import { cn } from '@ttab/elephant-ui/utils'
 
@@ -21,7 +21,7 @@ export const Content = ({ children, variant = 'default', columns = 0, className 
     case 'grid':
       return (
         <div
-          className={cn('grid h-full w-full overflow-scroll snap-x snap-mandatory', className)}
+          className={cn('grid self-center h-full w-full overflow-auto snap-x snap-mandatory', className)}
           style={{ gridTemplateColumns: gridFractions }}
         >
           {children}

@@ -1,6 +1,6 @@
 import { useHistory, useLink, useNavigation, useView, useWorkflowStatus } from '@/hooks'
 import { Newsvalue } from '@/components/Newsvalue'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState, type JSX } from 'react'
 import { MetaSheet } from '@/components/MetaSheet/MetaSheet'
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { AddNote } from '@/components/Notes/AddNote'

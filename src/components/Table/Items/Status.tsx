@@ -1,6 +1,6 @@
 import { Tooltip } from '@ttab/elephant-ui'
 import { CirclePlusIcon, CalendarCheckIcon } from '@ttab/elephant-ui/icons'
-import { useMemo } from 'react'
+import { useMemo, type JSX } from 'react'
 
 export const Status = ({ status }: { status: string }): JSX.Element => {
   return useMemo(() => (

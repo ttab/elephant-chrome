@@ -1,18 +1,19 @@
+import { isVisualAssignmentType } from '@/defaults/assignmentTypes'
 import { StatusSpecifications, WorkflowSpecifications } from '@/defaults/workflowSpecification'
+import type { JSX } from 'react'
 import { selectableStatuses } from '@/views/Planning/components/AssignmentStatus'
 
 export const DocumentStatus = ({ type, status }: {
   type: string
   status: string
 }): JSX.Element => {
-  const isVisualAssignment = ['picture', 'video'].includes(type || '')
   const visualStatus = selectableStatuses.find((s) => s.value === status)
 
-  const label = isVisualAssignment
+  const label = isVisualAssignmentType(type)
     ? visualStatus?.label || null
     : WorkflowSpecifications['core/article']?.[status]?.title || null
 
-  const docStatus = isVisualAssignment
+  const docStatus = isVisualAssignmentType(type)
     ? { ...visualStatus, ...visualStatus?.iconProps }
     : StatusSpecifications[status]
 

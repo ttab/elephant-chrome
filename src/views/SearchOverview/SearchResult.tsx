@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, type JSX } from 'react'
 import { Table } from '@/components/Table'
 import { useRegistry } from '@/hooks/useRegistry'
 import { useSections } from '@/hooks/useSections'
@@ -8,7 +8,7 @@ import { useOrganisers } from '@/hooks/useOrganisers'
 import { useAuthors } from '@/hooks/useAuthors'
 import type { Event, EventFields } from '@/shared/schemas/event'
 import type { Planning, PlanningFields } from '@/shared/schemas/planning'
-import type { Article, ArticleFields } from '@/shared/schemas/article'
+import type { Article } from '@/shared/schemas/article'
 import { useDocuments } from '@/hooks/index/useDocuments'
 import { createSearchColumns } from './lib/createSearchColumns'
 import type { SearchKeys } from '@/hooks/index/useDocuments/queries/views/search'
@@ -40,7 +40,7 @@ export const SearchResult = ({ searchType, page }: {
 
   const searchParams = search[searchType].params(filter)
 
-  const { error, isLoading } = useDocuments<Planning | Event | Article, PlanningFields | EventFields | ArticleFields>({
+  const { error, isLoading } = useDocuments<Planning | Event | Article, PlanningFields | EventFields>({
     ...searchParams,
     page,
     options: {

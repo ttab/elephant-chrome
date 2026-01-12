@@ -18,7 +18,7 @@ import {
 } from '@ttab/elephant-ui/icons'
 import { useRegistry } from '@/hooks'
 import { useSession } from 'next-auth/react'
-import type { PropsWithChildren } from 'react'
+import type { PropsWithChildren, JSX } from 'react'
 import { useEffect, useRef, useState } from 'react'
 import { UserMessage } from '@/components/UserMessage'
 import { Form } from '@/components/Form'

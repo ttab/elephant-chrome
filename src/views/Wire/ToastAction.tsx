@@ -1,3 +1,4 @@
+import type { JSX } from 'react'
 import type { Target } from '@/components/Link/lib/handleLink'
 import { useLink } from '@/hooks/useLink'
 import type { View } from '@/types/index'

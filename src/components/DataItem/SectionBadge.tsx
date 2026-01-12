@@ -1,6 +1,6 @@
 import { Badge } from '@ttab/elephant-ui'
 import { cn } from '@ttab/elephant-ui/utils'
-
+import type { JSX } from 'react'
 export const SectionBadge = ({ title, color }: {
   title: string
   color?: string

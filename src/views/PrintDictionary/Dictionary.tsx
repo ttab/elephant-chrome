@@ -4,7 +4,7 @@ import { BookAIcon, CheckIcon, PencilIcon, PlusIcon, TrashIcon } from '@ttab/ele
 import { cn } from '@ttab/elephant-ui/utils'
 import { useRegistry } from '@/hooks/useRegistry'
 import { useSession } from 'next-auth/react'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type JSX } from 'react'
 import { toast } from 'sonner'
 import { type Hypenation } from '@ttab/elephant-tt-api/baboon'
 import { Button, ScrollArea } from '@ttab/elephant-ui'

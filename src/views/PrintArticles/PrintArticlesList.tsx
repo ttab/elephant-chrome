@@ -7,6 +7,7 @@ import { useDocuments } from '@/hooks/index/useDocuments'
 import { constructQuery } from '@/hooks/baboon/useDocuments/printArticle'
 import { fields, type PrintArticleFields } from '@/hooks/baboon/lib/printArticles/schema'
 import { SortingV1 } from '@ttab/elephant-api/index'
+import type { JSX } from 'react'
 
 /**
  * PrintArticleList component.

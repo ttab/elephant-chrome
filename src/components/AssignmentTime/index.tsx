@@ -8,6 +8,7 @@ import type { FormProps } from '../Form/Root'
 import { useYValue } from '@/modules/yjs/hooks'
 import { deriveExecutionDates, getTimeSlot, getMedianSlot, getMidnightISOString, makeLocalString } from './utils'
 import type * as Y from 'yjs'
+import type { JSX } from 'react'
 
 export const AssignmentTime = ({ assignment, onChange }: {
   assignment: Y.Map<unknown>

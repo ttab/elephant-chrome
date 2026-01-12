@@ -9,7 +9,7 @@ import { DocumentStatus } from '../Items/DocumentStatus'
 import { useLink } from '@/hooks/useLink'
 import { CheckIcon, CheckCheckIcon } from '@ttab/elephant-ui/icons'
 import { useRepositoryEvents } from '@/hooks/useRepositoryEvents'
-import { useCallback } from 'react'
+import { useCallback, type JSX } from 'react'
 import { useUserTracker } from '@/hooks/useUserTracker'
 import type { NewItem } from './Root'
 

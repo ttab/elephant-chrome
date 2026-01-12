@@ -1,6 +1,7 @@
 import { CommandItem } from '@ttab/elephant-ui'
 import type { LucideIcon } from '@ttab/elephant-ui/icons'
 import type { FilterProps } from '.'
+import type { JSX } from 'react'
 
 export const Base = ({ pages, setPages, setSearch, label, Icon, filterPage }: {
   label: string

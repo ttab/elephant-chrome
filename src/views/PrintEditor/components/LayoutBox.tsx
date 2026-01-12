@@ -286,6 +286,7 @@ export const LayoutBox = ({
             role='group'
             aria-label='Layoutkontroller'
             data-state={isPinnedOpen ? 'selected' : undefined}
+            title={isPinnedOpen ? 'Fäll in layoutpanelen' : `Visa ${linkTitle} - ${articleLayout.name}`}
             className={cn(
               'flex flex-col items-center justify-center w-[2.75rem] min-w-[2.75rem] rounded border p-2 @4xl/view:hidden font-semibold uppercase transition-all transform',
               'data-[state=selected]:shadow-xl data-[state=selected]:opacity-50 data-[state=selected]:scale-[98%]',
@@ -322,7 +323,6 @@ export const LayoutBox = ({
               onClick={(event) => { event.stopPropagation() }}
             />
             <span
-              title={isPinnedOpen ? 'Fäll in layoutpanelen' : 'Visa layoutpanelen'}
               className='inline-flex items-center justify-center text-[0.6rem] leading-1 [writing-mode:vertical-rl] rotate-180 cursor-pointer'
             >
               {layoutLabel}

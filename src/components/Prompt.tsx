@@ -1,4 +1,4 @@
-import { useEffect, useState, type PropsWithChildren } from 'react'
+import { useEffect, useState, type PropsWithChildren, type JSX } from 'react'
 import { useKeydownGlobal } from '@/hooks/useKeydownGlobal'
 import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@ttab/elephant-ui'
 import type { MouseEvent } from 'react'

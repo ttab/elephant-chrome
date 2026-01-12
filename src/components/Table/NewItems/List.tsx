@@ -5,6 +5,7 @@ import { type View } from '@/types/index'
 import { GanttChartSquareIcon } from '@ttab/elephant-ui/icons'
 import useSWR from 'swr'
 import type { NewItem } from './Root'
+import type { JSX } from 'react'
 
 const BASE_URL = import.meta.env.BASE_URL || ''
 
