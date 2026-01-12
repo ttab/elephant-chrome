@@ -133,7 +133,7 @@ function EditorWrapper(props: ViewProps & {
   }
 
   return (
-    <View.Root>
+    <View.Root className='flex flex-col h-screen'>
       <EditorHeader ydoc={ydoc} planningId={props.planningId} readOnly={props.preview} />
       <div className='flex flex-col flex-1 min-h-0'>
         <BaseEditor.Root
