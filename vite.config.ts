@@ -44,7 +44,17 @@ export default defineConfig(({ mode }) => {
         '@/navigation': path.resolve(__dirname, './src/navigation'),
         '@/defaults': path.resolve(__dirname, './src/defaults'),
         '@/shared': path.resolve(__dirname, './shared')
-      }
+      },
+      dedupe: [
+        'react',
+        'react-dom',
+        'slate',
+        'slate-react',
+        'slate-history',
+        '@slate-yjs/core',
+        '@slate-yjs/react',
+        'yjs'
+      ]
     },
     define: {
       'process.env': process.env

@@ -1,5 +1,5 @@
 import React from 'react'
-import type { MouseEvent } from 'react'
+import type { MouseEvent, JSX } from 'react'
 import {
   type LucideIcon,
   MoreHorizontalIcon,
@@ -53,7 +53,7 @@ export const DotDropdownMenu = ({ trigger = 'horizontal', items }: {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant='ghost' className='flex h-8 w-8 p-0 data-[state=open]:bg-muted hover:bg-gray-200'>
+        <Button variant='ghost' className='flex h-8 w-8 p-0 data-[state=open]:bg-muted hover:bg-gray-200 dark:hover:bg-table-focused'>
           {trigger === 'horizontal'
             ? <MoreHorizontalIcon size={18} strokeWidth={1.75} />
             : <MoreVerticalIcon size={18} strokeWidth={1.75} />}

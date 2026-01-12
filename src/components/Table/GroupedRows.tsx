@@ -1,4 +1,4 @@
-import React, { type MouseEvent } from 'react'
+import React, { type MouseEvent, type JSX } from 'react'
 import { type ColumnDef, type Row as RowType } from '@tanstack/react-table'
 import { GroupedRowsHeader } from './GroupedRowsHeader'
 import { Row as RegularRow } from './Row'

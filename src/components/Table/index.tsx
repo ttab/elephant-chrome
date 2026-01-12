@@ -2,7 +2,8 @@ import {
   type MouseEvent,
   useEffect,
   useCallback,
-  useMemo
+  useMemo,
+  type JSX
 } from 'react'
 import {
   type ColumnDef,

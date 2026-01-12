@@ -1,6 +1,4 @@
-import {
-} from '@/lib/index'
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, type JSX } from 'react'
 
 import { Table } from '@/components/Table'
 import { useDocuments } from '@/hooks/index/useDocuments'

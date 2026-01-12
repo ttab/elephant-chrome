@@ -1,4 +1,4 @@
-import { type ForwardedRef, forwardRef, useRef, useState, type InputHTMLAttributes } from 'react'
+import { type ForwardedRef, forwardRef, useRef, useState, type InputHTMLAttributes, type JSX } from 'react'
 import { CommandInput } from '@ttab/elephant-ui'
 
 const DebouncedCommandInput = forwardRef(({
@@ -38,4 +38,3 @@ const DebouncedCommandInput = forwardRef(({
 
 DebouncedCommandInput.displayName = 'DebouncedCommandInput'
 export { DebouncedCommandInput }
-

@@ -1,7 +1,7 @@
 import { ComboBox } from '@ttab/elephant-ui'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import { Awareness } from './Awareness'
-import { useRef } from 'react'
+import { useRef, type JSX } from 'react'
 import { useContentSources } from '@/hooks/useContentSources'
 import { useYValue } from '@/modules/yjs/hooks'
 import type { YDocument } from '@/modules/yjs/hooks'

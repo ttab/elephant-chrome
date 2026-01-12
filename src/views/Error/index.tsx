@@ -1,6 +1,7 @@
 import { type ViewMetadata, type ViewProps } from '@/types'
 import { View, ViewHeader } from '@/components/View'
 import { MessageCircleWarningIcon } from '@ttab/elephant-ui/icons'
+import { type JSX } from 'react'
 
 const meta: ViewMetadata = {
   name: 'Error',

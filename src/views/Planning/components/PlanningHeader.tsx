@@ -1,5 +1,5 @@
 import { useView } from '@/hooks'
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, type JSX } from 'react'
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { ViewHeader } from '@/components/View'
 import { GanttChartSquareIcon } from '@ttab/elephant-ui/icons'

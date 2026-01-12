@@ -12,7 +12,7 @@ import {
 } from '@ttab/elephant-ui'
 import { useYValue, type YDocument } from '@/modules/yjs/hooks'
 import { PanelRightCloseIcon, PanelRightOpenIcon } from '@ttab/elephant-ui/icons'
-import { useState } from 'react'
+import { useState, type JSX } from 'react'
 import { AddNote } from '@/components/Notes/AddNote'
 import { Version } from '@/components/Version'
 import { ReadOnly } from './ReadOnly'
@@ -32,7 +32,7 @@ export function MetaSheet({ container, ydoc, readOnly, readOnlyVersion }: {
 
   return (
     <Sheet onOpenChange={setIsOpen}>
-      <SheetTrigger className='rounded-md  w-9 h-9 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700'>
+      <SheetTrigger className='rounded-md  w-9 h-9 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-table-focused'>
         {!isOpen
           ? <PanelRightOpenIcon size={18} strokeWidth={1.75} />
           : <PanelRightCloseIcon size={18} strokeWidth={1.75} />}

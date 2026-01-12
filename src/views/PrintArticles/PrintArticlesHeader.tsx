@@ -5,6 +5,7 @@ import { DateChanger } from '@/components/Header/Datechanger'
 import { useModal } from '@/components/Modal/useModal'
 import { PrintFlows } from './PrintFlows'
 import { useLink } from '@/hooks/useLink'
+import type { JSX } from 'react'
 
 /**
  * PrintArticlesHeader component.

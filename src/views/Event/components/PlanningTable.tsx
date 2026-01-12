@@ -1,6 +1,6 @@
 import { useRepositoryEvents } from '@/hooks/useRepositoryEvents'
 import { GanttChartSquareIcon, PlusIcon } from '@ttab/elephant-ui/icons'
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState, useEffect, type JSX } from 'react'
 import { NewItems } from '@/components/Table/NewItems'
 import type { FormProps } from '@/components/Form/Root'
 import { Button, Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger, Separator } from '@ttab/elephant-ui'
@@ -101,7 +101,7 @@ export const PlanningTable = ({ ydoc, asDialog }: {
         <DialogTrigger asChild>
           <Button
             variant='ghost'
-            className='flex flex-start items-center text-sm gap-2 p-2 -ml-2 rounded-sm hover:bg-gray-100'
+            className='flex flex-start items-center text-sm gap-2 p-2 -ml-2 rounded-sm hover:bg-gray-100 dark:hover:bg-table-focused'
             onClick={(e) => {
               setNestedOpen(true)
               e.stopPropagation()
@@ -135,8 +135,7 @@ export const PlanningTable = ({ ydoc, asDialog }: {
               <PlusIcon
                 size={15}
                 strokeWidth={2.25}
-                color='#FFFFFF'
-                className='absolute inset-0 m-auto'
+                className='text-white dark:text-black absolute inset-0 m-auto'
               />
             </div>
             Lägg till planering
@@ -165,7 +164,7 @@ export const PlanningTable = ({ ydoc, asDialog }: {
             {data?.map((planning) => (
               <Link key={planning.id} to='Planning' props={{ id: planning.id }} target='last'>
                 <div
-                  className='w-fit text-sm flex items-center gap-2 hover:bg-gray-100'
+                  className='w-fit text-sm flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-table-focused p-1 rounded-sm'
                   onClick={() => {
                     setNestedOpen(false)
                     if (asDialog) {

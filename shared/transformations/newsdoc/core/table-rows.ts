@@ -1,6 +1,6 @@
-import type { TBElement } from '@ttab/textbit'
+import { TextbitElement, type Descendant, type TBElement } from '@ttab/textbit'
 import { parse } from 'node-html-parser'
-import { Element, Node } from 'slate'
+import { Node } from 'slate'
 
 export interface TableRowElement {
   type: 'core/table/row'
@@ -54,16 +54,16 @@ export function parseTableRows(tablebody: string) {
   })
 }
 
-export function revertTableRows(data: TBElement[]) {
-  return data.filter((d) => d.type === 'core/table/row')
+export function revertTableRows(data: Descendant[]) {
+  return (data as TBElement[]).filter((d) => d.type === 'core/table/row')
     .map((d) => {
-      const cells = d.children
+      const cells = ((d).children as TBElement[])
         .map((cell) => {
-          if (!Element.isElement(cell)) {
+          if (!TextbitElement.isElement(cell)) {
             return '<td></td>'
           }
 
-          const props = cell.properties
+          const props = cell.properties as Record<string, string>
           const attribs = [
             props?.colspan ? `colspan="${props.colspan}"` : '',
             props?.rowspan ? `rowspan="${props.rowspan}"` : ''

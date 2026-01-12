@@ -10,7 +10,7 @@ interface useNavigationKeysOptions {
   preventDefault?: boolean
   enabled?: boolean
   capture?: boolean
-  elementRef?: React.RefObject<HTMLElement>
+  elementRef?: React.RefObject<HTMLElement | HTMLDivElement | null> | null
 }
 
 export const useNavigationKeys = (

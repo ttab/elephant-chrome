@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, type JSX } from 'react'
 import { useHistory, useView } from '@/hooks'
 import { cn } from '@ttab/elephant-ui/utils'
 import { cva } from 'class-variance-authority'

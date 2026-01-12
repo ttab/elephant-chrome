@@ -9,6 +9,7 @@ import {
 } from '@ttab/elephant-ui'
 
 import { Link } from '@/components/index'
+import { type JSX } from 'react'
 
 export const ActionMenu = ({ actions }: {
   actions: Array<{

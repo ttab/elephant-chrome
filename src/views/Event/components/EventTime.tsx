@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, type JSX } from 'react'
 import {
   Calendar,
   type CalendarTypes,
@@ -7,7 +7,7 @@ import {
   PopoverDrawer
 } from '@ttab/elephant-ui'
 import { useRegistry } from '@/hooks'
-import { dateToReadableDateTime, dateToReadableTime, dateToReadableDay, createDateWithTime } from '@/shared/datetime'
+import { dateToReadableDateTime, dateToReadableTime, dateToReadableDay, createDateWithTime, parseDate } from '@/shared/datetime'
 import { TimeInput } from '@/components/TimeInput'
 import { TriangleAlertIcon } from '@ttab/elephant-ui/icons'
 import type { FormProps } from '@/components/Form/Root'
@@ -87,12 +87,12 @@ export const EventTimeMenu = ({ ydoc, onChange }: {
   ydoc: YDocument<Y.Map<unknown>>
 } & FormProps): JSX.Element => {
   const [eventData] = useYValue<EventData>(ydoc.ele, 'meta.core/event[0].data')
-  const [, setEventStart] = useYValue<string>(ydoc.ele, 'meta.core/event[0].data.start')
+  const [eventStart, setEventStart] = useYValue<string>(ydoc.ele, 'meta.core/event[0].data.start')
   const [, setEventEnd] = useYValue<string>(ydoc.ele, 'meta.core/event[0].data.end')
   const [, setDateGranularity] = useYValue<string>(ydoc.ele, 'meta.core/event[0].data.dateGranularity')
 
   const [open, setOpen] = useState(false)
-  const [selected, setSelected] = useState<CalendarTypes.DateRange | undefined>({ from: dateMidnight(new Date()) })
+  const [selected, setSelected] = useState<CalendarTypes.DateRange | undefined>({ from: parseDate(eventStart) || dateMidnight(new Date()) })
   const [startTimeValue, setStartTimeValue] = useState<string>('00:00')
   const [endTimeValue, setEndTimeValue] = useState<string>('23:59')
   const [startDateValue, setStartDateValue] = useState<string>()
@@ -254,9 +254,10 @@ export const EventTimeMenu = ({ ydoc, onChange }: {
       <div className='p-2'>
         <Calendar
           mode='range'
+          locale={locale.module}
           required={false}
           selected={selected}
-          weekStartsOn={1}
+          defaultMonth={selected?.from}
           onSelect={handleOnSelectDay}
           className='p-2'
         />

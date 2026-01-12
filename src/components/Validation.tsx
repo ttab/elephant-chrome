@@ -1,5 +1,5 @@
 import { TriangleAlertIcon } from '@ttab/elephant-ui/icons'
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, type JSX } from 'react'
 import type { OnValidation } from './Form/Root'
 import { type FormProps } from './Form/Root'
 import { useYValue, type YDocument } from '@/modules/yjs/hooks'

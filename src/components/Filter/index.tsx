@@ -1,6 +1,6 @@
 import { Popover, PopoverTrigger, Button, PopoverContent, Command } from '@ttab/elephant-ui'
 import { ListFilterIcon } from '@ttab/elephant-ui/icons'
-import type { Dispatch, PropsWithChildren, SetStateAction } from 'react'
+import type { Dispatch, PropsWithChildren, SetStateAction, JSX } from 'react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { DebouncedCommandInput } from '@/components/Commands/Menu/DebouncedCommandInput'
 import { useQuery } from '@/hooks/useQuery'

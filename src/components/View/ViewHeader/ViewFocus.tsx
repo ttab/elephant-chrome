@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, type JSX } from 'react'
 import { Button } from '@ttab/elephant-ui'
 import { Maximize2Icon, Minimize2Icon } from '@ttab/elephant-ui/icons'
 
@@ -26,7 +26,7 @@ export const ViewFocus = ({ viewId }: { viewId: string }): JSX.Element => {
   return (
     <Button
       variant='ghost'
-      className='w-9 h-9 px-0 hover:bg-gray-200 dark:hover:bg-gray-700'
+      className='w-9 h-9 px-0 hover:bg-gray-200 dark:hover:bg-table-focused'
       onClick={() => {
         dispatch({
           type: NavigationActionType.FOCUS,

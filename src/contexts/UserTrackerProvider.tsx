@@ -3,7 +3,8 @@ import {
   type PropsWithChildren,
   useState,
   useMemo,
-  useEffect
+  useEffect,
+  type JSX
 } from 'react'
 import { HocuspocusProvider } from '@hocuspocus/provider'
 import { useSession } from 'next-auth/react'

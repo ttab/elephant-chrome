@@ -4,7 +4,8 @@ import React, {
   useCallback,
   type Dispatch,
   useMemo,
-  type SetStateAction
+  type SetStateAction,
+  type JSX
 } from 'react'
 import {
   GanttChartIcon

@@ -1,6 +1,5 @@
-import { ContextMenu } from '@ttab/textbit'
-import { type PropsWithChildren } from 'react'
-import type { Editor } from 'slate'
+import { ContextMenu, type Editor } from '@ttab/textbit'
+import type { PropsWithChildren, JSX } from 'react'
 
 export const ContextMenuItem = ({ apply, children }: PropsWithChildren & {
   apply: (editor: Editor) => void

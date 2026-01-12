@@ -1,5 +1,5 @@
 import { useRegistry } from '@/hooks/useRegistry'
-import { useMemo } from 'react'
+import { useMemo, type JSX } from 'react'
 
 export const Time = ({ startTime, endTime }: { startTime?: Date | undefined, endTime?: Date | undefined }): JSX.Element => {
   const { locale, timeZone } = useRegistry()

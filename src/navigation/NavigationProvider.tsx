@@ -2,7 +2,8 @@ import {
   useReducer,
   useLayoutEffect,
   type PropsWithChildren,
-  useEffect
+  useEffect,
+  type JSX
 } from 'react'
 import type { ContentState } from '@/types'
 import { NavigationActionType } from '@/types'

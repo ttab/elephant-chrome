@@ -1,4 +1,4 @@
-import { type PropsWithChildren } from 'react'
+import type { PropsWithChildren, JSX } from 'react'
 import { type VariantProps, cva } from 'class-variance-authority'
 import { cn } from '@ttab/elephant-ui/utils'
 

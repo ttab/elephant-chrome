@@ -48,6 +48,8 @@ export async function snapshotDocument(
       },
       // Send client state as an update, as the local content
       // is what the client expects to be stored.
+      // FIXME: We should not have to suppress this
+      // @ts-expect-error We should not have to suppress this
       body: document ? Y.encodeStateAsUpdate(document) : null
     })
 

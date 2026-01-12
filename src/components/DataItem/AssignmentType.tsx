@@ -7,6 +7,7 @@ import type { DefaultValueOption } from '@/types/index'
 import type { FormProps } from '../Form/Root'
 import { useYValue } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
+import type { JSX } from 'react'
 
 export const AssignmentType = ({ assignment, editable = false, readOnly = false, className, onChange }: {
   assignment?: Y.Map<unknown>
@@ -34,7 +35,7 @@ export const AssignmentType = ({ assignment, editable = false, readOnly = false,
     return (
       <Button
         variant='icon'
-        className='w-fit pl-2 pr-0.5'
+        className='w-fit px-2 hover:bg-slate-200 dark:hover:bg-table-focused'
       >
         {SelectedIcon
           ? (
@@ -84,7 +85,7 @@ export const AssignmentType = ({ assignment, editable = false, readOnly = false,
         }
       }}
     >
-      <SelectTrigger className='w-fit pl-2 pr-1 border-0'>
+      <SelectTrigger className='w-fit pl-2 pr-1 border-0 hover:bg-slate-200 dark:hover:bg-table-focused'>
         {SelectedIcon
           ? (
               <SelectedIcon

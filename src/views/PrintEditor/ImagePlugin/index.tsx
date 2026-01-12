@@ -1,4 +1,4 @@
-import { type Plugin } from '@ttab/textbit'
+import { type TBPluginInitFunction } from '@ttab/textbit'
 import { ImageIcon } from '@ttab/elephant-ui/icons'
 import {
   Figure,
@@ -14,7 +14,7 @@ import { actionHandler } from './lib/actionHandler'
 import type { Repository } from '@/shared/Repository'
 
 // @ts-expect-error Textbit types uncertainty
-export const ImagePlugin: Plugin.InitFunction = (options) => {
+export const ImagePlugin: TBPluginInitFunction = (options) => {
   return {
     class: 'block',
     name: 'core/image',

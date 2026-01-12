@@ -1,31 +1,23 @@
-import { useEffect, useRef } from 'react'
+import type { JSX } from 'react'
+import { useMemo } from 'react'
 import { View } from '@/components'
 import { Notes } from '@/components/Notes'
-import { Textbit, useTextbit } from '@ttab/textbit'
 import { Bold, Italic, Link, Text, TTVisual, Factbox, Table, LocalizedQuotationMarks } from '@ttab/textbit-plugins'
 import { ImageSearchPlugin } from '../../plugins/ImageSearch'
 import { FactboxPlugin } from '../../plugins/Factboxes'
 import { Editor as PlainEditor } from '@/components/PlainEditor'
+import { BaseEditor } from '@/components/Editor/BaseEditor'
 
 import {
   useQuery,
   useLink,
-  useView,
-  useYjsEditor,
   useWorkflowStatus
 } from '@/hooks'
 import type { ViewMetadata, ViewProps } from '@/types'
 import { EditorHeader } from './EditorHeader'
 import { Error } from '../Error'
 
-import { ContentMenu } from '@/components/Editor/ContentMenu'
-import { Toolbar } from '@/components/Editor/Toolbar'
-import { ContextMenu } from '@/components/Editor/ContextMenu'
-import { Gutter } from '@/components/Editor/Gutter'
-import { DropMarker } from '@/components/Editor/DropMarker'
-
 import { getValueByYPath } from '@/shared/yUtils'
-import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
 import { contentMenuLabels } from '@/defaults/contentMenuLabels'
 import type { YDocument } from '@/modules/yjs/hooks'
 import { useYDocument } from '@/modules/yjs/hooks'
@@ -79,7 +71,7 @@ const Editor = (props: ViewProps): JSX.Element => {
           readOnly
           readOnlyVersion={bigIntVersion}
         />
-        <View.Content className='flex flex-col max-w-[1000px] px-4 h-full'>
+        <View.Content className='flex flex-col max-w-[1000px] px-4 h-full' variant='grid'>
           <PlainEditor key={props.version} id={documentId} version={bigIntVersion} />
         </View.Content>
       </View.Root>
@@ -99,29 +91,27 @@ const Editor = (props: ViewProps): JSX.Element => {
 function EditorWrapper(props: ViewProps & {
   documentId: string
   planningId?: string | null
-  autoFocus?: boolean
   preview?: boolean
 }): JSX.Element {
   const ydoc = useYDocument<Y.Map<unknown>>(props.documentId, {
     visibility: !props.preview
   })
-
+  const [documentLanguage] = getValueByYPath<string>(ydoc.ele, 'root.language')
+  const [content] = getValueByYPath<Y.XmlText>(ydoc.ele, 'content', true)
   const openFactboxEditor = useLink('Factbox')
+  const openImageSearch = useLink('ImageSearch')
+  const openFactboxes = useLink('Factboxes')
 
   // Plugin configuration
-  const getConfiguredPlugins = () => {
-    const basePlugins = [
-      Bold,
-      Italic,
-      Link,
-      ImageSearchPlugin,
-      FactboxPlugin,
-      Table,
-      LocalizedQuotationMarks
-    ]
-
+  const configuredPlugins = useMemo(() => {
     return [
-      ...basePlugins.map((initPlugin) => initPlugin()),
+      Bold(),
+      Italic(),
+      Link(),
+      ImageSearchPlugin({ openImageSearch }),
+      FactboxPlugin({ openFactboxes }),
+      Table(),
+      LocalizedQuotationMarks(),
       TTVisual({
         enableCrop: false
       }),
@@ -136,113 +126,39 @@ function EditorWrapper(props: ViewProps & {
         removable: true
       })
     ]
+  }, [openFactboxEditor, openFactboxes, openImageSearch])
+
+  if (!content) {
+    return <View.Root />
   }
 
   return (
     <View.Root>
-      <Textbit.Root
-        autoFocus={props.autoFocus ?? true}
-        plugins={getConfiguredPlugins()}
-        placeholders='multiple'
-        className='h-screen max-h-screen flex flex-col'
-      >
-        <EditorContainer
-          ydoc={ydoc}
-          planningId={props.planningId}
-          preview={props.preview}
-        />
-      </Textbit.Root>
-    </View.Root>
-  )
-}
-
-
-// Container component that uses TextBit context
-function EditorContainer({
-  ydoc,
-  planningId,
-  preview
-}: {
-  ydoc: YDocument<Y.Map<unknown>>
-  planningId?: string | null
-  preview?: boolean
-}): JSX.Element {
-  const { stats } = useTextbit()
-
-  return (
-    <>
-      <EditorHeader
+      <BaseEditor.Root
         ydoc={ydoc}
-        planningId={planningId}
-        readOnly={preview}
-      />
-      <Notes ydoc={ydoc} />
-      <View.Content className='flex flex-col max-w-[1000px]'>
+        content={content}
+        readOnly={props.preview}
+        plugins={configuredPlugins}
+        lang={documentLanguage}
+      >
+        <EditorHeader ydoc={ydoc} planningId={props.planningId} readOnly={props.preview} />
 
-        <div className='grow overflow-auto pr-12 max-w-(--breakpoint-xl)'>
-          {ydoc.provider && ydoc.provider.isSynced
-            ? <EditorContent ydoc={ydoc} preview={preview} />
-            : <></>}
-        </div>
-      </View.Content>
+        <Notes ydoc={ydoc} />
 
-      <View.Footer>
-        <div className='flex gap-2'>
-          <strong>Ord:</strong>
-          <span title='Antal ord: artikel (totalt)'>{`${stats.short.words} (${stats.full.words})`}</span>
-        </div>
-        <div className='flex gap-2'>
-          <strong>Tecken:</strong>
-          <span title='Antal tecken: artikel (totalt)'>{`${stats.short.characters} (${stats.full.characters})`}</span>
-        </div>
-      </View.Footer>
-    </>
-  )
-}
+        <View.Content className='flex flex-col max-w-[1000px]'variant='grid'>
+          <div className='grow overflow-auto pr-12 max-w-(--breakpoint-xl)'>
+            <BaseEditor.Text
+              ydoc={ydoc}
+              autoFocus={true}
+            />
+          </div>
+        </View.Content>
 
-
-function EditorContent({ ydoc, preview }: {
-  ydoc: YDocument<Y.Map<unknown>>
-  preview?: boolean
-}): JSX.Element {
-  const { isActive } = useView()
-  const ref = useRef<HTMLDivElement>(null)
-  const [documentLanguage] = getValueByYPath<string>(ydoc.ele, 'root.language')
-
-  const yjsEditor = useYjsEditor(ydoc)
-  const onSpellcheck = useOnSpellcheck(documentLanguage)
-
-  // Handle focus on active state
-  useEffect(() => {
-    if (isActive && ref?.current?.dataset['state'] !== 'focused') {
-      setTimeout(() => {
-        ref?.current?.focus()
-      }, 0)
-    }
-  }, [isActive, ref])
-
-  return (
-    <Textbit.Editable
-      readOnly={preview}
-      ref={ref}
-      yjsEditor={yjsEditor}
-      lang={documentLanguage}
-      onSpellcheck={onSpellcheck}
-      className='outline-none
-        h-full
-        dark:text-slate-100
-        **:data-spelling-error:border-b-2
-        **:data-spelling-error:border-dotted
-        **:data-spelling-error:border-red-500
-      '
-    >
-      <DropMarker />
-      <Gutter>
-        <ContentMenu />
-      </Gutter>
-      <Toolbar />
-      <ContextMenu />
-    </Textbit.Editable>
+        <View.Footer>
+          <BaseEditor.Footer />
+        </View.Footer>
+      </BaseEditor.Root>
+    </View.Root>
   )
 }
 

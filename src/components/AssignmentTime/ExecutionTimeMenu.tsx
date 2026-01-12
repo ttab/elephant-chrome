@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, type JSX } from 'react'
 import {
   Popover,
   PopoverContent,
@@ -176,6 +176,7 @@ export const ExecutionTimeMenu = ({ handleOnSelect, assignment, startDate }: Exe
         <div>
           <Calendar
             mode='range'
+            locale={locale.module}
             required={false}
             selected={selected}
             weekStartsOn={1}

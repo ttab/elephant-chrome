@@ -7,7 +7,7 @@ import { Assignees } from '@/components/Assignees'
 import { SluglineEditable } from '@/components/DataItem/SluglineEditable'
 import { Form } from '@/components/Form'
 import { type FormProps } from '@/components/Form/Root'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, type JSX } from 'react'
 import { type YDocument, useYPath, useYValue } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import { useSession } from 'next-auth/react'
@@ -57,7 +57,7 @@ export const Assignment = ({ ydoc, assignment, onAbort, onClose }: {
   }
 
   return (
-    <div className='flex flex-col rounded-md border shadow-xl -mx-1 -my-1 z-10 bg-background' ref={formRef}>
+    <div className='flex flex-col rounded-md border shadow-xl -mx-1 -my-1 z-10 bg-background dark:bg-table-focused' ref={formRef}>
       <Form.Root asDialog={true}>
         <Form.Content>
           <Form.Title>
@@ -67,7 +67,7 @@ export const Assignment = ({ ydoc, assignment, onAbort, onClose }: {
               value={title}
               label='Titel'
               placeholder='Uppdragstitel'
-              autoFocus
+              autoFocus={true}
             />
           </Form.Title>
           <TextBox
@@ -103,6 +103,7 @@ export const Assignment = ({ ydoc, assignment, onAbort, onClose }: {
             />
             <Assignees
               ydoc={ydoc}
+              rootMap={!assignmentInProgress ? ydoc.ele : ydoc.ctx}
               path={`${path}.links.core/author`}
               placeholder='Lägg till uppdragstagare'
             />

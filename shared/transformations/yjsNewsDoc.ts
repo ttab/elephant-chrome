@@ -115,11 +115,13 @@ export function removeConsecutiveEmptyTextNodes(nodes: Descendant[]): Descendant
   const result: Descendant[] = []
   let lastWasEmptyText = false
 
-  for (const node of nodes) {
+  for (const node of nodes as TBElement[]) {
+    const children = node.children as TBElement[]
+
     if (
       TextbitElement.isText(node)
       && (!node.properties?.role || node.properties.role === '')
-      && node.children.every((child) => {
+      && children.every((child) => {
         return Text.isText(child) && child.text === ''
       })
     ) {

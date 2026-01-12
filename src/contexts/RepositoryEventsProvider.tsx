@@ -1,4 +1,4 @@
-import { createContext, useCallback, useEffect, useRef, useState } from 'react'
+import { createContext, useCallback, useEffect, useRef, useState, type JSX } from 'react'
 import { useRegistry } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import { fetchEventSource } from '@microsoft/fetch-event-source'
@@ -286,4 +286,3 @@ function parseEventlogItem(data: string): EventlogItem {
   }
   throw new Error('Invalid EventlogItem format')
 }
-

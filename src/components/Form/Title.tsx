@@ -1,9 +1,10 @@
-import React from 'react'
+import { type JSX } from 'react'
 import { cn } from '@ttab/elephant-ui/utils'
 import { cva } from 'class-variance-authority'
 import { type FormProps } from './Root'
+import { cloneChildrenWithProps } from './lib/cloneChildren'
 
-export const Title = ({ children, asDialog, onValidation, onChange }: FormProps): JSX.Element => {
+export const Title = ({ children, asDialog, onValidation, onChange, validateStateRef }: FormProps): JSX.Element => {
   const titleVariants = cva(`
     w-full
     [&_[role="textbox"]:has([data-slate-placeholder="true"])]:ring-0!
@@ -26,15 +27,12 @@ export const Title = ({ children, asDialog, onValidation, onChange }: FormProps)
 
   return (
     <div className={cn(titleVariants({ asDialog }))}>
-      {React.Children.map(children, (child: React.ReactNode): React.ReactNode =>
-        React.isValidElement<FormProps>(child)
-          ? React.cloneElement(child, {
-            asDialog,
-            onChange,
-            onValidation
-          })
-          : child
-      )}
+      {cloneChildrenWithProps<FormProps>(children, {
+        asDialog,
+        onValidation,
+        onChange,
+        validateStateRef
+      })}
     </div>
   )
 }

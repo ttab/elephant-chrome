@@ -323,7 +323,7 @@ export function dateToReadableShort(_date: Date, locale: string, timeZone: strin
  * @param value - The date string to parse. Expected format is 'YYYY-MM-DD'.
  * @returns A Date object if the input is valid, or undefined if the input is empty or invalid.
  */
-export function parseDate(value: string): Date | undefined {
+export function parseDate(value?: string): Date | undefined {
   if (!value) {
     return
   }

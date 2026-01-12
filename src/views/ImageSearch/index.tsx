@@ -1,4 +1,4 @@
-import React, { type Dispatch, type SetStateAction, useState } from 'react'
+import React, { type Dispatch, type SetStateAction, useState, type JSX } from 'react'
 import { View, ViewHeader } from '@/components'
 import { type ViewMetadata } from '@/types'
 import { LoaderIcon, ListEndIcon, ImageIcon } from '@ttab/elephant-ui/icons'
