@@ -96,7 +96,6 @@ export const Table = <TData, TValue>({
   const [, setDocumentStatus] = useWorkflowStatus()
   const handlePreview = useCallback((row: RowType<unknown>): void => {
     row.toggleSelected(true)
-
     const originalId = (row.original as { id: string }).id
     showModal(
       <PreviewSheet
@@ -125,7 +124,7 @@ export const Table = <TData, TValue>({
         return
       }
 
-      const originalRow = row.original as { _id: string | undefined, id: string, fields?: Record<string, string[]> }
+      const originalRow = row.original as { _id: string | undefined, id: string, fields?: Record<string, string[]>, documentType: string }
       const id = originalRow._id ?? originalRow.id
 
       const articleClick = type === 'Search' && searchType === 'Editor'
@@ -135,12 +134,11 @@ export const Table = <TData, TValue>({
       if (articleClick) {
         usableVersion = !articleClick ? undefined : originalRow?.fields?.['heads.usable.version']?.[0] as bigint | undefined
       }
-
       handleLink({
         event,
         dispatch,
         viewItem: state.viewRegistry.get(!searchType ? type : searchType),
-        props: { id, documentType },
+        props: { id, documentType: originalRow.documentType },
         viewId: crypto.randomUUID(),
         origin,
         history,
@@ -325,7 +323,7 @@ export const Table = <TData, TValue>({
   }, [rows, columns, loading, handleOpen, table, rowSelection])
   return (
     <>
-      {!['Wires', 'Factbox', 'Search', 'Concept'].includes(type) && (
+      {!['Wires', 'Factbox', 'Search', 'Concept', 'Admin'].includes(type) && (
         <Toolbar />
       )}
       {(type === 'Planning' || type === 'Event') && (
@@ -340,7 +338,7 @@ export const Table = <TData, TValue>({
       )}
       {type === 'Concept'
         && <Toolbar searchbar={true} searchPlaceholder='Fritextsökning' filter={false} quickFilter={false} />}
-      {type === 'Factbox'
+      {(type === 'Factbox' || type === 'Admin')
         && <Toolbar searchbar={true} searchPlaceholder='Fritextsökning' filter={false} sort={false} quickFilter={false} />}
 
       {(type !== 'Search' || !loading) && (

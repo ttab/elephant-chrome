@@ -1,8 +1,15 @@
 /** Concept structure in indexedDB objectStore  */
+export interface IDBAdmin {
+  title: string
+  description: string
+  documentType: string
+}
+
 export interface IDBConcept {
   id: string
   title: string
   usableVersion: bigint
+  documentType: string
 }
 
 export interface IDBSection extends IDBConcept {
