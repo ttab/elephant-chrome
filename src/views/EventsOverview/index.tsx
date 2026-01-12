@@ -66,7 +66,7 @@ export const Events = (): JSX.Element => {
         <ViewHeader.Root>
           <ViewHeader.Content>
             <ViewHeader.Title name='Events' title='Händelser' short='Händelser' />
-            <Header type='Event' docType='core/event' />
+            <Header type='Event' />
           </ViewHeader.Content>
 
           <ViewHeader.Action />

@@ -36,7 +36,7 @@ import type { EleDocumentResponse } from '@/shared/types'
 import { TextBox } from '@/components/ui'
 import { useDescriptionIndex } from './hooks/useDescriptionIndex'
 import { TextInput } from '@/components/ui/TextInput'
-import { ToastAction } from '@/components/ToastAction'
+import { ToastAction } from '../Wire/ToastAction'
 
 type Setter = React.Dispatch<SetStateAction<NewItem>>
 

@@ -9,7 +9,7 @@ import type * as Y from 'yjs'
 import { BaseEditor } from '@/components/Editor/BaseEditor'
 import { contentMenuLabels } from '@/defaults/contentMenuLabels'
 
-export const DialogEditor = ({ ydoc, setTitle, onValidation, validateStateRef }: {
+export const FlashEditor = ({ ydoc, setTitle, onValidation, validateStateRef }: {
   ydoc: YDocument<Y.Map<unknown>>
   setTitle: (value: string | undefined) => void
 } & FormProps): JSX.Element => {

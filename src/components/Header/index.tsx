@@ -1,15 +1,18 @@
 import { DateChanger } from '@/components/Header/Datechanger'
 import { TabsGrid } from '@/components/Header/LayoutSwitch'
+import { Button } from '@ttab/elephant-ui'
+import { PlusIcon } from '@ttab/elephant-ui/icons'
 import { type View } from '@/types/index'
 import { PersonalAssignmentsFilter } from './PersonalAssignmentsFilter'
 import { useMemo, type JSX } from 'react'
-import { AddButtonGroup } from './AddButtonGroup'
+import { useModal } from '../Modal/useModal'
+import * as Views from '@/views'
+import { getTemplateFromView } from '@/shared/templates/lib/getTemplateFromView'
 import { useQuery } from '@/hooks/useQuery'
 
-export const Header = ({ assigneeId, type, docType }: {
+export const Header = ({ assigneeId, type }: {
   type: View
   assigneeId?: string | undefined
-  docType?: string
 }): JSX.Element => {
   const [query] = useQuery()
   const showButton = useMemo(() => {
@@ -20,10 +23,32 @@ export const Header = ({ assigneeId, type, docType }: {
     return false
   }, [type])
 
+  const { showModal, hideModal } = useModal()
+
+  const ViewDialog = Views[type]
+
   return (
     <>
       {showButton && (
-        <AddButtonGroup type={type} docType={docType} query={query} />
+        <Button
+          size='sm'
+          className='h-8 pr-4'
+          onClick={() => {
+            const id = crypto.randomUUID()
+            const initialDocument = getTemplateFromView(type)(id, { query })
+            showModal(
+              <ViewDialog
+                onDialogClose={hideModal}
+                asDialog
+                id={id}
+                document={initialDocument}
+              />
+            )
+          }}
+        >
+          <PlusIcon size={18} strokeWidth={1.75} />
+          <span className='pl-0.5'>Ny</span>
+        </Button>
       )}
 
       <div className='hidden sm:block'>

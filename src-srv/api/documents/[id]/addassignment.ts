@@ -38,8 +38,7 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
     isoDateTime,
     publishTime,
     section,
-    wire,
-    quickArticleData
+    wire
   } = req.body as {
     planningId?: string
     planningTitle?: string
@@ -57,7 +56,6 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
       title: string
     }
     wire?: Wire
-    quickArticleData?: { title?: string, text?: string, deliverableId: string }
   }
 
   if (!type || !deliverableId || !title || !localDate || !isoDateTime) {
@@ -82,7 +80,7 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
   await connection.transact((document) => {
     if (!isValidUUID(planningId) && section) {
       // If we have no planningId we create a new planning item using
-      // planningDocumentTemplate as a basis and apply it to the document.
+      // planningDocumentTemplate as a basis and apply it to the cocument.
       toYjsNewsDoc(
         toGroupedNewsDoc({
           version: 0n,
@@ -144,7 +142,7 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
     const deliverableType = getDeliverableType(type)
     appendDocumentToAssignment({
       document,
-      id: quickArticleData?.deliverableId || deliverableId,
+      id: deliverableId,
       index,
       slug: '',
       type: deliverableType
@@ -159,6 +157,6 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
     collaborationServer,
     documentId,
     context,
-    { addToHistory: planningId === 'create' }
+    { addToHistory: !!planningId }
   )
 }

@@ -7,12 +7,12 @@ import { useQuery } from '@/hooks/useQuery'
 import { Error } from '../Error'
 import { FlashView } from './FlashView'
 import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
+import { FlashHeader } from './FlashHeader'
 import { Editor as PlainEditor } from '@/components/PlainEditor'
 import { getTemplateFromView } from '@/shared/templates/lib/getTemplateFromView'
 import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type { Document } from '@ttab/elephant-api/newsdoc'
-import { DocumentHeader } from '@/components/QuickDocument/DocumentHeader'
 
 const meta: ViewMetadata = {
   name: 'Flash',
@@ -75,8 +75,7 @@ export const Flash = (props: ViewProps & {
 
     return (
       <View.Root>
-        <DocumentHeader
-          view='Flash'
+        <FlashHeader
           ydoc={{ id: documentId } as YDocument<Y.Map<unknown>>}
           readOnly
         />
