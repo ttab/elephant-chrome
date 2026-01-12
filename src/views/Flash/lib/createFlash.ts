@@ -1,12 +1,15 @@
 import type { Session } from 'next-auth'
 import { getValueByYPath } from '@/shared/yUtils'
 import { convertToISOStringInTimeZone } from '@/shared/datetime'
-import { toast } from 'sonner'
-import { ToastAction } from '../ToastAction'
 import { addAssignmentWithDeliverable } from '@/lib/index/addAssignment'
 import { snapshotDocument } from '@/lib/snapshotDocument'
+import { yTextToSlateElement } from '@slate-yjs/core'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
+import type { YXmlText } from 'node_modules/yjs/dist/src/internals'
+import type { TBElement } from '@ttab/textbit'
+import type { QuickArticleData } from '@/shared/types'
+import { Block } from '@ttab/elephant-api/newsdoc'
 
 export type CreateFlashDocumentStatus = 'usable' | 'done' | undefined
 export async function createFlash({
@@ -16,7 +19,8 @@ export async function createFlash({
   timeZone,
   documentStatus,
   section,
-  startDate
+  startDate,
+  planningSection
 }: {
   ydoc: YDocument<Y.Map<unknown>>
   status: string
@@ -27,15 +31,24 @@ export async function createFlash({
   section?: {
     uuid: string
     title: string
+    type: string
+    rel: string
   }
+  planningSection?: {
+    type: string
+    rel: string
+    uuid: string
+    title: string
+  } | undefined
   startDate?: string
-}): Promise<void> {
+}): Promise<{
+  documentStatus: CreateFlashDocumentStatus
+  updatedPlanningId: string
+  quickArticleData: QuickArticleData | undefined
+} | undefined> {
   if (!ydoc || status !== 'authenticated') {
     console.error(`Failed adding flash ${ydoc.id} to a planning`)
-    toast.error('Kunde inte lägga flashen till en planering', {
-      action: <ToastAction flashId={ydoc.id} />
-    })
-    return
+    throw new Error('Failed to authenticate')
   }
 
   // Trigger the creation of the flash in the repository
@@ -44,12 +57,22 @@ export async function createFlash({
     status: documentStatus
   }, ydoc.provider?.document)
     .catch((ex) => {
-      toast.error('Kunde inte spara flash')
       console.error('Failed creating flash snapshot', ex)
+      throw new Error('FlashCreationError')
     })
 
   // Create and collect all base data for the assignment
   const [flashTitle] = getValueByYPath<string>(ydoc.ele, 'root.title')
+
+  const content = yTextToSlateElement((ydoc.ele.get('content') as YXmlText))?.children as TBElement[]
+
+  const bodyTextNode = content.find((c) => {
+    const properties = c.properties as { role?: string }
+    return !properties.role
+  })?.children[0]
+
+  const flashBodyText = bodyTextNode && 'text' in bodyTextNode ? bodyTextNode?.text : ''
+
   const dt = new Date()
   let localDate: string
   let isoDateTime: string
@@ -81,27 +104,33 @@ export async function createFlash({
   // Ensure the snapshot is complete before showing the toast
   await snapshotPromise
 
-  const getLabel = (documentStatus: CreateFlashDocumentStatus): string => {
-    switch (documentStatus) {
-      case 'usable': {
-        return 'Flash skickad'
-      }
-      case 'done': {
-        return 'Flash godkänd'
-      }
-      default: {
-        return 'Flash sparad'
-      }
-    }
+  if (!updatedPlanningId) {
+    throw new Error('CreateAssignmentError')
   }
 
-  if (!updatedPlanningId) {
-    toast.error('Flashen har skapats. Tyvärr misslyckades det att koppla den till en planering. Kontakta support för mer hjälp.', {
-      action: <ToastAction planningId={updatedPlanningId} flashId={ydoc.id} />
-    })
-  } else {
-    toast.success(getLabel(documentStatus), {
-      action: <ToastAction planningId={updatedPlanningId} flashId={ydoc.id} />
-    })
-  }
+  // A complementary text assignment is co-created for a quick first version.
+  // Only create if the flash is immediately published, for now.
+  const quickArticleData = documentStatus === 'usable'
+    ? {
+        deliverableId: crypto.randomUUID(),
+        text: flashBodyText,
+        payload: {
+          title: flashTitle,
+          meta: {
+            'core/newsvalue': [Block.create({ type: 'core/newsvalue', value: '5' })],
+            'tt/slugline': [Block.create({ type: 'tt/slugline', value: !flashTitle ? 'snabbartikel' : `${flashTitle?.toLocaleLowerCase()?.split(' ').slice(0, 3).join('-').slice(0, 20)}` })]
+          },
+          links: {
+            'core/section': [Block.create({
+              type: 'core/section',
+              uuid: section?.uuid || planningSection?.uuid,
+              title: section?.title || planningSection?.title,
+              rel: 'section'
+            })]
+          }
+        }
+      }
+    : undefined
+
+  return { quickArticleData, documentStatus, updatedPlanningId }
 }
