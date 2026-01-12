@@ -63,7 +63,7 @@ export const Plannings = (): JSX.Element => {
         <ViewHeader.Root>
           <ViewHeader.Content>
             <ViewHeader.Title name='Plannings' title='Planeringar' />
-            <Header type='Planning' docType='core/planning-item' />
+            <Header type='Planning' />
           </ViewHeader.Content>
 
           <ViewHeader.Action />

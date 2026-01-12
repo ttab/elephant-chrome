@@ -7,12 +7,10 @@ export { assignmentPlanningTemplate as assignment } from './assignmentPlanningTe
 export { planningDocumentTemplate as planning } from './planningDocumentTemplate.js'
 export { eventDocumentTemplate as event } from './eventDocumentTemplate.js'
 export { editorialInfoDocumentTemplate as editorialInfo } from './editorialInfoDocumentTemplate.js'
-export { quickArticleDocumentTemplate as quickArticle } from './quickArticleDocumentTemplate.js'
 
 export interface TemplatePayload {
   query?: Record<string, string | string[] | undefined>
   title?: string
-  text?: string
   meta?: {
     'tt/slugline'?: Block[]
     'core/newsvalue'?: Block[]

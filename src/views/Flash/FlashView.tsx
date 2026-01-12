@@ -3,7 +3,7 @@ import type { ViewProps } from '@/types'
 import { useQuery } from '@/hooks'
 import { Form } from '@/components/Form'
 import { LocalizedQuotationMarks, Text } from '@ttab/textbit-plugins'
-import { DocumentHeader } from '@/components/QuickDocument/DocumentHeader'
+import { FlashHeader } from './FlashHeader'
 import { type JSX } from 'react'
 import { getValueByYPath } from '@/shared/yUtils'
 import { useYDocument } from '@/modules/yjs/hooks'
@@ -52,7 +52,7 @@ export const FlashView = (props: ViewProps & {
           })
         ]}
       >
-        <DocumentHeader ydoc={ydoc} asDialog={false} readOnly={readOnly} preview={preview} view='Flash' />
+        <FlashHeader ydoc={ydoc} asDialog={false} readOnly={readOnly} preview={preview} />
 
         <View.Content className='flex flex-col max-w-[1000px]'>
           <Form.Root asDialog={props.asDialog}>
