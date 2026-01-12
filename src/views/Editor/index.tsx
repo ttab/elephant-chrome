@@ -133,32 +133,31 @@ function EditorWrapper(props: ViewProps & {
   }
 
   return (
-    <View.Root className='flex flex-col h-screen'>
-      <EditorHeader ydoc={ydoc} planningId={props.planningId} readOnly={props.preview} />
-      <div className='flex flex-col flex-1 min-h-0'>
-        <BaseEditor.Root
-          ydoc={ydoc}
-          content={content}
-          readOnly={props.preview}
-          plugins={configuredPlugins}
-          lang={documentLanguage}
-        >
-          <Notes ydoc={ydoc} />
+    <View.Root>
+      <BaseEditor.Root
+        ydoc={ydoc}
+        content={content}
+        readOnly={props.preview}
+        plugins={configuredPlugins}
+        lang={documentLanguage}
+      >
+        <EditorHeader ydoc={ydoc} planningId={props.planningId} readOnly={props.preview} />
 
-          <View.Content className='flex flex-col max-w-[1000px]'variant='grid'>
-            <div className='grow overflow-auto pr-12 max-w-(--breakpoint-xl)'>
-              <BaseEditor.Text
-                ydoc={ydoc}
-                autoFocus={true}
-              />
-            </div>
-          </View.Content>
+        <Notes ydoc={ydoc} />
 
-          <View.Footer>
-            <BaseEditor.Footer />
-          </View.Footer>
-        </BaseEditor.Root>
-      </div>
+        <View.Content className='flex flex-col max-w-[1000px]'variant='grid'>
+          <div className='grow overflow-auto pr-12 max-w-(--breakpoint-xl)'>
+            <BaseEditor.Text
+              ydoc={ydoc}
+              autoFocus={true}
+            />
+          </div>
+        </View.Content>
+
+        <View.Footer>
+          <BaseEditor.Footer />
+        </View.Footer>
+      </BaseEditor.Root>
     </View.Root>
   )
 }

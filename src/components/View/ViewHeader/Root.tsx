@@ -11,7 +11,7 @@ export const Root = ({ children, className, asDialog }: {
   const { isActive, isFocused } = useView()
   const { state } = useHistory()
 
-  const viewVariants = cva('sticky flex items-center justify-items-start px-4 group-first/view-container:ps-16 h-14 gap-3 border-b overflow-hidden dark:bg-secondary', {
+  const viewVariants = cva('sticky flex items-center justify-items-start px-4 group-first/view-container:ps-16 h-14 gap-3 border-b overflow-visible dark:bg-secondary', {
     variants: {
       isActiveView: {
         true: 'rounded-t-2xl bg-gray-100 dark:bg-secondary'
