@@ -125,7 +125,6 @@ export const Table = <TData, TValue>({
 
       const originalRow = row.original as { _id: string | undefined, id: string, fields?: Record<string, string[]>, documentType: string }
       const id = originalRow._id ?? originalRow.id
-      
       const articleClick = type === 'Search' && searchType === 'Editor'
 
       let usableVersion
