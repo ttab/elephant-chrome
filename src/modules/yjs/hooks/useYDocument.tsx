@@ -143,13 +143,25 @@ export function useYDocument<T>(
 
     const yCtx = document.current.getMap('ctx')
     const yEle = document.current.getMap(rootMap)
-    const onChange = () => {
+
+    const onChange = (events: Y.YEvent<Y.Map<unknown>>[]) => {
       if (isChanged) return
 
-      const newValue = createHash(yEle) !== yCtx.get('hash')
-      if (newValue !== isChanged) {
-        setIsChanged(newValue)
-        yCtx.set('isChanged', newValue)
+      const oldHash = yCtx.get('hash')
+      const newHash = createHash(yEle)
+
+      if (newHash !== oldHash) {
+        if ('keysChanged' in events[0] && events.length === 1) {
+          const changed = events[0].keysChanged as Set<string>
+          // Ignore if the change is _only_ for `start`, since thats automatically done when
+          // creating a new version of an deliverable
+          if (changed.has('start') && changed.size === 1) {
+            return
+          }
+        }
+
+        setIsChanged(true)
+        yCtx.set('isChanged', true)
       }
     }
 
