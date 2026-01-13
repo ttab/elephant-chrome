@@ -192,7 +192,7 @@ export const PrintArticleStatuses: DefaultValueOption[] = [
 
 export const ConceptStatuses: DefaultValueOption[] = [
   {
-    label: 'Inaktiv',
+    label: 'Inaktiva',
     value: 'inactive',
     icon: CircleIcon,
     iconProps: {
@@ -203,7 +203,7 @@ export const ConceptStatuses: DefaultValueOption[] = [
     }
   },
   {
-    label: 'Använd',
+    label: 'Används',
     value: 'usable',
     icon: CircleCheckIcon,
     iconProps: {
