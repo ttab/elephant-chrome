@@ -84,9 +84,8 @@ export const Table = <TData, TValue>({
   columns,
   type,
   onRowSelected,
-  searchType,
-  documentType
-}: TableProps<TData, TValue> & { searchType?: View, documentType?: string }): JSX.Element => {
+  searchType
+}: TableProps<TData, TValue> & { searchType?: View }): JSX.Element => {
   const { state, dispatch } = useNavigation()
   const history = useHistory()
   const { viewId: origin } = useView()
@@ -126,7 +125,7 @@ export const Table = <TData, TValue>({
 
       const originalRow = row.original as { _id: string | undefined, id: string, fields?: Record<string, string[]>, documentType: string }
       const id = originalRow._id ?? originalRow.id
-
+      
       const articleClick = type === 'Search' && searchType === 'Editor'
 
       let usableVersion
@@ -150,7 +149,7 @@ export const Table = <TData, TValue>({
         })
       })
     }
-  }, [dispatch, state.viewRegistry, onRowSelected, origin, type, history, handlePreview, searchType, documentType])
+  }, [dispatch, state.viewRegistry, onRowSelected, origin, type, history, handlePreview, searchType])
 
   useNavigationKeys({
     keys: ['ArrowUp', 'ArrowDown', 'Enter', 'Escape', ' ', 's', 'r', 'c', 'u'],

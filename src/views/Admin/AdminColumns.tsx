@@ -61,17 +61,6 @@ export function AdminColumns(): Array<ColumnDef<IDBAdmin>> {
           </div>
         )
       }
-
-    },
-    {
-      id: 'documentType',
-      meta: {
-        name: 'DocumentType',
-        columnIcon: BoxesIcon
-      },
-      accessorFn: (data) => {
-        return data.documentType
-      }
     }
   ]
 }

@@ -6,10 +6,9 @@ import type { ColumnDef } from '@tanstack/react-table'
 import { useTable } from '@/hooks/useTable'
 import type { IDBCategory, IDBConcept, IDBOrganiser, IDBSection, IDBStory } from 'src/datastore/types'
 
-export const ConceptList = ({ columns, data, documentType }: {
+export const ConceptList = ({ columns, data }: {
   columns: ColumnDef<IDBConcept>[]
   data: (IDBSection | IDBStory | IDBCategory | IDBOrganiser)[]
-  documentType: string
 }): JSX.Element => {
   const { setData } = useTable<IDBSection | IDBStory | IDBCategory | IDBOrganiser>()
 
@@ -33,7 +32,6 @@ export const ConceptList = ({ columns, data, documentType }: {
         type='Concept'
         columns={columns}
         onRowSelected={onRowSelected}
-        documentType={documentType}
       />
     </>
   )
