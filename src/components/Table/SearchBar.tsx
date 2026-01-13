@@ -1,6 +1,7 @@
-import { Command, CommandInput } from '@ttab/elephant-ui'
+import { Command } from '@ttab/elephant-ui'
 import type { Updater } from '@tanstack/react-table'
 import { useTable } from '@/hooks/useTable'
+import { DebouncedCommandInput } from '../Commands/Menu/DebouncedCommandInput'
 
 export const SearchBar = ({ placeholder, setGlobalTextFilter }: {
   setGlobalTextFilter: (updater: Updater<unknown>) => void
@@ -10,7 +11,7 @@ export const SearchBar = ({ placeholder, setGlobalTextFilter }: {
   const { globalFilter } = table.getState() as {
     globalFilter: string
   }
-  const handleChange = (value: string | number): void => {
+  const handleChange = (value: string | undefined): void => {
     if (value) {
       setGlobalTextFilter(value)
     } else {
@@ -23,10 +24,11 @@ export const SearchBar = ({ placeholder, setGlobalTextFilter }: {
         <Command
           className='[&_[cmdk-input-wrapper]]:border-none'
         >
-          <CommandInput
+          <DebouncedCommandInput
             value={globalFilter ?? ''}
-            onValueChange={(value: string | number) => handleChange(value ?? '')}
+            onChange={(value: string | undefined) => handleChange(value ?? '')}
             placeholder={placeholder}
+            className='h-9'
           />
 
         </Command>

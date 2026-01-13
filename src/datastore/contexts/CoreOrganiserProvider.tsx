@@ -47,7 +47,8 @@ export const CoreOrganiserProvider = ({ children }: {
           email: _['document.meta.core_contact_info.data.email']?.[0]?.trim() || '',
           phone: _['document.meta.core_contact_info.data.phone']?.[0]?.trim() || '',
           streetAddress: _['document.meta.core_contact_info.data.streetAddress']?.[0].trim() || '',
-          usableVersion: BigInt(_['heads.usable.version'][0])
+          usableVersion: BigInt(_['heads.usable.version'][0]),
+          documentType: documentType
         }
       }
     )

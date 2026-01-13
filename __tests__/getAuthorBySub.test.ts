@@ -13,7 +13,8 @@ const mockAuthors: IDBAuthor[] = [
     initials: 'AZ',
     email: 'author.zero@example.com',
     sub: 'core://user/sub/12',
-    usableVersion: 1n
+    usableVersion: 1n,
+    documentType: 'core/author'
   },
   {
     id: 'author-1',
@@ -24,7 +25,8 @@ const mockAuthors: IDBAuthor[] = [
     initials: 'AO',
     email: 'author.one@example.com',
     sub: 'core://user/sub/1234',
-    usableVersion: 1n
+    usableVersion: 1n,
+    documentType: 'core/author'
   },
   {
     id: 'author-2',
@@ -35,7 +37,8 @@ const mockAuthors: IDBAuthor[] = [
     initials: 'AT',
     email: 'author.two@example.com',
     sub: 'core://user/sub/cf8eb669-0c0f-432d-8fdf-b479ac2082a1',
-    usableVersion: 1n
+    usableVersion: 1n,
+    documentType: 'core/author'
   }
 ]
 

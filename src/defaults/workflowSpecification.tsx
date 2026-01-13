@@ -1,3 +1,4 @@
+import { tableDataMap } from '@/views/Concepts/lib/conceptDataTable'
 import {
   CircleCheckIcon,
   CircleDotIcon,
@@ -54,6 +55,8 @@ const baseConcept = {
   }
 }
 
+const conceptWorkflows = Object.fromEntries(Object.keys(tableDataMap).map((key) => [key, baseConcept]))
+
 export const StatusSpecifications: Record<string, StatusSpecification> = {
   draft: {
     icon: CircleDotIcon,
@@ -96,7 +99,6 @@ export const StatusSpecifications: Record<string, StatusSpecification> = {
     className: 'text-zinc-400 rounded-full'
   }
 }
-
 
 export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
   'core/event': {
@@ -541,6 +543,5 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
       }
     }
   },
-  'core/section': baseConcept,
-  'core/story': baseConcept
+  ...conceptWorkflows
 }

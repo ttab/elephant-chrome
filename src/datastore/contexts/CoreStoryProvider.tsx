@@ -51,7 +51,8 @@ export const CoreStoryProvider = ({ children }: {
           title: _['document.title'][0].trim(),
           shortText: '',
           longText: '',
-          usableVersion: BigInt(_['heads.usable.version'][0])
+          usableVersion: BigInt(_['heads.usable.version'][0]),
+          documentType: documentType
         }
 
         if (role0 && text0) {

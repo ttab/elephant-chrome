@@ -233,7 +233,8 @@ describe('authorOutput', () => {
       initials: '',
       email: 'aj@example.com',
       sub: 'core://user/001',
-      usableVersion: 1n
+      usableVersion: 1n,
+      documentType: 'core/author'
     }
     expect(authorOutput(author)).toBe('AJ')
   })
