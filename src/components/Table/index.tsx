@@ -335,7 +335,7 @@ export const Table = <TData, TValue>({
         </NewItems.Root>
       )}
       {type === 'Concept'
-        && <Toolbar searchbar={true} searchPlaceholder='Fritextsökning' filter={false} quickFilter={false} />}
+        && <Toolbar searchbar={true} searchPlaceholder='Fritextsökning' filter={false} />}
       {(type === 'Factbox' || type === 'Admin')
         && <Toolbar searchbar={true} searchPlaceholder='Fritextsökning' filter={false} sort={false} quickFilter={false} />}
 

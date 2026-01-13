@@ -10,6 +10,9 @@ import { Header } from '@/components/Header'
 import { useConcepts } from './lib/useConcepts'
 import { Error } from '../Error'
 import type { ConceptTableDataKey } from './lib/conceptDataTable'
+import { useInitFilters } from '@/hooks/useInitFilters'
+import { useQuery } from '@/hooks/useQuery'
+import type { ColumnFiltersState } from '@tanstack/react-table'
 
 const meta: ViewMetadata = {
   name: 'Concepts',
@@ -30,8 +33,23 @@ const meta: ViewMetadata = {
 export const Concepts = ({ title, documentType }: ViewProps) => {
   const [currentTab, setCurrentTab] = useState<string>('list')
   const { concept } = useConcepts(documentType as ConceptTableDataKey)
+  const [query] = useQuery()
+
   const columns = useMemo(() =>
     ConceptColumns(), [])
+
+  const columnFilters = useInitFilters<IDBConcept>({
+    path: 'filters.concepts.current',
+    columns
+  })
+
+  // filtering out only the documentStatus filter from the initial filters to avoid filtering by concept title
+  const documentStatusFilter: ColumnFiltersState | undefined = useMemo(() => {
+    if (!columnFilters) return undefined
+    if (columnFilters[1]?.id !== 'documentStatus') return undefined
+    return [columnFilters[1]]
+  }, [columnFilters])
+
   if (!documentType || !concept?.data || !concept) {
     return <Error></Error>
   } else {
@@ -40,6 +58,10 @@ export const Concepts = ({ title, documentType }: ViewProps) => {
         <TableProvider<IDBConcept>
           columns={columns}
           type={meta.name}
+          initialState={{
+            columnFilters: documentStatusFilter,
+            globalFilter: query.query
+          }}
         >
           <ViewHeader.Root>
             <ViewHeader.Content>

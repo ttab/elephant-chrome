@@ -96,7 +96,7 @@ export const StatusSpecifications: Record<string, StatusSpecification> = {
   },
   inactive: {
     icon: CircleIcon,
-    className: '  text-zinc-400 rounded-full '
+    className: 'text-zinc-400 rounded-full'
   }
 }
 

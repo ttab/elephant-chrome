@@ -1,19 +1,18 @@
 import { StatusSpecifications, WorkflowSpecifications } from '@/defaults/workflowSpecification'
-import { Tooltip } from '@ttab/elephant-ui'
+import { isConceptType } from '@/shared/isConceptType'
 
 export const DocumentStatus = ({ type, status }: {
   type: string
   status: string
 }): JSX.Element => {
-  const docStatus = StatusSpecifications[status]
-  const label = WorkflowSpecifications[type]?.[status]?.title || null
+  const newStatus = isConceptType(type) && status === 'unpublished' ? 'inactive' : status
+  const docStatus = StatusSpecifications[newStatus]
+  const label = WorkflowSpecifications[type]?.[status]?.title || undefined
   return (
-    <Tooltip content={label}>
-      <div className='flex items-center'>
-        {docStatus?.icon
-          ? <docStatus.icon strokeWidth={1.75} className={docStatus.className} />
-          : null}
-      </div>
-    </Tooltip>
+    <div title={label} className='flex items-center'>
+      {docStatus?.icon
+        ? <docStatus.icon strokeWidth={1.75} className={docStatus.className} />
+        : null}
+    </div>
   )
 }
