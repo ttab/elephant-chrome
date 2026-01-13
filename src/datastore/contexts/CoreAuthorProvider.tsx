@@ -49,7 +49,8 @@ export const CoreAuthorProvider = ({ children }: {
           email: _?.['document.meta.core_contact_info.data.email']?.[0].trim() || '',
           usableVersion: BigInt(_['heads.usable.version'][0]),
           sub: _?.['document.rel.same_as.uri']
-            ?.find((m: string) => m?.startsWith('core://user/sub'))?.trim() || ''
+            ?.find((m: string) => m?.startsWith('core://user/sub'))?.trim() || '',
+          documentType: documentType
         }
       }
     )

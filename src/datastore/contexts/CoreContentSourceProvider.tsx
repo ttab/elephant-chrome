@@ -43,7 +43,8 @@ export const CoreContentSourceProvider = ({ children }: {
           id,
           uri: _['document.uri'][0].trim(),
           title: _['document.title'][0].trim(),
-          usableVersion: BigInt(_['heads.usable.version'][0])
+          usableVersion: BigInt(_['heads.usable.version'][0]),
+          documentType: documentType
         }
       }
     )
