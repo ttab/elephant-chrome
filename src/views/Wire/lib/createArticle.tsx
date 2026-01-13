@@ -1,4 +1,3 @@
-import type { HocuspocusProvider } from '@hocuspocus/provider'
 import type { Session } from 'next-auth'
 import { getValueByYPath } from '@/shared/yUtils'
 import type { Wire } from '@/shared/schemas/wire'
@@ -7,9 +6,11 @@ import { ToastAction } from '../ToastAction'
 import { addAssignmentWithDeliverable } from '@/lib/index/addAssignment'
 import { convertToISOStringInTimeZone } from '@/shared/datetime'
 import { CalendarDaysIcon, FileInputIcon } from '@ttab/elephant-ui/icons'
+import type { YDocument } from '@/modules/yjs/hooks'
+import type * as Y from 'yjs'
 
 export async function createArticle({
-  provider: articleProvider,
+  ydoc,
   status,
   wire,
   planningId,
@@ -17,7 +18,7 @@ export async function createArticle({
   section,
   timeZone
 }: {
-  provider: HocuspocusProvider
+  ydoc: YDocument<Y.Map<unknown>>
   status: string
   session: Session
   wire?: Wire
@@ -29,11 +30,10 @@ export async function createArticle({
   }
   timeZone: string
 }): Promise<void> {
-  const articleEle = articleProvider.document.getMap('ele')
-  const [documentId] = getValueByYPath<string>(articleEle, 'root.uuid')
+  const [documentId] = getValueByYPath<string>(ydoc.ele, 'root.uuid')
 
-  if (!articleProvider || status !== 'authenticated' || !documentId) {
-    console.error(`Failed adding new wire article ${documentId} to a planning`)
+  if (!ydoc.connected || status !== 'authenticated' || !ydoc.id) {
+    console.error(`Failed adding new wire article ${ydoc.id} to a planning`)
     toast.error('Kunde inte skapa ny artikel!')
     return
   }
@@ -42,15 +42,15 @@ export async function createArticle({
   const dt = new Date()
   const isoDateTime = `${new Date().toISOString().split('.')[0]}Z` // Remove ms, add Z back again
   const localDate = convertToISOStringInTimeZone(dt, timeZone).slice(0, 10)
-  const [assignmentTitle] = getValueByYPath<string>(articleEle, 'root.title')
-  const [assignmentSlugline] = getValueByYPath<string>(articleEle, 'meta.tt/slugline[0].value')
-  const [newsValue] = getValueByYPath<string>(articleEle, 'meta.core/newsvalue[0].value')
+  const [assignmentTitle] = getValueByYPath<string>(ydoc.ele, 'root.title')
+  const [assignmentSlugline] = getValueByYPath<string>(ydoc.ele, 'meta.tt/slugline[0].value')
+  const [newsValue] = getValueByYPath<string>(ydoc.ele, 'meta.core/newsvalue[0].value')
 
   const updatedPlanningId = await addAssignmentWithDeliverable({
     planningId,
     planningTitle,
     type: 'text',
-    deliverableId: documentId,
+    deliverableId: ydoc.id,
     title: assignmentTitle || '',
     slugline: assignmentSlugline,
     priority: newsValue ? parseInt(newsValue) : undefined,
@@ -62,12 +62,14 @@ export async function createArticle({
   })
 
   // Create article in repo
-  const root = articleProvider.document.getMap('root')
-  if (root && root.get('__inProgress')) {
-    root.delete('__inProgress')
+  if (ydoc.isInProgress) {
+    ydoc.setIsInProgress(false)
   }
 
   toast.success(`Artikel skapad`, {
+    classNames: {
+      title: 'whitespace-nowrap'
+    },
     action: [
       <ToastAction
         key='open-planning'

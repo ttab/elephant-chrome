@@ -4,11 +4,11 @@ import { Button } from '@ttab/elephant-ui'
 import { PlusIcon } from '@ttab/elephant-ui/icons'
 import { type View } from '@/types/index'
 import { PersonalAssignmentsFilter } from './PersonalAssignmentsFilter'
-import { useMemo } from 'react'
+import { useMemo, type JSX } from 'react'
 import { useModal } from '../Modal/useModal'
 import * as Views from '@/views'
-import { createDocument } from '@/shared/createYItem'
 import { getTemplateFromView } from '@/shared/templates/lib/getTemplateFromView'
+import { useQuery } from '@/hooks/useQuery'
 import { getConceptTemplateFromDocumentType } from '@/shared/templates/lib/getConceptTemplateFromDocumentType'
 
 export const Header = ({ assigneeId, type, documentType }: {
@@ -16,6 +16,7 @@ export const Header = ({ assigneeId, type, documentType }: {
   assigneeId?: string | undefined
   documentType?: string
 }): JSX.Element => {
+  const [query] = useQuery()
   const showButton = useMemo(() => {
     const viewTypes: View[] = ['Planning', 'Event', 'Factbox', 'Concept']
     if (viewTypes.includes(type)) {
@@ -33,16 +34,14 @@ export const Header = ({ assigneeId, type, documentType }: {
           size='sm'
           className='h-8 pr-4'
           onClick={() => {
-            const initialDocument = createDocument({
-              template: type === 'Concept' ? getConceptTemplateFromDocumentType(documentType) : getTemplateFromView(type),
-              inProgress: true
-            })
+            const id = crypto.randomUUID()
+            const initialDocument = type === 'Concept' ? getConceptTemplateFromDocumentType(documentType) : getTemplateFromView(type)(id, { query })
             showModal(
               <ViewDialog
                 onDialogClose={hideModal}
                 asDialog
-                id={initialDocument[0]}
-                document={initialDocument[1]}
+                id={id}
+                document={initialDocument}
                 documentType={documentType}
               />
             )

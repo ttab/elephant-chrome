@@ -1,13 +1,24 @@
 /// <reference types="vitest" />
 import path from 'path'
 import tailwindcss from '@tailwindcss/vite'
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import { viteStaticCopy } from 'vite-plugin-static-copy'
 
-export default defineConfig(() => {
+export default defineConfig(({ mode }) => {
+  const fileEnv = loadEnv(mode, process.cwd(), '')
+  const env = { ...fileEnv, ...process.env } as Record<string, string | undefined>
+
+  const parsePort = (value: string | undefined, fallback: number): number => {
+    const parsed = Number(value)
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback
+  }
+
+  const devServerPort = parsePort(env.VITE_DEV_SERVER_PORT, 5173)
+  const devHmrPort = parsePort(env.VITE_HMR_PORT, 5183)
+
   return {
-    port: 5173,
+    port: devServerPort,
     base: '/elephant',
     plugins: [
       viteStaticCopy({
@@ -23,6 +34,7 @@ export default defineConfig(() => {
     ],
     resolve: {
       alias: {
+        '@/modules': path.resolve(__dirname, './src/modules'),
         '@/components': path.resolve(__dirname, './src/components'),
         '@/views': path.resolve(__dirname, './src/views'),
         '@/hooks': path.resolve(__dirname, './src/hooks'),
@@ -32,23 +44,37 @@ export default defineConfig(() => {
         '@/navigation': path.resolve(__dirname, './src/navigation'),
         '@/defaults': path.resolve(__dirname, './src/defaults'),
         '@/shared': path.resolve(__dirname, './shared')
-      }
+      },
+      dedupe: [
+        'react',
+        'react-dom',
+        'slate',
+        'slate-react',
+        'slate-history',
+        '@slate-yjs/core',
+        '@slate-yjs/react',
+        'yjs'
+      ]
     },
     define: {
       'process.env': process.env
     },
     server: {
       hmr: {
-        port: 5183
+        port: devHmrPort
       },
       watch: {
         awaitWriteFinish: true
       }
     },
+    preview: {
+      port: devServerPort
+    },
     optimizeDeps: {
       include: ['date-fns']
     },
     test: {
+      env,
       include: ['__tests__/**/*.test.ts(x)?'],
       deps: {
         optimizer: {

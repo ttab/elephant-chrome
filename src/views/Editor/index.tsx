@@ -1,38 +1,27 @@
-import { useEffect, useRef } from 'react'
-import { AwarenessDocument, View } from '@/components'
+import type { JSX } from 'react'
+import { useMemo } from 'react'
+import { View } from '@/components'
 import { Notes } from '@/components/Notes'
-import { Textbit, useTextbit } from '@ttab/textbit'
 import { Bold, Italic, Link, Text, TTVisual, Factbox, Table, LocalizedQuotationMarks } from '@ttab/textbit-plugins'
 import { ImageSearchPlugin } from '../../plugins/ImageSearch'
 import { FactboxPlugin } from '../../plugins/Factboxes'
 import { Editor as PlainEditor } from '@/components/PlainEditor'
+import { BaseEditor } from '@/components/Editor/BaseEditor'
 
 import {
   useQuery,
-  useCollaboration,
   useLink,
-  useYValue,
-  useView,
-  useYjsEditor,
-  useAwareness,
   useWorkflowStatus
 } from '@/hooks'
 import type { ViewMetadata, ViewProps } from '@/types'
 import { EditorHeader } from './EditorHeader'
-import { type HocuspocusProvider } from '@hocuspocus/provider'
-import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
 import { Error } from '../Error'
 
-import { ContentMenu } from '@/components/Editor/ContentMenu'
-import { Toolbar } from '@/components/Editor/Toolbar'
-import { ContextMenu } from '@/components/Editor/ContextMenu'
-import { Gutter } from '@/components/Editor/Gutter'
-import { DropMarker } from '@/components/Editor/DropMarker'
-
-import type { Block } from '@ttab/elephant-api/newsdoc'
 import { getValueByYPath } from '@/shared/yUtils'
-import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
 import { contentMenuLabels } from '@/defaults/contentMenuLabels'
+import type { YDocument } from '@/modules/yjs/hooks'
+import { useYDocument } from '@/modules/yjs/hooks'
+import type * as Y from 'yjs'
 
 // Metadata definition
 const meta: ViewMetadata = {
@@ -55,7 +44,9 @@ const meta: ViewMetadata = {
 const Editor = (props: ViewProps): JSX.Element => {
   const [query] = useQuery()
   const documentId = props.id || query.id as string
-  const [workflowStatus] = useWorkflowStatus(documentId, true)
+  const preview = query.preview === 'true'
+
+  const [workflowStatus] = useWorkflowStatus({ documentId, isWorkflow: true })
 
   // Error handling for missing document
   if (!documentId || typeof documentId !== 'string') {
@@ -75,8 +66,12 @@ const Editor = (props: ViewProps): JSX.Element => {
 
     return (
       <View.Root>
-        <EditorHeader documentId={documentId} readOnly readOnlyVersion={bigIntVersion} />
-        <View.Content className='flex flex-col max-w-[1000px] px-4 h-full'>
+        <EditorHeader
+          ydoc={{ id: documentId } as YDocument<Y.Map<unknown>>}
+          readOnly
+          readOnlyVersion={bigIntVersion}
+        />
+        <View.Content className='flex flex-col max-w-[1000px] px-4 h-full' variant='grid'>
           <PlainEditor key={props.version} id={documentId} version={bigIntVersion} />
         </View.Content>
       </View.Root>
@@ -84,9 +79,11 @@ const Editor = (props: ViewProps): JSX.Element => {
   }
 
   return (
-    <AwarenessDocument documentId={documentId} className='h-full'>
-      <EditorWrapper documentId={documentId} {...props} />
-    </AwarenessDocument>
+    <EditorWrapper
+      {...props}
+      preview={preview}
+      documentId={documentId}
+    />
   )
 }
 
@@ -94,34 +91,27 @@ const Editor = (props: ViewProps): JSX.Element => {
 function EditorWrapper(props: ViewProps & {
   documentId: string
   planningId?: string | null
-  autoFocus?: boolean
+  preview?: boolean
 }): JSX.Element {
-  const { provider, synced, user } = useCollaboration()
+  const ydoc = useYDocument<Y.Map<unknown>>(props.documentId, {
+    visibility: !props.preview
+  })
+  const [documentLanguage] = getValueByYPath<string>(ydoc.ele, 'root.language')
+  const [content] = getValueByYPath<Y.XmlText>(ydoc.ele, 'content', true)
   const openFactboxEditor = useLink('Factbox')
-  const [notes] = useYValue<Block[] | undefined>('meta.core/note')
-  const [, setIsFocused] = useAwareness(props.documentId)
-
-  useEffect(() => {
-    setIsFocused(true)
-    return () => setIsFocused(false)
-    // We only want to rerun when provider change
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [provider])
+  const openImageSearch = useLink('ImageSearch')
+  const openFactboxes = useLink('Factboxes')
 
   // Plugin configuration
-  const getConfiguredPlugins = () => {
-    const basePlugins = [
-      Bold,
-      Italic,
-      Link,
-      ImageSearchPlugin,
-      FactboxPlugin,
-      Table,
-      LocalizedQuotationMarks
-    ]
-
+  const configuredPlugins = useMemo(() => {
     return [
-      ...basePlugins.map((initPlugin) => initPlugin()),
+      Bold(),
+      Italic(),
+      Link(),
+      ImageSearchPlugin({ openImageSearch }),
+      FactboxPlugin({ openFactboxes }),
+      Table(),
+      LocalizedQuotationMarks(),
       TTVisual({
         enableCrop: false
       }),
@@ -136,117 +126,39 @@ function EditorWrapper(props: ViewProps & {
         removable: true
       })
     ]
+  }, [openFactboxEditor, openFactboxes, openImageSearch])
+
+  if (!content) {
+    return <View.Root />
   }
 
   return (
     <View.Root>
-      <Textbit.Root
-        autoFocus={props.autoFocus ?? true}
-        plugins={getConfiguredPlugins()}
-        placeholders='multiple'
-        className='h-screen max-h-screen flex flex-col'
+      <BaseEditor.Root
+        ydoc={ydoc}
+        content={content}
+        readOnly={props.preview}
+        plugins={configuredPlugins}
+        lang={documentLanguage}
       >
-        <EditorContainer
-          provider={provider}
-          synced={synced}
-          user={user}
-          planningId={props.planningId}
-          documentId={props.documentId}
-          notes={notes}
-        />
-      </Textbit.Root>
+        <EditorHeader ydoc={ydoc} planningId={props.planningId} readOnly={props.preview} />
+
+        <Notes ydoc={ydoc} />
+
+        <View.Content className='flex flex-col max-w-[1000px]'variant='grid'>
+          <div className='grow overflow-auto pr-12 max-w-(--breakpoint-xl)'>
+            <BaseEditor.Text
+              ydoc={ydoc}
+              autoFocus={true}
+            />
+          </div>
+        </View.Content>
+
+        <View.Footer>
+          <BaseEditor.Footer />
+        </View.Footer>
+      </BaseEditor.Root>
     </View.Root>
-  )
-}
-
-
-// Container component that uses TextBit context
-function EditorContainer({
-  provider,
-  synced,
-  user,
-  documentId,
-  planningId,
-  notes
-}: {
-  provider: HocuspocusProvider | undefined
-  synced: boolean
-  user: AwarenessUserData
-  documentId: string
-  planningId?: string | null
-  notes: Block[] | undefined
-}): JSX.Element {
-  const { stats } = useTextbit()
-
-  return (
-    <>
-      <EditorHeader documentId={documentId} planningId={planningId} />
-      {!!notes?.length && <div className='p-4'><Notes /></div>}
-      <View.Content className='flex flex-col max-w-[1000px]'>
-
-        <div className='grow overflow-auto pr-12 max-w-(--breakpoint-xl)'>
-          {!!provider && synced
-            ? <EditorContent provider={provider} user={user} />
-            : <></>}
-        </div>
-      </View.Content>
-
-      <View.Footer>
-        <div className='flex gap-2'>
-          <strong>Ord:</strong>
-          <span title='Antal ord: artikel (totalt)'>{`${stats.short.words} (${stats.full.words})`}</span>
-        </div>
-        <div className='flex gap-2'>
-          <strong>Tecken:</strong>
-          <span title='Antal tecken: artikel (totalt)'>{`${stats.short.characters} (${stats.full.characters})`}</span>
-        </div>
-      </View.Footer>
-    </>
-  )
-}
-
-
-function EditorContent({ provider, user }: {
-  provider: HocuspocusProvider
-  user: AwarenessUserData
-}): JSX.Element {
-  const { isActive } = useView()
-  const ref = useRef<HTMLDivElement>(null)
-  const [documentLanguage] = getValueByYPath<string>(provider.document.getMap('ele'), 'root.language')
-
-  const yjsEditor = useYjsEditor(provider, user)
-  const onSpellcheck = useOnSpellcheck(documentLanguage)
-
-  // Handle focus on active state
-  useEffect(() => {
-    if (isActive && ref?.current?.dataset['state'] !== 'focused') {
-      setTimeout(() => {
-        ref?.current?.focus()
-      }, 0)
-    }
-  }, [isActive, ref])
-
-  return (
-    <Textbit.Editable
-      ref={ref}
-      yjsEditor={yjsEditor}
-      lang={documentLanguage}
-      onSpellcheck={onSpellcheck}
-      className='outline-none
-        h-full
-        dark:text-slate-100
-        **:data-spelling-error:border-b-2
-        **:data-spelling-error:border-dotted
-        **:data-spelling-error:border-red-500
-      '
-    >
-      <DropMarker />
-      <Gutter>
-        <ContentMenu />
-      </Gutter>
-      <Toolbar />
-      <ContextMenu />
-    </Textbit.Editable>
   )
 }
 

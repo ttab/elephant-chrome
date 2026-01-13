@@ -12,7 +12,7 @@ export async function snapshot(
     status?: string
     cause?: string
     addToHistory?: boolean
-    stateVector?: Uint8Array
+    yjsUpdate?: Uint8Array
   }
 ): Promise<RouteContentResponse | RouteStatusResponse> {
   try {

@@ -1,15 +1,16 @@
-import { AwarenessDocument, View, ViewHeader } from '@/components'
+import { View, ViewHeader } from '@/components'
 import { type ViewMetadata } from '@/types'
 import { timesSlots as Slots } from '@/defaults/assignmentTimeslots'
 import { TimeSlot } from './TimeSlot'
 import { useAssignments } from '@/hooks/index/useAssignments'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, type JSX } from 'react'
 import { useQuery, useNavigationKeys, useOpenDocuments, useRegistry } from '@/hooks'
 import { Header } from '@/components/Header'
 import { newLocalDate } from '@/shared/datetime.ts'
 import { ApprovalsCard } from './ApprovalsCard'
 import { Toolbar } from './Toolbar.tsx'
 import { StatusSpecifications } from '@/defaults/workflowSpecification'
+import { useTrackedDocuments } from '@/hooks/useTrackedDocuments.tsx'
 
 const meta: ViewMetadata = {
   name: 'Approvals',
@@ -29,13 +30,13 @@ const meta: ViewMetadata = {
 
 export const Approvals = (): JSX.Element => {
   return (
-    <AwarenessDocument documentId='document-tracker'>
-      <ApprovalsView />
-    </AwarenessDocument>
+    <ApprovalsView />
   )
 }
 
 export const ApprovalsView = (): JSX.Element => {
+  const trackedDocuments = useTrackedDocuments()
+
   const { timeZone } = useRegistry()
 
   const slots = Object.keys(Slots).map((key) => {
@@ -168,6 +169,7 @@ export const ApprovalsView = (): JSX.Element => {
                     isFocused={colN === focusedColumn && cardN === focusedCard}
                     isSelected={isSelected}
                     openEditors={openEditors}
+                    trackedDocument={trackedDocuments.documents.find((doc) => doc.id === assignment._deliverableId)}
                   />
                 )
               })}

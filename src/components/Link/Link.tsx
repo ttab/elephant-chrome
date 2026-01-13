@@ -12,6 +12,7 @@ interface LinkProps {
   onClick?: (event: MouseEvent<HTMLAnchorElement>) => void
   target?: 'self' | 'last'
   className?: string
+  keepFocus?: boolean
 }
 
 export const Link = forwardRef((props: LinkProps, ref: ForwardedRef<HTMLAnchorElement>) => {
@@ -22,6 +23,7 @@ export const Link = forwardRef((props: LinkProps, ref: ForwardedRef<HTMLAnchorEl
   const qs = toQueryString(props.props)
 
   const { viewId: origin } = useView()
+  const { keepFocus, ...restProps } = props
 
   const handleClick = (
     event: MouseEvent<HTMLAnchorElement>
@@ -41,6 +43,7 @@ export const Link = forwardRef((props: LinkProps, ref: ForwardedRef<HTMLAnchorEl
       viewId,
       origin,
       target: props.target,
+      keepFocus,
       history
     })
   }
@@ -56,7 +59,7 @@ export const Link = forwardRef((props: LinkProps, ref: ForwardedRef<HTMLAnchorEl
   return (
     <a
       className={props?.className || ''}
-      {...props}
+      {...restProps}
       href={`${viewItem.meta.path}${qs || ''}`}
       onKeyDown={(event) => handleKeyDown(event)}
       onClick={(event) => handleClick(event)}

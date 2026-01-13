@@ -1,23 +1,24 @@
-import { useState, useEffect, useCallback, type MouseEvent } from 'react'
+import { useState, useEffect, useCallback, type MouseEvent, type JSX } from 'react'
 import {
   Command,
   CommandItem,
   Button
 } from '@ttab/elephant-ui'
 import { timePickTypes } from '../../defaults/assignmentTimeConstants'
-import { useYValue } from '@/hooks/useYValue'
 import { type AssignmentData } from './types'
 import { TimeInput } from '../TimeInput'
+import { useYValue } from '@/modules/yjs/hooks'
+import type * as Y from 'yjs'
 
-export const TimeSelectItem = ({ handleOnSelect, index, handleParentOpenChange }: {
+export const TimeSelectItem = ({ handleOnSelect, assignment, handleParentOpenChange }: {
   handleOnSelect: ({ value, selectValue }: { value: string, selectValue: string }) => void
   className?: string
-  index: number
+  assignment: Y.Map<unknown>
   handleParentOpenChange: (open: boolean) => void
 }): JSX.Element => {
   const [open, setOpen] = useState(false)
   const [endTime, setEndTime] = useState('')
-  const [data] = useYValue<AssignmentData>(`meta.core/assignment[${index}].data`)
+  const [data] = useYValue<AssignmentData>(assignment, `data`)
   const [valid, setValid] = useState(false)
 
   useEffect(() => {

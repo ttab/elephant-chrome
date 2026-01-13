@@ -1,7 +1,7 @@
-import { useRef } from 'react'
+import { useRef, type JSX, useState } from 'react'
 import { Preview } from '../Preview'
 import { type ttninjs } from '@ttab/api-client'
-import { Dialog, DialogContent, DialogDescription, DialogTrigger } from '@ttab/elephant-ui'
+import { Dialog, DialogContent, DialogDescription } from '@ttab/elephant-ui'
 import { findRenditionByUsageAndVariant } from '../lib/find-rendition'
 import type { renditions } from '../lib/find-rendition'
 
@@ -12,6 +12,7 @@ export const Thumbnail = ({ hit }: {
   hit: ttninjs
 }): JSX.Element => {
   const imageRef = useRef<HTMLImageElement>(null)
+  const [isOpen, setIsOpen] = useState<boolean>(false)
   const renditions = hit.renditions as renditions
   const thumbnail = findRenditionByUsageAndVariant(renditions, 'Thumbnail', 'Normal')
   const preview = findRenditionByUsageAndVariant(renditions, 'Preview', 'Normal')
@@ -22,61 +23,63 @@ export const Thumbnail = ({ hit }: {
   const proxyUrl = `${BASE_URL}/api/${mediaType}/${id}`
 
   return (
-    <Dialog modal={false}>
-      <DialogTrigger>
-        <div className='flex place-content-center bg-gray-200 min-h-[144px]'>
-          <img
-            ref={imageRef}
-            src={thumbnail.href}
-            className='max-h-[176px] object-contain m-width-auto'
-            onDragStartCapture={(e) => {
-              e.stopPropagation()
+    <Dialog open={isOpen}>
+      <div
+        className='flex place-content-center bg-gray-200 dark:bg-table-focused min-h-[144px] cursor-pointer'
+        onClick={() => setIsOpen((prev) => !prev)}
+      >
+        <img
+          ref={imageRef}
+          src={thumbnail.href}
+          title={hit?.description_text}
+          className='max-h-[176px] object-contain m-width-auto'
+          onDragStartCapture={(e) => {
+            e.stopPropagation()
 
-              if (!imageRef.current) {
-                return
-              }
+            if (!imageRef.current) {
+              return
+            }
 
-              // Create cloned element to force as drag image
-              const el = imageRef.current
-              const clone = el.cloneNode(true) as HTMLDivElement
-              const { left, top } = el.getBoundingClientRect()
+            // Create cloned element to force as drag image
+            const el = imageRef.current
+            const clone = el.cloneNode(true) as HTMLDivElement
+            const { left, top } = el.getBoundingClientRect()
 
-              clone.style.width = `${el.offsetWidth}px`
-              clone.style.height = `${el.offsetHeight}px`
-              clone.style.background = `url('${thumbnail.href}')`
+            clone.style.width = `${el.offsetWidth}px`
+            clone.style.height = `${el.offsetHeight}px`
+            clone.style.background = `url('${thumbnail.href}')`
 
-              el.style.opacity = '0.5'
-              e.dataTransfer.clearData()
+            el.style.opacity = '0.5'
+            e.dataTransfer.clearData()
 
-              const image = {
-                byline: hit.byline ?? '',
-                text: hit.description_text,
-                href: preview.href,
-                proxy: proxyUrl,
-                width: hires.width,
-                height: hires.height
-              }
+            const image = {
+              byline: hit.byline ?? '',
+              text: hit.description_text,
+              href: preview.href,
+              proxy: proxyUrl,
+              width: hires.width,
+              height: hires.height
+            }
 
-              e.dataTransfer.setData('tt/visual', JSON.stringify(image))
-              e.dataTransfer.setDragImage(
-                clone,
-                (e.clientX - left) * 0.2,
-                (e.clientY - top) * 0.2
-              )
-              document.body.appendChild(clone)
-            }}
-            onDragEndCapture={() => {
-              const el = imageRef.current
-              if (el) {
-                el.style.opacity = '1'
-              }
-            }}
-          />
-        </div>
-      </DialogTrigger>
-      <DialogContent>
+            e.dataTransfer.setData('tt/visual', JSON.stringify(image))
+            e.dataTransfer.setDragImage(
+              clone,
+              (e.clientX - left) * 0.2,
+              (e.clientY - top) * 0.2
+            )
+            document.body.appendChild(clone)
+          }}
+          onDragEndCapture={() => {
+            const el = imageRef.current
+            if (el) {
+              el.style.opacity = '1'
+            }
+          }}
+        />
+      </div>
+      <DialogContent className='z-50'>
         <DialogDescription />
-        <Preview ttninjs={hit} />
+        <Preview ttninjs={hit} setOpen={setIsOpen} />
       </DialogContent>
     </Dialog>
   )

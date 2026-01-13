@@ -11,14 +11,13 @@ import {
 } from 'express-ws'
 
 import type { AuthConfiguration } from './extensions/Auth.js'
+import { CacheExtension } from './extensions/Cache.js'
+import type { Context } from '../lib/context.js'
 import { Auth } from './extensions/Auth.js'
 import { OpenDocuments } from './extensions/OpenDocuments.js'
 import { RepositoryExtension } from './extensions/Repository.js'
-
 import CollaborationServerErrorHandler, { withErrorHandler } from '../lib/errorHandler.js'
 import logger from '../lib/logger.js'
-import { CacheExtension } from './extensions/Cache.js'
-import type { Context } from '../lib/context.js'
 
 interface CollaborationServerOptions {
   name: string
@@ -54,7 +53,7 @@ export class CollaborationServer {
     this.#expressServer = configuration.expressServer
     this.#repository = configuration.repository
     this.#errorHandler = new CollaborationServerErrorHandler(configuration.user)
-    this.#openDocuments = new OpenDocuments()
+    this.#openDocuments = new OpenDocuments({ redis: configuration.redis })
     this.#repositoryExtension = new RepositoryExtension({
       repository: this.#repository,
       errorHandler: this.#errorHandler,
@@ -170,7 +169,7 @@ export class CollaborationServer {
     status?: string
     cause?: string
     addToHistory?: boolean
-    stateVector?: Uint8Array
+    yjsUpdate?: Uint8Array
   }): Promise<{
     version: string
   } | void> {
@@ -195,6 +194,6 @@ export class CollaborationServer {
    * Snapshot of open documents and by who
    */
   getSnapshot() {
-    return this.#openDocuments.getSnapshot()
+    return this.#openDocuments?.getSnapshot()
   }
 }

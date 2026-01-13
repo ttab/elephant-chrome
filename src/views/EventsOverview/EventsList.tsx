@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, type JSX } from 'react'
 import { useOrganisers, useQuery, useRegistry, useSections } from '@/hooks'
 import type { EventFields } from '@/shared/schemas/event'
 import { type Event, fields } from '@/shared/schemas/event'

@@ -1,6 +1,7 @@
 import { useLink } from '@/hooks/useLink'
 import { Button, Tooltip } from '@ttab/elephant-ui'
 import { CalendarDaysIcon, CalendarPlus2Icon, FileInputIcon } from '@ttab/elephant-ui/icons'
+import type { JSX } from 'react'
 
 export const ToastAction = ({ planningId, flashId, eventId }: {
   planningId?: string

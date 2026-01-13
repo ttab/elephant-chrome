@@ -5,18 +5,19 @@ import { type View } from '@/types/index'
 import { GanttChartSquareIcon } from '@ttab/elephant-ui/icons'
 import useSWR from 'swr'
 import type { NewItem } from './Root'
+import type { JSX } from 'react'
 
 const BASE_URL = import.meta.env.BASE_URL || ''
 
-export const List = ({ type, createdIdRef, asDialog }: {
+export const List = ({ type, createdId, asDialog }: {
   type: View
-  createdIdRef: React.MutableRefObject<string | undefined>
+  createdId: string | undefined
   asDialog?: boolean
 }): JSX.Element | null => {
   const openPlanning = useLink('Planning')
   const [newDocuments = []] = useUserTracker<NewItem[]>(type)
 
-  const createdDocument = newDocuments.find(({ id }) => id === createdIdRef.current)
+  const createdDocument = newDocuments.find(({ id }) => id === createdId)
 
   const { data: document, error } = useSWR<EleDocumentResponse, Error>(
     createdDocument || null,

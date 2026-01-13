@@ -3,8 +3,7 @@ import {
   Awareness,
   Section,
   View,
-  Newsvalue,
-  Title
+  Newsvalue
 } from '@/components'
 import type { ViewProps } from '@/types'
 import type { DefaultValueOption } from '@ttab/elephant-ui'
@@ -17,9 +16,9 @@ import {
   BriefcaseBusinessIcon,
   TagIcon
 } from '@ttab/elephant-ui/icons'
-import { useCollaboration, useRegistry, useYValue } from '@/hooks'
+import { useRegistry } from '@/hooks'
 import { useSession } from 'next-auth/react'
-import type { PropsWithChildren } from 'react'
+import type { PropsWithChildren, JSX } from 'react'
 import { useEffect, useRef, useState } from 'react'
 import { UserMessage } from '@/components/UserMessage'
 import { Form } from '@/components/Form'
@@ -31,15 +30,23 @@ import { CreatePrompt } from '@/components/CreatePrompt'
 import type { Wire as WireType } from '@/shared/schemas/wire'
 import { toSlateYXmlText } from '@/shared/yUtils'
 import type { FormProps } from '@/components/Form/Root'
+import { useYDocument } from '@/modules/yjs/hooks'
+import { useYValue } from '@/modules/yjs/hooks/useYValue'
+import { TextInput } from '@/components/ui/TextInput'
+import type { EleDocumentResponse } from '@/shared/types'
 
 export const WireViewContent = (props: ViewProps & {
+  documentId: string
+  data?: EleDocumentResponse
   wire: WireType
 }): JSX.Element | undefined => {
-  const { provider } = useCollaboration()
+  // Create article using supplied data
+  const ydoc = useYDocument<Y.Map<unknown>>(props.documentId, { data: props.data })
   const { status, data: session } = useSession()
   const [showVerifyDialog, setShowVerifyDialog] = useState(false)
   const [searchOlder, setSearchOlder] = useState(false)
   const [selectedPlanning, setSelectedPlanning] = useState<DefaultValueOption & { payload: { slugline?: string, sluglines?: string[] } } | undefined>(undefined)
+  const [title] = useYValue<Y.XmlText>(ydoc.ele, 'root.title', true)
   const documentAwareness = useRef<(value: boolean) => void>(null)
   const planningTitleRef = useRef<HTMLInputElement>(null)
   const { index, locale, timeZone } = useRegistry()
@@ -49,7 +56,7 @@ export const WireViewContent = (props: ViewProps & {
     uuid: string
     title: string
   } | undefined>(undefined)
-  const [slugline, setSlugline] = useYValue<Y.XmlText>('meta.tt/slugline[0].value')
+  const [slugline, setSlugline] = useYValue<Y.XmlText>(ydoc.ele, 'meta.tt/slugline[0].value', true)
 
   const handleSubmit = (): void => {
     setShowVerifyDialog(true)
@@ -67,7 +74,7 @@ export const WireViewContent = (props: ViewProps & {
         </ViewHeader.Content>
 
         <ViewHeader.Action onDialogClose={props.onDialogClose} asDialog={props.asDialog}>
-          {!props.asDialog && !!props.id && <ViewHeader.RemoteUsers documentId={props.id} />}
+          {!props.asDialog && !!ydoc && <ViewHeader.RemoteUsers ydoc={ydoc} />}
         </ViewHeader.Action>
       </ViewHeader.Root>
 
@@ -86,7 +93,7 @@ export const WireViewContent = (props: ViewProps & {
             </Form.Group>
 
             <Form.Group icon={GanttChartSquareIcon}>
-              <Awareness path='wirePlanningItem' ref={documentAwareness}>
+              <Awareness path='wirePlanningItem' ref={documentAwareness} ydoc={ydoc}>
                 <ComboBox
                   max={1}
                   size='xs'
@@ -159,11 +166,10 @@ export const WireViewContent = (props: ViewProps & {
 
             {!selectedPlanning && (
               <Form.Group icon={TagsIcon}>
-                <Section onSelect={setSection} />
-                <SluglineEditable
-                  path='meta.tt/slugline[0].value'
-                />
-                <Newsvalue />
+
+                <Section ydoc={ydoc} path='links.core/section[0]' onSelect={setSection} />
+                <SluglineEditable ydoc={ydoc} value={slugline} />
+                <Newsvalue ydoc={ydoc} path='meta.core/newsvalue[0].value' />
               </Form.Group>
 
 
@@ -181,7 +187,10 @@ export const WireViewContent = (props: ViewProps & {
             )}
 
             <Form.Group icon={BriefcaseBusinessIcon}>
-              <Title
+              <TextInput
+                ydoc={ydoc}
+                value={title}
+                label='Titel'
                 placeholder='Uppdragstitel'
               />
             </Form.Group>
@@ -190,17 +199,19 @@ export const WireViewContent = (props: ViewProps & {
               {selectedPlanning && (
                 <SluglineEditable
                   key={selectedPlanning?.value}
+                  ydoc={ydoc}
+                  value={slugline}
                   compareValues={[
                     ...(selectedPlanning?.payload?.sluglines || []),
                     slugline?.toString()
                   ]}
-                  path='meta.tt/slugline[0].value'
                 />
               )}
 
               {(!selectedPlanning) && (
                 <SluglineEditable
-                  path='meta.tt/slugline[0].value'
+                  ydoc={ydoc}
+                  value={slugline}
                 />
               )}
             </Form.Group>
@@ -224,17 +235,18 @@ export const WireViewContent = (props: ViewProps & {
                 secondaryLabel='Avbryt'
                 primaryLabel='Skapa'
                 onPrimary={() => {
-                  if (!provider || !props.id || !session) {
+                  if (!ydoc.connected || !ydoc.id || !session) {
                     console.error('Environment is not sane, article cannot be created')
                     return
                   }
 
                   if (props?.onDialogClose) {
-                    props.onDialogClose(props.id)
+                    props.onDialogClose(ydoc.id)
                   }
 
+
                   createArticle({
-                    provider,
+                    ydoc,
                     status,
                     session,
                     planningId: selectedPlanning?.value,
@@ -286,7 +298,6 @@ export const WireViewContent = (props: ViewProps & {
 const ValidateNow = ({ setValidateForm }: FormProps & PropsWithChildren): null => {
   useEffect(() => {
     if (setValidateForm) {
-      console.log('Validate now effect')
       setValidateForm(true)
     }
   }, [setValidateForm])

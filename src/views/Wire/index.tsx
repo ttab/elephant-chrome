@@ -1,11 +1,10 @@
-import { AwarenessDocument } from '@/components'
 import type { ViewMetadata, ViewProps } from '@/types/index'
 import { WireViewContent } from './WireViewContent'
 import * as Templates from '@/shared/templates'
-import { createDocument } from '@/shared/createYItem'
-import { useMemo } from 'react'
+import { useMemo, type JSX } from 'react'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import type { Wire as WireType } from '@/shared/schemas/wire'
+import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
 
 const meta: ViewMetadata = {
   name: 'Wire',
@@ -27,44 +26,47 @@ export const Wire = (props: ViewProps & {
   wire?: WireType
 }): JSX.Element => {
   // The article we're creating
-  const initialArticle = useMemo(() => {
-    return createDocument({
-      template: Templates.article,
-      inProgress: true,
-      payload: {
-        meta: {
-          'tt/slugline': [Block.create({ type: 'tt/slugline' })],
-          'core/newsvalue': [Block.create({ type: 'core/newsvalue' })]
-        },
-        links: {
-          'tt/wire': [Block.create({
-            type: 'tt/wire',
-            uuid: props.wire?.id,
-            title: props.wire?.fields['document.title'].values[0],
-            rel: 'source-document',
-            data: {
-              version: props.wire?.fields['current_version'].values[0]
-            }
-          })]
-        }
+  const [documentId, data] = useMemo(() => {
+    const documentId = crypto.randomUUID()
+    const payload = {
+      meta: {
+        'tt/slugline': [Block.create({ type: 'tt/slugline' })],
+        'core/newsvalue': [Block.create({ type: 'core/newsvalue' })]
+      },
+      links: {
+        'tt/wire': [Block.create({
+          type: 'tt/wire',
+          uuid: props.wire?.id,
+          title: props.wire?.fields['document.title'].values[0],
+          rel: 'source-document',
+          data: {
+            version: props.wire?.fields['current_version'].values[0]
+          }
+        })]
       }
-    })
+    }
+
+    return [documentId, toGroupedNewsDoc({
+      version: 0n,
+      isMetaDocument: false,
+      mainDocument: '',
+      document: Templates.article(documentId, payload)
+    })]
   }, [props.wire])
 
   return (
     <>
-      {typeof initialArticle[0] === 'string' && props.wire
+      {typeof documentId === 'string' && props.wire
         ? (
-            <AwarenessDocument documentId={initialArticle[0]} document={initialArticle[1]}>
-              <WireViewContent {...
-                {
-                  ...props,
-                  wire: props.wire,
-                  id: initialArticle[0]
-                }
+            <WireViewContent {...
+              {
+                ...props,
+                wire: props.wire,
+                documentId,
+                data
               }
-              />
-            </AwarenessDocument>
+            }
+            />
           )
         : <></>}
     </>

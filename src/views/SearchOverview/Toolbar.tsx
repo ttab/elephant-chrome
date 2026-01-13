@@ -1,6 +1,6 @@
 import { Filter } from '@/components/Filter'
 import { Commands } from './Commands'
-import { useState } from 'react'
+import { useState, type JSX } from 'react'
 import type { FilterProps } from '@/components/Filter'
 import { SelectedFilters } from '@/components/Filter/SelectedFilters'
 import { Sort } from '@/components/Sort'

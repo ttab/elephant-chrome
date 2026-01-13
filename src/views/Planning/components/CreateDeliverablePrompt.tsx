@@ -1,15 +1,18 @@
 import { Prompt } from '@/components'
-import { useCollaboration } from '@/hooks/useCollaboration'
 import type { TemplatePayload } from '@/shared/templates/'
 import { useSession } from 'next-auth/react'
 import { useRegistry } from '@/hooks/useRegistry'
 import { toast } from 'sonner'
 import { getTemplateFromDeliverable } from '@/shared/templates/lib/getTemplateFromDeliverable'
+import type { YDocument } from '@/modules/yjs/hooks'
+import type * as Y from 'yjs'
+import type { JSX } from 'react'
 
 /**
  * Deliverable document creation dialog, responsible for creating articles and flashes in the repository.
  */
-export function CreateDeliverablePrompt({ deliverableType, payload, onClose, title, documentLabel }: {
+export function CreateDeliverablePrompt({ ydoc, deliverableType, payload, onClose, title, documentLabel }: {
+  ydoc: YDocument<Y.Map<unknown>>
   deliverableType: 'article' | 'flash' | 'editorial-info'
   payload: TemplatePayload
   title: string
@@ -19,10 +22,9 @@ export function CreateDeliverablePrompt({ deliverableType, payload, onClose, tit
   ) => void
 }): JSX.Element {
   const { repository } = useRegistry()
-  const { provider } = useCollaboration()
   const { data: session } = useSession()
 
-  if (!provider?.document || !session?.accessToken || !repository) {
+  if (!ydoc.provider?.document || !session?.accessToken || !repository) {
     return <></>
   }
 

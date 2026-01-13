@@ -7,7 +7,6 @@ import { useNavigation } from '@/hooks'
 import { render, screen } from '../setupTests'
 import { type NavigationActionType } from '@/types'
 import { initializeNavigationState } from '@/navigation/lib'
-import { DocTrackerContext } from '@/contexts/DocTrackerProvider'
 import { type HocuspocusProvider } from '@hocuspocus/provider'
 import { AppContent } from '../src/AppContent'
 import { type Mock, vi } from 'vitest'
@@ -76,9 +75,7 @@ describe('Use NavigationProvider', () => {
           <IndexedDBProvider>
             <NavigationProvider>
               <UserTrackerContext.Provider value={{ provider, synced: provider.synced, connected: true }}>
-                <DocTrackerContext.Provider value={{ synced: true, connected: true, provider }}>
-                  <AppContent />
-                </DocTrackerContext.Provider>
+                <AppContent />
               </UserTrackerContext.Provider>
             </NavigationProvider>
           </IndexedDBProvider>

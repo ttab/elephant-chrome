@@ -12,6 +12,7 @@ export { storyDocumentTemplate as story } from './storyDocumentTemplate.js'
 export { organiserDocumentTemplate as organiser } from './organiserDocumentTemplate.js'
 
 export interface TemplatePayload {
+  query?: Record<string, string | string[] | undefined>
   title?: string
   meta?: {
     'tt/slugline'?: Block[]

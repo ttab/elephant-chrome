@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, type JSX } from 'react'
 import {
   Popover,
   PopoverContent,
@@ -9,16 +9,18 @@ import {
   Switch
 } from '@ttab/elephant-ui'
 import { timePickTypes } from '../../defaults/assignmentTimeConstants'
-import { useYValue } from '@/hooks/useYValue'
 import { dateToReadableDateTime, createDateWithTime } from '@/shared/datetime'
 import { useRegistry } from '@/hooks'
 import { type AssignmentData } from './types'
 import { TimeInput } from '../TimeInput'
 import { FromDateTimeLabel, FromToDateTimeLabel } from './ExecutionTimeLabel'
+import type * as Y from 'yjs'
+import { useYValue } from '@/modules/yjs/hooks'
+
 interface ExecutionTimeItemsProps extends React.PropsWithChildren {
   handleOnSelect: ({ executionStart, executionEnd }: { executionStart: string | undefined, executionEnd: string | undefined }) => void
   className?: string
-  index?: number
+  assignment: Y.Map<unknown>
   startDate?: string
 }
 
@@ -30,9 +32,10 @@ const testValid = (time: string): boolean => {
  *
  * Used for displaying and changing times in picture and video assignment types
  */
-export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: ExecutionTimeItemsProps): JSX.Element => {
+export const ExecutionTimeMenu = ({ handleOnSelect, assignment, startDate }: ExecutionTimeItemsProps): JSX.Element => {
   const [open, setOpen] = useState(false)
-  const [data] = useYValue<AssignmentData>(`meta.core/assignment[${index}].data`)
+
+  const [data] = useYValue<AssignmentData>(assignment, 'data')
   const [selected, setSelected] = useState<CalendarTypes.DateRange | undefined>({ from: new Date(`${startDate}T00:00:00`) })
   const [startTimeValue, setStartTimeValue] = useState<string>('00:00')
   const [endTimeValue, setEndTimeValue] = useState<string>('23:59')
@@ -173,6 +176,7 @@ export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: Executio
         <div>
           <Calendar
             mode='range'
+            locale={locale.module}
             required={false}
             selected={selected}
             weekStartsOn={1}

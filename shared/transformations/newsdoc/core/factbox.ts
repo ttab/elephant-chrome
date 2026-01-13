@@ -1,5 +1,5 @@
 import { Block } from '@ttab/elephant-api/newsdoc'
-import { type TBElement } from '@ttab/textbit'
+import { TextbitElement, type TBElement } from '@ttab/textbit'
 import { newsDocToSlate } from '../index.js'
 import { toString } from '../../lib/toString.js'
 import { revertText } from './text.js'
@@ -50,8 +50,12 @@ interface Data {
 }
 
 export function revertFactbox(element: TBElement): Block {
-  const factboxTitle = element.children.find((child) => child.type === 'core/factbox/title')
-  const factboxBody = element.children.find((child) => child.type === 'core/factbox/body')
+  const factboxTitle = (element.children as TBElement[]).find((child) => {
+    return TextbitElement.isElement(child) && child.type === 'core/factbox/title'
+  })
+  const factboxBody = (element.children as TBElement[]).find((child) => {
+    return TextbitElement.isElement(child) && child.type === 'core/factbox/body'
+  })
 
   const title = (factboxTitle?.children as FactboxChild[] | undefined)?.[0]?.text ?? ''
   const body = (factboxBody?.children as FactboxChild[] | undefined)

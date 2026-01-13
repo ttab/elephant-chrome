@@ -1,16 +1,18 @@
 import { Awareness } from '@/components'
 import { ComboBox } from '@ttab/elephant-ui'
-import { useAuthors, useYValue } from '@/hooks'
+import { useAuthors } from '@/hooks'
+import type { YDocument } from '@/modules/yjs/hooks'
+import { useYValue } from '@/modules/yjs/hooks'
 import { Block } from '@ttab/elephant-api/newsdoc'
-import { useRef } from 'react'
+import { useRef, type JSX } from 'react'
 import { Validation } from './Validation'
-import { type ValidateState } from '../types'
-import type { OnValidation } from './Form/Root'
+import type { FormProps } from './Form/Root'
+import type * as Y from 'yjs'
 
-export const Byline = ({ onValidation, validateStateRef }: {
-  onValidation?: (args: OnValidation) => boolean
-  validateStateRef?: React.MutableRefObject<ValidateState>
-}): JSX.Element => {
+export const Byline = ({ ydoc, path, onValidation, validateStateRef }: {
+  ydoc: YDocument<Y.Map<unknown>>
+  path: string
+} & FormProps): JSX.Element => {
   const allAuthors = useAuthors().map((_) => {
     return {
       value: _.id,
@@ -18,15 +20,15 @@ export const Byline = ({ onValidation, validateStateRef }: {
     }
   })
 
-  const path = 'links.core/author'
-  const [authors, setAuthors] = useYValue<Block[] | undefined>(path)
+  const [authors, setAuthors] = useYValue<Block[] | undefined>(ydoc.ele, path)
   const setFocused = useRef<(value: boolean, path: string) => void>(() => { })
   const selectedOptions = allAuthors.filter((author) =>
     authors?.some((a) => a.uuid === author.value))
 
   return (
-    <Awareness ref={setFocused} path={path} className='flex flex-col gap-2'>
+    <Awareness ref={setFocused} ydoc={ydoc} path={path} className='flex flex-col gap-2'>
       <Validation
+        ydoc={ydoc}
         label='Byline'
         path={path}
         block='core/author'

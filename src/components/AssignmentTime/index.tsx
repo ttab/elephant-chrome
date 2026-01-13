@@ -1,41 +1,23 @@
 import { Clock5Icon } from '@ttab/elephant-ui/icons'
-import { useYValue } from '@/hooks/useYValue'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import { TimeDeliveryMenu } from './TimeDeliveryMenu'
-import { type AssignmentValueOption, type AssignmentData } from './types'
+import { type AssignmentData } from './types'
 import { ExecutionTimeMenu } from './ExecutionTimeMenu'
 import { timeSlotTypes, timePickTypes } from '../../defaults/assignmentTimeConstants'
 import type { FormProps } from '../Form/Root'
+import { useYValue } from '@/modules/yjs/hooks'
+import { deriveExecutionDates, getTimeSlot, getMedianSlot, getMidnightISOString, makeLocalString } from './utils'
+import type * as Y from 'yjs'
+import type { JSX } from 'react'
 
-const getTimeSlot = (timeSlot: string): AssignmentValueOption | undefined => {
-  return timeSlotTypes.find((type) => type.slots?.includes(timeSlot))
-}
-
-const getMedianSlot = (slots: AssignmentValueOption[], value: string): string => {
-  const slotMedian = slots.find((slot) => slot.value === value)?.median
-  return slotMedian || '-1'
-}
-
-const getMidnightISOString = (endDate: string | undefined): string => {
-  const endDateString = `${endDate}T00:00:00`
-  const endDateIsoString = (new Date(endDateString)).toISOString()
-  return endDateIsoString
-}
-
-const makeLocalString = (date: string) => {
-  return new Date(date.toString()).toLocaleString('sv-SE', {
-    hour: '2-digit',
-    minute: '2-digit'
-  })
-}
-
-export const AssignmentTime = ({ index, onChange }: {
-  index: number
+export const AssignmentTime = ({ assignment, onChange }: {
+  assignment: Y.Map<unknown>
 } & FormProps): JSX.Element => {
-  const [assignmentType] = useYValue<string>(`meta.core/assignment[${index}].meta.core/assignment-type[0].value`)
-  const [data, setData] = useYValue<AssignmentData>(`meta.core/assignment[${index}].data`)
+  const [assignmentType] = useYValue<string>(assignment, `meta.core/assignment-type[0].value`)
+  const [data, setData] = useYValue<AssignmentData>(assignment, `data`)
   const { full_day: fullDay, end, start, publish_slot: publishSlot, end_date: endDate, start_date: startDate } = data || {}
   let selectedLabel = ''
+
   const selectedOption = timeSlotTypes.concat(timePickTypes).find((option) => {
     if (fullDay === 'true' && option.value === 'fullday') {
       selectedLabel = option.label
@@ -65,7 +47,7 @@ export const AssignmentTime = ({ index, onChange }: {
 
       return true
     } else if (publishSlot) {
-      const ts = getTimeSlot(publishSlot)
+      const ts = getTimeSlot(publishSlot, timeSlotTypes)
 
       if (ts && ts.value === option.value) {
         selectedLabel = option.label
@@ -149,13 +131,17 @@ export const AssignmentTime = ({ index, onChange }: {
    * Used for setting time in picture or video assignments
    */
 
-  const onExecutionTimeSelect = (
-    { executionStart, executionEnd }: { executionStart: string | undefined, executionEnd: string | undefined }): void => {
+  const onExecutionTimeSelect = ({ executionStart, executionEnd }: {
+    executionStart: string | undefined
+    executionEnd: string | undefined
+  }): void => {
+    const { startDateValue, endDateValue } = deriveExecutionDates(executionStart, executionEnd, data)
+
     const block = Block.create({
       data: {
-        end_date: data?.end_date,
+        end_date: endDateValue,
         full_day: 'false',
-        start_date: data?.start_date,
+        start_date: startDateValue,
         end: executionEnd,
         start: executionStart,
         public: data?.public,
@@ -176,12 +162,12 @@ export const AssignmentTime = ({ index, onChange }: {
 
   return (
     (assignmentType && (assignmentType === 'picture' || assignmentType === 'video'))
-      ? (<ExecutionTimeMenu handleOnSelect={onExecutionTimeSelect} index={index} startDate={startDate} />)
+      ? (<ExecutionTimeMenu handleOnSelect={onExecutionTimeSelect} assignment={assignment} startDate={startDate} />)
       : (
           <TimeDeliveryMenu
             handleOnSelect={handleOnSelect}
             className='w-fit font-sans font-normal text-ellipsis px-2 h-7'
-            index={index}
+            assignment={assignment}
             assignmentType={assignmentType}
           >
             {selectedOption?.icon

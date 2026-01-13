@@ -2,7 +2,8 @@ import {
   type MouseEvent,
   useEffect,
   useCallback,
-  useMemo
+  useMemo,
+  type JSX
 } from 'react'
 import {
   type ColumnDef,
@@ -92,7 +93,8 @@ export const Table = <TData, TValue>({
   const { table, loading } = useTable()
   const openDocuments = useOpenDocuments({ idOnly: true })
   const { showModal, hideModal, currentModal } = useModal()
-  const [, setDocumentStatus] = useWorkflowStatus()
+  const [, setDocumentStatus] = useWorkflowStatus({})
+
   const handlePreview = useCallback((row: RowType<unknown>): void => {
     row.toggleSelected(true)
     const originalId = (row.original as { id: string }).id

@@ -1,16 +1,20 @@
-import { useYValue } from '@/hooks/useYValue'
 import { Input } from '@ttab/elephant-ui'
+import type { YDocument } from '@/modules/yjs/hooks'
+import { useYValue } from '@/modules/yjs/hooks'
+import type * as Y from 'yjs'
 
-export const Position = ({ basePath, onChange }: {
+export const Position = ({ ydoc, basePath, onChange, className }: {
+  ydoc: YDocument<Y.Map<unknown>>
   basePath: string
   onChange?: (value: boolean) => void
+  className?: string
 }) => {
-  const [position, setPosition] = useYValue<string>(`${basePath}.data.position`)
+  const [position, setPosition] = useYValue<string>(ydoc.ele, `${basePath}.data.position`)
   return (
-    <div className='col-span-2 row-span-1'>
+    <div className={className}>
       <Input
         type='text'
-        className='h-9'
+        className='h-9 w-full'
         placeholder='Position'
         value={position}
         onChange={(e) => {

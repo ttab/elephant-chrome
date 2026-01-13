@@ -1,32 +1,25 @@
-import { useQuery, useCollaboration, useYjsEditor, useAwareness, useView, useYValue } from '@/hooks'
-import { AwarenessDocument } from '@/components/AwarenessDocument'
+import { useQuery } from '@/hooks'
 import { type ViewProps, type ViewMetadata } from '@/types/index'
 import type * as Y from 'yjs'
 import { Bold, Italic, Text, OrderedList, UnorderedList, LocalizedQuotationMarks } from '@ttab/textbit-plugins'
-import Textbit, { useTextbit } from '@ttab/textbit'
-import { type HocuspocusProvider } from '@hocuspocus/provider'
-import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
-import { TextBox } from '@/components/ui'
 import { Button } from '@ttab/elephant-ui'
 import { useSession } from 'next-auth/react'
-import { ContentMenu } from '@/components/Editor/ContentMenu'
-import { Toolbar } from '@/components/Editor/Toolbar'
-import { Gutter } from '@/components/Editor/Gutter'
-import { DropMarker } from '@/components/Editor/DropMarker'
-import { ContextMenu } from '@/components/Editor/ContextMenu'
 import { getValueByYPath } from '@/shared/yUtils'
-import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
-import { Form, View } from '@/components'
+import { Form, UserMessage, View } from '@/components'
 import { FactboxHeader } from './FactboxHeader'
 import { Error } from '@/views/Error'
-import { useCallback, useEffect, useRef } from 'react'
-import { cn } from '@ttab/elephant-ui/utils'
+import { useMemo, useState, type JSX } from 'react'
 import { contentMenuLabels } from '@/defaults/contentMenuLabels'
 import { snapshotDocument } from '@/lib/snapshotDocument'
-import { Validation } from '@/components/Validation'
-import type { FormProps } from '@/components/Form/Root'
-import { toast } from 'sonner'
-import { InfoIcon } from '@ttab/elephant-ui/icons'
+import type { YDocument } from '@/modules/yjs/hooks'
+import { useYDocument, useYValue } from '@/modules/yjs/hooks'
+import { TextInput } from '@/components/ui/TextInput'
+import { getTemplateFromView } from '@/shared/templates/lib/getTemplateFromView'
+import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
+import type { EleDocumentResponse } from '@/shared/types'
+import type { Document } from '@ttab/elephant-api/newsdoc'
+import { BaseEditor } from '@/components/Editor/BaseEditor'
+import { cn } from '@ttab/elephant-ui/utils'
 
 const meta: ViewMetadata = {
   name: 'Factbox',
@@ -44,265 +37,172 @@ const meta: ViewMetadata = {
   }
 }
 
-const Factbox = (props: ViewProps & { document?: Y.Doc }): JSX.Element => {
+const Factbox = (props: ViewProps & { document?: Document }): JSX.Element => {
   const [query] = useQuery()
   const documentId = props.id || query.id
 
-  if (!documentId) {
-    return <></>
+  // Factbox should be responsible for creating new as well as editing
+  const data = useMemo(() => {
+    if (!props.document || !documentId || typeof documentId !== 'string') {
+      return undefined
+    }
+
+    return toGroupedNewsDoc({
+      version: 0n,
+      isMetaDocument: false,
+      mainDocument: '',
+      document: props.document || getTemplateFromView('Factbox')(documentId)
+    })
+  }, [documentId, props.document])
+
+  // Error handling for missing document
+  if (!documentId || typeof documentId !== 'string') {
+    return (
+      <Error
+        title='Artikeldokument saknas'
+        message='Inget artikeldokument är angivet. Navigera tillbaka till översikten och försök igen.'
+      />
+    )
   }
 
   return (
-    <>
-      {typeof documentId === 'string'
-        ? (
-            <AwarenessDocument documentId={documentId} document={props.document}>
-              <FactboxWrapper {...props} documentId={documentId} />
-            </AwarenessDocument>
-          )
-        : (
-            <Error
-              title='Faktarutedokument saknas'
-              message='Inget faktarutedokument är angivet. Navigera tillbaka till översikten och försök igen.'
-            />
-          )}
-    </>
+    <FactboxWrapper {...props} documentId={documentId} data={data} />
   )
 }
 
-const FactboxWrapper = (props: ViewProps & { documentId: string }): JSX.Element => {
-  const { provider, synced, user } = useCollaboration()
-  const [, setIsFocused] = useAwareness(props.documentId)
+const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocumentResponse }): JSX.Element => {
+  const ydoc = useYDocument<Y.Map<unknown>>(props.documentId, { data: props.data })
+  const [title] = useYValue<Y.XmlText>(ydoc.ele, 'root.title', true)
+  const [content] = getValueByYPath<Y.XmlText>(ydoc.ele, 'content', true)
+  const [documentLanguage] = getValueByYPath<string>(ydoc.ele, 'root.language')
+  const { status } = useSession()
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const environmentIsSane = ydoc.provider && status === 'authenticated'
 
-  useEffect(() => {
-    provider?.setAwarenessField('data', user)
-    setIsFocused(true)
-
-    return () => {
-      setIsFocused(false)
-    }
-
-    // We only want to rerun when provider change
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [provider])
-
-  const getPlugins = () => {
-    const basePlugins = [UnorderedList, OrderedList, Bold, Italic, LocalizedQuotationMarks]
+  const configuredPlugins = useMemo(() => {
     return [
-      ...basePlugins.map((initPlugin) => initPlugin()),
+      UnorderedList(),
+      OrderedList(),
+      Bold(),
+      Italic(),
+      LocalizedQuotationMarks(),
       Text({ ...contentMenuLabels })
     ]
+  }, [])
+
+  if (!ydoc.provider?.isSynced || !content) {
+    return <View.Root />
   }
 
-
   return (
-    <View.Root asDialog={props?.asDialog} className={props?.className}>
-      <Textbit.Root
-        debounce={0}
-        autoFocus={props.autoFocus ?? true}
-        plugins={getPlugins()}
-        placeholders='multiple'
-        className={cn('h-screen max-h-screen flex flex-col',
-          props.asDialog
-            ? 'h-full min-h-[600px] max-h-[800px] max-w-full'
-            : '')}
+    <View.Root asDialog={props.asDialog} className={props?.className}>
+      <BaseEditor.Root
+        ydoc={ydoc}
+        content={content}
+        lang={documentLanguage}
+        plugins={configuredPlugins}
+        className={cn(
+          'rounded-md border',
+          props.asDialog ? 'h-auto min-h-48' : ''
+        )}
       >
-        <FactboxContainer
-          provider={provider}
-          synced={synced}
-          user={user}
-          documentId={props.documentId}
-          asDialog={props.asDialog}
+        <FactboxHeader
+          ydoc={ydoc}
+          asDialog={!!props.asDialog}
           onDialogClose={props.onDialogClose}
         />
-      </Textbit.Root>
-    </View.Root>
 
+        <View.Content className='flex flex-col max-w-[1000px]' variant='grid'>
+          <Form.Root asDialog={props?.asDialog}>
+            <Form.Content>
+              <Form.Title>
+                <TextInput
+                  ydoc={ydoc}
+                  value={title}
+                  autoFocus={!!props.asDialog}
+                  className={cn(
+                    !props.asDialog ? 'ms-[13px]' : 'ms-6 me-5'
+                  )}
+                  label='Titel'
+                  placeholder='Titel'
+                />
+              </Form.Title>
+            </Form.Content>
+          </Form.Root>
+
+          <div className='flex flex-col gap-4 mb-4 grow'>
+            <BaseEditor.Text
+              ydoc={ydoc}
+              autoFocus={!props.asDialog}
+              className={cn(
+                props.asDialog ? 'rounded-md border me-[43px] min-h-48' : ''
+              )}
+            />
+
+            <div className='mx-12'>
+              {!environmentIsSane && (
+                <UserMessage asDialog={!!props?.asDialog} variant='destructive'>
+                  Du är utloggad eller har tappat kontakt med systemet.
+                  Vänligen försök logga in igen.
+                </UserMessage>
+              )}
+
+              {errorMessage && (
+                <UserMessage asDialog={!!props?.asDialog} variant='destructive'>
+                  {errorMessage}
+                </UserMessage>
+              )}
+            </div>
+          </div>
+        </View.Content>
+
+        <View.Footer>
+          {!props.asDialog
+            ? <BaseEditor.Footer />
+            : (
+                <FactboxDialogFooter
+                  ydoc={ydoc}
+                  disabled={!environmentIsSane}
+                  onError={setErrorMessage}
+                  onSuccess={props.onDialogClose}
+                />
+              )}
+        </View.Footer>
+      </BaseEditor.Root>
+    </View.Root>
   )
 }
 
-
-const FactboxContainer = ({
-  provider,
-  synced,
-  user,
-  documentId,
-  asDialog,
-  onDialogClose
-}: {
-  provider: HocuspocusProvider | undefined
-  synced: boolean
-  user: AwarenessUserData
-  documentId: string
-} & ViewProps): JSX.Element => {
-  const { stats } = useTextbit()
-  const { status } = useSession()
-  const [isChanged] = useYValue<boolean>('root.changed')
-  const [title] = useYValue<boolean>('root.title')
-
-  // TODO: useYValue doesn't provider a stable setter, this cause rerenders down the tree
-  const handleChange = useCallback((value: boolean): void => {
-    const root = provider?.document.getMap('ele').get('root') as Y.Map<unknown>
-    const changed = root.get('changed') as boolean
-
-
-    if (changed !== value) {
-      root.set('changed', value)
-    }
-  }, [provider])
-
+const FactboxDialogFooter = ({ ydoc, disabled, onSuccess, onError}: {
+  ydoc: YDocument<Y.Map<unknown>>
+  disabled?: boolean
+  onSuccess?: () => void
+  onError: (message: string) => void
+}) => {
+  const [title] = useYValue<string>(ydoc.ele, 'root.title')
 
   const handleSubmit = (): void => {
-    snapshotDocument(documentId, undefined, provider?.document)
+    if (disabled) {
+      return
+    }
+
+    snapshotDocument(ydoc.id, undefined, ydoc.provider?.document)
       .then(() => {
-        if (onDialogClose) {
-          onDialogClose()
-        }
+        onSuccess?.()
       }).catch((ex) => {
-        toast.error('Kunde inte skapa ny faktaruta!', {
-          duration: 5000,
-          position: 'top-center'
-        })
+        onError('Det gick inte att skapa ny faktaruta!')
         console.error(ex)
       })
   }
 
-  const environmentIsSane = provider && status === 'authenticated'
-
   return (
-    <>
-      <FactboxHeader
-        documentId={documentId}
-        asDialog={!!asDialog}
-        onDialogClose={onDialogClose}
-        isChanged={isChanged}
-      />
-
-      <View.Content className='flex flex-col max-w-[1000px]'>
-        <div className='grow overflow-auto pt-2 pr-12 max-w-(--breakpoint-xl)'>
-          {!!provider && synced
-            ? (
-                <FactboxContent provider={provider} user={user} onChange={handleChange} />
-              )
-            : <></>}
-        </div>
-      </View.Content>
-
-      <View.Footer>
-        {asDialog
-          ? (
-              <>
-                {!environmentIsSane && (
-                  <div className='text-sm leading-tight pb-2 text-left flex gap-2'>
-                    <span className='w-4'>
-                      <InfoIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />
-                    </span>
-                    <p>
-                      Du är utloggad eller har tappat kontakt med systemet.
-                      Vänligen försök logga in igen.
-                    </p>
-                  </div>
-                )}
-
-                <Button
-                  onClick={handleSubmit}
-                  disabled={!title || !environmentIsSane}
-                  className='whitespace-nowrap'
-                >
-                  Skapa faktaruta
-                </Button>
-              </>
-            )
-          : (
-              <>
-                <div className='flex gap-2'>
-                  <strong>Ord:</strong>
-                  <span title='Antal ord totalt'>{stats.full.words}</span>
-                </div>
-                <div className='flex gap-2'>
-                  <strong>Tecken:</strong>
-                  <span title='Antal tecken totalt'>{stats.full.characters}</span>
-                </div>
-              </>
-            )}
-      </View.Footer>
-    </>
-  )
-}
-
-const FactboxContent = ({ provider, user, onChange, onValidation, validateStateRef, asDialog }: {
-  provider: HocuspocusProvider
-  user: AwarenessUserData
-  onChange?: (value: boolean) => void
-} & FormProps): JSX.Element => {
-  const { isActive } = useView()
-  const ref = useRef<HTMLDivElement>(null)
-  const [documentLanguage] = getValueByYPath<string>(provider.document.getMap('ele'), 'root.language')
-
-  const yjsEditor = useYjsEditor(provider, user)
-  const onSpellcheck = useOnSpellcheck(documentLanguage)
-
-  // Handle focus on active state
-  useEffect(() => {
-    if (isActive && ref?.current?.dataset['state'] !== 'focused') {
-      setTimeout(() => {
-        ref?.current?.focus()
-      }, 0)
-    }
-  }, [isActive, ref])
-
-  return (
-    <>
-      <Form.Root
-        asDialog={asDialog}
-        className='[&_[role="textbox"]:focus]:bg-white [&_[role="textbox"]]:ring-transparent [&_[role="textbox"]:focus]:ring-gray-200'
-      >
-        <Form.Content>
-
-          <Validation
-            label='Titel'
-            path='root.title'
-            block='title'
-            onValidation={onValidation}
-            validateStateRef={validateStateRef}
-          >
-            <TextBox
-              path='root.title'
-              placeholder='Rubrik'
-              className='font-bold text-lg'
-              autoFocus={true}
-              singleLine={true}
-              onChange={onChange}
-            />
-          </Validation>
-
-        </Form.Content>
-      </Form.Root>
-      <Textbit.Editable
-        yjsEditor={yjsEditor}
-        lang={documentLanguage}
-        onSpellcheck={onSpellcheck}
-        className='outline-none
-          my-1
-          h-full
-          dark:text-slate-100
-          **:data-spelling-error:border-b-2
-          **:data-spelling-error:border-dotted
-          **:data-spelling-error:border-red-500'
-        onChange={() => {
-          if (provider.hasUnsyncedChanges) {
-            onChange?.(true)
-          }
-        }}
-      >
-        <DropMarker />
-        <Gutter>
-          <ContentMenu />
-        </Gutter>
-        <Toolbar />
-        <ContextMenu />
-      </Textbit.Editable>
-    </>
+    <Button
+      onClick={handleSubmit}
+      disabled={!title || disabled}
+      className='whitespace-nowrap'
+    >
+      Skapa faktaruta
+    </Button>
   )
 }
 

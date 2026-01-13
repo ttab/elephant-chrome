@@ -2,53 +2,60 @@ import { useSession } from 'next-auth/react'
 import type { KeyedMutator } from 'swr'
 import useSWR, { mutate as globalMutate } from 'swr'
 import { useCallback, useMemo } from 'react'
-import { useCollaboration, useRegistry, useRepositoryEvents, useYValue } from '@/hooks'
+import { useRegistry, useRepositoryEvents } from '@/hooks'
 import { toast } from 'sonner'
 import type { Repository, Status } from '@/shared/Repository'
 import { snapshotDocument } from '@/lib/snapshotDocument'
 import { getStatusFromMeta } from '@/lib/getStatusFromMeta'
 import type { Session } from 'next-auth'
+import { useYValue, type YDocument } from '@/modules/yjs/hooks'
+import type * as Y from 'yjs'
 
 // TODO: rename asPrint to a more generic name.
 // "asPrint" chould probably be used for planning-items and events as well
-export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false, asPrint?: boolean, documentType?: string): [
+export const useWorkflowStatus = ({ ydoc, documentId, isWorkflow = false, asPrint }: {
+  ydoc?: YDocument<Y.Map<unknown>>
+  documentId?: string
+  isWorkflow?: boolean
+  asPrint?: boolean
+}): [
   Status | undefined,
   (newStatusName: string | Status, cause?: string, asWire?: boolean) => Promise<void>,
   KeyedMutator<Status | undefined>
 ] => {
   const { repository } = useRegistry()
   const { data: session } = useSession()
-  const { provider } = useCollaboration()
   const [, setChanged] = useYValue('root.changed')
   const CACHE_KEY = useMemo(
-    () => `status/${uuid}/${isWorkflow}`,
-    [uuid, isWorkflow])
+    () => `status/${documentId}/${isWorkflow}`,
+    [documentId, isWorkflow])
   /**
    * SWR callback that fetches current workflow status
    */
   const { data: documentStatus, error, mutate } = useSWR<Status | undefined, Error>(
-    (uuid && session && repository) ? [CACHE_KEY] : null,
+    (documentId && session && repository) ? [CACHE_KEY] : null,
     async () => {
       // Dont try to fetch if document is inProgress
-      if (!session || !repository || !uuid) {
+      if (!session || !repository || !documentId) {
         return
       }
 
-      const { meta } = await repository.getMeta({ uuid, accessToken: session.accessToken }) || {}
+      const { meta } = await repository.getMeta({ uuid: documentId, accessToken: session.accessToken }) || {}
+
       if (!meta) {
         return
       }
 
       if (asPrint && meta.workflowCheckpoint === 'usable') {
         return {
-          uuid,
-          ...getStatusFromMeta(meta, false, documentType)
+          uuid: documentId,
+          ...getStatusFromMeta(meta, false)
         }
       }
 
       return {
-        uuid,
-        ...getStatusFromMeta(meta, isWorkflow, documentType)
+        uuid: documentId,
+        ...getStatusFromMeta(meta, isWorkflow)
       }
     }
   )
@@ -72,7 +79,7 @@ export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false, as
     'core/planning-item+meta'
 
   ], (event) => {
-    if (event.uuid === uuid || event.mainDocument === uuid) {
+    if (event.uuid === documentId || event.mainDocument === documentId) {
       void mutate()
     }
   })
@@ -83,7 +90,7 @@ export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false, as
    */
   const setDocumentStatus = useCallback(
     async (newStatus: string | Status, cause?: string, asWire?: boolean) => {
-      if (!session || !uuid) {
+      if (!session || !documentId) {
         toast.error('Ett fel har uppstått, aktuell status kunde inte ändras! Ladda om webbläsaren och försök igen.')
         return
       }
@@ -97,16 +104,13 @@ export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false, as
         }
 
         // Flush document to repository and if applicable, update the status with cause
-        await snapshotDocument(uuid, {
+        await snapshotDocument(documentId, {
           force: true,
           status: typeof newStatus === 'string'
             ? newStatus
             : newStatus.name,
           cause
-        }, provider?.document)
-
-        // Reset unsaved changes state
-        setChanged(undefined)
+        }, ydoc?.provider?.document)
 
         // Revalidate after the mutation completes
         await globalMutate([CACHE_KEY])
@@ -114,7 +118,7 @@ export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false, as
         toast.error(ex instanceof Error ? ex.message : 'Ett fel uppstod när aktuell status skulle ändras')
       }
     },
-    [session, uuid, setChanged, provider?.document, repository, CACHE_KEY]
+    [session, documentId, ydoc?.provider?.document, repository, CACHE_KEY]
   )
 
   return [documentStatus, setDocumentStatus, mutate]

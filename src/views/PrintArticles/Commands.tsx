@@ -8,6 +8,7 @@ import { CircleCheckIcon, TagIcon } from '@ttab/elephant-ui/icons'
 import type { PrintFlow, PrintFlowFields } from '@/shared/schemas/printFlow'
 import { fields } from '@/shared/schemas/printFlow'
 import { toast } from 'sonner'
+import type { JSX } from 'react'
 
 export const Commands = (props: FilterProps): JSX.Element => {
   if (props.page === undefined || props.pages === undefined || props.setPages === undefined || props.setSearch === undefined) {

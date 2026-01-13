@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, type JSX } from 'react'
 import { ToggleGroup, ToggleGroupItem } from '@ttab/elephant-ui'
 import { DotDropdownMenu } from '../ui/DotMenu'
 import type { QueryParams } from '@/hooks/useQuery'

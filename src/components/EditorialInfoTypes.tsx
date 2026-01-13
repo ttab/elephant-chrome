@@ -5,12 +5,17 @@ import {
   SelectContent,
   SelectItem
 } from '@ttab/elephant-ui'
-import { useYValue } from '../hooks'
+import type { YDocument } from '@/modules/yjs/hooks'
+import { useYValue } from '@/modules/yjs/hooks'
+import type * as Y from 'yjs'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import { useEditorialInfoTypes } from '../hooks/useEditorialInfoType'
+import type { JSX } from 'react'
 
-export const EditorialInfoTypes = (): JSX.Element => {
-  const [type, setType] = useYValue<Block | undefined>('links.core/editorial-info-type[0]')
+export const EditorialInfoTypes = ({ ydoc }: {
+  ydoc: YDocument<Y.Map<unknown>>
+}): JSX.Element => {
+  const [type, setType] = useYValue<Block | undefined>(ydoc.ele, 'links.core/editorial-info-type[0]')
 
   const editorialInfoTypes = useEditorialInfoTypes()
   const onValueChange = (value: string) => {

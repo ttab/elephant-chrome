@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, type JSX } from 'react'
 import { useHistory, useNavigation, useResize } from '@/hooks'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@ttab/elephant-ui'
 import { calculateViewWidths, minimumSpaceRequired } from '@/navigation/lib'
@@ -13,6 +13,7 @@ export const AppContent = (): JSX.Element => {
   const { setActiveView } = useHistory()
   const { state } = useNavigation()
   const idb = useIndexedDB()
+
   useResize()
 
   const { components, content } = useMemo(() => {
@@ -29,12 +30,9 @@ export const AppContent = (): JSX.Element => {
         const item = content[n]
         const { colSpan } = views[n]
 
-        // FIXME: This whole thing must be memoized(?), or could we handle colSpan better further down the tree?
         return (
           <ViewWrapper key={item.viewId} viewId={item.viewId} name={item.name} colSpan={colSpan}>
-            <FaroErrorBoundary
-              fallback={(error) => <Error error={error} />}
-            >
+            <FaroErrorBoundary fallback={(error) => <Error error={error} />}>
               <Component {...item.props} />
             </FaroErrorBoundary>
           </ViewWrapper>
@@ -42,6 +40,7 @@ export const AppContent = (): JSX.Element => {
       })}
 
       <Navigation visibleContent={content} />
+
       <Dialog open={!idb?.isConnected}>
         <DialogContent className='focus-visible:outline-none'>
           <DialogHeader>

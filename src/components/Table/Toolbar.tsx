@@ -6,7 +6,7 @@ import type { ColumnFiltersState } from '@tanstack/react-table'
 import { Filter } from '@/components/Filter'
 import { Commands } from '@/components/Commands'
 import { Sort } from '../Sort'
-import { useMemo, useCallback } from 'react'
+import { useMemo, useCallback, type JSX } from 'react'
 import { QuickFilter } from './QuickFilter'
 import { SearchBar } from './SearchBar'
 

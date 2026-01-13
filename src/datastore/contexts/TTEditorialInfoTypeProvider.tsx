@@ -1,4 +1,4 @@
-import { createContext, useCallback, useEffect, useState } from 'react'
+import { createContext, useCallback, useEffect, useState, type JSX } from 'react'
 import { useRegistry, useRepositoryEvents } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import { useIndexedDB } from '../hooks/useIndexedDB'

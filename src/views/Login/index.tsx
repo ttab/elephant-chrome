@@ -1,9 +1,11 @@
 import { type ViewProps, type ViewMetadata } from '@/types'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, type JSX } from 'react'
 import { Button, Checkbox } from '@ttab/elephant-ui'
 import { signIn } from 'next-auth/react'
 import { LoadingText } from '@/components/LoadingText'
 import { useIndexedDB } from '../../../src/datastore/hooks/useIndexedDB'
+// FIXME: Implement a better approach so we do not remove unsynced documents
+// import { CollaborationClientRegistry } from '@/modules/yjs/classes/CollaborationClientRegistry'
 
 const meta: ViewMetadata = {
   name: 'Login',
@@ -37,6 +39,8 @@ const LoginForm = ({ callbackUrl }: {
           onClick={() => {
             (async () => {
               await IDB.remove()
+              // FIXME: Implement a better approach so we do not remove unsynced documents
+              // await CollaborationClientRegistry.cleanupLocalDocuments()
             })().catch((err) => console.error(err))
             signIn('keycloak', { callbackUrl: callbackUrl || import.meta.env.BASE_URL })
               .catch((error) => console.error(error))

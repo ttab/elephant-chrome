@@ -8,7 +8,7 @@ import { isContext } from '../../lib/context.js'
 import type CollaborationServerErrorHandler from '../../lib/errorHandler.js'
 import { getErrorContext } from '../../lib/errorHandler.js'
 import type { Redis } from '../../utils/Redis.js'
-import { isValidUUID } from '../../utils/isValidUUID.js'
+import { isValidUUID } from '@/shared/isValidUUID.js'
 
 interface CacheExtensionConfiguration {
   redis: Redis
@@ -57,10 +57,19 @@ export class CacheExtension implements Extension {
     }
   }
 
-  async onStoreDocument({ documentName, document }: onStoreDocumentPayload) {
-    await this.#redis.store(
-      documentName,
-      Buffer.from(Y.encodeStateAsUpdate(document))
-    )
+  async onStoreDocument(payload: onStoreDocumentPayload) {
+    const { documentName, document } = payload
+
+    try {
+      await this.#redis.store(
+        documentName,
+        Buffer.from(Y.encodeStateAsUpdate(document))
+      )
+    } catch (ex) {
+      this.#errorHandler.error(
+        ex,
+        getErrorContext(payload)
+      )
+    }
   }
 }

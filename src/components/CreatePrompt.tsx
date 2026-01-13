@@ -8,7 +8,9 @@ import {
   DialogHeader,
   DialogTitle
 } from '@ttab/elephant-ui'
-import { type MouseEvent, type PropsWithChildren } from 'react'
+import { LoaderIcon } from '@ttab/elephant-ui/icons'
+import type { MouseEvent, PropsWithChildren, JSX } from 'react'
+import { useState } from 'react'
 
 export const CreatePrompt = ({
   title,
@@ -27,6 +29,15 @@ export const CreatePrompt = ({
   onSecondary?: (event: MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement> | KeyboardEvent) => void
   planningTitle?: string
 } & PropsWithChildren): JSX.Element => {
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const handleSubmit = () => {
+    if (isSubmitting) return
+
+    setIsSubmitting(true)
+    onPrimary()
+  }
+
   useKeydownGlobal((event) => {
     if (event.key === 'Escape' && secondaryLabel && onSecondary) {
       onSecondary(event as unknown as React.KeyboardEvent<HTMLButtonElement>)
@@ -63,14 +74,17 @@ export const CreatePrompt = ({
 
           <Button
             autoFocus
-            onClick={onPrimary}
+            onClick={handleSubmit}
+            disabled={isSubmitting}
             onKeyDown={(event: React.KeyboardEvent<HTMLButtonElement>) => {
               if (event.key === 'Enter') {
-                onPrimary()
+                handleSubmit()
               }
             }}
           >
-            {primaryLabel}
+            {isSubmitting
+              ? <LoaderIcon size={14} strokeWidth={1.75} className='animate-spin' />
+              : primaryLabel}
           </Button>
         </DialogFooter>
       </DialogContent>

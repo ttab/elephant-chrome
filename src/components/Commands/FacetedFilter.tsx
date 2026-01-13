@@ -1,10 +1,9 @@
-
 import { CheckIcon } from '@ttab/elephant-ui/icons'
 import { type Column } from '@tanstack/react-table'
 
 import { cn } from '@ttab/elephant-ui/utils'
 import { CommandItem } from '@ttab/elephant-ui'
-import { type SetStateAction, type Dispatch } from 'react'
+import type { SetStateAction, Dispatch, JSX } from 'react'
 
 interface FacetedFilterProps<TData, TValue> {
   column?: Column<TData, TValue>
@@ -76,4 +75,3 @@ export const FacetedFilter = <TData, TValue>({
     })
     : []
 }
-

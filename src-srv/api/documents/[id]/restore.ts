@@ -1,6 +1,6 @@
 import type { Request } from 'express'
 import type { RouteHandler } from '../../../routes.js'
-import { isValidUUID } from '../../../utils/isValidUUID.js'
+import { isValidUUID } from '@/shared/isValidUUID.js'
 import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc.js'
 import logger from '../../../lib/logger.js'
 import { getContextFromValidSession, getSession, isContext } from '../../../lib/context.js'

@@ -3,6 +3,15 @@ import { useHistory, useNavigation, useView } from '@/hooks'
 import { type Target, handleLink } from '@/components/Link/lib/handleLink'
 import { type ViewProps, type View } from '../types'
 
+export type LinkHandlerFunction = (
+  event: MouseEvent<Element> | KeyboardEvent | React.KeyboardEvent<HTMLButtonElement> | undefined,
+  props: ViewProps,
+  target?: Target,
+  callbacks?: Record<string, () => void>,
+  keepFocus?: boolean,
+  readOnly?: { version: bigint }
+) => void
+
 export const useLink = (viewName: View) => {
   const history = useHistory()
   const { state, dispatch } = useNavigation()

@@ -15,19 +15,20 @@ import { toast } from 'sonner'
 import { handleLink } from '../Link/lib/handleLink'
 import { useHistory, useNavigation, useView } from '@/hooks/index'
 import type { View } from '@/types/index'
+import type { YDocument } from '@/modules/yjs/hooks'
+import type * as Y from 'yjs'
 import { reset } from '@/views/Concepts/lib/reset'
 import { isConceptType } from '@/shared/isConceptType'
 import { tableDataMap } from '@/views/Concepts/lib/conceptDataTable'
 
-export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange, isChanged }: {
-  documentId: string
+export const StatusMenu = ({ ydoc, type, publishTime, onBeforeStatusChange }: {
+  ydoc: YDocument<Y.Map<unknown>>
   type: string
   publishTime?: Date
   onBeforeStatusChange?: (
     status: string,
     data?: Record<string, unknown>
   ) => Promise<boolean>
-  isChanged?: boolean
 }) => {
   // Should read the workflow status to get correct status
   const shouldUseWorkflowStatus = [
@@ -36,7 +37,7 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
     'core/editorial-info',
     'tt/print-article'
   ].includes(type) || isConceptType(type)
-  const [documentStatus, setDocumentStatus] = useWorkflowStatus(documentId, shouldUseWorkflowStatus, type === 'tt/print-article', type)
+  const [documentStatus, setDocumentStatus] = useWorkflowStatus({ ydoc, documentId: ydoc.id, isWorkflow: shouldUseWorkflowStatus, asPrint: type === 'tt/print-article' })
   const containerRef = useRef<HTMLDivElement>(null)
   const [dropdownWidth, setDropdownWidth] = useState<number>(0)
   const { statuses, workflow } = useWorkflow(type)
@@ -46,6 +47,16 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
   const { state, dispatch } = useNavigation()
   const history = useHistory()
   const { viewId } = useView()
+
+
+  // TODO: Revisit once reworking changed status logic for plannings etc
+  let isChanged: boolean
+  if (type === 'tt/print-article' && documentStatus?.name === 'usable') {
+    isChanged = ydoc.isChanged
+  } else {
+    isChanged = shouldUseWorkflowStatus ? false : ydoc.isChanged
+  }
+
   useEffect(() => {
     if (containerRef.current) {
       setDropdownWidth(containerRef.current.offsetWidth)
@@ -72,7 +83,7 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
 
     // Unpublishing a document is done by setting version: -1, status name to 'usable'
     const status = {
-      uuid: documentId,
+      uuid: ydoc.id,
       name: 'usable',
       version: -1n
     }
@@ -105,7 +116,7 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
         handleLink({
           dispatch,
           viewItem: state.viewRegistry.get(viewType[type]),
-          props: { id: documentId, documentType: type },
+          props: { id: ydoc.id, documentType: type },
           viewId: crypto.randomUUID(),
           history,
           origin: viewId,
@@ -134,7 +145,12 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
     return null
   }
 
-  const getCurrentCause = (cause: string | undefined, type: string, isChanged: boolean | undefined, prompt: { status: string } & WorkflowTransition | undefined) => {
+  const getCurrentCause = (
+    cause: string | undefined,
+    type: string,
+    isChanged: boolean,
+    prompt: { status: string } & WorkflowTransition | undefined
+  ): string | undefined => {
     if (cause !== undefined) {
       return cause
     } else if (type === 'tt/print-article') {

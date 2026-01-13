@@ -1,15 +1,16 @@
 import { useView } from '@/hooks'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, type JSX } from 'react'
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { ViewHeader } from '@/components/View'
 import { BookTextIcon } from '@ttab/elephant-ui/icons'
-import { MetaSheet } from '../Editor/components/MetaSheet'
+import { MetaSheet } from '@/components/MetaSheet/MetaSheet'
+import type { YDocument } from '@/modules/yjs/hooks'
+import type * as Y from 'yjs'
 
-export const FactboxHeader = ({ documentId, asDialog, onDialogClose, isChanged }: {
-  documentId: string
+export const FactboxHeader = ({ ydoc, asDialog, onDialogClose }: {
+  ydoc: YDocument<Y.Map<unknown>>
   asDialog: boolean
   onDialogClose?: () => void
-  isChanged?: boolean
 }): JSX.Element => {
   const { viewId } = useView()
   const containerRef = useRef<HTMLElement | null>(null)
@@ -35,18 +36,17 @@ export const FactboxHeader = ({ documentId, asDialog, onDialogClose, isChanged }
             {!asDialog && (
               <>
                 <StatusMenu
-                  documentId={documentId}
+                  ydoc={ydoc}
                   type='core/factbox'
-                  isChanged={isChanged}
                 />
-                <MetaSheet container={containerRef.current} documentId={documentId} />
+                <MetaSheet container={containerRef.current} ydoc={ydoc} />
               </>
             )}
-            {!!documentId && <ViewHeader.RemoteUsers documentId={documentId} />}
+            {!!ydoc && <ViewHeader.RemoteUsers ydoc={ydoc} />}
           </div>
         </div>
       </ViewHeader.Content>
-      <ViewHeader.Action onDialogClose={onDialogClose} asDialog={asDialog} />
+      <ViewHeader.Action ydoc={ydoc} onDialogClose={onDialogClose} asDialog={asDialog} />
 
     </ViewHeader.Root>
   )

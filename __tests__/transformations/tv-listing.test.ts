@@ -29,6 +29,7 @@ const tvListingSlate: TBElement = {
   children: [
     {
       type: 'tt/tv-listing/title',
+      class: 'text',
       children: [
         {
           text: 'Melodifestivalen'
@@ -37,6 +38,7 @@ const tvListingSlate: TBElement = {
     },
     {
       type: 'tt/tv-listing/channel',
+      class: 'text',
       children: [
         {
           text: 'SVT1'
@@ -45,6 +47,7 @@ const tvListingSlate: TBElement = {
     },
     {
       type: 'tt/tv-listing/day',
+      class: 'text',
       children: [
         {
           text: 'Lördag'
@@ -53,6 +56,7 @@ const tvListingSlate: TBElement = {
     },
     {
       type: 'tt/tv-listing/time',
+      class: 'text',
       children: [
         {
           text: '20.00'
@@ -61,6 +65,7 @@ const tvListingSlate: TBElement = {
     },
     {
       type: 'tt/tv-listing/end_time',
+      class: 'text',
       children: [
         {
           text: '22.30'

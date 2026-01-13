@@ -7,7 +7,7 @@ interface PrintChild {
 
 export function transformPrintText(element: Block): TBElement {
   const { id, data } = element
-  const children = [
+  const children: TBElement[] = [
     {
       id: id || crypto.randomUUID(),
       class: 'text',
@@ -35,7 +35,7 @@ export function revertPrintText(element: TBElement): Block {
   const [firstChild] = (element.children || []) as TBElement[] & { children?: PrintChild[] }
   const [firstNode] = (firstChild.children ?? [])
   const printText = (firstNode as PrintChild)?.text?.trim() ?? ''
-  const printRoleNode = element.children.find((child) => child.type === 'tt/print-text/role')
+  const printRoleNode = (element.children as TBElement[]).find((child) => child.type === 'tt/print-text/role')
   const printRole = (printRoleNode?.children as PrintChild[] | undefined)?.[0]?.text ?? ''
 
   return Block.create({

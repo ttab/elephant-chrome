@@ -1,14 +1,17 @@
-import React, { useCallback, useRef } from 'react'
+import React, { type JSX, useCallback, useRef } from 'react'
 import { Awareness } from '../Awareness'
 import { TextboxRoot } from './Textbox/TextboxRoot'
-import { Label } from '@ttab/elephant-ui'
+import { useYPath, type YDocument } from '@/modules/yjs/hooks'
+import type * as Y from 'yjs'
+import type { Descendant } from 'slate'
+import { cn } from '@ttab/elephant-ui/utils'
 
-export const TextBox = ({ id, label, asDialog, icon: Icon, iconAction, path, onChange, className, ...props }: {
+export const TextBox = ({ id, asDialog, icon: Icon, iconAction, value, onChange, className, ...props }: {
+  ydoc: YDocument<Y.Map<unknown>>
+  value: Y.XmlText | undefined
   id?: string
-  label?: string
   asDialog?: boolean | undefined
   disabled?: boolean
-  path: string
   icon?: React.ReactNode
   iconAction?: () => void
   placeholder?: string
@@ -19,8 +22,9 @@ export const TextBox = ({ id, label, asDialog, icon: Icon, iconAction, path, onC
   spellcheck?: boolean
   onBlur?: React.FocusEventHandler<HTMLDivElement>
   onFocus?: React.FocusEventHandler<HTMLDivElement>
-  onChange?: (arg: boolean) => void
+  onChange?: (arg: Descendant[]) => void
 }): JSX.Element => {
+  const path = useYPath(value, true)
   const setFocused = useRef<(value: boolean, key: string) => void>(() => { })
   const { onFocus, onBlur } = props
 
@@ -38,17 +42,44 @@ export const TextBox = ({ id, label, asDialog, icon: Icon, iconAction, path, onC
     }
   }, [onBlur])
   return (
-    <Awareness path={path} ref={setFocused} className='w-full'>
-      {label && <Label htmlFor={id}>{label}</Label>}
-      <div id={id} className='w-full flex flex-row gap-2'>
+    <Awareness ydoc={props.ydoc} path={path} ref={setFocused} className='w-full'>
+      <div id={props.ydoc.id} className='w-full flex flex-row gap-2'>
         {Icon && (
           <div className='pt-1.5' onClick={iconAction}>
             {Icon}
           </div>
         )}
-        <TextboxRoot className={className} {...props} path={path} onBlur={handleOnBlur} onFocus={handleOnFocus} onChange={onChange} />
+        {value
+          ? (
+              <TextboxRoot
+                className={className}
+                {...props}
+                value={value}
+                onBlur={handleOnBlur}
+                onFocus={handleOnFocus}
+              />
+            )
+          : (
+              <div className={cn(!props.singleLine && 'h-20!!',
+                `w-full
+                p-1
+                py-1.5
+                ps-2
+                h-8
+                rounded-md
+                outline-none
+                ring-offset-background
+                ring-1
+                ring-input
+                dark:ring-gray-600
+                whitespace-nowrap
+                bg-gray-50
+                dark:bg-input`,
+                props.className
+              )}
+              />
+            )}
       </div>
     </Awareness>
   )
 }
-

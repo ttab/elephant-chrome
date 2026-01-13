@@ -4,19 +4,26 @@ import type { TBElement } from '@ttab/textbit'
 import type { Descendant } from 'slate'
 import { transformSoftcrop, revertSoftcrop } from '../core/softcrop.js'
 
-// Construed way of making it work in both environments
-const BASE_URL: string
-  = typeof import.meta !== 'undefined'
-    && typeof ((import.meta as unknown as { env?: { BASE_URL?: string } }).env) !== 'undefined'
-    && typeof ((import.meta as unknown as { env: { BASE_URL?: string } }).env.BASE_URL) === 'string'
-    ? (import.meta as unknown as { env: { BASE_URL: string } }).env.BASE_URL
-    : typeof process !== 'undefined' && process.env && typeof process.env.BASE_URL === 'string'
-      ? process.env.BASE_URL
-      : ''
+type EnvLike = { BASE_URL?: string }
+
+// Utility to resolve BASE_URL from different environments
+const resolveBaseUrl = (): string | undefined => {
+  const viteEnv = typeof import.meta !== 'undefined'
+    && (import.meta as ImportMeta & { env?: EnvLike }).env
+
+  if (typeof process !== 'undefined' && process.env.BASE_URL) {
+    return process.env.BASE_URL
+  }
+
+  if (viteEnv) return viteEnv.BASE_URL
+
+  return '/'
+}
 
 export const transformVisual = (element: Block): TBElement => {
   const { id, data, links, meta } = element
   const mediaType = links[0]?.url?.includes('/media/graphic/') ? 'graphics' : 'images'
+  const BASE_URL = resolveBaseUrl()
 
   const properties: Record<string, string> = {
     href: links[0]?.url,
@@ -38,8 +45,9 @@ export const transformVisual = (element: Block): TBElement => {
     properties,
     children: [
       {
+        id: '',
         type: 'tt/visual/image',
-        class: 'block',
+        class: 'void',
         children: [{ text: '' }]
       },
       {
@@ -57,7 +65,9 @@ export const transformVisual = (element: Block): TBElement => {
 }
 
 export function revertVisual(element: TBElement): Block {
-  const { id, properties, children } = element
+  const { id, properties } = element
+  const children = element.children as TBElement[] || undefined
+
   const textNode = children?.find((c) => c.type === 'tt/visual/text')
   const bylineNode = children?.find((c) => c.type === 'tt/visual/byline')
 

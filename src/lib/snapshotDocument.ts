@@ -41,13 +41,6 @@ export async function snapshotDocument(
     if (options?.cause) url.searchParams.set('cause', options.cause)
     url.searchParams.set('addToHistory', options?.addToHistory === true ? '1' : '0')
 
-    // Always remove __inProgress flag if it exists to allow storage into repository
-    if (document) {
-      const root = document.getMap('ele')
-        .get('root') as Y.Map<unknown>
-      root?.delete('__inProgress')
-    }
-
     const response = await fetch(url, {
       method: 'POST',
       headers: {
@@ -55,6 +48,8 @@ export async function snapshotDocument(
       },
       // Send client state as an update, as the local content
       // is what the client expects to be stored.
+      // FIXME: We should not have to suppress this
+      // @ts-expect-error We should not have to suppress this
       body: document ? Y.encodeStateAsUpdate(document) : null
     })
 

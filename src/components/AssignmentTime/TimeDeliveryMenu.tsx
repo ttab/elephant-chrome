@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, type JSX } from 'react'
 import {
   Button,
   Command,
@@ -10,13 +10,14 @@ import {
   PopoverContent,
   PopoverTrigger
 } from '@ttab/elephant-ui'
-
 import { TimeSlotItems } from './TimeSlotItems'
 import { TimeSelectItem } from './TimeSelectItem'
+import type * as Y from 'yjs'
+
 interface TimeMenuProps extends React.PropsWithChildren {
   handleOnSelect: ({ value, selectValue }: { value: string, selectValue: string }) => void
   className?: string
-  index: number
+  assignment: Y.Map<unknown>
   assignmentType?: string
 }
 
@@ -27,9 +28,9 @@ interface TimeMenuProps extends React.PropsWithChildren {
 export const TimeDeliveryMenu = ({
   children,
   handleOnSelect,
-  index,
+  assignment,
   assignmentType
-}: TimeMenuProps): React.JSX.Element => {
+}: TimeMenuProps): JSX.Element => {
   const [open, setOpen] = useState(false)
 
   const handleOpenChange = (isOpen: boolean): void => {
@@ -68,7 +69,7 @@ export const TimeDeliveryMenu = ({
               </CommandGroup>
               {assignmentType !== 'text' && (
                 <CommandGroup>
-                  <TimeSelectItem handleOnSelect={handleOnSelect} index={index} handleParentOpenChange={handleOpenChange} />
+                  <TimeSelectItem handleOnSelect={handleOnSelect} assignment={assignment} handleParentOpenChange={handleOpenChange} />
                 </CommandGroup>
               )}
             </div>

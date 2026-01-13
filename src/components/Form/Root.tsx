@@ -1,8 +1,8 @@
-import React, { type Dispatch, type SetStateAction, useRef, useState, type PropsWithChildren, useCallback, useMemo } from 'react'
+import React, { type Dispatch, type SetStateAction, type JSX, useRef, useState, type PropsWithChildren, useCallback, useMemo } from 'react'
 import { ValidationAlert } from '../ValidationAlert'
-import { type ValidateState } from '@/types/index'
+import { type ValidateState, type ValidateStateRef } from '@/types/index'
 import { cn } from '@ttab/elephant-ui/utils'
-
+import { cloneChildrenWithProps } from './lib/cloneChildren'
 
 export interface OnValidation {
   block: string
@@ -16,14 +16,13 @@ export interface FormProps extends PropsWithChildren {
   asDialog?: boolean
   onValidation?: (args: OnValidation) => boolean
   setValidateForm?: Dispatch<SetStateAction<boolean>>
-  validateStateRef?: React.MutableRefObject<ValidateState>
+  validateStateRef?: ValidateStateRef
   onChange?: (arg: boolean) => void
   children?: React.ReactNode
 }
 
-export const Root = ({ children, asDialog = false, onChange, className }: PropsWithChildren & {
+export const Root = ({ children, asDialog = false, className }: PropsWithChildren & {
   asDialog?: boolean
-  onChange?: (arg: boolean) => void
   className?: string
 }): JSX.Element => {
   const validateStateRef = useRef<ValidateState>({})
@@ -62,27 +61,21 @@ export const Root = ({ children, asDialog = false, onChange, className }: PropsW
     [validateForm]
   )
 
-
-  const props = useMemo(
+  const inheritedProps = useMemo<Partial<FormProps>>(
     () => ({
       asDialog,
       onValidation: handleValidation,
       setValidateForm,
-      onChange,
       validateStateRef
     }),
-    [asDialog, handleValidation, onChange, validateStateRef]
+    [asDialog, handleValidation, validateStateRef]
   )
 
   return (
     <>
       <ValidationAlert validateStateRef={validateStateRef} />
       <div className={cn(formRootStyle, className)}>
-        {React.Children.map(children, (child: React.ReactNode): React.ReactNode =>
-          React.isValidElement<FormProps>(child)
-            ? React.cloneElement(child, props)
-            : child
-        )}
+        {cloneChildrenWithProps<FormProps>(children, inheritedProps)}
       </div>
     </>
   )

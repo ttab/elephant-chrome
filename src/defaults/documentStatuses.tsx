@@ -14,8 +14,7 @@ export const DocumentStatuses: DefaultValueOption[] = [
     value: 'usable',
     icon: CircleCheckIcon,
     iconProps: {
-      color: '#ffffff',
-      className: 'bg-usable fill-usable rounded-full',
+      className: 'bg-usable fill-usable rounded-full text-white dark:text-black',
       size: 18,
       strokeWidth: 1.75
     }
@@ -25,8 +24,7 @@ export const DocumentStatuses: DefaultValueOption[] = [
     value: 'withheld',
     icon: CircleCheckIcon,
     iconProps: {
-      color: '#ffffff',
-      className: 'bg-withheld fill-withheld rounded-full',
+      className: 'bg-withheld fill-withheld rounded-full text-white dark:text-black',
       size: 18,
       strokeWidth: 1.75
     }
@@ -36,8 +34,7 @@ export const DocumentStatuses: DefaultValueOption[] = [
     value: 'done',
     icon: CircleCheckIcon,
     iconProps: {
-      color: '#ffffff',
-      className: 'bg-done fill-done rounded-full',
+      className: 'bg-done fill-done rounded-full text-white dark:text-black',
       size: 18,
       strokeWidth: 1.75
     }
@@ -47,8 +44,7 @@ export const DocumentStatuses: DefaultValueOption[] = [
     value: 'approved',
     icon: BadgeCheckIcon,
     iconProps: {
-      color: '#ffffff',
-      className: 'bg-approved fill-approved rounded-full',
+      className: 'bg-approved fill-approved rounded-full text-white dark:text-black',
       size: 18,
       strokeWidth: 1.75
     }
@@ -68,8 +64,7 @@ export const DocumentStatuses: DefaultValueOption[] = [
     value: 'unpublished',
     icon: CircleArrowLeftIcon,
     iconProps: {
-      color: '#ffffff',
-      className: 'bg-cancelled fill-cancelled rounded-full',
+      className: 'bg-cancelled fill-cancelled rounded-full text-white dark:text-black',
       size: 18,
       strokeWidth: 1.75
     }
@@ -82,8 +77,7 @@ export const PlanningEventStatuses: DefaultValueOption[] = [
     value: 'usable',
     icon: CircleCheckIcon,
     iconProps: {
-      color: '#ffffff',
-      className: 'bg-usable fill-usable rounded-full',
+      className: 'bg-usable fill-usable rounded-full text-white dark:text-black',
       size: 18,
       strokeWidth: 1.75
     }
@@ -93,8 +87,7 @@ export const PlanningEventStatuses: DefaultValueOption[] = [
     value: 'withheld',
     icon: CircleCheckIcon,
     iconProps: {
-      color: '#ffffff',
-      className: 'bg-withheld fill-withheld rounded-full',
+      className: 'bg-withheld fill-withheld rounded-full text-white dark:text-black',
       size: 18,
       strokeWidth: 1.75
     }
@@ -104,8 +97,7 @@ export const PlanningEventStatuses: DefaultValueOption[] = [
     value: 'done',
     icon: CircleCheckIcon,
     iconProps: {
-      color: '#ffffff',
-      className: 'bg-done fill-done rounded-full',
+      className: 'bg-done fill-done rounded-full text-white dark:text-black',
       size: 18,
       strokeWidth: 1.75
     }
@@ -125,8 +117,7 @@ export const PlanningEventStatuses: DefaultValueOption[] = [
     value: 'unpublished',
     icon: CircleArrowLeftIcon,
     iconProps: {
-      color: '#ffffff',
-      className: 'bg-cancelled fill-cancelled rounded-full',
+      className: 'bg-cancelled fill-cancelled rounded-full text-white dark:text-black',
       size: 18,
       strokeWidth: 1.75
     }
@@ -139,8 +130,7 @@ export const PrintArticleStatuses: DefaultValueOption[] = [
     value: 'usable',
     icon: CircleCheckIcon,
     iconProps: {
-      color: '#ffffff',
-      className: 'bg-usable fill-usable rounded-full',
+      className: 'bg-usable fill-usable rounded-full text-white dark:text-black',
       size: 18,
       strokeWidth: 1.75
     }
@@ -150,8 +140,7 @@ export const PrintArticleStatuses: DefaultValueOption[] = [
     value: 'needs_proofreading',
     icon: CircleCheckIcon,
     iconProps: {
-      color: '#ffffff',
-      className: 'bg-done fill-done rounded-full',
+      className: 'bg-done fill-done rounded-full text-white dark:text-black',
       size: 18,
       strokeWidth: 1.75
     }
@@ -161,8 +150,7 @@ export const PrintArticleStatuses: DefaultValueOption[] = [
     value: 'approved',
     icon: BadgeCheckIcon,
     iconProps: {
-      color: '#ffffff',
-      className: 'bg-approved fill-approved rounded-full',
+      className: 'bg-approved fill-approved rounded-full text-white dark:text-black',
       size: 18,
       strokeWidth: 1.75
     }
@@ -172,8 +160,7 @@ export const PrintArticleStatuses: DefaultValueOption[] = [
     value: 'unpublished',
     icon: CircleXIcon,
     iconProps: {
-      color: '#ffffff',
-      className: 'bg-cancelled fill-cancelled rounded-full',
+      className: 'bg-cancelled fill-cancelled rounded-full text-white dark:text-black',
       size: 18,
       strokeWidth: 1.75
     }

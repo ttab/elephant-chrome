@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from 'react'
+import { createContext, useEffect, useState, type JSX } from 'react'
 import type { Theme, ThemeProviderState } from '@/types'
 
 interface ThemeProviderProps {

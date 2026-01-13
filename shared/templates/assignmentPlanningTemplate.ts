@@ -1,9 +1,12 @@
 import type { Wire } from '@/shared/schemas/wire.js'
 import type { IDBAuthor } from '../../src/datastore/types.js'
 import { Block } from '@ttab/elephant-api/newsdoc'
+import { DEFAULT_TIMEZONE } from '../../src/defaults/defaultTimezone.js'
+import { newLocalDate } from '@/shared/datetime.js'
+import { UTCDate } from '@date-fns/utc'
 
 /**
- * Create a template structure for an assigment
+ * Create a template structure for an assignment
  * @returns Block
  */
 export function assignmentPlanningTemplate({
@@ -23,12 +26,15 @@ export function assignmentPlanningTemplate({
   assignmentData?: Block['data']
   assignee: IDBAuthor | null | undefined
 }): Block {
+  const systemNow = newLocalDate(DEFAULT_TIMEZONE)
+  const systemHour = systemNow.getHours().toString()
+
   const startDateAndTime = (type: string): string => {
     const isTextFlashOrEditorialInfo = ['text', 'flash', 'editorial-info'].includes(type)
 
     if (isTextFlashOrEditorialInfo) {
-      const currentTime = new Date().toISOString().split('T')[1]
-      return new Date(`${planningDate}T${currentTime}`).toISOString()
+      const utcTime = new UTCDate().toISOString().split('T')[1]
+      return new Date(`${planningDate}T${utcTime}`).toISOString()
     } else {
       return new Date(`${planningDate}T00:00:00`).toISOString()
     }
@@ -63,7 +69,7 @@ export function assignmentPlanningTemplate({
   // Text assignments should be set with a publish_slot
   if (assignmentType === 'text') {
     if (assignmentData && !assignmentData.publish_slot) {
-      assignmentData.publish_slot = new Date().getHours().toString()
+      assignmentData.publish_slot = systemHour
     }
   }
 
@@ -72,11 +78,11 @@ export function assignmentPlanningTemplate({
     id: crypto.randomUUID(),
     type: 'core/assignment',
     title: title || undefined,
-    // Use provided assignmentData or default values
+    // N.B. Use provided assignmentData or default values
     data: assignmentData || {
       full_day: 'false',
       end_date: planningDate,
-      ...(assignmentType === 'text' && { publish_slot: new Date().getHours().toString() }),
+      ...(assignmentType === 'text' && { publish_slot: systemHour }),
       start_date: planningDate,
       start: startDateAndTime(assignmentType),
       public: assignmentType === 'flash'
@@ -106,4 +112,3 @@ export function assignmentPlanningTemplate({
     ]
   })
 }
-

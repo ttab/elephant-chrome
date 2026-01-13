@@ -1,11 +1,15 @@
 import { Awareness } from '@/components'
-import { useStories, useYValue } from '@/hooks'
+import { useStories } from '@/hooks'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import { ComboBox } from '@ttab/elephant-ui'
-import { useRef } from 'react'
+import { useRef, type JSX } from 'react'
 import type { FormProps } from './Form/Root'
+import { type YDocument, useYValue } from '@/modules/yjs/hooks'
+import type * as Y from 'yjs'
 
-export const Story = ({ onChange, asSubject }: {
+export const Story = ({ ydoc, path, onChange, asSubject }: {
+  ydoc: YDocument<Y.Map<unknown>>
+  path: string
   asSubject?: boolean
 } & FormProps): JSX.Element => {
   const allStories = useStories().map((_) => {
@@ -15,13 +19,12 @@ export const Story = ({ onChange, asSubject }: {
     }
   })
 
-  const path = 'links.core/story[0]'
-  const [story, setStory] = useYValue<Block | undefined>(path)
+  const [story, setStory] = useYValue<Block | undefined>(ydoc.ele, path)
   const setFocused = useRef<(value: boolean, path: string) => void>(() => { })
   const selectedOptions = (allStories || []).filter((s) => s.value === story?.uuid)
 
   return (
-    <Awareness ref={setFocused} path={path}>
+    <Awareness ref={setFocused} ydoc={ydoc} path={path}>
       <ComboBox
         max={1}
         size='xs'

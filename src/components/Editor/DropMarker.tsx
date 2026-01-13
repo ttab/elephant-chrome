@@ -1,4 +1,5 @@
-import Textbit from '@ttab/textbit'
+import { Textbit } from '@ttab/textbit'
+import type { JSX } from 'react'
 
 export const DropMarker = (): JSX.Element => {
   return (

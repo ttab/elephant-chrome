@@ -2,14 +2,14 @@ import {
   createContext,
   type PropsWithChildren,
   useState,
-  useContext,
   useMemo,
-  useEffect
+  useEffect,
+  type JSX
 } from 'react'
 import { HocuspocusProvider } from '@hocuspocus/provider'
 import { useSession } from 'next-auth/react'
-import { HPWebSocketProviderContext } from '.'
 import { createStateless, StatelessType } from '@/shared/stateless'
+import { useWebSocket } from '@/modules/yjs/hooks'
 
 interface UserTrackerProviderState {
   provider?: HocuspocusProvider
@@ -28,7 +28,7 @@ const initialState: UserTrackerProviderState = {
 export const UserTrackerContext = createContext(initialState)
 
 export const UserTrackerProvider = ({ children }: PropsWithChildren): JSX.Element => {
-  const { webSocket } = useContext(HPWebSocketProviderContext)
+  const { webSocketProvider } = useWebSocket()
   const { data, status } = useSession()
 
   const [synced, setSynced] = useState<boolean>(false)
@@ -39,12 +39,12 @@ export const UserTrackerProvider = ({ children }: PropsWithChildren): JSX.Elemen
   }
 
   const provider = useMemo(() => {
-    if (!webSocket) {
+    if (!webSocketProvider) {
       return
     }
 
     return new HocuspocusProvider({
-      websocketProvider: webSocket,
+      websocketProvider: webSocketProvider,
       name: data.user.sub.replace('core://user/', ''),
       token: data.accessToken,
       onConnect: () => {
@@ -63,7 +63,7 @@ export const UserTrackerProvider = ({ children }: PropsWithChildren): JSX.Elemen
     // JWT.token should be used on creation, but provider should not be recreated on token change
     // In this case we don't need to update the token since auth is done on when provider opens the connection
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [webSocket])
+  }, [webSocketProvider])
 
   const state = {
     provider,

@@ -1,16 +1,20 @@
-import { useYValue } from '@/hooks/useYValue'
+import type { JSX } from 'react'
+import { useYValue } from '@/modules/yjs/hooks/useYValue'
+import type { YDocument } from '@/modules/yjs/hooks'
 import { Label, Checkbox } from '@ttab/elephant-ui'
+import type * as Y from 'yjs'
 
 export interface Additional {
   name: string
   value: string
 }
 
-export const Additionals = ({ basePath, onChange }: {
+export const Additionals = ({ ydoc, basePath, onChange }: {
+  ydoc: YDocument<Y.Map<unknown>>
   basePath: string
   onChange?: (value: boolean) => void
 }): JSX.Element | null => {
-  const [additionals, setAdditionals] = useYValue<Additional[]>(`${basePath}.meta.tt/print-features[0].content.tt/print-feature`)
+  const [additionals, setAdditionals] = useYValue<Additional[]>(ydoc.ele, `${basePath}.meta.tt/print-features[0].content.tt/print-feature`)
 
   const handleChange = (index: number) => {
     if (!additionals) return
@@ -24,15 +28,17 @@ export const Additionals = ({ basePath, onChange }: {
   if (additionals?.length) {
     return (
       <div className='col-span-12 row-span-1 flex flex-col gap-2 mt-1'>
-        <h4 className='text-sm font-bold'>Tillägg</h4>
-        {additionals.map((additional, index) => (
-          <Additional
-            key={additional.name}
-            additional={additional}
-            index={index}
-            onChange={handleChange}
-          />
-        ))}
+        <Label htmlFor='additionals'>Tillägg</Label>
+        <div id='additionals' className='grid grid-cols-2 gap-2'>
+          {additionals.map((additional, index) => (
+            <Additional
+              key={additional.name}
+              additional={additional}
+              index={index}
+              onChange={handleChange}
+            />
+          ))}
+        </div>
       </div>
     )
   }

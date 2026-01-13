@@ -8,6 +8,7 @@ import { fields } from '@/shared/schemas/assignments'
 import type { Assignment, AssignmentFields } from '@/shared/schemas/assignments'
 import { getUTCDateRange } from '@/shared/datetime'
 import { SortingV1 } from '@ttab/elephant-api/index'
+import type { JSX } from 'react'
 
 export const AssignmentsList = ({ columns, date }: {
   columns: Array<ColumnDef<Assignment>>
@@ -26,7 +27,8 @@ export const AssignmentsList = ({ columns, date }: {
     options: {
       aggregatePages: true,
       asAssignments: true,
-      setTableData: true
+      setTableData: true,
+      subscribe: true
     }
   })
 

@@ -12,7 +12,7 @@ import {
 } from '@ttab/elephant-ui/icons'
 import { Newsvalues } from '@/defaults/newsvalues'
 import { FacetedFilter } from '@/components/Commands/FacetedFilter'
-import { AssignmentTypes } from '@/defaults/assignmentTypes'
+import { AssignmentTypes, isVisualAssignmentType } from '@/defaults/assignmentTypes'
 import { Type } from '@/components/Table/Items/Type'
 import { getNestedFacetedUniqueValues } from '@/components/Table/lib/getNestedFacetedUniqueValues'
 import { Assignees } from '@/components/Table/Items/Assignees'
@@ -29,6 +29,7 @@ import { parseISO } from 'date-fns'
 import { ActionMenu } from '@/components/ActionMenu'
 import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
 import { DocumentStatuses } from '@/defaults/documentStatuses'
+import { selectableStatuses } from '../Planning/components/AssignmentStatus'
 
 export function assignmentColumns({ authors = [], locale, timeZone, sections = [], currentDate }: {
   authors?: IDBAuthor[]
@@ -44,7 +45,7 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
         Filter: ({ column, setSearch }) => (
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
-        options: DocumentStatuses,
+        options: [...DocumentStatuses, ...selectableStatuses],
         name: 'Status',
         columnIcon: CircleCheckIcon,
         className: 'flex-none',
@@ -55,12 +56,21 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
         )
       },
       accessorFn: (data) => {
+        const type = data.fields['document.meta.core_assignment.meta.core_assignment_type.value']?.values[0]
+
+        // If visual assignment, return assignment status
+        if (isVisualAssignmentType(type)) {
+          const assignmentStatus = data.fields['document.meta.core_assignment.data.status']?.values[0]
+          return assignmentStatus || 'todo'
+        }
+
         const currentStatus = data?.fields['document.meta.status']?.values[0]
         return currentStatus
       },
       cell: ({ row }) => {
         const status = row.getValue<string>('deliverableStatus')
-        return <DocumentStatus type='core/article' status={status} />
+        const type = row.original.fields['document.meta.core_assignment.meta.core_assignment_type.value']?.values[0] || 'core/article'
+        return <DocumentStatus type={type} status={status} />
       },
       filterFn: (row, id, value: string[]) =>
         value.includes(row.getValue(id)),
@@ -123,7 +133,18 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
       cell: ({ row }) => {
         const assignmentTitle = row.getValue<string[]>('title')?.join(' ') || ''
         const planningTitle = row.original.fields['document.title'].values[0] || ''
-        return <AssignmentTitles planningTitle={planningTitle} assignmentTitle={assignmentTitle} />
+        const assignees = (row.getValue<string[]>('assignees') || []).map((assigneeId) => {
+          return authors.find((author) => author.id === assigneeId)?.name || ''
+        })
+
+        return (
+          <>
+            <AssignmentTitles planningTitle={planningTitle} assignmentTitle={assignmentTitle} />
+            <div className='display:revert @5xl/view:[display:none] pt-2'>
+              <Assignees assignees={assignees} />
+            </div>
+          </>
+        )
       },
       enableGrouping: false
     },

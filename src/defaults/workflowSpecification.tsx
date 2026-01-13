@@ -64,35 +64,35 @@ export const StatusSpecifications: Record<string, StatusSpecification> = {
   },
   done: {
     icon: CircleCheckIcon,
-    className: 'bg-done text-white fill-done rounded-full'
+    className: 'bg-done text-white fill-done rounded-full dark:text-black'
   },
   approved: {
     icon: BadgeCheckIcon,
-    className: 'bg-approved text-white fill-approved rounded-full'
+    className: 'bg-approved text-white fill-approved rounded-full dark:text-black'
   },
   withheld: {
     icon: CircleCheckIcon,
-    className: 'bg-withheld text-white fill-withheld rounded-full'
+    className: 'bg-withheld text-white fill-withheld rounded-full dark:text-black'
   },
   usable: {
     icon: CircleCheckIcon,
-    className: 'bg-usable text-white fill-usable rounded-full'
+    className: 'bg-usable text-white fill-usable rounded-full dark:text-black'
   },
   unpublished: {
     icon: CircleArrowLeftIcon,
-    className: 'bg-unpublished text-white fill-unpublished rounded-full'
+    className: 'bg-unpublished text-white fill-unpublished rounded-full dark:text-black'
   },
   print_done: {
     icon: BadgeCheckIcon,
-    className: 'bg-approved text-white fill-approved rounded-full'
+    className: 'bg-approved text-white fill-approved rounded-full dark:text-black'
   },
   needs_proofreading: {
     icon: CircleCheckIcon,
-    className: 'bg-done text-white fill-done rounded-full'
+    className: 'bg-done text-white fill-done rounded-full dark:text-black'
   },
   cancelled: {
     icon: CircleXIcon,
-    className: 'bg-cancelled text-white fill-cancelled rounded-full'
+    className: 'bg-cancelled text-white fill-cancelled rounded-full dark:text-black'
   },
   inactive: {
     icon: CircleIcon,

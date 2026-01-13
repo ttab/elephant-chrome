@@ -1,26 +1,26 @@
-import { useRef } from 'react'
+import { useRef, type JSX } from 'react'
 import { ComboBox } from '@ttab/elephant-ui'
 import { Newsvalues } from '@/defaults'
-import { useYValue } from '@/hooks'
 import { Awareness } from '@/components'
 import { Validation } from './Validation'
 import type { FormProps } from './Form/Root'
+import type * as Y from 'yjs'
+import { useYValue, type YDocument } from '@/modules/yjs/hooks'
 
-export const Newsvalue = ({ onValidation, validateStateRef, onChange }:
-FormProps): JSX.Element => {
-  const path = 'meta.core/newsvalue[0].value'
-  const [newsvalue, setNewsvalue] = useYValue<string | undefined>(path)
+export const Newsvalue = ({ ydoc, path, onValidation, validateStateRef, onChange }: {
+  ydoc: YDocument<Y.Map<unknown>>
+  path: string
+} & FormProps): JSX.Element => {
+  const [newsvalue, setNewsvalue] = useYValue<string | undefined>(ydoc.ele, path)
   const setFocused = useRef<(value: boolean, path: string) => void>(() => { })
-
-  const selectedOptions = Newsvalues.filter((type) => {
-    return type.value === newsvalue
-  })
+  const selectedOptions = Newsvalues.filter((type) => type.value === newsvalue)
 
   const SelectedIcon = selectedOptions.length && selectedOptions[0].icon
 
   return (
-    <Awareness ref={setFocused} path={path}>
+    <Awareness ref={setFocused} ydoc={ydoc} path={path}>
       <Validation
+        ydoc={ydoc}
         label='Nyhetsvärde'
         path={path}
         block='core/newsvalue[0]'
@@ -41,7 +41,6 @@ FormProps): JSX.Element => {
           }}
           onSelect={(option) => {
             onChange?.(true)
-
             if (newsvalue === option.value) {
               setNewsvalue(undefined)
             } else {

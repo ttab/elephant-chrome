@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
     "types": [
-      "@types/jest"
+      "vite/client",
+      "vitest/globals",
+      "node"
     ],
     "target": "ES2020",
     "useDefineForClassFields": true,
@@ -78,6 +80,9 @@
       ],
       "@/shared": [
         "./shared/index.ts"
+      ],
+      "@/modules/*": [
+        "./src/modules/*"
       ]
     },
   },

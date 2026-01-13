@@ -1,25 +1,26 @@
 import { Prompt } from '@/components/Prompt'
 import { useNavigationKeys } from '@/hooks/useNavigationKeys'
-import { useYValue } from '@/hooks/useYValue'
+import type { YDocument } from '@/modules/yjs/hooks'
 import { Button } from '@ttab/elephant-ui'
 import type { LucideIcon } from '@ttab/elephant-ui/icons'
 import { XIcon } from '@ttab/elephant-ui/icons'
-import { useState } from 'react'
+import { useState, type JSX } from 'react'
+import type * as Y from 'yjs'
 
-export const ViewDialogClose = ({ onClick, Icon = XIcon, asDialog }: {
+export const ViewDialogClose = ({ ydoc, onClick, Icon = XIcon, asDialog }: {
+  ydoc?: YDocument<Y.Map<unknown>>
   Icon?: LucideIcon
   onClick: () => void
   asDialog?: boolean
 }): JSX.Element => {
   const [showVerifyDialog, setShowVerifyDialog] = useState(false)
-  const [isChanged] = useYValue<boolean>('root.changed')
 
   useNavigationKeys({
     stopPropagation: true,
     keys: ['Escape'],
     onNavigation: () => {
       if (asDialog) {
-        if (isChanged) {
+        if (ydoc?.isChanged) {
           setShowVerifyDialog(true)
         } else {
           onClick()
@@ -32,9 +33,9 @@ export const ViewDialogClose = ({ onClick, Icon = XIcon, asDialog }: {
     <>
       <Button
         variant='ghost'
-        className='w-9 h-9 p-0 hover:bg-gray-200 dark:hover:bg-gray-700'
+        className='w-9 h-9 p-0 hover:bg-gray-200 dark:hover:bg-table-focused'
         onClick={() => {
-          if (isChanged) {
+          if (ydoc?.isChanged) {
             setShowVerifyDialog(true)
           } else {
             onClick()

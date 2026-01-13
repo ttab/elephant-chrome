@@ -2,6 +2,4 @@ export { RegistryProvider, RegistryContext, type RegistryProviderState } from '.
 export { ThemeProvider, ThemeProviderContext } from './ThemeProvider'
 export { TableProvider, TableContext } from './TableProvider'
 export { CollaborationProviderContext, CollaborationContext, type CollaborationProviderState } from './CollaborationProvider'
-export { HPWebSocketProviderContext, HPWebSocketProvider } from './HPWebSocketProvider'
-export { DocTrackerProvider } from './DocTrackerProvider'
 export { UserTrackerProvider, UserTrackerContext } from './UserTrackerProvider'
