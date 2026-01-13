@@ -1,5 +1,5 @@
 import { StatusSpecifications, WorkflowSpecifications } from '@/defaults/workflowSpecification'
-import { isConceptType } from '@/views/Concepts/lib/isConceptType'
+import { isConceptType } from '@/shared/isConceptType'
 
 export const DocumentStatus = ({ type, status }: {
   type: string
