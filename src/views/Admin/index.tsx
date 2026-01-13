@@ -3,8 +3,9 @@ import type { ViewMetadata } from '@/types/index'
 import { useMemo, useState } from 'react'
 import { ConceptOverview } from './ConceptOverview'
 import { TableProvider } from '@/contexts/TableProvider'
-import { ConceptColumns } from '../Concepts/ConceptColumns'
-import type { IDBConcept } from 'src/datastore/types'
+import type { IDBAdmin } from 'src/datastore/types'
+import { TabsContent } from '@ttab/elephant-ui'
+import { AdminColumns } from './AdminColumns'
 
 
 const meta: ViewMetadata = {
@@ -27,12 +28,12 @@ export const Admin = () => {
   const [currentTab, setCurrentTab] = useState<string>('list')
 
   const columns = useMemo(() =>
-    ConceptColumns(), [])
+    AdminColumns(), [])
 
   return (
     <>
       <View.Root tab={currentTab} onTabChange={setCurrentTab}>
-        <TableProvider<IDBConcept>
+        <TableProvider<IDBAdmin>
           columns={columns}
           type={meta.name}
         >
@@ -43,7 +44,9 @@ export const Admin = () => {
             <ViewHeader.Action />
           </ViewHeader.Root>
           <View.Content>
-            <ConceptOverview />
+            <TabsContent value='list' className='mt-0'>
+              <ConceptOverview columns={columns} />
+            </TabsContent>
           </View.Content>
         </TableProvider>
       </View.Root>

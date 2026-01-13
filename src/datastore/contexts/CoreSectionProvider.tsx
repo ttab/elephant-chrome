@@ -46,7 +46,8 @@ export const CoreSectionProvider = ({ children }: {
             id,
             title: _['document.title'][0].trim(),
             usableVersion: BigInt(_['heads.usable.version'][0]),
-            code: _['document.meta.core_section.data.code'][0]
+            code: _['document.meta.core_section.data.code'][0],
+            documentType: documentType
           }
         }
       )
