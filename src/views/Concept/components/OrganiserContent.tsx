@@ -17,12 +17,12 @@ export const OrganiserContent = ({ isActive, handleChange, asDialog, provider }:
   const LinkIcon = <ExternalLinkIcon size={18} strokeWidth={1.75} className='mr-2 hover:cursor-pointer' />
 
   const isLinkValid = () => {
-    return typeof link === 'string' && link.toString() !== ''
+    return typeof link === 'string' && link !== ''
   }
 
   const openLink = () => {
     if (isLinkValid()) {
-      window.open(link)
+      window.open(link, '_blank', 'noopener,noreferrer')
     }
   }
   return (
