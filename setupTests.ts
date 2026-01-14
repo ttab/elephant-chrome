@@ -4,9 +4,24 @@ import { randomUUID } from 'node:crypto'
 import { TextEncoder, TextDecoder } from 'util'
 import { type Mock, vi } from 'vitest'
 import { type Dispatch } from 'react'
-import { useNavigation, useView } from './src/hooks'
+import { useNavigation, useView, useRegistry } from './src/hooks'
 import { type NavigationActionType } from './src/types'
 export * from '@testing-library/react'
+import { sv } from 'date-fns/locale'
+import { DEFAULT_TIMEZONE } from '@/defaults/defaultTimezone'
+
+/**
+ * Global test setup file for Vitest
+ *
+ * This file is automatically loaded before all test files run.
+ * Use this file for:
+ * - Global mocks that need to be hoisted (imported before components)
+ * - Environment setup (crypto, TextEncoder, fetch mocks)
+ * - Default mock return values for frequently used hooks
+ *
+ * Note: Mocks defined here with vi.mock() are hoisted and applied before
+ * any component imports in test files, solving mock timing issues.
+ */
 
 // Set up crypto mock FIRST before any other imports
 window.crypto.randomUUID = randomUUID
@@ -127,4 +142,48 @@ vi.mock('@/hooks/useAuthors', () => ({
     { id: '234', name: 'Bob Lee', firstName: 'Bob', lastName: 'Lee', email: 'bl@example.com', sub: 'core://user/0002' },
     { id: '345', name: 'Christine King', firstName: 'Christine', lastName: 'King', initials: 'CK', email: 'ck@example.com', sub: 'core://user/0003' }
   ]
+}))
+
+vi.mock('@/hooks/useRegistry', () => ({
+  useRegistry: vi.fn()
+}));
+
+(useRegistry as Mock).mockReturnValue({
+  repository: {
+    saveDocument: vi.fn(),
+    getMeta: vi.fn(),
+    getDocument: vi.fn()
+  },
+  locale: {
+    code: {
+      full: 'sv-SE',
+      short: 'sv',
+      long: 'sv'
+    },
+    module: sv
+  },
+  timeZone: DEFAULT_TIMEZONE,
+  server: {},
+  dispatch: {},
+  index: {
+    query: vi.fn().mockReturnValue({
+      ok: true,
+      hits: []
+    })
+  }
+})
+
+vi.mock('sonner', () => ({
+  toast: {
+    error: vi.fn(),
+    success: vi.fn(),
+    info: vi.fn(),
+    warning: vi.fn(),
+    loading: vi.fn(),
+    promise: vi.fn(),
+    custom: vi.fn(),
+    message: vi.fn(),
+    dismiss: vi.fn()
+  },
+  Toaster: vi.fn(() => null)
 }))

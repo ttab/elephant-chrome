@@ -87,6 +87,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
 
   const [showVerifyDialog, setShowVerifyDialog] = useState<boolean>(false)
   const [showCreateDialogPayload, setShowCreateDialogPayload] = useState<boolean>(false)
+  const [isLinking, setIsLinking] = useState<boolean>(false)
   const [planningId] = getValueByYPath<string | undefined>(ydoc.ele, 'root.uuid')
 
   const documentId = articleId || flashId || editorialInfoId
@@ -184,6 +185,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
         undefined,
         event instanceof KeyboardEvent && event.key === ' ')
     } else if (!asDialog && ydoc.ele) {
+      // No deliverable yet, show create dialog
       setShowCreateDialogPayload(true)
     }
   }, [documentId, ydoc.ele, openDocument, asDialog])
@@ -312,6 +314,10 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
         `, selected ? 'bg-table-selected focus-visible:outline-table-selected' : ''
       )}
       onClick={(event) => {
+        if (showCreateDialogPayload || isLinking) {
+          return
+        }
+
         if (isDocument) {
           const isUsable = articleStatus?.meta?.workflowState === 'usable'
             || (assignmentType === 'flash' && articleStatus?.meta?.heads?.['usable']?.version === articleStatus?.meta?.currentVersion)
@@ -436,24 +442,68 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
           title={title || ''}
           documentLabel={documentLabel || ''}
           onClose={(id) => {
-            if (id && ydoc.provider?.document) {
-              // Add document id to correct assignment
+            // Prevent multiple simultaneous linking attempts
+            if (isLinking) {
+              return
+            }
+
+            // Capture document reference early to prevent race conditions
+            const document = ydoc.provider?.document
+
+            if (!id) {
+              setShowCreateDialogPayload(false)
+              return
+            }
+
+            if (!document) {
+              console.error('AssignmentRow: Document reference lost after deliverable creation', { id })
+              toast.error('Kunde inte länka leverabel till uppdrag')
+              setShowCreateDialogPayload(false)
+              return
+            }
+
+            setIsLinking(true)
+
+            // Link deliverable to assignment with error handling
+            try {
               appendDocumentToAssignment({
-                document: ydoc.provider.document,
+                document,
                 id,
                 index,
                 slug: '',
                 type: getDeliverableType(assignmentType)
               })
+            } catch (ex: unknown) {
+              const errorMessage = ex instanceof Error ? ex.message : 'Okänt fel'
+              console.error('AssignmentRow: Failed to link deliverable to assignment', {
+                id,
+                assignmentIndex: index,
+                error: errorMessage
+              })
+              toast.error(`Kunde inte länka leverabel: ${errorMessage}`)
+              setShowCreateDialogPayload(false)
+              setIsLinking(false)
+              return
+            }
 
-              if (planningId) {
-                snapshotDocument(planningId, undefined, ydoc.provider.document).then(() => {
-                  const openDocument = assignmentType === 'flash' ? openFlash : openArticle
-                  openDocument(undefined, { id, planningId }, 'blank')
-                }).catch((ex: unknown) => {
-                  toast.error(ex instanceof Error ? ex.message : 'Kunde inte spara planeringen')
+            // Snapshot document with error handling
+            if (planningId) {
+              snapshotDocument(planningId, undefined, document).then(() => {
+                const openDocument = assignmentType === 'flash' ? openFlash : openArticle
+                openDocument(undefined, { id, planningId }, 'blank')
+                setIsLinking(false)
+              }).catch((ex: unknown) => {
+                const errorMessage = ex instanceof Error ? ex.message : 'Kunde inte spara planeringen'
+                console.error('AssignmentRow: Failed to snapshot planning document', {
+                  planningId,
+                  deliverableId: id,
+                  error: errorMessage
                 })
-              }
+                toast.error(errorMessage)
+                setIsLinking(false)
+              })
+            } else {
+              setIsLinking(false)
             }
 
             setShowCreateDialogPayload(false)
