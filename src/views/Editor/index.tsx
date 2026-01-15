@@ -46,7 +46,7 @@ const Editor = (props: ViewProps): JSX.Element => {
   const documentId = props.id || query.id as string
   const preview = query.preview === 'true'
 
-  const [workflowStatus] = useWorkflowStatus({ documentId, isWorkflow: true })
+  const [workflowStatus] = useWorkflowStatus({ documentId })
 
   // Error handling for missing document
   if (!documentId || typeof documentId !== 'string') {

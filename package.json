@@ -52,7 +52,7 @@
     "@slate-yjs/react": "^1.1.0",
     "@tanstack/react-table": "^8.21.3",
     "@ttab/api-client": "^2.11.1",
-    "@ttab/elephant-api": "^0.18.2",
+    "@ttab/elephant-api": "^0.19.3",
     "@ttab/elephant-tt-api": "^0.1.8",
     "@ttab/elephant-ui": "^1.2.1",
     "@ttab/textbit": "^1.0.10",

@@ -205,7 +205,7 @@ export class RepositoryExtension implements Extension {
     void connection.transact((doc) => {
       const yCtx = doc.getMap('ctx')
       yCtx.delete('isInProgress')
-      yCtx.set('hash', createHash(JSON.stringify(doc.getMap('ele').toJSON())))
+      yCtx.set('hash', createHash(doc.getMap('ele')))
       yCtx.set('version', result.version)
 
       if (status) {
@@ -241,7 +241,7 @@ export class RepositoryExtension implements Extension {
     const documentResponse = fromYjsNewsDoc(document)
 
     // Regular lifecycle stores should ignore all stores with an unchanged hash.
-    const newHash = createHash(JSON.stringify(document.getMap('ele').toJSON()))
+    const newHash = createHash(document.getMap('ele'))
     if (newHash === document.getMap('ctx').get('hash')) {
       return
     }
