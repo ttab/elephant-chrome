@@ -14,7 +14,8 @@ export const TextInput = ({
   className,
   onValidation,
   rootMap,
-  validateStateRef
+  validateStateRef,
+  disabled
 }: {
   ydoc: YDocument<Y.Map<unknown>>
   value: Y.XmlText | undefined
@@ -23,9 +24,9 @@ export const TextInput = ({
   autoFocus?: boolean
   placeholder: string
   className?: string
+  disabled?: boolean
 } & FormProps): JSX.Element => {
   const path = useYPath(value, true)
-
   return (
     <Validation
       ydoc={ydoc}
@@ -43,6 +44,7 @@ export const TextInput = ({
         className={className}
         autoFocus={autoFocus}
         singleLine={true}
+        disabled={disabled}
       />
     </Validation>
   )

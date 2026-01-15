@@ -6,7 +6,7 @@ import type * as Y from 'yjs'
 import type { Descendant } from 'slate'
 import { cn } from '@ttab/elephant-ui/utils'
 
-export const TextBox = ({ id, asDialog, icon: Icon, iconAction, value, onChange, className, ...props }: {
+export const TextBox = ({ id, asDialog, disabled, icon: Icon, iconAction, value, onChange, className, ...props }: {
   ydoc: YDocument<Y.Map<unknown>>
   value: Y.XmlText | undefined
   id?: string
@@ -57,6 +57,7 @@ export const TextBox = ({ id, asDialog, icon: Icon, iconAction, value, onChange,
                 value={value}
                 onBlur={handleOnBlur}
                 onFocus={handleOnFocus}
+                disabled={disabled}
               />
             )
           : (
@@ -75,7 +76,7 @@ export const TextBox = ({ id, asDialog, icon: Icon, iconAction, value, onChange,
                 whitespace-nowrap
                 bg-gray-50
                 dark:bg-input`,
-                props.className
+                className
               )}
               />
             )}
