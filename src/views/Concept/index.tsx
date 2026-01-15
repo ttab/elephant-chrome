@@ -1,13 +1,9 @@
 import type { ViewMetadata, ViewProps } from '@/types/index'
 import type * as Y from 'yjs'
 import { useQuery } from '@/hooks/useQuery'
-import { AwarenessDocument } from '@/components/AwarenessDocument'
 import { Error } from '../Error'
-import { useCollaboration } from '@/hooks/useCollaboration'
-import { useAwareness } from '@/hooks/useAwareness'
-import { useYValue } from '@/hooks/useYValue'
 import { useSession } from 'next-auth/react'
-import { useCallback, useEffect, useState } from 'react'
+import { type JSX, useMemo, useState } from 'react'
 import { View } from '@/components/View'
 import { ConceptHeader } from '../Concepts/components/ConceptHeader'
 import { InfoIcon } from '@ttab/elephant-ui/icons'
@@ -21,7 +17,10 @@ import { LoadingText } from '@/components/LoadingText'
 import { ConceptContentRender } from './lib/ConceptContentRender'
 import { handleCancel } from './lib/handleCancel'
 import { handleSubmit } from './lib/handleSubmit'
-import { handleRootChange } from './lib/handleRootChange'
+import { useYDocument } from '@/modules/yjs/hooks'
+import { getConceptTemplateFromDocumentType } from '@/shared/templates/lib/getConceptTemplateFromDocumentType'
+import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
+
 
 const meta: ViewMetadata = {
   name: 'Concept',
@@ -38,20 +37,15 @@ const meta: ViewMetadata = {
     uhd: 2
   }
 }
-export const Concept = (props: ViewProps & { document?: Y.Doc }): JSX.Element => {
+export const Concept = (props: ViewProps): JSX.Element => {
   const [query] = useQuery()
   const documentId = props.id || query.id
 
-  if (!documentId || !props.documentType) {
-    return <></>
-  }
   return (
     <>
       {typeof documentId === 'string'
         ? (
-            <AwarenessDocument documentId={documentId} document={props.document}>
-              <ConceptContent {...props} documentId={documentId} />
-            </AwarenessDocument>
+            <ConceptContent {...props} />
           )
         : (
             <Error
@@ -62,68 +56,56 @@ export const Concept = (props: ViewProps & { document?: Y.Doc }): JSX.Element =>
     </>
   )
 }
-const ConceptContent = ({
-  documentId,
-  onDialogClose,
-  asDialog,
-  className,
-  documentType
-}: {
-  documentId: string
-} & ViewProps): JSX.Element => {
-  const { provider, synced, user } = useCollaboration()
-  const [, setIsFocused] = useAwareness(documentId)
-  const [isChanged] = useYValue<boolean>('root.changed')
-  const { status } = useSession()
-  const [, setChanged] = useYValue<boolean>('root.changed')
-  const environmentIsSane = provider && status === 'authenticated'
-  const [showVerifyDialog, setShowVerifyDialog] = useState(false)
-  const [documentStatus] = useWorkflowStatus(documentId, true, undefined, documentType)
-  const isActive = !documentStatus || documentStatus.name === 'usable'
-  const { concept } = useConcepts(documentType as ConceptTableDataKey)
 
-  useEffect(() => {
-    provider?.setAwarenessField('data', user)
-    setIsFocused(true)
-
-    return () => {
-      setIsFocused(false)
+const ConceptContent = (
+  props: ViewProps
+): JSX.Element => {
+  const documentType = props.documentType as string
+  const documentId = props.id as string
+  const data = useMemo(() => {
+    if (!props.id || !props.documentType || typeof props.id !== 'string') {
+      return undefined
     }
-    // We only want to rerun when provider change
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [provider])
+    return toGroupedNewsDoc({
+      version: 0n,
+      isMetaDocument: false,
+      mainDocument: '',
+      document: getConceptTemplateFromDocumentType(documentType)(props.id)
+    })
+  }, [props, documentType])
 
-  const handleChange = useCallback(
-    (value: boolean) => {
-      handleRootChange(value, provider)
-    }, [provider])
-
+  const ydoc = useYDocument<Y.Map<unknown>>(documentId, { data: data })
+  const { status } = useSession()
+  const environmentIsSane = ydoc.provider && status === 'authenticated'
+  const [showVerifyDialog, setShowVerifyDialog] = useState(false)
+  const [documentStatus] = useWorkflowStatus({ ydoc, documentId })
+  const isActive = !documentStatus || documentStatus.name === 'usable'
+  const { concept } = useConcepts(props.documentType as ConceptTableDataKey)
+  console.log(documentStatus)
   return (
-    !concept || !provider
+    !concept || !ydoc.provider
       ? <LoadingText>Laddar data</LoadingText>
       : (
           <>
-            <View.Root asDialog={asDialog} className={className}>
+            <View.Root asDialog={props.asDialog} className={props.className}>
               <ConceptHeader
-                documentId={documentId}
-                asDialog={!!asDialog}
-                isChanged={isChanged}
-                onDialogClose={onDialogClose}
+                ydoc={ydoc}
+                asDialog={!!props.asDialog}
+                onDialogClose={props.onDialogClose}
                 type={concept?.conceptTitle ?? 'Concept'}
                 documentType={concept?.documentType ?? ''}
               />
-              {!!provider && synced
+              {!!ydoc.provider && ydoc.synced
                 ? (
-                    <View.Content className='flex flex-col max-w-[1000px] p-5'>
+                    <View.Content className='flex flex-col max-w-[1000px] p-5' variant='grid'>
                       <Form.Root
-                        asDialog={asDialog}
-                        onChange={handleChange}
+                        asDialog={props.asDialog}
                       >
-                        <ConceptContentRender documentType={documentType} concept={concept} provider={provider} isActive={isActive} asDialog={asDialog} handleChange={handleChange} />
+                        <ConceptContentRender documentType={concept?.documentType ?? ''} ydoc={ydoc} concept={concept} {...props} isActive={isActive} />
                         <Form.Footer>
                           <Form.Submit
-                            onSubmit={() => handleSubmit(environmentIsSane, documentId, setChanged, onDialogClose)}
-                            onReset={() => handleCancel(isChanged, setShowVerifyDialog, onDialogClose)}
+                            onSubmit={() => handleSubmit(ydoc, props.onDialogClose)}
+                            onReset={() => handleCancel(ydoc.isChanged, setShowVerifyDialog, props.onDialogClose)}
                             className='w-full flex gap-2 justify-end'
                           >
                             <Button
@@ -143,7 +125,7 @@ const ConceptContent = ({
                               {`Skapa ${concept.conceptTitle.toLocaleLowerCase()}`}
                             </Button>
                           </Form.Submit>
-                          {asDialog
+                          {props.asDialog
                             && (
                               <>
                                 {!environmentIsSane && (
@@ -169,7 +151,7 @@ const ConceptContent = ({
                 <Prompt
                   title='Du har osparade ändringar'
                   description='Är du säker på att du vill stänga utan att spara?'
-                  onPrimary={() => onDialogClose && onDialogClose()}
+                  onPrimary={() => props.onDialogClose && props.onDialogClose()}
                   primaryLabel='Ja'
                   onSecondary={() => setShowVerifyDialog(false)}
                   secondaryLabel='Nej'

@@ -1,6 +1,6 @@
 import {
 } from '@/lib/index'
-import { useCallback, useEffect } from 'react'
+import { type JSX, useCallback, useEffect } from 'react'
 import { Table } from '@/components/Table'
 import type { ColumnDef } from '@tanstack/react-table'
 import { useTable } from '@/hooks/useTable'
