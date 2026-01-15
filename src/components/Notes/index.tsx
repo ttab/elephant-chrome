@@ -36,8 +36,8 @@ const Note = ({ ydoc, noteIndex, handleRemove }: {
 
   return (
     <Alert className={cn('flex p-1 pl-4', role === 'public'
-      ? 'bg-blue-50'
-      : 'bg-yellow-50')}
+      ? 'bg-blue-50 dark:bg-blue-800'
+      : 'bg-yellow-50 dark:bg-yellow-800')}
     >
       <div className='flex flex-row w-full justify-between items-center'>
         <AlertDescription className='flex space-x-2 items-center w-full'>

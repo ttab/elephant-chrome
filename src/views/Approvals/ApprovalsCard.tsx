@@ -25,7 +25,7 @@ export const ApprovalsCard = ({ trackedDocument, assignment, isSelected, isFocus
   const sections = useSections()
   const openArticle = useLink('Editor')
   const openFlash = useLink('Flash')
-  const [documentStatus] = useWorkflowStatus({ documentId: assignment._deliverableId, isWorkflow: true })
+  const [documentStatus] = useWorkflowStatus({ documentId: assignment._deliverableId })
 
   const openType = (assignmentType: string) => assignmentType === 'core/flash' ? openFlash : openArticle
 
@@ -92,7 +92,7 @@ export const ApprovalsCard = ({ trackedDocument, assignment, isSelected, isFocus
               }}
               >
                 <Tooltip content={internalInfo}>
-                  <div className='hover:bg-gray-300 dark:hover:bg-gray-700 p-1 -m-1 rounded'>
+                  <div className='hover:bg-gray-300 dark:hover:bg-table-focused p-1 -m-1 rounded'>
                     <MessageSquarePlusIcon className='opacity-50' size={14} />
                   </div>
                 </Tooltip>
@@ -144,7 +144,7 @@ export const ApprovalsCard = ({ trackedDocument, assignment, isSelected, isFocus
               <Link
                 to={assignment._deliverableType === 'core/flash' ? 'Flash' : 'Editor'}
                 props={{ id: assignment._deliverableId, autoFocus: false, preview: true }}
-                className='block p-1 -m-1 rounded transition-all opacity-70 md:opacity-0 md:group-hover:opacity-70 md:group-focus:opacity-70 md:group-focus-within:opacity-70 hover:bg-gray-300 dark:hover:bg-gray-700'
+                className='block p-1 -m-1 rounded transition-all opacity-70 md:opacity-0 md:group-hover:opacity-70 md:group-focus:opacity-70 md:group-focus-within:opacity-70 hover:bg-gray-300 dark:hover:bg-table-focused'
                 keepFocus
                 onClick={(e) => e.stopPropagation()}
               >
@@ -155,7 +155,7 @@ export const ApprovalsCard = ({ trackedDocument, assignment, isSelected, isFocus
               <Link
                 to='Planning'
                 props={{ id: assignment._id }}
-                className='block p-1 -m-1 rounded transition-all opacity-70 md:opacity-0 md:group-hover:opacity-70 md:group-focus:opacity-70 md:group-focus-within:opacity-70 hover:bg-gray-300 dark:hover:bg-gray-700'
+                className='block p-1 -m-1 rounded transition-all opacity-70 md:opacity-0 md:group-hover:opacity-70 md:group-focus:opacity-70 md:group-focus-within:opacity-70 hover:bg-gray-300 dark:hover:bg-table-focused'
                 onClick={(e) => e.stopPropagation()}
               >
                 <Tooltip content='Öppna planering'>

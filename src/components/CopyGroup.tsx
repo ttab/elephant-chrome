@@ -53,7 +53,7 @@ export const CopyGroup = ({ copyGroupId, type }: { copyGroupId: string, type: 'c
 
         return (
           <div key={original.id} className='flex flex-col gap-2'>
-            <div key={original.id} className='py-1 hover:bg-gray-100 dark:hover:bg-gray-700'>
+            <div key={original.id} className='py-1 hover:bg-gray-100 dark:hover:bg-table-focused'>
               <Link to={type === 'core/event' ? 'Event' : 'Planning'} props={{ id: original.id }} target='last'>
                 <div className='flex items-center gap-2 text-sm'>
                   <CalendarPlus2Icon strokeWidth={1.75} size={18} className='text-muted-foreground' />

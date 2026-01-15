@@ -142,7 +142,7 @@ export const Duplicate = ({ provider, title, session, status, type, dataInfo }: 
       <Popover>
         <PopoverTrigger title='Kopiera'>
           <div
-            className='flex items-center justify-center w-9 h-9 px-0 hover:bg-gray-200 dark:hover:bg-gray-700'
+            className='flex items-center justify-center w-9 h-9 px-0 hover:bg-gray-200 dark:hover:bg-table-focused'
           >
             <CopyPlusIcon size={20} strokeWidth={1.75} />
           </div>
