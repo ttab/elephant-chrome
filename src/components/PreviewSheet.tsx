@@ -1,6 +1,6 @@
 import { Badge, SheetClose, ToggleGroup, ToggleGroupItem, Tooltip } from '@ttab/elephant-ui'
 import { CheckIcon, FilePlus2Icon, SaveIcon, XIcon } from '@ttab/elephant-ui/icons'
-import { Editor } from '../../../components/PlainEditor'
+import { Editor } from '../components/PlainEditor'
 import { FaroErrorBoundary } from '@grafana/faro-react'
 import { Error, Wire } from '@/views'
 import { useNavigationKeys } from '@/hooks/useNavigationKeys'

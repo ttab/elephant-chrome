@@ -1,120 +1,93 @@
 import { View, ViewHeader } from '@/components/View'
 import { type ViewMetadata } from '@/types/index'
-import { MinusIcon, SaveIcon } from '@ttab/elephant-ui/icons'
-import { useMemo, type JSX } from 'react'
-import { wiresListColumns } from './WiresListColumns'
-import { Commands } from '@/components/Commands'
-import { TableCommandMenu } from '@/components/Commands/TableCommand'
-import { TableProvider } from '@/contexts/TableProvider'
-import { WireList } from './WiresList'
-import { Pagination } from '@/components/Table/Pagination'
-import { Controller } from './components/Controller'
-import { useView, useHistory, useSections } from '@/hooks'
-import type { HistoryInterface, HistoryState } from '@/navigation/hooks/useHistory'
-import { ViewDialogClose } from '@/components/View/ViewHeader/ViewDialogClose'
-import { ViewFocus } from '@/components/View/ViewHeader/ViewFocus'
-import { Button } from '@ttab/elephant-ui'
-import { useUserTracker } from '@/hooks/useUserTracker'
-import type { Wire } from '@/shared/schemas/wire'
+import { useCallback, useRef, useState, type JSX } from 'react'
+import { useView } from '@/hooks'
+import { cn } from '@ttab/elephant-ui/utils'
+import { Stream } from './components/Stream'
+import { Button, ButtonGroup } from '@ttab/elephant-ui'
+import { SaveIcon, PlusIcon } from '@ttab/elephant-ui/icons'
+import { useStreamNavigation } from './hooks/useStreamNavigation'
+
+
 const BASE_URL = import.meta.env.BASE_URL
 
 const meta: ViewMetadata = {
   name: 'Wires',
-  path: `${import.meta.env.BASE_URL}/wires`,
+  path: `${BASE_URL}/wires`,
   widths: {
     sm: 12,
     md: 12,
-    lg: 4,
-    xl: 4,
-    '2xl': 4,
-    hd: 3,
-    fhd: 3,
-    qhd: 3,
-    uhd: 2
+    lg: 12,
+    xl: 8,
+    '2xl': 8,
+    hd: 8,
+    fhd: 8,
+    qhd: 8,
+    uhd: 6
   }
 }
 
 export const Wires = (): JSX.Element => {
-  const sections = useSections()
-  const { viewId, isFocused } = useView()
-  const history = useHistory()
-  const isLast = history.state?.contentState[history.state?.contentState.length - 1]?.viewId === viewId
-  const isFirst = history.state?.contentState[0]?.viewId === viewId
-  const [, setWiresHistory] = useUserTracker<HistoryState>('Wires')
+  const { viewId, isActive, isFocused } = useView()
+  const [preview, setPreview] = useState<boolean>(false)
+  const [wireStreams, setWireStreams] = useState(['1', '2'])
+  const containerRef = useRef<HTMLDivElement>(null)
 
-  const columns = useMemo(() => wiresListColumns({ sections }), [sections])
+  useStreamNavigation({
+    isActive: isActive && isFocused,
+    containerRef,
+    wrapNavigation: false
+  })
+
+  const addWireStream = useCallback(() => {
+    setWireStreams((curr) => {
+      return [...curr, String(curr.length)]
+    })
+  }, [])
 
   return (
     <View.Root>
-      <TableProvider<Wire>
-        type={meta.name}
-        columns={columns}
-        initialState={{
-          grouping: ['modified']
-        }}
-      >
-        <TableCommandMenu heading='Wires'>
-          <Commands />
-        </TableCommandMenu>
 
-        <ViewHeader.Root>
-          {isFirst && (
-            <>
-              <ViewHeader.Title title='Telegram' name='Wires' />
-
-              <Button
-                variant='ghost'
-                onClick={() => {
-                  if (history.state) {
-                    // When persisting a WireHistory set first view as active
-                    setWiresHistory({
-                      ...history.state,
-                      viewId: history.state.contentState[0].viewId
-                    })
-                  }
-                }}
-              >
-                <SaveIcon strokeWidth={1.75} size={18} />
-              </Button>
-            </>
-          )}
-
-          <ViewHeader.Content>
-            <div className='flex gap-2'>
-              {!isFocused && isLast && (
-                <Controller />
-              )}
-              {!isFocused && (history.state?.contentState?.length ?? 0) > 1
-                && (
-                  <ViewDialogClose
-                    onClick={() => handleClose(viewId, history)}
-                    Icon={MinusIcon}
-                  />
-                )}
-            </div>
-          </ViewHeader.Content>
-
-          <div className='flex gap-2'>
-            <ViewFocus viewId={viewId} />
+      <ViewHeader.Root>
+        <ViewHeader.Title title='Telegram' name='Wires' />
+        <ViewHeader.Content>
+          <div className='flex'>
+            <Button variant='ghost' className='w-9 h-9 px-0' onClick={addWireStream}>
+              <PlusIcon strokeWidth={1.75} size={18} />
+            </Button>
+            <Button variant='ghost' disabled={true} className='w-9 h-9 px-0' onClick={() => {}}>
+              <SaveIcon strokeWidth={1.75} size={18} />
+            </Button>
           </div>
-        </ViewHeader.Root>
+        </ViewHeader.Content>
+        <ViewHeader.Action />
+      </ViewHeader.Root>
 
-        <View.Content>
-          <WireList columns={columns} />
-          <Pagination />
-        </View.Content>
+      <View.Content variant='no-scroll'>
+        <div
+          className={cn(
+            'h-full overflow-hidden @7xl/view:grid-cols-[auto_1fr]',
+            preview && 'grid grid-rows-2 @7xl/view:grid-rows-1'
+          )}
+        >
+          <div
+            className={cn(
+              'h-full overflow-x-auto overflow-y-hidden',
+              preview && '@7xl/view:pr-2'
+            )}
+          >
+            {/* Grid */}
+            <div ref={containerRef} className='grid h-full snap-x snap-proximity overflow-x-auto overflow-hidden grid-flow-col auto-cols-max'>
+              {wireStreams.map((wireStream) => (
+                <Stream key={wireStream} streamId={wireStream} wireStream={wireStream} />
+              ))}
+            </div>
+          </div>
+        </div>
 
-      </TableProvider>
+      </View.Content>
     </View.Root>
   )
 }
 
-function handleClose(
-  viewId?: string,
-  history?: HistoryInterface): void {
-  if (viewId && history) {
-    const newContentState = (history.state?.contentState.filter((obj) => obj.viewId !== viewId) || [])
-    history.replaceState(`${BASE_URL}/wires`, { viewId: viewId || '', contentState: newContentState })
-  }
-}
 Wires.meta = meta

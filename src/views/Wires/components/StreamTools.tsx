@@ -10,9 +10,9 @@ import { useWireSources } from '@/hooks/useWireSources'
 import { Newsvalues } from '@/defaults/newsvalues'
 import type { JSX } from 'react'
 
-export const Commands = (props: FilterProps): JSX.Element => {
+export const StreamTools = (props: FilterProps): JSX.Element => {
   if (props.page === undefined || props.pages === undefined || props.setPages === undefined || props.setSearch === undefined) {
-    throw new Error('No props passed to Command component')
+    throw new Error('No props passed to StreamFilter component')
   }
 
   const [filters, setFilters] = useQuery(['status', 'section'])
