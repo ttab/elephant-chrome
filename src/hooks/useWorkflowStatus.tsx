@@ -8,16 +8,17 @@ import type { Repository, Status } from '@/shared/Repository'
 import { snapshotDocument } from '@/lib/snapshotDocument'
 import { getStatusFromMeta } from '@/lib/getStatusFromMeta'
 import type { Session } from 'next-auth'
-import { useYValue, type YDocument } from '@/modules/yjs/hooks'
+import { type YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 
 // TODO: rename asPrint to a more generic name.
 // "asPrint" chould probably be used for planning-items and events as well
-export const useWorkflowStatus = ({ ydoc, documentId, isWorkflow = false, asPrint }: {
+export const useWorkflowStatus = ({ ydoc, documentId, isWorkflow = false, asPrint, documentType }: {
   ydoc?: YDocument<Y.Map<unknown>>
   documentId?: string
   isWorkflow?: boolean
   asPrint?: boolean
+  documentType?: string
 }): [
   Status | undefined,
   (newStatusName: string | Status, cause?: string, asWire?: boolean) => Promise<void>,
@@ -25,7 +26,7 @@ export const useWorkflowStatus = ({ ydoc, documentId, isWorkflow = false, asPrin
 ] => {
   const { repository } = useRegistry()
   const { data: session } = useSession()
-  const [, setChanged] = useYValue('root.changed')
+
   const CACHE_KEY = useMemo(
     () => `status/${documentId}/${isWorkflow}`,
     [documentId, isWorkflow])
@@ -49,13 +50,13 @@ export const useWorkflowStatus = ({ ydoc, documentId, isWorkflow = false, asPrin
       if (asPrint && meta.workflowCheckpoint === 'usable') {
         return {
           uuid: documentId,
-          ...getStatusFromMeta(meta, false)
+          ...getStatusFromMeta(meta, false, documentType)
         }
       }
 
       return {
         uuid: documentId,
-        ...getStatusFromMeta(meta, isWorkflow)
+        ...getStatusFromMeta(meta, isWorkflow, documentType)
       }
     }
   )

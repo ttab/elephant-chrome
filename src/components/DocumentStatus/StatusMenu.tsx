@@ -37,7 +37,8 @@ export const StatusMenu = ({ ydoc, type, publishTime, onBeforeStatusChange }: {
     'core/editorial-info',
     'tt/print-article'
   ].includes(type) || isConceptType(type)
-  const [documentStatus, setDocumentStatus] = useWorkflowStatus({ ydoc, documentId: ydoc.id, isWorkflow: shouldUseWorkflowStatus, asPrint: type === 'tt/print-article' })
+
+  const [documentStatus, setDocumentStatus] = useWorkflowStatus({ ydoc, documentId: ydoc.id, isWorkflow: shouldUseWorkflowStatus, asPrint: type === 'tt/print-article', documentType: type })
   const containerRef = useRef<HTMLDivElement>(null)
   const [dropdownWidth, setDropdownWidth] = useState<number>(0)
   const { statuses, workflow } = useWorkflow(type)
@@ -48,13 +49,12 @@ export const StatusMenu = ({ ydoc, type, publishTime, onBeforeStatusChange }: {
   const history = useHistory()
   const { viewId } = useView()
 
-
   // TODO: Revisit once reworking changed status logic for plannings etc
   let isChanged: boolean
   if (type === 'tt/print-article' && documentStatus?.name === 'usable') {
     isChanged = ydoc.isChanged
   } else {
-    isChanged = shouldUseWorkflowStatus ? false : ydoc.isChanged
+    isChanged = shouldUseWorkflowStatus && !isConceptType(type) ? false : ydoc.isChanged
   }
 
   useEffect(() => {
@@ -104,7 +104,6 @@ export const StatusMenu = ({ ydoc, type, publishTime, onBeforeStatusChange }: {
         })
 
         const ConceptViews = Object.fromEntries(Object.keys(tableDataMap).map((key) => [key, 'Concept']))
-
         const viewType: Record<string, View> = {
           'core/article': 'Editor',
           'core/planning-item': 'Planning',
@@ -130,8 +129,9 @@ export const StatusMenu = ({ ydoc, type, publishTime, onBeforeStatusChange }: {
   }
 
   const resetDocument = async () => {
-    if (!documentId || !session?.accessToken || !repository) return
-    await reset(repository, documentId, session.accessToken)
+    if (!ydoc.id || !session?.accessToken || !repository) return
+    await reset(repository, ydoc.id, session.accessToken)
+    ydoc.setIsChanged(false)
   }
 
   if (!documentStatus || !Object.keys(statuses).length) {
