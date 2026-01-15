@@ -26,7 +26,7 @@ export const StatusMenuLogic = ({ ydoc, propPlanningId, view }: StatusMenuHeader
   const { viewId } = useView()
   const { state, dispatch } = useNavigation()
   const history = useHistory()
-  const [workflowStatus] = useWorkflowStatus({ ydoc, isWorkflow: true })
+  const [workflowStatus] = useWorkflowStatus({ ydoc })
 
   const onBeforeStatusChange = useCallback(async (newStatus: string, data?: Record<string, unknown>) => {
     if (!planningId) {
@@ -95,7 +95,6 @@ export const StatusMenuLogic = ({ ydoc, propPlanningId, view }: StatusMenuHeader
       {!!(propPlanningId || planningId) && ydoc.id && (
         <StatusMenu
           ydoc={ydoc}
-          type='core/article'
           publishTime={publishTime ? new Date(publishTime) : undefined}
           onBeforeStatusChange={onBeforeStatusChange}
         />
