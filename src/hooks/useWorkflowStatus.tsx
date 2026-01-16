@@ -50,7 +50,9 @@ export const useWorkflowStatus = ({ ydoc, documentId: docId }: {
 
       // Read isWorkflow from specifications
       try {
-        const isWorkflow = !!WorkflowSpecifications[meta.type][state]?.isWorkflow
+        const isWorkflow = meta.type === 'tt/wire'
+          ? false
+          : !!WorkflowSpecifications[meta.type][state]?.isWorkflow
 
         return {
           uuid: documentId,
@@ -92,7 +94,9 @@ export const useWorkflowStatus = ({ ydoc, documentId: docId }: {
    */
   const setDocumentStatus = useCallback(
     async (newStatus: string | Status, cause?: string, asWire?: boolean) => {
-      if (!session || !documentId) {
+      const uuid = typeof newStatus === 'object' ? newStatus.uuid : documentId
+
+      if (!session || !uuid) {
         toast.error('Ett fel har uppstått, aktuell status kunde inte ändras! Ladda om webbläsaren och försök igen.')
         return
       }
@@ -106,7 +110,7 @@ export const useWorkflowStatus = ({ ydoc, documentId: docId }: {
         }
 
         // Flush document to repository and if applicable, update the status with cause
-        await snapshotDocument(documentId, {
+        await snapshotDocument(uuid, {
           force: true,
           status: typeof newStatus === 'string'
             ? newStatus
