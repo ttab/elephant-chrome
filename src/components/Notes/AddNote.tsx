@@ -36,6 +36,7 @@ export const AddNote = ({ ydoc, text = '', role }: {
       <Button
         variant='ghost'
         onClick={() => handleClick(role)}
+        className='hover:bg-gray-200 dark:hover:bg-table-focused rounded-md px-1 flex flex-row items-center justify-center gap-1 h-9 p-0 m-0 min-w-9'
       >
         <MessageSquarePlusIcon size={18} strokeWidth={1.75} />
         {text && <span className='text-muted-foreground'>{text}</span>}
