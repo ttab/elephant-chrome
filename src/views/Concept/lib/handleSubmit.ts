@@ -1,24 +1,27 @@
 import { snapshotDocument } from '@/lib/snapshotDocument'
+import type { YDocument } from '@/modules/yjs/hooks'
 import { toast } from 'sonner'
+import type * as Y from 'yjs'
 
 export const handleSubmit = (
-  environmentIsSane: boolean | undefined,
-  documentId: string,
-  setChanged: (arg0: boolean) => void,
+  ydoc: YDocument<Y.Map<unknown>>,
   onDialogClose: ((id?: string, title?: string) => void) | undefined): void => {
-  if (environmentIsSane) {
-    void snapshotDocument(documentId, { status: 'usable', addToHistory: true }).then((response) => {
-      if (response?.statusMessage) {
-        toast.error('Kunde inte skapa ny inställning!', {
-          duration: 5000,
-          position: 'top-center'
-        })
+  snapshotDocument(ydoc.id, { status: 'usable', addToHistory: true }, ydoc.provider?.document)
+    .then(() => {
+      onDialogClose?.(ydoc.id)
+    }).catch((ex) => {
+      console.error('Failed to snapshot document', ex)
+      toast.error('Kunde inte skapa ny inställning!', {
+        duration: 5000,
+        position: 'top-center'
+      })
+    }).finally(() => {
+      if (!ydoc) {
         return
       }
-      setChanged(false)
+      ydoc.setIsChanged(false)
       if (onDialogClose) {
         onDialogClose()
       }
     })
-  }
 }
