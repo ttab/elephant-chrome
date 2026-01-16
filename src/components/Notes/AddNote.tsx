@@ -52,7 +52,7 @@ export const AddNote = ({ ydoc, text = '', role }: {
             ? 'text-muted-foreground text-xs border rounded-md'
             : '')}
       >
-        <MessageSquarePlusIcon size={18} strokeWidth={1.75} className='text-black dark:text-white' />
+        <MessageSquarePlusIcon size={18} strokeWidth={1.75} />
         {text && <span className='text-muted-foreground'>{text}</span>}
       </DropdownMenuTrigger>
 
