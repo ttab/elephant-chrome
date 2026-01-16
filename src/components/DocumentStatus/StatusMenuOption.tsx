@@ -2,11 +2,12 @@ import type { StatusSpecification, WorkflowTransition } from '@/defaults/workflo
 import { DropdownMenuItem } from '@ttab/elephant-ui'
 import { cn } from '@ttab/elephant-ui/utils'
 
-export const StatusMenuOption = ({ statusDef, state, status, onSelect }: {
+export const StatusMenuOption = ({ statusDef, state, status, onSelect, hasChanges }: {
   statusDef: StatusSpecification
   state: WorkflowTransition
   status: string
   onSelect: (state: { status: string } & WorkflowTransition) => void
+  hasChanges?: boolean
 }) => {
   return (
     <DropdownMenuItem
@@ -26,7 +27,7 @@ export const StatusMenuOption = ({ statusDef, state, status, onSelect }: {
       <div className='grow flex flex-col gap-0.5'>
         <div className='font-semibold'>{state.title}</div>
         <div className='w-full text-sm text-muted-foreground pe-2'>
-          {state.description}
+          {hasChanges && state.changedDescription ? state.changedDescription : state.description}
         </div>
       </div>
     </DropdownMenuItem>
