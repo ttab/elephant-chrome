@@ -164,7 +164,7 @@ export const StatusMenu = ({ ydoc, type, publishTime, onBeforeStatusChange }: {
   // For print-articles we show "unpublished changes" _only_ if checkpoint is 'usable'
   const asSave = !!(type === 'tt/print-article'
     ? isChanged && documentStatus.checkpoint === 'usable'
-    : isChanged && documentStatus.name !== 'draft'
+    : (isChanged && documentStatus.name !== 'draft') && (isConceptType(type) && documentStatus.name !== 'unpublished')
   )
   return (
     <>
