@@ -3,9 +3,10 @@ import type { Wire } from '@/shared/schemas/wire'
 import { cn } from '@ttab/elephant-ui/utils'
 import { cva } from 'class-variance-authority'
 
-export const StreamEntry = ({ entry, status = 'saved' }: {
-  status?: 'saved' | 'used'
+export const StreamEntry = ({ streamId, entry, status = 'saved' }: {
+  streamId: string
   entry: Wire
+  status?: 'saved' | 'used'
 }): JSX.Element => {
   const variants = cva(
     `
@@ -40,9 +41,15 @@ export const StreamEntry = ({ entry, status = 'saved' }: {
 
   const modified = new Date(entry.fields.modified.values[0])
   const newsvalue = entry.fields['document.meta.core_newsvalue.value']?.values[0] === '6' ? 6 : undefined
+  const compositeId = `${streamId}:${entry.id}`
 
   return (
-    <div data-item-id={entry.id} tabIndex={0} className={cn(variants({ status, newsvalue }))}>
+    <div
+      data-item-id={compositeId}
+      data-entry-id={entry.id}
+      tabIndex={0}
+      className={cn(variants({ status, newsvalue }))}
+    >
       <StreamEntryCell>
         {`${modified.getHours()}.${modified.getMinutes().toString().padStart(2, '0')}`}
       </StreamEntryCell>

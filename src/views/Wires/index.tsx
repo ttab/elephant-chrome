@@ -28,13 +28,13 @@ const meta: ViewMetadata = {
 }
 
 export const Wires = (): JSX.Element => {
-  const { viewId, isActive, isFocused } = useView()
+  const { isActive } = useView()
   const [preview, setPreview] = useState<boolean>(false)
   const [wireStreams, setWireStreams] = useState(['1', '2'])
   const containerRef = useRef<HTMLDivElement>(null)
 
   useStreamNavigation({
-    isActive: isActive && isFocused,
+    isActive,
     containerRef,
     wrapNavigation: false
   })

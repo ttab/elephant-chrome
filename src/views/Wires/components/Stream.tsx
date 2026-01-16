@@ -37,7 +37,10 @@ export const Stream = ({ streamId, wireStream }: {
   return (
     <>
       {/* Column Wrapper */}
-      <div data-stream-id={streamId} className='flex flex-col h-full overflow-x-visible snap-start snap-always min-w-80 max-w-120 overflow-y-hidden border-e'>
+      <div
+        data-stream-id={streamId}
+        className='flex flex-col h-full overflow-x-visible snap-start snap-always min-w-80 max-w-120 overflow-y-hidden border-e'
+      >
         {/* Column */}
         <div className='col-span-1 grow flex flex-col min-w-0 overflow-y-auto flex-1'>
 
@@ -60,7 +63,7 @@ export const Stream = ({ streamId, wireStream }: {
           <div className='flex flex-col divide-y'>
             {data?.map((entry) => {
               return (
-                <StreamEntry key={entry.id} entry={entry} />
+                <StreamEntry key={entry.id} streamId={streamId} entry={entry} />
               )
             })}
           </div>

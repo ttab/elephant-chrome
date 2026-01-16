@@ -85,7 +85,7 @@ export function useStreamNavigation({
       const stream = streams[streamIndex]
       const items = getStreamItems(stream)
       const itemIndex = items.findIndex(
-        item => item.getAttribute('data-item-id') === itemId
+        (item) => item.getAttribute('data-item-id') === itemId
       )
 
       if (itemIndex !== -1) {
@@ -144,7 +144,7 @@ export function useStreamNavigation({
         }
         break
 
-      case 'down':
+      case 'down': {
         nextItemIndex = itemIndex + 1
         const currentStreamItems = getStreamItems(streams[streamIndex])
         if (wrapNavigation && nextItemIndex >= currentStreamItems.length) {
@@ -154,8 +154,9 @@ export function useStreamNavigation({
           return
         }
         break
+      }
 
-      case 'left':
+      case 'left': {
         nextStreamIndex = streamIndex - 1
         if (wrapNavigation && nextStreamIndex < 0) {
           nextStreamIndex = streams.length - 1
@@ -167,8 +168,9 @@ export function useStreamNavigation({
         const prevStreamItems = getStreamItems(streams[nextStreamIndex])
         nextItemIndex = Math.min(itemIndex, prevStreamItems.length - 1)
         break
+      }
 
-      case 'right':
+      case 'right': {
         nextStreamIndex = streamIndex + 1
         if (wrapNavigation && nextStreamIndex >= streams.length) {
           nextStreamIndex = 0
@@ -180,6 +182,7 @@ export function useStreamNavigation({
         const nextStreamItems = getStreamItems(streams[nextStreamIndex])
         nextItemIndex = Math.min(itemIndex, nextStreamItems.length - 1)
         break
+      }
     }
 
     const targetStream = streams[nextStreamIndex]
