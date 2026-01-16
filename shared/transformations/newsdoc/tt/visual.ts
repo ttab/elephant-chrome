@@ -73,11 +73,24 @@ export function revertVisual(element: TBElement): Block {
 
   function getText(node: Descendant | undefined) {
     let text = ''
-    if (node && 'children' in node && Array.isArray(node?.children)) {
-      const [child] = node.children
 
-      if (child && 'text' in child && child?.text) {
-        text = child.text
+    if (node && 'children' in node && Array.isArray(node?.children)) {
+      for (const child of node.children) {
+        const formatted = Object.keys(child).find((key) => key.startsWith('core/'))
+
+        if (child && 'text' in child && child?.text) {
+          if (!formatted) {
+            text += child.text
+          }
+
+          if (formatted && formatted === 'core/bold') {
+            text += `<strong>${child.text}</strong>`
+          }
+
+          if (formatted && formatted === 'core/italic') {
+            text += `<em>${child.text}</em>`
+          }
+        }
       }
     }
     return text
