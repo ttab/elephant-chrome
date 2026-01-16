@@ -37,7 +37,7 @@ const meta: ViewMetadata = {
     uhd: 2
   }
 }
-export const Concept = (props: ViewProps): JSX.Element => {
+export const Concept = (props: ViewProps & { document: Document }): JSX.Element => {
   const [query] = useQuery()
   const documentId = props.id || query.id
 
@@ -58,12 +58,13 @@ export const Concept = (props: ViewProps): JSX.Element => {
 }
 
 const ConceptContent = (
-  props: ViewProps
+  props: ViewProps & { document: Document }
 ): JSX.Element => {
   const documentType = props.documentType as string
   const documentId = props.id as string
+
   const data = useMemo(() => {
-    if (!props.id || !props.documentType || typeof props.id !== 'string') {
+    if (!props.document || !props.id || !props.documentType || typeof props.id !== 'string') {
       return undefined
     }
     return toGroupedNewsDoc({
@@ -78,10 +79,9 @@ const ConceptContent = (
   const { status } = useSession()
   const environmentIsSane = ydoc.provider && status === 'authenticated'
   const [showVerifyDialog, setShowVerifyDialog] = useState(false)
-  const [documentStatus] = useWorkflowStatus({ ydoc, documentId })
-  const isActive = !documentStatus || documentStatus.name === 'usable'
+  const [documentStatus] = useWorkflowStatus({ ydoc, documentId, isWorkflow: true, asPrint: false, documentType })
+  const isActive = !documentStatus || documentStatus?.name === 'usable'
   const { concept } = useConcepts(props.documentType as ConceptTableDataKey)
-  console.log(documentStatus)
   return (
     !concept || !ydoc.provider
       ? <LoadingText>Laddar data</LoadingText>
@@ -98,9 +98,7 @@ const ConceptContent = (
               {!!ydoc.provider && ydoc.synced
                 ? (
                     <View.Content className='flex flex-col max-w-[1000px] p-5' variant='grid'>
-                      <Form.Root
-                        asDialog={props.asDialog}
-                      >
+                      <Form.Root asDialog={props?.asDialog}>
                         <ConceptContentRender documentType={concept?.documentType ?? ''} ydoc={ydoc} concept={concept} {...props} isActive={isActive} />
                         <Form.Footer>
                           <Form.Submit
