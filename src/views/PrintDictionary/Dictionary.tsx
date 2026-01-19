@@ -194,8 +194,7 @@ const Dictionary = ({ className }: ViewProps): JSX.Element => {
             </Button>
           </div>
         </ViewHeader.Content>
-        <ViewHeader.Action>
-        </ViewHeader.Action>
+        <ViewHeader.Action />
       </ViewHeader.Root>
       <View.Content className='p-2 w-full'>
         <div className='flex flex-col gap-2'>

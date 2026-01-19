@@ -186,10 +186,6 @@ export const Table = <TData, TValue>({
         if (selectedRow && isRowTypeWire<TData, TValue>(type)) {
           const wireRow = selectedRow as RowType<WireType>
           const currentStatus = getWireStatus(type, wireRow.original)
-          if (currentStatus === 'used') {
-            return
-          }
-
           void setDocumentStatus({
             name: currentStatus === 'read' ? 'draft' : 'read',
             uuid: wireRow.original.id,
@@ -217,9 +213,6 @@ export const Table = <TData, TValue>({
         if (selectedRow && isRowTypeWire<TData, TValue>(type)) {
           const wireRow = selectedRow as RowType<WireType>
           const currentStatus = getWireStatus(type, wireRow.original)
-          if (currentStatus === 'used') {
-            return
-          }
 
           void setDocumentStatus({
             name: currentStatus === 'saved' ? 'draft' : 'saved',
