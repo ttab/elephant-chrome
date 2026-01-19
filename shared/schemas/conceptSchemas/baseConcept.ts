@@ -6,7 +6,9 @@ import type { FieldValuesV1, HitV1 } from '@ttab/elephant-api/index'
  */
 export const _baseConceptFields = [
   'document.title',
-  'heads.usable.version'
+  'heads.usable.version',
+  'current_version',
+  'heads.usable.id'
 ] as const
 
 /**
@@ -25,13 +27,15 @@ const _schema = z.object(schemaShape)
 /**
  * Type inferred from the BaseConceptSchema.
  */
-export type BaseConceptFields = z.infer<typeof _schema>
+export type BaseConceptFieldsObject = z.infer<typeof _schema>
+
+export type BaseConceptFields = Array<keyof typeof _baseConceptFields>
 
 /**
  * Interface extending HitV1 with a fields property of type BaseConceptFields
  */
 export interface Concept extends HitV1 {
-  fields: BaseConceptFields
+  fields: BaseConceptFieldsObject
 }
 
 /**
