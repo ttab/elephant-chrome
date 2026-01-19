@@ -1,60 +1,53 @@
 import { Form } from '@/components/Form'
-import { TextBox } from '@/components/ui'
-import { Validation } from '@/components/Validation'
-import { useYValue } from '@/hooks/useYValue'
+import { TextInput } from '@/components/ui/TextInput'
+import { useYValue, type YDocument } from '@/modules/yjs/hooks'
+import type { ViewProps } from '@/types/index'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { useMemo } from 'react'
+import type * as Y from 'yjs'
 
-export const StoryTagContent = ({ isActive, handleChange, asDialog }: {
-  isActive: boolean
-  handleChange: (value: boolean) => void
-  asDialog: boolean | undefined
-}) => {
-  const [data] = useYValue<Block[]>('meta.core/definition')
+
+export const StoryTagContent = ({ ydoc, isActive, ...props }:
+ & ViewProps & { ydoc: YDocument<Y.Map<unknown>>, isActive: boolean | null }) => {
+  const [title] = useYValue<Y.XmlText>(ydoc.ele, 'root.title', true)
+  const [data] = useYValue<Block[]>(ydoc.ele, 'meta.core/definition', false)
   const textPaths = useMemo(() => {
     if (!data) return { shortIndex: -1, longIndex: -1 }
-    const shortIndex = data.findIndex((d) => d.role === 'short')
-    const longIndex = data.findIndex((d) => d.role === 'long')
+    const shortIndex = data?.findIndex((d) => d.role === 'short')
+    const longIndex = data?.findIndex((d) => d.role === 'long')
     return { shortIndex, longIndex }
   }, [data])
+  const [longText] = useYValue<Y.XmlText>(ydoc.ele, `meta.core/definition[${textPaths.longIndex}].data.text`, true)
+  const [shortText] = useYValue<Y.XmlText>(ydoc.ele, `meta.core/definition[${textPaths.shortIndex}].data.text`, true)
+
   return (
-    <Form.Content>
-      <Validation
-        path='root.title'
-        label='title'
-        block='root.title'
-      >
-        <TextBox
-          id='storyTag'
-          label={!asDialog ? 'Story tag' : undefined}
-          asDialog={asDialog}
-          singleLine={true}
-          path='root.title'
-          className={isActive ? 'border' : 'bg-slate-100 text-slate-500'}
-          onChange={handleChange}
-          placeholder='Titel'
-          disabled={!isActive}
-        />
-      </Validation>
-      <TextBox
-        id='shortText'
-        label={!asDialog ? 'Kort text' : undefined}
-        asDialog={asDialog}
-        singleLine={true}
-        path={`meta.core/definition[${textPaths.shortIndex}].data.text`}
+    <Form.Content {...props}>
+
+      <TextInput
+        ydoc={ydoc}
+        label='Story tag'
         className={isActive ? 'border' : 'bg-slate-100 text-slate-500'}
-        onChange={handleChange}
+        value={title}
+        placeholder='Titel'
+        autoFocus={!!props.asDialog}
+        disabled={!isActive}
+      />
+
+      <TextInput
+        ydoc={ydoc}
+        label='Kod'
+        asDialog={props.asDialog}
+        value={shortText}
+        className={isActive ? 'border' : 'bg-slate-100 text-slate-500'}
         placeholder='Kort text'
         disabled={!isActive}
       />
-      <TextBox
-        id='longText'
-        label={!asDialog ? 'Lång text' : undefined}
-        asDialog={asDialog}
-        singleLine={false}
-        path={`meta.core/definition[${textPaths.longIndex}].data.text`}
+      <TextInput
+        ydoc={ydoc}
+        label='Lång text'
+        value={longText}
+        asDialog={props.asDialog}
         className={isActive ? 'border' : 'bg-slate-100 text-slate-500'}
-        onChange={handleChange}
         placeholder='Lång text'
         disabled={!isActive}
       />
