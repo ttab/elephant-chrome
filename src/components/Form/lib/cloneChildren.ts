@@ -14,7 +14,7 @@ const cloneChild = <P>(child: React.ReactNode, props?: Partial<P>): React.ReactN
   }
 
   if (props && isReactElement<P>(child)) {
-    return React.cloneElement<P>(child, props)
+    return React.cloneElement<P>(child, { ...props, ...child.props })
   }
 
   return React.cloneElement(child)
