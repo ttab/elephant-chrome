@@ -26,10 +26,8 @@ export function getWireStatus(type: DocumentType, wire: Wire): 'draft' | 'read' 
   }
 
   // Find the status with the most recent timestamp
-  const mostRecent = validStatuses.reduce((a, b) => (b.timestamp > a.timestamp ? b : a))
+  const mostRecent = validStatuses.reduce((a, b) =>
+    (b.timestamp > a.timestamp ? b : a))
 
-  if (wire.id === 'd821c3c6-00ad-585a-bf54-60efe1be2c3d') {
-    console.log(mostRecent)
-  }
   return mostRecent.key as 'read' | 'saved' | 'used'
 }
