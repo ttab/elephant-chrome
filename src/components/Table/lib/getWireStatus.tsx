@@ -6,24 +6,28 @@ export function getWireStatus(type: DocumentType, wire: Wire): 'draft' | 'read' 
     return null
   }
 
-  const read = Number(wire.fields?.['heads.read.version']?.values?.[0]) > -1
-    && wire.fields?.['heads.read.created']?.values?.[0]
-  const saved = Number(wire.fields?.['heads.saved.version']?.values?.[0]) > -1
-    && wire.fields?.['heads.saved.created']?.values?.[0]
-  const used = Number(wire.fields?.['heads.used.version']?.values?.[0]) > -1
-    && wire.fields?.['heads.used.created']?.values?.[0]
+  const statusFields = [
+    { key: 'read', created: wire.fields?.['heads.read.created']?.values?.[0], version: wire.fields?.['heads.read.version']?.values?.[0] },
+    { key: 'saved', created: wire.fields?.['heads.saved.created']?.values?.[0], version: wire.fields?.['heads.saved.version']?.values?.[0] },
+    { key: 'used', created: wire.fields?.['heads.used.created']?.values?.[0], version: wire.fields?.['heads.used.version']?.values?.[0] }
+  ]
 
-  if ((!read || read === '-1') && (!saved || saved === '-1') && (!used || used === '-1')) {
+  // Only consider statuses with version > 1 and valid timestamp
+  const validStatuses = statusFields
+    .filter((s) => s.created && s.version && Number(s.version) > 1)
+    .map((s) => ({
+      key: s.key,
+      timestamp: new Date(s.created).getTime()
+    }))
+    .filter((s) => !isNaN(s.timestamp))
+
+  if (validStatuses.length === 0) {
     return 'draft'
   }
 
-  if (saved || read || used) {
-    return saved && (!read || new Date(saved) > new Date(read))
-      ? 'saved'
-      : read && (!used || new Date(read) > new Date(used))
-        ? 'read'
-        : 'used'
-  }
+  // Find the status with the most recent timestamp
+  const mostRecent = validStatuses.reduce((a, b) =>
+    (b.timestamp > a.timestamp ? b : a))
 
-  return 'draft'
+  return mostRecent.key as 'read' | 'saved' | 'used'
 }
