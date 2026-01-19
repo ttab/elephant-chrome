@@ -1,116 +1,109 @@
 import { Form } from '@/components/Form'
-import { TextBox } from '@/components/ui'
-import { Validation } from '@/components/Validation'
-import { getValueByYPath, stringToYPath } from '@/shared/yUtils'
-import type { HocuspocusProvider } from '@hocuspocus/provider'
+import { TextInput } from '@/components/ui/TextInput'
+import { useYValue, type YDocument } from '@/modules/yjs/hooks'
+import { getValueByYPath } from '@/shared/yUtils'
+import type { ViewProps } from '@/types/index'
 import { ExternalLinkIcon } from '@ttab/elephant-ui/icons'
+import type * as Y from 'yjs'
 
-export const OrganiserContent = ({ isActive, handleChange, asDialog, provider }: {
-  isActive: boolean
-  handleChange: (value: boolean) => void
-  asDialog: boolean | undefined
-  provider: HocuspocusProvider
+
+export const OrganiserContent = ({ ydoc, isActive, ...props }: ViewProps & {
+  isActive: boolean | null
+  ydoc: YDocument<Y.Map<unknown>>
 }) => {
-  const yRoot = provider?.document.getMap('ele')
-  const yPath = stringToYPath(`links[text/html][0].url`)
-  const [link] = getValueByYPath<string>(yRoot, yPath, false)
+  const [link] = useYValue<Y.XmlText>(ydoc.ele, 'links[text/html][0].url', true)
+  const [title] = useYValue<Y.XmlText>(ydoc.ele, 'root.title', true)
+  const [streetAddress] = useYValue<Y.XmlText>(ydoc.ele, 'meta.core/contact-info[0].data.streetAddress', true)
+  const [city] = useYValue<Y.XmlText>(ydoc.ele, 'meta.core/contact-info[0].data.city', true)
+  const [country] = useYValue<Y.XmlText>(ydoc.ele, 'meta.core/contact-info[0].data.country', true)
+  const [email] = useYValue<Y.XmlText>(ydoc.ele, 'meta.core/contact-info[0].data.email', true)
+  const [phone] = useYValue<Y.XmlText>(ydoc.ele, 'meta.core/contact-info[0].data.phone', true)
+  const linkUrl = getValueByYPath<string>(ydoc.ele, 'links[text/html][0].url', false)[0]
   const LinkIcon = <ExternalLinkIcon size={18} strokeWidth={1.75} className='mr-2 hover:cursor-pointer' />
 
   const isLinkValid = () => {
-    return typeof link === 'string' && link !== ''
+    return typeof linkUrl === 'string' && linkUrl !== ''
   }
 
   const openLink = () => {
     if (isLinkValid()) {
-      window.open(link, '_blank', 'noopener,noreferrer')
+      window.open(linkUrl, '_blank', 'noopener,noreferrer')
     }
   }
   return (
-    <Form.Content>
-      <Validation
-        path='root.title'
-        label='title'
-        block='root.title'
-      >
-        <TextBox
-          id='organiser'
-          label={!asDialog ? 'Organisatör' : undefined}
-          asDialog={asDialog}
-          singleLine={true}
-          path='root.title'
-          className={isActive ? 'border' : 'bg-slate-100 text-slate-500'}
-          onChange={handleChange}
-          placeholder='Organisatörens namn'
-          disabled={!isActive}
-        />
-      </Validation>
-      <TextBox
-        id='streetAddress'
-        label={!asDialog ? 'Adress' : undefined}
-        asDialog={asDialog}
-        singleLine={true}
-        path='meta.core/contact-info[0].data.streetAddress'
+    <Form.Content {...props}>
+      <TextInput
+        ydoc={ydoc}
+        label='Organisatör'
+        value={title}
         className={isActive ? 'border' : 'bg-slate-100 text-slate-500'}
-        onChange={handleChange}
+        placeholder='Organisatörens namn'
+        autoFocus={!!props.asDialog}
+        disabled={!isActive}
+        asDialog={props.asDialog}
+      />
+
+      <TextInput
+        label='Adress'
+        ydoc={ydoc}
+        value={streetAddress}
+        className={isActive ? 'border' : 'bg-slate-100 text-slate-500'}
         placeholder='Adress'
         disabled={!isActive}
+        asDialog={props.asDialog}
+        onValidation={() => { return true }}
       />
-      <TextBox
-        id='city'
-        label={!asDialog ? 'Stad' : undefined}
-        asDialog={asDialog}
-        singleLine={true}
-        path='meta.core/contact-info[0].data.city'
+      <TextInput
+        label='Stad'
+        ydoc={ydoc}
+        value={city}
         className={isActive ? 'border' : 'bg-slate-100 text-slate-500'}
-        onChange={handleChange}
         placeholder='Stad'
         disabled={!isActive}
+        asDialog={props.asDialog}
+        onValidation={undefined}
       />
-      <TextBox
-        id='country'
-        label={!asDialog ? 'Land' : undefined}
-        asDialog={asDialog}
-        singleLine={true}
-        path='meta.core/contact-info[0].data.country'
+      <TextInput
+        label='Land'
+        ydoc={ydoc}
+        value={country}
         className={isActive ? 'border' : 'bg-slate-100 text-slate-500'}
-        onChange={handleChange}
         placeholder='Land'
         disabled={!isActive}
+        asDialog={props.asDialog}
+        onValidation={undefined}
       />
-      <TextBox
-        id='email'
-        label={!asDialog ? 'E-postadress' : undefined}
-        asDialog={asDialog}
-        singleLine={true}
-        path='meta.core/contact-info[0].data.email'
+      <TextInput
+        label='E-postadress'
+        ydoc={ydoc}
+        value={email}
         className={isActive ? 'border' : 'bg-slate-100 text-slate-500'}
-        onChange={handleChange}
         placeholder='E-postadress'
         disabled={!isActive}
+        asDialog={props.asDialog}
+        onValidation={undefined}
       />
-      <TextBox
-        id='phone'
-        label={!asDialog ? 'Telefon' : undefined}
-        asDialog={asDialog}
-        singleLine={true}
-        path='meta.core/contact-info[0].data.phone'
+      <TextInput
+        label='Telefon'
+        ydoc={ydoc}
+        value={phone}
         className={isActive ? 'border' : 'bg-slate-100 text-slate-500'}
-        onChange={handleChange}
         placeholder='Telefon'
         disabled={!isActive}
+        asDialog={props.asDialog}
+        onValidation={undefined}
       />
-      <TextBox
-        id='link'
-        label={!asDialog ? 'Länkar' : undefined}
-        asDialog={asDialog}
-        singleLine={true}
-        path='links[text/html][0].url'
+      <TextInput
+        label='Länkar'
+        ydoc={ydoc}
+        value={link}
         className={isActive ? 'border truncate' : 'bg-slate-100 text-slate-500 truncate'}
-        onChange={handleChange}
         placeholder='Website url'
         disabled={!isActive}
-        icon={isLinkValid() && !asDialog ? LinkIcon : undefined}
+        icon={isLinkValid() && !props.asDialog ? LinkIcon : undefined}
         iconAction={openLink}
+        asDialog={props.asDialog}
+        onValidation={undefined}
       />
     </Form.Content>
   )
