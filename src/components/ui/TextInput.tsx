@@ -1,4 +1,4 @@
-import type { JSX } from 'react'
+import { type JSX } from 'react'
 import type { FormProps } from '../Form/Root'
 import { TextBox } from './'
 import { Validation } from '../Validation'
@@ -15,7 +15,9 @@ export const TextInput = ({
   onValidation,
   rootMap,
   validateStateRef,
-  disabled
+  disabled,
+  icon,
+  iconAction
 }: {
   ydoc: YDocument<Y.Map<unknown>>
   value: Y.XmlText | undefined
@@ -25,6 +27,8 @@ export const TextInput = ({
   placeholder: string
   className?: string
   disabled?: boolean
+  icon?: JSX.Element
+  iconAction?: () => void
 } & FormProps): JSX.Element => {
   const path = useYPath(value, true)
   return (
@@ -38,6 +42,8 @@ export const TextInput = ({
       validateStateRef={validateStateRef}
     >
       <TextBox
+        icon={icon}
+        iconAction={iconAction}
         ydoc={ydoc}
         value={value}
         placeholder={placeholder}
