@@ -10,6 +10,8 @@ import {
 interface WorkflowItem {
   title: string
   description: string
+  changedDescription?: string
+  updateDescription?: string
   isWorkflow?: boolean
   asSave?: boolean
   requireCause?: boolean
@@ -258,6 +260,8 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
     usable: {
       title: 'Publicerad',
       description: 'Händelsen är publicerad externt',
+      changedDescription: 'Händelsen har ändrats sedan den senaste publiceringen',
+      updateDescription: 'Uppdatera den publicerade händelsen med de nya ändringarna',
       isWorkflow: false,
       asSave: true,
       transitions: {
@@ -321,6 +325,8 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
     usable: {
       title: 'Publicerad',
       description: 'Planeringen är publicerad',
+      changedDescription: 'Planeringen har ändrats sedan den senaste publiceringen',
+      updateDescription: 'Uppdatera den publicerade planeringen med de nya ändringarna',
       isWorkflow: false,
       asSave: true,
       transitions: {

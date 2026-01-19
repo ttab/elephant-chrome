@@ -154,27 +154,30 @@ export const StatusMenu = ({ ydoc, publishTime, onBeforeStatusChange }: {
               icon={currentStatusDef?.icon || StatusSpecifications[currentStatusName]?.icon}
               className={currentStatusDef?.className || StatusSpecifications[currentStatusName]?.className}
               title={workflow[currentStatusName]?.title}
-              description={workflow[currentStatusName]?.description}
+              description={asSave && isChanged && workflow[currentStatusName]?.changedDescription
+                ? workflow[currentStatusName]?.changedDescription
+                : workflow[currentStatusName]?.description}
             />
             <StatusOptions
               transitions={transitions}
               statuses={statuses}
               onSelect={showPrompt}
+              hasChanges={asSave && isChanged}
             >
               {asSave && isChanged && (
                 <StatusMenuOption
                   key='save'
                   status={documentStatus.name}
+                  hasChanges
                   state={{
                     verify: false,
                     isWorkflow: false,
-                    title: `Uppdatera ändringar - ${workflow[currentStatusName]?.title}`,
-                    description: 'Uppdatera med ändringar'
+                    title: 'Publicera ändringar',
+                    description: workflow[currentStatusName]?.updateDescription || workflow[currentStatusName]?.description
                   }}
                   onSelect={currentStatusName === 'usable' ? showPrompt : () => setStatus('usable')}
                   statusDef={currentStatusDef}
                 />
-
               )}
             </StatusOptions>
 
