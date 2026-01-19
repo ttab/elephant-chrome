@@ -20,6 +20,7 @@ import { handleSubmit } from './lib/handleSubmit'
 import { useYDocument } from '@/modules/yjs/hooks'
 import { getConceptTemplateFromDocumentType } from '@/shared/templates/lib/getConceptTemplateFromDocumentType'
 import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
+import type { EleDocumentResponse } from '@/shared/types'
 
 
 const meta: ViewMetadata = {
@@ -40,12 +41,23 @@ const meta: ViewMetadata = {
 export const Concept = (props: ViewProps & { document: Document }): JSX.Element => {
   const [query] = useQuery()
   const documentId = props.id || query.id
-
+  const documentType = props.documentType as string
+  const data = useMemo(() => {
+    if (!props.document || !documentId || !documentType || typeof documentId !== 'string') {
+      return undefined
+    }
+    return toGroupedNewsDoc({
+      version: 0n,
+      isMetaDocument: false,
+      mainDocument: '',
+      document: getConceptTemplateFromDocumentType(documentType)(documentId)
+    })
+  }, [documentId, documentType, props.document])
   return (
     <>
       {typeof documentId === 'string'
         ? (
-            <ConceptContent {...props} />
+            <ConceptContent {...props} data={data} documentId={documentId} documentType={documentType} />
           )
         : (
             <Error
@@ -58,30 +70,16 @@ export const Concept = (props: ViewProps & { document: Document }): JSX.Element 
 }
 
 const ConceptContent = (
-  props: ViewProps & { document: Document }
+  props: ViewProps & { document: Document, data?: EleDocumentResponse, documentId: string, documentType?: string }
 ): JSX.Element => {
-  const documentType = props.documentType as string
-  const documentId = props.id as string
-
-  const data = useMemo(() => {
-    if (!props.document || !props.id || !props.documentType || typeof props.id !== 'string') {
-      return undefined
-    }
-    return toGroupedNewsDoc({
-      version: 0n,
-      isMetaDocument: false,
-      mainDocument: '',
-      document: getConceptTemplateFromDocumentType(documentType)(props.id)
-    })
-  }, [props, documentType])
-
-  const ydoc = useYDocument<Y.Map<unknown>>(documentId, { data: data })
+  const ydoc = useYDocument<Y.Map<unknown>>(props.documentId, { data: props.data })
   const { status } = useSession()
   const environmentIsSane = ydoc.provider && status === 'authenticated'
   const [showVerifyDialog, setShowVerifyDialog] = useState(false)
-  const [documentStatus] = useWorkflowStatus({ ydoc, documentId, isWorkflow: true, asPrint: false, documentType })
+  const [documentStatus] = useWorkflowStatus({ ydoc, documentId: props.documentId, isWorkflow: true, asPrint: false, documentType: props.documentType })
   const isActive = !documentStatus || documentStatus?.name === 'usable'
   const { concept } = useConcepts(props.documentType as ConceptTableDataKey)
+
   return (
     !concept || !ydoc.provider
       ? <LoadingText>Laddar data</LoadingText>
@@ -95,56 +93,53 @@ const ConceptContent = (
                 type={concept?.conceptTitle ?? 'Concept'}
                 documentType={concept?.documentType ?? ''}
               />
-              {!!ydoc.provider && ydoc.synced
-                ? (
-                    <View.Content className='flex flex-col max-w-[1000px] p-5' variant='grid'>
-                      <Form.Root asDialog={props?.asDialog}>
-                        <ConceptContentRender documentType={concept?.documentType ?? ''} ydoc={ydoc} concept={concept} {...props} isActive={isActive} />
-                        <Form.Footer>
-                          <Form.Submit
-                            onSubmit={() => handleSubmit(ydoc, props.onDialogClose)}
-                            onReset={() => handleCancel(ydoc.isChanged, setShowVerifyDialog, props.onDialogClose)}
-                            className='w-full flex gap-2 justify-end'
-                          >
-                            <Button
-                              type='reset'
-                              className='whitespace-nowrap'
-                              variant='secondary'
-                              disabled={!environmentIsSane}
-                            >
-                              Avbryt
-                            </Button>
 
-                            <Button
-                              type='submit'
-                              disabled={!environmentIsSane}
-                              className='whitespace-nowrap'
-                            >
-                              {`Skapa ${concept.conceptTitle.toLocaleLowerCase()}`}
-                            </Button>
-                          </Form.Submit>
-                          {props.asDialog
-                            && (
-                              <>
-                                {!environmentIsSane && (
-                                  <div className='text-sm leading-tight pb-2 text-left flex gap-2'>
-                                    <span className='w-4'>
-                                      <InfoIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />
-                                    </span>
-                                    <p>
-                                      Du är utloggad eller har tappat kontakt med systemet.
-                                      Vänligen försök logga in igen.
-                                    </p>
-                                  </div>
-                                )}
+              <View.Content className='flex flex-col max-w-[1000px] p-5' variant='grid'>
+                <Form.Root asDialog={props?.asDialog}>
+                  <ConceptContentRender documentType={concept?.documentType ?? ''} ydoc={ydoc} {...props} isActive={isActive} id={props.id} />
+                  <Form.Footer>
+                    <Form.Submit
+                      onSubmit={() => handleSubmit(ydoc, props.onDialogClose)}
+                      onReset={() => handleCancel(ydoc.isChanged, setShowVerifyDialog, props.onDialogClose)}
+                      className='w-full flex gap-2 justify-end'
+                    >
+                      <Button
+                        type='reset'
+                        className='whitespace-nowrap'
+                        variant='secondary'
+                        disabled={!environmentIsSane}
+                      >
+                        Avbryt
+                      </Button>
 
-                              </>
-                            )}
-                        </Form.Footer>
-                      </Form.Root>
-                    </View.Content>
-                  )
-                : <></>}
+                      <Button
+                        type='submit'
+                        disabled={!environmentIsSane}
+                        className='whitespace-nowrap'
+                      >
+                        {`Skapa ${concept.conceptTitle.toLocaleLowerCase()}`}
+                      </Button>
+                    </Form.Submit>
+                    {props.asDialog
+                      && (
+                        <>
+                          {!environmentIsSane && (
+                            <div className='text-sm leading-tight pb-2 text-left flex gap-2'>
+                              <span className='w-4'>
+                                <InfoIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />
+                              </span>
+                              <p>
+                                Du är utloggad eller har tappat kontakt med systemet.
+                                Vänligen försök logga in igen.
+                              </p>
+                            </div>
+                          )}
+
+                        </>
+                      )}
+                  </Form.Footer>
+                </Form.Root>
+              </View.Content>
               {showVerifyDialog && (
                 <Prompt
                   title='Du har osparade ändringar'
