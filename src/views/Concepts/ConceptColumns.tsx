@@ -1,12 +1,12 @@
 import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
 import { Title } from '@/components/Table/Items/Title'
 import { ConceptStatuses } from '@/defaults/documentStatuses'
+import type { Concept } from '@/shared/schemas/conceptSchemas/baseConcept'
 import type { ColumnDef } from '@tanstack/react-table'
 import { BoxesIcon } from '@ttab/elephant-ui/icons'
-import type { IDBConcept } from 'src/datastore/types'
 
 
-export function ConceptColumns(): Array<ColumnDef<IDBConcept>> {
+export function ConceptColumns(): Array<ColumnDef<Concept>> {
   return [
     {
       id: 'documentStatus',
@@ -21,7 +21,7 @@ export function ConceptColumns(): Array<ColumnDef<IDBConcept>> {
         quickFilter: true
       },
       accessorFn: (data) => {
-        return data?.usableVersion && data.usableVersion > 0 ? 'usable' : 'inactive'
+        return data?.fields['heads.usable.version'] && Number(data?.fields['heads.usable.version'].values[0]) > 0 ? 'usable' : 'inactive'
       },
       cell: ({ row }) => {
         const status = row.getValue<string>('documentStatus') === 'usable' ? 'usable' : 'unpublished'
@@ -36,7 +36,7 @@ export function ConceptColumns(): Array<ColumnDef<IDBConcept>> {
         className: 'flex-none'
       },
       accessorFn: (data) => {
-        return data.title
+        return data?.fields['document.title'].values[0]
       },
       cell: ({ row }) => {
         const status = row.getValue<string>('documentStatus') === 'usable' ? 'usable' : 'inactive'

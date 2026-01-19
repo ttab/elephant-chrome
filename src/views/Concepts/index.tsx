@@ -5,14 +5,12 @@ import { useMemo, useState } from 'react'
 import { TabsContent } from '@ttab/elephant-ui'
 import { ConceptList } from './ConceptList'
 import { ConceptColumns } from './ConceptColumns'
-import type { IDBConcept } from 'src/datastore/types'
 import { Header } from '@/components/Header'
-import { useConcepts } from './lib/useConcepts'
-import { Error } from '../Error'
 import { tableDataMap, type ConceptTableDataKey } from './lib/conceptDataTable'
 import { useInitFilters } from '@/hooks/useInitFilters'
 import { useQuery } from '@/hooks/useQuery'
 import type { ColumnFiltersState } from '@tanstack/react-table'
+import type { Concept } from '@/shared/schemas/conceptSchemas/baseConcept'
 
 const meta: ViewMetadata = {
   name: 'Concepts',
@@ -32,17 +30,14 @@ const meta: ViewMetadata = {
 
 export const Concepts = ({ documentType }: ViewProps) => {
   const [currentTab, setCurrentTab] = useState<string>('list')
-  const { concept } = useConcepts(documentType as ConceptTableDataKey)
   const [query] = useQuery()
   const title = documentType ? tableDataMap[documentType as ConceptTableDataKey]?.label : 'Concepts'
   const columns = useMemo(() =>
     ConceptColumns(), [])
-
-  const columnFilters = useInitFilters<IDBConcept>({
+  const columnFilters = useInitFilters<Concept>({
     path: 'filters.concepts.current',
     columns
   })
-
   // filtering out only the documentStatus filter from the initial filters to avoid filtering by concept title
   const documentStatusFilter: ColumnFiltersState | undefined = useMemo(() => {
     if (!columnFilters) return undefined
@@ -50,36 +45,33 @@ export const Concepts = ({ documentType }: ViewProps) => {
     return [columnFilters[1]]
   }, [columnFilters])
 
-  if (!documentType || !concept?.data || !concept) {
-    return <Error></Error>
-  } else {
-    return (
-      <View.Root tab={currentTab} onTabChange={setCurrentTab}>
-        <TableProvider<IDBConcept>
-          columns={columns}
-          type={meta.name}
-          initialState={{
-            columnFilters: documentStatusFilter,
-            globalFilter: query.query
-          }}
-        >
-          <ViewHeader.Root>
-            <ViewHeader.Content>
-              <ViewHeader.Title name={title ?? 'Concepts'} title={title ?? 'Concepts'} />
-              <Header type='Concept' documentType={documentType} />
-            </ViewHeader.Content>
-            <ViewHeader.Action />
-          </ViewHeader.Root>
 
-          <View.Content>
-            <TabsContent value='list' className='mt-0'>
-              <ConceptList columns={columns} data={concept.data} />
-            </TabsContent>
-          </View.Content>
-        </TableProvider>
-      </View.Root>
-    )
-  }
+  return (
+    <View.Root tab={currentTab} onTabChange={setCurrentTab}>
+      <TableProvider<Concept>
+        columns={columns}
+        type={meta.name}
+        initialState={{
+          columnFilters: documentStatusFilter,
+          globalFilter: query.query
+        }}
+      >
+        <ViewHeader.Root>
+          <ViewHeader.Content>
+            <ViewHeader.Title name={title ?? 'Concepts'} title={title ?? 'Concepts'} />
+            <Header type='Concept' documentType={documentType} />
+          </ViewHeader.Content>
+          <ViewHeader.Action />
+        </ViewHeader.Root>
+
+        <View.Content>
+          <TabsContent value='list' className='mt-0'>
+            <ConceptList columns={columns} documentType={documentType ? documentType : 'default'} />
+          </TabsContent>
+        </View.Content>
+      </TableProvider>
+    </View.Root>
+  )
 }
 
 Concepts.meta = meta

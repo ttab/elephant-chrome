@@ -14,7 +14,7 @@ import { getConceptTemplateFromDocumentType } from '@/shared/templates/lib/getCo
 export const Header = ({ assigneeId, type, documentType }: {
   type: View
   assigneeId?: string | undefined
-  documentType: string
+  documentType?: string
 }): JSX.Element => {
   const [query] = useQuery()
   const showButton = useMemo(() => {
@@ -35,7 +35,7 @@ export const Header = ({ assigneeId, type, documentType }: {
           className='h-8 pr-4'
           onClick={() => {
             const id = crypto.randomUUID()
-            const initialDocument = type === 'Concept' ? getConceptTemplateFromDocumentType(documentType)(id, { query }) : getTemplateFromView(type)(id, { query })
+            const initialDocument = type === 'Concept' ? getConceptTemplateFromDocumentType(documentType ?? 'default')(id, { query }) : getTemplateFromView(type)(id, { query })
             showModal(
               <ViewDialog
                 onDialogClose={hideModal}
