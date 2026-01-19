@@ -1,21 +1,20 @@
+import type { FormProps } from '@/components/Form/Root'
 import type { YDocument } from '@/modules/yjs/hooks'
 import { type ViewProps } from '@/types/index'
 import { OrganiserContent } from '@/views/Concept/components/OrganiserContent'
 import { SectionContent } from '@/views/Concept/components/SectionContent'
 import { StoryTagContent } from '@/views/Concept/components/StoryTagContent'
-import { type ConceptTableDataMap } from '@/views/Concepts/lib/conceptDataTable'
 import { Error } from '@/views/Error'
 import type * as Y from 'yjs'
 
 
-export const ConceptContentRender = ({ ydoc, concept, documentType, isActive, ...props }: ViewProps & {
+export const ConceptContentRender = ({ ydoc, documentType, isActive, ...formProps}: ViewProps & {
   ydoc: YDocument<Y.Map<unknown>>
-  concept: ConceptTableDataMap[keyof ConceptTableDataMap] | null
   documentType: string
   isActive: boolean | null
-}) => {
+} & FormProps) => {
   // Error handling for missing document
-  if (!props.id || typeof props.id !== 'string') {
+  if (!formProps.id || typeof formProps.id !== 'string') {
     return (
       <Error
         title='Artikeldokument saknas'
@@ -24,14 +23,14 @@ export const ConceptContentRender = ({ ydoc, concept, documentType, isActive, ..
     )
   }
 
-  if (!concept) return <></>
+  if (!documentType) return <></>
   switch (documentType) {
     case 'core/section':
-      return SectionContent({ ydoc: ydoc, isActive: isActive, asDialog: props.asDialog })
+      return <SectionContent {...formProps} ydoc={ydoc} isActive={isActive} />
     case 'core/story':
-      return StoryTagContent({ ydoc: ydoc, isActive: isActive, asDialog: props.asDialog })
+      return <StoryTagContent {...formProps} ydoc={ydoc} isActive={isActive} />
     case 'core/organiser':
-      return OrganiserContent({ ydoc: ydoc, isActive: isActive, asDialog: props.asDialog, provider: ydoc.provider })
+      return <OrganiserContent {...formProps} ydoc={ydoc} isActive={isActive} />
     default:
       return <Error title='Innehållet hittades inte' message='Dokumenttypen finns inte' />
   }
