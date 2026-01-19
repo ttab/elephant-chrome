@@ -85,9 +85,9 @@ export const useLatest = (): HitV1[] => {
   const data = useMemo(
     () =>
       [
-        ...(dataArticles?.result ?? []),
-        ...(dataFlashes?.result ?? []),
-        ...(dataEditorialInfo?.result ?? [])
+        ...(dataArticles ?? []),
+        ...(dataFlashes ?? []),
+        ...(dataEditorialInfo ?? [])
       ].sort((a, b) => {
         const aCreated = a.fields['heads.usable.created']?.values?.[0]
         const bCreated = b.fields['heads.usable.created']?.values?.[0]

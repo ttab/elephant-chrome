@@ -63,7 +63,7 @@ export const Print = (): JSX.Element => {
   })
 
   const columns = useMemo(
-    () => printArticlesListColumns({ printFlows: data?.result }),
+    () => printArticlesListColumns({ printFlows: data }),
     [data]
   )
 

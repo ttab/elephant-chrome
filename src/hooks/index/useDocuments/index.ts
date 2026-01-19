@@ -57,7 +57,7 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
   page?: number
   sort?: SortingV1[]
   options?: useDocumentsFetchOptions
-}): SWRResponse<{ result: T[], total: number }, Error> => {
+}): SWRResponse<T[], Error> => {
   const { data: session } = useSession()
   const { index, repository } = useRegistry()
   const { setData } = useTable<T>()
@@ -72,7 +72,7 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
     : documentType, [query, page, documentType])
 
   // Memoize fetcher
-  const fetcher = useMemo(() => (): Promise<{ result: T[], total: number }> =>
+  const fetcher = useMemo(() => (): Promise<T[]> =>
     fetch<T, F>({
       index,
       repository,
@@ -88,7 +88,7 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
     }),
   [index, repository, session, page, size, documentType, query, fields, sort, options])
 
-  const { data, error, mutate, isLoading, isValidating } = useSWR<{ result: T[], total: number }, Error>(key, fetcher)
+  const { data, error, mutate, isLoading, isValidating } = useSWR<T[], Error>(key, fetcher)
   // Keep refs up to date for polling
   useEffect(() => {
     subscriptionsRef.current = subscriptions
@@ -104,7 +104,7 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
   // Set table data after fetch
   useEffect(() => {
     if (data && setData && options?.setTableData) {
-      setData(data?.result)
+      setData(data)
     }
   }, [data, setData, options?.setTableData])
 
@@ -119,7 +119,7 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
       try {
         subscriptionsRef.current = await pollSubscriptions({
           index,
-          data: dataRef.current?.result,
+          data: dataRef.current,
           accessToken: session.accessToken,
           subscriptions: subscriptionsRef.current ?? [],
           mutate: mutateRef.current!,
@@ -200,7 +200,7 @@ async function pollSubscriptions<T extends HitV1>({
   data?: T[]
   accessToken: string
   subscriptions: SubscriptionReference[]
-  mutate: KeyedMutator<{ result: T[], total: number }>
+  mutate: KeyedMutator<T[]>
   abortController?: AbortController
   options?: useDocumentsFetchOptions
 }): Promise<SubscriptionReference[]> {
@@ -258,7 +258,7 @@ async function pollSubscriptions<T extends HitV1>({
           : obj
       )
 
-      await mutate({ result: updatedData, total: 0 }, false)
+      await mutate(updatedData, false)
     }
 
     return newSubscriptions

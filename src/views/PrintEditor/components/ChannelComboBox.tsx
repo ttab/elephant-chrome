@@ -13,7 +13,7 @@ export const ChannelComboBox = () => {
     fields
   })
 
-  const allTVChannels = useMemo(() => data?.result.map((hit) => ({
+  const allTVChannels = useMemo(() => data?.map((hit) => ({
     label: hit.fields['document.title'].values[0],
     value: hit.fields['document.uri'].values[0]
   })) || [], [data])

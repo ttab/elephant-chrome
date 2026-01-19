@@ -78,7 +78,7 @@ export const PlanningTable = ({ ydoc, asDialog }: {
                 }
               },
               id: newItem?.uuid
-            } as PlanningType], total: data.total + 1 }, { revalidate: false })
+            } as PlanningType], { revalidate: false })
           }
         } catch (error) {
           console.warn('Failed to update planning table', error)
@@ -154,14 +154,14 @@ export const PlanningTable = ({ ydoc, asDialog }: {
         </DialogContent>
       </Dialog>
       <div className='pl-6 w-full'>
-        {data?.result.length > 0 && (
+        {data?.length > 0 && (
           <>
             <Separator />
             <div className='flex gap-2 items-center'>
               <GanttChartSquareIcon color='#FF971E' strokeWidth={1.75} size={18} className='text-muted-foreground' />
               <div className='text-muted-foreground py-2'>Planeringar</div>
             </div>
-            {data?.result.map((planning) => (
+            {data?.map((planning) => (
               <Link key={planning.id} to='Planning' props={{ id: planning.id }} target='last'>
                 <div
                   className='w-fit text-sm flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-table-focused p-1 rounded-sm'

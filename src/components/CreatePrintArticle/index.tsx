@@ -37,12 +37,12 @@ export const CreatePrintArticle = ({ id, asDialog, onDialogClose, className }: V
 
   const date = parseDate(dateString) || initDate
 
-  const allPrintFlows = data?.result.map((hit) => ({
+  const allPrintFlows = data?.map((hit) => ({
     value: hit.id,
     label: hit.fields['document.title'].values[0]
   })) || []
 
-  const allArticleNames = data?.result
+  const allArticleNames = data
     ?.find((hit) => hit.id === printFlow)
     ?.fields['document.content.tt_print_content.name'].values || []
 
@@ -109,7 +109,7 @@ export const CreatePrintArticle = ({ id, asDialog, onDialogClose, className }: V
       </ViewHeader.Root>
 
       <View.Content>
-        {data?.result.length
+        {data?.length
           ? (
               <Form.Root asDialog={asDialog}>
                 <Form.Content>

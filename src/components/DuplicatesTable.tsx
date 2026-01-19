@@ -62,14 +62,14 @@ export const DuplicatesTable = ({ documentId, type }: {
     return <pre>{error.message}</pre>
   }
 
-  if (!data?.result.length) {
+  if (!data?.length) {
     return <></>
   }
 
   return (
     <div className='pl-6 border-t'>
       <div className='text-sm font-bold pt-2'>Kopierad till</div>
-      {data?.result.map((duplicate) => {
+      {data?.map((duplicate) => {
         let start, end
         const title = duplicate.fields['document.title']?.values[0]
 
