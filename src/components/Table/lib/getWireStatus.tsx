@@ -12,9 +12,9 @@ export function getWireStatus(type: DocumentType, wire: Wire): 'draft' | 'read' 
     { key: 'used', created: wire.fields?.['heads.used.created']?.values?.[0], version: wire.fields?.['heads.used.version']?.values?.[0] }
   ]
 
-  // Only consider statuses with version > 1 and valid timestamp
+  // Only consider statuses with version >= 1 and valid timestamp
   const validStatuses = statusFields
-    .filter((s) => s.created && s.version && Number(s.version) > 1)
+    .filter((s) => s.created && s.version && Number(s.version) >= 1)
     .map((s) => ({
       key: s.key,
       timestamp: new Date(s.created).getTime()

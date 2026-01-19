@@ -16,7 +16,7 @@ describe('getWireStatus', () => {
       id: '3',
       fields: {
         'heads.read.created': { values: ['2020-01-01T00:00:00Z'] },
-        'heads.read.version': { values: ['1'] },
+        'heads.read.version': { values: ['-1'] },
         'heads.saved.created': { values: ['invalid-date'] },
         'heads.saved.version': { values: ['2'] }
       }
