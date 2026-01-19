@@ -1,5 +1,5 @@
 import type { QueryParams } from '@/hooks/useQuery'
-import { BoolQueryV1, MultiMatchQueryV1, QueryV1, RangeQueryV1 } from '@ttab/elephant-api/index'
+import { BoolQueryV1, MultiMatchQueryV1, QueryV1 } from '@ttab/elephant-api/index'
 
 /**
  * Constructs a query object based on the provided filter parameters.
@@ -15,20 +15,11 @@ export function constructQuery(filter?: QueryParams): QueryV1 | undefined {
     conditions: {
       oneofKind: 'bool',
       bool: BoolQueryV1.create({
-        must: [
-          {
-            conditions: {
-              oneofKind: 'range',
-              range: RangeQueryV1.create({
-                gte: '1',
-                field: 'heads.usable.version'
-              })
-            }
-          }
-        ]
+        must: []
       })
     }
   })
+
   if (query.conditions.oneofKind !== 'bool') {
     return undefined
   }
