@@ -1,4 +1,4 @@
-import type { ViewMetadata, ViewProps } from '@/types/index'
+import { type ViewMetadata, type ViewProps } from '@/types/index'
 import type * as Y from 'yjs'
 import { useQuery } from '@/hooks/useQuery'
 import { Error } from '../Error'
@@ -21,6 +21,7 @@ import { useYDocument } from '@/modules/yjs/hooks'
 import { getConceptTemplateFromDocumentType } from '@/shared/templates/lib/getConceptTemplateFromDocumentType'
 import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
 import type { EleDocumentResponse } from '@/shared/types'
+import type { Document } from '@ttab/elephant-api/newsdoc'
 
 
 const meta: ViewMetadata = {
@@ -38,7 +39,7 @@ const meta: ViewMetadata = {
     uhd: 2
   }
 }
-export const Concept = (props: ViewProps & { document: Document }): JSX.Element => {
+export const Concept = (props: ViewProps & { document?: Document }): JSX.Element => {
   const [query] = useQuery()
   const documentId = props.id || query.id
   const documentType = props.documentType as string
@@ -70,7 +71,7 @@ export const Concept = (props: ViewProps & { document: Document }): JSX.Element 
 }
 
 const ConceptContent = (
-  props: ViewProps & { document: Document, data?: EleDocumentResponse, documentId: string, documentType?: string }
+  props: ViewProps & { data?: EleDocumentResponse, documentId: string, documentType?: string }
 ): JSX.Element => {
   const ydoc = useYDocument<Y.Map<unknown>>(props.documentId, { data: props.data })
   const { status } = useSession()
