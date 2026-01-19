@@ -9,7 +9,7 @@ import type { IDBConcept } from 'src/datastore/types'
 import { Header } from '@/components/Header'
 import { useConcepts } from './lib/useConcepts'
 import { Error } from '../Error'
-import type { ConceptTableDataKey } from './lib/conceptDataTable'
+import { tableDataMap, type ConceptTableDataKey } from './lib/conceptDataTable'
 import { useInitFilters } from '@/hooks/useInitFilters'
 import { useQuery } from '@/hooks/useQuery'
 import type { ColumnFiltersState } from '@tanstack/react-table'
@@ -30,11 +30,11 @@ const meta: ViewMetadata = {
   }
 }
 
-export const Concepts = ({ title, documentType }: ViewProps) => {
+export const Concepts = ({ documentType }: ViewProps) => {
   const [currentTab, setCurrentTab] = useState<string>('list')
   const { concept } = useConcepts(documentType as ConceptTableDataKey)
   const [query] = useQuery()
-
+  const title = documentType ? tableDataMap[documentType as ConceptTableDataKey]?.label : 'Concepts'
   const columns = useMemo(() =>
     ConceptColumns(), [])
 
