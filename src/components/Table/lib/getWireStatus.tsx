@@ -14,7 +14,7 @@ export function getWireStatus(type: DocumentType, wire: Wire): 'draft' | 'read' 
 
   // Only consider statuses with version > 1 and valid timestamp
   const validStatuses = statusFields
-    .filter((s) => s.created && s.version && Number(s.version) > 1)
+    .filter((s) => s.created && s.version && Number(s.version) >= 1)
     .map((s) => ({
       key: s.key,
       timestamp: new Date(s.created).getTime()
