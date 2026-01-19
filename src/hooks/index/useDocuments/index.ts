@@ -28,6 +28,7 @@ export interface useDocumentsFetchOptions {
   asAssignments?: boolean
   setTableData?: boolean
   subscribe?: boolean
+  usableOnly?: boolean
 }
 
 class AbortError extends Error { }
@@ -183,7 +184,6 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
     }
     // Only restart polling if these change
   }, [index, options?.subscribe, session, subscriptions])
-
   return { data, error, mutate, isValidating, isLoading }
 }
 
