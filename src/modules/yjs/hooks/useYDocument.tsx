@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
-import type * as Y from 'yjs'
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
+import * as Y from 'yjs'
 import type { HocuspocusProvider } from '@hocuspocus/provider'
-import { createTypedYDoc } from '@/shared/yUtils'
+import { createTypedYDoc, stringToYPath } from '@/shared/yUtils'
 import { useYValue } from './useYValue'
 import { useSession } from 'next-auth/react'
 import { useRegistry } from '@/hooks/useRegistry'
@@ -11,6 +11,8 @@ import createHash from '@/shared/createHash'
 import type { CollaborationClient } from '../classes/CollaborationClient'
 import { useIsOnline } from './useIsOnline'
 import { useClientRegistry } from './useClientRegistry'
+import { findDescriptionIndex } from '@/views/Planning/hooks/useDescriptionIndex'
+import type { Block } from '@ttab/elephant-api/newsdoc'
 
 export interface YDocument<T> {
   id: string
@@ -44,6 +46,7 @@ export function useYDocument<T>(
     persistent?: boolean
     visibility?: boolean
     rootMap?: string
+    ignoreChangeKeys?: string[]
   }
 ): YDocument<T> {
   const { data: session } = useSession()
@@ -76,6 +79,13 @@ export function useYDocument<T>(
   // Whether document is ready to be saved to repository (is valid)
   const [isInProgress, setIsInProgress] = useYValue<boolean>(document.current.getMap('ctx'), 'isInProgress')
   const [isChanged, setIsChanged] = useState(document.current.getMap('ctx')?.get('isChanged') as boolean ?? false)
+  const [descriptions] = useYValue<Block[]>(document.current.getMap(rootMap), 'meta.core/description')
+
+  const internalDescriptionIndex = useMemo(() => {
+    if (isChanged) return
+
+    return findDescriptionIndex(descriptions, 'internal')
+  }, [descriptions, isChanged])
 
   /**
    * Client lifecycle - get client and release on unmount
@@ -137,6 +147,7 @@ export function useYDocument<T>(
   /**
    * Observe changes to the ele root map (the actual document) and set the isChange flag
    * to true if the calculated hash is different from the existing one.
+   * Ignore paths that are specified in options.ignoreChangeKeys
    */
   useEffect(() => {
     if (!document.current) return
@@ -151,12 +162,35 @@ export function useYDocument<T>(
       const newHash = createHash(yEle)
 
       if (newHash !== oldHash) {
-        if ('keysChanged' in events[0] && events.length === 1) {
-          const changed = events[0].keysChanged as Set<string>
-          // Ignore if the change is _only_ for `start`, since thats automatically done when
-          // creating a new version of an deliverable
-          if (changed.has('start') && changed.size === 1) {
-            return
+        // Check if we should ignore this change based on keys changed
+        if (options?.ignoreChangeKeys?.length) {
+          for (const ignoreChangedKey of options.ignoreChangeKeys) {
+            const ignoreKeys = stringToYPath(ignoreChangedKey)
+
+            const isMatch = ignoreKeys.every((key, index) => {
+              // Handle wildcard match
+              if (key === '*') return true
+
+              // Handle inserted variable
+              if (key === '@internalDescriptionIndex') {
+                return internalDescriptionIndex === events[0].path[index]
+              }
+
+              // Handle direct match
+              if (events[0].path[index] !== undefined) {
+                return key === events[0].path[index]
+              }
+
+              // Finally, check if this key was changed in this event
+              if (events[0] instanceof Y.YMapEvent) {
+                const changedKeys = (events[0] as Y.YMapEvent<Y.Map<unknown>>).keysChanged
+                return changedKeys.has(key.toString())
+              }
+            })
+
+            if (isMatch) {
+              return
+            }
           }
         }
 
@@ -170,7 +204,7 @@ export function useYDocument<T>(
     return () => {
       yEle.unobserveDeep(onChange)
     }
-  }, [isChanged, setIsChanged, rootMap])
+  }, [isChanged, setIsChanged, rootMap, options?.ignoreChangeKeys, internalDescriptionIndex])
 
   /**
    * Observe changes to the ctx root map and set the local state accordingly.

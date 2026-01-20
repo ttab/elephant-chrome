@@ -38,7 +38,7 @@ export const StatusButton = forwardRef<HTMLButtonElement, {
         />
       </div>
       <div className='pe-1'>
-        {asSave ? 'Opublicerade ändringar' : workflow[currentStatusName]?.title}
+        {asSave ? 'Publicera ny information' : workflow[currentStatusName]?.title}
       </div>
       <div className='ps-1'>
         <ChevronDownIcon size={16} />
