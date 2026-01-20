@@ -39,8 +39,7 @@ export const article: GetDocumentResponse = {
         type: 'tt/visual',
         title: '',
         data: {
-          caption: 'En stor mängd mjölk spilldes över vägbanan i samband med en olycka i Falkenberg. Arkivbild.',
-          html_caption: ''
+          caption: 'En stor mängd mjölk spilldes över vägbanan i samband med en olycka i Falkenberg. Arkivbild.'
         },
         rel: '',
         role: '',
