@@ -27,7 +27,7 @@ export const StatusButton = forwardRef<HTMLButtonElement, {
       size='sm'
       variant='outline'
       className='flex items-center h-8 px-3'
-      title={workflow[props.currentStatusName]?.description}
+      title={asSave ? workflow[props.currentStatusName]?.changedDescription : workflow[props.currentStatusName]?.description}
       {...rest}
     >
       <div className='pe-2'>

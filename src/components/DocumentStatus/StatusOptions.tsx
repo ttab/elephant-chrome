@@ -6,11 +6,11 @@ import {
 import { StatusMenuOption } from './StatusMenuOption'
 import type { PropsWithChildren } from 'react'
 
-export const StatusOptions = ({ transitions, statuses, onSelect, children, asSave }: {
+export const StatusOptions = ({ transitions, statuses, onSelect, children, hasChanges }: {
   transitions: Record<string, WorkflowTransition>
   statuses: Record<string, StatusSpecification>
   onSelect: (state: { status: string } & WorkflowTransition) => void
-  asSave: boolean
+  hasChanges?: boolean
 } & PropsWithChildren) => {
   return (
     <div className='p-2'>
@@ -24,7 +24,7 @@ export const StatusOptions = ({ transitions, statuses, onSelect, children, asSav
         .map(([status, state]) => {
           const statusDef = status === 'unpublished' ? StatusSpecifications[status] : statuses[status]
           // Remove option to deactivate a document in a change state
-          if (asSave && (transitions?.unpublished.title === 'Inaktivera')) return undefined
+          if (hasChanges && (transitions?.unpublished.title === 'Inaktivera')) return undefined
           return (
             <StatusMenuOption
               key={status}
@@ -32,6 +32,7 @@ export const StatusOptions = ({ transitions, statuses, onSelect, children, asSav
               statusDef={statusDef}
               state={state}
               onSelect={onSelect}
+              hasChanges={hasChanges}
             />
           )
         })}

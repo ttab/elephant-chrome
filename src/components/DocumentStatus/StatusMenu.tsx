@@ -1,7 +1,7 @@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@ttab/elephant-ui'
 import { useRef, useState, useEffect, useCallback } from 'react'
 import { useWorkflow } from '@/hooks/index/useWorkflow'
-import { StatusSpecifications, type WorkflowTransition } from '@/defaults/workflowSpecification'
+import { StatusSpecifications, WorkflowSpecifications, type WorkflowTransition } from '@/defaults/workflowSpecification'
 import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
 import { StatusOptions } from './StatusOptions'
 import { StatusMenuHeader } from './StatusMenuHeader'
@@ -21,9 +21,8 @@ import { reset } from '@/views/Concepts/lib/reset'
 import { isConceptType } from '@/shared/isConceptType'
 import { tableDataMap } from '@/views/Concepts/lib/conceptDataTable'
 
-export const StatusMenu = ({ ydoc, type, publishTime, onBeforeStatusChange }: {
+export const StatusMenu = ({ ydoc, publishTime, onBeforeStatusChange }: {
   ydoc: YDocument<Y.Map<unknown>>
-  type: string
   publishTime?: Date
   onBeforeStatusChange?: (
     status: string,
@@ -41,7 +40,7 @@ export const StatusMenu = ({ ydoc, type, publishTime, onBeforeStatusChange }: {
   const [documentStatus, setDocumentStatus] = useWorkflowStatus({ ydoc, documentId: ydoc.id, isWorkflow: shouldUseWorkflowStatus, asPrint: type === 'tt/print-article', documentType: type })
   const containerRef = useRef<HTMLDivElement>(null)
   const [dropdownWidth, setDropdownWidth] = useState<number>(0)
-  const { statuses, workflow } = useWorkflow(type)
+  const { statuses, workflow } = useWorkflow(documentStatus?.type)
   const [prompt, showPrompt] = useState<{ status: string } & WorkflowTransition | undefined>()
   const { data: session } = useSession()
   const { repository } = useRegistry()
@@ -49,13 +48,18 @@ export const StatusMenu = ({ ydoc, type, publishTime, onBeforeStatusChange }: {
   const history = useHistory()
   const { viewId } = useView()
 
-  // TODO: Revisit once reworking changed status logic for plannings etc
-  let isChanged: boolean
-  if (type === 'tt/print-article' && documentStatus?.name === 'usable') {
-    isChanged = ydoc.isChanged
-  } else {
-    isChanged = shouldUseWorkflowStatus && !isConceptType(type) ? false : ydoc.isChanged
-  }
+  // Read workflow specifications from current type and current status
+  const isWorkflow = documentStatus?.type
+    ? WorkflowSpecifications[documentStatus.type][documentStatus.name].isWorkflow
+    : false
+  const isChanged = !isWorkflow ? ydoc.isChanged : false
+  const asSave = (documentStatus?.type
+    ? WorkflowSpecifications[documentStatus.type][documentStatus.name].asSave && ydoc.isChanged
+    : false) || false
+  const requireCause = !!documentStatus?.checkpoint && documentStatus.type
+    ? WorkflowSpecifications[documentStatus.type][documentStatus.name].requireCause || false
+    : false
+
 
   useEffect(() => {
     if (containerRef.current) {
@@ -99,7 +103,7 @@ export const StatusMenu = ({ ydoc, type, publishTime, onBeforeStatusChange }: {
           status,
           accessToken: session?.accessToken || '',
           cause: documentStatus?.cause,
-          isWorkflow: WORKFLOW_TYPES.has(type) || isConceptType(type),
+          isWorkflow: documentStatus?.type === 'core/article',
           currentStatus: documentStatus
         })
 
@@ -108,13 +112,15 @@ export const StatusMenu = ({ ydoc, type, publishTime, onBeforeStatusChange }: {
           'core/article': 'Editor',
           'core/planning-item': 'Planning',
           'core/event': 'Event',
+          'core/factbox': 'Factbox',
+          'core/flash': 'Flash',
           'tt/print-article': 'PrintEditor',
           ...ConceptViews
         }
 
         handleLink({
           dispatch,
-          viewItem: state.viewRegistry.get(viewType[type]),
+          viewItem: state.viewRegistry.get(viewType[documentStatus?.type || 'Error']),
           props: { id: ydoc.id, documentType: type },
           viewId: crypto.randomUUID(),
           history,
@@ -145,27 +151,6 @@ export const StatusMenu = ({ ydoc, type, publishTime, onBeforeStatusChange }: {
     return null
   }
 
-  const getCurrentCause = (
-    cause: string | undefined,
-    type: string,
-    isChanged: boolean,
-    prompt: { status: string } & WorkflowTransition | undefined
-  ): string | undefined => {
-    if (cause !== undefined) {
-      return cause
-    } else if (type === 'tt/print-article') {
-      return ''
-    } else if (isChanged && prompt?.status === 'usable') {
-      return ''
-    } else {
-      return undefined
-    }
-  }
-  // For print-articles we show "unpublished changes" _only_ if checkpoint is 'usable'
-  const asSave = !!(type === 'tt/print-article'
-    ? isChanged && documentStatus.checkpoint === 'usable'
-    : (isChanged && documentStatus.name !== 'draft') && (isConceptType(type) && documentStatus.name !== 'unpublished')
-  )
   return (
     <>
       <div className='flex items-center' ref={containerRef}>
@@ -178,7 +163,6 @@ export const StatusMenu = ({ ydoc, type, publishTime, onBeforeStatusChange }: {
               currentStatusName={currentStatusName}
               currentStatusDef={currentStatusDef}
               asSave={asSave}
-
             />
           </DropdownMenuTrigger>
 
@@ -192,25 +176,29 @@ export const StatusMenu = ({ ydoc, type, publishTime, onBeforeStatusChange }: {
               icon={currentStatusDef?.icon || StatusSpecifications[currentStatusName]?.icon}
               className={currentStatusDef?.className || StatusSpecifications[currentStatusName]?.className}
               title={workflow[currentStatusName]?.title}
-              description={workflow[currentStatusName]?.description}
+              description={asSave && isChanged && workflow[currentStatusName]?.changedDescription
+                ? workflow[currentStatusName]?.changedDescription
+                : workflow[currentStatusName]?.description}
             />
             <StatusOptions
               transitions={transitions}
               statuses={statuses}
               onSelect={showPrompt}
-              asSave={asSave}
+              hasChanges={asSave && isChanged}
             >
               {asSave && (
                 <>
                   <StatusMenuOption
                     key='save'
                     status={documentStatus.name}
+                    hasChanges
                     state={{
-                      verify: true,
-                      title: `Uppdatera ändringar - ${workflow[currentStatusName]?.title}`,
-                      description: 'Uppdatera med ändringar'
+                      verify: false,
+                      isWorkflow: false,
+                      title: `Publicera ändringar`,
+                      description: workflow[currentStatusName]?.updateDescription || workflow[currentStatusName]?.description
                     }}
-                    onSelect={showPrompt}
+                    onSelect={currentStatusName === 'usable' ? showPrompt : () => setStatus('usable')}
                     statusDef={currentStatusDef}
                   />
                   {isConceptType(type)
@@ -255,14 +243,8 @@ export const StatusMenu = ({ ydoc, type, publishTime, onBeforeStatusChange }: {
               prompt={prompt}
               showPrompt={showPrompt}
               setStatus={(...args) => void setStatus(...args)}
-              currentCause={
-                getCurrentCause(documentStatus?.cause, type, isChanged, prompt)
-              }
-              requireCause={!!documentStatus.checkpoint && [
-                'core/article',
-                'core/flash',
-                'core/editorial-info'
-              ].includes(type)}
+              currentCause={documentStatus.cause}
+              requireCause={requireCause}
               unPublishDocument={unPublishDocument}
               resetDocument={resetDocument}
             />

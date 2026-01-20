@@ -7,6 +7,7 @@ import { getTemplateFromDeliverable } from '@/shared/templates/lib/getTemplateFr
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import type { JSX } from 'react'
+import { useState } from 'react'
 
 /**
  * Deliverable document creation dialog, responsible for creating articles and flashes in the repository.
@@ -23,12 +24,24 @@ export function CreateDeliverablePrompt({ ydoc, deliverableType, payload, onClos
 }): JSX.Element {
   const { repository } = useRegistry()
   const { data: session } = useSession()
+  const [isCreating, setIsCreating] = useState(false)
 
   if (!ydoc.provider?.document || !session?.accessToken || !repository) {
+    console.error('CreateDeliverablePrompt: Missing required dependencies', {
+      hasDocument: !!ydoc.provider?.document,
+      hasAccessToken: !!session?.accessToken,
+      hasRepository: !!repository
+    })
+    toast.error('Kan inte skapa leverabel')
     return <></>
   }
 
   const onCreateDocument = async () => {
+    // Validate payload contains required fields
+    if (!payload.meta?.['core/newsvalue'] || !payload.links?.['core/section']) {
+      throw new Error('Saknar nyhetsvärde eller sektion')
+    }
+
     const id = crypto.randomUUID()
     const template = getTemplateFromDeliverable(deliverableType)
     await repository.saveDocument(
@@ -46,13 +59,20 @@ export function CreateDeliverablePrompt({ ydoc, deliverableType, payload, onClos
       secondaryLabel='Avbryt'
       primaryLabel='Skapa'
       onPrimary={() => {
+        if (isCreating) {
+          return
+        }
+
+        setIsCreating(true)
         onCreateDocument()
           .then((id) => {
             onClose(id)
           })
           .catch((ex) => {
-            console.error((ex as Error).message)
-            toast.error(`Misslyckades att skapa text: ${(ex as Error).message}`)
+            const errorMessage = ex instanceof Error ? ex.message : 'Okänt fel'
+            console.error('Failed to create deliverable:', errorMessage, ex)
+            toast.error(`Misslyckades att skapa text: ${errorMessage}`)
+            setIsCreating(false)
           })
       }}
       onSecondary={() => {

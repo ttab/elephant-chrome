@@ -56,6 +56,19 @@ export function getStatusFromMeta(meta: DocumentMeta | StatusOverviewItem, isWor
       flow = meta.workflowCheckpoint || meta.workflowState
     }
   }
+
+  // Handle wire documents separately they don't have workflow states
+  if ('type' in meta && meta.type === 'tt/wire') {
+    return {
+      name: flow || entry.version > 0n ? name : 'draft',
+      version,
+      creator: entry.creator,
+      cause: entry.meta?.cause,
+      checkpoint: meta.workflowCheckpoint
+    }
+  }
+
+
   return {
     name: flow || name,
     version,

@@ -12,6 +12,11 @@ import {
 interface WorkflowItem {
   title: string
   description: string
+  changedDescription?: string
+  updateDescription?: string
+  isWorkflow?: boolean
+  asSave?: boolean
+  requireCause?: boolean
 }
 
 export interface WorkflowTransition extends WorkflowItem {
@@ -27,6 +32,153 @@ export type WorkflowSpecification = Record<string, WorkflowState>
 export interface StatusSpecification {
   icon: LucideIcon
   className: string
+}
+
+const baseDeliverable: WorkflowSpecification = {
+  draft: {
+    title: 'Utkast',
+    description: 'Du jobbar på ett utkast av artikeln',
+    isWorkflow: true,
+    requireCause: true,
+    transitions: {
+      done: {
+        default: true,
+        verify: true,
+        title: 'Klarmarkera',
+        description: 'Markera artikeln som klar'
+      },
+      approved: {
+        verify: true,
+        title: 'Godkänn',
+        description: 'Godkänn artikeln för publicering'
+      },
+      usable: {
+        verify: true,
+        title: 'Publicera',
+        description: 'Publicera artikeln'
+      },
+      withheld: {
+        verify: true,
+        title: 'Schemalägg publicering',
+        description: 'Ange datum och tid för publicering'
+      }
+    }
+  },
+  done: {
+    title: 'Klar',
+    requireCause: true,
+    description: 'Artikeln är klar och väntar på godkännande',
+    isWorkflow: true,
+    transitions: {
+      approved: {
+        default: true,
+        verify: true,
+        title: 'Godkänn',
+        description: 'Godkänn artikeln för publicering'
+      },
+      usable: {
+        verify: true,
+        title: 'Publicera',
+        description: 'Publicera artikeln direkt'
+      },
+      withheld: {
+        verify: true,
+        title: 'Schemalägg publicering',
+        description: 'Ange datum och tid för publicering'
+      },
+      draft: {
+        verify: true,
+        title: 'Till utkast',
+        description: 'Gör om artikeln till ett utkast igen'
+      },
+      unpublished: {
+        verify: true,
+        title: 'Avpublicera',
+        description: 'Avbryt och arkivera artikeln'
+      }
+    }
+  },
+  approved: {
+    title: 'Godkänd',
+    description: 'Artikeln är godkänd att publicera',
+    isWorkflow: true,
+    requireCause: true,
+    transitions: {
+      usable: {
+        default: true,
+        verify: true,
+        title: 'Publicera',
+        description: 'Publicera artikeln'
+      },
+      withheld: {
+        verify: true,
+        title: 'Schemalägg publicering',
+        description: 'Ange datum och tid för publicering'
+      },
+      draft: {
+        verify: true,
+        title: 'Till utkast',
+        description: 'Gör om artikeln till ett utkast igen'
+      },
+      unpublished: {
+        verify: true,
+        title: 'Avpublicera',
+        description: 'Avbryt och arkivera artikeln'
+      }
+    }
+  },
+  usable: {
+    title: 'Publicerad',
+    description: 'Artikeln är publicerad',
+    isWorkflow: true,
+    requireCause: true,
+    transitions: {
+      draft: {
+        default: true,
+        verify: true,
+        title: 'Ny version',
+        description: 'Fortsätt jobba på en ny version av artikeln'
+      },
+      unpublished: {
+        verify: true,
+        title: 'Avpublicera',
+        description: 'Avbryt publiceringen och arkivera artikeln'
+      }
+    }
+  },
+  withheld: {
+    title: 'Schemalagd',
+    description: 'Artikeln är schemalagd för automatisk publicering',
+    isWorkflow: true,
+    requireCause: true,
+    transitions: {
+      usable: {
+        default: true,
+        verify: true,
+        title: 'Publicera direkt',
+        description: 'Publicera artikeln direkt'
+      },
+      draft: {
+        verify: true,
+        title: 'Till utkast',
+        description: 'Avbryt schemalagd publicering och gör om till utkast igen'
+      }
+    }
+  },
+  unpublished: {
+    title: 'Avpublicerad',
+    description: 'Artikeln har avpublicerats',
+    isWorkflow: true,
+    requireCause: true,
+    transitions: {
+      draft: {
+        default: true,
+        verify: true,
+        title: 'Ny version',
+        description: 'Fortsätt jobba på en ny version av artikeln'
+      }
+    }
+  }
 }
 
 const baseConcept = {
@@ -105,9 +257,12 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
     draft: {
       title: 'Utkast',
       description: 'Du jobbar på ett utkast av denna händelse',
+      isWorkflow: false,
+      asSave: false,
       transitions: {
         done: {
           default: true,
+          verify: false,
           title: 'Använd internt',
           description: 'Gör händelsen internt synlig'
         },
@@ -121,6 +276,7 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
     done: {
       title: 'Intern',
       description: 'Händelsen är internt synlig',
+      isWorkflow: false,
       transitions: {
         usable: {
           verify: true,
@@ -137,6 +293,10 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
     usable: {
       title: 'Publicerad',
       description: 'Händelsen är publicerad externt',
+      changedDescription: 'Händelsen har ändrats sedan den senaste publiceringen',
+      updateDescription: 'Uppdatera den publicerade händelsen med de nya ändringarna',
+      isWorkflow: false,
+      asSave: true,
       transitions: {
         unpublished: {
           verify: true,
@@ -148,6 +308,7 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
     unpublished: {
       title: 'Avpublicerad',
       description: 'Händelsen har avpublicerats',
+      isWorkflow: false,
       transitions: {
         draft: {
           verify: true,
@@ -161,9 +322,12 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
     draft: {
       title: 'Utkast',
       description: 'Du jobbar på ett utkast av denna planering',
+      isWorkflow: false,
+      asSave: false,
       transitions: {
         done: {
           default: true,
+          verify: false,
           title: 'Använd internt',
           description: 'Gör planeringen internt synlig'
         },
@@ -177,10 +341,11 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
     done: {
       title: 'Intern',
       description: 'Planeringen är internt synlig',
+      isWorkflow: false,
       transitions: {
         usable: {
-          verify: true,
           title: 'Publicera',
+          verify: true,
           description: 'Publicera planeringen externt'
         },
         unpublished: {
@@ -193,6 +358,10 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
     usable: {
       title: 'Publicerad',
       description: 'Planeringen är publicerad',
+      changedDescription: 'Planeringen har ändrats sedan den senaste publiceringen',
+      updateDescription: 'Uppdatera den publicerade planeringen med de nya ändringarna',
+      isWorkflow: false,
+      asSave: true,
       transitions: {
         unpublished: {
           verify: true,
@@ -204,6 +373,7 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
     unpublished: {
       title: 'Avpublicerad',
       description: 'Planeringen har avpublicerats',
+      isWorkflow: false,
       transitions: {
         draft: {
           verify: true,
@@ -213,139 +383,14 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
       }
     }
   },
-  'core/article': {
-    draft: {
-      title: 'Utkast',
-      description: 'Du jobbar på ett utkast av artikeln',
-      transitions: {
-        done: {
-          default: true,
-          title: 'Klarmarkera',
-          description: 'Markera artikeln som klar'
-        },
-        approved: {
-          title: 'Godkänn',
-          description: 'Godkänn artikeln för publicering'
-        },
-        usable: {
-          verify: true,
-          title: 'Publicera',
-          description: 'Publicera artikeln'
-        },
-        withheld: {
-          verify: true,
-          title: 'Schemalägg publicering',
-          description: 'Ange datum och tid för publicering'
-        }
-      }
-    },
-    done: {
-      title: 'Klar',
-      description: 'Artikeln är klar och väntar på godkännande',
-      transitions: {
-        approved: {
-          default: true,
-          title: 'Godkänn',
-          description: 'Godkänn artikeln för publicering'
-        },
-        usable: {
-          verify: true,
-          title: 'Publicera',
-          description: 'Publicera artikeln direkt'
-        },
-        withheld: {
-          verify: true,
-          title: 'Schemalägg publicering',
-          description: 'Ange datum och tid för publicering'
-        },
-        draft: {
-          title: 'Till utkast',
-          description: 'Gör om artikeln till ett utkast igen'
-        },
-        unpublished: {
-          verify: true,
-          title: 'Avpublicera',
-          description: 'Avbryt och arkivera artikeln'
-        }
-      }
-    },
-    approved: {
-      title: 'Godkänd',
-      description: 'Artikeln är godkänd att publicera',
-      transitions: {
-        usable: {
-          default: true,
-          verify: true,
-          title: 'Publicera',
-          description: 'Publicera artikeln'
-        },
-        withheld: {
-          verify: true,
-          title: 'Schemalägg publicering',
-          description: 'Ange datum och tid för publicering'
-        },
-        draft: {
-          title: 'Till utkast',
-          description: 'Gör om artikeln till ett utkast igen'
-        },
-        unpublished: {
-          verify: true,
-          title: 'Avpublicera',
-          description: 'Avbryt och arkivera artikeln'
-        }
-      }
-    },
-    usable: {
-      title: 'Publicerad',
-      description: 'Artikeln är publicerad',
-      transitions: {
-        draft: {
-          default: true,
-          verify: true,
-          title: 'Ny version',
-          description: 'Fortsätt jobba på en ny version av artikeln'
-        },
-        unpublished: {
-          verify: true,
-          title: 'Avpublicera',
-          description: 'Avbryt publiceringen och arkivera artikeln'
-        }
-      }
-    },
-    withheld: {
-      title: 'Schemalagd',
-      description: 'Artikeln är schemalagd för automatisk publicering',
-      transitions: {
-        usable: {
-          default: true,
-          verify: true,
-          title: 'Publicera direkt',
-          description: 'Publicera artikeln direkt'
-        },
-        draft: {
-          verify: true,
-          title: 'Till utkast',
-          description: 'Avbryt schemalagd publicering och gör om till utkast igen'
-        }
-      }
-    },
-    unpublished: {
-      title: 'Avpublicerad',
-      description: 'Artikeln har avpublicerats',
-      transitions: {
-        draft: {
-          default: true,
-          verify: true,
-          title: 'Ny version',
-          description: 'Fortsätt jobba på en ny version av artikeln'
-        }
-      }
-    }
-  },
+  'core/article': baseDeliverable,
+  'core/flash': baseDeliverable,
+  // Factbox workflow needs to be defined
   'core/factbox': {
     draft: {
       title: 'Utkast',
       description: 'Du jobbar på ett utkast av faktarutan',
+      isWorkflow: false,
       transitions: {
         usable: {
           verify: true,
@@ -357,11 +402,13 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
     usable: {
       title: 'Användbar',
       description: 'Faktarutan är användbar',
+      isWorkflow: false,
+      asSave: true,
       transitions: {
-        unpublished: {
+        draft: {
           verify: true,
-          title: 'Arkivera',
-          description: 'Dra tillbaka och arkivera den här faktarutan'
+          title: 'Till utkast',
+          description: 'Gör om faktarutan till ett utkast igen'
         }
       }
     }
@@ -370,6 +417,7 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
     draft: {
       title: 'Utkast',
       description: 'Du jobbar på ett utkast av detta till red',
+      isWorkflow: true,
       transitions: {
         done: {
           default: true,
@@ -390,6 +438,7 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
     done: {
       title: 'Klar',
       description: 'Till red är klar och väntar på godkännande',
+      isWorkflow: true,
       transitions: {
         approved: {
           default: true,
@@ -410,6 +459,7 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
     approved: {
       title: 'Intern',
       description: 'Till red är internt publicerad och går att publicera externt',
+      isWorkflow: true,
       transitions: {
         usable: {
           default: true,
@@ -426,6 +476,7 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
     usable: {
       title: 'Publicerad',
       description: 'Till red är publicerad',
+      isWorkflow: true,
       transitions: {
         draft: {
           default: true,
@@ -443,6 +494,7 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
     draft: {
       title: 'Utkast',
       description: 'Du jobbar på ett utkast av printartikeln',
+      isWorkflow: true,
       transitions: {
         needs_proofreading: {
           default: true,
@@ -463,6 +515,7 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
     needs_proofreading: {
       title: 'Klar för korr',
       description: 'Printartikeln behöver korrläsning',
+      isWorkflow: true,
       transitions: {
         print_done: {
           title: 'Klarmarkera',
@@ -474,10 +527,12 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
           description: 'Exportera printartikeln'
         },
         cancelled: {
+          verify: true,
           title: 'Kasta',
           description: 'Kasta printartikeln'
         },
         draft: {
+          verify: true,
           title: 'Till utkast',
           description: 'Gör om printartikeln till ett utkast igen'
         }
@@ -486,6 +541,7 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
     print_done: {
       title: 'Klar',
       description: 'Printartikeln är klar och väntar på godkännande',
+      isWorkflow: true,
       transitions: {
         approved: {
           default: true,
@@ -514,6 +570,8 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
     usable: {
       title: 'Exporterad',
       description: 'Printartikeln är exporterad',
+      isWorkflow: false,
+      asSave: true,
       transitions: {
         unpublished: {
           verify: true,
@@ -525,6 +583,7 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
     unpublished: {
       title: 'Inställd',
       description: 'Printartikeln är avpublicerad',
+      isWorkflow: true,
       transitions: {
         draft: {
           title: 'Till utkast',
@@ -535,6 +594,7 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
     cancelled: {
       title: 'Kastad',
       description: 'Printartikeln är kastad',
+      isWorkflow: true,
       transitions: {
         draft: {
           title: 'Till utkast',

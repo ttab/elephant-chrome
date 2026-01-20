@@ -25,7 +25,7 @@ export const ApprovalsCard = ({ trackedDocument, assignment, isSelected, isFocus
   const sections = useSections()
   const openArticle = useLink('Editor')
   const openFlash = useLink('Flash')
-  const [documentStatus] = useWorkflowStatus({ documentId: assignment._deliverableId, isWorkflow: true })
+  const [documentStatus] = useWorkflowStatus({ documentId: assignment._deliverableId })
 
   const openType = (assignmentType: string) => assignmentType === 'core/flash' ? openFlash : openArticle
 
@@ -79,7 +79,7 @@ export const ApprovalsCard = ({ trackedDocument, assignment, isSelected, isFocus
               {Object.values(trackedDocument.users).map((user) => {
                 return (
                   <Tooltip key={user.id} content={user.name}>
-                    <Avatar value={user.name} size='xxs' className='bg-primary text-white dark:text-black border-none' />
+                    <Avatar value={user.name} size='xxs' className='bg-primary border-none' />
                   </Tooltip>
                 )
               })}

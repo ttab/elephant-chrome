@@ -1,6 +1,6 @@
 import type { WorkflowTransition } from '@/defaults/workflowSpecification'
 import { Prompt } from '../Prompt'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { PromptCauseField } from './PromptCauseField'
 
 export const PromptDefault = ({
@@ -40,23 +40,35 @@ export const PromptDefault = ({
     }
   }, [prompt.status])
 
+  const handleSubmit = useCallback(() => {
+    if (isUnpublishPrompt && unPublishDocument) {
+      void unPublishDocument('unpublished')
+    } else {
+      void setStatus(prompt.status, { cause })
+    }
+
+    showPrompt(undefined)
+  }, [cause, isUnpublishPrompt, prompt.status, setStatus, showPrompt, unPublishDocument])
+
+  // Handle auto-submit when verification is not required
+  useEffect(() => {
+    if (prompt.verify === false) {
+      handleSubmit()
+    }
+  }, [prompt.verify, handleSubmit])
+
+  // Don't render the prompt if verification is not required
+  if (prompt.verify === false) {
+    return null
+  }
+
   return (
     <Prompt
       title={prompt.title}
       description={prompt.description}
       primaryLabel={prompt.title}
       secondaryLabel='Avbryt'
-      onPrimary={() => {
-        showPrompt(undefined)
-
-        if (isUnpublishPrompt && unPublishDocument) {
-          void unPublishDocument('unpublished')
-        } else if (isResetPromt) {
-          void resetDocument()
-        } else {
-          void setStatus(prompt.status, { cause })
-        }
-      }}
+      onPrimary={handleSubmit}
       onSecondary={() => {
         showPrompt(undefined)
       }}

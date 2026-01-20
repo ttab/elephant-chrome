@@ -14,10 +14,6 @@ import { IndexedDBProvider } from '../src/datastore/contexts/IndexedDBProvider'
 import indexeddb from 'fake-indexeddb'
 import { ModalProvider } from '@/components/Modal/ModalProvider'
 import { UserTrackerContext } from '@/contexts/UserTrackerProvider'
-import type { RegistryProviderState } from '@/contexts/RegistryProvider'
-import { RegistryContext } from '@/contexts/RegistryProvider'
-import { sv } from 'date-fns/locale'
-import { DEFAULT_TIMEZONE } from '@/defaults/defaultTimezone'
 
 globalThis.indexedDB = indexeddb
 
@@ -39,47 +35,17 @@ const provider = {
   document: new Y.Doc()
 } as unknown as HocuspocusProvider
 
-const registry = {
-  locale: {
-    code: {
-      full: 'sv-SE',
-      short: 'sv',
-      long: 'sv'
-    },
-    module: sv
-  },
-  timeZone: DEFAULT_TIMEZONE,
-  server: {},
-  dispatch: {},
-  index: {
-    query: vi.fn().mockReturnValue({
-      ok: true,
-      hits: []
-    })
-  }
-} as unknown as RegistryProviderState
-
-vi.mock('next-auth/react', () => ({
-  useSession: vi.fn(() => ({
-    data: { user: { name: 'Test User', email: 'test@example.com' } },
-    status: 'authenticated'
-  }))
-}))
-
-
 describe('Use NavigationProvider', () => {
   it('should render view from registry', async () => {
     render(
       <ModalProvider>
-        <RegistryContext.Provider value={registry}>
-          <IndexedDBProvider>
-            <NavigationProvider>
-              <UserTrackerContext.Provider value={{ provider, synced: provider.synced, connected: true }}>
-                <AppContent />
-              </UserTrackerContext.Provider>
-            </NavigationProvider>
-          </IndexedDBProvider>
-        </RegistryContext.Provider>
+        <IndexedDBProvider>
+          <NavigationProvider>
+            <UserTrackerContext.Provider value={{ provider, synced: provider.synced, connected: true }}>
+              <AppContent />
+            </UserTrackerContext.Provider>
+          </NavigationProvider>
+        </IndexedDBProvider>
       </ModalProvider>
     )
 

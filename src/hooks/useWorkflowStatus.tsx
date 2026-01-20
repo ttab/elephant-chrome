@@ -8,16 +8,13 @@ import type { Repository, Status } from '@/shared/Repository'
 import { snapshotDocument } from '@/lib/snapshotDocument'
 import { getStatusFromMeta } from '@/lib/getStatusFromMeta'
 import type { Session } from 'next-auth'
-import { type YDocument } from '@/modules/yjs/hooks'
+import { WorkflowSpecifications } from '@/defaults/workflowSpecification'
+import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 
-// TODO: rename asPrint to a more generic name.
-// "asPrint" chould probably be used for planning-items and events as well
-export const useWorkflowStatus = ({ ydoc, documentId, isWorkflow = false, asPrint, documentType }: {
+export const useWorkflowStatus = ({ ydoc, documentId: docId, documentType }: {
   ydoc?: YDocument<Y.Map<unknown>>
   documentId?: string
-  isWorkflow?: boolean
-  asPrint?: boolean
   documentType?: string
 }): [
   Status | undefined,
@@ -27,9 +24,11 @@ export const useWorkflowStatus = ({ ydoc, documentId, isWorkflow = false, asPrin
   const { repository } = useRegistry()
   const { data: session } = useSession()
 
+  const documentId = docId || ydoc?.id
+
   const CACHE_KEY = useMemo(
-    () => `status/${documentId}/${isWorkflow}`,
-    [documentId, isWorkflow])
+    () => `status/${documentId}`,
+    [documentId])
   /**
    * SWR callback that fetches current workflow status
    */
@@ -47,16 +46,22 @@ export const useWorkflowStatus = ({ ydoc, documentId, isWorkflow = false, asPrin
         return
       }
 
-      if (asPrint && meta.workflowCheckpoint === 'usable') {
+      // Determine workflow from meta
+      const state = meta.workflowCheckpoint || meta.workflowState
+
+      // Read isWorkflow from specifications
+      try {
+        const isWorkflow = meta.type === 'tt/wire'
+          ? false
+          : !!WorkflowSpecifications[meta.type][state]?.isWorkflow
+
         return {
           uuid: documentId,
-          ...getStatusFromMeta(meta, false, documentType)
+          type: meta.type,
+          ...getStatusFromMeta(meta, isWorkflow, documentType)
         }
-      }
-
-      return {
-        uuid: documentId,
-        ...getStatusFromMeta(meta, isWorkflow, documentType)
+      } catch (err) {
+        console.error('Failed to get workflow specifications for type:', meta.type, 'state:', state, err, ydoc?.id, documentId)
       }
     }
   )
@@ -85,13 +90,14 @@ export const useWorkflowStatus = ({ ydoc, documentId, isWorkflow = false, asPrin
     }
   })
 
-
   /**
    * Callback hook to update the workflow status of a document
    */
   const setDocumentStatus = useCallback(
     async (newStatus: string | Status, cause?: string, asWire?: boolean) => {
-      if (!session || !documentId) {
+      const uuid = typeof newStatus === 'object' ? newStatus.uuid : documentId
+
+      if (!session || !uuid) {
         toast.error('Ett fel har uppstått, aktuell status kunde inte ändras! Ladda om webbläsaren och försök igen.')
         return
       }
@@ -105,7 +111,7 @@ export const useWorkflowStatus = ({ ydoc, documentId, isWorkflow = false, asPrin
         }
 
         // Flush document to repository and if applicable, update the status with cause
-        await snapshotDocument(documentId, {
+        await snapshotDocument(uuid, {
           force: true,
           status: typeof newStatus === 'string'
             ? newStatus
