@@ -64,10 +64,10 @@ export const ViewDialogClose = ({ ydoc, onClick, Icon = XIcon, asDialog }: {
                   setShowVerifyDialog(false)
                   onClick()
                 })
-                .catch(() => {
+                .catch((error) => {
                   setShowVerifyDialog(false)
                   toast.error('Kunde inte spara en dokumentet')
-                  console.log('Could not snapshot document before closing view.')
+                  console.error('Could not snapshot document before closing view.', error)
                 })
             }
           }}
