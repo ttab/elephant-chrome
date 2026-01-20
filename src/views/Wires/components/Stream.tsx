@@ -10,9 +10,13 @@ import { StreamTools } from './StreamTools'
 import { MinusIcon, SaveIcon } from '@ttab/elephant-ui/icons'
 import { Button } from '@ttab/elephant-ui'
 
-export const Stream = ({ streamId, wireStream }: {
+export const Stream = ({ streamId, wireStream, onFocus, onUnpress, onSelect, onPress }: {
   streamId: string
   wireStream: string // TODO: Needs to be filter specification with unique stable id, not just a number
+  onFocus?: (item: Wire, event: React.FocusEvent<HTMLElement>) => void
+  onUnpress?: (item: Wire, event: React.KeyboardEvent<HTMLElement>) => void
+  onSelect?: (item: Wire, selected: boolean) => void
+  onPress?: (item: Wire, event: React.MouseEvent<HTMLElement> | React.KeyboardEvent<HTMLElement>) => void
 }): JSX.Element => {
   const [{ page }] = useQuery()
   const [filter] = useQuery(['section', 'source', 'query', 'newsvalue'])
@@ -63,7 +67,15 @@ export const Stream = ({ streamId, wireStream }: {
           <div className='flex flex-col divide-y'>
             {data?.map((entry) => {
               return (
-                <StreamEntry key={entry.id} streamId={streamId} entry={entry} />
+                <StreamEntry
+                  key={entry.id}
+                  streamId={streamId}
+                  entry={entry}
+                  onPress={onPress}
+                  onUnpress={onUnpress}
+                  onFocus={onFocus}
+                  onSelect={onSelect}
+                />
               )
             })}
           </div>
