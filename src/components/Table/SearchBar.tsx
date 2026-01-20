@@ -2,6 +2,7 @@ import { Command } from '@ttab/elephant-ui'
 import type { Updater } from '@tanstack/react-table'
 import { useTable } from '@/hooks/useTable'
 import { DebouncedCommandInput } from '../Commands/Menu/DebouncedCommandInput'
+import type { JSX } from 'react'
 
 export const SearchBar = ({ placeholder, setGlobalTextFilter }: {
   setGlobalTextFilter: (updater: Updater<unknown>) => void
