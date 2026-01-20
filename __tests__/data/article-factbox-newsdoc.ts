@@ -68,7 +68,8 @@ export const articleFactbox: GetDocumentResponse = {
         content: [],
         contenttype: '',
         data: {
-          caption: 'Lorem ipsum dolor sit amet 2'
+          caption: 'Lorem ipsum dolor sit amet 2',
+          html_caption: ''
         },
         id: 'e485d938-527e-408d-a3e3-39833b72e438',
         links: [
