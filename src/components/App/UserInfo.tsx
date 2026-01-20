@@ -4,6 +4,7 @@ import type { Session } from 'next-auth'
 import { Avatar } from '../Avatar'
 import { signOut } from 'next-auth/react'
 import type { JSX } from 'react'
+import { useTranslation } from 'react-i18next'
 
 const BASE_URL = import.meta.env.BASE_URL
 const hasUserDoc = (obj: object | undefined) => obj && Object.keys(obj).length > 0
@@ -12,6 +13,8 @@ export const UserInfo = ({ user, data }: {
   user?: object
   data: Session | null
 }): JSX.Element => {
+  const { t } = useTranslation()
+
   return (
     <div className='justify-self-end flex flex-col items-center justify-center rounded-md bg-gray-100 dark:bg-gray-800 mt-10 pb-6'>
       <div className={cn({
@@ -39,7 +42,7 @@ export const UserInfo = ({ user, data }: {
           }}
           className='gap-4'
         >
-          Logga ut
+          {t('app.mainMenu.logout')}
         </Button>
       </SheetClose>
     </div>

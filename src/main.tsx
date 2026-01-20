@@ -1,4 +1,5 @@
 import ReactDOM from 'react-dom/client'
+import './lib/i18n'
 import { App } from './App.tsx'
 import { ThemeProvider, RegistryProvider } from '@/contexts'
 import { SessionProvider } from './contexts/SessionProvider'
