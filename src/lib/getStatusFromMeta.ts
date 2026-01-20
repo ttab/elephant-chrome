@@ -17,7 +17,9 @@ export function getStatusFromMeta(meta: StatusOverviewItem, isWorkflow: boolean)
 export function getStatusFromMeta(meta: DocumentMeta | StatusOverviewItem, isWorkflow: boolean): Status {
   const isMeta = isMetaData(meta)
   const heads = meta.heads
+  const type = isMeta ? meta.type : undefined
   const version = isMeta ? meta.currentVersion : meta.version
+  const isConcept = isMeta && typeof type === 'string' ? isConceptType(type) : false
   // If there are no heads it's always implicitly a 'draft'
   if (!heads || Object.keys(heads).length === 0) {
     return {
@@ -44,7 +46,7 @@ export function getStatusFromMeta(meta: DocumentMeta | StatusOverviewItem, isWor
   if (isWorkflow) {
     flow = meta.workflowState
   } else {
-    if (meta.heads?.usable?.version < 0 && isConceptType((meta as DocumentMeta).type as string)) {
+    if (meta.heads?.usable?.version < 0 && isConcept) {
       console.log('Concept unpublished detected')
       flow = 'unpublished'
     } else {
