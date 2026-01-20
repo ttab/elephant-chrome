@@ -18,7 +18,6 @@ export const TextboxRoot = ({
   spellcheck = true,
   onBlur,
   onFocus,
-  onChange,
   className
 }: {
   value: Y.XmlText
@@ -31,7 +30,6 @@ export const TextboxRoot = ({
   spellcheck?: boolean
   onBlur: React.FocusEventHandler<HTMLDivElement>
   onFocus: React.FocusEventHandler<HTMLDivElement>
-  onChange?: (arg: boolean) => void
   className?: string
 }): JSX.Element => {
   const [documentLanguage] = useYValue<string>(ydoc.ele, 'root.language')
