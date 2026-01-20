@@ -31,7 +31,7 @@ export const OrganiserContent = ({ ydoc, isActive, ...props }: ViewProps & {
     }
   }
   return (
-    <Form.Content {...props}>
+    <Form.Content {...props} key={isActive ? 'active' : 'inactive'}>
       <TextInput
         ydoc={ydoc}
         label='Organisatör'
@@ -42,7 +42,6 @@ export const OrganiserContent = ({ ydoc, isActive, ...props }: ViewProps & {
         disabled={!isActive}
         asDialog={props.asDialog}
       />
-
       <TextInput
         label='Adress'
         ydoc={ydoc}

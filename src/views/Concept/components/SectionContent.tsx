@@ -13,7 +13,7 @@ export const SectionContent = ({
   const [title] = useYValue<Y.XmlText>(ydoc.ele, 'root.title', true)
   const [code] = useYValue<Y.XmlText>(ydoc.ele, 'meta.core/section[0].data.code', true)
   return (
-    <Form.Content {...props}>
+    <Form.Content {...props} key={isActive ? 'active' : 'inactive'}>
       <TextInput
         ydoc={ydoc}
         value={title}

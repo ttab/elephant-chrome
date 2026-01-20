@@ -21,8 +21,7 @@ export const StoryTagContent = ({ ydoc, isActive, ...props }:
   const [shortText] = useYValue<Y.XmlText>(ydoc.ele, `meta.core/definition[${textPaths.shortIndex}].data.text`, true)
 
   return (
-    <Form.Content {...props}>
-
+    <Form.Content {...props} key={isActive ? 'active' : 'inactive'}>
       <TextInput
         ydoc={ydoc}
         label='Story tag'
@@ -32,7 +31,6 @@ export const StoryTagContent = ({ ydoc, isActive, ...props }:
         autoFocus={!!props.asDialog}
         disabled={!isActive}
       />
-
       <TextInput
         ydoc={ydoc}
         label='Kod'
