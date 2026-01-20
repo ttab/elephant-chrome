@@ -12,10 +12,9 @@ import { WorkflowSpecifications } from '@/defaults/workflowSpecification'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 
-export const useWorkflowStatus = ({ ydoc, documentId: docId, documentType }: {
+export const useWorkflowStatus = ({ ydoc, documentId: docId }: {
   ydoc?: YDocument<Y.Map<unknown>>
   documentId?: string
-  documentType?: string
 }): [
   Status | undefined,
   (newStatusName: string | Status, cause?: string, asWire?: boolean) => Promise<void>,
@@ -58,7 +57,7 @@ export const useWorkflowStatus = ({ ydoc, documentId: docId, documentType }: {
         return {
           uuid: documentId,
           type: meta.type,
-          ...getStatusFromMeta(meta, isWorkflow, documentType)
+          ...getStatusFromMeta(meta, isWorkflow)
         }
       } catch (err) {
         console.error('Failed to get workflow specifications for type:', meta.type, 'state:', state, err, ydoc?.id, documentId)

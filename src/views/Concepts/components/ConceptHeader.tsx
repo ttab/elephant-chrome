@@ -8,12 +8,11 @@ import type * as Y from 'yjs'
 import { MetaSheet } from '@/components/MetaSheet/MetaSheet'
 
 
-export const ConceptHeader = ({ ydoc, asDialog, onDialogClose, type, documentType }: {
+export const ConceptHeader = ({ ydoc, asDialog, onDialogClose, type }: {
   ydoc: YDocument<Y.Map<unknown>>
   asDialog: boolean
   onDialogClose?: () => void
   type: string
-  documentType: string
 }): JSX.Element => {
   const { viewId } = useView()
   const containerRef = useRef<HTMLElement | null>(null)
@@ -40,7 +39,6 @@ export const ConceptHeader = ({ ydoc, asDialog, onDialogClose, type, documentTyp
               <>
                 <StatusMenu
                   ydoc={ydoc}
-                  type={documentType}
                 />
                 <MetaSheet container={containerRef.current} ydoc={ydoc} />
               </>

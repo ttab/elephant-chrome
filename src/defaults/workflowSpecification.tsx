@@ -186,6 +186,7 @@ const baseConcept = {
   usable: {
     title: 'Används',
     description: 'Nuvarande version används',
+    asSave: true,
     transitions: {
       unpublished: {
         verify: true,

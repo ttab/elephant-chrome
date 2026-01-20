@@ -12,9 +12,9 @@ interface Status {
 /**
  * Parse meta heads information to retrieve the current status of a document.
  */
-export function getStatusFromMeta(meta: DocumentMeta, isWorkflow: boolean, documentType?: string): Status
-export function getStatusFromMeta(meta: StatusOverviewItem, isWorkflow: boolean, documentType?: string): Status
-export function getStatusFromMeta(meta: DocumentMeta | StatusOverviewItem, isWorkflow: boolean, documentType?: string): Status {
+export function getStatusFromMeta(meta: DocumentMeta, isWorkflow: boolean): Status
+export function getStatusFromMeta(meta: StatusOverviewItem, isWorkflow: boolean): Status
+export function getStatusFromMeta(meta: DocumentMeta | StatusOverviewItem, isWorkflow: boolean): Status {
   const isMeta = isMetaData(meta)
   const heads = meta.heads
   const version = isMeta ? meta.currentVersion : meta.version
@@ -42,18 +42,19 @@ export function getStatusFromMeta(meta: DocumentMeta | StatusOverviewItem, isWor
 
   let flow
   if (isWorkflow) {
-    if (meta.heads?.usable?.version < 0 && isConceptType(documentType)) {
+    flow = meta.workflowState
+  } else {
+    if (meta.heads?.usable?.version < 0 && isConceptType((meta as DocumentMeta).type as string)) {
+      console.log('Concept unpublished detected')
       flow = 'unpublished'
     } else {
-      flow = meta.workflowState
-    }
-  } else {
-    if (meta.workflowCheckpoint === 'unpublished') {
-      flow = meta.workflowState
-    }
+      if (meta.workflowCheckpoint === 'unpublished') {
+        flow = meta.workflowState
+      }
 
-    if (meta.workflowCheckpoint !== 'unpublished') {
-      flow = meta.workflowCheckpoint || meta.workflowState
+      if (meta.workflowCheckpoint !== 'unpublished') {
+        flow = meta.workflowCheckpoint || meta.workflowState
+      }
     }
   }
 

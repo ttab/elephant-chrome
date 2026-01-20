@@ -29,15 +29,7 @@ export const StatusMenu = ({ ydoc, publishTime, onBeforeStatusChange }: {
     data?: Record<string, unknown>
   ) => Promise<boolean>
 }) => {
-  // Should read the workflow status to get correct status
-  const shouldUseWorkflowStatus = [
-    'core/article',
-    'core/flash',
-    'core/editorial-info',
-    'tt/print-article'
-  ].includes(type) || isConceptType(type)
-
-  const [documentStatus, setDocumentStatus] = useWorkflowStatus({ ydoc, documentId: ydoc.id, isWorkflow: shouldUseWorkflowStatus, asPrint: type === 'tt/print-article', documentType: type })
+  const [documentStatus, setDocumentStatus] = useWorkflowStatus({ ydoc, documentId: ydoc.id })
   const containerRef = useRef<HTMLDivElement>(null)
   const [dropdownWidth, setDropdownWidth] = useState<number>(0)
   const { statuses, workflow } = useWorkflow(documentStatus?.type)
@@ -59,7 +51,6 @@ export const StatusMenu = ({ ydoc, publishTime, onBeforeStatusChange }: {
   const requireCause = !!documentStatus?.checkpoint && documentStatus.type
     ? WorkflowSpecifications[documentStatus.type][documentStatus.name].requireCause || false
     : false
-
 
   useEffect(() => {
     if (containerRef.current) {
@@ -92,11 +83,6 @@ export const StatusMenu = ({ ydoc, publishTime, onBeforeStatusChange }: {
       version: -1n
     }
 
-    const WORKFLOW_TYPES = new Set([
-      'core/article',
-      'core/planning-item',
-      'core/event'
-    ])
     try {
       (async () => {
         await repository?.saveMeta({
@@ -121,7 +107,7 @@ export const StatusMenu = ({ ydoc, publishTime, onBeforeStatusChange }: {
         handleLink({
           dispatch,
           viewItem: state.viewRegistry.get(viewType[documentStatus?.type || 'Error']),
-          props: { id: ydoc.id, documentType: type },
+          props: { id: ydoc.id, documentType: documentStatus?.type },
           viewId: crypto.randomUUID(),
           history,
           origin: viewId,
@@ -201,7 +187,7 @@ export const StatusMenu = ({ ydoc, publishTime, onBeforeStatusChange }: {
                     onSelect={currentStatusName === 'usable' ? showPrompt : () => setStatus('usable')}
                     statusDef={currentStatusDef}
                   />
-                  {isConceptType(type)
+                  {isConceptType(documentStatus.type || '')
                     && (
                       <StatusMenuOption
                         key='reset'

@@ -77,7 +77,7 @@ const ConceptContent = (
   const { status } = useSession()
   const environmentIsSane = ydoc.provider && status === 'authenticated'
   const [showVerifyDialog, setShowVerifyDialog] = useState(false)
-  const [documentStatus] = useWorkflowStatus({ ydoc, documentId: props.documentId, isWorkflow: true, asPrint: false, documentType: props.documentType })
+  const [documentStatus] = useWorkflowStatus({ ydoc, documentId: props.documentId })
   const isActive = !documentStatus || documentStatus?.name === 'usable'
   const { concept } = useConcepts(props.documentType as ConceptTableDataKey)
 
@@ -92,7 +92,6 @@ const ConceptContent = (
                 asDialog={!!props.asDialog}
                 onDialogClose={props.onDialogClose}
                 type={concept?.conceptTitle ?? 'Concept'}
-                documentType={concept?.documentType ?? ''}
               />
 
               <View.Content className='flex flex-col max-w-[1000px] p-5' variant='grid'>
