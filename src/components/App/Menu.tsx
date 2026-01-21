@@ -17,6 +17,7 @@ import { useUserTracker } from '@/hooks/useUserTracker'
 import { useCallback, useRef, useState, type JSX } from 'react'
 import { UserInfo } from './UserInfo'
 import { MenuItemSubSheet } from './MenuItemSubSheet'
+import { LanguageSelector } from '../Header/LanguageSelector'
 
 
 export const Menu = (): JSX.Element => {
@@ -74,7 +75,7 @@ export const Menu = (): JSX.Element => {
                     <Logo className='w-full h-6' />
                   </Link>
                 </SheetClose>
-
+                <LanguageSelector />
                 <ThemeSwitcher />
               </div>
             </SheetHeader>
