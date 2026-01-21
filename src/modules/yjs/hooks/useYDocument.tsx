@@ -158,45 +158,59 @@ export function useYDocument<T>(
     const onChange = (events: Y.YEvent<Y.Map<unknown>>[]) => {
       if (isChanged) return
 
+      if (events[0] instanceof Y.YMapEvent) {
+        // Ignore if only meta, links, root and content changed (document initialization)
+        const ev = events[0] as Y.YMapEvent<Y.Map<unknown>>
+        const keys = ev.keysChanged
+        if (keys.size === 4 && ['meta', 'links', 'root', 'content'].every((k) => keys.has(k))) {
+          return
+        }
+      }
+
       const oldHash = yCtx.get('hash')
       const newHash = createHash(yEle)
 
-      if (newHash !== oldHash) {
-        // Check if we should ignore this change based on keys changed
-        if (options?.ignoreChangeKeys?.length) {
-          for (const ignoreChangedKey of options.ignoreChangeKeys) {
-            const ignoreKeys = stringToYPath(ignoreChangedKey)
+      // No change in hash, ignore
+      if (newHash === oldHash) {
+        return
+      }
 
-            const isMatch = ignoreKeys.every((key, index) => {
-              // Handle wildcard match
-              if (key === '*') return true
+      // Check if we should ignore this change based on keys changed
+      if (options?.ignoreChangeKeys?.length) {
+        for (const ignoreChangedKey of options.ignoreChangeKeys) {
+          const ignoreKeys = stringToYPath(ignoreChangedKey)
 
-              // Handle inserted variable
-              if (key === '@internalDescriptionIndex') {
-                return internalDescriptionIndex === events[0].path[index]
-              }
-
-              // Handle direct match
-              if (events[0].path[index] !== undefined) {
-                return key === events[0].path[index]
-              }
-
-              // Finally, check if this key was changed in this event
-              if (events[0] instanceof Y.YMapEvent) {
-                const changedKeys = (events[0] as Y.YMapEvent<Y.Map<unknown>>).keysChanged
-                return changedKeys.has(key.toString())
-              }
-            })
-
-            if (isMatch) {
-              return
+          const isMatch = ignoreKeys.every((key, index) => {
+            // Handle wildcard match
+            if (key === '*') {
+              return true
             }
+
+            // Handle inserted variable
+            if (key === '@internalDescriptionIndex') {
+              return internalDescriptionIndex === events[0].path[index]
+            }
+
+            // Handle direct match
+            if (events[0].path[index] !== undefined) {
+              return key === events[0].path[index]
+            }
+
+            // Finally, check if this key was changed in this event
+            if (events[0] instanceof Y.YMapEvent) {
+              const changedKeys = (events[0] as Y.YMapEvent<Y.Map<unknown>>).keysChanged
+              return changedKeys.has(key.toString())
+            }
+          })
+
+          if (isMatch) {
+            return
           }
         }
-
-        setIsChanged(true)
-        yCtx.set('isChanged', true)
       }
+
+      setIsChanged(true)
+      yCtx.set('isChanged', true)
     }
 
     yEle.observeDeep(onChange)
