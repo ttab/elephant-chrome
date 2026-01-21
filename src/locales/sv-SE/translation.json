@@ -1,7 +1,17 @@
 {
   "app": {
     "mainMenu": {
-      "logout": "Logga ut"
+      "logout": "Logga ut",
+      "settings": "Inställningar",
+      "plans": "Planeringar",
+      "today": "Dagen",
+      "events": "Händelser",
+      "assignments": "Uppdrag",
+      "wires": "Telegram",
+      "lastPublished": "Senast utgivet",
+      "factBoxes": "Faktarutor",
+      "createAlert": "Skapa flash",
+      "search": "Sök"
     }
   }
 }
