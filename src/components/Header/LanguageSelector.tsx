@@ -1,4 +1,4 @@
-import { Select, SelectContent, SelectItem, SelectTrigger, Label } from '@ttab/elephant-ui'
+import { Select, SelectContent, SelectItem, SelectTrigger } from '@ttab/elephant-ui'
 import { LanguagesIcon } from 'lucide-react'
 import { type JSX } from 'react'
 import { useTranslation } from 'react-i18next'
