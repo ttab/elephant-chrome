@@ -3,8 +3,7 @@ import { defineConfig } from 'i18next-cli'
 export default defineConfig({
   locales: [
     'sv-SE',
-    'nb',
-    'en'
+    'nb'
   ],
   extract: {
     input: 'src/**/*.{js,jsx,ts,tsx}',

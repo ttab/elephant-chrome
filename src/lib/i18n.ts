@@ -2,7 +2,6 @@ import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
 import svSE from '../locales/sv-SE/translation.json'
 import nb from '../locales/nb/translation.json'
-import en from '../locales/en/translation.json'
 import LanguageDetector from 'i18next-browser-languagedetector'
 
 const resources = {
@@ -11,9 +10,6 @@ const resources = {
   },
   no: {
     translation: nb
-  },
-  en: {
-    translation: en
   }
 }
 
@@ -35,7 +31,7 @@ void i18n
     interpolation: {
       escapeValue: false // React already does escaping
     },
-    supportedLngs: ['sv', 'no', 'en'],
+    supportedLngs: ['sv', 'no'],
     load: 'languageOnly',
     nonExplicitSupportedLngs: true
   })
