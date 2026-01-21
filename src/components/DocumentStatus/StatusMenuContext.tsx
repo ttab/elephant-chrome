@@ -18,7 +18,7 @@ export const StatusMenuContext = ({ icon: Icon, className, title, description }:
           />
         )}
       </div>
-      <div className='grow flex flex-col gap-0.5 text-sm text-gray-600'>
+      <div className='grow flex flex-col gap-0.5 text-sm text-gray-600 dark:text-gray-400/80 '>
         <div className='font-semibold'>{title}</div>
         <div className='text-sm'>{description}</div>
       </div>

@@ -35,7 +35,7 @@ export const StatusButton = forwardRef<HTMLButtonElement, {
           className={currentStatusDef?.className}
         />
         {asSave && (
-          <span className='absolute top-0 right-0 -translate-y-0.5 -translate-x-1 inline-flex items-center justify-center w-3 h-3 text-[10px] font-bold text-white bg-cancelled rounded-full'>
+          <span className='absolute top-0 right-0 -translate-y-0.5 -translate-x-1 inline-flex items-center justify-center w-3 h-3 text-[10px] font-bold text-white dark:text-black bg-cancelled rounded-full'>
             !
           </span>
         )}
