@@ -172,7 +172,7 @@ export const StatusMenu = ({ ydoc, publishTime, onBeforeStatusChange }: {
                   state={{
                     verify: false,
                     isWorkflow: false,
-                    title: 'Publicera ny information',
+                    title: workflow[currentStatusName]?.asSaveTitle || 'Publicera ny information',
                     description: workflow[currentStatusName]?.updateDescription || workflow[currentStatusName]?.description
                   }}
                   onSelect={currentStatusName === 'usable' ? showPrompt : () => setStatus('usable')}

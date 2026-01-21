@@ -9,6 +9,7 @@ import {
 
 interface WorkflowItem {
   title: string
+  asSaveTitle?: string
   description: string
   changedDescription?: string
   updateDescription?: string
@@ -259,6 +260,7 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
     },
     usable: {
       title: 'Publicerad',
+      asSaveTitle: 'Publicera ny information',
       description: 'Händelsen är publicerad externt',
       changedDescription: 'Händelsen har ändrats sedan den senaste publiceringen',
       updateDescription: 'Uppdatera den publicerade händelsen med de nya ändringarna',
@@ -324,6 +326,7 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
     },
     usable: {
       title: 'Publicerad',
+      asSaveTitle: 'Publicera ny information',
       description: 'Planeringen är publicerad',
       changedDescription: 'Planeringen har ändrats sedan den senaste publiceringen',
       updateDescription: 'Uppdatera den publicerade planeringen med de nya ändringarna',
@@ -368,6 +371,7 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
     },
     usable: {
       title: 'Användbar',
+      asSaveTitle: 'Publicera ny information',
       description: 'Faktarutan är användbar',
       isWorkflow: false,
       asSave: true,
@@ -536,7 +540,10 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
     },
     usable: {
       title: 'Exporterad',
+      asSaveTitle: 'Exportera ny information',
       description: 'Printartikeln är exporterad',
+      changedDescription: 'Printartikeln har ändrats sedan den senaste exporten',
+      updateDescription: 'Uppdatera den exporterade printartikeln med de nya ändringarna',
       isWorkflow: false,
       asSave: true,
       transitions: {

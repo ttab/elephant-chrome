@@ -38,7 +38,7 @@ export const StatusButton = forwardRef<HTMLButtonElement, {
         />
       </div>
       <div className='pe-1'>
-        {asSave ? 'Publicera ny information' : workflow[currentStatusName]?.title}
+        {asSave ? workflow[currentStatusName]?.asSaveTitle : workflow[currentStatusName]?.title}
       </div>
       <div className='ps-1'>
         <ChevronDownIcon size={16} />
