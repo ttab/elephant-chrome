@@ -38,6 +38,8 @@ export const ViewDialogClose = ({ ydoc, onClick, Icon = XIcon, asDialog }: {
     onNavigation: () => {
       if (asDialog) {
         handleClose()
+      } else {
+        setShowVerifyDialog(false)
       }
     }
   })
@@ -53,8 +55,8 @@ export const ViewDialogClose = ({ ydoc, onClick, Icon = XIcon, asDialog }: {
       </Button>
       {showVerifyDialog && (
         <Prompt
-          title='Dina ändringar är sparade men inte publicerade'
-          description='Vill du publicera dina ändringar innan du stänger fönstret?'
+          title='Vill du publicera ändringarna innan du stänger?'
+          description='Dina ändringar är sparade men inte publicerade.'
           onPrimary={() => {
             if (ydoc) {
               snapshotDocument(ydoc?.id, {
@@ -77,6 +79,8 @@ export const ViewDialogClose = ({ ydoc, onClick, Icon = XIcon, asDialog }: {
             onClick()
           }}
           secondaryLabel='Nej'
+          onCancel={() => setShowVerifyDialog(false)}
+          cancelLabel='Avbryt'
         />
       )}
     </>
