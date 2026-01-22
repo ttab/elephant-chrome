@@ -112,7 +112,13 @@ const PlanningViewContent = (props: ViewProps & {
     ignoreChangeKeys: [
       'meta.core/description[@internalDescriptionIndex].data.text[0]', // internal description
       'meta.core/assignment[*].meta.core/description[0].data.text[0]', // assignment description
-      'meta.core/assignment[*].data.start' // assignment start
+      'meta.core/assignment[*].data.start', // assignment start
+      // assignment deliverables
+      'meta.core/assignment[*].links.core/article',
+      'meta.core/assignment[*].links.core/flash',
+      'meta.core/assignment[*].links.core/editorial-info',
+      'meta.core/assignment[*].data.status' // assignment status (for photo, video, graphics)
+
     ]
   })
   const { provider, ele: document, connected } = ydoc

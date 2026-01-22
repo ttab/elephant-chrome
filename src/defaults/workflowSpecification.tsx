@@ -339,7 +339,7 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
         unpublished: {
           verify: true,
           title: 'Avpublicera',
-          description: 'Avpublicera planeringen externt'
+          description: 'Avpublicera planeringen'
         }
       }
     },
