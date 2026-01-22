@@ -12,6 +12,7 @@ import {
   type LucideIcon
 } from '@ttab/elephant-ui/icons'
 import type { ViewProps, View } from '../types'
+import i18next from 'i18next'
 
 /**
  * Defines a menu item in the main application menu.
@@ -46,44 +47,44 @@ export const applicationMenu: ApplicationMenu = {
       items: [
         {
           name: 'Plannings',
-          label: 'Planeringar',
+          label: i18next.t('app.mainMenu.plans'),
           icon: CalendarDaysIcon,
           color: '#FF971E'
         },
         {
           name: 'Approvals',
-          label: 'Dagen',
+          label: i18next.t('app.mainMenu.approvals'),
           icon: EarthIcon,
           color: '#5E9F5D'
         },
         {
           name: 'Events',
-          label: 'Händelser',
+          label: i18next.t('app.mainMenu.events'),
           icon: CalendarPlus2Icon,
           color: '#D802FD'
         },
         {
           name: 'Assignments',
-          label: 'Uppdrag',
+          label: i18next.t('app.mainMenu.assignments'),
           icon: BriefcaseBusinessIcon,
           color: '#006bb3'
         },
         {
           name: 'Wires',
-          label: 'Telegram',
+          label: i18next.t('app.mainMenu.wires'),
           icon: CableIcon,
           color: '#FF6347'
         },
         {
           name: 'Latest',
-          label: 'Senast utgivet',
+          label: i18next.t('app.mainMenu.lastPublished'),
           icon: UtilityPoleIcon,
           color: '#996633',
           target: 'sheet'
         },
         {
           name: 'Factboxes',
-          label: 'Faktarutor',
+          label: i18next.t('app.mainMenu.factboxes'),
           icon: BoxesIcon,
           color: '#99c5c4'
         }
@@ -94,14 +95,14 @@ export const applicationMenu: ApplicationMenu = {
       items: [
         {
           name: 'Flash',
-          label: 'Skapa flash',
+          label: i18next.t('app.mainMenu.createFlash'),
           icon: ZapIcon,
           color: '#FF5150',
           target: 'dialog'
         },
         {
           name: 'Search',
-          label: 'Sök',
+          label: i18next.t('app.mainMenu.search'),
           icon: SearchIcon,
           color: '#F06F21'
         }
@@ -112,7 +113,7 @@ export const applicationMenu: ApplicationMenu = {
       items: [
         {
           name: 'Print',
-          label: 'Print',
+          label: i18next.t('app.mainMenu.print'),
           icon: LibraryIcon,
           color: '#006bb3'
         }

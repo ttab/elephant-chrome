@@ -1,18 +1,17 @@
 {
   "app": {
     "mainMenu": {
-      "logout": "Logga ut",
-      "settings": "Inställningar",
-      "plans": "Planeringar",
-      "today": "Dagen",
-      "events": "Händelser",
+      "approvals": "Dagen",
       "assignments": "Uppdrag",
-      "wires": "Telegram",
+      "createFlash": "Skapa flash",
+      "events": "Händelser",
+      "factboxes": "Faktarutor",
       "lastPublished": "Senast utgivet",
-      "factBoxes": "Faktarutor",
-      "createAlert": "Skapa flash",
+      "logout": "Logga ut",
+      "plans": "Planeringar",
+      "print": "Print",
       "search": "Sök",
-      "print": "Print"
+      "wires": "Telegram"
     }
   }
 }
