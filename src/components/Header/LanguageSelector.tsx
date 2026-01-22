@@ -8,7 +8,7 @@ export const LanguageSelector = (): JSX.Element => {
   const { i18n } = useTranslation()
 
   const languages = [
-    { code: 'sv-SE', short: 'sv', label: 'Svenska' },
+    { code: 'sv', short: 'sv', label: 'Svenska' },
     { code: 'nb', short: 'nb', label: 'Norsk bokmål' }
   ]
 
