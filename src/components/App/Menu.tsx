@@ -75,7 +75,7 @@ export const Menu = (): JSX.Element => {
                     <Logo className='w-full h-6' />
                   </Link>
                 </SheetClose>
-                <div className='flex gap-1.5 md:gap-0'>
+                <div className='flex gap-1 md:gap-1.5'>
                   <LanguageSelector />
                   <ThemeSwitcher />
                 </div>
