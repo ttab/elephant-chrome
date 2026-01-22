@@ -78,7 +78,7 @@ export function useYDocument<T>(
 
   // Whether document is ready to be saved to repository (is valid)
   const [isInProgress, setIsInProgress] = useYValue<boolean>(document.current.getMap('ctx'), 'isInProgress')
-  const [isChanged, setIsChanged] = useState(document.current.getMap('ctx')?.get('isChanged') as boolean ?? false)
+  const [isChanged, setIsChangedState] = useState(document.current.getMap('ctx')?.get('isChanged') as boolean ?? false)
   const [descriptions] = useYValue<Block[]>(document.current.getMap(rootMap), 'meta.core/description')
 
   const internalDescriptionIndex = useMemo(() => {
@@ -143,6 +143,17 @@ export function useYDocument<T>(
       provider.setAwarenessField('data', userRef.current)
     }
   }, [client, userRef])
+
+  const setIsChanged = useCallback((value: boolean) => {
+    const yCtx = document.current.getMap('ctx')
+    if (yCtx?.get('isChanged') !== value) {
+      yCtx?.set('isChanged', value)
+    }
+
+    setIsChangedState((currValue) => {
+      return currValue !== value ? value : currValue
+    })
+  }, [])
 
   /**
    * Observe changes to the ele root map (the actual document) and set the isChange flag
@@ -210,7 +221,6 @@ export function useYDocument<T>(
       }
 
       setIsChanged(true)
-      yCtx.set('isChanged', true)
     }
 
     yEle.observeDeep(onChange)
@@ -229,7 +239,7 @@ export function useYDocument<T>(
 
     const onChange = () => {
       const newValue = yCtx.get('isChanged') as boolean ?? false
-      setIsChanged((currValue) => {
+      setIsChangedState((currValue) => {
         return currValue !== newValue ? newValue : currValue
       })
     }

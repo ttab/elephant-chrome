@@ -48,7 +48,7 @@ export interface RegistryProviderState {
 const colors = Object.keys(Collaboration.colors)
 
 /** Registry registry provider state */
-const initialState: RegistryProviderState = {
+export const initialState: RegistryProviderState = {
   locale: defaultLocale,
   timeZone: getUserTimeZone() || DEFAULT_TIMEZONE,
   userColor: colors[Math.floor(Math.random() * colors.length)],
