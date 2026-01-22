@@ -8,7 +8,7 @@ const resources = {
   sv: {
     translation: svSE
   },
-  no: {
+  nb: {
     translation: nb
   }
 }
@@ -31,7 +31,7 @@ void i18n
     interpolation: {
       escapeValue: false // React already does escaping
     },
-    supportedLngs: ['sv', 'no'],
+    supportedLngs: ['sv', 'nb'],
     load: 'languageOnly',
     nonExplicitSupportedLngs: true
   })
