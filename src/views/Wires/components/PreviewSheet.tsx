@@ -10,7 +10,7 @@ import type { Status as DocumentStatuses } from '@ttab/elephant-api/repository'
 import { useEffect, useMemo, useRef, type JSX } from 'react'
 import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
 import { decodeString } from '@/lib/decodeString'
-import { getWireStatus } from '@/components/Table/lib/getWireStatus'
+import { getWireStatus } from '@/lib/getWireStatus'
 import type { Status } from '@/shared/Repository'
 
 export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, versionStatusHistory }: {
@@ -40,7 +40,7 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, 
         ?.replace('wires://provider/', ''),
       role: wire?.fields['document.meta.tt_wire.role'].values[0],
       newsvalue: wire?.fields['document.meta.core_newsvalue.value']?.values[0],
-      status: getWireStatus('Wires', wire)
+      status: getWireStatus(wire)
     }
   }, [wire])
 
