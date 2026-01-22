@@ -12,7 +12,6 @@ import {
   type LucideIcon
 } from '@ttab/elephant-ui/icons'
 import type { ViewProps, View } from '../types'
-import i18next from 'i18next'
 
 /**
  * Defines a menu item in the main application menu.
@@ -33,7 +32,7 @@ interface ApplicationMenu {
 }
 export interface ApplicationMenuItem {
   name: View
-  label: string
+  translationKey: string
   icon: LucideIcon
   target?: 'view' | 'dialog' | 'sheet'
   color?: string
@@ -47,44 +46,44 @@ export const applicationMenu: ApplicationMenu = {
       items: [
         {
           name: 'Plannings',
-          label: i18next.t('app.mainMenu.plans'),
+          translationKey: 'app.mainMenu.plans',
           icon: CalendarDaysIcon,
           color: '#FF971E'
         },
         {
           name: 'Approvals',
-          label: i18next.t('app.mainMenu.approvals'),
+          translationKey: 'app.mainMenu.approvals',
           icon: EarthIcon,
           color: '#5E9F5D'
         },
         {
           name: 'Events',
-          label: i18next.t('app.mainMenu.events'),
+          translationKey: 'app.mainMenu.events',
           icon: CalendarPlus2Icon,
           color: '#D802FD'
         },
         {
           name: 'Assignments',
-          label: i18next.t('app.mainMenu.assignments'),
+          translationKey: 'app.mainMenu.assignments',
           icon: BriefcaseBusinessIcon,
           color: '#006bb3'
         },
         {
           name: 'Wires',
-          label: i18next.t('app.mainMenu.wires'),
+          translationKey: 'app.mainMenu.wires',
           icon: CableIcon,
           color: '#FF6347'
         },
         {
           name: 'Latest',
-          label: i18next.t('app.mainMenu.lastPublished'),
+          translationKey: 'app.mainMenu.lastPublished',
           icon: UtilityPoleIcon,
           color: '#996633',
           target: 'sheet'
         },
         {
           name: 'Factboxes',
-          label: i18next.t('app.mainMenu.factboxes'),
+          translationKey: 'app.mainMenu.factboxes',
           icon: BoxesIcon,
           color: '#99c5c4'
         }
@@ -95,14 +94,14 @@ export const applicationMenu: ApplicationMenu = {
       items: [
         {
           name: 'Flash',
-          label: i18next.t('app.mainMenu.createFlash'),
+          translationKey: 'app.mainMenu.createFlash',
           icon: ZapIcon,
           color: '#FF5150',
           target: 'dialog'
         },
         {
           name: 'Search',
-          label: i18next.t('app.mainMenu.search'),
+          translationKey: 'app.mainMenu.search',
           icon: SearchIcon,
           color: '#F06F21'
         }
@@ -113,7 +112,7 @@ export const applicationMenu: ApplicationMenu = {
       items: [
         {
           name: 'Print',
-          label: i18next.t('app.mainMenu.print'),
+          translationKey: 'app.mainMenu.print',
           icon: LibraryIcon,
           color: '#006bb3'
         }
