@@ -101,7 +101,7 @@ export const Stream = ({
   return (
     <div
       data-stream-id={streamId}
-      className='flex flex-col h-full snap-start snap-always min-w-80 max-w-120 border-e'
+      className='flex flex-col h-full snap-start snap-always min-w-80 max-w-120 border rounded-md overflow-hidden'
     >
       {/* Column header - fixed height */}
       <div className='flex-none bg-background flex items-center justify-between py-1 px-4 border-b'>

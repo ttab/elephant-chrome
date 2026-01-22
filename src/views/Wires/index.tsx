@@ -203,7 +203,7 @@ export const Wires = (): JSX.Element => {
             )}
           >
             {/* Grid */}
-            <div ref={containerRef} className='grid h-full snap-x snap-proximity overflow-x-auto overflow-hidden grid-flow-col auto-cols-max'>
+            <div ref={containerRef} className='grid gap-2 p-2 pe-1 h-full snap-x snap-proximity overflow-x-auto overflow-hidden grid-flow-col auto-cols-max'>
               {wireStreams.map((wireStream) => (
                 <Stream
                   key={wireStream}
@@ -224,9 +224,9 @@ export const Wires = (): JSX.Element => {
             && (
               <div
                 className={cn(
-                  'rounded-lg grid shadow-xl border border-default-foreground/20 mx-0.5',
+                  'rounded-lg grid shadow-xl border border-default-foreground/20 mx-1',
                   'grid-rows-[auto_1fr]',
-                  '@7xl/view:ml-0 @7xl/view:w-xl @7xl/view:my-0.5 @7xl/view:mx-0'
+                  '@7xl/view:ml-0 @7xl/view:w-xl @7xl/view:my-2 @7xl/view:mx-0'
                 )}
               >
                 <Preview
