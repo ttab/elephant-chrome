@@ -4,11 +4,11 @@ import { cn } from '@ttab/elephant-ui/utils'
 import { cva } from 'class-variance-authority'
 import { Button } from '@ttab/elephant-ui'
 import { SquareCheckIcon, SquareIcon } from '@ttab/elephant-ui/icons'
+import { getWireStatus } from '@/components/Table/lib/getWireStatus'
 
 export const StreamEntry = ({
   streamId,
   entry,
-  status = 'saved',
   isSelected,
   onToggleSelected,
   onFocus,
@@ -17,7 +17,6 @@ export const StreamEntry = ({
 }: {
   streamId: string
   entry: Wire
-  status?: 'saved' | 'used'
   isSelected: boolean
   onToggleSelected: (event: unknown) => void
   onFocus?: (item: Wire, event: React.FocusEvent<HTMLElement>) => void
@@ -50,12 +49,14 @@ export const StreamEntry = ({
     onToggleSelected(e)
   }, [onToggleSelected])
 
+  const status = getWireStatus('Wires', entry)
+
   const variants = cva(
     `
       relative
       grid
       grid-cols-[3rem_1fr]
-      gap-3 border-s-[6px]
+      gap-3 border-s-[7px]
       bg-background
       text-[0.785rem]
       subpixel-antialiased
@@ -70,6 +71,8 @@ export const StreamEntry = ({
     {
       variants: {
         status: {
+          draft: '',
+          read: 'border-s-read bg-read-background',
           saved: 'border-s-done bg-done-background',
           used: 'border-s-usable bg-usable-background'
         },
@@ -112,7 +115,7 @@ export const StreamEntry = ({
         tabIndex={-1}
         className={cn(
           'absolute right-0 top-0 h-9 w-9 p-0 transition-opacity z-40 bg-transparent!',
-          isSelected ? 'opacity-100' : 'opacity-0 hover:opacity-80'
+          isSelected ? 'opacity-60 hover:opacity-100' : 'opacity-0 hover:opacity-60'
         )}
         onMouseDown={(e) => {
           e.preventDefault()
@@ -120,8 +123,8 @@ export const StreamEntry = ({
         onClick={handleToggleClick}
       >
         {isSelected
-          ? <SquareCheckIcon size={22} strokeWidth={1.85} className='opacity-60' />
-          : <SquareIcon size={22} strokeWidth={1.85} className='opacity-60' />}
+          ? <SquareCheckIcon size={22} strokeWidth={1.85} />
+          : <SquareIcon size={22} strokeWidth={1.85} />}
       </Button>
     </div>
   )

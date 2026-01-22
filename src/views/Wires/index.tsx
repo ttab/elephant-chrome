@@ -1,16 +1,17 @@
 import { View, ViewHeader } from '@/components/View'
 import { type ViewMetadata } from '@/types/index'
-import { useCallback, useRef, useState, useMemo, type JSX } from 'react'
+import { useCallback, useRef, useState, useMemo, type JSX, useEffect } from 'react'
 import { useView } from '@/hooks'
 import { cn } from '@ttab/elephant-ui/utils'
 import { Stream } from './components/Stream'
-import { Button } from '@ttab/elephant-ui'
+import { Button, ButtonGroup } from '@ttab/elephant-ui'
 import { SaveIcon, PlusIcon } from '@ttab/elephant-ui/icons'
 import { useStreamNavigation } from './hooks/useStreamNavigation'
 import type { Wire } from '@/shared/schemas/wire'
 import { Preview } from './components/Preview'
 import { getWireStatus } from '@/components/Table/lib/getWireStatus'
 import type { RowSelectionState, Updater } from '@tanstack/react-table'
+import { WiresActions } from './components/WiresActions'
 
 const BASE_URL = import.meta.env.BASE_URL
 
@@ -32,9 +33,12 @@ const meta: ViewMetadata = {
 
 export const Wires = (): JSX.Element => {
   const { isActive } = useView()
-  const [preview, setPreview] = useState<Wire | null>(null)
-  const [wireStreams, setWireStreams] = useState(['1', '2'])
+  const [previewWire, setPreviewWire] = useState<Wire | null>(null)
+  const [focusedWire, setFocusedWire] = useState<Wire | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+
+  // FIXME: Replace with actual wire streams
+  const [wireStreams, setWireStreams] = useState(['1', '2'])
 
   // Global row selection state for all streams
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
@@ -55,17 +59,41 @@ export const Wires = (): JSX.Element => {
   }, [])
 
   const handleOnPress = useCallback((wire: Wire) => {
-    setPreview(wire)
+    setPreviewWire(wire)
   }, [])
 
   const handleOnUnpress = useCallback(() => {
-    setPreview(null)
+    setPreviewWire(null)
   }, [])
 
   const handleOnFocus = useCallback((wire: Wire) => {
-    setPreview((curr) => {
+    setFocusedWire(wire)
+    setPreviewWire((curr) => {
       return curr ? wire : null
     })
+  }, [])
+
+  // Track focus loss
+  useEffect(() => {
+    const container = containerRef.current
+    if (!container) {
+      return
+    }
+
+    const handleFocusOut = (event: FocusEvent) => {
+      // Check if focus is moving outside the container
+      const relatedTarget = event.relatedTarget as HTMLElement | null
+
+      // If relatedTarget is null or not within container, we've lost focus
+      if (!relatedTarget || !container.contains(relatedTarget)) {
+        setFocusedWire(null)
+      }
+    }
+
+    container.addEventListener('focusout', handleFocusOut)
+    return () => {
+      container.removeEventListener('focusout', handleFocusOut)
+    }
   }, [])
 
   // Handle data updates from streams
@@ -86,11 +114,16 @@ export const Wires = (): JSX.Element => {
 
   // Get selected wires from selection state
   const selectedWires = useMemo(() => {
-    return Object.keys(rowSelection)
+    const activeWires = Object.keys(rowSelection)
       .filter((id) => rowSelection[id])
       .map((id) => wireDataMap.get(id))
       .filter((wire): wire is Wire => wire !== undefined)
-  }, [rowSelection, wireDataMap])
+
+    if (focusedWire && !activeWires.includes(focusedWire)) {
+      activeWires.push(focusedWire)
+    }
+    return activeWires
+  }, [rowSelection, wireDataMap, focusedWire])
 
   // Clear all selections
   const clearSelection = useCallback(() => {
@@ -102,12 +135,12 @@ export const Wires = (): JSX.Element => {
       return
     }
 
-    if (event.key === 'Escape' && !preview) {
+    if (event.key === 'Escape' && !previewWire) {
       clearSelection()
       return
     }
 
-    const wires = [preview, ...selectedWires].filter((wire): wire is Wire => !!wire)
+    const wires = [previewWire, ...selectedWires].filter((wire): wire is Wire => !!wire)
     wires.forEach((wire) => {
       const currentStatus = getWireStatus('Wires', wire)
       let newStatus = 'draft'
@@ -132,21 +165,25 @@ export const Wires = (): JSX.Element => {
       }
       console.log(payload)
     })
-  }, [preview, selectedWires, clearSelection])
+  }, [previewWire, selectedWires, clearSelection])
 
   return (
     <View.Root>
       <ViewHeader.Root>
         <ViewHeader.Title title='Telegram' name='Wires' />
+
         <ViewHeader.Content>
-          <div className='flex'>
+          <ButtonGroup className='border border-muted rounded-md'>
             <Button variant='ghost' className='w-9 h-9 px-0' onClick={addWireStream}>
               <PlusIcon strokeWidth={1.75} size={18} />
             </Button>
             <Button variant='ghost' disabled={true} className='w-9 h-9 px-0' onClick={() => {}}>
               <SaveIcon strokeWidth={1.75} size={18} />
             </Button>
-          </div>
+          </ButtonGroup>
+
+          <WiresActions wires={[...selectedWires, focusedWire]} />
+
         </ViewHeader.Content>
         <ViewHeader.Action />
       </ViewHeader.Root>
@@ -155,14 +192,14 @@ export const Wires = (): JSX.Element => {
         <div
           className={cn(
             'h-full overflow-hidden @7xl/view:grid-cols-[auto_1fr]',
-            preview && 'grid grid-rows-2 @7xl/view:grid-rows-1'
+            previewWire && 'grid grid-rows-2 @7xl/view:grid-rows-1'
           )}
           onKeyDown={handleKeyDown}
         >
           <div
             className={cn(
               'h-full overflow-x-auto overflow-y-hidden',
-              preview && '@7xl/view:pr-2'
+              previewWire && '@7xl/view:pr-2'
             )}
           >
             {/* Grid */}
@@ -183,7 +220,7 @@ export const Wires = (): JSX.Element => {
             </div>
           </div>
 
-          {!!preview
+          {!!previewWire
             && (
               <div
                 className={cn(
@@ -193,8 +230,8 @@ export const Wires = (): JSX.Element => {
                 )}
               >
                 <Preview
-                  wire={preview}
-                  onClose={() => setPreview(null)}
+                  wire={previewWire}
+                  onClose={() => setPreviewWire(null)}
                 />
               </div>
             )}
@@ -203,22 +240,26 @@ export const Wires = (): JSX.Element => {
         {selectedWires.length > 0 && (
           <div className='absolute bottom-4 left-0 right-0 flex justify-center items-center z-50'>
             <div className='border bg-background rounded-lg text-sm px-5 py-3 shadow-lg flex flex-col items-center gap-1'>
-              <div className='flex flex-row items-center gap-2'>
-                <div className='overflow-hidden truncate max-w-130'>
-                  {`${selectedWires[0].fields['document.title']?.values[0]}`}
+              <div className='flex flex-row items-center gap-2 justify-items-center text-center'>
+                <div className='overflow-hidden truncate max-w-100 min-w-80'>
+                  {`${selectedWires[0].fields['document.title']?.values[0] ?? selectedWires[0].fields['document.title']?.values[0]}`}
                 </div>
 
                 {selectedWires.length > 1 && (
-                  <div className='bg-muted px-2 py-0.5 rounded-md text-xs'>
+                  <span className='inline-block bg-muted px-2 py-0.5 rounded-md text-xs font-medium'>
                     +
                     {selectedWires.length - 1}
-                  </div>
+                  </span>
                 )}
               </div>
               <div className='text-center text-muted-foreground text-xs'>
                 <span className='bg-muted px-2 py-0.5 rounded-md text-xs font-semibold'>ESC</span>
-                {' '}
-                <span>för att ta avmarkera valda telegram</span>
+                {selectedWires.length && (
+                  <>
+                    {' '}
+                    <span>för att ta avmarkera valda telegram</span>
+                  </>
+                )}
               </div>
             </div>
           </div>
