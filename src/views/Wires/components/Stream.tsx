@@ -1,4 +1,4 @@
-import { type JSX } from 'react'
+import { type JSX, useMemo, useEffect } from 'react'
 import { fields, type Wire, type WireFields } from '@/shared/schemas/wire'
 import { useQuery } from '@/hooks'
 import { useDocuments } from '@/hooks/index/useDocuments'
@@ -9,14 +9,33 @@ import { Filter } from '@/components/Filter'
 import { StreamTools } from './StreamTools'
 import { MinusIcon, SaveIcon } from '@ttab/elephant-ui/icons'
 import { Button } from '@ttab/elephant-ui'
+import {
+  useReactTable,
+  getCoreRowModel,
+  flexRender,
+  type ColumnDef,
+  type RowSelectionState,
+  type OnChangeFn
+} from '@tanstack/react-table'
 
-export const Stream = ({ streamId, wireStream, onFocus, onUnpress, onSelect, onPress }: {
+export const Stream = ({
+  streamId,
+  wireStream,
+  onFocus,
+  onUnpress,
+  onPress,
+  rowSelection,
+  onRowSelectionChange,
+  onDataChange
+}: {
   streamId: string
-  wireStream: string // TODO: Needs to be filter specification with unique stable id, not just a number
+  wireStream: string
   onFocus?: (item: Wire, event: React.FocusEvent<HTMLElement>) => void
   onUnpress?: (item: Wire, event: React.KeyboardEvent<HTMLElement>) => void
-  onSelect?: (item: Wire, selected: boolean) => void
   onPress?: (item: Wire, event: React.MouseEvent<HTMLElement> | React.KeyboardEvent<HTMLElement>) => void
+  rowSelection: RowSelectionState
+  onRowSelectionChange: OnChangeFn<RowSelectionState>
+  onDataChange?: (data: Wire[]) => void
 }): JSX.Element => {
   const [{ page }] = useQuery()
   const [filter] = useQuery(['section', 'source', 'query', 'newsvalue'])
@@ -38,6 +57,47 @@ export const Stream = ({ streamId, wireStream, onFocus, onUnpress, onSelect, onP
     }
   })
 
+  // Notify parent when data changes
+  useEffect(() => {
+    if (data && onDataChange) {
+      onDataChange(data)
+    }
+  }, [data, onDataChange])
+
+  // Define columns for TanStack Table
+  const columns = useMemo<ColumnDef<Wire>[]>(
+    () => [
+      {
+        id: 'entry',
+        accessorFn: (row) => row,
+        cell: ({ row }) => (
+          <StreamEntry
+            streamId={streamId}
+            entry={row.original}
+            isSelected={row.getIsSelected()}
+            onToggleSelected={row.getToggleSelectedHandler()}
+            onPress={onPress}
+            onUnpress={onUnpress}
+            onFocus={onFocus}
+          />
+        )
+      }
+    ],
+    [streamId, onPress, onUnpress, onFocus]
+  )
+
+  const table = useReactTable({
+    data: data ?? [],
+    columns,
+    state: {
+      rowSelection
+    },
+    enableRowSelection: true,
+    onRowSelectionChange,
+    getCoreRowModel: getCoreRowModel(),
+    getRowId: (row) => row.id
+  })
+
   return (
     <>
       {/* Column Wrapper */}
@@ -47,7 +107,6 @@ export const Stream = ({ streamId, wireStream, onFocus, onUnpress, onSelect, onP
       >
         {/* Column */}
         <div className='col-span-1 grow flex flex-col min-w-0 overflow-y-auto flex-1'>
-
           {/* Column header */}
           <div className='bg-background flex items-center justify-between py-1 px-4 border-b sticky top-0 z-10'>
             <Filter page={String(1)} pages={[String(1)]} setPages={() => { }} search={undefined} setSearch={() => {}}>
@@ -63,21 +122,16 @@ export const Stream = ({ streamId, wireStream, onFocus, onUnpress, onSelect, onP
             </div>
           </div>
 
-          {/* Column content */}
+          {/* Column content - TanStack Table */}
           <div className='flex flex-col divide-y'>
-            {data?.map((entry) => {
-              return (
-                <StreamEntry
-                  key={entry.id}
-                  streamId={streamId}
-                  entry={entry}
-                  onPress={onPress}
-                  onUnpress={onUnpress}
-                  onFocus={onFocus}
-                  onSelect={onSelect}
-                />
-              )
-            })}
+            {table.getRowModel().rows.map((row) => (
+              <div key={row.id}>
+                {flexRender(
+                  row.getVisibleCells()[0].column.columnDef.cell,
+                  row.getVisibleCells()[0].getContext()
+                )}
+              </div>
+            ))}
           </div>
         </div>
       </div>

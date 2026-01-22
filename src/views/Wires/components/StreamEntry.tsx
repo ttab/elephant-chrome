@@ -1,25 +1,29 @@
-import { useCallback, useEffect, useState, type JSX, type ReactNode } from 'react'
+import { useCallback, type JSX, type ReactNode } from 'react'
 import type { Wire } from '@/shared/schemas/wire'
 import { cn } from '@ttab/elephant-ui/utils'
 import { cva } from 'class-variance-authority'
 import { Button } from '@ttab/elephant-ui'
 import { SquareCheckIcon, SquareIcon } from '@ttab/elephant-ui/icons'
 
-export const StreamEntry = ({ streamId, entry, status = 'saved', onFocus, onUnpress, onSelect, onPress }: {
+export const StreamEntry = ({
+  streamId,
+  entry,
+  status = 'saved',
+  isSelected,
+  onToggleSelected,
+  onFocus,
+  onUnpress,
+  onPress
+}: {
   streamId: string
   entry: Wire
   status?: 'saved' | 'used'
+  isSelected: boolean
+  onToggleSelected: (event: unknown) => void
   onFocus?: (item: Wire, event: React.FocusEvent<HTMLElement>) => void
   onUnpress?: (item: Wire, event: React.KeyboardEvent<HTMLElement>) => void
-  onSelect?: (item: Wire, selected: boolean) => void
   onPress?: (item: Wire, event: React.MouseEvent<HTMLElement> | React.KeyboardEvent<HTMLElement>) => void
 }): JSX.Element => {
-  const [isSelected, setIsSelected] = useState(false)
-
-  useEffect(() => {
-    onSelect?.(entry, isSelected)
-  }, [entry, isSelected, onSelect])
-
   const handleClick = useCallback((e: React.MouseEvent<HTMLElement>) => {
     onPress?.(entry, e)
   }, [entry, onPress])
@@ -30,16 +34,21 @@ export const StreamEntry = ({ streamId, entry, status = 'saved', onFocus, onUnpr
       onPress?.(entry, e)
     } else if (e.key === ' ') {
       e.preventDefault()
-      setIsSelected((curr) => !curr)
+      onToggleSelected(e)
     } else if (e.key === 'Escape') {
       e.preventDefault()
       onUnpress?.(entry, e)
     }
-  }, [entry, onPress, onUnpress])
+  }, [entry, onPress, onToggleSelected, onUnpress])
 
   const handleFocus = useCallback((e: React.FocusEvent<HTMLElement>) => {
     onFocus?.(entry, e)
   }, [entry, onFocus])
+
+  const handleToggleClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation()
+    onToggleSelected(e)
+  }, [onToggleSelected])
 
   const variants = cva(
     `
@@ -100,23 +109,19 @@ export const StreamEntry = ({ streamId, entry, status = 'saved', onFocus, onUnpr
       <Button
         variant='icon'
         size='lg'
-        tabIndex={-1} // Should not be navigable, use space to select/deselect
+        tabIndex={-1}
         className={cn(
-          'absolute right-0 top-0 h-9 w-9 p-0 transition-opacity z-50 bg-transparent!',
+          'absolute right-0 top-0 h-9 w-9 p-0 transition-opacity z-40 bg-transparent!',
           isSelected ? 'opacity-100' : 'opacity-0 hover:opacity-80'
         )}
         onMouseDown={(e) => {
-          // Should not receive focus when clicked
           e.preventDefault()
         }}
-        onClick={(e) => {
-          e.stopPropagation()
-          setIsSelected((curr) => !curr)
-        }}
+        onClick={handleToggleClick}
       >
         {isSelected
-          ? <SquareCheckIcon size={24} strokeWidth={2.25} className='opacity-60' />
-          : <SquareIcon size={24} strokeWidth={2.25} className='opacity-60' />}
+          ? <SquareCheckIcon size={22} strokeWidth={1.85} className='opacity-60' />
+          : <SquareIcon size={22} strokeWidth={1.85} className='opacity-60' />}
       </Button>
     </div>
   )

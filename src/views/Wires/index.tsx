@@ -1,6 +1,6 @@
 import { View, ViewHeader } from '@/components/View'
 import { type ViewMetadata } from '@/types/index'
-import { useCallback, useRef, useState, type JSX } from 'react'
+import { useCallback, useRef, useState, useMemo, type JSX } from 'react'
 import { useView } from '@/hooks'
 import { cn } from '@ttab/elephant-ui/utils'
 import { Stream } from './components/Stream'
@@ -10,7 +10,7 @@ import { useStreamNavigation } from './hooks/useStreamNavigation'
 import type { Wire } from '@/shared/schemas/wire'
 import { Preview } from './components/Preview'
 import { getWireStatus } from '@/components/Table/lib/getWireStatus'
-
+import type { RowSelectionState, Updater } from '@tanstack/react-table'
 
 const BASE_URL = import.meta.env.BASE_URL
 
@@ -35,7 +35,12 @@ export const Wires = (): JSX.Element => {
   const [preview, setPreview] = useState<Wire | null>(null)
   const [wireStreams, setWireStreams] = useState(['1', '2'])
   const containerRef = useRef<HTMLDivElement>(null)
-  const selectedWires = useRef<Wire[]>([])
+
+  // Global row selection state for all streams
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
+
+  // Store wire data reference for selected rows
+  const [wireDataMap, setWireDataMap] = useState<Map<string, Wire>>(new Map())
 
   useStreamNavigation({
     isActive,
@@ -63,12 +68,33 @@ export const Wires = (): JSX.Element => {
     })
   }, [])
 
-  const handleOnSelect = useCallback((wire: Wire, selected: boolean) => {
-    if (selected) {
-      selectedWires.current.push(wire)
-    } else {
-      selectedWires.current = selectedWires.current.filter((w) => w.id !== wire.id)
-    }
+  // Handle data updates from streams
+  const handleDataChange = useCallback((data: Wire[]) => {
+    setWireDataMap((prev) => {
+      const newMap = new Map(prev)
+      data.forEach((wire) => {
+        newMap.set(wire.id, wire)
+      })
+      return newMap
+    })
+  }, [])
+
+  // Update wire data map when selection changes - properly typed
+  const handleRowSelectionChange = useCallback((updater: Updater<RowSelectionState>) => {
+    setRowSelection(updater)
+  }, [])
+
+  // Get selected wires from selection state
+  const selectedWires = useMemo(() => {
+    return Object.keys(rowSelection)
+      .filter((id) => rowSelection[id])
+      .map((id) => wireDataMap.get(id))
+      .filter((wire): wire is Wire => wire !== undefined)
+  }, [rowSelection, wireDataMap])
+
+  // Clear all selections
+  const clearSelection = useCallback(() => {
+    setRowSelection({})
   }, [])
 
   const handleKeyDown = useCallback((event: React.KeyboardEvent<HTMLElement>) => {
@@ -77,13 +103,11 @@ export const Wires = (): JSX.Element => {
     }
 
     if (event.key === 'Escape' && !preview) {
-      // FIXME: Unselect selected stream entry components (how?)
-      // FIXME: Selected wires must be part of a context maybe?
-      selectedWires.current.length = 0
+      clearSelection()
       return
     }
 
-    const wires = [preview, ...selectedWires.current].filter((wire) => !!wire)
+    const wires = [preview, ...selectedWires].filter((wire): wire is Wire => !!wire)
     wires.forEach((wire) => {
       const currentStatus = getWireStatus('Wires', wire)
       let newStatus = 'draft'
@@ -108,11 +132,10 @@ export const Wires = (): JSX.Element => {
       }
       console.log(payload)
     })
-  }, [preview])
+  }, [preview, selectedWires, clearSelection])
 
   return (
     <View.Root>
-
       <ViewHeader.Root>
         <ViewHeader.Title title='Telegram' name='Wires' />
         <ViewHeader.Content>
@@ -128,7 +151,7 @@ export const Wires = (): JSX.Element => {
         <ViewHeader.Action />
       </ViewHeader.Root>
 
-      <View.Content variant='no-scroll'>
+      <View.Content variant='no-scroll' className='relative'>
         <div
           className={cn(
             'h-full overflow-hidden @7xl/view:grid-cols-[auto_1fr]',
@@ -152,7 +175,9 @@ export const Wires = (): JSX.Element => {
                   onPress={handleOnPress}
                   onUnpress={handleOnUnpress}
                   onFocus={handleOnFocus}
-                  onSelect={handleOnSelect}
+                  rowSelection={rowSelection}
+                  onRowSelectionChange={handleRowSelectionChange}
+                  onDataChange={handleDataChange}
                 />
               ))}
             </div>
@@ -175,6 +200,29 @@ export const Wires = (): JSX.Element => {
             )}
         </div>
 
+        {selectedWires.length > 0 && (
+          <div className='absolute bottom-4 left-0 right-0 flex justify-center items-center z-50'>
+            <div className='border bg-background rounded-lg text-sm px-5 py-3 shadow-lg flex flex-col items-center gap-1'>
+              <div className='flex flex-row items-center gap-2'>
+                <div className='overflow-hidden truncate max-w-130'>
+                  {`${selectedWires[0].fields['document.title']?.values[0]}`}
+                </div>
+
+                {selectedWires.length > 1 && (
+                  <div className='bg-muted px-2 py-0.5 rounded-md text-xs'>
+                    +
+                    {selectedWires.length - 1}
+                  </div>
+                )}
+              </div>
+              <div className='text-center text-muted-foreground text-xs'>
+                <span className='bg-muted px-2 py-0.5 rounded-md text-xs font-semibold'>ESC</span>
+                {' '}
+                <span>för att ta avmarkera valda telegram</span>
+              </div>
+            </div>
+          </div>
+        )}
       </View.Content>
     </View.Root>
   )
