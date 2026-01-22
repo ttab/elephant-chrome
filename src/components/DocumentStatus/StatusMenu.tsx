@@ -4,7 +4,7 @@ import { useWorkflow } from '@/hooks/index/useWorkflow'
 import { StatusSpecifications, WorkflowSpecifications, type WorkflowTransition } from '@/defaults/workflowSpecification'
 import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
 import { StatusOptions } from './StatusOptions'
-import { StatusMenuHeader } from './StatusMenuHeader'
+import { StatusMenuContext } from './StatusMenuContext'
 import { PromptDefault } from './PromptDefault'
 import { PromptSchedule } from './PromptSchedule'
 import { StatusMenuOption } from './StatusMenuOption'
@@ -150,14 +150,6 @@ export const StatusMenu = ({ ydoc, publishTime, onBeforeStatusChange }: {
             sideOffset={0}
             style={{ minWidth: `${dropdownWidth}px` }}
           >
-            <StatusMenuHeader
-              icon={currentStatusDef?.icon || StatusSpecifications[currentStatusName]?.icon}
-              className={currentStatusDef?.className || StatusSpecifications[currentStatusName]?.className}
-              title={workflow[currentStatusName]?.title}
-              description={asSave && isChanged && workflow[currentStatusName]?.changedDescription
-                ? workflow[currentStatusName]?.changedDescription
-                : workflow[currentStatusName]?.description}
-            />
             <StatusOptions
               transitions={transitions}
               statuses={statuses}
@@ -172,7 +164,7 @@ export const StatusMenu = ({ ydoc, publishTime, onBeforeStatusChange }: {
                   state={{
                     verify: false,
                     isWorkflow: false,
-                    title: 'Publicera ändringar',
+                    title: workflow[currentStatusName]?.asSaveTitle || 'Publicera ny information',
                     description: workflow[currentStatusName]?.updateDescription || workflow[currentStatusName]?.description
                   }}
                   onSelect={currentStatusName === 'usable' ? showPrompt : () => setStatus('usable')}
@@ -181,6 +173,14 @@ export const StatusMenu = ({ ydoc, publishTime, onBeforeStatusChange }: {
               )}
             </StatusOptions>
 
+            <StatusMenuContext
+              icon={currentStatusDef?.icon || StatusSpecifications[currentStatusName]?.icon}
+              className={currentStatusDef?.className || StatusSpecifications[currentStatusName]?.className}
+              title={workflow[currentStatusName]?.title}
+              description={asSave && isChanged && workflow[currentStatusName]?.changedDescription
+                ? workflow[currentStatusName]?.changedDescription
+                : workflow[currentStatusName]?.description}
+            />
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

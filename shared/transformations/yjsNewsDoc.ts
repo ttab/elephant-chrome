@@ -17,7 +17,7 @@ import { TextbitElement } from '@ttab/textbit'
  * Convert a grouped YDocumentResponse a yjs structure and add it to the provided Y.Doc
  */
 export function toYjsNewsDoc(eleDoc: EleDocumentResponse, yDoc: Document | Y.Doc): void {
-  const yMap = yDoc.getMap('ele')
+  const yEle = yDoc.getMap('ele')
   const { document, version } = eleDoc
 
   if (!document) {
@@ -25,9 +25,9 @@ export function toYjsNewsDoc(eleDoc: EleDocumentResponse, yDoc: Document | Y.Doc
   }
 
   const { meta, links, content, ...properties } = document
-  yMap.set('meta', toYMap(meta))
-  yMap.set('links', toYMap(links))
-  yMap.set('root', toYMap(properties, new Y.Map()))
+  yEle.set('meta', toYMap(meta))
+  yEle.set('links', toYMap(links))
+  yEle.set('root', toYMap(properties, new Y.Map()))
 
   // Slate text to yjs
   const yContent = new Y.XmlText()
@@ -35,29 +35,29 @@ export function toYjsNewsDoc(eleDoc: EleDocumentResponse, yDoc: Document | Y.Doc
     slateNodesToInsertDelta(content)
   )
 
-  yMap.set('content', yContent)
+  yEle.set('content', yContent)
 
   // Set version and original hash
   const yCtx = yDoc.getMap('ctx')
   yCtx.set('version', version)
-  yCtx.set('hash', createHash(yMap))
+  yCtx.set('hash', createHash(yEle))
 }
 
 /**
  * Convert a yjs structure to a grouped YDocumentResponse
  */
 export function fromYjsNewsDoc(yDoc: Y.Doc): EleDocumentResponse {
-  const yMap = yDoc.getMap('ele')
+  const yEle = yDoc.getMap('ele')
 
-  const root = yMap.get('root') as Y.Map<unknown>
+  const root = yEle.get('root') as Y.Map<unknown>
   const { uuid, type, uri, url, title, language } = root.toJSON() as Record<string, string>
 
-  const meta = transformYXmlTextNodes(yMap.get('meta') as Y.Map<unknown>) as Record<string, EleBlock[]>
+  const meta = transformYXmlTextNodes(yEle.get('meta') as Y.Map<unknown>) as Record<string, EleBlock[]>
 
-  const links = (yMap.get('links') as Y.Map<unknown>).toJSON() || {}
+  const links = (yEle.get('links') as Y.Map<unknown>).toJSON() || {}
 
   const isTextDocument = ['core/article', 'core/editorial-info', 'core/flash'].includes(type)
-  const yContent = yMap.get('content') as Y.XmlText
+  const yContent = yEle.get('content') as Y.XmlText
   const content = yContent.length
     ? removeConsecutiveEmptyTextNodes(yTextToSlateElement(yContent).children)
     : []
