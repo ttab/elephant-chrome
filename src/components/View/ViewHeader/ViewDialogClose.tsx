@@ -8,6 +8,8 @@ import type { LucideIcon } from '@ttab/elephant-ui/icons'
 import { XIcon } from '@ttab/elephant-ui/icons'
 import { useState, type JSX } from 'react'
 import type * as Y from 'yjs'
+import { snapshotDocument } from '@/lib/snapshotDocument'
+import { toast } from 'sonner'
 
 export const ViewDialogClose = ({ ydoc, onClick, Icon = XIcon, asDialog }: {
   ydoc?: YDocument<Y.Map<unknown>>
@@ -36,6 +38,8 @@ export const ViewDialogClose = ({ ydoc, onClick, Icon = XIcon, asDialog }: {
     onNavigation: () => {
       if (asDialog) {
         handleClose()
+      } else {
+        setShowVerifyDialog(false)
       }
     }
   })
@@ -51,12 +55,32 @@ export const ViewDialogClose = ({ ydoc, onClick, Icon = XIcon, asDialog }: {
       </Button>
       {showVerifyDialog && (
         <Prompt
-          title='Du har osparade ändringar'
-          description='Är du säker på att du vill stänga utan att spara?'
-          onPrimary={onClick}
+          title='Vill du publicera ändringarna innan du stänger?'
+          description='Dina ändringar är sparade men inte publicerade.'
+          onPrimary={() => {
+            if (ydoc) {
+              snapshotDocument(ydoc?.id, {
+                status: 'usable'
+              }, ydoc.provider?.document)
+                .then(() => {
+                  setShowVerifyDialog(false)
+                  onClick()
+                })
+                .catch((error) => {
+                  setShowVerifyDialog(false)
+                  toast.error('Kunde inte spara dokumentet')
+                  console.error('Could not snapshot document before closing view.', error)
+                })
+            }
+          }}
           primaryLabel='Ja'
-          onSecondary={() => setShowVerifyDialog(false)}
+          onSecondary={() => {
+            setShowVerifyDialog(false)
+            onClick()
+          }}
           secondaryLabel='Nej'
+          onCancel={() => setShowVerifyDialog(false)}
+          cancelLabel='Avbryt'
         />
       )}
     </>

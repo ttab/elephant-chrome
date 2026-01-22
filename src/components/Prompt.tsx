@@ -9,8 +9,10 @@ interface PromptProps extends PropsWithChildren {
   description?: string
   primaryLabel: string
   secondaryLabel?: string
+  cancelLabel?: string
   onPrimary: (event: MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement> | KeyboardEvent) => void
   onSecondary?: () => void
+  onCancel?: () => void
   disablePrimary?: boolean
   primaryVariant?: 'link' | 'secondary' | 'default' | 'destructive' | 'outline' | 'ghost' | 'icon' | null
   currentCause?: { cause: string | undefined, setCause: (value: string) => void }
@@ -22,8 +24,10 @@ export const Prompt = ({
   children,
   primaryLabel,
   secondaryLabel,
+  cancelLabel,
   onPrimary,
   onSecondary,
+  onCancel,
   disablePrimary = false,
   primaryVariant
 }: PromptProps): JSX.Element => {
@@ -61,35 +65,52 @@ export const Prompt = ({
 
         {!!children && <>{children}</>}
 
-        <DialogFooter className='flex flex-col gap-2 pt-4'>
-          {!!onSecondary && !!secondaryLabel && (
+        <DialogFooter className='flex flex-row sm:justify-between justify-between gap-2 pt-4'>
+          <div className='flex items-center'>
+            {!!onCancel && !!cancelLabel && (
+              <Button
+                variant='outline'
+                onClick={(event) => {
+                  event.preventDefault()
+                  event.stopPropagation()
+                  onCancel()
+                }}
+              >
+                {cancelLabel}
+              </Button>
+            )}
+          </div>
+
+          <div className='flex items-center gap-2'>
+            {!!onSecondary && !!secondaryLabel && (
+              <Button
+                variant='secondary'
+                onClick={(event) => {
+                  event.preventDefault()
+                  event.stopPropagation()
+                  onSecondary()
+                }}
+              >
+                {secondaryLabel}
+              </Button>
+            )}
+
             <Button
-              variant='secondary'
-              onClick={(event) => {
-                event.preventDefault()
-                event.stopPropagation()
-                onSecondary()
+              variant={primaryVariant}
+              disabled={disablePrimary}
+              autoFocus
+              onClick={(event: MouseEvent<HTMLButtonElement>) => {
+                onPrimary(event)
+              }}
+              onKeyDown={(event: React.KeyboardEvent<HTMLButtonElement>) => {
+                if (event.key === 'Enter') {
+                  onPrimary(event)
+                }
               }}
             >
-              {secondaryLabel}
+              {primaryLabel}
             </Button>
-          )}
-
-          <Button
-            variant={primaryVariant}
-            disabled={disablePrimary}
-            autoFocus
-            onClick={(event: MouseEvent<HTMLButtonElement>) => {
-              onPrimary(event)
-            }}
-            onKeyDown={(event: React.KeyboardEvent<HTMLButtonElement>) => {
-              if (event.key === 'Enter') {
-                onPrimary(event)
-              }
-            }}
-          >
-            {primaryLabel}
-          </Button>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>

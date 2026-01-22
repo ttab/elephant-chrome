@@ -1,11 +1,6 @@
 import type { Wire } from '@/shared/schemas/wire'
 
-type DocumentType = 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires' | 'Factbox' | 'Print' | 'PrintEditor'
-export function getWireStatus(type: DocumentType, wire: Wire): 'draft' | 'read' | 'saved' | 'used' | null {
-  if (type !== 'Wires') {
-    return null
-  }
-
+export function getWireStatus(wire: Wire): 'draft' | 'read' | 'saved' | 'used' {
   const statusFields = [
     { key: 'read', created: wire.fields?.['heads.read.created']?.values?.[0], version: wire.fields?.['heads.read.version']?.values?.[0] },
     { key: 'saved', created: wire.fields?.['heads.saved.created']?.values?.[0], version: wire.fields?.['heads.saved.version']?.values?.[0] },

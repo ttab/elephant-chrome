@@ -7,8 +7,7 @@ import { type Dispatch } from 'react'
 import { useNavigation, useView, useRegistry } from './src/hooks'
 import { type NavigationActionType } from './src/types'
 export * from '@testing-library/react'
-import { sv } from 'date-fns/locale'
-import { DEFAULT_TIMEZONE } from '@/defaults/defaultTimezone'
+import { initialState } from '@/contexts/RegistryProvider'
 
 /**
  * Global test setup file for Vitest
@@ -148,30 +147,7 @@ vi.mock('@/hooks/useRegistry', () => ({
   useRegistry: vi.fn()
 }));
 
-(useRegistry as Mock).mockReturnValue({
-  repository: {
-    saveDocument: vi.fn(),
-    getMeta: vi.fn(),
-    getDocument: vi.fn()
-  },
-  locale: {
-    code: {
-      full: 'sv-SE',
-      short: 'sv',
-      long: 'sv'
-    },
-    module: sv
-  },
-  timeZone: DEFAULT_TIMEZONE,
-  server: {},
-  dispatch: {},
-  index: {
-    query: vi.fn().mockReturnValue({
-      ok: true,
-      hits: []
-    })
-  }
-})
+(useRegistry as Mock).mockReturnValue(initialState)
 
 vi.mock('sonner', () => ({
   toast: {
