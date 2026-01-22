@@ -14,11 +14,11 @@ import { Spellchecker } from '@/shared/Spellchecker'
 import { Index } from '@/shared/Index'
 import { Workflow } from '@/shared/Workflow'
 import { User } from '@/shared/User'
-import { defaultLocale, getLocaleData } from '@/shared/getLocaleData'
 import type { LocaleData } from '@/types'
 import { Baboon } from '@/shared/Baboon'
 import { DEFAULT_TIMEZONE } from '@/defaults/defaultTimezone'
 import { Collaboration } from '@/defaults'
+import { defaultLocale } from '@/defaults/locale'
 
 /** Registry registry provider state interface */
 export interface RegistryProviderState {
@@ -80,7 +80,7 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
     const initialize = async () => {
       try {
         const server = await getServerUrls()
-        const locale = await getLocaleData()
+        const locale = defaultLocale
 
         const repository = new Repository(server.repositoryUrl.href)
         const workflow = new Workflow(server.repositoryUrl.href)
