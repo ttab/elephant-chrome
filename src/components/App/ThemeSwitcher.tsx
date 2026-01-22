@@ -10,7 +10,7 @@ export const ThemeSwitcher = (): JSX.Element => {
     <Button
       aria-label='Toggle theme'
       variant='ghost'
-      className='w-9 h-9 p-0 flex items-center justify-center'
+      className='md:w-9 md:h-9 p-0 flex items-center justify-center'
       onClick={() => {
         setTheme(theme === 'dark'
           ? 'light'
