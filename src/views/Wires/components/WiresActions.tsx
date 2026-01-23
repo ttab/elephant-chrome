@@ -16,7 +16,7 @@ export const WiresActions = ({ wires }: {
   })
 
   return (
-    <ButtonGroup className='border border-muted rounded-md'>
+    <ButtonGroup className='border border-muted rounded-md z-50'>
       <Tooltip content='Markera som sparad'>
         <Button
           onKeyDown={(e) => e.preventDefault()}

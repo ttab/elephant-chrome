@@ -65,8 +65,7 @@ export const StreamEntry = ({
       focus:outline-none
       focus:ring-2
       focus:ring-table-selected
-      focus:z-20
-      hover:bg-background
+      hover:bg-muted
     `,
     {
       variants: {
@@ -104,7 +103,11 @@ export const StreamEntry = ({
         <StreamEntryCell>
           {`${modified.getHours()}.${modified.getMinutes().toString().padStart(2, '0')}`}
         </StreamEntryCell>
-        <StreamEntryCell className={isSelected ? 'last:pe-8' : 'group-hover:last:pe-8'}>
+        <StreamEntryCell className={cn(
+          'transition-[padding] duration-100',
+          isSelected ? 'last:pe-8' : 'group-has-[.checkbox-button:hover]:last:pe-8'
+        )}
+        >
           {entry.fields['document.title'].values[0] ?? 'No title'}
         </StreamEntryCell>
       </div>
@@ -114,7 +117,7 @@ export const StreamEntry = ({
         size='lg'
         tabIndex={-1}
         className={cn(
-          'absolute right-0 top-0 h-9 w-9 p-0 transition-opacity z-40 bg-transparent!',
+          'checkbox-button absolute right-0 top-0 h-9 w-9 p-0 transition-opacity duration-150 bg-transparent!',
           isSelected ? 'opacity-60 hover:opacity-100' : 'opacity-0 hover:opacity-60'
         )}
         onMouseDown={(e) => {
