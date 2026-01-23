@@ -22,6 +22,12 @@
         "forenoon": "Förmiddag",
         "afternoon": "Eftermiddag",
         "evening": "Kväll"
+      },
+      "tooltips": {
+        "openPreview": "Öppna förhandsgranskning",
+        "openPlanning": "Öppna planering",
+        "lastChanged": "Senast ändrad",
+        "scheduledAt": "Schemalagd kl"
       }
     }
   }
