@@ -31,12 +31,12 @@ export const TimeCard = ({ assignment }: { assignment: AssignmentInterface }) =>
 
   const time = useMemo(() =>
     getAssignmentTime({ assignment, timeZone, locale, statusData, compareDate, t }),
-  [assignment, timeZone, locale, statusData, compareDate]
+  [assignment, timeZone, locale, statusData, compareDate, t]
   )
 
   const timeTooltip = useMemo(() =>
     getTimeTooltip({ assignment, statusData, timeZone, locale, compareDate, t }),
-  [assignment, statusData, timeZone, locale, compareDate]
+  [assignment, statusData, timeZone, locale, compareDate, t]
   )
 
   return (
