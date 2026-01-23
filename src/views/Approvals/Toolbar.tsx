@@ -10,13 +10,14 @@ import { Filter } from '@/components/Filter'
 import type { Facets } from '@/hooks/index/lib/assignments/filterAssignments'
 import { Commands } from './Commands'
 import { useCallback, useState, type JSX } from 'react'
+import { useTranslation } from 'react-i18next'
 
 export const Toolbar = ({ facets }: { facets: Facets }): JSX.Element => {
   const [filters, setFilters] = useQuery(['status', 'section'])
   const isFiltered = Object.values(filters).some((value) => value?.length)
   const [userFilters, setUserFilters] = useUserTracker<QueryParams | undefined>(`filters.Approvals.user`)
   const [, setCurrentFilters] = useUserTracker<QueryParams | undefined>(`filters.Approvals.current`)
-
+  const { t } = useTranslation()
 
   const [pages, setPages] = useState<string[]>([])
   const [search, setSearch] = useState<string | undefined>('')
@@ -91,7 +92,7 @@ export const Toolbar = ({ facets }: { facets: Facets }): JSX.Element => {
           onClick={handleResetFilters}
           className='h-8 px-2 lg:px-3'
         >
-          Rensa
+          {t('views.approvals.toolbar.clearFilters')}
           <XIcon size={18} strokeWidth={1.75} className='ml-2' />
         </Button>
       )}

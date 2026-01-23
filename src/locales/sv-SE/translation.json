@@ -24,6 +24,9 @@
         "afternoon": "Eftermiddag",
         "evening": "Kväll"
       },
+      "toolbar": {
+        "clearFilters": "Rensa"
+      },
       "tooltips": {
         "openPreview": "Öppna förhandsgranskning",
         "openPlanning": "Öppna planering",
