@@ -13,5 +13,16 @@
       "search": "Sök",
       "wires": "Telegram"
     }
+  },
+  "views": {
+    "approvals": {
+      "title": "Dagen",
+      "timeSlots": {
+        "morning": "Morgon",
+        "forenoon": "Förmiddag",
+        "afternoon": "Eftermiddag",
+        "evening": "Kväll"
+      }
+    }
   }
 }

@@ -13,5 +13,16 @@
       "search": "Søk",
       "wires": "Byråimport"
     }
+  },
+  "views": {
+    "approvals": {
+      "title": "Dagen",
+      "timeSlots": {
+        "morning": "Natt",
+        "forenoon": "Morgen",
+        "afternoon": "Ettermiddag",
+        "evening": "Kveld"
+      }
+    }
   }
 }
