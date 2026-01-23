@@ -3,13 +3,13 @@
     "mainMenu": {
       "approvals": "Dagen",
       "assignments": "Oppdrag",
-      "createFlash": "Ny hast",
       "events": "Hendelser",
       "factboxes": "Fakatbokser",
+      "flash": "Ny HAST",
       "lastPublished": "Sist publisert",
       "logout": "Logg ut",
       "plans": "Planer",
-      "print": "[Missing translation]",
+      "print": "",
       "search": "Søk",
       "wires": "Byråimport"
     }

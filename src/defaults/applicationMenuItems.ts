@@ -32,7 +32,7 @@ interface ApplicationMenu {
 }
 export interface ApplicationMenuItem {
   name: View
-  translationKey: string
+  label: string
   icon: LucideIcon
   target?: 'view' | 'dialog' | 'sheet'
   color?: string
@@ -46,44 +46,44 @@ export const applicationMenu: ApplicationMenu = {
       items: [
         {
           name: 'Plannings',
-          translationKey: 'app.mainMenu.plans',
+          label: 'plannings',
           icon: CalendarDaysIcon,
           color: '#FF971E'
         },
         {
           name: 'Approvals',
-          translationKey: 'app.mainMenu.approvals',
+          label: 'approvals',
           icon: EarthIcon,
           color: '#5E9F5D'
         },
         {
           name: 'Events',
-          translationKey: 'app.mainMenu.events',
+          label: 'events',
           icon: CalendarPlus2Icon,
           color: '#D802FD'
         },
         {
           name: 'Assignments',
-          translationKey: 'app.mainMenu.assignments',
+          label: 'assignments',
           icon: BriefcaseBusinessIcon,
           color: '#006bb3'
         },
         {
           name: 'Wires',
-          translationKey: 'app.mainMenu.wires',
+          label: 'wires',
           icon: CableIcon,
           color: '#FF6347'
         },
         {
           name: 'Latest',
-          translationKey: 'app.mainMenu.lastPublished',
+          label: 'latest published',
           icon: UtilityPoleIcon,
           color: '#996633',
           target: 'sheet'
         },
         {
           name: 'Factboxes',
-          translationKey: 'app.mainMenu.factboxes',
+          label: 'factboxes',
           icon: BoxesIcon,
           color: '#99c5c4'
         }
@@ -94,14 +94,14 @@ export const applicationMenu: ApplicationMenu = {
       items: [
         {
           name: 'Flash',
-          translationKey: 'app.mainMenu.createFlash',
+          label: 'flash',
           icon: ZapIcon,
           color: '#FF5150',
           target: 'dialog'
         },
         {
           name: 'Search',
-          translationKey: 'app.mainMenu.search',
+          label: 'search',
           icon: SearchIcon,
           color: '#F06F21'
         }
@@ -112,7 +112,7 @@ export const applicationMenu: ApplicationMenu = {
       items: [
         {
           name: 'Print',
-          translationKey: 'app.mainMenu.print',
+          label: 'print',
           icon: LibraryIcon,
           color: '#006bb3'
         }

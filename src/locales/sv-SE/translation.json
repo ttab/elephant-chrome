@@ -3,10 +3,10 @@
     "mainMenu": {
       "approvals": "Dagen",
       "assignments": "Uppdrag",
-      "createFlash": "Skapa flash",
       "events": "Händelser",
       "factboxes": "Faktarutor",
-      "lastPublished": "Senast utgivet",
+      "flash": "Skapa flash",
+      "latest": "",
       "logout": "Logga ut",
       "plans": "Planeringar",
       "print": "Print",
