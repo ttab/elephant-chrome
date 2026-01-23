@@ -3,5 +3,16 @@
     "mainMenu": {
       "logout": "Logg ut"
     }
+  },
+  "views": {
+    "approvals": {
+      "title": "Dagen",
+      "timeSlots": {
+        "morning": "Natt",
+        "forenoon": "Morgen",
+        "afternoon": "Ettermiddag",
+        "evening": "Kveld"
+      }
+    }
   }
 }
