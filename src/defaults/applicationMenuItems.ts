@@ -76,7 +76,7 @@ export const applicationMenu: ApplicationMenu = {
         },
         {
           name: 'Latest',
-          label: 'latest published',
+          label: 'last published',
           icon: UtilityPoleIcon,
           color: '#996633',
           target: 'sheet'

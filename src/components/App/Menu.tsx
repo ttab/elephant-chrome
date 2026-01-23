@@ -43,6 +43,14 @@ export const Menu = (): JSX.Element => {
     .flatMap((group) => group.items)
     .filter((item) => item.target === 'sheet')
 
+  const showTranslatedText = (menuItem: string): string => {
+    switch (menuItem) {
+      case 'last published': return t('app.mainMenu.lastPublished')
+      default:
+        return ''
+    }
+  }
+
   return (
     <>
       {/* Main Menu Sheet */}
@@ -98,7 +106,7 @@ export const Menu = (): JSX.Element => {
                           >
                             <div className='flex items-center gap-3'>
                               <item.icon strokeWidth={2.25} size={18} color={item.color} />
-                              <div className='pl-2'>{t(`${item.translationKey}`)}</div>
+                              <div className='pl-2'>{showTranslatedText(item.label)}</div>
                             </div>
                           </button>
                         )

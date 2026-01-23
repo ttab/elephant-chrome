@@ -30,7 +30,6 @@ const MenuItemViewOpener = ({ menuItem }: {
       case 'events': return t('app.mainMenu.events')
       case 'assignments': return t('app.mainMenu.assignments')
       case 'wires': return t('app.mainMenu.wires')
-      case 'last published': return t('app.mainMenu.latest')
       case 'factboxes': return t('app.mainMenu.factboxes')
       case 'search': return t('app.mainMenu.search')
       case 'print': return t('app.mainMenu.print')
