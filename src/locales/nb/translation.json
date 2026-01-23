@@ -1,7 +1,17 @@
 {
   "app": {
     "mainMenu": {
-      "logout": "Logg ut"
+      "approvals": "Dagen",
+      "assignments": "Oppdrag",
+      "events": "Hendelser",
+      "factboxes": "Faktabokser",
+      "flash": "Ny HAST",
+      "lastPublished": "Sist publisert",
+      "logout": "Logg ut",
+      "plans": "Planer",
+      "print": "",
+      "search": "Søk",
+      "wires": "Byråimport"
     }
   }
 }

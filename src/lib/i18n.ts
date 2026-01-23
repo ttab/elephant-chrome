@@ -27,7 +27,11 @@ void i18n
     },
     resources,
     debug: true, // Useful during development to see loading errors
-    fallbackLng: 'sv',
+    fallbackLng: (lng) => {
+      const nb = ['nn', 'nb', 'no', 'nb-NO', 'nn-NO'].includes(lng)
+      if (nb) return 'nb'
+      return 'sv'
+    },
     interpolation: {
       escapeValue: false // React already does escaping
     },
