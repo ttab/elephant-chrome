@@ -137,7 +137,7 @@ export const ApprovalsCard = ({ trackedDocument, assignment, isSelected, isFocus
                   </span>
                   {assignment._metricsData?.charCount}
                   {' '}
-                  tkn
+                  {t('views.approvals.charactersShort')}
                 </span>
               )}
             </div>

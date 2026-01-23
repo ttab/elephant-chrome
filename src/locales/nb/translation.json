@@ -17,6 +17,7 @@
   "views": {
     "approvals": {
       "title": "Dagen",
+      "charactersShort": "tgn",
       "timeSlots": {
         "morning": "Natt",
         "forenoon": "Morgen",
