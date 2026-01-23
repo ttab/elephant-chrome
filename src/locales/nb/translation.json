@@ -14,6 +14,9 @@
         "afternoon": "Ettermiddag",
         "evening": "Kveld"
       },
+       "toolbar": {
+        "clearFilters": "Tøm"
+      },
       "tooltips": {
         "openPreview": "Åpne forhåndsvisning",
         "openPlanning": "Åpne planlegging",
