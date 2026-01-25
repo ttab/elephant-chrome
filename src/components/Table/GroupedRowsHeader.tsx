@@ -2,12 +2,15 @@ import { TableRow, TableCell } from '@ttab/elephant-ui'
 import { useTable } from '@/hooks/useTable'
 import { type ColumnDef, type Row } from '@tanstack/react-table'
 import type { JSX } from 'react'
+import { useTranslation } from 'react-i18next'
 
 export const GroupedRowsHeader = <TData, TValue>({ row, columns }: {
   row: Row<unknown>
   columns: Array<ColumnDef<TData, TValue>>
 }): JSX.Element => {
   const { table } = useTable()
+  const { t } = useTranslation()
+
   const groupingValues = table.getState().grouping
   const groupingMeta = columns.find((column) => column.id === groupingValues[0])?.meta
 
@@ -16,7 +19,7 @@ export const GroupedRowsHeader = <TData, TValue>({ row, columns }: {
       <TableCell colSpan={columns.length} className='pl-6 px-2 py-1 border-b'>
         <div className='flex justify-between items-center flex-wrap'>
           <div className='flex items-center space-x-2'>
-            <span className='font-thin text-muted-foreground'>{groupingMeta?.name}</span>
+            <span className='font-thin text-muted-foreground'>{t(`${groupingMeta?.name}`)}</span>
             {typeof groupingMeta?.display === 'function'
               ? groupingMeta.display(row.groupingValue as string)
 

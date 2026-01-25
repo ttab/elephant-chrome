@@ -19,6 +19,7 @@ import { toast } from 'sonner'
 import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { type YDocument, useYValue } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
+import { useTranslation } from 'react-i18next'
 
 export const MoveDialog = ({ ydoc, onClose, newDate }: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -31,6 +32,7 @@ export const MoveDialog = ({ ydoc, onClose, newDate }: {
   const [, setEndString] = useYValue<string>(ydoc.ele, 'meta.core/planning-item[0].data.end_date')
   // Record of assignment ids and times to change
   const assignmentTimes = useRef<Record<string, TimeDef | undefined>>({})
+  const { t } = useTranslation()
 
   return (
     <Dialog open={true}>
@@ -97,7 +99,7 @@ export const MoveDialog = ({ ydoc, onClose, newDate }: {
             variant='secondary'
             onClick={onClose}
           >
-            Avbryt
+            {t('views.planning.move.abort')}
           </Button>
 
           <Button
@@ -150,12 +152,12 @@ export const MoveDialog = ({ ydoc, onClose, newDate }: {
                   onClose()
                 }).catch((err) => {
                   console.error(err)
-                  toast.error('Planeringen har ändrats lokalt men gick inte att spara.')
+                  toast.error(t('views.planning.toasts.snapshotError'))
                 })
               }
             }}
           >
-            Flytta
+            {t('views.planning.move.label')}
           </Button>
         </DialogFooter>
       </DialogContent>

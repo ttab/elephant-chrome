@@ -4,9 +4,11 @@ import { type CopyGroupFields, copyGroupFields } from '@/lib/getSharedFields'
 import { TermsQueryV1, BoolQueryV1, type HitV1, QueryV1 } from '@ttab/elephant-api/index'
 import { CalendarPlus2Icon } from '@ttab/elephant-ui/icons'
 import { format } from 'date-fns'
+import { useTranslation } from 'react-i18next'
 
 export const CopyGroup = ({ copyGroupId, type }: { copyGroupId: string, type: 'core/event' | 'core/planning-item' }) => {
   const fields: CopyGroupFields = copyGroupFields(type)
+  const { t } = useTranslation()
 
   const { data } = useDocuments<HitV1, CopyGroupFields>({
     documentType: type,
@@ -38,7 +40,7 @@ export const CopyGroup = ({ copyGroupId, type }: { copyGroupId: string, type: 'c
 
   return (
     <div className='pl-6 border-t'>
-      <div className='text-sm font-bold pt-2'>Kopierad från</div>
+      <div className='text-sm font-bold pt-2'>{t('views.planning.copy.copiedFrom')}</div>
       {data.map((original) => {
         const [title] = original.fields['document.title'].values
         let start

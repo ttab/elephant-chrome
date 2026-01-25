@@ -12,12 +12,14 @@ import {
 } from '@ttab/elephant-ui/icons'
 import { useMemo, useState } from 'react'
 import { useTable } from '../hooks'
+import { useTranslation } from 'react-i18next'
 
 export const Sort = <TData,>() => {
   const { table } = useTable<TData>()
   const [open, setOpen] = useState(false)
   const [order, setOrder] = useState('asc')
   const [quickSort, setQuickSort] = useState('')
+  const { t } = useTranslation()
 
   const { grouping, sorting } = table.getState()
 
@@ -84,7 +86,7 @@ export const Sort = <TData,>() => {
                     aria-label='Sortera efter nyhetsvärde'
                     className='border data-[state=off]:text-muted-foreground'
                   >
-                    Nyhetsvärde
+                    {t('core.labels.newsvalue')}
                   </ToggleGroupItem>
                 )}
 

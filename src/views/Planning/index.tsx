@@ -37,6 +37,7 @@ import { TextBox } from '@/components/ui'
 import { useDescriptionIndex } from './hooks/useDescriptionIndex'
 import { TextInput } from '@/components/ui/TextInput'
 import { ToastAction } from '../Wire/ToastAction'
+import { useTranslation } from 'react-i18next'
 
 type Setter = React.Dispatch<SetStateAction<NewItem>>
 
@@ -129,6 +130,7 @@ const PlanningViewContent = (props: ViewProps & {
   const intIndex = useDescriptionIndex(document, 'internal')
   const [publicDescription] = useYValue<Y.XmlText>(document, `meta.core/description[${pubIndex}].data.text`, true)
   const [internalDescription] = useYValue<Y.XmlText>(document, `meta.core/description[${intIndex}].data.text`, true)
+  const { t } = useTranslation()
 
   const handleSubmit = async ({ documentStatus }: {
     documentStatus: 'usable' | 'done' | undefined
@@ -148,7 +150,7 @@ const PlanningViewContent = (props: ViewProps & {
           props.onDialogClose()
         }
 
-        toast.success(`Planering skapad`, {
+        toast.success(t('views.plannings.toasts.create.success'), {
           classNames: {
             title: 'whitespace-nowrap'
           },
@@ -157,7 +159,7 @@ const PlanningViewContent = (props: ViewProps & {
               key='open-planning'
               documentId={props.documentId}
               withView='Planning'
-              label='Öppna planering'
+              label={t('views.plannings.toasts.openItem')}
               Icon={CalendarDaysIcon}
               target='last'
             />
@@ -165,7 +167,7 @@ const PlanningViewContent = (props: ViewProps & {
         })
       } catch (ex) {
         console.error('Failed to snapshot document', ex)
-        toast.error('Kunde inte skapa ny planering!', {
+        toast.error(t('views.plannings.toasts.create.error'), {
           duration: 5000,
           position: 'top-center'
         })
@@ -197,7 +199,7 @@ const PlanningViewContent = (props: ViewProps & {
                 ydoc={ydoc}
                 value={title}
                 label='Titel'
-                placeholder='Planeringstitel'
+                placeholder={t('views.planning.title')}
                 autoFocus={props.asDialog === true}
               />
             </Form.Title>
@@ -206,14 +208,14 @@ const PlanningViewContent = (props: ViewProps & {
               ydoc={ydoc}
               value={publicDescription}
               icon={<TextIcon size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />}
-              placeholder='Publik beskrivning'
+              placeholder={t('views.planning.description.public')}
             />
 
             <TextBox
               ydoc={ydoc}
               value={internalDescription}
               icon={<MessageCircleMoreIcon size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />}
-              placeholder='Internt meddelande'
+              placeholder={t('views.planning.description.internal')}
             />
 
             <Form.Group icon={CalendarIcon}>
