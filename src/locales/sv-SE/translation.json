@@ -13,5 +13,95 @@
       "search": "Sök",
       "wires": "Telegram"
     }
+  },
+  "common": {
+    "actions": {
+      "add": "Lägg till",
+      "open": "Öppna",
+      "edit": "Redigera",
+      "remove": "Ta bort",
+      "abort": "Avbryt",
+      "close": "Stäng"
+    },
+    "errors": {
+      "unknown": "Okänt fel"
+    },
+    "misc": {
+      "unknown": "okänd",
+      "user": "användare"
+    }
+  },
+  "core": {
+    "labels": {
+      "newsvalue": "Nyhetsvärde",
+      "section": "Sektion",
+      "assignee": "Uppdragstagare",
+      "assignmentType": "Typ",
+      "title": "Titel"
+    }
+  },
+  "views": {
+    "planning": {
+      "assignment": {
+        "startEndTime": "Start- och sluttid",
+        "startTime": "Starttid",
+        "publishWindow": "Publiceringsfönster",
+        "publishTime": "Publiceringstid",
+        "createPrintArticle": "Skapa printartikel",
+        "removeAssignment": "Vill du ta bort uppdraget",
+        "actions": {
+          "addAssignment": "Lägg till uppdrag",
+          "addAssignee": "Lägg till uppdragstagare"
+        },
+        "collaboration": {
+          "inProgress": "Nytt uppdrag skapas av",
+          "overtake": "Ta över"
+        },
+        "status": {
+          "todo": "Att göra",
+          "started": "Påbörjad",
+          "done": "Klar"
+        }
+      },
+      "copy": {
+        "copiedFrom": "Kopierad från"
+      },
+      "description": {
+        "internal": "Internt meddelande",
+        "public": "Publik beskrivning"
+      },
+      "prompts": {
+        "slugMissing": "Slugg saknas",
+        "slugMissingDescription": "Vänligen lägg till en slugg på uppdraget. Därefter kan du skapa en text."
+      },
+      "toasts": {
+        "snapshotError": "Planeringen har ändrats lokalt men gick inte att spara.",
+        "createDeliverableLinkError": "Kunde inte länka leverabel",
+        "saveError": "Kunde inte spara planeringen",
+        "saveChangeError": "Kunde inte spara ändringen"
+      },
+      "move": {
+        "label": "Flytta"
+      },
+      "related": {
+        "relatedEvents": "Länkade händelser"
+      },
+      "slugline": "Lägg till slugg",
+      "story": "Lägg till story",
+      "title": "Planeringstitel"
+    },
+    "plannings": {
+      "label": {
+        "plural": "Planeringar",
+        "singular": "Planering"
+      },
+      "toasts": {
+        "create": {
+          "error": "Kunde inte skapa ny planering",
+          "success": "Planering skapad"
+        },
+        "openItem": "Öppna planering"
+      }
+    }
   }
 }

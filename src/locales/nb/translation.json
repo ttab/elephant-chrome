@@ -13,5 +13,95 @@
       "search": "Søk",
       "wires": "Byråimport"
     }
+  },
+  "common": {
+    "actions": {
+      "add": "Legg til",
+      "open": "Åpne",
+      "edit": "Redigere",
+      "remove": "Fjerne",
+      "abort": "Kansellere",
+      "close": "Lukke"
+    },
+    "errors": {
+      "unknown": "Ukjent feil"
+    },
+    "misc": {
+      "unknown": "ukjent",
+      "user": "bruker"
+    }
+  },
+  "core": {
+    "labels": {
+      "newsvalue": "Nyhetesverdi",
+      "section": "Kategori",
+      "assignee": "Oppdragstaker",
+      "assignmentType": "Oppdragstype",
+      "title": "Tittel"
+    }
+  },
+  "views": {
+    "planning": {
+      "assignment": {
+        "startEndTime": "Start- og sluttid",
+        "startTime": "Starttid",
+        "publishWindow": "Publiseringsvindu",
+        "publishTime": "Publiseringstid",
+        "createPrintArticle": "",
+        "removeAssignment": "Vil du fjerne oppdraget",
+        "actions": {
+          "addAssignment": "Legg til oppdrag",
+          "addAssignee": "Legg til oppdragstaker"
+        },
+        "collaboration": {
+          "inProgress": "Ny oppdrag opprettes av",
+          "overtake": "Ta over"
+        },
+        "status": {
+          "todo": "Å gjøre",
+          "started": "Startet",
+          "done": "Ferdig"
+        }
+      },
+      "copy": {
+        "copiedFrom": "Kopiert fra"
+      },
+      "description": {
+        "internal": "Intern beskjed",
+        "public": "Beskrivelse"
+      },
+      "prompts": {
+        "slugMissing": "Stikkord mangler",
+        "slugMissingDescription": "Vennligst legg til en stikkord i oppgaven. Etter det kan du lage en tekst."
+      },
+      "toasts": {
+        "snapshotError": "Planen er endret lokalt, men kunne ikke lagres.",
+        "createDeliverableLinkError": "Kunne ikke koble til leveransen",
+        "saveError": "Kunne ikke lagre planen",
+        "saveChangeError": "Kunne ikke lagre endringen"
+      },
+      "move": {
+        "label": "Flytte"
+      },
+      "related": {
+        "relatedEvents": "Relaterte hendelser"
+      },
+      "slugline": "Legg til stikkord",
+      "story": "Legg til story",
+      "title": "Planleggingstittel"
+    },
+    "plannings": {
+      "label": {
+        "plural": "Planer",
+        "singular": "Planlegging"
+      },
+      "toasts": {
+        "create": {
+          "error": "Kunne ikke opprette ny plan",
+          "success": "Planlegging opprettet"
+        },
+        "openItem": "Åpen planlegging"
+      }
+    }
   }
 }
