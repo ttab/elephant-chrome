@@ -21,23 +21,40 @@
       "edit": "Redigere",
       "remove": "Fjerne",
       "abort": "Kansellere",
-      "close": "Lukke"
+      "close": "Lukke",
+      "create": "Opprett ny {{documentType}}",
+      "sort": "Sortere",
+      "sortBy": "Sortere etter {{label}}",
+      "presetSort": "Forhåndsinnstilt sortering",
+      "grouping": "Velg gruppering",
+      "nogrouping": "Ingen gruppering",
+      "group": "Gruppe"
     },
     "errors": {
-      "unknown": "Ukjent feil"
+      "unknown": "Ukjent feil",
+      "unwellEnvironment": "Du har blitt logget ut eller mistet kontakten med systemet. Prøv å logge inn på nytt."
     },
     "misc": {
       "unknown": "ukjent",
-      "user": "bruker"
+      "user": "bruker",
+      "numberOf": "Antall"
     }
   },
   "core": {
+    "documentType": {
+      "planning": "plan",
+      "event": "hendelse",
+      "assignment": "oppdrag",
+      "article": "artikkel",
+      "flash": "HAST"
+    },
     "labels": {
       "newsvalue": "Nyhetesverdi",
       "section": "Kategori",
       "assignee": "Oppdragstaker",
       "assignmentType": "Oppdragstype",
-      "title": "Tittel"
+      "title": "Tittel",
+      "time": "Tid"
     }
   },
   "views": {
@@ -61,6 +78,9 @@
           "todo": "Å gjøre",
           "started": "Startet",
           "done": "Ferdig"
+        },
+        "errors": {
+          "saveAssignmentError": "Kunne ikke lagre oppdraget"
         }
       },
       "copy": {
@@ -83,7 +103,10 @@
         "saveChangeError": "Kunne ikke lagre endringen"
       },
       "move": {
-        "label": "Flytte"
+        "label": "Flytte",
+        "dateSwitch": "",
+        "dateSwitchDescription": "Planleggingen og alle tekstoppdragen endrer dato til",
+        "dateSwitchAssignments": "Velg nedenfor om bilde- og videooppdrag også skal endre datoer."
       },
       "related": {
         "relatedEvents": "Relaterte hendelser"

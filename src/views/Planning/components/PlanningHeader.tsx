@@ -35,7 +35,7 @@ export const PlanningHeader = ({ ydoc, asDialog, onDialogClose, session, provide
     <ViewHeader.Root asDialog={asDialog}>
       <ViewHeader.Title
         name='Plannings'
-        title={(!asDialog) ? t('views.plannings.label.singular') : 'Skapa ny planering'}
+        title={(!asDialog) ? t('views.plannings.label.singular') : t('common.actions.create', { documentType: 'planning' })}
         icon={GanttChartSquareIcon}
         asDialog={asDialog}
         ydoc={ydoc}
