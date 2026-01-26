@@ -103,9 +103,10 @@ function stopRowClick(event: React.PointerEvent | React.MouseEvent) {
   event.stopPropagation()
 }
 
-export const selectableStatuses: Array<Omit<DefaultValueOption, 'label'>> = [
+export const selectableStatuses: DefaultValueOption[] = [
   {
     value: 'todo',
+    label: '',
     icon: CircleDotIcon,
     iconProps: {
       className: 'text-muted-foreground',
@@ -115,6 +116,7 @@ export const selectableStatuses: Array<Omit<DefaultValueOption, 'label'>> = [
   },
   {
     value: 'started',
+    label: '',
     icon: CircleArrowUpIcon,
     iconProps: {
       className: 'bg-done text-white dark:text-black rounded-full',
@@ -124,6 +126,7 @@ export const selectableStatuses: Array<Omit<DefaultValueOption, 'label'>> = [
   },
   {
     value: 'done',
+    label: '',
     icon: CircleCheckIcon,
     iconProps: {
       className: 'bg-usable text-white dark:text-black fill-usable rounded-full',
