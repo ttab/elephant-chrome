@@ -22,7 +22,13 @@
       "remove": "Fjerne",
       "abort": "Kansellere",
       "close": "Lukke",
-      "create": "Opprett ny {{documentType}}"
+      "create": "Opprett ny {{documentType}}",
+      "sort": "Sortere",
+      "sortBy": "Sortere etter {{label}}",
+      "presetSort": "Forhåndsinnstilt sortering",
+      "grouping": "Velg gruppering",
+      "nogrouping": "Ingen gruppering",
+      "group": "Gruppe"
     },
     "errors": {
       "unknown": "Ukjent feil",
@@ -47,7 +53,8 @@
       "section": "Kategori",
       "assignee": "Oppdragstaker",
       "assignmentType": "Oppdragstype",
-      "title": "Tittel"
+      "title": "Tittel",
+      "time": "Tid"
     }
   },
   "views": {

@@ -22,7 +22,13 @@
       "remove": "Ta bort",
       "abort": "Avbryt",
       "close": "Stäng",
-      "create": "Skapa ny {{documentType}}"
+      "create": "Skapa ny {{documentType}}",
+      "sort": "Sortera",
+      "sortBy": "Sortera efter {{label}}",
+      "presetSort": "Förinställd sortering",
+      "grouping": "Välj gruppering",
+      "nogrouping": "Ingen gruppering",
+      "group": "Gruppera"
     },
     "errors": {
       "unknown": "Okänt fel",
@@ -47,7 +53,8 @@
       "section": "Sektion",
       "assignee": "Uppdragstagare",
       "assignmentType": "Typ",
-      "title": "Titel"
+      "title": "Titel",
+      "time": "Tid"
     }
   },
   "views": {
