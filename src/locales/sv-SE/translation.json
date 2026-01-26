@@ -103,7 +103,10 @@
         "saveChangeError": "Kunde inte spara ändringen"
       },
       "move": {
-        "label": "Flytta"
+        "label": "Flytta",
+        "dateSwitch": "Byt datum på planering",
+        "dateSwitchDescription": "Planeringen och alla dess textuppdrag byter datum till",
+        "dateSwitchAssignments": "Välj nedan om även bild- och videouppdrag ska byta datum"
       },
       "related": {
         "relatedEvents": "Länkade händelser"

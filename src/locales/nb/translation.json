@@ -103,7 +103,10 @@
         "saveChangeError": "Kunne ikke lagre endringen"
       },
       "move": {
-        "label": "Flytte"
+        "label": "Flytte",
+        "dateSwitch": "",
+        "dateSwitchDescription": "Planleggingen og alle tekstoppdragen endrer dato til",
+        "dateSwitchAssignments": "Velg nedenfor om bilde- og videooppdrag også skal endre datoer."
       },
       "related": {
         "relatedEvents": "Relaterte hendelser"
