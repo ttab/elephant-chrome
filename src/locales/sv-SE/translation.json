@@ -20,6 +20,10 @@
       "forenoon": "Förmiddag",
       "afternoon": "Eftermiddag",
       "evening": "Kväll"
+    },
+    "labels": {
+      "section": "Sektion",
+      "status": "Status"
     }
   },
   "views": {
