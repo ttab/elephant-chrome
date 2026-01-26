@@ -152,7 +152,7 @@ const PlanningViewContent = (props: ViewProps & {
           props.onDialogClose()
         }
 
-        toast.success(t('views.plannings.toasts.create.success') as string, {
+        toast.success(t('views.plannings.toasts.create.success'), {
           classNames: {
             title: 'whitespace-nowrap'
           },
