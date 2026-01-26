@@ -19,7 +19,7 @@ export const GroupedRowsHeader = <TData, TValue>({ row, columns }: {
       <TableCell colSpan={columns.length} className='pl-6 px-2 py-1 border-b'>
         <div className='flex justify-between items-center flex-wrap'>
           <div className='flex items-center space-x-2'>
-            <span className='font-thin text-muted-foreground'>{t(`${groupingMeta?.name}`)}</span>
+            <span className='font-thin text-muted-foreground'>{groupingMeta?.name}</span>
             {typeof groupingMeta?.display === 'function'
               ? groupingMeta.display(row.groupingValue as string)
 
@@ -30,7 +30,7 @@ export const GroupedRowsHeader = <TData, TValue>({ row, columns }: {
                 )}
           </div>
           <div className='flex items-center space-x-2 px-6'>
-            <span className='font-thin text-muted-foreground'>Antal</span>
+            <span className='font-thin text-muted-foreground'>{t('common.misc.numberOf')}</span>
             <span className='inline-flex items-center justify-center size-5 bg-background rounded-full ring-1 ring-gray-300'>
               {row.subRows.length}
             </span>

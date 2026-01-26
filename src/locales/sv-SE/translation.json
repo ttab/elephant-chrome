@@ -21,23 +21,40 @@
       "edit": "Redigera",
       "remove": "Ta bort",
       "abort": "Avbryt",
-      "close": "Stäng"
+      "close": "Stäng",
+      "create": "Skapa ny {{documentType}}",
+      "sort": "Sortera",
+      "sortBy": "Sortera efter {{label}}",
+      "presetSort": "Förinställd sortering",
+      "grouping": "Välj gruppering",
+      "nogrouping": "Ingen gruppering",
+      "group": "Gruppera"
     },
     "errors": {
-      "unknown": "Okänt fel"
+      "unknown": "Okänt fel",
+      "unwellEnvironment": "Du har blivit utloggad eller tappat kontakt med systemet. Vänligen försök logga in igen."
     },
     "misc": {
       "unknown": "okänd",
-      "user": "användare"
+      "user": "användare",
+      "numberOf": "Antal"
     }
   },
   "core": {
+    "documentType": {
+      "planning": "planering",
+      "event": "händelse",
+      "assignment": "uppdrag",
+      "article": "artikel",
+      "flash": "flash"
+    },
     "labels": {
       "newsvalue": "Nyhetsvärde",
       "section": "Sektion",
       "assignee": "Uppdragstagare",
       "assignmentType": "Typ",
-      "title": "Titel"
+      "title": "Titel",
+      "time": "Tid"
     }
   },
   "views": {
@@ -61,6 +78,9 @@
           "todo": "Att göra",
           "started": "Påbörjad",
           "done": "Klar"
+        },
+        "errors": {
+          "saveAssignmentError": "Kunde inte spara uppdraget"
         }
       },
       "copy": {
@@ -83,7 +103,10 @@
         "saveChangeError": "Kunde inte spara ändringen"
       },
       "move": {
-        "label": "Flytta"
+        "label": "Flytta",
+        "dateSwitch": "Byt datum på planering",
+        "dateSwitchDescription": "Planeringen och alla dess textuppdrag byter datum till",
+        "dateSwitchAssignments": "Välj nedan om även bild- och videouppdrag ska byta datum"
       },
       "related": {
         "relatedEvents": "Länkade händelser"
