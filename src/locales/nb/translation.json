@@ -105,5 +105,41 @@
         "openItem": "Åpen planlegging"
       }
     }
+  },
+  "core": {
+    "timeSlots": {
+      "morning": "Natt",
+      "forenoon": "Morgen",
+      "afternoon": "Ettermiddag",
+      "evening": "Kveld"
+    },
+    "labels": {
+      "section": "Kategori",
+      "status": "Status"
+    }
+  },
+  "views": {
+    "approvals": {
+      "title": "Dagen",
+      "charactersShort": "tgn",
+      "toolbar": {
+        "clearFilters": "Tøm",
+        "savePersonalFilter": "Lagre personlig filter",
+        "personalFilter": "Personlig filter"
+      },
+      "authors": {
+        "byAuthor": "av {{author}}",
+        "bylineAuthor": "Byline {{author}}",
+        "lastDoneMarkedAuthor": "Sist klarmarkert {{created}} av {{author}}",
+        "doneByAuthor": "Klarmarkert av {{author}}",
+        "createdByAuthor": "Opprettet av {{author}}"
+      },
+      "tooltips": {
+        "openPreview": "Åpne forhåndsvisning",
+        "openPlanning": "Åpne planlegging",
+        "lastChanged": "Sist endret",
+        "scheduledAt": "Planlagt kl"
+      }
+    }
   }
 }
