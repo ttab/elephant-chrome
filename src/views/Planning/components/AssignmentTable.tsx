@@ -171,7 +171,7 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId }: {
                     <div>
                       <span className='hidden sm:inline'>{t('views.planning.assignment.collaboration.inProgress')}</span>
                       {' '}
-                      {user?.name || `${t('common.misc.unknown')}: ${sub ?? t('common.misc.user')}`}
+                      {user?.name || `${t('common.misc.unknown') as unknown as string}: ${sub ?? t('common.misc.user')}`}
                       {', '}
                       <a
                         className='text-primary hover:underline'
