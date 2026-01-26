@@ -198,7 +198,7 @@ const PlanningViewContent = (props: ViewProps & {
               <TextInput
                 ydoc={ydoc}
                 value={title}
-                label='Titel'
+                label={t('core.labels.title')}
                 placeholder={t('views.planning.title')}
                 autoFocus={props.asDialog === true}
               />
