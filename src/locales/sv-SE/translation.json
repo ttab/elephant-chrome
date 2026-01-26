@@ -14,16 +14,18 @@
       "wires": "Telegram"
     }
   },
+  "core": {
+    "timeSlots": {
+      "morning": "Morgon",
+      "forenoon": "Förmiddag",
+      "afternoon": "Eftermiddag",
+      "evening": "Kväll"
+    }
+  },
   "views": {
     "approvals": {
       "title": "Dagen",
       "charactersShort": "tkn",
-      "timeSlots": {
-        "morning": "Morgon",
-        "forenoon": "Förmiddag",
-        "afternoon": "Eftermiddag",
-        "evening": "Kväll"
-      },
       "toolbar": {
         "clearFilters": "Rensa",
         "savePersonalFilter": "Spara personligt filter",

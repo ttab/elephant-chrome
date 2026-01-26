@@ -14,16 +14,18 @@
       "wires": "Byråimport"
     }
   },
+  "core": {
+    "timeSlots": {
+      "morning": "Natt",
+      "forenoon": "Morgen",
+      "afternoon": "Ettermiddag",
+      "evening": "Kveld"
+    }
+  },
   "views": {
     "approvals": {
       "title": "Dagen",
       "charactersShort": "tgn",
-      "timeSlots": {
-        "morning": "Natt",
-        "forenoon": "Morgen",
-        "afternoon": "Ettermiddag",
-        "evening": "Kveld"
-      },
       "toolbar": {
         "clearFilters": "Tøm",
         "savePersonalFilter": "Lagre personlig filter",

@@ -10,13 +10,13 @@ export const TimeSlot = ({ label, slots }: {
   const showTranslatedText = (slot: string) => {
     switch (slot) {
       case 'morning':
-        return t('views.approvals.timeSlots.morning')
+        return t('core.timeSlots.morning')
       case 'forenoon':
-        return t('views.approvals.timeSlots.forenoon')
+        return t('core.timeSlots.forenoon')
       case 'afternoon':
-        return t('views.approvals.timeSlots.afternoon')
+        return t('core.timeSlots.afternoon')
       case 'evening':
-        return t('views.approvals.timeSlots.evening')
+        return t('core.timeSlots.evening')
       default:
         return 'Translation missing'
     }
