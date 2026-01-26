@@ -64,6 +64,8 @@ export const Planning = (props: ViewProps & {
   const [query] = useQuery()
   const documentId = props.id || query.id
 
+  const { t } = useTranslation()
+
   // Planning should be responsible for creating new as well as editing
   const data = useMemo(() => {
     if (!props.document || !documentId || typeof documentId !== 'string') {
@@ -95,8 +97,8 @@ export const Planning = (props: ViewProps & {
           )
         : (
             <Error
-              title='Planeringsdokument saknas'
-              message='Inget planeringsdokument är angivet. Navigera tillbaka till översikten och försök igen.'
+              title={t('views.planning.prompts.planningDocumentMissing')}
+              message={t('views.planning.prompts.documentMissingMessage')}
             />
           )}
     </>
@@ -150,7 +152,7 @@ const PlanningViewContent = (props: ViewProps & {
           props.onDialogClose()
         }
 
-        toast.success(t('views.plannings.toasts.create.success'), {
+        toast.success(t('views.plannings.toasts.create.success') as string, {
           classNames: {
             title: 'whitespace-nowrap'
           },

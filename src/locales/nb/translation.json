@@ -72,7 +72,9 @@
       },
       "prompts": {
         "slugMissing": "Stikkord mangler",
-        "slugMissingDescription": "Vennligst legg til en stikkord i oppgaven. Etter det kan du lage en tekst."
+        "slugMissingDescription": "Vennligst legg til en stikkord i oppgaven. Etter det kan du lage en tekst.",
+        "planningDocumentMissing": "Plandokumenter mangler",
+        "documentMissingMessage": "Ingen planleggingsdokumenter er spesifisert. Gå tilbake til oversikten og prøv på nytt."
       },
       "toasts": {
         "snapshotError": "Planen er endret lokalt, men kunne ikke lagres.",

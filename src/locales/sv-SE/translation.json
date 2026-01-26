@@ -72,7 +72,9 @@
       },
       "prompts": {
         "slugMissing": "Slugg saknas",
-        "slugMissingDescription": "Vänligen lägg till en slugg på uppdraget. Därefter kan du skapa en text."
+        "slugMissingDescription": "Vänligen lägg till en slugg på uppdraget. Därefter kan du skapa en text.",
+        "planningDocumentMissing": "Planeringsdokument saknas",
+        "documentMissingMessage": "Inget planeringsdokument är angivet. Navigera tillbaka till översikten och försök igen."
       },
       "toasts": {
         "snapshotError": "Planeringen har ändrats lokalt men gick inte att spara.",
