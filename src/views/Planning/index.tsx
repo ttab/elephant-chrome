@@ -254,8 +254,7 @@ const PlanningViewContent = (props: ViewProps & {
           <Form.Footer>
             {!environmentIsSane && (
               <UserMessage asDialog={!!props.asDialog} className='pb-6'>
-                Du har blivit utloggad eller tappat kontakt med systemet.
-                Vänligen försök logga in igen.
+                {t('common.errors.unwellEnvironment')}
               </UserMessage>
 
             )}

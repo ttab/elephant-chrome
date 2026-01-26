@@ -24,7 +24,8 @@
       "close": "Lukke"
     },
     "errors": {
-      "unknown": "Ukjent feil"
+      "unknown": "Ukjent feil",
+      "unwellEnvironment": "Du har blitt logget ut eller mistet kontakten med systemet. Prøv å logge inn på nytt."
     },
     "misc": {
       "unknown": "ukjent",

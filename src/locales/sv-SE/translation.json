@@ -24,7 +24,8 @@
       "close": "Stäng"
     },
     "errors": {
-      "unknown": "Okänt fel"
+      "unknown": "Okänt fel",
+      "unwellEnvironment": "Du har blivit utloggad eller tappat kontakt med systemet. Vänligen försök logga in igen."
     },
     "misc": {
       "unknown": "okänd",
