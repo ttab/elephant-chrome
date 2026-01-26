@@ -131,7 +131,7 @@ export const Toolbar = ({ facets }: { facets: Facets }): JSX.Element => {
             trigger='vertical'
             items={[
               {
-                label: 'Spara personligt filter',
+                label: t('views.approvals.toolbar.savePersonalFilter'),
                 icon: SaveIcon,
                 item: handleSaveUserFilter
               }
@@ -149,7 +149,7 @@ export const Toolbar = ({ facets }: { facets: Facets }): JSX.Element => {
                 }
               })),
               {
-                label: 'Personligt filter',
+                label: t('views.approvals.toolbar.personalFilter'),
                 icon: UserCogIcon,
                 item: () => {
                   if (userFilters) {
@@ -158,7 +158,7 @@ export const Toolbar = ({ facets }: { facets: Facets }): JSX.Element => {
                 }
               },
               {
-                label: 'Spara personligt filter',
+                label: t('views.approvals.toolbar.savePersonalFilter'),
                 icon: SaveIcon,
                 item: handleSaveUserFilter
               }

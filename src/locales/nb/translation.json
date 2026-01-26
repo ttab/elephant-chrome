@@ -24,8 +24,10 @@
         "afternoon": "Ettermiddag",
         "evening": "Kveld"
       },
-       "toolbar": {
-        "clearFilters": "Tøm"
+      "toolbar": {
+        "clearFilters": "Tøm",
+        "savePersonalFilter": "Lagre personlig filter",
+        "personalFilter": "Personlig filter"
       },
       "tooltips": {
         "openPreview": "Åpne forhåndsvisning",
