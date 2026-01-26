@@ -130,7 +130,7 @@ export const Assignment = ({ ydoc, assignment, onAbort, onClose }: {
                 </Button>
               )}
               <Button type='submit' variant='outline' className='whitespace-nowrap'>
-                {assignmentInProgress ? t('common.actions.add') : t('common.actions.close')}
+                {assignmentInProgress ? t('commons.actions.add') : t('commons.actions.close')}
               </Button>
             </div>
           </Form.Submit>

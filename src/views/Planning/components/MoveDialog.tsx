@@ -39,11 +39,11 @@ export const MoveDialog = ({ ydoc, onClose, newDate }: {
       <DialogContent className='focus-visible:outline-none'>
         <DialogHeader>
           <DialogTitle>
-            {t('views.planning.move.dateSwitch')}
+            Byt datum på planering
           </DialogTitle>
 
           <DialogDescription>
-            {t('views.planning.move.dateSwitchDescription')}
+            Planeringen och alla dess textuppdrag byter datum till
             {' '}
             {newDate}
             .
@@ -70,7 +70,7 @@ export const MoveDialog = ({ ydoc, onClose, newDate }: {
           </div>
 
           <DialogDescription>
-            {t('views.planning.move.dateSwitchAssignments')}
+            Välj nedan om även bild- och videouppdrag ska byta datum.
           </DialogDescription>
 
           <div className='flex flex-col gap-3 py-2 text-left'>

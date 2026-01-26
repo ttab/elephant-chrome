@@ -152,7 +152,7 @@ const PlanningViewContent = (props: ViewProps & {
           props.onDialogClose()
         }
 
-        toast.success(t('views.plannings.toasts.create.success'), {
+        toast.success(t('views.plannings.toasts.create.success') as string, {
           classNames: {
             title: 'whitespace-nowrap'
           },
@@ -254,7 +254,8 @@ const PlanningViewContent = (props: ViewProps & {
           <Form.Footer>
             {!environmentIsSane && (
               <UserMessage asDialog={!!props.asDialog} className='pb-6'>
-                {t('common.errors.unwellEnvironment')}
+                Du har blivit utloggad eller tappat kontakt med systemet.
+                Vänligen försök logga in igen.
               </UserMessage>
 
             )}

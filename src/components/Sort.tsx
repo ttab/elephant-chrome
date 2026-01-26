@@ -72,10 +72,10 @@ export const Sort = <TData,>() => {
                 && (
                   <ToggleGroupItem
                     value='startTime'
-                    aria-label={t('common.actions.sortBy', { label: t('core.labels.time').toLocaleLowerCase() })}
+                    aria-label='Sortera efter tid'
                     className='border data-[state=off]:text-muted-foreground'
                   >
-                    {t('core.labels.time')}
+                    Tid
                   </ToggleGroupItem>
                 )}
 
@@ -83,7 +83,7 @@ export const Sort = <TData,>() => {
                 && (
                   <ToggleGroupItem
                     value='newsvalue'
-                    aria-label={t('common.actions.sortBy', { label: t('core.labels.newsvalue').toLocaleLowerCase() })}
+                    aria-label='Sortera efter nyhetsvärde'
                     className='border data-[state=off]:text-muted-foreground'
                   >
                     {t('core.labels.newsvalue')}
@@ -94,15 +94,15 @@ export const Sort = <TData,>() => {
                 && (
                   <ToggleGroupItem
                     value='section'
-                    aria-label={t('common.actions.sortBy', { label: t('core.labels.section').toLocaleLowerCase() })}
+                    aria-label='Sortera efter sektion'
                     className='border data-[state=off]:text-muted-foreground'
                   >
-                    {t('core.labels.section')}
+                    Sektion
                   </ToggleGroupItem>
                 )}
             </ToggleGroup>
           </div>
-          <Label htmlFor='grouping'>{t('common.actions.group')}</Label>
+          <Label htmlFor='grouping'>Gruppera</Label>
           <Select
             value={grouping[0]}
             onValueChange={(option) => {
@@ -117,10 +117,10 @@ export const Sort = <TData,>() => {
             }}
           >
             <SelectTrigger>
-              {groupableColumns.find((column) => column.id === grouping[0])?.columnDef.meta?.name || t('common.actions.grouping')}
+              {groupableColumns.find((column) => column.id === grouping[0])?.columnDef.meta?.name || 'Välj gruppering'}
             </SelectTrigger>
             <SelectContent id='grouping'>
-              <SelectItem value='none'>{t('common.actions.nogrouping')}</SelectItem>
+              <SelectItem value='none'>Ingen gruppering</SelectItem>
               {groupableColumns.map((column) => (
                 <SelectItem value={column.id} key={column.id}>{column.columnDef.meta?.name}</SelectItem>
               ))}
@@ -144,10 +144,10 @@ export const Sort = <TData,>() => {
               <SelectTrigger>
                 {sortableColumns
                   .find((column) => column.id === sorting[0]?.id)
-                  ?.columnDef.meta?.name || t('common.actions.presetSort')}
+                  ?.columnDef.meta?.name || 'Förinställd sortering'}
               </SelectTrigger>
               <SelectContent id='sorting'>
-                <SelectItem value='none'>{t('common.actions.presetSort')}</SelectItem>
+                <SelectItem value='none'>Förinställd sortering</SelectItem>
                 {sortableColumns.map((column) => (
                   <SelectItem value={column.id} key={column.id}>{column.columnDef.meta?.name}</SelectItem>
                 ))}
