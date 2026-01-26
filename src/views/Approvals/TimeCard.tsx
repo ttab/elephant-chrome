@@ -11,12 +11,11 @@ import { useRegistry } from '@/hooks/useRegistry'
 import { useMemo } from 'react'
 import { timesSlots } from '@/defaults/assignmentTimeslots'
 import type { LocaleData } from '@/types/index'
-import { useTranslation } from 'react-i18next'
 
 export const TimeCard = ({ assignment }: { assignment: AssignmentInterface }) => {
   const [query] = useQuery()
   const { timeZone, locale } = useRegistry()
-  const { t } = useTranslation()
+
   const compareDate = useMemo(() => (
     typeof query?.from === 'string'
       ? parseDate(query.from)
@@ -30,13 +29,13 @@ export const TimeCard = ({ assignment }: { assignment: AssignmentInterface }) =>
   ), [assignment?._statusData])
 
   const time = useMemo(() =>
-    getAssignmentTime({ assignment, timeZone, locale, statusData, compareDate, t }),
-  [assignment, timeZone, locale, statusData, compareDate, t]
+    getAssignmentTime({ assignment, timeZone, locale, statusData, compareDate }),
+  [assignment, timeZone, locale, statusData, compareDate]
   )
 
   const timeTooltip = useMemo(() =>
-    getTimeTooltip({ assignment, statusData, timeZone, locale, compareDate, t }),
-  [assignment, statusData, timeZone, locale, compareDate, t]
+    getTimeTooltip({ assignment, statusData, timeZone, locale, compareDate }),
+  [assignment, statusData, timeZone, locale, compareDate]
   )
 
   return (
@@ -56,20 +55,19 @@ export const TimeCard = ({ assignment }: { assignment: AssignmentInterface }) =>
   )
 }
 
-function getAssignmentTime({ assignment, timeZone, locale, statusData, compareDate, t }: {
+function getAssignmentTime({ assignment, timeZone, locale, statusData, compareDate }: {
   assignment: AssignmentInterface
   timeZone: string
   locale: LocaleData
   statusData: StatusData | null
   compareDate?: Date
-  t: (key: string) => string
 }): string | undefined {
   if (
     assignment._deliverableStatus === 'draft'
     && !statusData?.workflowCheckpoint
     && assignment.data.publish_slot
   ) {
-    return getTimeslotLabel(parseInt(assignment.data.publish_slot), t)
+    return getTimeslotLabel(parseInt(assignment.data.publish_slot))
   }
 
   if (assignment.data.publish && assignment._deliverableStatus === 'withheld') {
@@ -89,45 +87,30 @@ function getAssignmentTime({ assignment, timeZone, locale, statusData, compareDa
   return undefined
 }
 
-export function getTimeslotLabel(hour: number, t: (key: string) => string): string | undefined {
-  const showTranslatedText = (slot: string) => {
-    switch (slot) {
-      case 'morning':
-        return t('core.timeSlots.morning')
-      case 'forenoon':
-        return t('core.timeSlots.forenoon')
-      case 'afternoon':
-        return t('core.timeSlots.afternoon')
-      case 'evening':
-        return t('core.timeSlots.evening')
-      default:
-        return 'Translation missing'
-    }
-  }
+export function getTimeslotLabel(hour: number): string | undefined {
   for (const key in timesSlots) {
     if (timesSlots[key].slots.includes(hour)) {
-      return showTranslatedText(timesSlots[key].label)
+      return timesSlots[key].label
     }
   }
   return undefined
 }
 
-function getTimeTooltip({ assignment, statusData, timeZone, locale, compareDate, t }: {
+function getTimeTooltip({ assignment, statusData, timeZone, locale, compareDate }: {
   assignment: AssignmentInterface
   statusData: StatusData | null
   timeZone: string
   locale: LocaleData
   compareDate?: Date
-  t: (key: string) => string
 }): string {
   if (assignment._deliverableStatus === 'withheld' && assignment.data.publish) {
-    return `${t('views.approvals.tooltips.scheduledAt')} ${format(toZonedTime(parseISO(assignment.data.publish), timeZone), 'HH:mm')}`
+    return `Schemalagd kl ${format(toZonedTime(parseISO(assignment.data.publish), timeZone), 'HH:mm')}`
   }
   if (statusData?.modified) {
     if (compareDate) {
-      return `${t('views.approvals.tooltips.lastChanged')} ${dateInTimestampOrShortMonthDayTimestamp(statusData.modified, locale.code.full, timeZone, compareDate)}`
+      return `Senast ändrad ${dateInTimestampOrShortMonthDayTimestamp(statusData.modified, locale.code.full, timeZone, compareDate)}`
     }
-    return `${t('views.approvals.tooltips.lastChanged')} ${format(toZonedTime(parseISO(statusData.modified), timeZone), 'HH:mm')}`
+    return `Senast ändrad ${format(toZonedTime(parseISO(statusData.modified), timeZone), 'HH:mm')}`
   }
-  return t('views.approvals.tooltips.lastChanged')
+  return 'Senast ändrad'
 }

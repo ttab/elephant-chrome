@@ -3,41 +3,5 @@
     "mainMenu": {
       "logout": "Logga ut"
     }
-  },
-  "core": {
-    "timeSlots": {
-      "morning": "Morgon",
-      "forenoon": "Förmiddag",
-      "afternoon": "Eftermiddag",
-      "evening": "Kväll"
-    },
-    "labels": {
-      "section": "Sektion",
-      "status": "Status"
-    }
-  },
-  "views": {
-    "approvals": {
-      "title": "Dagen",
-      "charactersShort": "tkn",
-      "toolbar": {
-        "clearFilters": "Rensa",
-        "savePersonalFilter": "Spara personligt filter",
-        "personalFilter": "Personligt filter"
-      },
-        "authors": {
-        "byAuthor": "av {{author}}",
-        "bylineAuthor": "Byline {{author}}",
-        "lastDoneMarkedAuthor": "Senast klarmarkerad {{created}} av {{author}}",
-        "doneByAuthor": "Klar av {{author}}",
-        "createdByAuthor": "Skapad av {{author}}"
-      },
-      "tooltips": {
-        "openPreview": "Öppna förhandsgranskning",
-        "openPlanning": "Öppna planering",
-        "lastChanged": "Senast ändrad",
-        "scheduledAt": "Schemalagd kl"
-      }
-    }
   }
 }

@@ -4,25 +4,25 @@ type Slots = Record<string, { slots: number[], label: string }>
 export const timesSlots: Slots = {
   morning: {
     slots: [0, 1, 2, 3, 4, 5, 6],
-    label: 'morning'
+    label: 'Morgon'
   },
   forenoon: {
     slots: [7, 8, 9, 10, 11, 12],
-    label: 'forenoon'
+    label: 'Förmiddag'
   },
   afternoon: {
     slots: [13, 14, 15, 16, 17, 18],
-    label: 'afternoon'
+    label: 'Eftermiddag'
   },
   evening: {
     slots: [19, 20, 21, 22, 23],
-    label: 'evening'
+    label: 'Kväll'
   }
 }
 
 export const slotLabels = [
-  { value: 'morning', label: 'morning' },
-  { value: 'forenoon', label: 'forenoon' },
-  { value: 'afternoon', label: 'afternoon' },
-  { value: 'evening', label: 'evening' }
+  { value: 'morning', label: 'Morgon' },
+  { value: 'forenoon', label: 'Förmiddag' },
+  { value: 'afternoon', label: 'Eftermiddag' },
+  { value: 'evening', label: 'Kväll' }
 ]

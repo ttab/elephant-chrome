@@ -7,12 +7,9 @@ import type { StatusMeta } from '@/types'
 import type { Status, StatusOverviewItem } from '@ttab/elephant-api/repository'
 import { getAuthorBySub } from '@/lib/getAuthorBySub'
 import { DocumentStatuses } from '@/defaults/documentStatuses'
-import { useTranslation } from 'react-i18next'
-import type { TFunction } from 'i18next'
 
 export const AuthorNames = ({ assignment }: { assignment: AssignmentInterface }): JSX.Element => {
   const authors = useAuthors()
-  const { t } = useTranslation()
 
   // Parse status data only if it exists and changes
   const statusData = useMemo<StatusOverviewItem | null>(() => {
@@ -41,8 +38,8 @@ export const AuthorNames = ({ assignment }: { assignment: AssignmentInterface })
 
   // Get display and full text for tooltip
   const { display, full } = useMemo(
-    () => getDisplayAndFull(assignment, authors, entries, statusData, t),
-    [assignment, authors, entries, statusData, t]
+    () => getDisplayAndFull(assignment, authors, entries, statusData),
+    [assignment, authors, entries, statusData]
   )
 
   // Optionally append last status setter if not draft/done
@@ -80,11 +77,11 @@ export const AuthorNames = ({ assignment }: { assignment: AssignmentInterface })
 
     if (statusValue !== 'draft' && statusValue !== 'done') {
       return full
-        ? `${full}, ${statusLabel} av ${t('views.approvals.authors.byAuthor', { author: lastStatusUpdateAuthor.name })}`
-        : `${statusLabel} av ${t('views.approvals.authors.byAuthor', { author: lastStatusUpdateAuthor.name })}`
+        ? `${full}, ${statusLabel} av ${lastStatusUpdateAuthor.name}`
+        : `${statusLabel} av ${lastStatusUpdateAuthor.name}`
     }
     return full
-  }, [full, lastStatusUpdateAuthor, lastUpdated, statusData, t])
+  }, [full, lastStatusUpdateAuthor, lastUpdated, statusData])
 
   return (
     <div title={enhancedFull}>
@@ -98,8 +95,7 @@ function getDisplayAndFull(
   assignment: AssignmentInterface,
   authors: IDBAuthor[],
   entries: [string, Status][],
-  statusData: StatusOverviewItem | null,
-  t: TFunction<string>
+  statusData: StatusOverviewItem | null
 ) {
   // Prefer byline from deliverable document
   const byline = (assignment?._deliverableDocument?.links ?? [])
@@ -115,7 +111,7 @@ function getDisplayAndFull(
           <span>{byline}</span>
         </span>
       ),
-      full: t('views.approvals.authors.bylineAuthor', { author: byline })
+      full: `Byline ${byline}`
     }
   }
 
@@ -130,7 +126,7 @@ function getDisplayAndFull(
           <span>{authorObj ? authorOutput(authorObj) : '??'}</span>
         </span>
       ),
-      full: t('views.approvals.authors.doneByAuthor', { author: authorObj?.name || '??' })
+      full: `Klar av ${authorObj?.name || '??'}`
     }
   }
 
@@ -144,7 +140,7 @@ function getDisplayAndFull(
           <span>{authorOutput(afterDraftAuthor)}</span>
         </span>
       ),
-      full: t('views.approvals.authors.byAuthor', { author: afterDraftAuthor.name })
+      full: `Av ${afterDraftAuthor.name}`
     }
   }
 
@@ -162,7 +158,7 @@ function getDisplayAndFull(
     }
   }
 
-  // Show creator of deliverable 
+  // Show creator of deliverable
   if (statusData?.creatorUri) {
     const creator = getAuthorBySub(authors, statusData.creatorUri)
     return {
@@ -172,7 +168,7 @@ function getDisplayAndFull(
           <span>{creator ? authorOutput(creator) : '??'}</span>
         </span>
       ),
-      full: creator?.name ? `${t('views.approvals.authors.createdByAuthor', { author: creator.name })}` : ''
+      full: creator?.name ? `Skapad av ${creator.name}` : ''
     }
   }
 
