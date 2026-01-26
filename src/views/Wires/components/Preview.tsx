@@ -52,17 +52,6 @@ export const Preview = ({ wire, onClose }: {
             className='w-9 h-9 px-0'
             onMouseDown={(e) => { e.preventDefault() }}
             onClick={(e) => {
-            // navigate(`/users/${previewUser.id}`)
-            }}
-          >
-            <Edit2Icon size={16} strokeWidth={1.75} className='opacity-60' />
-          </Button>
-
-          <Button
-            variant='ghost'
-            className='w-9 h-9 px-0'
-            onMouseDown={(e) => { e.preventDefault() }}
-            onClick={(e) => {
               e.preventDefault()
               onClose()
             }}

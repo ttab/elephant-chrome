@@ -4,14 +4,15 @@ import { useCallback, useRef, useState, useMemo, type JSX, useEffect } from 'rea
 import { useView } from '@/hooks'
 import { cn } from '@ttab/elephant-ui/utils'
 import { Stream } from './components/Stream'
-import { Button, ButtonGroup } from '@ttab/elephant-ui'
-import { SaveIcon, PlusIcon } from '@ttab/elephant-ui/icons'
 import { useStreamNavigation } from './hooks/useStreamNavigation'
 import type { Wire } from '@/shared/schemas/wire'
 import { Preview } from './components/Preview'
 import { getWireStatus } from '@/components/Table/lib/getWireStatus'
 import type { RowSelectionState, Updater } from '@tanstack/react-table'
 import { WiresActions } from './components/WiresActions'
+import { addWire, init, removeWire } from './wires'
+import { useUserTracker } from '@/hooks/useUserTracker'
+import type { HistoryState } from '@/navigation/hooks/useHistory'
 
 const BASE_URL = import.meta.env.BASE_URL
 
@@ -37,8 +38,14 @@ export const Wires = (): JSX.Element => {
   const [focusedWire, setFocusedWire] = useState<Wire | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
-  // FIXME: Replace with actual wire streams
-  const [wireStreams, setWireStreams] = useState(['1', '2'])
+  const [wiresHistory] = useUserTracker<HistoryState>('Wires')
+  const [wireStreams, setWireStreams] = useState(init())
+
+  useEffect(() => {
+    if (wiresHistory) {
+      setWireStreams(init(wiresHistory))
+    }
+  }, [wiresHistory])
 
   // Global row selection state for all streams
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
@@ -54,7 +61,13 @@ export const Wires = (): JSX.Element => {
 
   const addWireStream = useCallback(() => {
     setWireStreams((curr) => {
-      return [...curr, String(curr.length)]
+      return addWire(curr)
+    })
+  }, [])
+
+  const removeWireStream = useCallback((streamId: string) => {
+    setWireStreams((curr) => {
+      return removeWire(curr, streamId)
     })
   }, [])
 
@@ -173,17 +186,10 @@ export const Wires = (): JSX.Element => {
         <ViewHeader.Title title='Telegram' name='Wires' />
 
         <ViewHeader.Content>
-          <ButtonGroup className='border border-muted rounded-md'>
-            <Button variant='ghost' className='w-9 h-9 px-0' onClick={addWireStream}>
-              <PlusIcon strokeWidth={1.75} size={18} />
-            </Button>
-            <Button variant='ghost' disabled={true} className='w-9 h-9 px-0' onClick={() => {}}>
-              <SaveIcon strokeWidth={1.75} size={18} />
-            </Button>
-          </ButtonGroup>
-
-          <WiresActions wires={[...selectedWires, focusedWire]} />
-
+          <WiresActions
+            wires={[...selectedWires, focusedWire]}
+            addWireStream={addWireStream}
+          />
         </ViewHeader.Content>
         <ViewHeader.Action />
       </ViewHeader.Root>
@@ -203,11 +209,10 @@ export const Wires = (): JSX.Element => {
             )}
           >
             {/* Grid */}
-            <div ref={containerRef} className='grid gap-2 p-2 pe-1 h-full snap-x snap-proximity overflow-x-auto overflow-hidden grid-flow-col auto-cols-max'>
-              {wireStreams.map((wireStream) => (
+            <div ref={containerRef} className='grid gap-2 p-2 pe-1 h-full snap-x snap-proximity scroll-pl-6 overflow-x-auto overflow-hidden grid-flow-col auto-cols-max'>
+              {wireStreams.content.map((wireStream) => (
                 <Stream
-                  key={wireStream}
-                  streamId={wireStream}
+                  key={wireStream.uuid}
                   wireStream={wireStream}
                   onPress={handleOnPress}
                   onUnpress={handleOnUnpress}
@@ -215,6 +220,7 @@ export const Wires = (): JSX.Element => {
                   rowSelection={rowSelection}
                   onRowSelectionChange={handleRowSelectionChange}
                   onDataChange={handleDataChange}
+                  onRemove={removeWireStream}
                 />
               ))}
             </div>

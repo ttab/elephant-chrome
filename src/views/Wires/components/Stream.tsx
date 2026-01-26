@@ -1,4 +1,4 @@
-import { type JSX, useMemo, useEffect } from 'react'
+import { type JSX, useMemo, useEffect, useCallback } from 'react'
 import { fields, type Wire, type WireFields } from '@/shared/schemas/wire'
 import { useQuery } from '@/hooks'
 import { useDocuments } from '@/hooks/index/useDocuments'
@@ -7,8 +7,8 @@ import { SortingV1 } from '@ttab/elephant-api/index'
 import { StreamEntry } from './StreamEntry'
 import { Filter } from '@/components/Filter'
 import { StreamTools } from './StreamTools'
-import { MinusIcon, SaveIcon } from '@ttab/elephant-ui/icons'
-import { Button } from '@ttab/elephant-ui'
+import { MinusIcon } from '@ttab/elephant-ui/icons'
+import { Badge, Button } from '@ttab/elephant-ui'
 import {
   useReactTable,
   getCoreRowModel,
@@ -17,29 +17,30 @@ import {
   type RowSelectionState,
   type OnChangeFn
 } from '@tanstack/react-table'
+import { getWireFilter, type WireStream } from '../wires'
 
 export const Stream = ({
-  streamId,
   wireStream,
   onFocus,
   onUnpress,
   onPress,
   rowSelection,
   onRowSelectionChange,
-  onDataChange
+  onDataChange,
+  onRemove
 }: {
-  streamId: string
-  wireStream: string
+  wireStream: WireStream
   onFocus?: (item: Wire, event: React.FocusEvent<HTMLElement>) => void
   onUnpress?: (item: Wire, event: React.KeyboardEvent<HTMLElement>) => void
   onPress?: (item: Wire, event: React.MouseEvent<HTMLElement> | React.KeyboardEvent<HTMLElement>) => void
   rowSelection: RowSelectionState
   onRowSelectionChange: OnChangeFn<RowSelectionState>
   onDataChange?: (data: Wire[]) => void
+  onRemove?: (streamId: string) => void
 }): JSX.Element => {
+  // FIXME: page is not part of page query params anymore
   const [{ page }] = useQuery()
-  const [filter] = useQuery(['section', 'source', 'query', 'newsvalue'])
-
+  const filter = getWireFilter(wireStream)
   const { data } = useDocuments<Wire, WireFields>({
     documentType: 'tt/wire',
     size: 40,
@@ -57,6 +58,10 @@ export const Stream = ({
     }
   })
 
+  const removeThisWire = useCallback(() => {
+    onRemove?.(wireStream.uuid)
+  }, [onRemove, wireStream.uuid])
+
   // Notify parent when data changes
   useEffect(() => {
     if (data && onDataChange) {
@@ -72,7 +77,7 @@ export const Stream = ({
         accessorFn: (row) => row,
         cell: ({ row }) => (
           <StreamEntry
-            streamId={streamId}
+            streamId={wireStream.uuid}
             entry={row.original}
             isSelected={row.getIsSelected()}
             onToggleSelected={row.getToggleSelectedHandler()}
@@ -83,7 +88,7 @@ export const Stream = ({
         )
       }
     ],
-    [streamId, onPress, onUnpress, onFocus]
+    [wireStream.uuid, onPress, onUnpress, onFocus]
   )
 
   const table = useReactTable({
@@ -100,19 +105,24 @@ export const Stream = ({
 
   return (
     <div
-      data-stream-id={streamId}
+      data-stream-id={wireStream.uuid}
       className='flex flex-col h-full snap-start snap-always min-w-80 max-w-120 border rounded-md overflow-hidden'
     >
       {/* Column header - fixed height */}
       <div className='flex-none bg-background flex items-center justify-between py-1 px-4 border-b'>
-        <Filter page={String(1)} pages={[String(1)]} setPages={() => { }} search={undefined} setSearch={() => {}}>
-          <StreamTools page={String(1)} pages={[String(1)]} setPages={() => { }} search={undefined} setSearch={() => { }} />
-        </Filter>
+        <div className='flex gap-2'>
+          <Filter page={String(1)} pages={[String(1)]} setPages={() => { }} search={undefined} setSearch={() => {}}>
+            <StreamTools page={String(1)} pages={[String(1)]} setPages={() => { }} search={undefined} setSearch={() => { }} />
+          </Filter>
+          {Array.isArray(filter['source']) && (
+            <>
+              {filter['source'].map((source) => <Badge key={source}>{source}</Badge>)}
+            </>
+          )}
+        </div>
+
         <div>
-          <Button variant='ghost' disabled={true} className='w-9 h-9 px-0' onClick={() => {}}>
-            <SaveIcon strokeWidth={1.75} size={18} />
-          </Button>
-          <Button variant='ghost' className='w-9 h-9 px-0' onClick={() => {}}>
+          <Button variant='ghost' className='w-9 h-9 px-0' onClick={removeThisWire}>
             <MinusIcon strokeWidth={1.75} size={18} />
           </Button>
         </div>
