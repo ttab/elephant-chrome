@@ -30,7 +30,8 @@
     },
     "misc": {
       "unknown": "okänd",
-      "user": "användare"
+      "user": "användare",
+      "numberOf": "Antal"
     }
   },
   "core": {
