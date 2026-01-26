@@ -2,15 +2,17 @@ import { isVisualAssignmentType } from '@/defaults/assignmentTypes'
 import { StatusSpecifications, WorkflowSpecifications } from '@/defaults/workflowSpecification'
 import type { JSX } from 'react'
 import { selectableStatuses } from '@/views/Planning/components/AssignmentStatus'
+import { useTranslation } from 'react-i18next'
 
 export const DocumentStatus = ({ type, status }: {
   type: string
   status: string
 }): JSX.Element => {
   const visualStatus = selectableStatuses.find((s) => s.value === status)
+  const { t } = useTranslation()
 
   const label = isVisualAssignmentType(type)
-    ? visualStatus?.label || null
+    ? t(`views.planning.assignment.status.${visualStatus?.value}`) || null
     : WorkflowSpecifications['core/article']?.[status]?.title || null
 
   const docStatus = isVisualAssignmentType(type)
