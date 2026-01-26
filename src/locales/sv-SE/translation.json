@@ -15,7 +15,9 @@
         "evening": "Kväll"
       },
       "toolbar": {
-        "clearFilters": "Rensa"
+        "clearFilters": "Rensa",
+        "savePersonalFilter": "Spara personligt filter",
+        "personalFilter": "Personligt filter"
       },
       "tooltips": {
         "openPreview": "Öppna förhandsgranskning",
