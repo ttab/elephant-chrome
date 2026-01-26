@@ -33,6 +33,7 @@ export const transformVisual = (element: Block): TBElement => {
     type: links[0].type,
     credit: links[0].data.credit,
     text: data.caption,
+    html_caption: data.html_caption,
     width: links[0].data.width,
     height: links[0].data.height,
     ...transformSoftcrop(meta) || {}
@@ -73,30 +74,59 @@ export function revertVisual(element: TBElement): Block {
 
   function getText(node: Descendant | undefined) {
     let text = ''
-    if (node && 'children' in node && Array.isArray(node?.children)) {
-      const [child] = node.children
+    let html_caption = ''
+    let hasFormattedText = false
 
-      if (child && 'text' in child && child?.text) {
-        text = child.text
+    if (node && 'children' in node && Array.isArray(node?.children)) {
+      for (const child of node.children) {
+        const formatted = Object.keys(child).find((key) => key.startsWith('core/'))
+
+        if (child && 'text' in child && child?.text) {
+          if (!formatted) {
+            html_caption += child.text
+          }
+
+          if (child && 'text' in child && child?.text) {
+            text += child.text
+
+            if (formatted) {
+              hasFormattedText = true
+              if (formatted === 'core/bold') {
+                html_caption += `<strong>${child.text}</strong>`
+              }
+              if (formatted === 'core/italic') {
+                html_caption += `<em>${child.text}</em>`
+              }
+            }
+          }
+        }
       }
     }
-    return text
+
+    return {
+      text,
+      ...(hasFormattedText && { html_caption })
+    }
   }
 
   const captionText = getText(textNode)
   const bylineText = getText(bylineNode)
 
   const data: Record<string, string> = {
-    credit: toString(bylineText),
+    credit: toString(bylineText.text),
     height: toString(properties?.height),
     width: toString(properties?.width)
   }
+
+  const caption = toString(captionText.text)
+  const html_caption = toString(captionText.html_caption)
 
   return Block.create({
     id,
     type: 'tt/visual',
     data: {
-      caption: toString(captionText)
+      caption,
+      ...(html_caption && { html_caption })
     },
     meta: revertSoftcrop(element),
     links: [
