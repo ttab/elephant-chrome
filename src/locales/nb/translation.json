@@ -21,7 +21,8 @@
       "edit": "Redigere",
       "remove": "Fjerne",
       "abort": "Kansellere",
-      "close": "Lukke"
+      "close": "Lukke",
+      "create": "Opprett ny {{documentType}}"
     },
     "errors": {
       "unknown": "Ukjent feil",
@@ -33,6 +34,13 @@
     }
   },
   "core": {
+    "documentType": {
+      "planning": "plan",
+      "event": "hendelse",
+      "assignment": "oppdrag",
+      "article": "artikkel",
+      "flash": "HAST"
+    },
     "labels": {
       "newsvalue": "Nyhetesverdi",
       "section": "Kategori",

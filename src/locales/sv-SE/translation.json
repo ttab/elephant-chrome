@@ -21,7 +21,8 @@
       "edit": "Redigera",
       "remove": "Ta bort",
       "abort": "Avbryt",
-      "close": "Stäng"
+      "close": "Stäng",
+      "create": "Skapa ny {{documentType}}"
     },
     "errors": {
       "unknown": "Okänt fel",
@@ -33,6 +34,13 @@
     }
   },
   "core": {
+    "documentType": {
+      "planning": "planering",
+      "event": "händelse",
+      "assignment": "uppdrag",
+      "article": "artikel",
+      "flash": "flash"
+    },
     "labels": {
       "newsvalue": "Nyhetsvärde",
       "section": "Sektion",
