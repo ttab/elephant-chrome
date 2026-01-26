@@ -78,6 +78,9 @@
           "todo": "Att göra",
           "started": "Påbörjad",
           "done": "Klar"
+        },
+        "errors": {
+          "saveAssignmentError": "Kunde inte spara uppdraget"
         }
       },
       "copy": {

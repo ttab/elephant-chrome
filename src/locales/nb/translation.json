@@ -78,6 +78,9 @@
           "todo": "Å gjøre",
           "started": "Startet",
           "done": "Ferdig"
+        },
+        "errors": {
+          "saveAssignmentError": "Kunne ikke lagre oppdraget"
         }
       },
       "copy": {
