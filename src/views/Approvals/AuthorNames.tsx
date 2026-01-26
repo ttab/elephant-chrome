@@ -162,7 +162,7 @@ function getDisplayAndFull(
     }
   }
 
-  // Show creator of deliverable 
+  // Show creator of deliverable
   if (statusData?.creatorUri) {
     const creator = getAuthorBySub(authors, statusData.creatorUri)
     return {
