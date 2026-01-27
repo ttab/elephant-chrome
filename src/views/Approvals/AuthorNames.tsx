@@ -80,8 +80,8 @@ export const AuthorNames = ({ assignment }: { assignment: AssignmentInterface })
 
     if (statusValue !== 'draft' && statusValue !== 'done') {
       return full
-        ? `${full}, ${t('core.statuses.' + statusValue)} ${t('shared.authors.from', { author: lastStatusUpdateAuthor.name })}`
-        : `${t('core.statuses.' + statusValue)} ${t('shared.authors.from', { author: lastStatusUpdateAuthor.name })}`
+        ? `${full}, ${t('core.status.' + statusValue)} ${t('shared.authors.from', { author: lastStatusUpdateAuthor.name })}`
+        : `${t('core.status.' + statusValue)} ${t('shared.authors.from', { author: lastStatusUpdateAuthor.name })}`
     }
     return full
   }, [full, lastStatusUpdateAuthor, lastUpdated, statusData, t])

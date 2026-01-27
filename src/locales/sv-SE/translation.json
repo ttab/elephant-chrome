@@ -72,16 +72,19 @@
           "publish": "Publicera"
         },
         "draft": "Utkast",
-        "internal": "Intern"
+        "internal": "Intern",
+        "approved": "Godkänd",
+        "usable": "Publicerad",
+        "unpublished": "Avpublicerad",
+        "done": "Klar",
+        "withheld": "Schemalagd",
+        "cancelled": "Kastad"
       },
       "timeSlots": {
         "morning": "Morgon",
         "forenoon": "Förmiddag",
         "afternoon": "Eftermiddag",
         "evening": "Kväll"
-      },
-      "statuses": {
-        "approved": "Godkänd"
       }
     },
     "views": {

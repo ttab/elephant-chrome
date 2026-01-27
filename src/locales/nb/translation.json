@@ -72,16 +72,19 @@
         "publish": "Publiser"
       },
       "draft": "Utkast",
-      "internal": "Intern"
+      "internal": "Intern",
+      "approved": "Godkjent",
+      "usable": "Publisert",
+      "unpublished": "Avpublisert",
+      "done": "Klar",
+      "withheld": "Planlagt",
+      "cancelled": "Kastet"
     },
     "timeSlots": {
       "morning": "Natt",
       "forenoon": "Morgen",
       "afternoon": "Ettermiddag",
       "evening": "Kveld"
-    },
-    "statuses": {
-      "approved": "Godkjent"
     }
   },
   "views": {
