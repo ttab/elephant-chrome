@@ -58,7 +58,7 @@
     "@ttab/textbit": "^1.0.10",
     "@ttab/textbit-plugins": "^1.1.2",
     "class-variance-authority": "^0.7.1",
-    "cors": "^2.8.5",
+    "cors": "^2.8.6",
     "date-fns": "^4.1.0",
     "date-fns-tz": "^3.2.0",
     "escape-html": "^1.0.3",
