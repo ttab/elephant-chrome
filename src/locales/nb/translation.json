@@ -14,21 +14,6 @@
       "wires": "Byråimport"
     }
   },
-  "core": {
-    "timeSlots": {
-      "morning": "Natt",
-      "forenoon": "Morgen",
-      "afternoon": "Ettermiddag",
-      "evening": "Kveld"
-    },
-    "labels": {
-      "section": "Kategori",
-      "status": "Status"
-    },
-    "statuses": {
-      "approved": "Godkjent"
-    }
-  },
   "shared": {
     "authors": {
       "from": "av {{author}}",
@@ -37,6 +22,66 @@
       "doneBy": "Klarmarkert av {{author}}",
       "createdBy": "Opprettet av {{author}}",
       "approvedBy": "Godkjent av {{author}}"
+    }
+  },
+  "common": {
+    "actions": {
+      "add": "Legg til",
+      "open": "Åpne",
+      "edit": "Redigere",
+      "remove": "Fjerne",
+      "abort": "Avbryte",
+      "close": "Lukke",
+      "create": "Opprett ny {{documentType}}",
+      "sort": "Sortere",
+      "sortBy": "Sortere etter {{label}}",
+      "presetSort": "Forhåndsinnstilt sortering",
+      "grouping": "Velg gruppering",
+      "nogrouping": "Ingen gruppering",
+      "group": "Gruppe"
+    },
+    "errors": {
+      "unknown": "Ukjent feil",
+      "unwellEnvironment": "Du har blitt logget ut eller mistet kontakten med systemet. Prøv å logge inn på nytt."
+    },
+    "misc": {
+      "unknown": "ukjent",
+      "user": "bruker",
+      "numberOf": "Antall"
+    }
+  },
+  "core": {
+    "documentType": {
+      "planning": "plan",
+      "event": "hendelse",
+      "assignment": "oppdrag",
+      "article": "artikkel",
+      "flash": "HAST"
+    },
+    "labels": {
+      "newsvalue": "Nyhetesverdi",
+      "section": "Kategori",
+      "assignee": "Oppdragstaker",
+      "assignmentType": "Oppdragstype",
+      "title": "Tittel",
+      "time": "Tid",
+      "status": "Status"
+    },
+    "status": {
+      "action": {
+        "publish": "Publiser"
+      },
+      "draft": "Utkast",
+      "internal": "Intern"
+    },
+    "timeSlots": {
+      "morning": "Natt",
+      "forenoon": "Morgen",
+      "afternoon": "Ettermiddag",
+      "evening": "Kveld"
+    },
+    "statuses": {
+      "approved": "Godkjent"
     }
   },
   "views": {
@@ -53,6 +98,76 @@
         "openPlanning": "Åpne planlegging",
         "lastChanged": "Sist endret",
         "scheduledAt": "Planlagt kl"
+      }
+    },
+    "planning": {
+      "assignment": {
+        "startEndTime": "Start- og sluttid",
+        "startTime": "Starttid",
+        "publishWindow": "Publiseringsvindu",
+        "publishTime": "Publiseringstid",
+        "createPrintArticle": "",
+        "removeAssignment": "Vil du fjerne oppdraget",
+        "actions": {
+          "addAssignment": "Legg til oppdrag",
+          "addAssignee": "Legg til oppdragstaker"
+        },
+        "collaboration": {
+          "inProgress": "Ny oppdrag opprettes av",
+          "overtake": "Ta over"
+        },
+        "status": {
+          "todo": "Å gjøre",
+          "started": "Startet",
+          "done": "Ferdig"
+        },
+        "errors": {
+          "saveAssignmentError": "Kunne ikke lagre oppdraget"
+        }
+      },
+      "copy": {
+        "copiedFrom": "Kopiert fra"
+      },
+      "description": {
+        "internal": "Intern beskjed",
+        "public": "Beskrivelse"
+      },
+      "prompts": {
+        "slugMissing": "Stikkord mangler",
+        "slugMissingDescription": "Vennligst legg til en stikkord i oppgaven. Etter det kan du lage en tekst.",
+        "planningDocumentMissing": "Plandokumenter mangler",
+        "documentMissingMessage": "Ingen planleggingsdokumenter er spesifisert. Gå tilbake til oversikten og prøv på nytt."
+      },
+      "toasts": {
+        "snapshotError": "Planen er endret lokalt, men kunne ikke lagres.",
+        "createDeliverableLinkError": "Kunne ikke koble til leveransen",
+        "saveError": "Kunne ikke lagre planen",
+        "saveChangeError": "Kunne ikke lagre endringen"
+      },
+      "move": {
+        "label": "Flytte",
+        "dateSwitch": "Endre dato på planlegging",
+        "dateSwitchDescription": "Planleggingen og alle tekstoppdragen endrer dato til",
+        "dateSwitchAssignments": "Velg nedenfor om bilde- og videooppdrag også skal endre datoer."
+      },
+      "related": {
+        "relatedEvents": "Koblede hendelser"
+      },
+      "slugline": "Legg til stikkord",
+      "story": "Legg til story",
+      "title": "Planleggingstittel"
+    },
+    "plannings": {
+      "label": {
+        "plural": "Planer",
+        "singular": "Planlegging"
+      },
+      "toasts": {
+        "create": {
+          "error": "Kunne ikke opprette ny plan",
+          "success": "Planlegging opprettet"
+        },
+        "openItem": "Åpen planlegging"
       }
     }
   }

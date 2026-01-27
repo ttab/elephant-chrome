@@ -2,12 +2,15 @@ import { TableRow, TableCell } from '@ttab/elephant-ui'
 import { useTable } from '@/hooks/useTable'
 import { type ColumnDef, type Row } from '@tanstack/react-table'
 import type { JSX } from 'react'
+import { useTranslation } from 'react-i18next'
 
 export const GroupedRowsHeader = <TData, TValue>({ row, columns }: {
   row: Row<unknown>
   columns: Array<ColumnDef<TData, TValue>>
 }): JSX.Element => {
   const { table } = useTable()
+  const { t } = useTranslation()
+
   const groupingValues = table.getState().grouping
   const groupingMeta = columns.find((column) => column.id === groupingValues[0])?.meta
 
@@ -27,7 +30,7 @@ export const GroupedRowsHeader = <TData, TValue>({ row, columns }: {
                 )}
           </div>
           <div className='flex items-center space-x-2 px-6'>
-            <span className='font-thin text-muted-foreground'>Antal</span>
+            <span className='font-thin text-muted-foreground'>{t('common.misc.numberOf')}</span>
             <span className='inline-flex items-center justify-center size-5 bg-background rounded-full ring-1 ring-gray-300'>
               {row.subRows.length}
             </span>
