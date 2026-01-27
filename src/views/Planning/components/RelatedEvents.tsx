@@ -2,8 +2,11 @@ import { Link } from '@/components/index'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { Separator } from '@ttab/elephant-ui'
 import { CalendarPlus2Icon } from '@ttab/elephant-ui/icons'
+import { useTranslation } from 'react-i18next'
 
 export const RelatedEvents = ({ events = [] }: { events: Block[] | undefined }) => {
+  const { t } = useTranslation()
+
   if (!events || events?.length < 1) {
     return <></>
   }
@@ -19,7 +22,8 @@ export const RelatedEvents = ({ events = [] }: { events: Block[] | undefined }) 
             size={18}
             className='text-muted-foreground'
           />
-          <div className='text-muted-foreground py-2'>Länkade händelser</div>
+          {/* Länkade händelser */}
+          <div className='text-muted-foreground py-2'>{t('views.planning.related.relatedEvents')}</div>
         </div>
         <div>
           {events.map((ev) => (
