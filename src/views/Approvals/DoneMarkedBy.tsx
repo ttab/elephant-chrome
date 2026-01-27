@@ -5,12 +5,14 @@ import { dateToReadableDateTime } from '@/shared/datetime'
 import { useRegistry } from '@/hooks/useRegistry'
 import { Tooltip } from '@ttab/elephant-ui'
 import { authorOutput } from './AuthorNames'
+import { useTranslation } from 'react-i18next'
 
 export const DoneMarkedBy = ({ doneStatus, authors }: {
   doneStatus: StatusMeta | undefined
   authors: IDBAuthor[]
 }) => {
   const { locale, timeZone } = useRegistry()
+  const { t } = useTranslation()
 
   if (!doneStatus?.creator) {
     return <></>
@@ -31,7 +33,7 @@ export const DoneMarkedBy = ({ doneStatus, authors }: {
 
   return (
     <div className='flex flex-col items-start justify-start'>
-      <Tooltip content={`Senast klarmarkerat ${created} av ${matchedAuthor.name}`}>
+      <Tooltip content={`${t('shared.authors.lastDoneMarked', { created: created, author: matchedAuthor.name })}`}>
         <div className='flex gap-1 items-center relative'>
           <CheckIcon size={16} />
           <div>{author}</div>
