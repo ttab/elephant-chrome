@@ -26,5 +26,16 @@
       },
       "openItem": "Öppna planering"
     }
+  },
+  "events": {
+    "label": {
+      "plural": "Händelser",
+      "singular": "Händelse"
+    },
+    "toasts": {
+      "fetch":{
+        "error": "Kunde inte hämta händelser"
+      }
+    }
   }
 }

@@ -14,6 +14,7 @@ import { useQuery } from '@/hooks/useQuery'
 import { useOrganisers } from '@/hooks/useOrganisers'
 import { useRegistry } from '@/hooks/useRegistry'
 import { useInitFilters } from '@/hooks/useInitFilters'
+import { useTranslation } from 'react-i18next'
 
 const meta: ViewMetadata = {
   name: 'Events',
@@ -35,11 +36,12 @@ export const Events = (): JSX.Element => {
   const [currentTab, setCurrentTab] = useState<string>('list')
   const sections = useSections()
   const [query] = useQuery()
+  const { t } = useTranslation()
 
   const organisers = useOrganisers()
   const { locale } = useRegistry()
   const columns = useMemo(() =>
-    eventTableColumns({ sections, organisers, locale }), [sections, organisers, locale])
+    eventTableColumns({ sections, organisers, locale, t }), [sections, organisers, locale, t])
 
   // Load current filters from user tracker if any
   const columnFilters = useInitFilters<Event>({
@@ -65,7 +67,7 @@ export const Events = (): JSX.Element => {
 
         <ViewHeader.Root>
           <ViewHeader.Content>
-            <ViewHeader.Title name='Events' title='Händelser' short='Händelser' />
+            <ViewHeader.Title name='Events' title={t('views:events.label.plural')} short={t('views:events.label.plural')} />
             <Header type='Event' />
           </ViewHeader.Content>
 

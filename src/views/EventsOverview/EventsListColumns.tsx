@@ -26,11 +26,13 @@ import { type IDBOrganiser, type IDBSection } from 'src/datastore/types'
 import { FacetedFilter } from '@/components/Commands/FacetedFilter'
 import { Tooltip } from '@ttab/elephant-ui'
 import type { LocaleData } from '@/types/index'
+import type { TFunction } from 'i18next'
 
-export function eventTableColumns({ sections = [], organisers = [], locale }: {
+export function eventTableColumns({ sections = [], organisers = [], locale, t }: {
   sections?: IDBSection[]
   organisers?: IDBOrganiser[]
   locale: LocaleData
+  t?: TFunction<string>
 }): Array<ColumnDef<Event>> {
   return [
     {
@@ -42,7 +44,7 @@ export function eventTableColumns({ sections = [], organisers = [], locale }: {
         display: (value: string) => {
           const [hour, day] = value.split(' ')
           if (hour === 'undefined') {
-            return <span>Heldag</span>
+            return <span>{t?.('core:timeSlots.fullDay')}</span>
           }
 
           return (
@@ -68,7 +70,7 @@ export function eventTableColumns({ sections = [], organisers = [], locale }: {
         const isFullDay = (end.getTime() - start.getTime()) / (1000 * 60 * 60) > 12
 
         if (isFullDay) {
-          return 'Heldag'
+          return t?.('core:timeSlots.fullDay')
         }
 
         return `${start.getHours()} ${start.toLocaleString(locale.code.full, { weekday: 'long', hourCycle: 'h23' })}`
@@ -117,7 +119,7 @@ export function eventTableColumns({ sections = [], organisers = [], locale }: {
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
         options: Newsvalues,
-        name: 'Nyhetsvärde',
+        name: t?.('core:labels.newsvalue') || '',
         columnIcon: SignalHighIcon,
         className: 'flex-none hidden @3xl/view:[display:revert]'
       },
