@@ -26,6 +26,16 @@
       "status": "Status"
     }
   },
+  "shared": {
+    "authors": {
+      "from": "av {{author}}",
+      "byline": "Byline {{author}}",
+      "lastDoneMarked": "Senast klarmarkerad {{created}} av {{author}}",
+      "doneBy": "Klar av {{author}}",
+      "createdBy": "Skapad av {{author}}",
+      "approvedBy": "Godkänd av {{author}}"
+    }
+  },
   "views": {
     "approvals": {
       "title": "Dagen",
@@ -34,13 +44,6 @@
         "clearFilters": "Rensa",
         "savePersonalFilter": "Spara personligt filter",
         "personalFilter": "Personligt filter"
-      },
-        "authors": {
-        "byAuthor": "av {{author}}",
-        "bylineAuthor": "Byline {{author}}",
-        "lastDoneMarkedAuthor": "Senast klarmarkerad {{created}} av {{author}}",
-        "doneByAuthor": "Klar av {{author}}",
-        "createdByAuthor": "Skapad av {{author}}"
       },
       "tooltips": {
         "openPreview": "Öppna förhandsgranskning",
