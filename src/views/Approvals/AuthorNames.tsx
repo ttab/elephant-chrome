@@ -75,7 +75,7 @@ export const AuthorNames = ({ assignment }: { assignment: AssignmentInterface })
     const lastStatus = DocumentStatuses.find(
       (status) => status.value === statusData.workflowState
     )
-    
+
     const statusValue = lastStatus?.value
 
     if (statusValue !== 'draft' && statusValue !== 'done') {
