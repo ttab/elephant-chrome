@@ -55,6 +55,13 @@
       "assignmentType": "Typ",
       "title": "Titel",
       "time": "Tid"
+    },
+    "status": {
+      "action": {
+        "publish": "Publicera"
+      },
+      "draft": "Utkast",
+      "internal": "Intern"
     }
   },
   "views": {

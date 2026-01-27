@@ -55,6 +55,13 @@
       "assignmentType": "Oppdragstype",
       "title": "Tittel",
       "time": "Tid"
+    },
+    "status": {
+      "action": {
+        "publish": "Publiser"
+      },
+      "draft": "Utkast",
+      "internal": "Intern"
     }
   },
   "views": {
