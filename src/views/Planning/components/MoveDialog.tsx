@@ -39,11 +39,11 @@ export const MoveDialog = ({ ydoc, onClose, newDate }: {
       <DialogContent className='focus-visible:outline-none'>
         <DialogHeader>
           <DialogTitle>
-            {t('views.planning.move.dateSwitch')}
+            {t('planning:move.dateSwitch')}
           </DialogTitle>
 
           <DialogDescription>
-            {t('views.planning.move.dateSwitchDescription')}
+            {t('planning:move.dateSwitchDescription')}
             {' '}
             {newDate}
             .
@@ -70,7 +70,7 @@ export const MoveDialog = ({ ydoc, onClose, newDate }: {
           </div>
 
           <DialogDescription>
-            {t('views.planning.move.dateSwitchAssignments')}
+            {t('planning:move.dateSwitchAssignments')}
           </DialogDescription>
 
           <div className='flex flex-col gap-3 py-2 text-left'>
@@ -99,7 +99,7 @@ export const MoveDialog = ({ ydoc, onClose, newDate }: {
             variant='secondary'
             onClick={onClose}
           >
-            {t('views.planning.move.abort')}
+            {t('planning:move.abort')}
           </Button>
 
           <Button
@@ -152,12 +152,12 @@ export const MoveDialog = ({ ydoc, onClose, newDate }: {
                   onClose()
                 }).catch((err) => {
                   console.error(err)
-                  toast.error(t('views.planning.toasts.snapshotError'))
+                  toast.error(t('planning:toasts.snapshotError'))
                 })
               }
             }}
           >
-            {t('views.planning.move.label')}
+            {t('planning:move.label')}
           </Button>
         </DialogFooter>
       </DialogContent>

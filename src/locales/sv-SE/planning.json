@@ -1,0 +1,57 @@
+{
+  "assignment": {
+    "startEndTime": "Start- och sluttid",
+    "startTime": "Starttid",
+    "publishWindow": "Publiceringsfönster",
+    "publishTime": "Publiceringstid",
+    "createPrintArticle": "Skapa printartikel",
+    "removeAssignment": "Vill du ta bort uppdraget",
+    "actions": {
+      "addAssignment": "Lägg till uppdrag",
+      "addAssignee": "Lägg till uppdragstagare"
+    },
+    "collaboration": {
+      "inProgress": "Nytt uppdrag skapas av",
+      "overtake": "Ta över"
+    },
+    "status": {
+      "todo": "Att göra",
+      "started": "Påbörjad",
+      "done": "Klar"
+    },
+    "errors": {
+      "saveAssignmentError": "Kunde inte spara uppdraget"
+    }
+  },
+  "copy": {
+    "copiedFrom": "Kopierad från"
+  },
+  "description": {
+    "internal": "Internt meddelande",
+    "public": "Publik beskrivning"
+  },
+  "prompts": {
+    "slugMissing": "Slugg saknas",
+    "slugMissingDescription": "Vänligen lägg till en slugg på uppdraget. Därefter kan du skapa en text.",
+    "planningDocumentMissing": "Planeringsdokument saknas",
+    "documentMissingMessage": "Inget planeringsdokument är angivet. Navigera tillbaka till översikten och försök igen."
+  },
+  "toasts": {
+    "snapshotError": "Planeringen har ändrats lokalt men gick inte att spara.",
+    "createDeliverableLinkError": "Kunde inte länka leverabel",
+    "saveError": "Kunde inte spara planeringen",
+    "saveChangeError": "Kunde inte spara ändringen"
+  },
+  "move": {
+    "label": "Flytta",
+    "dateSwitch": "Byt datum på planering",
+    "dateSwitchDescription": "Planeringen och alla dess textuppdrag byter datum till",
+    "dateSwitchAssignments": "Välj nedan om även bild- och videouppdrag ska byta datum"
+  },
+  "related": {
+    "relatedEvents": "Länkade händelser"
+  },
+  "slugline": "Lägg till slugg",
+  "story": "Lägg till story",
+  "title": "Planeringstitel"
+}

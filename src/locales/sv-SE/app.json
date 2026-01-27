@@ -1,0 +1,30 @@
+{
+  "mainMenu": {
+    "approvals": "Dagen",
+    "assignments": "Uppdrag",
+    "events": "Händelser",
+    "factboxes": "Faktarutor",
+    "flash": "Skapa flash",
+    "lastPublished": "Senast utgivet",
+    "logout": "Logga ut",
+    "plans": "Planeringar",
+    "print": "Print",
+    "search": "Sök",
+    "wires": "Telegram"
+  },
+  "views": {
+    "plannings": {
+      "label": {
+        "plural": "Planeringar",
+        "singular": "Planering"
+      },
+      "toasts": {
+        "create": {
+          "error": "Kunde inte skapa ny planering",
+          "success": "Planering skapad"
+        },
+        "openItem": "Öppna planering"
+      }
+    }
+  }
+}

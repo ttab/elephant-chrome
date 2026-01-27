@@ -106,7 +106,7 @@ export const Assignment = ({ ydoc, assignment, onAbort, onClose }: {
               ydoc={ydoc}
               rootMap={!assignmentInProgress ? ydoc.ele : ydoc.ctx}
               path={`${path}.links.core/author`}
-              placeholder={t('views.planning.assignment.actions.addAssignee')}
+              placeholder={t('planning:assignment.actions.addAssignee')}
             />
             <AssignmentTime assignment={assignment} />
 
@@ -126,11 +126,11 @@ export const Assignment = ({ ydoc, assignment, onAbort, onClose }: {
             <div className='flex gap-2 justify-end pt-4'>
               {!!assignmentInProgress && !!onAbort && (
                 <Button type='reset' variant='ghost'>
-                  {t('common.actions.abort')}
+                  {t('common:actions.abort')}
                 </Button>
               )}
               <Button type='submit' variant='outline' className='whitespace-nowrap'>
-                {assignmentInProgress ? t('common.actions.add') : t('common.actions.close')}
+                {assignmentInProgress ? t('common:actions.add') : t('common:actions.close')}
               </Button>
             </div>
           </Form.Submit>

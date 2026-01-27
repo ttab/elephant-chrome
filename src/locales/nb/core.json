@@ -1,0 +1,24 @@
+  {
+  "documentType": {
+    "planning": "plan",
+    "event": "hendelse",
+    "assignment": "oppdrag",
+    "article": "artikkel",
+    "flash": "HAST"
+  },
+  "labels": {
+    "newsvalue": "Nyhetesverdi",
+    "section": "Kategori",
+    "assignee": "Oppdragstaker",
+    "assignmentType": "Oppdragstype",
+    "title": "Tittel",
+    "time": "Tid"
+  },
+  "status": {
+    "action": {
+      "publish": "Publiser"
+    },
+    "draft": "Utkast",
+    "internal": "Intern"
+  }
+}

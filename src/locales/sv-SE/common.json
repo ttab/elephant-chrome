@@ -1,0 +1,27 @@
+
+{
+  "actions": {
+    "add": "Lägg till",
+    "open": "Öppna",
+    "edit": "Redigera",
+    "remove": "Ta bort",
+    "abort": "Avbryt",
+    "close": "Stäng",
+    "create": "Skapa ny {{documentType}}",
+    "sort": "Sortera",
+    "sortBy": "Sortera efter {{label}}",
+    "presetSort": "Förinställd sortering",
+    "grouping": "Välj gruppering",
+    "nogrouping": "Ingen gruppering",
+    "group": "Gruppera"
+  },
+  "errors": {
+    "unknown": "Okänt fel",
+    "unwellEnvironment": "Du har blivit utloggad eller tappat kontakt med systemet. Vänligen försök logga in igen."
+  },
+  "misc": {
+    "unknown": "okänd",
+    "user": "användare",
+    "numberOf": "Antal"
+  }
+}

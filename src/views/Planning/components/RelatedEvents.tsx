@@ -23,7 +23,7 @@ export const RelatedEvents = ({ events = [] }: { events: Block[] | undefined }) 
             className='text-muted-foreground'
           />
           {/* Länkade händelser */}
-          <div className='text-muted-foreground py-2'>{t('views.planning.related.relatedEvents')}</div>
+          <div className='text-muted-foreground py-2'>{t('planning:related.relatedEvents')}</div>
         </div>
         <div>
           {events.map((ev) => (

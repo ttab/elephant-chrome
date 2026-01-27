@@ -34,7 +34,7 @@ export const Story = ({ ydoc, path, onChange, asSubject }: {
         sortOrder='label'
         options={allStories}
         selectedOptions={selectedOptions}
-        placeholder={story?.title || t('views.planning.story')}
+        placeholder={story?.title || t('planning:story')}
         onOpenChange={(isOpen: boolean) => {
           setFocused.current(true, isOpen ? path : '')
         }}

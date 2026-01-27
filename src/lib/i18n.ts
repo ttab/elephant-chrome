@@ -1,24 +1,21 @@
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
-import svSE from '../locales/sv-SE/translation.json'
-import nb from '../locales/nb/translation.json'
+import { sv } from '../locales/sv-SE/index'
+import { nb } from '../locales/nb/index'
 import LanguageDetector from 'i18next-browser-languagedetector'
 
 const resources = {
-  sv: {
-    translation: svSE
-  },
-  nb: {
-    translation: nb
-  }
+  sv,
+  nb
 }
-
 
 void i18n
   .use(initReactI18next)
   .use(LanguageDetector)
   .init({
     // lng: language, // Default
+    ns: ['common', 'core', 'planning'],
+    defaultNS: 'common',
     detection: {
       // order: defines the priority of detection
       // 'navigator' is the browser/system setting

@@ -1,0 +1,24 @@
+{
+  "documentType": {
+    "planning": "planering",
+    "event": "händelse",
+    "assignment": "uppdrag",
+    "article": "artikel",
+    "flash": "flash"
+  },
+  "labels": {
+    "newsvalue": "Nyhetsvärde",
+    "section": "Sektion",
+    "assignee": "Uppdragstagare",
+    "assignmentType": "Typ",
+    "title": "Titel",
+    "time": "Tid"
+  },
+  "status": {
+    "action": {
+      "publish": "Publicera"
+    },
+    "draft": "Utkast",
+    "internal": "Intern"
+  }
+}

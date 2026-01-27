@@ -1,0 +1,30 @@
+{
+  "mainMenu": {
+    "approvals": "Dagen",
+    "assignments": "Oppdrag",
+    "events": "Hendelser",
+    "factboxes": "Faktabokser",
+    "flash": "Ny HAST",
+    "lastPublished": "Sist publisert",
+    "logout": "Logg ut",
+    "plans": "Planer",
+    "print": "",
+    "search": "Søk",
+    "wires": "Byråimport"
+  },
+  "views": {
+    "plannings": {
+      "label": {
+        "plural": "Planer",
+        "singular": "Planlegging"
+      },
+      "toasts": {
+        "create": {
+          "error": "Kunne ikke opprette ny plan",
+          "success": "Planlegging opprettet"
+        },
+        "openItem": "Åpen planlegging"
+      }
+    }
+  }
+}

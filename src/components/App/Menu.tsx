@@ -45,7 +45,7 @@ export const Menu = (): JSX.Element => {
 
   const showTranslatedText = (menuItem: string): string => {
     switch (menuItem) {
-      case 'last published': return t('app.mainMenu.lastPublished')
+      case 'last published': return t('app:mainMenu.lastPublished')
       default:
         return ''
     }
