@@ -11,20 +11,5 @@
     "print": "",
     "search": "Søk",
     "wires": "Byråimport"
-  },
-  "views": {
-    "plannings": {
-      "label": {
-        "plural": "Planer",
-        "singular": "Planlegging"
-      },
-      "toasts": {
-        "create": {
-          "error": "Kunne ikke opprette ny plan",
-          "success": "Planlegging opprettet"
-        },
-        "openItem": "Åpen planlegging"
-      }
-    }
   }
 }

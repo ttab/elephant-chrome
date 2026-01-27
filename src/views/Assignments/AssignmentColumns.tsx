@@ -31,12 +31,13 @@ import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
 import { DocumentStatuses } from '@/defaults/documentStatuses'
 import { selectableStatuses } from '../Planning/components/AssignmentStatus'
 
-export function assignmentColumns({ authors = [], locale, timeZone, sections = [], currentDate }: {
+export function assignmentColumns({ authors = [], locale, timeZone, sections = [], currentDate, t }: {
   authors?: IDBAuthor[]
   sections?: IDBSection[]
   locale: LocaleData
   timeZone: string
   currentDate: Date
+  t: (key: string) => string
 }): Array<ColumnDef<Assignment>> {
   return [
     {
@@ -244,6 +245,20 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
       },
       accessorFn: (data) => data.fields['document.start_time.value'].values[0],
       cell: ({ row }) => {
+        const showTranslatedText = (slot: string) => {
+          switch (slot) {
+            case 'morning':
+              return t('core:timeSlots.morning')
+            case 'forenoon':
+              return t('core:timeSlots.forenoon')
+            case 'afternoon':
+              return t('core:timeSlots.afternoon')
+            case 'evening':
+              return t('core:timeSlots.evening')
+            default:
+              return 'Translation missing'
+          }
+        }
         const startTime = row.getValue<string>('assignment_time')
         const startTimeType = row.original.fields['document.start_time.type'].values[0]
 
@@ -256,7 +271,11 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
 
         if (startTimeType === 'publish_slot') {
           const slotFormatted = Object.entries(timesSlots).find((slot) => slot[1].slots.includes(parseInt(startTime, 10)))?.[1]?.label
-          return <div className='items-center'>{slotFormatted}</div>
+          return (
+            <div className='items-center'>
+              {slotFormatted && showTranslatedText(slotFormatted)}
+            </div>
+          )
         }
         return <Time time={formattedStart} type='start' tooltip='Uppdragets starttid' />
       },

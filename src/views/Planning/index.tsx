@@ -152,7 +152,7 @@ const PlanningViewContent = (props: ViewProps & {
           props.onDialogClose()
         }
 
-        toast.success(t('app:views.plannings.toasts.create.success'), {
+        toast.success(t('views:plannings.toasts.create.success'), {
           classNames: {
             title: 'whitespace-nowrap'
           },
@@ -161,7 +161,7 @@ const PlanningViewContent = (props: ViewProps & {
               key='open-planning'
               documentId={props.documentId}
               withView='Planning'
-              label={t('app:views.plannings.toasts.openItem')}
+              label={t('views:plannings.toasts.openItem')}
               Icon={CalendarDaysIcon}
               target='last'
             />
@@ -169,7 +169,7 @@ const PlanningViewContent = (props: ViewProps & {
         })
       } catch (ex) {
         console.error('Failed to snapshot document', ex)
-        toast.error(t('app:views.plannings.toasts.create.error'), {
+        toast.error(t('views:plannings.toasts.create.error'), {
           duration: 5000,
           position: 'top-center'
         })

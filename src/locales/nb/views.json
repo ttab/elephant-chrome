@@ -1,0 +1,30 @@
+{
+  "approvals": {
+    "title": "Dagen",
+    "charactersShort": "tgn",
+    "toolbar": {
+      "clearFilters": "Tøm",
+      "savePersonalFilter": "Lagre personlig filter",
+      "personalFilter": "Personlig filter"
+    },
+    "tooltips": {
+      "openPreview": "Åpne forhåndsvisning",
+      "openPlanning": "Åpne planlegging",
+      "lastChanged": "Sist endret",
+      "scheduledAt": "Planlagt kl"
+    }
+  },
+  "plannings": {
+    "label": {
+      "plural": "Planer",
+      "singular": "Planlegging"
+    },
+    "toasts": {
+      "create": {
+        "error": "Kunne ikke opprette ny plan",
+        "success": "Planlegging opprettet"
+      },
+      "openItem": "Åpen planlegging"
+    }
+  }
+}

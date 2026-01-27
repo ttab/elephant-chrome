@@ -12,13 +12,26 @@
     "assignee": "Uppdragstagare",
     "assignmentType": "Typ",
     "title": "Titel",
-    "time": "Tid"
+    "time": "Tid",
+    "status": "Status"
   },
   "status": {
     "action": {
       "publish": "Publicera"
     },
     "draft": "Utkast",
-    "internal": "Intern"
+    "internal": "Intern",
+    "approved": "Godkänd",
+    "usable": "Publicerad",
+    "unpublished": "Avpublicerad",
+    "done": "Klar",
+    "withheld": "Schemalagd",
+    "cancelled": "Kastad"
+  },
+  "timeSlots": {
+    "morning": "Morgon",
+    "forenoon": "Förmiddag",
+    "afternoon": "Eftermiddag",
+    "evening": "Kväll"
   }
 }

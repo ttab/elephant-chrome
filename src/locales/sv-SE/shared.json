@@ -1,0 +1,10 @@
+{
+  "authors": {
+    "from": "av {{author}}",
+    "byline": "Byline {{author}}",
+    "lastDoneMarked": "Senast klarmarkerad {{created}} av {{author}}",
+    "doneBy": "Klar av {{author}}",
+    "createdBy": "Skapad av {{author}}",
+    "approvedBy": "Godkänd av {{author}}"
+  }
+}
