@@ -1,0 +1,57 @@
+{
+  "assignment": {
+    "startEndTime": "Start- og sluttid",
+    "startTime": "Starttid",
+    "publishWindow": "Publiseringsvindu",
+    "publishTime": "Publiseringstid",
+    "createPrintArticle": "",
+    "removeAssignment": "Vil du fjerne oppdraget",
+    "actions": {
+      "addAssignment": "Legg til oppdrag",
+      "addAssignee": "Legg til oppdragstaker"
+    },
+    "collaboration": {
+      "inProgress": "Ny oppdrag opprettes av",
+      "overtake": "Ta over"
+    },
+    "status": {
+      "todo": "Å gjøre",
+      "started": "Startet",
+      "done": "Ferdig"
+    },
+    "errors": {
+      "saveAssignmentError": "Kunne ikke lagre oppdraget"
+    }
+  },
+  "copy": {
+    "copiedFrom": "Kopiert fra"
+  },
+  "description": {
+    "internal": "Intern beskjed",
+    "public": "Beskrivelse"
+  },
+  "prompts": {
+    "slugMissing": "Stikkord mangler",
+    "slugMissingDescription": "Vennligst legg til en stikkord i oppgaven. Etter det kan du lage en tekst.",
+    "planningDocumentMissing": "Plandokumenter mangler",
+    "documentMissingMessage": "Ingen planleggingsdokumenter er spesifisert. Gå tilbake til oversikten og prøv på nytt."
+  },
+  "toasts": {
+    "snapshotError": "Planen er endret lokalt, men kunne ikke lagres.",
+    "createDeliverableLinkError": "Kunne ikke koble til leveransen",
+    "saveError": "Kunne ikke lagre planen",
+    "saveChangeError": "Kunne ikke lagre endringen"
+  },
+  "move": {
+    "label": "Flytte",
+    "dateSwitch": "Endre dato på planlegging",
+    "dateSwitchDescription": "Planleggingen og alle tekstoppdragen endrer dato til",
+    "dateSwitchAssignments": "Velg nedenfor om bilde- og videooppdrag også skal endre datoer."
+  },
+  "related": {
+    "relatedEvents": "Koblede hendelser"
+  },
+  "slugline": "Legg til stikkord",
+  "story": "Legg til story",
+  "title": "Planleggingstittel"
+}

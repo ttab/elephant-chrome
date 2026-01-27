@@ -291,7 +291,7 @@ describe('AuthorNames with various statusData assert tooltip', () => {
     render(<AuthorNames assignment={a} />)
 
     // Should only show whoever sat status done
-    expect(screen.getByTitle(i18n.t('shared.authors.doneBy', { author: 'Alice Johnson' }))).toBeInTheDocument()
+    expect(screen.getByTitle(i18n.t('shared:authors.doneBy', { author: 'Alice Johnson' }))).toBeInTheDocument()
   })
 
   it('renders correctly with statusDataCreator', () => {
@@ -299,7 +299,7 @@ describe('AuthorNames with various statusData assert tooltip', () => {
     render(<AuthorNames assignment={a} />)
 
     // Should only show document creator
-    expect(screen.getByTitle(i18n.t('shared.authors.createdBy', { author: 'Bob Lee' }))).toBeInTheDocument()
+    expect(screen.getByTitle(i18n.t('shared:authors.createdBy', { author: 'Bob Lee' }))).toBeInTheDocument()
   })
 
   it('renders correctly with statusDataStatusAfterDraft', () => {
@@ -307,7 +307,7 @@ describe('AuthorNames with various statusData assert tooltip', () => {
     render(<AuthorNames assignment={a} />)
 
     // Should show who set status after draft and last status (in this case the same status)
-    expect(screen.getByTitle(`${i18n.t('shared.authors.from', { author: 'Bob Lee' })}, ${i18n.t('shared.authors.approvedBy', { author: 'Bob Lee' })}`)).toBeInTheDocument()
+    expect(screen.getByTitle(`${i18n.t('shared:authors.from', { author: 'Bob Lee' })}, ${i18n.t('shared:authors.approvedBy', { author: 'Bob Lee' })}`)).toBeInTheDocument()
   })
 
   it('renders correctly with statusDataCreatorApproved', () => {
@@ -315,7 +315,7 @@ describe('AuthorNames with various statusData assert tooltip', () => {
     render(<AuthorNames assignment={a} />)
 
     // Should show who set status
-    expect(screen.getByTitle(`${i18n.t('shared.authors.doneBy', { author: 'Alice Johnson' })}, ${i18n.t('shared.authors.approvedBy', { author: 'Bob Lee' })}`)).toBeInTheDocument()
+    expect(screen.getByTitle(`${i18n.t('shared:authors.doneBy', { author: 'Alice Johnson' })}, ${i18n.t('shared:authors.approvedBy', { author: 'Bob Lee' })}`)).toBeInTheDocument()
   })
 
   describe('handles byline', () => {
@@ -324,7 +324,7 @@ describe('AuthorNames with various statusData assert tooltip', () => {
       render(<AuthorNames assignment={a} />)
 
       // Should only show byline, no status
-      expect(screen.getByTitle(i18n.t('shared.authors.byline', { author: 'John Doe' }))).toBeInTheDocument()
+      expect(screen.getByTitle(i18n.t('shared:authors.byline', { author: 'John Doe' }))).toBeInTheDocument()
     })
 
     it('renders correctly with statusDataBylineApproved', () => {
@@ -332,19 +332,19 @@ describe('AuthorNames with various statusData assert tooltip', () => {
       render(<AuthorNames assignment={a} />)
 
       // Should show byline and approved by
-      expect(screen.getByTitle(`${i18n.t('shared.authors.byline', { author: 'John Doe' })}, ${i18n.t('shared.authors.approvedBy', { author: 'Alice Johnson' })}`)).toBeInTheDocument()
+      expect(screen.getByTitle(`${i18n.t('shared:authors.byline', { author: 'John Doe' })}, ${i18n.t('shared:authors.approvedBy', { author: 'Alice Johnson' })}`)).toBeInTheDocument()
     })
 
     it('renders correctly with statusDataBylineDone', () => {
       const a = assignment(byline, JSON.stringify(statusDataBylineDone))
       render(<AuthorNames assignment={a} />)
-      expect(screen.getByTitle(i18n.t('shared.authors.byline', { author: 'John Doe' }))).toBeInTheDocument()
+      expect(screen.getByTitle(i18n.t('shared:authors.byline', { author: 'John Doe' }))).toBeInTheDocument()
     })
 
     it('renders correctly with statusDataBylineCreator', () => {
       const a = assignment(byline, JSON.stringify(statusDataBylineCreator))
       render(<AuthorNames assignment={a} />)
-      expect(screen.getByTitle(i18n.t('shared.authors.byline', { author: 'John Doe' }))).toBeInTheDocument()
+      expect(screen.getByTitle(i18n.t('shared:authors.byline', { author: 'John Doe' }))).toBeInTheDocument()
       expect(screen.getByText('John Doe')).toBeInTheDocument()
     })
   })

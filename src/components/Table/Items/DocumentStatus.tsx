@@ -12,7 +12,7 @@ export const DocumentStatus = ({ type, status }: {
   const { t } = useTranslation()
 
   const label = isVisualAssignmentType(type)
-    ? t(`views.planning.assignment.status.${visualStatus?.value}`) || null
+    ? t(`planning:assignment.status.${visualStatus?.value}`) || null
     : WorkflowSpecifications['core/article']?.[status]?.title || null
 
   const docStatus = isVisualAssignmentType(type)

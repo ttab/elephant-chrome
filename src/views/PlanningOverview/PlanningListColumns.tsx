@@ -76,7 +76,7 @@ export function planningListColumns({ sections = [], authors = [], t }: {
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
         options: Newsvalues,
-        name: t?.('core.labels.newsvalue') || '',
+        name: t?.('core:labels.newsvalue') || '',
         columnIcon: SignalHighIcon,
         className: 'flex-none hidden @3xl/view:[display:revert]'
       },
@@ -96,7 +96,7 @@ export function planningListColumns({ sections = [], authors = [], t }: {
     {
       id: 'title',
       meta: {
-        name: t?.('core.labels.title') || '',
+        name: t?.('core:labels.title') || '',
         columnIcon: PenIcon,
         className: 'flex-1 w-[200px]'
       },
@@ -122,7 +122,7 @@ export function planningListColumns({ sections = [], authors = [], t }: {
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
         quickFilter: true,
-        name: t?.('core.labels.section') || '',
+        name: t?.('core:labels.section') || '',
         columnIcon: ShapesIcon,
         className: 'flex-none w-[115px] hidden @4xl/view:[display:revert]',
         display: (value: string) => (
@@ -153,7 +153,7 @@ export function planningListColumns({ sections = [], authors = [], t }: {
         Filter: ({ column, setSearch }) => (
           <FacetedFilter column={column} setSearch={setSearch} facetFn={() => getNestedFacetedUniqueValues(column)} />
         ),
-        name: t?.('core.labels.assignee') || '',
+        name: t?.('core:labels.assignee') || '',
         columnIcon: UsersIcon,
         className: 'flex-none w-[112px] hidden @5xl/view:[display:revert]'
       },
@@ -179,7 +179,7 @@ export function planningListColumns({ sections = [], authors = [], t }: {
           <FacetedFilter column={column} setSearch={setSearch} facetFn={() => getNestedFacetedUniqueValues(column)} />
         ),
         options: AssignmentTypes,
-        name: t?.('core.labels.assignmentType') || '',
+        name: t?.('core:labels.assignmentType') || '',
         columnIcon: CrosshairIcon,
         className: 'flex-none w-[120px] hidden @6xl/view:[display:revert]',
         display: (value: string | string[]) => {

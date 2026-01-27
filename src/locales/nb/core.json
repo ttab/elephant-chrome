@@ -1,0 +1,37 @@
+  {
+  "documentType": {
+    "planning": "plan",
+    "event": "hendelse",
+    "assignment": "oppdrag",
+    "article": "artikkel",
+    "flash": "HAST"
+  },
+  "labels": {
+    "newsvalue": "Nyhetesverdi",
+    "section": "Kategori",
+    "assignee": "Oppdragstaker",
+    "assignmentType": "Oppdragstype",
+    "title": "Tittel",
+    "time": "Tid",
+    "status": "Status"
+  },
+  "status": {
+    "action": {
+      "publish": "Publiser"
+    },
+    "draft": "Utkast",
+    "internal": "Intern",
+    "approved": "Godkjent",
+    "usable": "Publisert",
+    "unpublished": "Avpublisert",
+    "done": "Ferdig",
+    "withheld": "Planlagt",
+    "cancelled": "Kastet"
+  },
+  "timeSlots": {
+    "morning": "Natt",
+    "forenoon": "Morgen",
+    "afternoon": "Ettermiddag",
+    "evening": "Kveld"
+  }
+}

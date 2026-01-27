@@ -33,7 +33,7 @@ export const DoneMarkedBy = ({ doneStatus, authors }: {
 
   return (
     <div className='flex flex-col items-start justify-start'>
-      <Tooltip content={`${t('shared.authors.lastDoneMarked', { created: created, author: matchedAuthor.name })}`}>
+      <Tooltip content={`${t('shared:authors.lastDoneMarked', { created: created, author: matchedAuthor.name })}`}>
         <div className='flex gap-1 items-center relative'>
           <CheckIcon size={16} />
           <div>{author}</div>

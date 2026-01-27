@@ -40,7 +40,7 @@ export const Commands = (props: {
       <OptionsFilter
         {...props}
         options={DocumentStatuses}
-        label={t('core.labels.status')}
+        label={t('core:labels.status')}
         filterPage='status'
         Icon={CircleCheckIcon}
         facets={props.facets?.section}
@@ -48,7 +48,7 @@ export const Commands = (props: {
       <OptionsFilter
         {...props}
         options={optionsSections}
-        label={t('core.labels.section')}
+        label={t('core:labels.section')}
         filterPage='section'
         Icon={ShapesIcon}
         facets={props.facets?.section}

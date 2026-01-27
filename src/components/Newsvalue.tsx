@@ -23,7 +23,7 @@ export const Newsvalue = ({ ydoc, path, onValidation, validateStateRef, onChange
     <Awareness ref={setFocused} ydoc={ydoc} path={path}>
       <Validation
         ydoc={ydoc}
-        label={t('core.labels.newsvalue')}
+        label={t('core:labels.newsvalue')}
         path={path}
         block='core/newsvalue[0]'
         onValidation={onValidation}
@@ -36,7 +36,7 @@ export const Newsvalue = ({ ydoc, path, onValidation, validateStateRef, onChange
           variant='outline'
           options={Newsvalues}
           selectedOptions={selectedOptions}
-          placeholder={`${t('common.actions.add')} ${t('core.labels.newsvalue').toLocaleLowerCase()}`}
+          placeholder={`${t('common:actions.add')} ${t('core:labels.newsvalue').toLocaleLowerCase()}`}
           validation={!!onValidation}
           onOpenChange={(isOpen: boolean) => {
             setFocused.current(true, isOpen ? path : '')

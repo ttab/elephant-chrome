@@ -93,13 +93,13 @@ export function getTimeslotLabel(hour: number, t: (key: string) => string): stri
   const showTranslatedText = (slot: string) => {
     switch (slot) {
       case 'morning':
-        return t('core.timeSlots.morning')
+        return t('core:timeSlots.morning')
       case 'forenoon':
-        return t('core.timeSlots.forenoon')
+        return t('core:timeSlots.forenoon')
       case 'afternoon':
-        return t('core.timeSlots.afternoon')
+        return t('core:timeSlots.afternoon')
       case 'evening':
-        return t('core.timeSlots.evening')
+        return t('core:timeSlots.evening')
       default:
         return 'Translation missing'
     }
@@ -121,13 +121,13 @@ function getTimeTooltip({ assignment, statusData, timeZone, locale, compareDate,
   t: (key: string) => string
 }): string {
   if (assignment._deliverableStatus === 'withheld' && assignment.data.publish) {
-    return `${t('views.approvals.tooltips.scheduledAt')} ${format(toZonedTime(parseISO(assignment.data.publish), timeZone), 'HH:mm')}`
+    return `${t('views:approvals.tooltips.scheduledAt')} ${format(toZonedTime(parseISO(assignment.data.publish), timeZone), 'HH:mm')}`
   }
   if (statusData?.modified) {
     if (compareDate) {
-      return `${t('views.approvals.tooltips.lastChanged')} ${dateInTimestampOrShortMonthDayTimestamp(statusData.modified, locale.code.full, timeZone, compareDate)}`
+      return `${t('views:approvals.tooltips.lastChanged')} ${dateInTimestampOrShortMonthDayTimestamp(statusData.modified, locale.code.full, timeZone, compareDate)}`
     }
-    return `${t('views.approvals.tooltips.lastChanged')} ${format(toZonedTime(parseISO(statusData.modified), timeZone), 'HH:mm')}`
+    return `${t('views:approvals.tooltips.lastChanged')} ${format(toZonedTime(parseISO(statusData.modified), timeZone), 'HH:mm')}`
   }
-  return t('views.approvals.tooltips.lastChanged')
+  return t('views:approvals.tooltips.lastChanged')
 }

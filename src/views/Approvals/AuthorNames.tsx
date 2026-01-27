@@ -80,8 +80,8 @@ export const AuthorNames = ({ assignment }: { assignment: AssignmentInterface })
 
     if (statusValue !== 'draft' && statusValue !== 'done') {
       return full
-        ? `${full}, ${t('core.status.' + statusValue)} ${t('shared.authors.from', { author: lastStatusUpdateAuthor.name })}`
-        : `${t('core.status.' + statusValue)} ${t('shared.authors.from', { author: lastStatusUpdateAuthor.name })}`
+        ? `${full}, ${t('core:status.' + statusValue)} ${t('shared:authors.from', { author: lastStatusUpdateAuthor.name })}`
+        : `${t('core:status.' + statusValue)} ${t('shared:authors.from', { author: lastStatusUpdateAuthor.name })}`
     }
     return full
   }, [full, lastStatusUpdateAuthor, lastUpdated, statusData, t])
@@ -115,7 +115,7 @@ function getDisplayAndFull(
           <span>{byline}</span>
         </span>
       ),
-      full: t('shared.authors.byline', { author: byline })
+      full: t('shared:authors.byline', { author: byline })
     }
   }
 
@@ -130,7 +130,7 @@ function getDisplayAndFull(
           <span>{authorObj ? authorOutput(authorObj) : '??'}</span>
         </span>
       ),
-      full: t('shared.authors.doneBy', { author: authorObj?.name || '??' })
+      full: t('shared:authors.doneBy', { author: authorObj?.name || '??' })
     }
   }
 
@@ -144,7 +144,7 @@ function getDisplayAndFull(
           <span>{authorOutput(afterDraftAuthor)}</span>
         </span>
       ),
-      full: t('shared.authors.from', { author: afterDraftAuthor.name })
+      full: t('shared:authors.from', { author: afterDraftAuthor.name })
     }
   }
 
@@ -172,7 +172,7 @@ function getDisplayAndFull(
           <span>{creator ? authorOutput(creator) : '??'}</span>
         </span>
       ),
-      full: creator?.name ? `${t('shared.authors.createdBy', { author: creator.name })}` : ''
+      full: creator?.name ? `${t('shared:authors.createdBy', { author: creator.name })}` : ''
     }
   }
 

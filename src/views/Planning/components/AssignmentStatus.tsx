@@ -52,7 +52,7 @@ const VisualAssignment = ({ ydoc, path }: {
     snapshotDocument(ydoc.id, undefined, ydoc.provider?.document)
       .catch((ex) => {
         console.error('Failed to snapshot document after changing visual assignment status', ex)
-        toast.error(t('views.planning.toasts.saveChangeError'))
+        toast.error(t('planning:toasts.saveChangeError'))
       })
   }, [setVisualAssignmentStatus, ydoc, t])
 
@@ -62,7 +62,7 @@ const VisualAssignment = ({ ydoc, path }: {
     ?? selectableStatuses[0]
 
   return (
-    <div className='w-12' title={t(`views.planning.assignment.status.${currentStatus.value}`)}>
+    <div className='w-12' title={t(`planning:assignment.status.${currentStatus.value}`)}>
       <Select
         name='AssignmentStatus'
         onValueChange={onValueChange}
@@ -83,13 +83,13 @@ const VisualAssignment = ({ ydoc, path }: {
               key={value}
               value={value}
               className='flex justify-start'
-              aria-label={t(`views.planning.assignment.status.${value}`)}
+              aria-label={t(`planning:assignment.status.${value}`)}
               onPointerDownCapture={stopRowClick}
               onClick={stopRowClick}
             >
               <span className='flex flex-row items-center justify-start gap-2'>
                 {IconComponent && <IconComponent {...iconProps} />}
-                <span>{t(`views.planning.assignment.status.${value}`)}</span>
+                <span>{t(`planning:assignment.status.${value}`)}</span>
               </span>
             </SelectItem>
           ))}

@@ -42,7 +42,7 @@ export const UserInfo = ({ user, data }: {
           }}
           className='gap-4'
         >
-          {t('app.mainMenu.logout')}
+          {t('app:mainMenu.logout')}
         </Button>
       </SheetClose>
     </div>

@@ -97,8 +97,8 @@ export const Planning = (props: ViewProps & {
           )
         : (
             <Error
-              title={t('views.planning.prompts.planningDocumentMissing')}
-              message={t('views.planning.prompts.documentMissingMessage')}
+              title={t('planning:prompts.planningDocumentMissing')}
+              message={t('planning:prompts.documentMissingMessage')}
             />
           )}
     </>
@@ -152,7 +152,7 @@ const PlanningViewContent = (props: ViewProps & {
           props.onDialogClose()
         }
 
-        toast.success(t('views.plannings.toasts.create.success'), {
+        toast.success(t('views:plannings.toasts.create.success'), {
           classNames: {
             title: 'whitespace-nowrap'
           },
@@ -161,7 +161,7 @@ const PlanningViewContent = (props: ViewProps & {
               key='open-planning'
               documentId={props.documentId}
               withView='Planning'
-              label={t('views.plannings.toasts.openItem')}
+              label={t('views:plannings.toasts.openItem')}
               Icon={CalendarDaysIcon}
               target='last'
             />
@@ -169,7 +169,7 @@ const PlanningViewContent = (props: ViewProps & {
         })
       } catch (ex) {
         console.error('Failed to snapshot document', ex)
-        toast.error(t('views.plannings.toasts.create.error'), {
+        toast.error(t('views:plannings.toasts.create.error'), {
           duration: 5000,
           position: 'top-center'
         })
@@ -200,8 +200,8 @@ const PlanningViewContent = (props: ViewProps & {
               <TextInput
                 ydoc={ydoc}
                 value={title}
-                label={t('core.labels.title')}
-                placeholder={t('views.planning.title')}
+                label={t('core:labels.title')}
+                placeholder={t('planning:title')}
                 autoFocus={props.asDialog === true}
               />
             </Form.Title>
@@ -210,14 +210,14 @@ const PlanningViewContent = (props: ViewProps & {
               ydoc={ydoc}
               value={publicDescription}
               icon={<TextIcon size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />}
-              placeholder={t('views.planning.description.public')}
+              placeholder={t('planning:description.public')}
             />
 
             <TextBox
               ydoc={ydoc}
               value={internalDescription}
               icon={<MessageCircleMoreIcon size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />}
-              placeholder={t('views.planning.description.internal')}
+              placeholder={t('planning:description.internal')}
             />
 
             <Form.Group icon={CalendarIcon}>
@@ -254,7 +254,7 @@ const PlanningViewContent = (props: ViewProps & {
           <Form.Footer>
             {!environmentIsSane && (
               <UserMessage asDialog={!!props.asDialog} className='pb-6'>
-                {t('common.errors.unwellEnvironment')}
+                {t('common:errors.unwellEnvironment')}
               </UserMessage>
 
             )}
@@ -268,14 +268,14 @@ const PlanningViewContent = (props: ViewProps & {
               <div className='flex justify-between'>
                 <div className='flex gap-2'>
                   <Button type='button' variant='secondary' role='tertiary' disabled={!environmentIsSane}>
-                    {t('core.status.draft')}
+                    {t('core:status.draft')}
                   </Button>
                   <Button type='button' variant='secondary' role='secondary' disabled={!environmentIsSane}>
-                    {t('core.status.internal')}
+                    {t('core:status.internal')}
                   </Button>
                 </div>
                 <Button type='submit' disabled={!environmentIsSane}>
-                  {t('core.status.action.publish')}
+                  {t('core:status.action.publish')}
                 </Button>
               </div>
             </Form.Submit>

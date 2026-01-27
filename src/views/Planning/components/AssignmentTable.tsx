@@ -107,7 +107,7 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId }: {
       snapshotDocument(documentId, { force: true }, ydoc.provider.document)
         .catch((ex) => {
           console.error('Error closing assignment:', ex)
-          toast.error(t('views.planning.assignment.toasts.saveAssignmentError'))
+          toast.error(t('planning:assignment.toasts.saveAssignmentError'))
         })
     }
   }
@@ -149,7 +149,7 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId }: {
                   className='text-white dark:text-black absolute inset-0 m-auto'
                 />
               </div>
-              {t('views.planning.assignment.actions.addAssignment')}
+              {t('planning:assignment.actions.addAssignment')}
             </div>
           </Button>
         </div>
@@ -169,9 +169,9 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId }: {
                   <div className='text-sm ps-6 py-2 flex flex-row gap-2 text-muted-foreground items-center'>
                     <InfoIcon size={18} strokeWidth={1.75} />
                     <div>
-                      <span className='hidden sm:inline'>{t('views.planning.assignment.collaboration.inProgress')}</span>
+                      <span className='hidden sm:inline'>{t('planning:assignment.collaboration.inProgress')}</span>
                       {' '}
-                      {user?.name || `${t('common.misc.unknown') as unknown as string}: ${sub ?? t('common.misc.user')}`}
+                      {user?.name || `${t('common:misc.unknown') as unknown as string}: ${sub ?? t('common:misc.user')}`}
                       {', '}
                       <a
                         className='text-primary hover:underline'
@@ -185,7 +185,7 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId }: {
                           )
                         }}
                       >
-                        {t('views.planning.assignment.collaboration.overtake')}
+                        {t('planning:assignment.collaboration.overtake')}
                       </a>
                     </div>
                   </div>

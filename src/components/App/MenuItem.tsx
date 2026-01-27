@@ -25,14 +25,14 @@ const MenuItemViewOpener = ({ menuItem }: {
 
   const showTranslatedText = (menuItem: string): string => {
     switch (menuItem) {
-      case 'plannings': return t('app.mainMenu.plans')
-      case 'approvals': return t('app.mainMenu.approvals')
-      case 'events': return t('app.mainMenu.events')
-      case 'assignments': return t('app.mainMenu.assignments')
-      case 'wires': return t('app.mainMenu.wires')
-      case 'factboxes': return t('app.mainMenu.factboxes')
-      case 'search': return t('app.mainMenu.search')
-      case 'print': return t('app.mainMenu.print')
+      case 'plannings': return t('app:mainMenu.plans')
+      case 'approvals': return t('app:mainMenu.approvals')
+      case 'events': return t('app:mainMenu.events')
+      case 'assignments': return t('app:mainMenu.assignments')
+      case 'wires': return t('app:mainMenu.wires')
+      case 'factboxes': return t('app:mainMenu.factboxes')
+      case 'search': return t('app:mainMenu.search')
+      case 'print': return t('app:mainMenu.print')
       default:
         return 'Translation missing'
     }
@@ -57,7 +57,7 @@ const MenuItemDialogOpener = ({ menuItem }: {
 
   const showTranslatedText = (menuItem: string): string => {
     switch (menuItem) {
-      case 'flash': return t('app.mainMenu.flash')
+      case 'flash': return t('app:mainMenu.flash')
       default:
         return ''
     }
