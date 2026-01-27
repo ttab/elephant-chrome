@@ -75,13 +75,13 @@ export const AuthorNames = ({ assignment }: { assignment: AssignmentInterface })
     const lastStatus = DocumentStatuses.find(
       (status) => status.value === statusData.workflowState
     )
-    const statusLabel = lastStatus?.label
+    
     const statusValue = lastStatus?.value
 
     if (statusValue !== 'draft' && statusValue !== 'done') {
       return full
-        ? `${full}, ${statusLabel} ${t('shared.authors.from', { author: lastStatusUpdateAuthor.name })}`
-        : `${statusLabel} ${t('shared.authors.from', { author: lastStatusUpdateAuthor.name })}`
+        ? `${full}, ${t('core.statuses.' + statusValue)} ${t('shared.authors.from', { author: lastStatusUpdateAuthor.name })}`
+        : `${t('core.statuses.' + statusValue)} ${t('shared.authors.from', { author: lastStatusUpdateAuthor.name })}`
     }
     return full
   }, [full, lastStatusUpdateAuthor, lastUpdated, statusData, t])

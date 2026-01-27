@@ -24,6 +24,9 @@
     "labels": {
       "section": "Kategori",
       "status": "Status"
+    },
+    "statuses": {
+      "approved": "Godkjent"
     }
   },
   "shared": {

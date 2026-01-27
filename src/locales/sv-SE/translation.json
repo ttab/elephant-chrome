@@ -24,6 +24,9 @@
     "labels": {
       "section": "Sektion",
       "status": "Status"
+    },
+    "statuses": {
+      "approved": "Godkänd"
     }
   },
   "shared": {
