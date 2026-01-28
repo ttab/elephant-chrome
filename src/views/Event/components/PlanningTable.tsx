@@ -15,6 +15,7 @@ import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import { getTemplateFromView } from '@/shared/templates/lib/getTemplateFromView'
 import { Block, type Document } from '@ttab/elephant-api/newsdoc'
+import { useTranslation } from 'react-i18next'
 
 export type NewItem = { title: string, uuid: string } | undefined
 type PlanningTableFields = ['document.title', 'document.rel.event.uuid']
@@ -26,6 +27,7 @@ export const PlanningTable = ({ ydoc, asDialog }: {
   const { hideModal } = useModal()
   const [newItem, setNewItem] = useState<NewItem>()
   const [nestedDialogOpen, setNestedOpen] = useState<boolean>(false)
+  const { t } = useTranslation()
 
   useEffect(() => {
     return () => {
@@ -88,7 +90,7 @@ export const PlanningTable = ({ ydoc, asDialog }: {
   })
 
   if (!data) {
-    return <>Loading...</>
+    return <>{t('core:loading.loading')}</>
   }
 
   if (error) {
@@ -138,7 +140,7 @@ export const PlanningTable = ({ ydoc, asDialog }: {
                 className='text-white dark:text-black absolute inset-0 m-auto'
               />
             </div>
-            Lägg till planering
+            {t('event:buttons.addPlanning')}
           </Button>
         </DialogTrigger>
         <DialogContent className='gap-0 p-0'>
@@ -159,7 +161,7 @@ export const PlanningTable = ({ ydoc, asDialog }: {
             <Separator />
             <div className='flex gap-2 items-center'>
               <GanttChartSquareIcon color='#FF971E' strokeWidth={1.75} size={18} className='text-muted-foreground' />
-              <div className='text-muted-foreground py-2'>Planeringar</div>
+              <div className='text-muted-foreground py-2'>{t('event:subheadings.plannings')}</div>
             </div>
             {data?.map((planning) => (
               <Link key={planning.id} to='Planning' props={{ id: planning.id }} target='last'>

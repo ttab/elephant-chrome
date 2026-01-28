@@ -14,6 +14,8 @@ import type { FormProps } from '@/components/Form/Root'
 import { useYValue } from '@/modules/yjs/hooks'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
+import type { TFunction } from 'i18next'
+import { useTranslation } from 'react-i18next'
 
 export interface EventData {
   end: string
@@ -55,7 +57,7 @@ const dateTimeLabel = ({
 }
 
 
-const dateLabel = ({ fromDate, toDate, locale, timeZone }: { fromDate?: string | undefined, toDate?: string | undefined, locale: string, timeZone: string }): string => {
+const dateLabel = ({ fromDate, toDate, locale, timeZone, t }: { fromDate?: string | undefined, toDate?: string | undefined, locale: string, timeZone: string, t: TFunction }): string => {
   if (!fromDate || !toDate) {
     return ''
   }
@@ -64,7 +66,7 @@ const dateLabel = ({ fromDate, toDate, locale, timeZone }: { fromDate?: string |
   const sameDay = isSameDate(fromDate, toDate)
   const from = dateToReadableDay(fromDateObject, locale, timeZone)
   const to = dateToReadableDay(toDateObject, locale, timeZone)
-  return `Heldag ${sameDay ? ` ${from}` : ` ${from} - ${to}`}`
+  return `${t('core:timeSlots.fullDay')} ${sameDay ? ` ${from}` : ` ${from} - ${to}`}`
 }
 
 const testValid = (time: string): boolean => {
@@ -102,6 +104,7 @@ export const EventTimeMenu = ({ ydoc, onChange }: {
   const [startTimeValid, setStartTimeValid] = useState(false)
   const [endTimeValid, setEndTimeValid] = useState(false)
   const [fullDay, setFullDay] = useState(false)
+  const { t } = useTranslation()
 
   useEffect(() => {
     if (!mounted && eventData) {
@@ -240,7 +243,8 @@ export const EventTimeMenu = ({ ydoc, onChange }: {
       fromDate: eventData?.start,
       toDate: eventData?.end,
       timeZone,
-      locale: locale.code.full
+      locale: locale.code.full,
+      t
     })
     : dateTimeLabel({
       fromDate: eventData?.start,

@@ -34,6 +34,7 @@ import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
 import { TextBox } from '@/components/ui'
 import type { Document } from '@ttab/elephant-api/newsdoc'
 import { ToastAction } from '../Wire/ToastAction'
+import { useTranslation } from 'react-i18next'
 
 const meta: ViewMetadata = {
   name: 'Event',
@@ -54,6 +55,7 @@ const meta: ViewMetadata = {
 export const Event = (props: ViewProps & { document?: Document }): JSX.Element => {
   const [query] = useQuery()
   const documentId = props.id || query.id
+  const { t } = useTranslation()
 
   // Event should be responsible for creating new as well as editing
   const data = useMemo(() => {
@@ -72,8 +74,8 @@ export const Event = (props: ViewProps & { document?: Document }): JSX.Element =
   if (typeof documentId !== 'string' || !documentId) {
     return (
       <Error
-        title='Händelsedokument saknas'
-        message='Inget händelsedokument är angivet. Navigera tillbaka till översikten och försök igen.'
+        title={t('event:error.noEventDocument.title')}
+        message={t('event:error.noEventDocument.message')}
       />
     )
   }
@@ -94,6 +96,7 @@ const EventViewContent = (props: ViewProps & {
 }): JSX.Element | undefined => {
   const ydoc = useYDocument<Y.Map<unknown>>(props.documentId, { data: props.data })
   const { provider, ele: document, connected } = ydoc
+  const { t } = useTranslation()
 
   const { data, status } = useSession()
   const [title] = useYValue<Y.XmlText>(document, 'root.title', true)
@@ -116,7 +119,7 @@ const EventViewContent = (props: ViewProps & {
           props.onDialogClose()
         }
 
-        toast.success(`Händelse skapad`, {
+        toast.success(t('event:toasts.created.success'), {
           classNames: {
             title: 'whitespace-nowrap'
           },
@@ -125,7 +128,7 @@ const EventViewContent = (props: ViewProps & {
               key='open-event'
               documentId={props.documentId}
               withView='Event'
-              label='Öppna händelse'
+              label={t('event:toasts.actions.openEvent')}
               Icon={CalendarPlus2Icon}
               target='last'
             />
@@ -133,7 +136,7 @@ const EventViewContent = (props: ViewProps & {
         })
       } catch (ex) {
         console.error('Failed to snapshot event', ex)
-        toast.error('Kunde inte skapa ny händelse!', {
+        toast.error(t('event:toasts.created.error'), {
           duration: 5000,
           position: 'top-center'
         })
@@ -164,22 +167,22 @@ const EventViewContent = (props: ViewProps & {
               <TextInput
                 ydoc={ydoc}
                 value={title}
-                label='Titel'
+                label={t('core:labels.title')}
                 autoFocus={!!props.asDialog}
-                placeholder='Händelsestitel'
+                placeholder={t('event:placeholders.eventTitle')}
               />
             </Form.Title>
             <TextBox
               ydoc={ydoc}
               value={publicDescription}
               icon={<TextIcon size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />}
-              placeholder='Publik beskrivning'
+              placeholder={t('event:placeholders.publicDescription')}
             />
             <TextBox
               ydoc={ydoc}
               value={registration}
               icon={<KeyIcon size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />}
-              placeholder='Ackreditering'
+              placeholder={t('event:placeholders.accreditation')}
             />
             <Form.Group icon={CalendarClockIcon}>
               <EventTimeMenu ydoc={ydoc} />
@@ -210,8 +213,7 @@ const EventViewContent = (props: ViewProps & {
           <Form.Footer>
             {!environmentIsSane && (
               <UserMessage asDialog={!!props.asDialog} className='pb-6'>
-                Du har blivit utloggad eller tappat kontakt med systemet.
-                Vänligen försök logga in igen.
+                {t('core:errors.unwellEnvironment')}
               </UserMessage>
             )}
 
@@ -224,14 +226,14 @@ const EventViewContent = (props: ViewProps & {
               <div className='flex justify-between'>
                 <div className='flex gap-2'>
                   <Button type='button' variant='secondary' role='tertiary' disabled={!environmentIsSane}>
-                    Utkast
+                    {t('core:labels.draft')}
                   </Button>
                   <Button type='button' variant='secondary' role='secondary' disabled={!environmentIsSane}>
-                    Intern
+                    {t('core:labels.internal')}
                   </Button>
                 </div>
                 <Button type='submit' disabled={!environmentIsSane}>
-                  Publicera
+                  {t('core:labels.action.publish')}
                 </Button>
               </div>
             </Form.Submit>

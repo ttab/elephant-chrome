@@ -268,14 +268,14 @@ const PlanningViewContent = (props: ViewProps & {
               <div className='flex justify-between'>
                 <div className='flex gap-2'>
                   <Button type='button' variant='secondary' role='tertiary' disabled={!environmentIsSane}>
-                    {t('core:status.draft')}
+                    {t('core:labels.draft')}
                   </Button>
                   <Button type='button' variant='secondary' role='secondary' disabled={!environmentIsSane}>
-                    {t('core:status.internal')}
+                    {t('core:labels.internal')}
                   </Button>
                 </div>
                 <Button type='submit' disabled={!environmentIsSane}>
-                  {t('core:status.action.publish')}
+                  {t('core:labels.action.publish')}
                 </Button>
               </div>
             </Form.Submit>
