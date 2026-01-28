@@ -9,7 +9,7 @@ import type { Wire } from '@/shared/schemas/wire'
 import { Preview } from './components/Preview'
 import { getWireStatus } from '@/components/Table/lib/getWireStatus'
 import type { RowSelectionState, Updater } from '@tanstack/react-table'
-import { WiresActions } from './components/WiresActions'
+import { WiresToolbar } from './components/WiresToolbar'
 import { addWire, init, removeWire } from './wires'
 import { useUserTracker } from '@/hooks/useUserTracker'
 import type { HistoryState } from '@/navigation/hooks/useHistory'
@@ -186,7 +186,7 @@ export const Wires = (): JSX.Element => {
         <ViewHeader.Title title='Telegram' name='Wires' />
 
         <ViewHeader.Content>
-          <WiresActions
+          <WiresToolbar
             wires={[...selectedWires, focusedWire]}
             addWireStream={addWireStream}
           />

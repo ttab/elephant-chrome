@@ -11,7 +11,7 @@
  *       "title": "APA Economy",
  *       "meta": [
  *         {"role": "filter", "type": "core/section", "uuid": "111932dc-99f3-4ba4-acf2-ed9d9f2f1c7c"},
- *         {"role": "filter", "type": "source", "uri": "wires://source/apa"}
+ *         {"role": "filter", "type": "tt/source", "uri": "wires://source/apa"}
  *       ]
  *     },
  *     {
@@ -50,6 +50,7 @@ export interface WireState {
 
 /**
  * Create a new WireState with a new additional entry
+ *
  * @param {WireState} state - Full wire state
  * @returns {WireState}
  */
@@ -70,6 +71,7 @@ export function addWire(state: WireState): WireState {
 
 /**
  * Create a new WireState without given wire stream identified by uuid
+ *
  * @param {WireState} state - Full wire state
  * @param {string} uuid - Id of the wire stream to remove
  * @returns {WireState}
@@ -87,16 +89,13 @@ export function removeWire(state: WireState, uuid: string): WireState {
 }
 
 /**
- * Convert a stream filer into query params
- * @todo Investigate:
- * Should the constructQuery() in src/hooks/index/useDocuments/queries/views/wires.ts
- * take a stream filter array as param instead?
+ * Convert a stream filter into a Record
  *
  * @param {WireStream} stream
  * @returns {Record<string, string | string[] | undefined>}
  */
-export function getWireFilter(stream: WireStream): Record<string, string | string[] | undefined> {
-  const params = {} as Record<string, string | string[]>
+export function getWireFilters(stream: WireStream): Record<string, string[]> {
+  const params = {} as Record<string, string[]>
 
   for (const filter of stream.meta) {
     if (filter.role !== 'filter') {
@@ -110,7 +109,7 @@ export function getWireFilter(stream: WireStream): Record<string, string | strin
     }
 
     if (filter.type === 'query' && filter.value) {
-      params['query'] = filter.value
+      params['query'] = [filter.value]
     }
 
     if (filter.type === 'core/section' && filter.uuid) {
@@ -127,6 +126,31 @@ export function getWireFilter(stream: WireStream): Record<string, string | strin
   }
 
   return params
+}
+
+/**
+ * Clear a specific filter from a stream
+ * @returns {Record<string, string | string[] | undefined>}
+ */
+export function clearFilter(stream: WireStream, type: string): Record<string, string | string[] | undefined> {
+  const filterTypeMap: Record<string, string> = {
+    source: 'tt/source',
+    query: 'query',
+    section: 'core/section',
+    newsvalue: 'tt/newsvalue'
+  }
+
+  const filterType = filterTypeMap[type]
+  if (!filterType) {
+    return getWireFilters(stream)
+  }
+
+  const filteredStream: WireStream = {
+    ...stream,
+    meta: stream.meta.filter((filter) => filter.type !== filterType)
+  }
+
+  return getWireFilters(filteredStream)
 }
 
 /**

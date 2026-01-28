@@ -1,14 +1,11 @@
-import { type JSX, useMemo, useEffect, useCallback } from 'react'
+import { type JSX, useMemo, useEffect, useCallback, useState } from 'react'
 import { fields, type Wire, type WireFields } from '@/shared/schemas/wire'
-import { useQuery } from '@/hooks'
 import { useDocuments } from '@/hooks/index/useDocuments'
 import { constructQuery } from '@/hooks/index/useDocuments/queries/views/wires'
 import { SortingV1 } from '@ttab/elephant-api/index'
 import { StreamEntry } from './StreamEntry'
-import { Filter } from '@/components/Filter'
-import { StreamTools } from './StreamTools'
 import { MinusIcon } from '@ttab/elephant-ui/icons'
-import { Badge, Button } from '@ttab/elephant-ui'
+import { Button } from '@ttab/elephant-ui'
 import {
   useReactTable,
   getCoreRowModel,
@@ -17,7 +14,8 @@ import {
   type RowSelectionState,
   type OnChangeFn
 } from '@tanstack/react-table'
-import { getWireFilter, type WireStream } from '../wires'
+import { getWireFilters, type WireStream } from '../wires'
+import { FilterValue } from './Filter/FilterValue'
 
 export const Stream = ({
   wireStream,
@@ -38,16 +36,14 @@ export const Stream = ({
   onDataChange?: (data: Wire[]) => void
   onRemove?: (streamId: string) => void
 }): JSX.Element => {
-  // FIXME: page is not part of page query params anymore
-  const [{ page }] = useQuery()
-  const filter = getWireFilter(wireStream)
+  // FIXME: Pagination
+  const [page, setPage] = useState(1)
+  const filters = getWireFilters(wireStream)
   const { data } = useDocuments<Wire, WireFields>({
     documentType: 'tt/wire',
     size: 40,
-    query: constructQuery(filter),
-    page: typeof page === 'string'
-      ? parseInt(page)
-      : undefined,
+    query: constructQuery(filters),
+    page: typeof page === 'string' ? parseInt(page) : undefined,
     fields,
     sort: [
       SortingV1.create({ field: 'modified', desc: true })
@@ -111,14 +107,23 @@ export const Stream = ({
       {/* Column header - fixed height */}
       <div className='flex-none bg-background flex items-center justify-between py-1 px-4 border-b'>
         <div className='flex gap-2'>
-          <Filter page={String(1)} pages={[String(1)]} setPages={() => { }} search={undefined} setSearch={() => {}}>
-            <StreamTools page={String(1)} pages={[String(1)]} setPages={() => { }} search={undefined} setSearch={() => { }} />
-          </Filter>
-          {Array.isArray(filter['source']) && (
-            <>
-              {filter['source'].map((source) => <Badge key={source}>{source}</Badge>)}
-            </>
-          )}
+          {/* <StreamToolbar
+            page={String(1)}
+            pages={[String(1)]}
+            setPages={() => { }}
+            search={undefined}
+            setSearch={() => { }}
+          /> */}
+
+          {Object.keys(filters).map((key) => (
+            <FilterValue
+              key={key}
+              type={key}
+              values={filters[key]}
+              onClearFilter={() => { }}
+            />
+          ))}
+
         </div>
 
         <div>

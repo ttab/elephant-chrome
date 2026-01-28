@@ -10,17 +10,17 @@ import { useWireSources } from '@/hooks/useWireSources'
 import { Newsvalues } from '@/defaults/newsvalues'
 import type { JSX } from 'react'
 
-export const StreamTools = (props: FilterProps): JSX.Element => {
+export const StreamToolbar = (props: FilterProps): JSX.Element => {
   if (props.page === undefined || props.pages === undefined || props.setPages === undefined || props.setSearch === undefined) {
     throw new Error('No props passed to StreamFilter component')
   }
 
-  const [filters, setFilters] = useQuery(['status', 'section'])
-  const hasFilter = Object.values(filters).some((value) => value?.length)
+  // const [filters, setFilters] = useQuery(['status', 'section'])
+  // const hasFilter = Object.values(filters).some((value) => value?.length)
 
-  const handleClear = () => {
-    setFilters({})
-  }
+  // const handleClear = () => {
+  //   setFilters({})
+  // }
 
   const optionsSections = useSections().map((_) => {
     return {
@@ -63,10 +63,10 @@ export const StreamTools = (props: FilterProps): JSX.Element => {
         filterPage='newsvalue'
         Icon={SignalHighIcon}
       />
-      <ClearFilter
+      {/* <ClearFilter
         hasFilter={hasFilter}
         onClear={handleClear}
-      />
+      /> */}
     </CommandList>
   )
 }
