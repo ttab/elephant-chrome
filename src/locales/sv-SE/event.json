@@ -13,7 +13,7 @@
     },
     "error": {
         "noEventDocument": {
-            "title": "händelsedokument saknas",
+            "title": "Händelsedokument saknas",
             "message": "Inget händelsedokument är angivet. Navigera tillbaka till översikten och försök igen."
         }
     },
@@ -32,7 +32,7 @@
         "accreditation": "Ackreditering"
     },
     "status": {
-        "planerad": "Planerad",
+        "planned": "Planerad",
         "notPlanned": "Ej planerad"
     }
 }

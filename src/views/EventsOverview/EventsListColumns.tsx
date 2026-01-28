@@ -71,7 +71,7 @@ export function eventTableColumns({ sections = [], organisers = [], locale, t }:
         const isFullDay = (end.getTime() - start.getTime()) / (1000 * 60 * 60) > 12
 
         if (isFullDay) {
-          return t?.('core:timeSlots.fullDay')
+          return t?.('core:timeSlots.fullDay') || ''
         }
 
         return `${start.getHours()} ${start.toLocaleString(locale.code.full, { weekday: 'long', hourCycle: 'h23' })}`
@@ -310,7 +310,7 @@ const menuItems: DotDropdownMenuActionItem[] = [
     item: (event: MouseEvent<HTMLDivElement>) => {
       event.preventDefault()
       event.stopPropagation()
-      confirm(i18next.t('common:actions.delete'))
+      confirm(i18next.t('common:actions.remove'))
     }
   }
 ]

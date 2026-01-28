@@ -213,7 +213,7 @@ const EventViewContent = (props: ViewProps & {
           <Form.Footer>
             {!environmentIsSane && (
               <UserMessage asDialog={!!props.asDialog} className='pb-6'>
-                {t('core:errors.unwellEnvironment')}
+                {t('common:errors.unwellEnvironment')}
               </UserMessage>
             )}
 

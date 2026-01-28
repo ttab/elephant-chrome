@@ -19,8 +19,8 @@
   },
   "toasts": {
     "created": {
-      "success": "Handling skapt",
-      "error": "Kunde ikke skape ny hendelse!"
+      "success": "Hendelse skapt",
+      "error": "Kunne ikke skape ny hendelse!"
     },
     "actions": {
       "openEvent": "Åpne hendelse"
@@ -32,7 +32,7 @@
     "accreditation": "Akkreditering"
   },
   "status": {
-    "planerad": "Planlagt",
+    "planned": "Planlagt",
     "notPlanned": "Ikke planlagt"
   }
 }
