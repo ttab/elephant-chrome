@@ -27,6 +27,7 @@ import { FacetedFilter } from '@/components/Commands/FacetedFilter'
 import { Tooltip } from '@ttab/elephant-ui'
 import type { LocaleData } from '@/types/index'
 import type { TFunction } from 'i18next'
+import i18next from 'i18next'
 
 export function eventTableColumns({ sections = [], organisers = [], locale, t }: {
   sections?: IDBSection[]
@@ -296,7 +297,7 @@ export function eventTableColumns({ sections = [], organisers = [], locale, t }:
 
 const menuItems: DotDropdownMenuActionItem[] = [
   {
-    label: 'Redigera',
+    label: i18next.t('common:actions.edit'),
     icon: EditIcon,
     item: (event: MouseEvent<HTMLDivElement>) => {
       event.preventDefault()
@@ -304,12 +305,12 @@ const menuItems: DotDropdownMenuActionItem[] = [
     }
   },
   {
-    label: 'Ta bort',
+    label: i18next.t('common:actions.remove'),
     icon: DeleteIcon,
     item: (event: MouseEvent<HTMLDivElement>) => {
       event.preventDefault()
       event.stopPropagation()
-      confirm('Ta bort')
+      confirm(i18next.t('common:actions.delete'))
     }
   }
 ]
