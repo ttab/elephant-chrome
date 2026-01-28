@@ -11,6 +11,7 @@ import { MetaSheet } from '@/components/MetaSheet/MetaSheet'
 import type { EventData } from './components/EventTime'
 import type * as Y from 'yjs'
 import type { YDocument } from '@/modules/yjs/hooks'
+import { useTranslation } from 'react-i18next'
 
 export const EventHeader = ({
   ydoc,
@@ -32,6 +33,7 @@ export const EventHeader = ({
   const { viewId } = useView()
   const containerRef = useRef<HTMLElement | null>(null)
   const [eventData] = useYValue<EventData | undefined>(ydoc.ele, 'meta.core/event[0].data')
+  const { t } = useTranslation()
 
   useEffect(() => {
     containerRef.current = (document.getElementById(viewId))
@@ -41,7 +43,7 @@ export const EventHeader = ({
     <ViewHeader.Root asDialog={asDialog}>
       <ViewHeader.Title
         name='Events'
-        title={(!asDialog) ? 'Händelse' : 'Skapa ny händelse'}
+        title={(!asDialog) ? t('event:title') : t('event:createEvent')}
         asDialog={asDialog}
       />
 

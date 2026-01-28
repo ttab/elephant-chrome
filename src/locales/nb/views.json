@@ -26,5 +26,27 @@
       },
       "openItem": "Åpen planlegging"
     }
+  },
+  "events": {
+    "label": {
+      "plural": "Hendelser",
+      "singular": "Hendelse"
+    },
+    "columnLabels": {
+      "startTime": "Starttid",
+      "status": "Status",
+      "organiser": "Arrangør",
+      "section": "Kategori",
+      "planningStatus": "Planleggingsstatus",
+      "action": "Action"
+    },
+    "toasts": {
+      "fetch": {
+        "error": "Kunne ikke hente hendelser"
+      }
+    },
+    "tooltips": {
+      "organiser": "Arrangør"
+    }
   }
 }

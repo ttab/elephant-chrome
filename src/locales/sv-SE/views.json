@@ -26,5 +26,27 @@
       },
       "openItem": "Öppna planering"
     }
+  },
+  "events": {
+    "label": {
+      "plural": "Händelser",
+      "singular": "Händelse"
+    },
+    "columnLabels": {
+      "startTime": "Starttid",
+      "status": "Status",
+      "organiser": "Organisatör",
+      "section": "Sektion",
+      "planningStatus": "Planeringsstatus",
+      "action": "Action"
+    },
+    "toasts": {
+      "fetch":{
+        "error": "Kunde inte hämta händelser"
+      }
+    },
+    "tooltips": {
+      "organiser": "Organisatör"
+    }
   }
 }
