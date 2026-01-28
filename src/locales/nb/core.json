@@ -13,9 +13,7 @@
     "assignmentType": "Oppdragstype",
     "title": "Tittel",
     "time": "Tid",
-    "status": "Status"
-  },
-  "status": {
+    "status": "Status",
     "action": {
       "publish": "Publiser"
     },

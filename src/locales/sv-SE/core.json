@@ -13,9 +13,7 @@
     "assignmentType": "Typ",
     "title": "Titel",
     "time": "Tid",
-    "status": "Status"
-  },
-  "status": {
+    "status": "Status",
     "action": {
       "publish": "Publicera"
     },
