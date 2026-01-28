@@ -13,7 +13,8 @@
     "presetSort": "Förinställd sortering",
     "grouping": "Välj gruppering",
     "nogrouping": "Ingen gruppering",
-    "group": "Gruppera"
+    "group": "Gruppera",
+    "done": "Klar"
   },
   "errors": {
     "unknown": "Okänt fel",
@@ -25,6 +26,7 @@
   "misc": {
     "unknown": "okänd",
     "user": "användare",
-    "numberOf": "Antal"
+    "numberOf": "Antal",
+    "missing": "saknas"
   }
 }

@@ -12,15 +12,20 @@
     "presetSort": "Forhåndsinnstilt sortering",
     "grouping": "Velg gruppering",
     "nogrouping": "Ingen gruppering",
-    "group": "Gruppe"
+    "group": "Gruppe",
+    "done": "Ferdig"
   },
   "errors": {
     "unknown": "Ukjent feil",
     "unwellEnvironment": "Du har blitt logget ut eller mistet kontakten med systemet. Prøv å logge inn på nytt."
   },
+  "loading": {
+    "loading": "laster inn..."
+  },
   "misc": {
     "unknown": "ukjent",
     "user": "bruker",
-    "numberOf": "Antall"
+    "numberOf": "Antall",
+    "missing": "Savnet"
   }
 }

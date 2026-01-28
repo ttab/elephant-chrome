@@ -1,4 +1,4 @@
-  {
+{
   "documentType": {
     "planning": "plan",
     "event": "hendelse",
@@ -30,6 +30,7 @@
     "morning": "Natt",
     "forenoon": "Morgen",
     "afternoon": "Ettermiddag",
-    "evening": "Kveld"
+    "evening": "Kveld",
+    "fullDay": "Hel dag"
   }
 }

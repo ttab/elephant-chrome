@@ -30,6 +30,9 @@
         "eventTitle": "Händelsetitel",
         "publicDescription": "Publik beskrivning",
         "accreditation": "Ackreditering"
+    },
+    "status": {
+        "planerad": "Planerad",
+        "notPlanned": "Ej planerad"
     }
-    
 }

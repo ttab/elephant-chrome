@@ -272,7 +272,7 @@ export const EventTimeMenu = ({ ydoc, onChange }: {
             checked={fullDay}
             className='self-center'
           />
-          <label htmlFor='wholeDaySwitch' className='text-sm self-center p-2'>Heldag</label>
+          <label htmlFor='wholeDaySwitch' className='text-sm self-center p-2'>{t?.('core:timeSlots.fullDay') || ''}</label>
         </div>
         <div className={`${!fullDay && startDateValue && endDateValue && startDateValue > endDateValue ? 'border-2 rounded-md border-red-400 relative' : ''}`}>
           {!fullDay && startDateValue && endDateValue && startDateValue > endDateValue && (
@@ -320,7 +320,7 @@ export const EventTimeMenu = ({ ydoc, onChange }: {
               setOpen(false)
             }}
           >
-            Avbryt
+            {t?.('common:actions.abort') || ''}
           </Button>
           <Button
             variant='outline'
@@ -337,7 +337,7 @@ export const EventTimeMenu = ({ ydoc, onChange }: {
               setOpen(false)
             }}
           >
-            Klar
+            {t?.('common:actions.done') || ''}
           </Button>
         </div>
       </div>

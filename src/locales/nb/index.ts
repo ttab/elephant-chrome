@@ -4,6 +4,7 @@ import planning from './planning.json'
 import app from './app.json'
 import shared from './shared.json'
 import views from './views.json'
+import event from './event.json'
 
 export const nb = {
   common,
@@ -11,5 +12,6 @@ export const nb = {
   planning,
   app,
   shared,
-  views
+  views,
+  event
 }

@@ -1,0 +1,38 @@
+{
+  "title": "Hendelse",
+  "subheadings": {
+    "plannings": "Planlegginger"
+  },
+  "createEvent": "Opprett hendelse",
+  "buttons": {
+    "addPlanning": "Legg til planlegging"
+  },
+  "labels": {
+    "markAsCancelled": "Merk som avlyst",
+    "markedAsCancelled": "Hendelsen er merket som avlyst!"
+  },
+  "error": {
+    "noEventDocument": {
+      "title": "Hendelsesdokument mangler",
+      "message": "Inget hendelsesdokument er oppgitt. Naviger tilbake til oversikten og forsøk igjen."
+    }
+  },
+  "toasts": {
+    "created": {
+      "success": "Handling skapt",
+      "error": "Kunde ikke skape ny hendelse!"
+    },
+    "actions": {
+      "openEvent": "Åpne hendelse"
+    }
+  },
+  "placeholders": {
+    "eventTitle": "Tittel på hendelse",
+    "publicDescription": "Offentlig beskrivelse",
+    "accreditation": "Akkreditering"
+  },
+  "status": {
+    "planerad": "Planlagt",
+    "notPlanned": "Ikke planlagt"
+  }
+}

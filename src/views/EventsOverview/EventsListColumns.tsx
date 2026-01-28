@@ -39,7 +39,7 @@ export function eventTableColumns({ sections = [], organisers = [], locale, t }:
     {
       id: 'startTime',
       meta: {
-        name: 'Starttid',
+        name: t?.('views:events.columnLabels.startTime') || '',
         columnIcon: SignalHighIcon,
         className: 'hidden',
         display: (value: string) => {
@@ -84,7 +84,7 @@ export function eventTableColumns({ sections = [], organisers = [], locale, t }:
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
         options: PlanningEventStatuses,
-        name: 'Status',
+        name: t?.('views:events.columnLabels.status') || '',
         columnIcon: CircleCheckIcon,
         className: 'flex-none',
         display: (value: string) => (
@@ -135,7 +135,7 @@ export function eventTableColumns({ sections = [], organisers = [], locale, t }:
     {
       id: 'title',
       meta: {
-        name: 'Titel',
+        name: t?.('core:labels.title') || '',
         columnIcon: PenIcon,
         className: 'flex-1 w-[200px]',
         display: (value: string) => (
@@ -161,13 +161,13 @@ export function eventTableColumns({ sections = [], organisers = [], locale, t }:
     {
       id: 'organiser',
       meta: {
-        name: 'Organisatör',
+        name: t?.('views:events.columnLabels.organiser') || '',
         columnIcon: BookUserIcon,
         className: 'flex-none hidden @4xl/view:[display:revert]',
         options: organisers.map((o) => ({ label: o.title, value: o.title })),
         display: (value: string) => (
           <span>
-            {value === 'undefined' ? 'saknas' : value}
+            {value === 'undefined' ? t?.('common:misc.missing') || '' : value}
           </span>
         ),
         Filter: ({ column, setSearch }) => (
@@ -180,7 +180,7 @@ export function eventTableColumns({ sections = [], organisers = [], locale, t }:
 
         if (value) {
           return (
-            <Tooltip content={`Organisatör: ${value}`}>
+            <Tooltip content={`${t?.('views:events.tooltips.organiser')}: ${value}`}>
               <div className='border-slate-200 rounded-md mr-2 p-1 truncate'>{value}</div>
             </Tooltip>
           )
@@ -200,7 +200,7 @@ export function eventTableColumns({ sections = [], organisers = [], locale, t }:
             label: _.title
           }
         }),
-        name: 'Sektion',
+        name: t?.('views:events.columnLabels.section') || '',
         columnIcon: ShapesIcon,
         className: 'flex-none w-[115px] hidden @4xl/view:[display:revert]',
         display: (value: string) => (
@@ -232,13 +232,13 @@ export function eventTableColumns({ sections = [], organisers = [], locale, t }:
         Filter: ({ column, setSearch }) => (
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
-        options: [{ label: 'Planerad', value: 'planned' }, { label: 'Ej planerad', value: 'unplanned' }],
-        name: 'Planeringsstatus',
+        options: [{ label: t?.('event:status.planned') || '', value: 'planned' }, { label: t?.('event:status.notPlanned') || '', value: 'unplanned' }],
+        name: t?.('views:events.columnLabels.planningStatus') || '',
         columnIcon: NotebookPenIcon,
         className: 'flex-none w-[112px] hidden @5xl/view:[display:revert]',
         display: (value: string) => (
           <span>
-            {value === 'planned' ? 'Planerad' : 'Ej planerad'}
+            {value === 'planned' ? t?.('event:status.planned') || '' : t?.('event:status.notPlanned') || ''}
           </span>
         )
 
@@ -257,7 +257,7 @@ export function eventTableColumns({ sections = [], organisers = [], locale, t }:
     {
       id: 'event_time',
       meta: {
-        name: 'Tid',
+        name: t?.('core:labels.time') || '',
         columnIcon: Clock3Icon,
         className: 'flex-none w-[112px] hidden @5xl/view:[display:revert]',
         Filter: ({ column, setSearch }) => (
@@ -283,7 +283,7 @@ export function eventTableColumns({ sections = [], organisers = [], locale, t }:
     {
       id: 'action',
       meta: {
-        name: 'Action',
+        name: t?.('views:events.columnLabels.action') || '',
         columnIcon: NavigationIcon,
         className: 'flex-none'
       },
