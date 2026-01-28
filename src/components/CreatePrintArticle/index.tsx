@@ -14,7 +14,7 @@ import { useDocuments } from '@/hooks/index/useDocuments'
 import { fields } from '@/shared/schemas/printFlow'
 import type { PrintFlow, PrintFlowFields } from '@/shared/schemas/printFlow'
 import { addDays } from 'date-fns'
-import { ToastAction } from '@/views/Wire/ToastAction'
+import { ToastAction } from '@/components/ToastAction'
 
 
 export const CreatePrintArticle = ({ id, asDialog, onDialogClose, className }: ViewProps) => {
