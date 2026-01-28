@@ -10,9 +10,8 @@ import { Preview } from './components/Preview'
 import { getWireStatus } from '@/components/Table/lib/getWireStatus'
 import type { RowSelectionState, Updater } from '@tanstack/react-table'
 import { WiresToolbar } from './components/WiresToolbar'
-import { addWire, init, removeWire } from './wires'
-import { useUserTracker } from '@/hooks/useUserTracker'
-import type { HistoryState } from '@/navigation/hooks/useHistory'
+import type { WireStream } from './hooks/useWireViewState'
+import { useWireViewState } from './hooks/useWireViewState'
 
 const BASE_URL = import.meta.env.BASE_URL
 
@@ -32,20 +31,41 @@ const meta: ViewMetadata = {
   }
 }
 
+const EXAMPLE_STATE = {
+  title: 'Utrikesbevakning',
+  type: 'tt/wires-panes',
+  content: [
+    {
+      uuid: '1582b455-682b-496e-8d1e-94ef809f6e5e',
+      title: 'APA Economy',
+      meta: [
+        { role: 'filter', type: 'core/section', value: '111932dc-99f3-4ba4-acf2-ed9d9f2f1c7c' },
+        { role: 'filter', type: 'tt/source', value: 'wires://source/apa' }
+      ]
+    },
+    {
+      uuid: '3d2542c0-39ca-4438-9c87-7a3efdb9e7b7',
+      title: 'NTB',
+      meta: [
+        { role: 'filter', type: 'tt/source', value: 'wires://source/ntb' }
+      ]
+    }
+  ]
+}
+
 export const Wires = (): JSX.Element => {
   const { isActive } = useView()
   const [previewWire, setPreviewWire] = useState<Wire | null>(null)
   const [focusedWire, setFocusedWire] = useState<Wire | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
-
-  const [wiresHistory] = useUserTracker<HistoryState>('Wires')
-  const [wireStreams, setWireStreams] = useState(init())
-
-  useEffect(() => {
-    if (wiresHistory) {
-      setWireStreams(init(wiresHistory))
-    }
-  }, [wiresHistory])
+  const {
+    streams,
+    addStream,
+    removeStream
+  } = useWireViewState(EXAMPLE_STATE, (newState) => {
+    setWireStreams(newState)
+  })
+  const [wireStreams, setWireStreams] = useState<WireStream[]>(streams)
 
   // Global row selection state for all streams
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
@@ -58,18 +78,6 @@ export const Wires = (): JSX.Element => {
     containerRef,
     wrapNavigation: false
   })
-
-  const addWireStream = useCallback(() => {
-    setWireStreams((curr) => {
-      return addWire(curr)
-    })
-  }, [])
-
-  const removeWireStream = useCallback((streamId: string) => {
-    setWireStreams((curr) => {
-      return removeWire(curr, streamId)
-    })
-  }, [])
 
   const handleOnPress = useCallback((wire: Wire) => {
     setPreviewWire(wire)
@@ -188,7 +196,7 @@ export const Wires = (): JSX.Element => {
         <ViewHeader.Content>
           <WiresToolbar
             wires={[...selectedWires, focusedWire]}
-            addWireStream={addWireStream}
+            addWireStream={addStream}
           />
         </ViewHeader.Content>
         <ViewHeader.Action />
@@ -210,7 +218,7 @@ export const Wires = (): JSX.Element => {
           >
             {/* Grid */}
             <div ref={containerRef} className='grid gap-2 p-2 pe-1 h-full snap-x snap-proximity scroll-pl-6 overflow-x-auto overflow-hidden grid-flow-col auto-cols-max'>
-              {wireStreams.content.map((wireStream) => (
+              {wireStreams.map((wireStream) => (
                 <Stream
                   key={wireStream.uuid}
                   wireStream={wireStream}
@@ -220,7 +228,7 @@ export const Wires = (): JSX.Element => {
                   rowSelection={rowSelection}
                   onRowSelectionChange={handleRowSelectionChange}
                   onDataChange={handleDataChange}
-                  onRemove={removeWireStream}
+                  onRemove={removeStream}
                 />
               ))}
             </div>

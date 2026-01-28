@@ -1,7 +1,7 @@
 import { type JSX, useMemo, useEffect, useCallback, useState } from 'react'
 import { fields, type Wire, type WireFields } from '@/shared/schemas/wire'
 import { useDocuments } from '@/hooks/index/useDocuments'
-import { constructQuery } from '@/hooks/index/useDocuments/queries/views/wires'
+import { constructQuery } from '../lib/constructQuery'
 import { SortingV1 } from '@ttab/elephant-api/index'
 import { StreamEntry } from './StreamEntry'
 import { MinusIcon } from '@ttab/elephant-ui/icons'
@@ -14,8 +14,8 @@ import {
   type RowSelectionState,
   type OnChangeFn
 } from '@tanstack/react-table'
-import { getWireFilters, type WireStream } from '../wires'
 import { FilterValue } from './Filter/FilterValue'
+import { type WireStream } from '../hooks/useWireViewState'
 
 export const Stream = ({
   wireStream,
@@ -37,12 +37,12 @@ export const Stream = ({
   onRemove?: (streamId: string) => void
 }): JSX.Element => {
   // FIXME: Pagination
-  const [page, setPage] = useState(1)
-  const filters = getWireFilters(wireStream)
+  const [page] = useState(1)
+
   const { data } = useDocuments<Wire, WireFields>({
     documentType: 'tt/wire',
     size: 40,
-    query: constructQuery(filters),
+    query: constructQuery(wireStream.filters),
     page: typeof page === 'string' ? parseInt(page) : undefined,
     fields,
     sort: [
@@ -115,11 +115,11 @@ export const Stream = ({
             setSearch={() => { }}
           /> */}
 
-          {Object.keys(filters).map((key) => (
+          {wireStream.filters.map((filter) => (
             <FilterValue
-              key={key}
-              type={key}
-              values={filters[key]}
+              key={filter.type}
+              type={filter.type}
+              values={filter.values}
               onClearFilter={() => { }}
             />
           ))}
@@ -134,7 +134,7 @@ export const Stream = ({
       </div>
 
       {/* Column content - fills remaining space and scrolls */}
-      <div className='flex-1 basis-0 overflow-y-auto'>
+      <div className='flex-1 basis-0 overflow-y-auto bg-muted'>
         <div className='flex flex-col divide-y'>
           {table.getRowModel().rows.map((row) => (
             <div key={row.id}>

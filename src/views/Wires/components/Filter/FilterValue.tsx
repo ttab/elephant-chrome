@@ -40,23 +40,23 @@ const SpecificFilterValue = ({ type, values }: {
   values: string[]
 }) => {
   switch (type) {
-    case 'section':
+    case 'core/section':
       return <SectionFilterValue values={values} />
-    case 'source':
+    case 'tt/source':
       return <WireSourceFilterValue values={values} />
-    case 'newsvalue':
+    case 'core/newsvalue':
       return <NewsvalueFilterValue values={values} />
     case 'query':
       return <QueryFilterValue values={values} />
     case 'status':
       return <StatusFilterValue values={values} />
-    case 'organiser':
+    case 'core/organiser':
       return <OrganiserFilterValue values={values} />
-    case 'category':
+    case 'core/category':
       return <CategoryFilterValue values={values} />
     case 'from':
       return <FromFilterValue values={values} />
-    case 'author':
+    case 'core/author':
       return <AuthorFilterValue values={values} />
     case 'aType':
       return <ATypeFilterValue values={values} />
