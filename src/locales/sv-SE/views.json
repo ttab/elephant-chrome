@@ -39,6 +39,7 @@
     "actionMenu": {
       "openArticle": "Öppna artikel",
       "openPlanning": "Öppna planering"
-    }
+    },
+    "myAssignments": "Mina uppdrag"
   }
 }

@@ -39,6 +39,7 @@
     "actionMenu": {
       "openArticle": "Åpne artikkel",
       "openPlanning": "Åpne planlegging"
-    }
+    },
+    "myAssignments": "Mine oppdrag"
   }
 }
