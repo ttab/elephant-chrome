@@ -87,6 +87,7 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
         className: '',
         display: (value: string) => {
           const [hour, day] = value.split(' ')
+          console.log({ hour, day })
           if (hour === 'undefined' || hour === 'Heldag') {
             return <span>{t('core:timeSlots.fullDay')}</span>
           }
@@ -110,7 +111,7 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
         }
 
         if (startTimeType === 'full_day') {
-          return 'Heldag'
+          return t('core:timeSlots.fullDay')
         }
 
         const startDate = parseISO(startTime)
@@ -249,7 +250,7 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
         const startTime = row.getValue<string>('assignment_time')
         const startTimeType = row.original.fields['document.start_time.type'].values[0]
 
-        if (!startTime || startTime === 'Heldag' || startTime === '??') {
+        if (!startTime || startTime === t('core:timeSlots.fullDay') || startTime === '??') {
           return <Time time={startTime} type={startTimeType} tooltip={t('views:assignments.tooltips.assignmentStartTime')} />
         }
         const formattedStart = dateInTimestampOrShortMonthDayTimestamp(
