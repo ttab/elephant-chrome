@@ -1,8 +1,8 @@
-
 {
   "actions": {
     "add": "Lägg till",
     "open": "Öppna",
+    "openType": "Åpne {{type, lowercase}}",
     "edit": "Redigera",
     "remove": "Ta bort",
     "abort": "Avbryt",

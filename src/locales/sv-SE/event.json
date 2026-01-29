@@ -21,9 +21,6 @@
         "created": {
             "success": "Händelse skapad",
             "error": "Kunde inte skapa ny händelse!"
-        },
-        "actions": {
-            "openEvent": "Öppna händelse"
         }
     },
     "placeholders": {

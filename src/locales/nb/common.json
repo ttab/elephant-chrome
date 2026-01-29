@@ -2,6 +2,7 @@
   "actions": {
     "add": "Legg til",
     "open": "Åpne",
+    "openType": "Åpne {{type, lowercase}}",
     "edit": "Redigere",
     "remove": "Fjerne",
     "abort": "Avbryte",

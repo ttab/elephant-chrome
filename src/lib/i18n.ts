@@ -30,7 +30,13 @@ void i18n
       return 'sv'
     },
     interpolation: {
-      escapeValue: false // React already does escaping
+      escapeValue: false, // React already does escaping,
+      format: (value, formatStr) => {
+        if (formatStr === 'lowercase' && typeof value === 'string') {
+          return value.toLowerCase()
+        }
+        return value
+      }
     },
     supportedLngs: ['sv', 'nb'],
     load: 'languageOnly',

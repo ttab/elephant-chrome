@@ -128,7 +128,7 @@ const EventViewContent = (props: ViewProps & {
               key='open-event'
               documentId={props.documentId}
               withView='Event'
-              label={t('event:toasts.actions.openEvent')}
+              label={t('common:actions.openType', { type: t('event:title') })}
               Icon={CalendarPlus2Icon}
               target='last'
             />
