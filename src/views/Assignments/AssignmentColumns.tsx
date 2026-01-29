@@ -87,7 +87,6 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
         className: '',
         display: (value: string) => {
           const [hour, day] = value.split(' ')
-          console.log({ hour, day })
           if (hour === 'undefined' || hour === 'Heldag') {
             return <span>{t('core:timeSlots.fullDay')}</span>
           }
