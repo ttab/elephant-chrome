@@ -2,11 +2,6 @@
   "approvals": {
     "title": "Dagen",
     "charactersShort": "tkn",
-    "toolbar": {
-      "clearFilters": "Rensa",
-      "savePersonalFilter": "Spara personligt filter",
-      "personalFilter": "Personligt filter"
-    },
     "tooltips": {
       "openPreview": "Öppna förhandsgranskning",
       "openPlanning": "Öppna planering",
@@ -24,6 +19,7 @@
         "error": "Kunde inte skapa ny planering",
         "success": "Planering skapad"
       },
+      "getPlanningsError": "Kunde inte hämta planeringar",
       "openItem": "Öppna planering"
     }
   }

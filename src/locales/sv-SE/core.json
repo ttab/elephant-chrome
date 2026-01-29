@@ -13,9 +13,10 @@
     "assignmentType": "Typ",
     "title": "Titel",
     "time": "Tid",
-    "status": "Status"
-  },
-  "status": {
+    "status": "Status",
+    "type": "Typ",
+    "organiser": "Organisatör",
+    "category": "Kategori",
     "action": {
       "publish": "Publicera"
     },
@@ -29,6 +30,7 @@
     "cancelled": "Kastad"
   },
   "timeSlots": {
+    "fullday": "Heldag",
     "morning": "Morgon",
     "forenoon": "Förmiddag",
     "afternoon": "Eftermiddag",

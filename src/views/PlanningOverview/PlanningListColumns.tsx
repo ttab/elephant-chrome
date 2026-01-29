@@ -39,11 +39,14 @@ export function planningListColumns({ sections = [], authors = [], t }: {
         name: 'Status',
         columnIcon: CircleCheckIcon,
         className: 'flex-none',
-        display: (value: string) => (
-          <span>
-            {PlanningEventStatuses.find((status) => status.value === value)?.label}
-          </span>
-        )
+        display: (value: string) => {
+          const statusLabel = t?.(`core:labels.${value}`)
+          return (
+            <span>
+              {statusLabel}
+            </span>
+          )
+        }
       },
       accessorFn: (data) => {
         const currentStatus = data?.fields['document.meta.status']?.values[0]
@@ -185,7 +188,7 @@ export function planningListColumns({ sections = [], authors = [], t }: {
         display: (value: string | string[]) => {
           const items = AssignmentTypes
             .filter((type) => value.includes(type.value))
-            .map((item) => item.label)
+            .map((item) => t?.(`shared:assignmentTypes.${item.value}`))
           return (
             <div className='flex flex-row gap-2'>
               <span>

@@ -126,7 +126,7 @@ export const Sort = <TData,>() => {
               ))}
             </SelectContent>
           </Select>
-          <Label htmlFor='sorting'>Sortera</Label>
+          <Label htmlFor='sorting'>{t('common:actions.sort')}</Label>
           <div className='flex flex-row gap-2'>
             <Select
               value={sorting[0]?.id || 'none'}

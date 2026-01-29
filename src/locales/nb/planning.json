@@ -23,9 +23,6 @@
       "saveAssignmentError": "Kunne ikke lagre oppdraget"
     }
   },
-  "copy": {
-    "copiedFrom": "Kopiert fra"
-  },
   "description": {
     "internal": "Intern beskjed",
     "public": "Beskrivelse"

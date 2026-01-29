@@ -297,7 +297,7 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
         display: (value: string | string[]) => {
           const items = AssignmentTypes
             .filter((type) => value.includes(type.value))
-            .map((item) => item.label)
+            .map((item) => t(`shared:assignmentTypes.${item.value}`))
           return (
             <div className='flex flex-row gap-2'>
               <span>

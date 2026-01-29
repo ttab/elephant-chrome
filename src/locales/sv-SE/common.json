@@ -1,4 +1,3 @@
-
 {
   "actions": {
     "add": "Lägg till",
@@ -13,15 +12,24 @@
     "presetSort": "Förinställd sortering",
     "grouping": "Välj gruppering",
     "nogrouping": "Ingen gruppering",
-    "group": "Gruppera"
+    "group": "Gruppera",
+    "copy": "Kopiera",
+    "confirm": "Välj"
   },
   "errors": {
     "unknown": "Okänt fel",
-    "unwellEnvironment": "Du har blivit utloggad eller tappat kontakt med systemet. Vänligen försök logga in igen."
+    "unwellEnvironment": "Du har blivit utloggad eller tappat kontakt med systemet. Vänligen försök logga in igen.",
+    "errorTitle": "Ett fel har uppstått!",
+    "unknownErrorAdminInfo": "Ett okänt fel, eller ett fel som saknar felmeddelande har uppstått. Kontakta systemadministratören.",
+    "someError": "Något gick fel"
   },
   "misc": {
     "unknown": "okänd",
     "user": "användare",
-    "numberOf": "Antal"
+    "numberOf": "Antal",
+    "from": "Från",
+    "new": "Ny",
+    "selected": "valda",
+    "since": "sedan"
   }
 }

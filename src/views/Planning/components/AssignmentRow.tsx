@@ -35,7 +35,7 @@ import type * as Y from 'yjs'
 import { useRegistry } from '@/hooks/useRegistry'
 import { useSession } from 'next-auth/react'
 import { getDeliverableType } from '@/shared/templates/lib/getDeliverableType'
-import { AssignmentTypes, isVisualAssignmentType } from '@/defaults/assignmentTypes'
+import { isVisualAssignmentType } from '@/defaults/assignmentTypes'
 import { CreatePrintArticle } from '@/components/CreatePrintArticle'
 import { snapshotDocument } from '@/lib/snapshotDocument'
 import { timeSlotTypes } from '@/defaults/assignmentTimeConstants'
@@ -95,8 +95,8 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
   const documentId = articleId || flashId || editorialInfoId
   const isDocument = assignmentType === 'flash' || assignmentType === 'text' || assignmentType === 'editorial-info'
   const documentLabel = assignmentType
-    ? AssignmentTypes.find((a) => a.value === assignmentType)?.label?.toLowerCase()
-    : 'okänt'
+    ? t(`shared:assignmentTypes.${assignmentType}`)
+    : t('common:misc.unknown')
 
   const openDocument = assignmentType === 'flash' ? openFlash : openArticle
   const { showModal, hideModal } = useModal()
@@ -408,8 +408,8 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
 
       {showVerifyDialog && (
         <Prompt
-          title={`${t('common:actions.remove')}?`}
-          description={`${t('planning:assignment.removeAssignment')}${title ? ' ' + title : ''}?`}
+          title={`${t('common:actions.remove') as unknown as string}?`}
+          description={`${t('planning:assignment.removeAssignment') as unknown as string}${title ? ' ' + title : ''}?`}
           secondaryLabel={t('common:actions.abort')}
           primaryLabel={t('common:actions.remove')}
           onPrimary={(event) => {
@@ -459,7 +459,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
 
             if (!document) {
               console.error('AssignmentRow: Document reference lost after deliverable creation', { id })
-              toast.error(`${t('planning:toasts.createDeliverableLinkError')} till uppdrag`)
+              toast.error(t('planning:toasts.createDeliverableLinkError'))
               setShowCreateDialogPayload(false)
               return
             }
@@ -476,13 +476,15 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
                 type: getDeliverableType(assignmentType)
               })
             } catch (ex: unknown) {
-              const errorMessage = ex instanceof Error ? ex.message : t('common:errors.unknown')
+              const errorMessage = ex instanceof Error ? ex.message : t('common:errors.unknown') as unknown as string
+              const linkError = t('planning:toasts.createDeliverableLinkError') as unknown as string
+
               console.error('AssignmentRow: Failed to link deliverable to assignment', {
                 id,
                 assignmentIndex: index,
                 error: errorMessage
               })
-              toast.error(`${t('planning:toasts.createDeliverableLinkError')}: ${errorMessage}`)
+              toast.error(`${linkError}: ${errorMessage}`)
               setShowCreateDialogPayload(false)
               setIsLinking(false)
               return
