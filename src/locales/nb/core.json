@@ -1,4 +1,4 @@
-  {
+{
   "documentType": {
     "planning": "plan",
     "event": "hendelse",
@@ -13,7 +13,8 @@
     "assignmentType": "Oppdragstype",
     "title": "Tittel",
     "time": "Tid",
-    "status": "Status"
+    "status": "Status",
+    "action": "Action"
   },
   "status": {
     "action": {
@@ -32,6 +33,7 @@
     "morning": "Natt",
     "forenoon": "Morgen",
     "afternoon": "Ettermiddag",
-    "evening": "Kveld"
+    "evening": "Kveld",
+    "fullDay": "Hel dag"
   }
 }

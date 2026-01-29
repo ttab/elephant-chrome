@@ -13,7 +13,8 @@
     "assignmentType": "Typ",
     "title": "Titel",
     "time": "Tid",
-    "status": "Status"
+    "status": "Status",
+    "action": "Action"
   },
   "status": {
     "action": {
@@ -32,6 +33,7 @@
     "morning": "Morgon",
     "forenoon": "Förmiddag",
     "afternoon": "Eftermiddag",
-    "evening": "Kväll"
+    "evening": "Kväll",
+    "fullDay": "Heldag"
   }
 }

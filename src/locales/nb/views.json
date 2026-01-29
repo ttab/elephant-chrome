@@ -26,5 +26,20 @@
       },
       "openItem": "Åpen planlegging"
     }
+  },
+  "assignments": {
+    "title": "Oppdrag",
+    "columnLabels": {
+      "assignmentTime": "Oppdragstid",
+      "type": "Oppdragstype"
+    },
+    "tooltips": {
+      "assignmentStartTime": "Oppdragets starttid"
+    },
+    "actionMenu": {
+      "openArticle": "Åpne artikkel",
+      "openPlanning": "Åpne planlegging"
+    },
+    "myAssignments": "Mine oppdrag"
   }
 }
