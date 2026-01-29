@@ -22,7 +22,13 @@
     "personalFilter": "Personlig filter",
     "toggleUserFilter": "Vexle brukerfilter",
     "toggleLabel": "Vexle {{label}}",
-    "navigateToday": "Gå til idag"
+    "navigateToday": "Gå til idag",
+    "freeText": "Fritekst",
+    "altSearch": "Søkealternativer"
+  },
+  "status_menu": {
+    "cause": "Grunn",
+    "pickCause": "Velg en grunn..."
   },
   "copy": {
     "copiedTo": "Kopiert til",

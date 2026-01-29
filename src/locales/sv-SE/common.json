@@ -14,14 +14,16 @@
     "nogrouping": "Ingen gruppering",
     "group": "Gruppera",
     "copy": "Kopiera",
-    "confirm": "Välj"
+    "confirm": "Klar"
   },
   "errors": {
     "unknown": "Okänt fel",
     "unwellEnvironment": "Du har blivit utloggad eller tappat kontakt med systemet. Vänligen försök logga in igen.",
     "errorTitle": "Ett fel har uppstått!",
     "unknownErrorAdminInfo": "Ett okänt fel, eller ett fel som saknar felmeddelande har uppstått. Kontakta systemadministratören.",
-    "someError": "Något gick fel"
+    "someError": "Något gick fel",
+    "nameMissing": "Namn saknas",
+    "nothingFound": "Ingenting hittades"
   },
   "misc": {
     "unknown": "okänd",

@@ -22,7 +22,13 @@
     "personalFilter": "Personligt filter",
     "toggleUserFilter": "Växla användarfilter",
     "toggleLabel": "Växla {{label}}",
-    "navigateToday": "Gå till idag"
+    "navigateToday": "Gå till idag",
+    "freeText": "Fritext",
+    "altSearch": "Sök alternativ"
+  },
+  "status_menu": {
+    "cause": "Anledning",
+    "pickCause": "Välj anledning..."
   },
   "copy": {
     "copiedTo": "Kopierad till",
