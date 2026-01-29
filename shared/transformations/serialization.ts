@@ -101,7 +101,7 @@ export function serializeNode(node: TBElement | TBText): string {
   // NOTE: Add other/new supported inline elements here
   switch (node.type) {
     case 'core/link':
-      return `<a href="${escapeHTML(encodeURI(properties.url as string || ''))}" ${serializedChildren}</a>`
+      return `<a href="${escapeHTML(encodeURI(properties.url as string || ''))}" id="${node.id || crypto.randomUUID()}">${serializedChildren}</a>`
 
     default:
       return serializedChildren
@@ -152,7 +152,7 @@ export function deserializeNode(el: HTMLElement, markAttributes: Record<string, 
   switch (nodeName) {
     case 'a':
       return {
-        id: crypto.randomUUID(),
+        id: el.id || crypto.randomUUID(),
         class: 'inline',
         type: 'core/link',
         properties: {
