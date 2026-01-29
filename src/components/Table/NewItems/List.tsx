@@ -6,6 +6,7 @@ import { GanttChartSquareIcon } from '@ttab/elephant-ui/icons'
 import useSWR from 'swr'
 import type { NewItem } from './Root'
 import type { JSX } from 'react'
+import { useTranslation } from 'react-i18next'
 
 const BASE_URL = import.meta.env.BASE_URL || ''
 
@@ -16,6 +17,7 @@ export const List = ({ type, createdId, asDialog }: {
 }): JSX.Element | null => {
   const openPlanning = useLink('Planning')
   const [newDocuments = []] = useUserTracker<NewItem[]>(type)
+  const { t } = useTranslation('shared')
 
   const createdDocument = newDocuments.find(({ id }) => id === createdId)
 
@@ -28,7 +30,7 @@ export const List = ({ type, createdId, asDialog }: {
     }
   )
 
-  if (error) return <div>Failed to load</div>
+  if (error) return <div>{t('errors.loadFailed')}</div>
   if (!document) return null
 
   return (

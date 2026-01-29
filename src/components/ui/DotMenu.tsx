@@ -15,7 +15,7 @@ import {
 } from '@ttab/elephant-ui'
 
 export interface DotDropdownMenuActionItem {
-  label: string
+  label?: string
   icon?: LucideIcon
   item: DotDropdownMenuActionItem[] | ((event: MouseEvent<HTMLDivElement>) => void) | React.ReactNode
   disabled?: boolean

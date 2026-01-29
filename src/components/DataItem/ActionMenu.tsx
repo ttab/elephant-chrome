@@ -11,8 +11,11 @@ import {
   DropdownMenuTrigger
 } from '@ttab/elephant-ui'
 import type { JSX } from 'react'
+import { useTranslation } from 'react-i18next'
 
 export const ActionMenu = ({ deliverableUuids, planningId }: { deliverableUuids: string[], planningId: string }): JSX.Element => {
+  const { t } = useTranslation()
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -21,17 +24,17 @@ export const ActionMenu = ({ deliverableUuids, planningId }: { deliverableUuids:
           className='flex h-8 w-8 p-0 data-[state=open]:bg-muted hover:bg-accent2'
         >
           <MoreHorizontalIcon size={18} strokeWidth={1.75} />
-          <span className='sr-only'>Open</span>
+          <span className='sr-only'>{t('common:actions.open')}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className='w-56'>
         <DropdownMenuItem>
           <Link to='Planning' props={{ id: planningId }}>
-            Open
+            {t('common:actions.open')}
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSub>
-          <DropdownMenuSubTrigger>Assignments</DropdownMenuSubTrigger>
+          <DropdownMenuSubTrigger>{t('app:mainMenu.assignments')}</DropdownMenuSubTrigger>
           <DropdownMenuSubContent>
             {deliverableUuids.length
               ? deliverableUuids.map((uuid) => {
@@ -43,7 +46,7 @@ export const ActionMenu = ({ deliverableUuids, planningId }: { deliverableUuids:
                   </DropdownMenuItem>
                 )
               })
-              : 'No deliverables'}
+              : t('shared:errors.noDeliverables')}
           </DropdownMenuSubContent>
         </DropdownMenuSub>
       </DropdownMenuContent>

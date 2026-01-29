@@ -23,9 +23,6 @@
       "saveAssignmentError": "Kunde inte spara uppdraget"
     }
   },
-  "copy": {
-    "copiedFrom": "Kopierad från"
-  },
   "description": {
     "internal": "Internt meddelande",
     "public": "Publik beskrivning"

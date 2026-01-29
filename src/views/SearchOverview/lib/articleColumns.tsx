@@ -11,10 +11,11 @@ import { DocumentStatuses } from '@/defaults/documentStatuses'
 import { CircleCheckIcon, PenIcon, ShapesIcon, SignalHighIcon } from '@ttab/elephant-ui/icons'
 import type { Dispatch, SetStateAction } from 'react'
 import type { IDBSection } from 'src/datastore/types'
+import type { TFunction } from 'i18next'
 
 export function articleColumns({ sections = [] }: {
   sections?: IDBSection[]
-}): Array<ColumnDef<Article>> {
+}, t: TFunction): Array<ColumnDef<Article>> {
   return [
     {
       id: 'documentStatus',
@@ -26,12 +27,11 @@ export function articleColumns({ sections = [] }: {
         name: 'Status',
         columnIcon: CircleCheckIcon,
         className: 'flex-none',
-        display: (value: string) => (
-          <span>
-            {DocumentStatuses
-              .find((status) => status.value === value)?.label}
-          </span>
-        )
+        display: (value: string) => {
+          const statusLabel = t?.(`core:labels.${value}`)
+
+          return <span>{statusLabel}</span>
+        }
       },
       accessorFn: (data) => data?.fields['document.meta.status']?.values[0],
       cell: ({ row }) => {

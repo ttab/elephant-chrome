@@ -6,5 +6,35 @@
     "doneBy": "Klarmarkert av {{author}}",
     "createdBy": "Opprettet av {{author}}",
     "approvedBy": "Godkjent av {{author}}"
+  },
+  "assignmentTypes": {
+    "text": "Artikkel",
+    "flash": "HAST",
+    "editorial-info": "Til red",
+    "graphic": "Grafikk",
+    "picture": "Foto",
+    "video": "Video",
+    "picture/video": "Foto/Video"
+  },
+  "toolbar": {
+    "clearFilters": "Tøm",
+    "savePersonalFilter": "Lagre personlig filter",
+    "personalFilter": "Personlig filter",
+    "toggleUserFilter": "Vexle brukerfilter",
+    "toggleLabel": "Vexle {{label}}",
+    "navigateToday": "Gå til idag"
+  },
+  "copy": {
+    "copiedTo": "Kopiert til",
+    "copiedFrom": "Kopiert fra",
+    "copyType": "Kopiere {{type}}",
+    "copyPrompt": "Vil du kopiere \"{{title}}\" til {{start}}?",
+    "copySuccess": "\"{{title}}\" har blitt kopiert til {{start}}",
+    "copyEventPrompt": "Vil du kopiere hendelsen til {{datesFormatted}}?",
+    "copyEventSuccess": "Hendelsen \"{{title}}\" har blitt kopiert til {{datesFormatted}}"
+  },
+  "errors": {
+    "loadFailed": "Kunne ikke laste",
+    "noDeliverables": "Ingen leveranser"
   }
 }

@@ -18,6 +18,7 @@ import { DatePicker } from '@/components/Datepicker'
 import { useMemo, type JSX } from 'react'
 import type { SearchKeys } from '@/hooks/index/useDocuments/queries/views/search'
 import { parseDate } from '@/shared/datetime'
+import { useTranslation } from 'react-i18next'
 
 export const Commands = (props: FilterProps & { type: SearchKeys }): JSX.Element => {
   if (props.page === undefined || props.pages === undefined || props.setPages === undefined || props.setSearch === undefined) {
@@ -27,6 +28,7 @@ export const Commands = (props: FilterProps & { type: SearchKeys }): JSX.Element
   const { type } = props
 
   const [filters, setFilters] = useQuery(['section', 'organiser', 'category', 'from', 'author', 'aType', 'newsvalue'])
+  const { t } = useTranslation()
   const hasFilter = Object.values(filters).some((value) => value?.length)
 
   const { from } = filters
@@ -67,14 +69,14 @@ export const Commands = (props: FilterProps & { type: SearchKeys }): JSX.Element
       <OptionsFilter
         {...props}
         options={sections}
-        label='Sektion'
+        label={t('core:labels.section')}
         filterPage='section'
         Icon={ShapesIcon}
       />
       <OptionsFilter
         {...props}
         options={Newsvalues}
-        label='Nyhetsvärde'
+        label={t('core:labels.newsvalue')}
         filterPage='newsvalue'
         Icon={SignalHighIcon}
       />
@@ -82,7 +84,7 @@ export const Commands = (props: FilterProps & { type: SearchKeys }): JSX.Element
         <OptionsFilter
           {...props}
           options={AssignmentTypes}
-          label='Typ'
+          label={t('core:labels.type')}
           filterPage='aType'
           Icon={CrosshairIcon}
         />
@@ -92,14 +94,14 @@ export const Commands = (props: FilterProps & { type: SearchKeys }): JSX.Element
           <OptionsFilter
             {...props}
             options={organisers}
-            label='Organisatör'
+            label={t('core:labels.organiser')}
             filterPage='organiser'
             Icon={BookUserIcon}
           />
           <OptionsFilter
             {...props}
             options={categories}
-            label='Kategori'
+            label={t('core:labels.category')}
             filterPage='category'
             Icon={TagIcon}
           />
@@ -109,14 +111,14 @@ export const Commands = (props: FilterProps & { type: SearchKeys }): JSX.Element
         <OptionsFilter
           {...props}
           options={authors}
-          label='Uppdragstagare'
+          label={t('core:labels.assignee')}
           filterPage='author'
           Icon={UsersIcon}
         />
       )}
       <div className='flex gap-1 w-full items-center px-2 my-1'>
         <CalendarIcon size={18} strokeWidth={1.75} />
-        <div className='text-xs'>Från</div>
+        <div className='text-xs'>{t('common:misc.from')}</div>
         <DatePicker
           date={currentDate}
           setDate={(d: string) => {

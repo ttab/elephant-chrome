@@ -10,6 +10,9 @@
     "plans": "Planer",
     "print": "",
     "search": "Søk",
-    "wires": "Byråimport"
+    "wires": "Byråimport",
+    "actions": {
+      "toggleTheme": "Vexle tema"
+    }
   }
 }

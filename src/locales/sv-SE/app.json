@@ -10,6 +10,9 @@
     "plans": "Planeringar",
     "print": "Print",
     "search": "Sök",
-    "wires": "Telegram"
+    "wires": "Telegram",
+    "actions": {
+      "toggleTheme": "Växla tema"
+    }
   }
 }

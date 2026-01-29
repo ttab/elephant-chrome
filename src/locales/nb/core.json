@@ -1,4 +1,4 @@
-  {
+{
   "documentType": {
     "planning": "plan",
     "event": "hendelse",
@@ -13,9 +13,10 @@
     "assignmentType": "Oppdragstype",
     "title": "Tittel",
     "time": "Tid",
-    "status": "Status"
-  },
-  "status": {
+    "status": "Status",
+    "type": "Type",
+    "organiser": "Arrangør",
+    "category": "Kategori",
     "action": {
       "publish": "Publiser"
     },
@@ -29,6 +30,7 @@
     "cancelled": "Kastet"
   },
   "timeSlots": {
+    "fullday": "Hel dag",
     "morning": "Natt",
     "forenoon": "Morgen",
     "afternoon": "Ettermiddag",
