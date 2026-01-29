@@ -75,17 +75,46 @@ export function useWireViewState(
     })
   }, [onStateChange])
 
-  // Clear all filters from a stream
-  const clearFilter = useCallback((uuid: string) => {
+  // Clear a specific filter from a stream (or all filters if type not provided)
+  const clearFilter = useCallback((uuid: string, type?: string) => {
     setWireStreams((prev) => {
+      // Find the stream to update
+      const targetStreamIndex = prev.streams.findIndex((s) => s.uuid === uuid)
+      if (targetStreamIndex === -1) {
+        console.warn('[useWireViewState] Stream not found:', uuid)
+        return prev
+      }
+
+      const targetStream = prev.streams[targetStreamIndex]
+
+      // Calculate new filters
+      const newFilters = type
+        ? targetStream.filters.filter((f) => f.type !== type)
+        : []
+
+      // Check if filters actually changed
+      const oldFiltersStr = JSON.stringify(targetStream.filters)
+      const newFiltersStr = JSON.stringify(newFilters)
+
+      if (oldFiltersStr === newFiltersStr) {
+        return prev
+      }
+
+      // Create new stream with updated filters
+      const newStream = {
+        ...targetStream,
+        filters: newFilters
+      }
+
+      // Create new streams array with only the changed stream replaced
+      const newStreamsArray = [...prev.streams]
+      newStreamsArray[targetStreamIndex] = newStream
+
       const newStreams = {
         ...prev,
-        streams: prev.streams.map((stream) =>
-          stream.uuid === uuid
-            ? { ...stream, filters: [] }
-            : stream
-        )
+        streams: newStreamsArray
       }
+
       onStateChange?.(newStreams.streams)
       return newStreams
     })
@@ -94,22 +123,43 @@ export function useWireViewState(
   // Set a filter on a stream (replaces existing filter of same type)
   const setFilter = useCallback((uuid: string, type: string, values: string[]) => {
     setWireStreams((prev) => {
+      // Find the stream to update
+      const targetStreamIndex = prev.streams.findIndex((s) => s.uuid === uuid)
+      if (targetStreamIndex === -1) {
+        console.warn('[useWireViewState] Stream not found:', uuid)
+        return prev
+      }
+
+      const targetStream = prev.streams[targetStreamIndex]
+
+      // Remove existing filter of this type
+      const otherFilters = targetStream.filters.filter((f) => f.type !== type)
+
+      // Create new filters array
+      const newFilters = values.length > 0
+        ? [...otherFilters, { type, values }]
+        : otherFilters
+
+      // Check if filters actually changed
+      if (JSON.stringify(targetStream.filters) === JSON.stringify(newFilters)) {
+        return prev
+      }
+
+      // Create new stream with updated filters
+      const newStream = {
+        ...targetStream,
+        filters: newFilters
+      }
+
+      // Create new streams array with only the changed stream replaced
+      const newStreamsArray = [...prev.streams]
+      newStreamsArray[targetStreamIndex] = newStream
+
       const newStreams = {
         ...prev,
-        streams: prev.streams.map((stream) => {
-          if (stream.uuid !== uuid) return stream
-
-          // Remove existing filter of this type, then add new one
-          const otherFilters = stream.filters.filter((f) => f.type !== type)
-
-          return {
-            ...stream,
-            filters: values.length > 0
-              ? [...otherFilters, { type, values }]
-              : otherFilters
-          }
-        })
+        streams: newStreamsArray
       }
+
       onStateChange?.(newStreams.streams)
       return newStreams
     })

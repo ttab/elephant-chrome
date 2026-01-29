@@ -40,14 +40,15 @@ export function constructQuery(filters: WireFilter[]): QueryV1 | undefined {
   }
 
   filters.forEach((filter) => {
-    filter.values.forEach((value) => {
-      if (filter.type === 'tt/source') {
-        addCondition('document.rel.source.uri', value)
-      } else if (filter.type === 'core/section') {
-        addCondition('document.rel.section.uuid', value)
-      } else if (filter.type === 'core/newsvalue') {
-        addCondition('document.meta.core_newsvalue.value', value)
-      } else if (filter.type === 'query') {
+    if (filter.type === 'tt/source') {
+      addCondition('document.rel.source.uri', filter.values)
+    } else if (filter.type === 'core/section') {
+      addCondition('document.rel.section.uuid', filter.values)
+    } else if (filter.type === 'core/newsvalue') {
+      addCondition('document.meta.core_newsvalue.value', filter.values)
+    } else if (filter.type === 'query') {
+      // For query filters, we still need to iterate values since each needs a separate multiMatch
+      filter.values.forEach((value) => {
         boolConditions.must.push({
           conditions: {
             oneofKind: 'multiMatch',
@@ -67,8 +68,8 @@ export function constructQuery(filters: WireFilter[]): QueryV1 | undefined {
             })
           }
         })
-      }
-    })
+      })
+    }
   })
 
   return query

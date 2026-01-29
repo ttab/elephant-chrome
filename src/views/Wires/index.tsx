@@ -10,7 +10,6 @@ import { Preview } from './components/Preview'
 import { getWireStatus } from '@/components/Table/lib/getWireStatus'
 import type { RowSelectionState, Updater } from '@tanstack/react-table'
 import { WiresToolbar } from './components/WiresToolbar'
-import type { WireStream } from './hooks/useWireViewState'
 import { useWireViewState } from './hooks/useWireViewState'
 
 const BASE_URL = import.meta.env.BASE_URL
@@ -61,17 +60,17 @@ export const Wires = (): JSX.Element => {
   const {
     streams,
     addStream,
-    removeStream
-  } = useWireViewState(EXAMPLE_STATE, (newState) => {
-    setWireStreams(newState)
-  })
-  const [wireStreams, setWireStreams] = useState<WireStream[]>(streams)
+    removeStream,
+    setFilter,
+    clearFilter
+  } = useWireViewState(EXAMPLE_STATE)
 
   // Global row selection state for all streams
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
 
   // Store wire data reference for selected rows
-  const [wireDataMap, setWireDataMap] = useState<Map<string, Wire>>(new Map())
+  // NOTE: Temporarily disabled to fix infinite re-render - selection may not work properly
+  const [wireDataMap] = useState<Map<string, Wire>>(new Map())
 
   useStreamNavigation({
     isActive,
@@ -117,16 +116,9 @@ export const Wires = (): JSX.Element => {
     }
   }, [])
 
-  // Handle data updates from streams
-  const handleDataChange = useCallback((data: Wire[]) => {
-    setWireDataMap((prev) => {
-      const newMap = new Map(prev)
-      data.forEach((wire) => {
-        newMap.set(wire.id, wire)
-      })
-      return newMap
-    })
-  }, [])
+  // NOTE: handleDataChange removed to fix infinite re-render issue
+  // This means wireDataMap won't be populated, which may affect selection features
+  // TODO: Re-implement data collection in a way that doesn't cause infinite loops
 
   // Update wire data map when selection changes - properly typed
   const handleRowSelectionChange = useCallback((updater: Updater<RowSelectionState>) => {
@@ -218,7 +210,7 @@ export const Wires = (): JSX.Element => {
           >
             {/* Grid */}
             <div ref={containerRef} className='grid gap-2 p-2 pe-1 h-full snap-x snap-proximity scroll-pl-6 overflow-x-auto overflow-hidden grid-flow-col auto-cols-max'>
-              {wireStreams.map((wireStream) => (
+              {streams.map((wireStream) => (
                 <Stream
                   key={wireStream.uuid}
                   wireStream={wireStream}
@@ -227,8 +219,9 @@ export const Wires = (): JSX.Element => {
                   onFocus={handleOnFocus}
                   rowSelection={rowSelection}
                   onRowSelectionChange={handleRowSelectionChange}
-                  onDataChange={handleDataChange}
                   onRemove={removeStream}
+                  onFilterChange={setFilter}
+                  onClearFilter={clearFilter}
                 />
               ))}
             </div>

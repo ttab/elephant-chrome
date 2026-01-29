@@ -1,5 +1,5 @@
 import { Badge, Button } from '@ttab/elephant-ui'
-import { Edit2Icon, XIcon } from '@ttab/elephant-ui/icons'
+import { XIcon } from '@ttab/elephant-ui/icons'
 import { decodeString } from '@/lib/decodeString'
 import type { Wire } from '@/shared/schemas/wire'
 import { Editor } from '@/components/PlainEditor'

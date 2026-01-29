@@ -1,4 +1,4 @@
-import { type JSX, useMemo, useEffect, useCallback, useState } from 'react'
+import { type JSX, useMemo, useCallback, useState } from 'react'
 import { fields, type Wire, type WireFields } from '@/shared/schemas/wire'
 import { useDocuments } from '@/hooks/index/useDocuments'
 import { constructQuery } from '../lib/constructQuery'
@@ -15,6 +15,7 @@ import {
   type OnChangeFn
 } from '@tanstack/react-table'
 import { FilterValue } from './Filter/FilterValue'
+import { FilterMenu } from './Filter/FilterMenu'
 import { type WireStream } from '../hooks/useWireViewState'
 
 export const Stream = ({
@@ -24,8 +25,9 @@ export const Stream = ({
   onPress,
   rowSelection,
   onRowSelectionChange,
-  onDataChange,
-  onRemove
+  onRemove,
+  onFilterChange,
+  onClearFilter
 }: {
   wireStream: WireStream
   onFocus?: (item: Wire, event: React.FocusEvent<HTMLElement>) => void
@@ -33,37 +35,48 @@ export const Stream = ({
   onPress?: (item: Wire, event: React.MouseEvent<HTMLElement> | React.KeyboardEvent<HTMLElement>) => void
   rowSelection: RowSelectionState
   onRowSelectionChange: OnChangeFn<RowSelectionState>
-  onDataChange?: (data: Wire[]) => void
   onRemove?: (streamId: string) => void
+  onFilterChange?: (streamId: string, type: string, values: string[]) => void
+  onClearFilter?: (streamId: string, type: string) => void
 }): JSX.Element => {
   // FIXME: Pagination
   const [page] = useState(1)
 
+  // Memoize the query to prevent unnecessary re-renders
+  const query = useMemo(() => constructQuery(wireStream.filters), [wireStream.filters])
+
+  // Memoize sort to prevent re-creating on every render
+  const sort = useMemo(() => {
+    return [SortingV1.create({ field: 'modified', desc: true })]
+  }, [])
+
+  // Memoize options to prevent re-creating on every render
+  const options = useMemo(() => ({
+    setTableData: true,
+    subscribe: true
+  }), [])
+
   const { data } = useDocuments<Wire, WireFields>({
     documentType: 'tt/wire',
     size: 40,
-    query: constructQuery(wireStream.filters),
+    query,
     page: typeof page === 'string' ? parseInt(page) : undefined,
     fields,
-    sort: [
-      SortingV1.create({ field: 'modified', desc: true })
-    ],
-    options: {
-      setTableData: true,
-      subscribe: true
-    }
+    sort,
+    options
   })
 
   const removeThisWire = useCallback(() => {
     onRemove?.(wireStream.uuid)
   }, [onRemove, wireStream.uuid])
 
-  // Notify parent when data changes
-  useEffect(() => {
-    if (data && onDataChange) {
-      onDataChange(data)
-    }
-  }, [data, onDataChange])
+  const handleFilterChange = useCallback((type: string, values: string[]) => {
+    onFilterChange?.(wireStream.uuid, type, values)
+  }, [onFilterChange, wireStream.uuid])
+
+  const handleClearFilter = useCallback((type: string) => {
+    onClearFilter?.(wireStream.uuid, type)
+  }, [onClearFilter, wireStream.uuid])
 
   // Define columns for TanStack Table
   const columns = useMemo<ColumnDef<Wire>[]>(
@@ -87,16 +100,25 @@ export const Stream = ({
     [wireStream.uuid, onPress, onUnpress, onFocus]
   )
 
+  // Memoize the row ID getter to prevent re-creating on every render
+  const getRowId = useCallback((row: Wire) => row.id, [])
+
+  // Memoize the core row model to prevent re-creating on every render
+  const coreRowModel = useMemo(() => getCoreRowModel(), [])
+
+  // Memoize empty array to prevent creating new reference on every render when data is undefined
+  const emptyData = useMemo(() => [], [])
+
   const table = useReactTable({
-    data: data ?? [],
+    data: data ?? emptyData,
     columns,
     state: {
       rowSelection
     },
     enableRowSelection: true,
     onRowSelectionChange,
-    getCoreRowModel: getCoreRowModel(),
-    getRowId: (row) => row.id
+    getCoreRowModel: coreRowModel,
+    getRowId
   })
 
   return (
@@ -107,20 +129,18 @@ export const Stream = ({
       {/* Column header - fixed height */}
       <div className='flex-none bg-background flex items-center justify-between py-1 px-4 border-b'>
         <div className='flex gap-2'>
-          {/* <StreamToolbar
-            page={String(1)}
-            pages={[String(1)]}
-            setPages={() => { }}
-            search={undefined}
-            setSearch={() => { }}
-          /> */}
+          <FilterMenu
+            streamId={wireStream.uuid}
+            currentFilters={wireStream.filters}
+            onFilterChange={handleFilterChange}
+          />
 
           {wireStream.filters.map((filter) => (
             <FilterValue
               key={filter.type}
               type={filter.type}
               values={filter.values}
-              onClearFilter={() => { }}
+              onClearFilter={handleClearFilter}
             />
           ))}
 
