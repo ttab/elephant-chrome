@@ -21,14 +21,11 @@
     "created": {
       "success": "Hendelse skapt",
       "error": "Kunne ikke skape ny hendelse!"
-    },
-    "actions": {
-      "openEvent": "Åpne hendelse"
     }
   },
   "placeholders": {
     "eventTitle": "Tittel på hendelse",
-    "publicDescription": "Offentlig beskrivelse",
+    "publicDescription": "Beskrivelse",
     "accreditation": "Akkreditering"
   },
   "status": {
