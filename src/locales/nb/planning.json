@@ -42,10 +42,13 @@
     "saveChangeError": "Kunne ikke lagre endringen"
   },
   "move": {
+    "pickPlanning": "Velg plan",
     "label": "Flytte",
     "dateSwitch": "Endre dato på planlegging",
     "dateSwitchDescription": "Planleggingen og alle tekstoppdragen endrer dato til",
-    "dateSwitchAssignments": "Velg nedenfor om bilde- og videooppdrag også skal endre datoer."
+    "dateSwitchAssignments": "Velg nedenfor om bilde- og videooppdrag også skal endre datoer.",
+    "assignmentMoveError": "Oppdraget kunne ikke flyttes",
+    "assignmentMoveSuccess": "Oppdraget er flyttet"
   },
   "related": {
     "relatedEvents": "Koblede hendelser"

@@ -27,6 +27,7 @@ import { createPayload } from '@/shared/templates/lib/createPayload'
 import { DatePicker } from '../Datepicker'
 import { currentDateInUTC, parseDate } from '@/shared/datetime'
 import type { YDocument } from '@/modules/yjs/hooks'
+import { useTranslation } from 'react-i18next'
 
 export const Move = ({ ydoc, ...props }: ViewProps & {
   ydoc: YDocument<Y.Map<unknown>>
@@ -42,6 +43,7 @@ export const Move = ({ ydoc, ...props }: ViewProps & {
   const [showVerifyDialog, setShowVerifyDialog] = useState(false)
   const [planningDateString, setPlanningDateString] = useState<string | undefined>()
   const [searchOlder, setSearchOlder] = useState(false)
+  const { t } = useTranslation()
 
   const { data: session } = useSession()
   const { index, locale, timeZone } = useRegistry()
@@ -92,13 +94,13 @@ export const Move = ({ ydoc, ...props }: ViewProps & {
       )
 
       if (originalAssignmentIndex < 0) {
-        toast.error('Uppdraget kunde inte flyttas')
+        toast.error(t('planning:move.assignmentMoveError'))
         return
       }
 
       const originalAssignment = getValueByYPath<Block>(yRootOriginal, `meta.core/assignment[${originalAssignmentIndex}]`)?.[0]
       if (!originalAssignment) {
-        toast.error('Uppdraget kunde inte flyttas')
+        toast.error(t('planning:move.assignmentMoveError'))
         return
       }
 
@@ -121,7 +123,7 @@ export const Move = ({ ydoc, ...props }: ViewProps & {
       const newAssignmentIndex = newAssignmentArray.length
 
       if (!setValueByYPath(newEle, `meta.core/assignment[${newAssignmentIndex}]`, toYStructure(updatedAssignment))) {
-        toast.error('Uppdraget kunde inte flyttas')
+        toast.error(t('planning:move.assignmentMoveError'))
         return
       }
 
@@ -130,7 +132,7 @@ export const Move = ({ ydoc, ...props }: ViewProps & {
       deleteByYPath(yRootOriginal, `meta.core/assignment[${originalAssignmentIndex}]`)
 
       const newPlanningUUID = getValueByYPath<string>(newEle, 'root.uuid')?.[0]
-      toast.success('Uppdraget har flyttats', {
+      toast.success(t('planning:move.assignmentMoveSuccess'), {
         classNames: {
           title: 'whitespace-nowrap'
         },
@@ -148,7 +150,7 @@ export const Move = ({ ydoc, ...props }: ViewProps & {
       props.onDialogClose?.()
     } catch (error) {
       console.error('Error moving assignment', error)
-      toast.error('Uppdraget kunde inte flyttas')
+      toast.error(t('planning:move.assignmentMoveError'))
     }
   }
 
@@ -187,7 +189,7 @@ export const Move = ({ ydoc, ...props }: ViewProps & {
                 size='xs'
                 className='min-w-0 w-full truncate justify-start max-w-48'
                 selectedOptions={selectedPlanning ? [selectedPlanning] : []}
-                placeholder='Välj planering'
+                placeholder={t('planning:move.pickPlanning')}
                 modal={props.asDialog}
                 fetch={(query) => fetch(query, session, index, locale, timeZone, {
                   searchOlder
