@@ -71,7 +71,7 @@ export const StreamEntry = ({
       variants: {
         status: {
           draft: '',
-          read: 'border-s-read bg-read-background',
+          read: 'border-s-approved bg-approved-background',
           saved: 'border-s-done bg-done-background',
           used: 'border-s-usable bg-usable-background'
         },

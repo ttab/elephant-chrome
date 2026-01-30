@@ -23,8 +23,8 @@ export const Stream = ({
   onFocus,
   onUnpress,
   onPress,
-  rowSelection,
-  onRowSelectionChange,
+  selectedWires,
+  onToggleWire,
   onRemove,
   onFilterChange,
   onClearFilter
@@ -33,28 +33,17 @@ export const Stream = ({
   onFocus?: (item: Wire, event: React.FocusEvent<HTMLElement>) => void
   onUnpress?: (item: Wire, event: React.KeyboardEvent<HTMLElement>) => void
   onPress?: (item: Wire, event: React.MouseEvent<HTMLElement> | React.KeyboardEvent<HTMLElement>) => void
-  rowSelection: RowSelectionState
-  onRowSelectionChange: OnChangeFn<RowSelectionState>
+  selectedWires: Wire[]
+  onToggleWire: (wire: Wire, isSelected: boolean) => void
   onRemove?: (streamId: string) => void
   onFilterChange?: (streamId: string, type: string, values: string[]) => void
   onClearFilter?: (streamId: string, type: string) => void
 }): JSX.Element => {
-  // FIXME: Pagination
   const [page] = useState(1)
 
-  // Memoize the query to prevent unnecessary re-renders
   const query = useMemo(() => constructQuery(wireStream.filters), [wireStream.filters])
-
-  // Memoize sort to prevent re-creating on every render
-  const sort = useMemo(() => {
-    return [SortingV1.create({ field: 'modified', desc: true })]
-  }, [])
-
-  // Memoize options to prevent re-creating on every render
-  const options = useMemo(() => ({
-    setTableData: true,
-    subscribe: true
-  }), [])
+  const sort = useMemo(() => [SortingV1.create({ field: 'modified', desc: true })], [])
+  const options = useMemo(() => ({ setTableData: true, subscribe: true }), [])
 
   const { data } = useDocuments<Wire, WireFields>({
     documentType: 'tt/wire',
@@ -65,6 +54,39 @@ export const Stream = ({
     sort,
     options
   })
+
+  // Convert selected wires array to TanStack Table format
+  const rowSelection = useMemo<RowSelectionState>(() => {
+    const selection: RowSelectionState = {}
+    selectedWires.forEach((wire) => {
+      selection[wire.id] = true
+    })
+    return selection
+  }, [selectedWires])
+
+  const handleRowSelectionChange = useCallback<OnChangeFn<RowSelectionState>>((updaterOrValue) => {
+    const newSelection = typeof updaterOrValue === 'function'
+      ? updaterOrValue(rowSelection)
+      : updaterOrValue
+
+    // Check each row in the new selection
+    Object.keys(newSelection).forEach((wireId) => {
+      if (newSelection[wireId] && !rowSelection[wireId]) {
+        // Newly selected
+        const wire = data?.find((w) => w.id === wireId)
+        if (wire) onToggleWire(wire, true)
+      }
+    })
+
+    // Check for deselections
+    Object.keys(rowSelection).forEach((wireId) => {
+      if (!newSelection[wireId]) {
+        // Deselected
+        const wire = data?.find((w) => w.id === wireId)
+        if (wire) onToggleWire(wire, false)
+      }
+    })
+  }, [rowSelection, data, onToggleWire])
 
   const removeThisWire = useCallback(() => {
     onRemove?.(wireStream.uuid)
@@ -78,7 +100,6 @@ export const Stream = ({
     onClearFilter?.(wireStream.uuid, type)
   }, [onClearFilter, wireStream.uuid])
 
-  // Define columns for TanStack Table
   const columns = useMemo<ColumnDef<Wire>[]>(
     () => [
       {
@@ -100,23 +121,16 @@ export const Stream = ({
     [wireStream.uuid, onPress, onUnpress, onFocus]
   )
 
-  // Memoize the row ID getter to prevent re-creating on every render
   const getRowId = useCallback((row: Wire) => row.id, [])
-
-  // Memoize the core row model to prevent re-creating on every render
   const coreRowModel = useMemo(() => getCoreRowModel(), [])
-
-  // Memoize empty array to prevent creating new reference on every render when data is undefined
   const emptyData = useMemo(() => [], [])
 
   const table = useReactTable({
     data: data ?? emptyData,
     columns,
-    state: {
-      rowSelection
-    },
+    state: { rowSelection },
     enableRowSelection: true,
-    onRowSelectionChange,
+    onRowSelectionChange: handleRowSelectionChange,
     getCoreRowModel: coreRowModel,
     getRowId
   })
@@ -126,7 +140,6 @@ export const Stream = ({
       data-stream-id={wireStream.uuid}
       className='flex flex-col h-full snap-start snap-always min-w-80 max-w-120 border rounded-md overflow-hidden'
     >
-      {/* Column header - fixed height */}
       <div className='flex-none bg-background flex items-center justify-between py-1 px-4 border-b'>
         <div className='flex gap-2'>
           <FilterMenu
@@ -134,7 +147,6 @@ export const Stream = ({
             currentFilters={wireStream.filters}
             onFilterChange={handleFilterChange}
           />
-
           {wireStream.filters.map((filter) => (
             <FilterValue
               key={filter.type}
@@ -143,9 +155,7 @@ export const Stream = ({
               onClearFilter={handleClearFilter}
             />
           ))}
-
         </div>
-
         <div>
           <Button variant='ghost' className='w-9 h-9 px-0' onClick={removeThisWire}>
             <MinusIcon strokeWidth={1.75} size={18} />
@@ -153,7 +163,6 @@ export const Stream = ({
         </div>
       </div>
 
-      {/* Column content - fills remaining space and scrolls */}
       <div className='flex-1 basis-0 overflow-y-auto bg-muted'>
         <div className='flex flex-col divide-y'>
           {table.getRowModel().rows.map((row) => (

@@ -1,16 +1,16 @@
 import { View, ViewHeader } from '@/components/View'
 import { type ViewMetadata } from '@/types/index'
-import { useCallback, useRef, useState, useMemo, type JSX, useEffect } from 'react'
-import { useView } from '@/hooks'
+import { useCallback, useRef, useState, type JSX, useEffect } from 'react'
+import { useRegistry, useView } from '@/hooks'
 import { cn } from '@ttab/elephant-ui/utils'
 import { Stream } from './components/Stream'
 import { useStreamNavigation } from './hooks/useStreamNavigation'
 import type { Wire } from '@/shared/schemas/wire'
 import { Preview } from './components/Preview'
-import { getWireStatus } from '@/components/Table/lib/getWireStatus'
-import type { RowSelectionState, Updater } from '@tanstack/react-table'
 import { WiresToolbar } from './components/WiresToolbar'
 import { useWireViewState } from './hooks/useWireViewState'
+import { setWireStatus } from './lib/setWireStatus'
+import { useSession } from 'next-auth/react'
 
 const BASE_URL = import.meta.env.BASE_URL
 
@@ -54,6 +54,8 @@ const EXAMPLE_STATE = {
 
 export const Wires = (): JSX.Element => {
   const { isActive } = useView()
+  const { repository } = useRegistry()
+  const { data: session } = useSession()
   const [previewWire, setPreviewWire] = useState<Wire | null>(null)
   const [focusedWire, setFocusedWire] = useState<Wire | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -65,12 +67,7 @@ export const Wires = (): JSX.Element => {
     clearFilter
   } = useWireViewState(EXAMPLE_STATE)
 
-  // Global row selection state for all streams
-  const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
-
-  // Store wire data reference for selected rows
-  // NOTE: Temporarily disabled to fix infinite re-render - selection may not work properly
-  const [wireDataMap] = useState<Map<string, Wire>>(new Map())
+  const [selectedWires, setSelectedWires] = useState<Wire[]>([])
 
   useStreamNavigation({
     isActive,
@@ -101,10 +98,7 @@ export const Wires = (): JSX.Element => {
     }
 
     const handleFocusOut = (event: FocusEvent) => {
-      // Check if focus is moving outside the container
       const relatedTarget = event.relatedTarget as HTMLElement | null
-
-      // If relatedTarget is null or not within container, we've lost focus
       if (!relatedTarget || !container.contains(relatedTarget)) {
         setFocusedWire(null)
       }
@@ -116,69 +110,51 @@ export const Wires = (): JSX.Element => {
     }
   }, [])
 
-  // NOTE: handleDataChange removed to fix infinite re-render issue
-  // This means wireDataMap won't be populated, which may affect selection features
-  // TODO: Re-implement data collection in a way that doesn't cause infinite loops
-
-  // Update wire data map when selection changes - properly typed
-  const handleRowSelectionChange = useCallback((updater: Updater<RowSelectionState>) => {
-    setRowSelection(updater)
+  // Add or remove a wire from selectedWires
+  const handleToggleWire = useCallback((wire: Wire, isSelected: boolean) => {
+    setSelectedWires((prev) => {
+      if (isSelected) {
+        return [...prev, wire]
+      } else {
+        return prev.filter((w) => w.id !== wire.id)
+      }
+    })
   }, [])
 
-  // Get selected wires from selection state
-  const selectedWires = useMemo(() => {
-    const activeWires = Object.keys(rowSelection)
-      .filter((id) => rowSelection[id])
-      .map((id) => wireDataMap.get(id))
-      .filter((wire): wire is Wire => wire !== undefined)
+  const onAction = useCallback((newStatus: 'read' | 'used' | 'saved') => {
+    if (!repository || !session) return
 
-    if (focusedWire && !activeWires.includes(focusedWire)) {
-      activeWires.push(focusedWire)
+    const wires = selectedWires.length
+      ? [...selectedWires]
+      : focusedWire ? [focusedWire] : []
+
+    for (const wire of wires) {
+      const currentVersion = wire.fields?.['current_version']?.values?.[0]
+      if (!currentVersion) {
+        continue
+      }
+
+      void setWireStatus(repository, session, {
+        uuid: wire.id,
+        version: BigInt(currentVersion),
+        name: newStatus
+      })
+
+      setSelectedWires([])
     }
-    return activeWires
-  }, [rowSelection, wireDataMap, focusedWire])
-
-  // Clear all selections
-  const clearSelection = useCallback(() => {
-    setRowSelection({})
-  }, [])
+  }, [selectedWires, focusedWire, repository, session])
 
   const handleKeyDown = useCallback((event: React.KeyboardEvent<HTMLElement>) => {
-    if (!['s', 'r', 'u', 'Escape'].includes(event.key)) {
-      return
-    }
-
     if (event.key === 'Escape' && !previewWire) {
-      clearSelection()
-      return
+      setSelectedWires([])
+    } else if (event.key === 's') {
+      onAction('saved')
+    } else if (event.key === 'r') {
+      onAction('read')
+    } else if (event.key === 'u') {
+      onAction('used')
     }
-
-    const wires = [previewWire, ...selectedWires].filter((wire): wire is Wire => !!wire)
-    wires.forEach((wire) => {
-      const currentStatus = getWireStatus('Wires', wire)
-      let newStatus = 'draft'
-      switch (event.key) {
-        case 's':
-          newStatus = currentStatus === 'saved' ? 'draft' : 'saved'
-          break
-        case 'r':
-          newStatus = currentStatus === 'read' ? 'draft' : 'read'
-          break
-        case 'u':
-          newStatus = currentStatus === 'used' ? 'draft' : 'used'
-          break
-        default:
-          return
-      }
-
-      const payload = {
-        name: newStatus,
-        version: undefined,
-        uuid: wire.id
-      }
-      console.log(payload)
-    })
-  }, [previewWire, selectedWires, clearSelection])
+  }, [previewWire, onAction])
 
   return (
     <View.Root>
@@ -187,8 +163,9 @@ export const Wires = (): JSX.Element => {
 
         <ViewHeader.Content>
           <WiresToolbar
-            wires={[...selectedWires, focusedWire]}
-            addWireStream={addStream}
+            disabled={selectedWires.length === 0 && !focusedWire}
+            onAddStream={addStream}
+            onAction={onAction}
           />
         </ViewHeader.Content>
         <ViewHeader.Action />
@@ -208,7 +185,6 @@ export const Wires = (): JSX.Element => {
               previewWire && '@7xl/view:pr-2'
             )}
           >
-            {/* Grid */}
             <div ref={containerRef} className='grid gap-2 p-2 pe-1 h-full snap-x snap-proximity scroll-pl-6 overflow-x-auto overflow-hidden grid-flow-col auto-cols-max'>
               {streams.map((wireStream) => (
                 <Stream
@@ -217,8 +193,8 @@ export const Wires = (): JSX.Element => {
                   onPress={handleOnPress}
                   onUnpress={handleOnUnpress}
                   onFocus={handleOnFocus}
-                  rowSelection={rowSelection}
-                  onRowSelectionChange={handleRowSelectionChange}
+                  selectedWires={selectedWires}
+                  onToggleWire={handleToggleWire}
                   onRemove={removeStream}
                   onFilterChange={setFilter}
                   onClearFilter={clearFilter}
@@ -249,7 +225,7 @@ export const Wires = (): JSX.Element => {
             <div className='border bg-background rounded-lg text-sm px-5 py-3 shadow-xl flex flex-col items-center gap-1'>
               <div className='flex flex-row items-center gap-2 justify-items-center text-center'>
                 <div className='overflow-hidden truncate max-w-100 min-w-80'>
-                  {`${selectedWires[0].fields['document.title']?.values[0] ?? selectedWires[0].fields['document.title']?.values[0]}`}
+                  {`${selectedWires[0].fields['document.title']?.values[0]}`}
                 </div>
 
                 {selectedWires.length > 1 && (
@@ -261,12 +237,7 @@ export const Wires = (): JSX.Element => {
               </div>
               <div className='text-center text-muted-foreground text-xs'>
                 <span className='bg-muted px-2 py-0.5 rounded-md text-xs font-semibold'>ESC</span>
-                {selectedWires.length && (
-                  <>
-                    {' '}
-                    <span>för att ta avmarkera valda telegram</span>
-                  </>
-                )}
+                <span> för att ta avmarkera valda telegram</span>
               </div>
             </div>
           </div>
