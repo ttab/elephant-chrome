@@ -1,3 +1,36 @@
 {
-    "title": "Metadata"
+    "title": "Metadata",
+    "labels": {
+        "properties": "Egenskaper",
+        "tags": "Etiketter",
+        "byline": "Byline",
+        "actions": "Åtgärder",
+        "contentSource": "Källor andra än TT",
+        "source": "Källa",
+        "extraInformation": "Extra information",
+        "versions": "Versioner",
+        "version": "Version",
+        "editorialInfoType": "Redaktionell info, typ",
+        "slugg": "Slugg"
+    },
+    "actions": {
+        "addNote": "Lägg till notering"
+    },
+    "placeholders": {
+        "addByline": "Lägg till byline",
+        "addSource": "Lägg till källa"
+    },
+    "dropDownMenuItems": {
+        "internalNote": "Intern notering",
+        "infoToCustomer": "Info till kund"
+    },
+    "errors": {
+        "failedToLoadHistory": "Det uppstod ett fel när dokumenthistoriken skulle hämtas.",
+        "failedToLoadMetaData": "Ett fel uppstod vid hämtning av metadata."
+    },
+    "misc": {
+        "lastUpdated": "Senast uppdaterad: {{date}}",
+        "createdBy": "Skapad av",
+        "noType": "Ingen typ"
+    }
 }
