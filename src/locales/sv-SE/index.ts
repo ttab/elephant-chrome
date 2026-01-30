@@ -4,6 +4,7 @@ import planning from './planning.json'
 import app from './app.json'
 import shared from './shared.json'
 import views from './views.json'
+import factbox from './factbox.json'
 
 export const sv = {
   common,
@@ -11,5 +12,6 @@ export const sv = {
   planning,
   app,
   shared,
-  views
+  views,
+  factbox
 }
