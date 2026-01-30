@@ -87,7 +87,7 @@ export function MetaSheet({ container, ydoc, readOnly, readOnlyVersion }: {
                         <AddNote ydoc={ydoc} text={t('actions.addNote')} />
                       </div>
 
-                      <Label htmlFor='content-source'>{t('labels.contentSource')}</Label>
+                      <Label htmlFor='content-source'>{t('labels.otherSources')}</Label>
                       <div id='content-source'>
                         <ContentSource ydoc={ydoc} path='links.core/content-source' />
                       </div>

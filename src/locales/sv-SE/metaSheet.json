@@ -5,7 +5,7 @@
         "tags": "Etiketter",
         "byline": "Byline",
         "actions": "Åtgärder",
-        "contentSource": "Källor andra än TT",
+        "otherSources": "Källor andra än TT",
         "source": "Källa",
         "extraInformation": "Extra information",
         "versions": "Versioner",
@@ -30,7 +30,6 @@
     },
     "misc": {
         "lastUpdated": "Senast uppdaterad: {{date}}",
-        "createdBy": "Skapad av",
         "noType": "Ingen typ"
     }
 }
