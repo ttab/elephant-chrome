@@ -41,5 +41,12 @@
       "openPlanning": "Åpne planlegging"
     },
     "myAssignments": "Mine oppdrag"
+  },
+  "factboxes": {
+    "title": "Faktabokser",
+    "columnLabels": {
+      "description": "Beskrivelse",
+      "lastChanged": "Sist endret"
+    }
   }
 }
