@@ -41,5 +41,8 @@
       "openPlanning": "Öppna planering"
     },
     "myAssignments": "Mina uppdrag"
+  },
+  "factboxes": {
+    "title": "Faktarutor"
   }
 }
