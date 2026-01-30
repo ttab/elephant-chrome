@@ -149,6 +149,19 @@ vi.mock('@/hooks/useRegistry', () => ({
 
 (useRegistry as Mock).mockReturnValue(initialState)
 
+vi.mock('@/hooks/baboon/useLayouts', () => ({
+  useLayouts: vi.fn(() => ({
+    data: undefined,
+    isLoading: false,
+    error: null,
+    refetch: vi.fn(),
+    isError: false,
+    isSuccess: false,
+    status: 'pending',
+    mutate: vi.fn()
+  }))
+}))
+
 vi.mock('sonner', () => ({
   toast: {
     error: vi.fn(),
