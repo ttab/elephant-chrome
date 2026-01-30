@@ -205,9 +205,28 @@ function getParent(yRoot: Y.Map<unknown> | Y.Array<unknown>, yPath: YPath): Y.Ma
         throw new Error(`Invalid path. Expected an array, but encountered a map at '${currentKey}'.`)
       }
 
-      current = current.get(currentKey) as Y.Map<unknown> | Y.Array<unknown>
+      const yarray = current
+      let child = yarray.get(currentKey)
+
+      if (child == null) {
+        // Create a container for the missing array element depending on the next path segment
+        const newChild = isNextArrayIndex ? new Y.Array<unknown>() : new Y.Map<unknown>()
+        if (currentKey <= yarray.length) {
+          yarray.insert(currentKey, [newChild])
+        } else {
+          // If the requested index is beyond the current length, push the new child
+          yarray.push([newChild])
+        }
+        child = newChild
+      }
+
+      current = child as Y.Map<unknown> | Y.Array<unknown>
     } else {
-      if (current instanceof Y.Map && !current.has(currentKey)) {
+      if (!(current instanceof Y.Map)) {
+        throw new Error(`Invalid path. Expected a map, but encountered a non-map at '${currentKey}'.`)
+      }
+
+      if (!current.has(currentKey)) {
         current.set(currentKey, isNextArrayIndex ? new Y.Array() : new Y.Map())
       }
 
