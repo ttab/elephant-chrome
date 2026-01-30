@@ -14,7 +14,9 @@
     "title": "Tittel",
     "time": "Tid",
     "status": "Status",
-    "action": "Action"
+    "action": "Action",
+    "category": "Kategori",
+    "story": "Story"
   },
   "status": {
     "action": {
