@@ -27,7 +27,8 @@
     "unpublished": "Avpublicerad",
     "done": "Klar",
     "withheld": "Schemalagd",
-    "cancelled": "Kastad"
+    "cancelled": "Kastad",
+    "changed": "Ändrad"
   },
   "timeSlots": {
     "morning": "Morgon",

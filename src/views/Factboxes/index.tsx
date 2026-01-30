@@ -34,7 +34,7 @@ export const Factboxes = (): JSX.Element => {
   const { t } = useTranslation('views')
 
   const columns = useMemo(() =>
-    factboxColumns({ locale, timeZone }), [locale, timeZone])
+    factboxColumns({ locale, timeZone, t }), [locale, timeZone, t])
 
   return (
     <View.Root tab={currentTab} onTabChange={setCurrentTab}>
