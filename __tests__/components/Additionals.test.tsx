@@ -2,13 +2,15 @@ import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import * as Y from 'yjs'
 import { Block, type Document } from '@ttab/elephant-api/newsdoc'
-import type { YDocument } from '@/modules/yjs/hooks/useYDocument'
-import type { ElementType } from 'react'
+import type { YDocument } from '../../src/modules/yjs/hooks/useYDocument'
+import { Additionals } from '../../src/views/PrintEditor/components/Additionals'
+import { useYValue } from '../../src/modules/yjs/hooks/useYValue'
 
-// Per-test mocking and dynamic import will be done in beforeEach to ensure mocks are applied
-// Problems arise if we try to do this at the top-level due to module caching/hoisting ???
-let useYValue: ReturnType<typeof vi.fn> | undefined
-let Additionals: ElementType
+vi.mock('../../src/modules/yjs/hooks/useYValue', () => {
+  return {
+    useYValue: vi.fn()
+  }
+})
 
 describe('Additionals', () => {
   const mockDoc = new Y.Doc()
@@ -53,21 +55,13 @@ describe('Additionals', () => {
     language: 'sv'
   }
 
-  beforeEach(async () => {
-    vi.resetModules()
-    // Mock the concrete useYValue module before importing the component
-    vi.mock('@/modules/yjs/hooks/useYValue', () => ({ useYValue: vi.fn() }))
-    const hooks = await import('@/modules/yjs/hooks/useYValue')
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
-    useYValue = hooks.useYValue as any
-    const mod = await import('@/views/PrintEditor/components/Additionals')
-    Additionals = mod.Additionals
+  beforeEach(() => {
     vi.clearAllMocks()
   })
 
   it('shows loader when layout is not provided', () => {
     vi.mocked(useYValue)
-      ?.mockReturnValueOnce([undefined, vi.fn()]) // articleAdditionals
+      .mockReturnValueOnce([undefined, vi.fn()]) // articleAdditionals
       .mockReturnValueOnce(['test-slot', vi.fn()]) // articleLayoutName
 
     render(
@@ -94,7 +88,7 @@ describe('Additionals', () => {
     }
 
     vi.mocked(useYValue)
-      ?.mockReturnValueOnce([[], vi.fn()]) // articleAdditionals
+      .mockReturnValueOnce([[], vi.fn()]) // articleAdditionals
       .mockReturnValueOnce(['test-slot', vi.fn()]) // articleLayoutName
 
     const { container } = render(
@@ -116,7 +110,7 @@ describe('Additionals', () => {
     ]
 
     vi.mocked(useYValue)
-      ?.mockImplementationOnce(() => {
+      .mockImplementationOnce(() => {
         return [mockAdditionals, mockSetAdditionals]
       })
       .mockImplementationOnce(() => {
@@ -145,7 +139,7 @@ describe('Additionals', () => {
     ]
 
     vi.mocked(useYValue)
-      ?.mockReturnValueOnce([mockAdditionals, mockSetAdditionals]) // articleAdditionals
+      .mockReturnValueOnce([mockAdditionals, mockSetAdditionals]) // articleAdditionals
       .mockReturnValueOnce(['test-slot', vi.fn()]) // articleLayoutName
 
     render(
@@ -174,7 +168,7 @@ describe('Additionals', () => {
     ]
 
     vi.mocked(useYValue)
-      ?.mockReturnValueOnce([mockAdditionals, mockSetAdditionals]) // articleAdditionals
+      .mockReturnValueOnce([mockAdditionals, mockSetAdditionals]) // articleAdditionals
       .mockReturnValueOnce(['test-slot', vi.fn()]) // articleLayoutName
 
     render(
@@ -198,7 +192,7 @@ describe('Additionals', () => {
     const mockSetAdditionals = vi.fn()
 
     vi.mocked(useYValue)
-      ?.mockReturnValueOnce([[], mockSetAdditionals]) // empty articleAdditionals
+      .mockReturnValueOnce([[], mockSetAdditionals]) // empty articleAdditionals
       .mockReturnValueOnce(['test-slot', vi.fn()]) // articleLayoutName
 
     render(
@@ -218,7 +212,7 @@ describe('Additionals', () => {
     const mockSetAdditionals = vi.fn()
 
     vi.mocked(useYValue)
-      ?.mockReturnValueOnce([undefined, mockSetAdditionals]) // articleAdditionals undefined
+      .mockReturnValueOnce([undefined, mockSetAdditionals]) // articleAdditionals undefined
       .mockReturnValueOnce(['test-slot', vi.fn()]) // articleLayoutName
 
     render(
@@ -239,3 +233,4 @@ describe('Additionals', () => {
     expect(mockSetAdditionals).not.toHaveBeenCalled()
   })
 })
+

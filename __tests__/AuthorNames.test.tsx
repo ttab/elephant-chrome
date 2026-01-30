@@ -4,6 +4,15 @@ import type { IDBAuthor } from '../src/datastore/types'
 import type { AssignmentInterface } from '@/hooks/index/useAssignments'
 import { Block } from '@ttab/elephant-api/newsdoc'
 
+
+vi.mock('@/hooks/useAuthors', () => ({
+  useAuthors: () => [
+    { id: '123', name: 'Alice Johnson', firstName: 'Alice', lastName: 'Johnson', initials: 'AAJ', email: 'aj@example.com', sub: 'core://user/0001' },
+    { id: '234', name: 'Bob Lee', firstName: 'Bob', lastName: 'Lee', email: 'bl@example.com', sub: 'core://user/0002' },
+    { id: '345', name: 'Christine King', firstName: 'Christine', lastName: 'King', initials: 'CK', email: 'ck@example.com', sub: 'core://user/0003' }
+  ]
+}))
+
 const statusData = {
   uuid: '3ee39e5d-3e52-4cb1-a321-8e646ddcea55',
   version: '12',

@@ -1,36 +1,16 @@
 import '@testing-library/jest-dom'
-import { initializeNavigationState } from '@/navigation/lib'
-import { randomUUID } from 'node:crypto'
 import { TextEncoder, TextDecoder } from 'util'
-import { type Mock, vi } from 'vitest'
-import { type Dispatch } from 'react'
-import { useNavigation, useView, useRegistry } from './src/hooks'
-import { type NavigationActionType } from './src/types'
 export * from '@testing-library/react'
-import { initialState } from '@/contexts/RegistryProvider'
 
 /**
  * Global test setup file for Vitest
  *
  * This file is automatically loaded before all test files run.
- * Use this file for:
- * - Global mocks that need to be hoisted (imported before components)
- * - Environment setup (crypto, TextEncoder, fetch mocks)
- * - Default mock return values for frequently used hooks
- *
- * Note: Mocks defined here with vi.mock() are hoisted and applied before
- * any component imports in test files, solving mock timing issues.
+ * N.B! Use this with caution:
+ * j
+ * Mocks defined here with vi.mock() are hoisted and applied before
+ * any component imports in test files, causing mock import issues.
  */
-
-// Set up crypto mock FIRST before any other imports
-window.crypto.randomUUID = randomUUID
-
-// Use Object.defineProperty to override the crypto global
-Object.defineProperty(global, 'crypto', {
-  value: { randomUUID },
-  writable: true,
-  configurable: true
-})
 
 global.TextEncoder = TextEncoder
 // @ts-expect-error unknown
@@ -84,40 +64,6 @@ global.fetch = vi.fn().mockImplementation(async (url: string) => {
   })
 })
 
-vi.mock('@/hooks/useView', () => ({
-  useView: vi.fn()
-}));
-
-(useView as Mock).mockReturnValue({
-  viewId: 'eddbfe39-57d4-4b32-b9a1-a555e39139ea'
-})
-
-vi.mock('@/navigation/hooks/useNavigation', () => ({
-  useNavigation: vi.fn()
-}))
-const mockState = initializeNavigationState()
-
-history.pushState({
-  viewId: 'eddbfe39-57d4-4b32-b9a1-a555e39139ea',
-  contentState: [
-    {
-      viewId: 'eddbfe39-57d4-4b32-b9a1-a555e39139ea',
-      name: 'Plannings',
-      props: {},
-      path: '/'
-    }
-  ]
-}, '', '/')
-
-const mockDispatch = vi.fn() as Dispatch<NavigationActionType>
-
-
-(useNavigation as Mock).mockReturnValue({
-  state: mockState,
-  dispatch: mockDispatch
-})
-
-
 vi.mock('next-auth/react', async () => {
   const originalModule = await vi.importActual('next-auth/react')
   const mockSession = {
@@ -135,44 +81,3 @@ vi.mock('next-auth/react', async () => {
   }
 })
 
-vi.mock('@/hooks/useAuthors', () => ({
-  useAuthors: () => [
-    { id: '123', name: 'Alice Johnson', firstName: 'Alice', lastName: 'Johnson', initials: 'AAJ', email: 'aj@example.com', sub: 'core://user/0001' },
-    { id: '234', name: 'Bob Lee', firstName: 'Bob', lastName: 'Lee', email: 'bl@example.com', sub: 'core://user/0002' },
-    { id: '345', name: 'Christine King', firstName: 'Christine', lastName: 'King', initials: 'CK', email: 'ck@example.com', sub: 'core://user/0003' }
-  ]
-}))
-
-vi.mock('@/hooks/useRegistry', () => ({
-  useRegistry: vi.fn()
-}));
-
-(useRegistry as Mock).mockReturnValue(initialState)
-
-vi.mock('@/hooks/baboon/useLayouts', () => ({
-  useLayouts: vi.fn(() => ({
-    data: undefined,
-    isLoading: false,
-    error: null,
-    refetch: vi.fn(),
-    isError: false,
-    isSuccess: false,
-    status: 'pending',
-    mutate: vi.fn()
-  }))
-}))
-
-vi.mock('sonner', () => ({
-  toast: {
-    error: vi.fn(),
-    success: vi.fn(),
-    info: vi.fn(),
-    warning: vi.fn(),
-    loading: vi.fn(),
-    promise: vi.fn(),
-    custom: vi.fn(),
-    message: vi.fn(),
-    dismiss: vi.fn()
-  },
-  Toaster: vi.fn(() => null)
-}))

@@ -4,9 +4,9 @@ import { Button, Checkbox, Input } from '@ttab/elephant-ui'
 import { EyeIcon, Trash2Icon } from '@ttab/elephant-ui/icons'
 import type * as Y from 'yjs'
 import type { YDocument } from '@/modules/yjs/hooks'
-import { LayoutsSelect } from '@/views/PrintEditor/components/LayoutsSelect'
-import { Position } from '@/views/PrintEditor/components/Position'
-import { Additionals } from '@/views/PrintEditor/components/Additionals'
+import { LayoutsSelect } from './LayoutsSelect'
+import { Position } from './Position'
+import { Additionals } from './Additionals'
 import { useLayouts } from '@/hooks/baboon/useLayouts'
 
 export type LayoutPanelContentProps = HTMLAttributes<HTMLDivElement> & {

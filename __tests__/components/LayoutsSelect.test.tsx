@@ -2,13 +2,15 @@ import { render, screen } from '@testing-library/react'
 import type { YDocument } from '@/modules/yjs/hooks'
 import * as Y from 'yjs'
 import { Block, type Document } from '@ttab/elephant-api/newsdoc'
+import { useYValue } from '@/modules/yjs/hooks/useYValue'
+import { LayoutsSelect } from '@/views/PrintEditor/components/LayoutsSelect'
 
 // Mock window.matchMedia for ComboBox
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
   value: vi.fn().mockImplementation((query) => ({
     matches: false,
-    media: query,
+    media: query as unknown,
     onchange: null,
     addListener: vi.fn(),
     removeListener: vi.fn(),
@@ -30,13 +32,10 @@ global.ResizeObserver = ResizeObserverMock
 // Mock scrollIntoView
 Element.prototype.scrollIntoView = vi.fn()
 
-// Mock the useYValue hook before component import
 vi.mock('@/modules/yjs/hooks/useYValue', () => ({
   useYValue: vi.fn()
 }))
 
-import { useYValue } from '@/modules/yjs/hooks/useYValue'
-import { LayoutsSelect } from '@/views/PrintEditor/components/LayoutsSelect'
 
 describe('LayoutsSelect', () => {
   const mockDoc = new Y.Doc()

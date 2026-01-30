@@ -5,6 +5,8 @@ import * as Y from 'yjs'
 import type { EleDocumentResponse } from '@/shared/types'
 import createHash from '@/shared/createHash'
 import { setValueByYPath, toYStructure } from '@/shared/yUtils'
+import { useRegistry } from '@/hooks/useRegistry'
+import { initialState } from '@/contexts/RegistryProvider'
 
 const mockDocumentData: EleDocumentResponse = {
   isMetaDocument: false,
@@ -37,6 +39,12 @@ const mockDocumentData: EleDocumentResponse = {
 
 const createMockDocumentData = (): EleDocumentResponse =>
   JSON.parse(JSON.stringify(mockDocumentData)) as EleDocumentResponse
+
+vi.mock('@/hooks/useRegistry', () => ({
+  useRegistry: vi.fn()
+}))
+
+vi.mocked(useRegistry).mockReturnValue(initialState)
 
 describe('useYDocument', () => {
   describe('Basic functionality', () => {
