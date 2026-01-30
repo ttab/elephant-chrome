@@ -1,0 +1,35 @@
+{
+  "title": "Metadata",
+  "labels": {
+    "properties": "Eiendommer",
+    "tags": "Etiketter",
+    "byline": "Byline",
+    "actions": "Handlinger",
+    "otherSources": "Andre kilder enn NTB",
+    "source": "Kilde",
+    "extraInformation": "Tilleggsinformasjon",
+    "versions": "Versjoner",
+    "version": "Versjon",
+    "editorialInfoType": "Redaksjonell informasjon, type",
+    "slugg": "Stikkord"
+  },
+  "actions": {
+    "addNote": "Legg til beskjed"
+  },
+  "placeholders": {
+    "addByline": "Legg til byline",
+    "addSource": "Legg til kilde"
+  },
+  "dropDownMenuItems": {
+    "internalNote": "Intern beskjed",
+    "infoToCustomer": "Info til kunde"
+  },
+  "errors": {
+    "failedToLoadHistory": "Det oppsto en feil under henting av dokumenthistorikken.",
+    "failedToLoadMetaData": "Det oppsto en feil under henting av metadata."
+  },
+  "misc": {
+    "lastUpdated": "Sist oppdatert: {{date}}",
+    "noType": "Ingen type"
+  }
+}

@@ -4,12 +4,13 @@ import planning from './planning.json'
 import app from './app.json'
 import shared from './shared.json'
 import views from './views.json'
-
+import metaSheet from './metaSheet.json'
 export const sv = {
   common,
   core,
   planning,
   app,
   shared,
-  views
+  views,
+  metaSheet
 }
