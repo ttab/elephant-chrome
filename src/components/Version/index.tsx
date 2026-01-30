@@ -221,7 +221,7 @@ export const Version = ({ documentId, hideDetails = false, textOnly = true }: { 
       {lastUpdated && <div className='text-sm text-muted-foreground pl-0.5'>{t('misc.lastUpdated', { date: formatDateAndTime(lastUpdated) })}</div>}
 
       {!hideDetails && selectedVersion?.createdBy && (
-        <div className='text-sm text-muted-foreground pl-0.5'>{`${t('shared:authors.createdBy', { author: selectedVersion?.createdBy })}`}</div>
+        <div className='text-sm text-muted-foreground pl-0.5'>{t('shared:authors.createdBy', { author: selectedVersion?.createdBy })}</div>
       )}
     </div>
   )
