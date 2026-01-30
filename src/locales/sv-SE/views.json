@@ -41,26 +41,27 @@
       "action": "Action"
     },
     "toasts": {
-      "fetch":{
+      "fetch": {
         "error": "Kunde inte hämta händelser"
       }
     },
     "tooltips": {
       "organiser": "Organisatör"
+    },
+    "assignments": {
+      "title": "Uppdrag",
+      "columnLabels": {
+        "assignmentTime": "Uppdragstid",
+        "type": "Typ"
+      },
+      "tooltips": {
+        "assignmentStartTime": "Uppdragets starttid"
+      },
+      "actionMenu": {
+        "openArticle": "Öppna artikel",
+        "openPlanning": "Öppna planering"
+      },
+      "myAssignments": "Mina uppdrag"
     }
-  "assignments": {
-    "title": "Uppdrag",
-    "columnLabels": {
-      "assignmentTime": "Uppdragstid",
-      "type": "Typ"
-    },
-    "tooltips": {
-      "assignmentStartTime": "Uppdragets starttid"
-    },
-    "actionMenu": {
-      "openArticle": "Öppna artikel",
-      "openPlanning": "Öppna planering"
-    },
-    "myAssignments": "Mina uppdrag"
   }
 }
