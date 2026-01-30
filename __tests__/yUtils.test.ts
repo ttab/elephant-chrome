@@ -323,6 +323,49 @@ describe('yUtils', () => {
       // In actual yUtils implementation, it might create the path, so let's check if the value exists
       expect(typeof success).toBe('boolean')
     })
+
+    describe('complex nested paths', () => {
+      it('creates deep nested structures for paths with slashes and arrays', () => {
+        const doc = new Y.Doc()
+        const root = doc.getMap('test')
+
+        const path = 'root.links[0].data.articles[0].meta.tt/print-features[0].content.tt/print-feature'
+        const ok = setValueByPath(root, path, 'test-slot')
+        expect(ok).toBe(true)
+
+        const value = getValueFromPath(root, path)
+        expect(value).toBe('test-slot')
+
+        const parent = getValueFromPath(root, 'root.links[0].data.articles[0].meta.tt/print-features[0].content', true)
+        expect(parent).toBeInstanceOf(Y.Map)
+      })
+
+      it('creates intermediate arrays and maps and sets values at various levels', () => {
+        const doc = new Y.Doc()
+        const root = doc.getMap('test2')
+
+        expect(setValueByPath(root, 'a[0].b.c[0].d', 'deep')).toBe(true)
+        expect(getValueFromPath(root, 'a[0].b.c[0].d')).toBe('deep')
+
+        expect(setValueByPath(root, 'x.y.z', 42)).toBe(true)
+        expect(getValueFromPath(root, 'x.y.z')).toBe(42)
+      })
+
+      it('updates existing array elements and appends when index equals length', () => {
+        const doc = new Y.Doc()
+        const root = doc.getMap('arrays')
+
+        const arr = new Y.Array()
+        arr.insert(0, ['one'])
+        root.set('items', arr)
+
+        expect(setValueByPath(root, 'items[0]', 'uno')).toBe(true)
+        expect(getValueFromPath(root, 'items[0]')).toBe('uno')
+
+        expect(setValueByPath(root, 'items[1]', 'dos')).toBe(true)
+        expect(getValueFromPath(root, 'items[1]')).toBe('dos')
+      })
+    })
   })
 
   describe('getValueByYPath', () => {
