@@ -90,7 +90,7 @@ export const PlanningTable = ({ ydoc, asDialog }: {
   })
 
   if (!data) {
-    return <>{t('core:loading.loading')}</>
+    return <>{t('common:loading.loading')}</>
   }
 
   if (error) {
