@@ -29,7 +29,7 @@ export const Commands = (props: FilterProps & { type: SearchKeys }): JSX.Element
 
   const [filters, setFilters] = useQuery(['section', 'organiser', 'category', 'from', 'author', 'aType', 'newsvalue'])
   const hasFilter = Object.values(filters).some((value) => value?.length)
-  
+
   const { from } = filters
   const currentDate = useMemo(() => {
     return Array.isArray(from)
