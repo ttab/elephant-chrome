@@ -42,7 +42,7 @@ export const Error = ({ title, error, message }: ViewProps & {
         )}
 
         {error && (
-          <div className='text-sm bg-gray-100 p-4 rounded-lg mt-4'>
+          <div className='text-sm bg-gray-100 p-4 rounded-lg mt-4 dark:bg-slate-600'>
             <pre className='whitespace-pre-wrap'>
               {JSON.stringify(error.stack, null, 2)}
             </pre>

@@ -35,7 +35,7 @@ import { PreviewSheet } from '../PreviewSheet'
 import type { Wire as WireType } from '@/shared/schemas/wire'
 import { Wire } from '@/views/Wire'
 import { GroupedRows } from './GroupedRows'
-import { getWireStatus } from './lib/getWireStatus'
+import { getWireStatus } from '../../lib/getWireStatus'
 import { type View } from '@/types/index'
 const BASE_URL = import.meta.env.BASE_URL
 
@@ -185,11 +185,7 @@ export const Table = <TData, TValue>({
       if (event.key === 'r') {
         if (selectedRow && isRowTypeWire<TData, TValue>(type)) {
           const wireRow = selectedRow as RowType<WireType>
-          const currentStatus = getWireStatus(type, wireRow.original)
-          if (currentStatus === 'used') {
-            return
-          }
-
+          const currentStatus = getWireStatus(wireRow.original)
           void setDocumentStatus({
             name: currentStatus === 'read' ? 'draft' : 'read',
             uuid: wireRow.original.id,
@@ -202,7 +198,7 @@ export const Table = <TData, TValue>({
       if (event.key === 'u') {
         if (selectedRow && isRowTypeWire<TData, TValue>(type)) {
           const wireRow = selectedRow as RowType<WireType>
-          const currentStatus = getWireStatus(type, wireRow.original)
+          const currentStatus = getWireStatus(wireRow.original)
 
           void setDocumentStatus({
             name: currentStatus === 'used' ? 'draft' : 'used',
@@ -216,10 +212,7 @@ export const Table = <TData, TValue>({
       if (event.key === 's') {
         if (selectedRow && isRowTypeWire<TData, TValue>(type)) {
           const wireRow = selectedRow as RowType<WireType>
-          const currentStatus = getWireStatus(type, wireRow.original)
-          if (currentStatus === 'used') {
-            return
-          }
+          const currentStatus = getWireStatus(wireRow.original)
 
           void setDocumentStatus({
             name: currentStatus === 'saved' ? 'draft' : 'saved',

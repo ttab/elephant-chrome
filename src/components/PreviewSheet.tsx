@@ -10,7 +10,8 @@ import type { Status as DocumentStatuses } from '@ttab/elephant-api/repository'
 import { useEffect, useMemo, useRef, type JSX } from 'react'
 import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
 import { decodeString } from '@/lib/decodeString'
-import { getWireStatus } from '@/components/Table/lib/getWireStatus'
+import { getWireStatus } from '@/lib/getWireStatus'
+import type { Status } from '@/shared/Repository'
 
 export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, versionStatusHistory }: {
   id: string
@@ -39,18 +40,19 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, 
         ?.replace('wires://provider/', ''),
       role: wire?.fields['document.meta.tt_wire.role'].values[0],
       newsvalue: wire?.fields['document.meta.core_newsvalue.value']?.values[0],
-      status: getWireStatus('Wires', wire)
+      status: getWireStatus(wire)
     }
   }, [wire])
 
   useNavigationKeys({
     keys: ['s', 'r', 'c', 'u', 'Escape'],
+    elementRef: containerRef,
     onNavigation: (event) => {
-      event.stopPropagation()
+      event.stopImmediatePropagation()
       if (documentStatus && wire) {
         if (event.key === 'r') {
           const payload = {
-            name: currentWire?.status === 'read' ? 'draft' : 'read',
+            name: documentStatus.name === 'read' ? 'draft' : 'read',
             version: documentStatus?.version,
             uuid: documentStatus?.uuid
           }
@@ -63,7 +65,7 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, 
 
         if (event.key === 's') {
           const payload = {
-            name: currentWire?.status === 'saved' ? 'draft' : 'saved',
+            name: documentStatus.name === 'saved' ? 'draft' : 'saved',
             version: documentStatus?.version,
             uuid: documentStatus?.uuid
           }
@@ -76,7 +78,7 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, 
 
         if (event.key === 'u') {
           const payload = {
-            name: currentWire?.status === 'used' ? 'draft' : 'used',
+            name: documentStatus.name === 'used' ? 'draft' : 'used',
             version: documentStatus?.version,
             uuid: documentStatus?.uuid
           }
@@ -147,18 +149,14 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, 
                     ? documentStatus?.name
                     : ''}
                   onValueChange={(value) => {
-                    if (!value && documentStatus) { // reset status to draft
-                      void setDocumentStatus({
-                        name: 'draft',
+                    if (documentStatus) {
+                      const payload: Status = {
+                        name: value || 'draft',
                         version: documentStatus.version,
                         uuid: documentStatus.uuid
-                      }, undefined, true)
-                    } else if (documentStatus && value) { // set status to saved, read or used
-                      void setDocumentStatus({
-                        name: value,
-                        version: documentStatus?.version,
-                        uuid: documentStatus?.uuid
-                      }, undefined, true)
+                      }
+                      void setDocumentStatus(payload, undefined, true)
+                      void mutate(payload, false)
                     }
                   }}
                 >
