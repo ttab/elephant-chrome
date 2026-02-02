@@ -16,6 +16,7 @@ import search from '@/hooks/index/useDocuments/queries/views/search'
 import { useQuery } from '@/hooks/useQuery'
 import type { ColumnDef } from '@tanstack/react-table'
 import { toast } from 'sonner'
+import { useTranslation } from 'react-i18next'
 
 export const SearchResult = ({ searchType, page }: {
   searchType: SearchKeys
@@ -25,6 +26,7 @@ export const SearchResult = ({ searchType, page }: {
   const organisers = useOrganisers()
   const authors = useAuthors()
   const [filter] = useQuery()
+  const { t } = useTranslation('views')
 
   const { locale, timeZone } = useRegistry()
   const getType = (searchType: SearchKeys) => searchType === 'events' ? 'Event' : searchType === 'articles' ? 'Editor' : 'Planning'
@@ -47,7 +49,6 @@ export const SearchResult = ({ searchType, page }: {
       setTableData: true
     }
   })
-
   const columns = useMemo(() => {
     return createSearchColumns({
       searchType,
@@ -55,20 +56,21 @@ export const SearchResult = ({ searchType, page }: {
       authors,
       locale,
       timeZone,
-      organisers
+      organisers,
+      t
     })
-  }, [locale, timeZone, authors, sections, searchType, organisers])
+  }, [locale, timeZone, authors, sections, searchType, organisers, t])
 
   if (error) {
     console.error('Error fetching search result items:', error)
-    toast.error('Kunde inte hämta sökresultat')
+    toast.error(t('search.errors.errorFetchingResults'))
   }
 
   return (
     <>
       {isLoading
         ? (
-            <LoadingText>Laddar...</LoadingText>
+            <LoadingText>{t('common:loading.loading')}</LoadingText>
           )
         : (
             <>

@@ -8,6 +8,7 @@ import search from '@/hooks/index/useDocuments/queries/views/search'
 import type { SearchKeys } from '@/hooks/index/useDocuments/queries/views/search'
 import { articleColumns } from './articleColumns'
 import { CalendarIcon } from '@ttab/elephant-ui/icons'
+import type { TFunction } from 'i18next'
 
 interface SearchColumnsParams {
   searchType: SearchKeys
@@ -16,6 +17,7 @@ interface SearchColumnsParams {
   organisers?: IDBOrganiser[]
   locale: LocaleData
   timeZone: string
+  t: TFunction
 }
 export const createSearchColumns = (params: SearchColumnsParams) => {
   return [
@@ -23,7 +25,7 @@ export const createSearchColumns = (params: SearchColumnsParams) => {
       id: 'date',
       enableGrouping: true,
       meta: {
-        name: 'Datum',
+        name: params.t('views:search.columnLabels.date'),
         columnIcon: CalendarIcon,
         className: 'flex-none w-[100px]',
         display: (value: string) => {

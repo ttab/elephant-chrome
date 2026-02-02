@@ -41,5 +41,22 @@
       "openPlanning": "Öppna planering"
     },
     "myAssignments": "Mina uppdrag"
+  },
+  "search": {
+    "title": "Sök",
+    "placeholders": {
+      "search": "Sök"
+    },
+    "labels": {
+      "plannings": "Planeringar",
+      "events": "Händelser",
+      "articles": "Artiklar"
+    },
+    "errors": {
+      "errorFetchingResults": "Kunde inte hämta sökresultat"
+    },
+    "columnLabels": {
+      "date": "Datum"
+    }
   }
 }

@@ -18,6 +18,7 @@ import type { SearchKeys } from '@/hooks/index/useDocuments/queries/views/search
 import type { Planning } from '@/shared/schemas/planning'
 import type { Event } from '@/shared/schemas/event'
 import type { Article } from '@/shared/schemas/article'
+import { useTranslation } from 'react-i18next'
 
 const meta: ViewMetadata = {
   name: 'Search',
@@ -43,6 +44,7 @@ export const Search = (): JSX.Element => {
   const sections = useSections()
   const organisers = useOrganisers()
   const authors = useAuthors()
+  const { t } = useTranslation('views')
 
 
   const columns = useMemo(() => {
@@ -52,9 +54,10 @@ export const Search = (): JSX.Element => {
       authors,
       locale,
       timeZone,
-      organisers
+      organisers,
+      t
     })
-  }, [locale, timeZone, authors, sections, searchType, organisers])
+  }, [locale, timeZone, authors, sections, searchType, organisers, t])
 
   if (!validSearchTypes.map((p) => p.value).includes(searchType)) {
     return <></>
@@ -74,7 +77,7 @@ export const Search = (): JSX.Element => {
       >
         <ViewHeader.Root>
           <ViewHeader.Content>
-            <ViewHeader.Title name='Search' title='Sök' />
+            <ViewHeader.Title name='Search' title={t('search.title')} />
 
             {!Object.keys(params).length
               ? null

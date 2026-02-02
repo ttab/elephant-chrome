@@ -19,9 +19,13 @@
     "unknown": "Okänt fel",
     "unwellEnvironment": "Du har blivit utloggad eller tappat kontakt med systemet. Vänligen försök logga in igen."
   },
+  "loading": {
+    "loading": "Laddar..."
+  },
   "misc": {
     "unknown": "okänd",
     "user": "användare",
-    "numberOf": "Antal"
+    "numberOf": "Antal",
+    "from": "Från"
   }
 }
