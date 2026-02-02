@@ -64,15 +64,11 @@ export const Stream = ({
     options
   })
 
-  // Merge new data with existing data
   useEffect(() => {
     if (data && !isLoading) {
       setAllData((prev) => {
-        if (page === 1) {
-          return data
-        }
+        if (page === 1) return data
 
-        // Merge and deduplicate by wire ID
         const existingIds = new Set(prev.map((w) => w.id))
         const newWires = data.filter((w) => !existingIds.has(w.id))
         return [...prev, ...newWires]
@@ -81,13 +77,11 @@ export const Stream = ({
     }
   }, [data, isLoading, page])
 
-  // Reset to page 1 when filters change
   useEffect(() => {
     setPage(1)
     setAllData([])
   }, [wireStream.filters])
 
-  // Infinite scroll handler
   useEffect(() => {
     const scrollContainer = scrollContainerRef.current
     if (!scrollContainer) return
@@ -98,7 +92,6 @@ export const Stream = ({
       const { scrollTop, scrollHeight, clientHeight } = scrollContainer
       const distanceFromBottom = scrollHeight - scrollTop - clientHeight
 
-      // Load more when within 300px of the bottom
       if (distanceFromBottom < 300 && data && data.length === PAGE_SIZE) {
         loadingRef.current = true
         setPage((prev) => prev + 1)
@@ -109,7 +102,6 @@ export const Stream = ({
     return () => scrollContainer.removeEventListener('scroll', handleScroll)
   }, [isLoading, data])
 
-  // Convert selected wires array to TanStack Table format
   const rowSelection = useMemo<RowSelectionState>(() => {
     const selection: RowSelectionState = {}
     selectedWires.forEach((wire) => {
@@ -123,20 +115,16 @@ export const Stream = ({
       ? updaterOrValue(rowSelection)
       : updaterOrValue
 
-    // Check each row in the new selection
     Object.keys(newSelection).forEach((wireId) => {
       if (newSelection[wireId] && !rowSelection[wireId]) {
-        // Newly selected
-        const wire = allData?.find((w) => w.id === wireId)
+        const wire = allData.find((w) => w.id === wireId)
         if (wire) onToggleWire(wire, true)
       }
     })
 
-    // Check for deselections
     Object.keys(rowSelection).forEach((wireId) => {
       if (!newSelection[wireId]) {
-        // Deselected
-        const wire = allData?.find((w) => w.id === wireId)
+        const wire = allData.find((w) => w.id === wireId)
         if (wire) onToggleWire(wire, false)
       }
     })
@@ -164,7 +152,7 @@ export const Stream = ({
             streamId={wireStream.uuid}
             entry={row.original}
             isSelected={row.getIsSelected()}
-            statusMutation={statusMutations.find((mutation) => mutation.uuid === row.original.id)}
+            statusMutation={statusMutations.find((m) => m.uuid === row.original.id)}
             onToggleSelected={row.getToggleSelectedHandler()}
             onPress={onPress}
             onUnpress={onUnpress}
@@ -176,18 +164,68 @@ export const Stream = ({
     [wireStream.uuid, onPress, onUnpress, onFocus, statusMutations]
   )
 
-  const getRowId = useCallback((row: Wire) => row.id, [])
-  const coreRowModel = useMemo(() => getCoreRowModel(), [])
-  const emptyData = useMemo(() => [], [])
-
   const table = useReactTable({
-    data: allData ?? emptyData,
+    data: allData,
     columns,
     state: { rowSelection },
     enableRowSelection: true,
     onRowSelectionChange: handleRowSelectionChange,
-    getCoreRowModel: coreRowModel,
-    getRowId
+    getCoreRowModel: getCoreRowModel(),
+    getRowId: (row) => row.id
+  })
+
+  const rows = table.getRowModel().rows
+
+  const groups: Array<{
+    key: string
+    header: JSX.Element
+    rows: typeof rows
+  }> = []
+
+  rows.forEach((row, index) => {
+    const currentWire = row.original
+    const currentDate = new Date(currentWire.fields.modified.values[0])
+
+    const prevWire = index > 0 ? rows[index - 1].original : null
+    const prevDate = prevWire
+      ? new Date(prevWire.fields.modified.values[0])
+      : null
+
+    const showDateHeader
+      = !prevDate || currentDate.toDateString() !== prevDate.toDateString()
+
+    const showTimeHeader
+      = !showDateHeader
+        && prevDate
+        && currentDate.getHours() !== prevDate.getHours()
+
+    if (showDateHeader || showTimeHeader) {
+      const key = showDateHeader
+        ? `date-${currentDate.toDateString()}`
+        : `time-${currentDate.toDateString()}-${currentDate.getHours()}`
+
+      groups.push({
+        key,
+        header: (
+          <StreamGroupHeader
+            date={
+              showDateHeader
+                ? currentDate.toLocaleDateString('sv-SE', {
+                  weekday: 'short',
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric'
+                })
+                : undefined
+            }
+            time={`${currentDate.getHours().toString().padStart(2, '0')}:00`}
+          />
+        ),
+        rows: []
+      })
+    }
+
+    groups[groups.length - 1].rows.push(row)
   })
 
   return (
@@ -211,51 +249,28 @@ export const Stream = ({
             />
           ))}
         </div>
-        <div>
-          <Button variant='ghost' className='w-9 h-9 px-0' onClick={removeThisWire}>
-            <MinusIcon strokeWidth={1.75} size={18} />
-          </Button>
-        </div>
+
+        <Button variant='ghost' className='w-9 h-9 px-0' onClick={removeThisWire}>
+          <MinusIcon strokeWidth={1.75} size={18} />
+        </Button>
       </div>
 
       <div ref={scrollContainerRef} className='flex-1 basis-0 overflow-y-auto bg-muted'>
         <div className='flex flex-col'>
-          {table.getRowModel().rows.map((row, index) => {
-            const currentWire = row.original
-            const currentDate = new Date(currentWire.fields.modified.values[0])
-            const prevWire = index > 0 ? table.getRowModel().rows[index - 1].original : null
-            const prevDate = prevWire ? new Date(prevWire.fields.modified.values[0]) : null
+          {groups.map((group) => (
+            <div key={group.key} className='relative'>
+              {group.header}
 
-            const showDateHeader = !prevDate || currentDate.toDateString() !== prevDate.toDateString()
-            const showTimeHeader = !showDateHeader && prevDate && currentDate.getHours() !== prevDate.getHours()
-
-            return (
-              <div key={row.id}>
-                {showDateHeader && (
-                  <StreamGroupHeader
-                    date={currentDate.toLocaleDateString('sv-SE', {
-                      weekday: 'short',
-                      year: 'numeric',
-                      month: 'short',
-                      day: 'numeric'
-                    })}
-                    time={`${currentDate.getHours().toString().padStart(2, '0')}:00`}
-                  />
-                )}
-                {showTimeHeader && (
-                  <StreamGroupHeader
-                    time={`${currentDate.getHours().toString().padStart(2, '0')}:00`}
-                  />
-                )}
-                <div className='border-b last:border-b-0'>
+              {group.rows.map((row) => (
+                <div key={row.id} className='border-b last:border-b-0'>
                   {flexRender(
                     row.getVisibleCells()[0].column.columnDef.cell,
                     row.getVisibleCells()[0].getContext()
                   )}
                 </div>
-              </div>
-            )
-          })}
+              ))}
+            </div>
+          ))}
 
           {isLoading && page > 1 && (
             <div className='py-4 text-center text-sm text-muted-foreground'>
