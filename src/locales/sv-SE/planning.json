@@ -6,6 +6,7 @@
     "publishTime": "Publiceringstid",
     "createPrintArticle": "Skapa printartikel",
     "removeAssignment": "Vill du ta bort uppdraget",
+    "chooseTime": "Välj tid",
     "actions": {
       "addAssignment": "Lägg till uppdrag",
       "addAssignee": "Lägg till uppdragstagare"
