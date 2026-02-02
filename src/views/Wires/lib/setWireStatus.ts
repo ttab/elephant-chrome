@@ -4,33 +4,20 @@ import type { Wire } from '@/shared/schemas/wire'
 import { getWireStatus } from '@/lib/getWireStatus'
 
 type WireStatusName = 'draft' | 'read' | 'saved' | 'used'
-type WireStatus = {
+export type WireStatus = {
   uuid: string
   name: WireStatusName
   version: bigint
 }
-export function setWiresStatuses(repository: Repository, session: Session, wires: Wire[], newStatus: WireStatusName) {
-  // Find out if all wires have the same status
-  const versions = wires.map((wire) => getWireStatus(wire)).filter(Boolean)
-  const singleValue = [...new Set(versions)].length === 1
 
-  for (const wire of wires) {
-    // Don't allow changing status of used wires
-    const currentVersion = wire.fields?.['current_version']?.values?.[0]
-    const currentStatus = getWireStatus(wire)
-    if (!currentVersion || currentStatus === 'used') {
-      continue
-    }
-
-    void setWireStatus(repository, session, {
-      uuid: wire.id,
-      version: BigInt(currentVersion),
-      // Toggle status to draft only if they all have the same status,
-      // otherwise set them all to the wanted status.
-      name: (newStatus === currentStatus && singleValue)
-        ? 'draft'
-        : newStatus
-    })
+/**
+ * FIXME:
+ * This function should return a promise that resolves with a list of uuid and true/false
+ * depending on whether the status update was successful.
+ */
+export function executeWiresStatuses(repository: Repository, session: Session, wireStatuses: WireStatus[]) {
+  for (const wireStatus of wireStatuses) {
+    void setWireStatus(repository, session, wireStatus)
   }
 }
 
@@ -44,4 +31,34 @@ async function setWireStatus(repository: Repository, session: Session, status: W
     currentStatus: undefined,
     accessToken: session.accessToken
   })
+}
+
+
+export function calculateWireStatuses(wires: Wire[], newStatus: WireStatusName) {
+  // Find out if all wires have the same status
+  const currentStatuses = wires.map((wire) => getWireStatus(wire)).filter(Boolean)
+  const singleValue = [...new Set(currentStatuses)].length === 1
+
+  const nextStatuses: WireStatus[] = []
+  for (const wire of wires) {
+    const currentVersion = wire.fields?.['current_version']?.values?.[0]
+    const currentStatus = getWireStatus(wire)
+
+    // Don't allow changing status of used wires
+    if (!currentVersion || currentStatus === 'used') {
+      continue
+    }
+
+    nextStatuses.push({
+      uuid: wire.id,
+      version: BigInt(currentVersion),
+      // Toggle status to draft only if they all have the same status,
+      // otherwise set them all to the wanted status.
+      name: (newStatus === currentStatus && singleValue)
+        ? 'draft'
+        : newStatus
+    })
+  }
+
+  return nextStatuses
 }

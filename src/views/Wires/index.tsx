@@ -9,7 +9,8 @@ import type { Wire } from '@/shared/schemas/wire'
 import { Preview } from './components/Preview'
 import { WiresToolbar } from './components/WiresToolbar'
 import { useWireViewState } from './hooks/useWireViewState'
-import { setWiresStatuses } from './lib/setWireStatus'
+import type { WireStatus } from './lib/setWireStatus'
+import { calculateWireStatuses, executeWiresStatuses } from './lib/setWireStatus'
 import { useSession } from 'next-auth/react'
 
 const BASE_URL = import.meta.env.BASE_URL
@@ -68,6 +69,7 @@ export const Wires = (): JSX.Element => {
   } = useWireViewState(EXAMPLE_STATE)
 
   const [selectedWires, setSelectedWires] = useState<Wire[]>([])
+  const [statusMutations, setStatusMutations] = useState<WireStatus[]>([])
 
   useStreamNavigation({
     isActive,
@@ -127,11 +129,20 @@ export const Wires = (): JSX.Element => {
     const wires = selectedWires.length
       ? [...selectedWires]
       : focusedWire ? [focusedWire] : []
-    void setWiresStatuses(repository, session, wires, newStatus)
+    const nextStatuses = calculateWireStatuses(wires, newStatus)
+    void executeWiresStatuses(repository, session, nextStatuses)
+    setStatusMutations(nextStatuses)
     setSelectedWires([])
   }, [selectedWires, focusedWire, repository, session])
 
   const handleKeyDown = useCallback((event: React.KeyboardEvent<HTMLElement>) => {
+    if (event.getModifierState('Control')
+      || event.getModifierState('Meta')
+      || event.getModifierState('Alt')
+    ) {
+      return
+    }
+
     if (event.key === 'Escape' && !previewWire) {
       setSelectedWires([])
     } else if (event.key === 's') {

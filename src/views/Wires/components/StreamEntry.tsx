@@ -23,6 +23,8 @@ export const StreamEntry = ({
   onUnpress?: (item: Wire, event: React.KeyboardEvent<HTMLElement>) => void
   onPress?: (item: Wire, event: React.MouseEvent<HTMLElement> | React.KeyboardEvent<HTMLElement>) => void
 }): JSX.Element => {
+  const status = getWireStatus(entry)
+
   const handleClick = useCallback((e: React.MouseEvent<HTMLElement>) => {
     onPress?.(entry, e)
   }, [entry, onPress])
@@ -33,12 +35,14 @@ export const StreamEntry = ({
       onPress?.(entry, e)
     } else if (e.key === ' ') {
       e.preventDefault()
-      onToggleSelected(e)
+      if (status !== 'used') {
+        onToggleSelected(e)
+      }
     } else if (e.key === 'Escape') {
       e.preventDefault()
       onUnpress?.(entry, e)
     }
-  }, [entry, onPress, onToggleSelected, onUnpress])
+  }, [entry, onPress, onToggleSelected, onUnpress, status])
 
   const handleFocus = useCallback((e: React.FocusEvent<HTMLElement>) => {
     onFocus?.(entry, e)
@@ -48,8 +52,6 @@ export const StreamEntry = ({
     e.stopPropagation()
     onToggleSelected(e)
   }, [onToggleSelected])
-
-  const status = getWireStatus(entry)
 
   const variants = cva(
     `
@@ -112,23 +114,25 @@ export const StreamEntry = ({
         </StreamEntryCell>
       </div>
 
-      <Button
-        variant='icon'
-        size='lg'
-        tabIndex={-1}
-        className={cn(
-          'checkbox-button absolute right-0 top-0 h-9 w-9 p-0 transition-opacity duration-150 bg-transparent!',
-          isSelected ? 'opacity-60 hover:opacity-100' : 'opacity-0 hover:opacity-60'
-        )}
-        onMouseDown={(e) => {
-          e.preventDefault()
-        }}
-        onClick={handleToggleClick}
-      >
-        {isSelected
-          ? <SquareCheckIcon size={22} strokeWidth={1.85} />
-          : <SquareIcon size={22} strokeWidth={1.85} />}
-      </Button>
+      {status !== 'used' && (
+        <Button
+          variant='icon'
+          size='lg'
+          tabIndex={-1}
+          className={cn(
+            'checkbox-button absolute right-0 top-0 h-9 w-9 p-0 transition-opacity duration-150 bg-transparent!',
+            isSelected ? 'opacity-60 hover:opacity-100' : 'opacity-0 hover:opacity-60'
+          )}
+          onMouseDown={(e) => {
+            e.preventDefault()
+          }}
+          onClick={handleToggleClick}
+        >
+          {isSelected
+            ? <SquareCheckIcon size={22} strokeWidth={1.85} />
+            : <SquareIcon size={22} strokeWidth={1.85} />}
+        </Button>
+      )}
     </div>
   )
 }
