@@ -26,6 +26,8 @@
     "usable": "Publicerad",
     "unpublished": "Avpublicerad",
     "done": "Klar",
+    "print_done": "Klar",
+    "needs_proofreading": "Klar för korr",
     "withheld": "Schemalagd",
     "cancelled": "Kastad"
   },

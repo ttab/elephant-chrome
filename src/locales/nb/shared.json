@@ -28,7 +28,16 @@
   },
   "status_menu": {
     "cause": "Grunn",
-    "pickCause": "Velg en grunn..."
+    "pickCause": "Velg en grunn...",
+    "planningDate": "Dato i planen",
+    "setTime": "Skriv inn tid",
+    "asSavePlaceholder": "Publiser ny informasjon",
+    "causes": {
+      "development_short": "UV",
+      "fix_short": "KORR",
+      "correction_short": "RET",
+      "retransmission_short": "OMS"
+    }
   },
   "copy": {
     "copiedTo": "Kopiert til",
@@ -41,6 +50,15 @@
   },
   "errors": {
     "loadFailed": "Kunne ikke laste",
-    "noDeliverables": "Ingen leveranser"
+    "noDeliverables": "Ingen leveranser",
+    "sendDataError": "Kunne ikke sende data",
+    "multipleAuthors": "Flere forfatterdokumenter funnet, kontakt support",
+    "unpublishError": "Kunne ikke avpubliser dokumentet"
+  },
+  "operations": {
+    "authorUpdateSuccess": "Forfatterdokumentet er oppdatert",
+    "authorSaveSuccess": "Forfatterdokumentet er lagret",
+    "authorUpdateFailure": "Kunne ikke oppdatere forfatterdokumentet: {{errorMessage}}",
+    "authorSaveFailure": "Kunne ikke lagre forfatterdokumentet: {{errorMessage}}"
   }
 }
