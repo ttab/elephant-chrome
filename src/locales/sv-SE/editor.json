@@ -1,0 +1,11 @@
+{
+  "spelling": {
+    "noSuggestions": "Inga förslag"
+  },
+  "footer": {
+    "words": "Ord",
+    "numberOfWords": "Antal ord: artikel (totalt)",
+    "chars": "Tecken",
+    "numberOfChars": "Antal tecken: artikel (totalt)"
+  }
+}
