@@ -4,6 +4,8 @@ import planning from './planning.json'
 import app from './app.json'
 import shared from './shared.json'
 import views from './views.json'
+import editor from './editor.json'
+import workflows from './workflows.json'
 
 export const sv = {
   common,
@@ -11,5 +13,7 @@ export const sv = {
   planning,
   app,
   shared,
-  views
+  views,
+  editor,
+  workflows
 }

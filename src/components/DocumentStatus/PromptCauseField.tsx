@@ -15,10 +15,10 @@ export const PromptCauseField = ({ onValueChange, cause }: {
           <SelectValue placeholder={t('shared:status_menu.pickCause')} />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value='development'>UV</SelectItem>
-          <SelectItem value='fix'>KORR</SelectItem>
-          <SelectItem value='correction'>RÄ</SelectItem>
-          <SelectItem value='retransmission'>OMS</SelectItem>
+          <SelectItem value='development'>{t('shared:status_menu.causes.development_short')}</SelectItem>
+          <SelectItem value='fix'>{t('shared:status_menu.causes.fix_short')}</SelectItem>
+          <SelectItem value='correction'>{t('shared:status_menu.causes.correction_short')}</SelectItem>
+          <SelectItem value='retransmission'>{t('shared:status_menu.causes.retransmission_short')}</SelectItem>
         </SelectContent>
       </Select>
     </>

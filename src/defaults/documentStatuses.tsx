@@ -9,7 +9,6 @@ import {
 
 export const DocumentStatuses: DefaultValueOption[] = [
   {
-    // label: 'Publicerad',
     value: 'usable',
     icon: CircleCheckIcon,
     iconProps: {
@@ -19,7 +18,6 @@ export const DocumentStatuses: DefaultValueOption[] = [
     }
   },
   {
-    // label: 'Tidsplanerad',
     value: 'withheld',
     icon: CircleCheckIcon,
     iconProps: {
@@ -29,7 +27,6 @@ export const DocumentStatuses: DefaultValueOption[] = [
     }
   },
   {
-    // label: 'Klar',
     value: 'done',
     icon: CircleCheckIcon,
     iconProps: {
@@ -39,7 +36,6 @@ export const DocumentStatuses: DefaultValueOption[] = [
     }
   },
   {
-    // label: 'Godkänd',
     value: 'approved',
     icon: BadgeCheckIcon,
     iconProps: {
@@ -49,7 +45,6 @@ export const DocumentStatuses: DefaultValueOption[] = [
     }
   },
   {
-    // label: 'Utkast',
     value: 'draft',
     icon: CircleDotIcon,
     iconProps: {
@@ -59,7 +54,6 @@ export const DocumentStatuses: DefaultValueOption[] = [
     }
   },
   {
-    // label: 'Avpublicerad',
     value: 'unpublished',
     icon: CircleArrowLeftIcon,
     iconProps: {
@@ -72,7 +66,6 @@ export const DocumentStatuses: DefaultValueOption[] = [
 
 export const PlanningEventStatuses: DefaultValueOption[] = [
   {
-    // label: 'Publicerad',
     value: 'usable',
     icon: CircleCheckIcon,
     iconProps: {
@@ -82,7 +75,6 @@ export const PlanningEventStatuses: DefaultValueOption[] = [
     }
   },
   {
-    // label: 'Tidsplanerad',
     value: 'withheld',
     icon: CircleCheckIcon,
     iconProps: {
@@ -92,7 +84,6 @@ export const PlanningEventStatuses: DefaultValueOption[] = [
     }
   },
   {
-    // label: 'Intern',
     value: 'done',
     icon: CircleCheckIcon,
     iconProps: {
@@ -102,7 +93,6 @@ export const PlanningEventStatuses: DefaultValueOption[] = [
     }
   },
   {
-    // label: 'Utkast',
     value: 'draft',
     icon: CircleDotIcon,
     iconProps: {
@@ -112,7 +102,6 @@ export const PlanningEventStatuses: DefaultValueOption[] = [
     }
   },
   {
-    // label: 'Avpublicerad',
     value: 'unpublished',
     icon: CircleArrowLeftIcon,
     iconProps: {
@@ -125,7 +114,7 @@ export const PlanningEventStatuses: DefaultValueOption[] = [
 
 export const PrintArticleStatuses: DefaultValueOption[] = [
   {
-    // label: 'Exporterad',
+    label: 'Exporterad',
     value: 'usable',
     icon: CircleCheckIcon,
     iconProps: {
@@ -135,7 +124,7 @@ export const PrintArticleStatuses: DefaultValueOption[] = [
     }
   },
   {
-    // label: 'Klar för korr',
+    label: 'Klar för korr',
     value: 'needs_proofreading',
     icon: CircleCheckIcon,
     iconProps: {
@@ -145,7 +134,7 @@ export const PrintArticleStatuses: DefaultValueOption[] = [
     }
   },
   {
-    // label: 'Godkänd',
+    label: 'Godkänd',
     value: 'approved',
     icon: BadgeCheckIcon,
     iconProps: {
@@ -155,7 +144,7 @@ export const PrintArticleStatuses: DefaultValueOption[] = [
     }
   },
   {
-    // label: 'Inställd',
+    label: 'Inställd',
     value: 'unpublished',
     icon: CircleXIcon,
     iconProps: {
@@ -165,7 +154,7 @@ export const PrintArticleStatuses: DefaultValueOption[] = [
     }
   },
   {
-    // label: 'Utkast',
+    label: 'Utkast',
     value: 'draft',
     icon: CircleDotIcon,
     iconProps: {

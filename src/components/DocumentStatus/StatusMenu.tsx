@@ -17,6 +17,7 @@ import { useHistory, useNavigation, useView } from '@/hooks/index'
 import type { View } from '@/types/index'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
+import { useTranslation } from 'react-i18next'
 
 export const StatusMenu = ({ ydoc, publishTime, onBeforeStatusChange }: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -36,6 +37,7 @@ export const StatusMenu = ({ ydoc, publishTime, onBeforeStatusChange }: {
   const { state, dispatch } = useNavigation()
   const history = useHistory()
   const { viewId } = useView()
+  const { t } = useTranslation()
 
   // Read workflow specifications from current type and current status
   const isWorkflow = documentStatus?.type
@@ -112,7 +114,7 @@ export const StatusMenu = ({ ydoc, publishTime, onBeforeStatusChange }: {
         })
       })().catch((err) => console.error(err))
     } catch (error) {
-      toast.error('Det gick inte att avpublicera dokumentet')
+      toast.error(t('shared:errors.unpublishError'))
       console.error('error while unpublishing document:', error)
     }
   }
@@ -164,7 +166,7 @@ export const StatusMenu = ({ ydoc, publishTime, onBeforeStatusChange }: {
                   state={{
                     verify: false,
                     isWorkflow: false,
-                    title: workflow[currentStatusName]?.asSaveTitle || 'Publicera ny information',
+                    title: workflow[currentStatusName]?.asSaveTitle || t('shared:status_menu.asSavePlaceholder'),
                     description: workflow[currentStatusName]?.updateDescription || workflow[currentStatusName]?.description
                   }}
                   onSelect={currentStatusName === 'usable' ? showPrompt : () => setStatus('usable')}
