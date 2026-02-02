@@ -41,5 +41,22 @@
       "openPlanning": "Åpne planlegging"
     },
     "myAssignments": "Mine oppdrag"
+  },
+  "search": {
+    "title": "Søk",
+    "placeholders": {
+      "search": "Søk"
+    },
+    "labels": {
+      "plannings": "Planlegging",
+      "events": "Hendelser",
+      "articles": "Artikler"
+    },
+    "errors": {
+      "errorFetchingResults": "Kunne ikke hente søkeresultatene"
+    },
+    "columnLabels": {
+      "date": "Dato"
+    }
   }
 }

@@ -9,6 +9,8 @@
   "labels": {
     "newsvalue": "Nyhetesverdi",
     "section": "Kategori",
+    "organiser": "Arrangør",
+    "category": "Kategori",
     "assignee": "Oppdragstaker",
     "assignmentType": "Oppdragstype",
     "title": "Tittel",

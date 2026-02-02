@@ -18,9 +18,13 @@
     "unknown": "Ukjent feil",
     "unwellEnvironment": "Du har blitt logget ut eller mistet kontakten med systemet. Prøv å logge inn på nytt."
   },
+  "loading": {
+    "loading": "Laster inn..."
+  },
   "misc": {
     "unknown": "ukjent",
     "user": "bruker",
-    "numberOf": "Antall"
+    "numberOf": "Antall",
+    "from": "Fra"
   }
 }
