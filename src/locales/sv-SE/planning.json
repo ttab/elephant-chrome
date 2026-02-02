@@ -30,6 +30,9 @@
     "internal": "Internt meddelande",
     "public": "Publik beskrivning"
   },
+  "actions": {
+    "openPlanning": "Öppna planering"
+  },
   "prompts": {
     "slugMissing": "Slugg saknas",
     "slugMissingDescription": "Vänligen lägg till en slugg på uppdraget. Därefter kan du skapa en text.",
@@ -51,7 +54,12 @@
     "dateSwitchDescription": "Planeringen och alla dess textuppdrag byter datum till",
     "dateSwitchAssignments": "Välj nedan om även bild- och videouppdrag ska byta datum",
     "assignmentMoveError": "Uppdraget kunde inte flyttas",
-    "assignmentMoveSuccess": "Uppdraget har flyttats"
+    "assignmentCreateInfo": "Väljer du ingen planering kommer en ny planering med detta uppdrag att skapas åt dig på valt datum.",
+    "assignmentAddInfo": "Detta uppdrag kommer läggas i den valda planeringen",
+    "assignmentMoveSuccess": "Uppdraget har flyttats",
+    "moveAssignment": "Flytta uppdrag",
+    "moveAssignmentConfirm": "Är du säker på att du vill flytta uppdraget?",
+    "showOlder": "Visa äldre"
   },
   "related": {
     "relatedEvents": "Länkade händelser"

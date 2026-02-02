@@ -140,7 +140,7 @@ export const Move = ({ ydoc, ...props }: ViewProps & {
           <ToastAction
             documentId={newPlanningUUID}
             withView='Planning'
-            label='Öppna planering'
+            label={t('planning:actions.openPlanning')}
             Icon={CalendarDaysIcon}
           />
         )
@@ -160,7 +160,7 @@ export const Move = ({ ydoc, ...props }: ViewProps & {
         <ViewHeader.Content>
           {props.asDialog && (
             <div className='flex w-full h-full items-center space-x-2 font-bold'>
-              <ViewHeader.Title name='Assignment' title='Flytta uppdrag' icon={ArrowRightLeftIcon} iconColor='#006bb3' />
+              <ViewHeader.Title name='Assignment' title={t('planning:move.moveAssignment')} icon={ArrowRightLeftIcon} iconColor='#006bb3' />
             </div>
           )}
         </ViewHeader.Content>
@@ -221,21 +221,21 @@ export const Move = ({ ydoc, ...props }: ViewProps & {
                   defaultChecked={searchOlder}
                   onCheckedChange={(checked: boolean) => { setSearchOlder(checked) }}
                 />
-                <Label htmlFor='SearchOlder' className='text-muted-foreground'>Visa äldre</Label>
+                <Label htmlFor='SearchOlder' className='text-muted-foreground'>{t('planning:move.showOlder')}</Label>
               </>
             </Form.Group>
             <UserMessage asDialog={!!props?.asDialog}>
               {!selectedPlanning
                 ? (
                     <div className='flex flex-col gap-4'>
-                      Väljer du ingen planering kommer en ny planering med detta uppdrag att skapas åt dig på valt datum.
+                      {t('planning:move.assignmentCreateInfo')}
                       <Form.Group icon={CalendarIcon}>
                         <DatePicker date={date} setDate={(value) => setPlanningDateString(value)} />
                       </Form.Group>
                     </div>
                   )
                 : (
-                    <>Detta uppdrag kommer läggas i den valda planeringen</>
+                    <>{t('planning:move.assignmentAddInfo')}</>
                   )}
             </UserMessage>
           </Form.Content>
@@ -244,8 +244,8 @@ export const Move = ({ ydoc, ...props }: ViewProps & {
             showVerifyDialog
             && (
               <MovePrompt
-                title='Flytta uppdrag'
-                description='Är du säker på att du vill flytta uppdraget?'
+                title={t('planning:move.moveAssignment')}
+                description={t('planning:move.moveAssignmentConfirm')}
                 selectedPlanning={selectedPlanning}
                 payload={{
                   ...payload,
@@ -268,8 +268,8 @@ export const Move = ({ ydoc, ...props }: ViewProps & {
                 onSecondary={() => {
                   setShowVerifyDialog(false)
                 }}
-                primaryLabel='Flytta'
-                secondaryLabel='Avbryt'
+                primaryLabel={t('planning:move.label')}
+                secondaryLabel={t('common:actions.abort')}
               />
             )
           }
@@ -279,8 +279,8 @@ export const Move = ({ ydoc, ...props }: ViewProps & {
               onReset={() => props.onDialogClose?.()}
             >
               <div className='flex gap-2 justify-end'>
-                <Button type='reset'>Avbryt</Button>
-                <Button type='submit'>Flytta uppdrag</Button>
+                <Button type='reset'>{t('common:actions.abort')}</Button>
+                <Button type='submit'>{t('planning:move.moveAssignment')}</Button>
               </div>
             </Form.Submit>
           </Form.Footer>
