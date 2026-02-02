@@ -32,7 +32,8 @@
     "print_done": "",
     "needs_proofreading": "",
     "withheld": "Planlagt",
-    "cancelled": "Kastet"
+    "cancelled": "Kastet",
+    "changed": "Endret"
   },
   "timeSlots": {
     "morning": "Natt",

@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next'
 
 export const Toolbar = (): JSX.Element => {
   const [filter, setFilter] = useQuery(['query'])
-  const { t } = useTranslation()
+  const { t } = useTranslation('shared')
 
   return (
     <div className='bg-table-bg flex items-center justify-between py-1 px-4 border-b sticky top-0 z-10'>
@@ -23,7 +23,7 @@ export const Toolbar = (): JSX.Element => {
                 setFilter({})
               }
             }}
-            placeholder={t('shared:toolbar.freeText')}
+            placeholder={t('toolbar.freeTextSearch')}
             className='h-9'
           />
         </Command>

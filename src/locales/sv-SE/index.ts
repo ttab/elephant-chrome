@@ -6,6 +6,7 @@ import shared from './shared.json'
 import views from './views.json'
 import editor from './editor.json'
 import workflows from './workflows.json'
+import factbox from './factbox.json'
 
 export const sv = {
   common,
@@ -15,5 +16,6 @@ export const sv = {
   shared,
   views,
   editor,
-  workflows
+  workflows,
+  factbox
 }

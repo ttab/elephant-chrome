@@ -24,7 +24,9 @@
     "unknownErrorAdminInfo": "Det har oppstått en ukjent feil, eller en feil uten feilmelding. Kontakt systemadministratoren.",
     "someError": "Noe gikk galt",
     "nameMissing": "Navn mangler",
-    "nothingFound": "Ingenting ble funnet"
+    "nothingFound": "Ingenting ble funnet",
+    "articleMissingTitle": "Artikkeldokumentet mangler",
+    "articleMissingDescription": "Ingen artikkeldokument er oppgitt. Gå tilbake til oversikten og forsøk igjen."
   },
   "misc": {
     "unknown": "ukjent",

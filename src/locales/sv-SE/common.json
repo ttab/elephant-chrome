@@ -24,7 +24,9 @@
     "unknownErrorAdminInfo": "Ett okänt fel, eller ett fel som saknar felmeddelande har uppstått. Kontakta systemadministratören.",
     "someError": "Något gick fel",
     "nameMissing": "Namn saknas",
-    "nothingFound": "Ingenting hittades"
+    "nothingFound": "Ingenting hittades",
+    "articleMissingTitle": "Artikeldokument saknas",
+    "articleMissingDescription": "Inget artikeldokument är angivet. Navigera tillbaka till översikten och försök igen."
   },
   "misc": {
     "unknown": "okänd",

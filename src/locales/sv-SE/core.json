@@ -32,7 +32,8 @@
     "print_done": "Klar",
     "needs_proofreading": "Klar för korr",
     "withheld": "Schemalagd",
-    "cancelled": "Kastad"
+    "cancelled": "Kastad",
+    "changed": "Ändrad"
   },
   "timeSlots": {
     "morning": "Morgon",

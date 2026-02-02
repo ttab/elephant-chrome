@@ -37,5 +37,12 @@
       "openPlanning": "Öppna planering"
     },
     "myAssignments": "Mina uppdrag"
+  },
+  "factboxes": {
+    "title": "Faktarutor",
+    "columnLabels": {
+      "description": "Beskrivning",
+      "lastChanged": "Senast ändrad"
+    }
   }
 }
