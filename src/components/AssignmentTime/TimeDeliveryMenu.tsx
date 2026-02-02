@@ -67,7 +67,7 @@ export const TimeDeliveryMenu = ({
             <CommandEmpty>{t('common:errors.nothingFound')}</CommandEmpty>
             <div className='flex flex-col divide-y'>
               <CommandGroup>
-                <TimeSlotItems handleOnSelect={handleOnSelect} handleParentOpenChange={handleOpenChange} assignmentType={assignmentType} />
+                <TimeSlotItems handleOnSelect={handleOnSelect} handleParentOpenChange={handleOpenChange} assignmentType={assignmentType} t={t} />
               </CommandGroup>
               {assignmentType !== 'text' && (
                 <CommandGroup>
