@@ -31,7 +31,7 @@ export const TimeSlotItems = ({ handleOnSelect, handleParentOpenChange, assignme
     }
 
     return (
-      <CommandItem key={slot.label} value={slot.label} onSelect={onSelect}>
+      <CommandItem key={slot.label} value={t(`core:timeSlots.${slot.value}`)} onSelect={onSelect}>
         <div className='flex flex-row space-x-2 items-center'>
           {slot?.icon && <slot.icon {...slot.iconProps} />}
           <div>{t(`core:timeSlots.${slot.value}`)}</div>
