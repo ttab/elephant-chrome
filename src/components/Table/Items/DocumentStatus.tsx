@@ -13,7 +13,7 @@ export const DocumentStatus = ({ type, status }: {
 
   const label = isVisualAssignmentType(type)
     ? t(`planning:assignment.status.${visualStatus?.value}`) || null
-    : t(`core:labels.${status}`)
+    : t(`core:status.${status}`)
 
   const docStatus = isVisualAssignmentType(type)
     ? { ...visualStatus, ...visualStatus?.iconProps }

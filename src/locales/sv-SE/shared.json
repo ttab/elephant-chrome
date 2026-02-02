@@ -57,9 +57,12 @@
     "addAssignmentToPlanningError": "Det gick inte att lägga till uppdraget i en kopplad planering"
   },
   "operations": {
+    "authorCreateSuccess": "Författardokument är skapat",
     "authorUpdateSuccess": "Författardokument har uppdaterats",
     "authorSaveSuccess": "Författardokument har sparats",
     "authorUpdateFailure": "Kunde inte uppdatera författardokument: {{errorMessage}}",
-    "authorSaveFailure": "Kunde inte spara författardokument: {{errorMessage}}"
+    "authorSaveFailure": "Kunde inte skapa författardokument: {{errorMessage}}",
+    "authorCreateFailure": "Kunde inte skapa författardokument: Failed to create author doc",
+    "authorCreateUndefinedFailed": "Kunde inte skapa författardokument: Failed to fetch author document: undefined"
   }
 }

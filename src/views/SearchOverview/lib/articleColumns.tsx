@@ -28,7 +28,7 @@ export function articleColumns({ sections = [] }: {
         columnIcon: CircleCheckIcon,
         className: 'flex-none',
         display: (value: string) => {
-          const statusLabel = t?.(`core:labels.${value}`)
+          const statusLabel = t?.(`core:status.${value}`)
 
           return <span>{statusLabel}</span>
         }

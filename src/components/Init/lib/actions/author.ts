@@ -95,7 +95,6 @@ export async function initializeAuthor({ url, session, repository, t }: {
     return true
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
-    // toast.error(`Kunde inte ${operation === 'update' ? 'uppdatera' : 'skapa'} författardokument: ${errorMessage}`)
     if (operation === 'update') {
       toast.error(t('shared:operations.authorUpdateFailure', { errorMessage }))
     } else {
@@ -116,7 +115,7 @@ export async function initializeAuthor({ url, session, repository, t }: {
  */
 function verifyAuthorDoc(document: IndexSearchResult<Author>, envRole: 'stage' | 'prod', session: Session, t: TFunction): boolean | undefined {
   if (document.hits?.length > 1) {
-    toast.error(t('shared:operations.multipleAuthors'))
+    toast.error(t('shared:errors.multipleAuthors'))
     throw new Error(`More than one author document found for sub: ${session.user.sub} email: ${session.user.email}`)
   }
 
