@@ -90,7 +90,7 @@ export const Assignments = (): JSX.Element => {
 
         <ViewHeader.Root>
           <ViewHeader.Content>
-            <ViewHeader.Title name={meta.name} title='Uppdrag' />
+            <ViewHeader.Title name={meta.name} title={t('views:assignments.title')} />
             <Header type={meta.name} assigneeId={assigneeId} />
           </ViewHeader.Content>
 

@@ -17,6 +17,9 @@
     "type": "Typ",
     "organiser": "Organisatör",
     "category": "Kategori",
+    "action": "Action"
+  },
+  "status": {
     "action": {
       "publish": "Publicera"
     },
@@ -36,6 +39,7 @@
     "morning": "Morgon",
     "forenoon": "Förmiddag",
     "afternoon": "Eftermiddag",
-    "evening": "Kväll"
+    "evening": "Kväll",
+    "fullDay": "Heldag"
   }
 }
