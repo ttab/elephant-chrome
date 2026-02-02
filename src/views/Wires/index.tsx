@@ -12,6 +12,7 @@ import { useWireViewState } from './hooks/useWireViewState'
 import type { WireStatus } from './lib/setWireStatus'
 import { calculateWireStatuses, executeWiresStatuses } from './lib/setWireStatus'
 import { useSession } from 'next-auth/react'
+import { toast } from 'sonner'
 
 const BASE_URL = import.meta.env.BASE_URL
 
@@ -130,9 +131,34 @@ export const Wires = (): JSX.Element => {
       ? [...selectedWires]
       : focusedWire ? [focusedWire] : []
     const nextStatuses = calculateWireStatuses(wires, newStatus)
-    void executeWiresStatuses(repository, session, nextStatuses)
+
+    // Store currently focused element
+    const activeElement = document.activeElement as HTMLElement
+    const focusedItemId = activeElement?.getAttribute('data-item-id')
+
+    // Clear selected statuses and start mutations
     setStatusMutations(nextStatuses)
     setSelectedWires([])
+
+    // Execute wire status changes and wait for completion.
+    // Using setTimeout for to avoid the progress spinner to blink and disappear too quickly.
+    void executeWiresStatuses(repository, session, nextStatuses).then((result) => {
+      setTimeout(() => {
+        setStatusMutations([])
+
+        // Restore focus if we had a focused item
+        if (focusedItemId) {
+          requestAnimationFrame(() => {
+            const elementToFocus = document.querySelector(`[data-item-id="${focusedItemId}"]`) as HTMLElement
+            elementToFocus?.focus()
+          })
+        }
+      }, 100)
+
+      if (result.find((r) => !r.statusSet)) {
+        toast.error('Någon eller några status-ändringar misslyckades!')
+      }
+    })
   }, [selectedWires, focusedWire, repository, session])
 
   const handleKeyDown = useCallback((event: React.KeyboardEvent<HTMLElement>) => {
@@ -192,6 +218,7 @@ export const Wires = (): JSX.Element => {
                   onUnpress={handleOnUnpress}
                   onFocus={handleOnFocus}
                   selectedWires={selectedWires}
+                  statusMutations={statusMutations}
                   onToggleWire={handleToggleWire}
                   onRemove={removeStream}
                   onFilterChange={setFilter}

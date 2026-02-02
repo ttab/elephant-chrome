@@ -4,21 +4,39 @@ import type { Wire } from '@/shared/schemas/wire'
 import { getWireStatus } from '@/lib/getWireStatus'
 
 type WireStatusName = 'draft' | 'read' | 'saved' | 'used'
+
 export type WireStatus = {
   uuid: string
   name: WireStatusName
   version: bigint
 }
 
+type WireStatusResult = {
+  uuid: string
+  statusSet: boolean
+}
+
 /**
- * FIXME:
- * This function should return a promise that resolves with a list of uuid and true/false
- * depending on whether the status update was successful.
+ * Updates wire statuses and returns results indicating success/failure for each wire
  */
-export function executeWiresStatuses(repository: Repository, session: Session, wireStatuses: WireStatus[]) {
-  for (const wireStatus of wireStatuses) {
-    void setWireStatus(repository, session, wireStatus)
-  }
+export async function executeWiresStatuses(
+  repository: Repository,
+  session: Session,
+  wireStatuses: WireStatus[]
+): Promise<WireStatusResult[]> {
+  const results = await Promise.allSettled(
+    wireStatuses.map((wireStatus) =>
+      setWireStatus(repository, session, wireStatus)
+        .then(() => ({ uuid: wireStatus.uuid, statusSet: true }))
+        .catch(() => ({ uuid: wireStatus.uuid, statusSet: false }))
+    )
+  )
+
+  return results.map((result) =>
+    result.status === 'fulfilled'
+      ? result.value
+      : { uuid: '', statusSet: false }
+  )
 }
 
 async function setWireStatus(repository: Repository, session: Session, status: WireStatus) {
@@ -33,12 +51,12 @@ async function setWireStatus(repository: Repository, session: Session, status: W
   })
 }
 
-
 export function calculateWireStatuses(wires: Wire[], newStatus: WireStatusName) {
   // Find out if all wires have the same status
   const currentStatuses = wires.map((wire) => getWireStatus(wire)).filter(Boolean)
   const singleValue = [...new Set(currentStatuses)].length === 1
 
+  // Calculate next status for each wire
   const nextStatuses: WireStatus[] = []
   for (const wire of wires) {
     const currentVersion = wire.fields?.['current_version']?.values?.[0]

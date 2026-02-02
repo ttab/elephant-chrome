@@ -17,6 +17,7 @@ import {
 import { FilterValue } from './Filter/FilterValue'
 import { FilterMenu } from './Filter/FilterMenu'
 import { type WireStream } from '../hooks/useWireViewState'
+import type { WireStatus } from '../lib/setWireStatus'
 
 export const Stream = ({
   wireStream,
@@ -24,6 +25,7 @@ export const Stream = ({
   onUnpress,
   onPress,
   selectedWires,
+  statusMutations,
   onToggleWire,
   onRemove,
   onFilterChange,
@@ -34,6 +36,7 @@ export const Stream = ({
   onUnpress?: (item: Wire, event: React.KeyboardEvent<HTMLElement>) => void
   onPress?: (item: Wire, event: React.MouseEvent<HTMLElement> | React.KeyboardEvent<HTMLElement>) => void
   selectedWires: Wire[]
+  statusMutations: WireStatus[]
   onToggleWire: (wire: Wire, isSelected: boolean) => void
   onRemove?: (streamId: string) => void
   onFilterChange?: (streamId: string, type: string, values: string[]) => void
@@ -110,6 +113,7 @@ export const Stream = ({
             streamId={wireStream.uuid}
             entry={row.original}
             isSelected={row.getIsSelected()}
+            statusMutation={statusMutations.find((mutation) => mutation.uuid === row.original.id)}
             onToggleSelected={row.getToggleSelectedHandler()}
             onPress={onPress}
             onUnpress={onUnpress}
@@ -118,7 +122,7 @@ export const Stream = ({
         )
       }
     ],
-    [wireStream.uuid, onPress, onUnpress, onFocus]
+    [wireStream.uuid, onPress, onUnpress, onFocus, statusMutations]
   )
 
   const getRowId = useCallback((row: Wire) => row.id, [])

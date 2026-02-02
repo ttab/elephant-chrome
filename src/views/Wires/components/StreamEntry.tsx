@@ -3,13 +3,15 @@ import type { Wire } from '@/shared/schemas/wire'
 import { cn } from '@ttab/elephant-ui/utils'
 import { cva } from 'class-variance-authority'
 import { Button } from '@ttab/elephant-ui'
-import { SquareCheckIcon, SquareIcon } from '@ttab/elephant-ui/icons'
+import { RefreshCwIcon, SquareCheckIcon, SquareIcon } from '@ttab/elephant-ui/icons'
 import { getWireStatus } from '@/lib/getWireStatus'
+import type { WireStatus } from '../lib/setWireStatus'
 
 export const StreamEntry = ({
   streamId,
   entry,
   isSelected,
+  statusMutation,
   onToggleSelected,
   onFocus,
   onUnpress,
@@ -18,6 +20,7 @@ export const StreamEntry = ({
   streamId: string
   entry: Wire
   isSelected: boolean
+  statusMutation: WireStatus | undefined
   onToggleSelected: (event: unknown) => void
   onFocus?: (item: Wire, event: React.FocusEvent<HTMLElement>) => void
   onUnpress?: (item: Wire, event: React.KeyboardEvent<HTMLElement>) => void
@@ -107,14 +110,20 @@ export const StreamEntry = ({
         </StreamEntryCell>
         <StreamEntryCell className={cn(
           'transition-[padding] duration-100',
-          isSelected ? 'last:pe-8' : 'group-has-[.checkbox-button:hover]:last:pe-8'
+          isSelected || statusMutation ? 'last:pe-8' : 'group-has-[.checkbox-button:hover]:last:pe-8'
         )}
         >
           {entry.fields['document.title'].values[0] ?? 'No title'}
         </StreamEntryCell>
       </div>
 
-      {status !== 'used' && (
+      {statusMutation && (
+        <div className='checkbox-button absolute right-0 top-1.5 h-7 w-7 p-1 rounded opacity-40'>
+          <RefreshCwIcon size={16} strokeWidth={2.25} className='animate-spin' />
+        </div>
+      )}
+
+      {!statusMutation && status !== 'used' && (
         <Button
           variant='icon'
           size='lg'
