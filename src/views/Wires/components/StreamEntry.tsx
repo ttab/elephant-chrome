@@ -4,7 +4,7 @@ import { cn } from '@ttab/elephant-ui/utils'
 import { cva } from 'class-variance-authority'
 import { Button } from '@ttab/elephant-ui'
 import { SquareCheckIcon, SquareIcon } from '@ttab/elephant-ui/icons'
-import { getWireStatus } from '@/components/Table/lib/getWireStatus'
+import { getWireStatus } from '@/lib/getWireStatus'
 
 export const StreamEntry = ({
   streamId,
@@ -49,7 +49,7 @@ export const StreamEntry = ({
     onToggleSelected(e)
   }, [onToggleSelected])
 
-  const status = getWireStatus('Wires', entry)
+  const status = getWireStatus(entry)
 
   const variants = cva(
     `
