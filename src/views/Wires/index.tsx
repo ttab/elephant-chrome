@@ -9,7 +9,7 @@ import type { Wire } from '@/shared/schemas/wire'
 import { Preview } from './components/Preview'
 import { WiresToolbar } from './components/WiresToolbar'
 import { useWireViewState } from './hooks/useWireViewState'
-import { setWireStatus } from './lib/setWireStatus'
+import { setWiresStatuses } from './lib/setWireStatus'
 import { useSession } from 'next-auth/react'
 
 const BASE_URL = import.meta.env.BASE_URL
@@ -127,21 +127,8 @@ export const Wires = (): JSX.Element => {
     const wires = selectedWires.length
       ? [...selectedWires]
       : focusedWire ? [focusedWire] : []
-
-    for (const wire of wires) {
-      const currentVersion = wire.fields?.['current_version']?.values?.[0]
-      if (!currentVersion) {
-        continue
-      }
-
-      void setWireStatus(repository, session, {
-        uuid: wire.id,
-        version: BigInt(currentVersion),
-        name: newStatus
-      })
-
-      setSelectedWires([])
-    }
+    void setWiresStatuses(repository, session, wires, newStatus)
+    setSelectedWires([])
   }, [selectedWires, focusedWire, repository, session])
 
   const handleKeyDown = useCallback((event: React.KeyboardEvent<HTMLElement>) => {
