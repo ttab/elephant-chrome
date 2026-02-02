@@ -211,7 +211,7 @@ export const Wires = (): JSX.Element => {
           <div className='absolute top-1 left-0 right-0 flex justify-center items-center'>
             <div className='border bg-background rounded-lg text-sm px-5 py-3 shadow-xl flex flex-col items-center gap-1'>
               <div className='flex flex-row items-center gap-2 justify-items-center text-center'>
-                <div className='overflow-hidden truncate max-w-100 min-w-80'>
+                <div className='overflow-hidden truncate max-w-100 min-w-60'>
                   {`${selectedWires[0].fields['document.title']?.values[0]}`}
                 </div>
 
