@@ -1,4 +1,4 @@
-import { type JSX, useMemo, useCallback, useState } from 'react'
+import { type JSX, useMemo, useCallback, useState, useRef, useEffect } from 'react'
 import { fields, type Wire, type WireFields } from '@/shared/schemas/wire'
 import { useDocuments } from '@/hooks/index/useDocuments'
 import { constructQuery } from '../lib/constructQuery'
@@ -18,6 +18,8 @@ import { FilterValue } from './Filter/FilterValue'
 import { FilterMenu } from './Filter/FilterMenu'
 import { type WireStream } from '../hooks/useWireViewState'
 import type { WireStatus } from '../lib/setWireStatus'
+
+const PAGE_SIZE = 80
 
 export const Stream = ({
   wireStream,
@@ -42,21 +44,69 @@ export const Stream = ({
   onFilterChange?: (streamId: string, type: string, values: string[]) => void
   onClearFilter?: (streamId: string, type: string) => void
 }): JSX.Element => {
-  const [page] = useState(1)
+  const [page, setPage] = useState(1)
+  const [allData, setAllData] = useState<Wire[]>([])
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
+  const loadingRef = useRef(false)
 
   const query = useMemo(() => constructQuery(wireStream.filters), [wireStream.filters])
   const sort = useMemo(() => [SortingV1.create({ field: 'modified', desc: true })], [])
   const options = useMemo(() => ({ setTableData: true, subscribe: true }), [])
 
-  const { data } = useDocuments<Wire, WireFields>({
+  const { data, isLoading } = useDocuments<Wire, WireFields>({
     documentType: 'tt/wire',
-    size: 40,
+    size: PAGE_SIZE,
     query,
-    page: typeof page === 'string' ? parseInt(page) : undefined,
+    page,
     fields,
     sort,
     options
   })
+
+  // Merge new data with existing data
+  useEffect(() => {
+    if (data && !isLoading) {
+      setAllData((prev) => {
+        if (page === 1) {
+          return data
+        }
+
+        // Merge and deduplicate by wire ID
+        const existingIds = new Set(prev.map((w) => w.id))
+        const newWires = data.filter((w) => !existingIds.has(w.id))
+        return [...prev, ...newWires]
+      })
+      loadingRef.current = false
+    }
+  }, [data, isLoading, page])
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setPage(1)
+    setAllData([])
+  }, [wireStream.filters])
+
+  // Infinite scroll handler
+  useEffect(() => {
+    const scrollContainer = scrollContainerRef.current
+    if (!scrollContainer) return
+
+    const handleScroll = () => {
+      if (loadingRef.current || isLoading) return
+
+      const { scrollTop, scrollHeight, clientHeight } = scrollContainer
+      const distanceFromBottom = scrollHeight - scrollTop - clientHeight
+
+      // Load more when within 300px of the bottom
+      if (distanceFromBottom < 300 && data && data.length === PAGE_SIZE) {
+        loadingRef.current = true
+        setPage((prev) => prev + 1)
+      }
+    }
+
+    scrollContainer.addEventListener('scroll', handleScroll)
+    return () => scrollContainer.removeEventListener('scroll', handleScroll)
+  }, [isLoading, data])
 
   // Convert selected wires array to TanStack Table format
   const rowSelection = useMemo<RowSelectionState>(() => {
@@ -76,7 +126,7 @@ export const Stream = ({
     Object.keys(newSelection).forEach((wireId) => {
       if (newSelection[wireId] && !rowSelection[wireId]) {
         // Newly selected
-        const wire = data?.find((w) => w.id === wireId)
+        const wire = allData?.find((w) => w.id === wireId)
         if (wire) onToggleWire(wire, true)
       }
     })
@@ -85,11 +135,11 @@ export const Stream = ({
     Object.keys(rowSelection).forEach((wireId) => {
       if (!newSelection[wireId]) {
         // Deselected
-        const wire = data?.find((w) => w.id === wireId)
+        const wire = allData?.find((w) => w.id === wireId)
         if (wire) onToggleWire(wire, false)
       }
     })
-  }, [rowSelection, data, onToggleWire])
+  }, [rowSelection, allData, onToggleWire])
 
   const removeThisWire = useCallback(() => {
     onRemove?.(wireStream.uuid)
@@ -130,7 +180,7 @@ export const Stream = ({
   const emptyData = useMemo(() => [], [])
 
   const table = useReactTable({
-    data: data ?? emptyData,
+    data: allData ?? emptyData,
     columns,
     state: { rowSelection },
     enableRowSelection: true,
@@ -167,7 +217,7 @@ export const Stream = ({
         </div>
       </div>
 
-      <div className='flex-1 basis-0 overflow-y-auto bg-muted'>
+      <div ref={scrollContainerRef} className='flex-1 basis-0 overflow-y-auto bg-muted'>
         <div className='flex flex-col divide-y'>
           {table.getRowModel().rows.map((row) => (
             <div key={row.id}>
@@ -177,6 +227,12 @@ export const Stream = ({
               )}
             </div>
           ))}
+
+          {isLoading && page > 1 && (
+            <div className='py-4 text-center text-sm text-muted-foreground'>
+              Laddar fler...
+            </div>
+          )}
         </div>
       </div>
     </div>
