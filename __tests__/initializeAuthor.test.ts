@@ -5,6 +5,7 @@ import { Index } from '@/shared/Index'
 import type { Repository } from '@/shared/Repository'
 import { toast } from 'sonner'
 import type { Session } from 'next-auth'
+import i18n from '@/lib/i18n'
 
 vi.mock('@/shared/Index')
 vi.mock('@/shared/Repository')
@@ -57,7 +58,8 @@ describe('initializeAuthor', () => {
     const result = await initializeAuthor({
       url: mockUrl,
       session: mockSession,
-      repository: mockRepository
+      repository: mockRepository,
+      t: i18n.t
     })
 
     expect(result).toBe(true)
@@ -71,7 +73,8 @@ describe('initializeAuthor', () => {
     const result = await initializeAuthor({
       url: mockUrl,
       session: mockSession,
-      repository: mockRepository
+      repository: mockRepository,
+      t: i18n.t
     })
 
     expect(result).toBe(true)
@@ -87,7 +90,8 @@ describe('initializeAuthor', () => {
     const result = await initializeAuthor({
       url: mockUrl,
       session: mockSession,
-      repository: mockRepository
+      repository: mockRepository,
+      t: i18n.t
     })
 
     expect(result).toBe(true)
@@ -112,7 +116,8 @@ describe('initializeAuthor', () => {
       initializeAuthor({
         url: mockUrl,
         session: mockSession,
-        repository: mockRepository
+        repository: mockRepository,
+        t: i18n.t
       })
     ).rejects.toThrow('Failed to initialize author: Failed to create author doc')
 
@@ -126,7 +131,8 @@ describe('initializeAuthor', () => {
       initializeAuthor({
         url: mockUrl,
         session: mockSession,
-        repository: mockRepository
+        repository: mockRepository,
+        t: i18n.t
       })
     ).rejects.toThrow('More than one author document found')
 
@@ -141,7 +147,8 @@ describe('initializeAuthor', () => {
       initializeAuthor({
         url: mockUrl,
         session: mockSession,
-        repository: mockRepository
+        repository: mockRepository,
+        t: i18n.t
       })
     ).rejects.toThrow('Failed to initialize author: Failed to fetch author document: undefined')
 
