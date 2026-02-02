@@ -7,6 +7,7 @@
     "createPrintArticle": "Skapa printartikel",
     "removeAssignment": "Vill du ta bort uppdraget",
     "chooseTime": "Välj tid",
+    "timeFromTo": "Tid från-till",
     "actions": {
       "addAssignment": "Lägg till uppdrag",
       "addAssignee": "Lägg till uppdragstagare"

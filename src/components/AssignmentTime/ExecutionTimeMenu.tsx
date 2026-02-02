@@ -201,7 +201,7 @@ export const ExecutionTimeMenu = ({ handleOnSelect, assignment, startDate }: Exe
           <div>
             <div className='flex pt-2 pb-2'>
               <Switch onCheckedChange={handleHasEndTime} checked={hasEndTime} className='self-center'></Switch>
-              <label className='text-sm self-center p-2'>Tid från-till</label>
+              <label className='text-sm self-center p-2'>{t('planning:assignment.timeFromTo')}</label>
             </div>
             <div className='flex justify-between border-2 rounded-md border-slate-100'>
               <div className='px-3 py-2 text-sm'>
