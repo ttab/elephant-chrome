@@ -18,6 +18,7 @@ import { FilterValue } from './Filter/FilterValue'
 import { FilterMenu } from './Filter/FilterMenu'
 import { type WireStream } from '../hooks/useWireViewState'
 import type { WireStatus } from '../lib/setWireStatus'
+import { StreamGroupHeader } from './StreamGroupHeader'
 
 const PAGE_SIZE = 80
 
@@ -218,15 +219,43 @@ export const Stream = ({
       </div>
 
       <div ref={scrollContainerRef} className='flex-1 basis-0 overflow-y-auto bg-muted'>
-        <div className='flex flex-col divide-y'>
-          {table.getRowModel().rows.map((row) => (
-            <div key={row.id}>
-              {flexRender(
-                row.getVisibleCells()[0].column.columnDef.cell,
-                row.getVisibleCells()[0].getContext()
-              )}
-            </div>
-          ))}
+        <div className='flex flex-col'>
+          {table.getRowModel().rows.map((row, index) => {
+            const currentWire = row.original
+            const currentDate = new Date(currentWire.fields.modified.values[0])
+            const prevWire = index > 0 ? table.getRowModel().rows[index - 1].original : null
+            const prevDate = prevWire ? new Date(prevWire.fields.modified.values[0]) : null
+
+            const showDateHeader = !prevDate || currentDate.toDateString() !== prevDate.toDateString()
+            const showTimeHeader = !showDateHeader && prevDate && currentDate.getHours() !== prevDate.getHours()
+
+            return (
+              <div key={row.id}>
+                {showDateHeader && (
+                  <StreamGroupHeader
+                    date={currentDate.toLocaleDateString('sv-SE', {
+                      weekday: 'short',
+                      year: 'numeric',
+                      month: 'short',
+                      day: 'numeric'
+                    })}
+                    time={`${currentDate.getHours().toString().padStart(2, '0')}:00`}
+                  />
+                )}
+                {showTimeHeader && (
+                  <StreamGroupHeader
+                    time={`${currentDate.getHours().toString().padStart(2, '0')}:00`}
+                  />
+                )}
+                <div className='border-b last:border-b-0'>
+                  {flexRender(
+                    row.getVisibleCells()[0].column.columnDef.cell,
+                    row.getVisibleCells()[0].getContext()
+                  )}
+                </div>
+              </div>
+            )
+          })}
 
           {isLoading && page > 1 && (
             <div className='py-4 text-center text-sm text-muted-foreground'>

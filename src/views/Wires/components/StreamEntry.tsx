@@ -1,4 +1,4 @@
-import { useCallback, type JSX, type ReactNode } from 'react'
+import { useCallback, type JSX } from 'react'
 import type { Wire } from '@/shared/schemas/wire'
 import { cn } from '@ttab/elephant-ui/utils'
 import { cva } from 'class-variance-authority'
@@ -6,6 +6,7 @@ import { Button } from '@ttab/elephant-ui'
 import { RefreshCwIcon, SquareCheckIcon, SquareIcon } from '@ttab/elephant-ui/icons'
 import { getWireStatus } from '@/lib/getWireStatus'
 import type { WireStatus } from '../lib/setWireStatus'
+import { StreamEntryCell } from './StreamEntryCell'
 
 export const StreamEntry = ({
   streamId,
@@ -63,6 +64,7 @@ export const StreamEntry = ({
       grid-cols-[3rem_1fr]
       gap-3 border-s-[7px]
       bg-background
+      border-b
       text-[0.785rem]
       subpixel-antialiased
       cursor-default
@@ -95,7 +97,7 @@ export const StreamEntry = ({
   const compositeId = `${streamId}:${entry.id}`
 
   return (
-    <div className='relative group'>
+    <div className='group relative'>
       <div
         data-item-id={compositeId}
         data-entry-id={entry.id}
@@ -142,24 +144,6 @@ export const StreamEntry = ({
             : <SquareIcon size={22} strokeWidth={1.85} />}
         </Button>
       )}
-    </div>
-  )
-}
-
-const StreamEntryCell = ({ children, className }: {
-  children: ReactNode
-  className?: string
-}): JSX.Element => {
-  return (
-    <div
-      className={cn(
-        'px-2 py-2',
-        'first:ps-4 first:font-thin first:opacity-65',
-        'last:pe-4 last:truncate last:min-w-0 last:tracking-[0.015em]',
-        className
-      )}
-    >
-      {children}
     </div>
   )
 }
