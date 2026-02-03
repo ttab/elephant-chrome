@@ -105,8 +105,8 @@ describe('Additionals', () => {
   it('renders additionals with checkboxes', () => {
     const mockSetAdditionals = vi.fn()
     const mockAdditionals = [
-      { name: 'Feature 1', value: 'true' },
-      { name: 'Feature 2', value: 'false' }
+      Block.create({ type: 'tt/print-feature', name: 'Feature 1', value: 'true' }),
+      Block.create({ type: 'tt/print-feature', name: 'Feature 2', value: 'false' })
     ]
 
     vi.mocked(useYValue)
@@ -134,8 +134,8 @@ describe('Additionals', () => {
     const user = userEvent.setup()
     const mockSetAdditionals = vi.fn()
     const mockAdditionals = [
-      { name: 'Feature 1', value: 'false' },
-      { name: 'Feature 2', value: 'false' }
+      Block.create({ type: 'tt/print-feature', name: 'Feature 1', value: 'false' }),
+      Block.create({ type: 'tt/print-feature', name: 'Feature 2', value: 'false' })
     ]
 
     vi.mocked(useYValue)
@@ -154,8 +154,8 @@ describe('Additionals', () => {
     await user.click(checkbox1)
 
     expect(mockSetAdditionals).toHaveBeenCalledWith([
-      { name: 'Feature 1', value: 'true' },
-      { name: 'Feature 2', value: 'false' }
+      expect.objectContaining({ name: 'Feature 1', value: 'true', type: 'tt/print-feature' }),
+      expect.objectContaining({ name: 'Feature 2', value: 'false', type: 'tt/print-feature' })
     ])
   })
 
@@ -163,8 +163,8 @@ describe('Additionals', () => {
     const user = userEvent.setup()
     const mockSetAdditionals = vi.fn()
     const mockAdditionals = [
-      { name: 'Feature 1', value: 'true' },
-      { name: 'Feature 2', value: 'false' }
+      Block.create({ type: 'tt/print-feature', name: 'Feature 1', value: 'true' }),
+      Block.create({ type: 'tt/print-feature', name: 'Feature 2', value: 'false' })
     ]
 
     vi.mocked(useYValue)
@@ -183,8 +183,8 @@ describe('Additionals', () => {
     await user.click(checkbox1)
 
     expect(mockSetAdditionals).toHaveBeenCalledWith([
-      { name: 'Feature 1', value: 'false' },
-      { name: 'Feature 2', value: 'false' }
+      expect.objectContaining({ name: 'Feature 1', value: 'false', type: 'tt/print-feature' }),
+      expect.objectContaining({ name: 'Feature 2', value: 'false', type: 'tt/print-feature' })
     ])
   })
 
@@ -207,7 +207,7 @@ describe('Additionals', () => {
     expect(screen.getByLabelText('Feature 1')).toBeInTheDocument()
   })
 
-  it('does not update when articleAdditionals is undefined', async () => {
+  it('adds new item when articleAdditionals is undefined', async () => {
     const user = userEvent.setup()
     const mockSetAdditionals = vi.fn()
 
@@ -229,8 +229,64 @@ describe('Additionals', () => {
     const checkbox1 = screen.getByLabelText('Feature 1')
     await user.click(checkbox1)
 
-    // Should not call setter when articleAdditionals is undefined
-    expect(mockSetAdditionals).not.toHaveBeenCalled()
+    // Should create a new array with the checked item
+    expect(mockSetAdditionals).toHaveBeenCalledWith([
+      expect.objectContaining({ type: 'tt/print-feature', name: 'Feature 1', value: 'true' })
+    ])
+  })
+
+  it('adds new item when it does not exist in articleAdditionals', async () => {
+    const user = userEvent.setup()
+    const mockSetAdditionals = vi.fn()
+    const mockAdditionals = [
+      Block.create({ type: 'tt/print-feature', name: 'Feature 1', value: 'true' })
+    ]
+
+    vi.mocked(useYValue)
+      .mockReturnValueOnce([mockAdditionals, mockSetAdditionals]) // articleAdditionals with only Feature 1
+      .mockReturnValueOnce(['test-slot', vi.fn()]) // articleLayoutName
+
+    render(
+      <Additionals
+        ydoc={mockYdoc}
+        basePath='root.links[0].data.articles[0]'
+        layout={mockLayout}
+      />
+    )
+
+    const checkbox2 = screen.getByLabelText('Feature 2')
+    await user.click(checkbox2)
+
+    // Should add Feature 2 to the existing array
+    expect(mockSetAdditionals).toHaveBeenCalledWith([
+      expect.objectContaining({ type: 'tt/print-feature', name: 'Feature 1', value: 'true' }),
+      expect.objectContaining({ type: 'tt/print-feature', name: 'Feature 2', value: 'true' })
+    ])
+  })
+
+  it('adds item when articleAdditionals is empty array', async () => {
+    const user = userEvent.setup()
+    const mockSetAdditionals = vi.fn()
+
+    vi.mocked(useYValue)
+      .mockReturnValueOnce([[], mockSetAdditionals]) // empty array
+      .mockReturnValueOnce(['test-slot', vi.fn()]) // articleLayoutName
+
+    render(
+      <Additionals
+        ydoc={mockYdoc}
+        basePath='root.links[0].data.articles[0]'
+        layout={mockLayout}
+      />
+    )
+
+    const checkbox1 = screen.getByLabelText('Feature 1')
+    await user.click(checkbox1)
+
+    // Should create a new array with the checked item
+    expect(mockSetAdditionals).toHaveBeenCalledWith([
+      expect.objectContaining({ type: 'tt/print-feature', name: 'Feature 1', value: 'true' })
+    ])
   })
 })
 
