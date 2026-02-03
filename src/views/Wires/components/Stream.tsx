@@ -64,11 +64,13 @@ export const Stream = ({
     options
   })
 
+  // Merge new data with existing data
   useEffect(() => {
     if (data && !isLoading) {
       setAllData((prev) => {
         if (page === 1) return data
 
+        // Merge and deduplicate by wire ID
         const existingIds = new Set(prev.map((w) => w.id))
         const newWires = data.filter((w) => !existingIds.has(w.id))
         return [...prev, ...newWires]
@@ -77,11 +79,13 @@ export const Stream = ({
     }
   }, [data, isLoading, page])
 
+  // Reset to page 1 when filters change
   useEffect(() => {
     setPage(1)
     setAllData([])
   }, [wireStream.filters])
 
+  // Infinite scroll handler
   useEffect(() => {
     const scrollContainer = scrollContainerRef.current
     if (!scrollContainer) return
@@ -92,6 +96,7 @@ export const Stream = ({
       const { scrollTop, scrollHeight, clientHeight } = scrollContainer
       const distanceFromBottom = scrollHeight - scrollTop - clientHeight
 
+      // Load more when within 300px of the bottom
       if (distanceFromBottom < 300 && data && data.length === PAGE_SIZE) {
         loadingRef.current = true
         setPage((prev) => prev + 1)
@@ -102,6 +107,7 @@ export const Stream = ({
     return () => scrollContainer.removeEventListener('scroll', handleScroll)
   }, [isLoading, data])
 
+  // Convert selected wires array to TanStack Table format
   const rowSelection = useMemo<RowSelectionState>(() => {
     const selection: RowSelectionState = {}
     selectedWires.forEach((wire) => {
@@ -115,6 +121,7 @@ export const Stream = ({
       ? updaterOrValue(rowSelection)
       : updaterOrValue
 
+    // Check each row in the new selection
     Object.keys(newSelection).forEach((wireId) => {
       if (newSelection[wireId] && !rowSelection[wireId]) {
         const wire = allData.find((w) => w.id === wireId)
@@ -122,6 +129,7 @@ export const Stream = ({
       }
     })
 
+    // Check for deselections
     Object.keys(rowSelection).forEach((wireId) => {
       if (!newSelection[wireId]) {
         const wire = allData.find((w) => w.id === wireId)

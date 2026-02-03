@@ -34,12 +34,12 @@ export const StreamEntry = ({
   }, [entry, onPress])
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLElement>) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault()
       onPress?.(entry, e)
-    } else if (e.key === ' ') {
-      e.preventDefault()
+    } else if (e.key === 'm') {
       if (status !== 'used') {
+        e.preventDefault()
         onToggleSelected(e)
       }
     } else if (e.key === 'Escape') {
