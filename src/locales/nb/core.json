@@ -29,7 +29,8 @@
     "unpublished": "Avpublisert",
     "done": "Ferdig",
     "withheld": "Planlagt",
-    "cancelled": "Kastet"
+    "cancelled": "Kastet",
+    "changed": "Endret"
   },
   "timeSlots": {
     "morning": "Natt",

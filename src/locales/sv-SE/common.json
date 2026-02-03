@@ -17,7 +17,9 @@
   },
   "errors": {
     "unknown": "Okänt fel",
-    "unwellEnvironment": "Du har blivit utloggad eller tappat kontakt med systemet. Vänligen försök logga in igen."
+    "unwellEnvironment": "Du har blivit utloggad eller tappat kontakt med systemet. Vänligen försök logga in igen.",
+    "articleMissingTitle": "Artikeldokument saknas",
+    "articleMissingDescription": "Inget artikeldokument är angivet. Navigera tillbaka till översikten och försök igen."
   },
   "misc": {
     "unknown": "okänd",

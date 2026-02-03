@@ -6,5 +6,8 @@
     "doneBy": "Klar av {{author}}",
     "createdBy": "Skapad av {{author}}",
     "approvedBy": "Godkänd av {{author}}"
+  },
+  "toolbar": {
+    "freeTextSearch": "Fritextsökning"
   }
 }
