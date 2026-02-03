@@ -31,7 +31,6 @@ import { NewItems } from './NewItems'
 import { LoadingText } from '../LoadingText'
 import { Row } from './Row'
 import { useModal } from '../Modal/useModal'
-import { PreviewSheet } from '../PreviewSheet'
 import type { Wire as WireType } from '@/shared/schemas/wire'
 import { Wire } from '@/views/Wire'
 import { GroupedRows } from './GroupedRows'
@@ -94,33 +93,7 @@ export const Table = <TData, TValue>({
   const { showModal, hideModal, currentModal } = useModal()
   const [, setDocumentStatus] = useWorkflowStatus({})
 
-  const handlePreview = useCallback((row: RowType<unknown>): void => {
-    row.toggleSelected(true)
-
-    const originalId = (row.original as { id: string }).id
-
-    showModal(
-      <PreviewSheet
-        id={originalId}
-        wire={row.original as WireType}
-        textOnly
-        handleClose={hideModal}
-      />,
-      'sheet',
-      {
-        id: originalId
-      },
-      'right'
-    )
-  }, [hideModal, showModal])
-
-
   const handleOpen = useCallback((event: MouseEvent<HTMLTableRowElement> | KeyboardEvent, row: RowType<unknown>): void => {
-    if (type === 'Wires') {
-      handlePreview(row)
-      return
-    }
-
     const target = event.target as HTMLElement
     if (target && 'dataset' in target && !target.dataset.rowAction) {
       if (!onRowSelected) {
@@ -154,7 +127,7 @@ export const Table = <TData, TValue>({
         })
       })
     }
-  }, [dispatch, state.viewRegistry, onRowSelected, origin, type, history, handlePreview, searchType])
+  }, [dispatch, state.viewRegistry, onRowSelected, origin, type, history, searchType])
 
   useNavigationKeys({
     keys: ['ArrowUp', 'ArrowDown', 'Enter', 'Escape', ' ', 's', 'r', 'c', 'u'],
