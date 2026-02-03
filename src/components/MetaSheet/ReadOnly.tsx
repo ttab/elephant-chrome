@@ -87,7 +87,7 @@ export const ReadOnly = ({ documentId, version }: { documentId: string, version:
         <ValueBlock label={t('labels.byline')} value={authors} />
       </InfoBlock>
       <InfoBlock text={t('labels.tags')} labelId='tags'>
-        <ValueBlock label={t('labels.slugg')} value={slugline} />
+        <ValueBlock label={t('labels.slugline')} value={slugline} />
         <ValueBlock label={t('core:labels.section')} value={section} />
         <ValueBlock label={t('core:labels.category')} value={category} />
         <ValueBlock label={t('core:labels.story')} value={story} />

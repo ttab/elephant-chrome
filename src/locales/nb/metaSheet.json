@@ -11,7 +11,7 @@
     "versions": "Versjoner",
     "version": "Versjon",
     "editorialInfoType": "Redaksjonell informasjon, type",
-    "slugg": "Stikkord"
+    "slugline": "Stikkord"
   },
   "actions": {
     "addNote": "Legg til beskjed"
