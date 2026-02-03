@@ -5,7 +5,8 @@
     "lastDoneMarked": "Senast klarmarkerad {{created}} av {{author}}",
     "doneBy": "Klar av {{author}}",
     "createdBy": "Skapad av {{author}}",
-    "approvedBy": "Godkänd av {{author}}"
+    "approvedBy": "Godkänd av {{author}}",
+    "createdTimeBy": "Skapad {{created}} av {{author}}"
   },
   "toolbar": {
     "freeTextSearch": "Fritextsökning"
