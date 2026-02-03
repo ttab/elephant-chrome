@@ -47,7 +47,8 @@
     },
     "tooltips": {
       "organiser": "Arrangør"
-    },
+    }
+  },
     "assignments": {
       "title": "Oppdrag",
       "columnLabels": {
@@ -63,5 +64,4 @@
       },
       "myAssignments": "Mine oppdrag"
     }
-  }
 }
