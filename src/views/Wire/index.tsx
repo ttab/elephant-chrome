@@ -23,26 +23,28 @@ const meta: ViewMetadata = {
 }
 
 export const Wire = (props: ViewProps & {
-  wire?: WireType
+  wires?: WireType[]
 }): JSX.Element => {
   // The article we're creating
   const [documentId, data] = useMemo(() => {
     const documentId = crypto.randomUUID()
+    const ttWireLinks = props.wires?.map((wire) => Block.create({
+      type: 'tt/wire',
+      uuid: wire.id,
+      title: wire.fields['document.title'].values[0],
+      rel: 'source-document',
+      data: {
+        version: wire.fields['current_version'].values[0]
+      }
+    }))
+
     const payload = {
       meta: {
         'tt/slugline': [Block.create({ type: 'tt/slugline' })],
         'core/newsvalue': [Block.create({ type: 'core/newsvalue' })]
       },
       links: {
-        'tt/wire': [Block.create({
-          type: 'tt/wire',
-          uuid: props.wire?.id,
-          title: props.wire?.fields['document.title'].values[0],
-          rel: 'source-document',
-          data: {
-            version: props.wire?.fields['current_version'].values[0]
-          }
-        })]
+        'tt/wire': ttWireLinks
       }
     }
 
@@ -52,16 +54,16 @@ export const Wire = (props: ViewProps & {
       mainDocument: '',
       document: Templates.article(documentId, payload)
     })]
-  }, [props.wire])
+  }, [props.wires])
 
   return (
     <>
-      {typeof documentId === 'string' && props.wire
+      {typeof documentId === 'string' && props.wires
         ? (
             <WireViewContent {...
               {
                 ...props,
-                wire: props.wire,
+                wires: props.wires,
                 documentId,
                 data
               }

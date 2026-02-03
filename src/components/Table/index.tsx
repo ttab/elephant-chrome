@@ -238,7 +238,7 @@ export const Table = <TData, TValue>({
             <Wire
               onDialogClose={hideModal}
               asDialog
-              wire={wireRow.original}
+              wires={[wireRow.original]}
               onDocumentCreated={onDocumentCreated}
             />
           )

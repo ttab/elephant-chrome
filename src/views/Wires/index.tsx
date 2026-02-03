@@ -13,6 +13,8 @@ import type { WireStatus } from './lib/setWireStatus'
 import { calculateWireStatuses, executeWiresStatuses } from './lib/setWireStatus'
 import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
+import { useModal } from '@/components/Modal/useModal'
+import { Wire as WireView } from '@/views'
 
 const BASE_URL = import.meta.env.BASE_URL
 
@@ -58,6 +60,7 @@ export const Wires = (): JSX.Element => {
   const { isActive } = useView()
   const { repository } = useRegistry()
   const { data: session } = useSession()
+  const { showModal, hideModal } = useModal()
   const [previewWire, setPreviewWire] = useState<Wire | null>(null)
   const [focusedWire, setFocusedWire] = useState<Wire | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -124,6 +127,7 @@ export const Wires = (): JSX.Element => {
     })
   }, [])
 
+  // Mutate selected wires to a new status
   const onAction = useCallback((newStatus: 'read' | 'used' | 'saved') => {
     if (!repository || !session) return
 
@@ -161,6 +165,25 @@ export const Wires = (): JSX.Element => {
     })
   }, [selectedWires, focusedWire, repository, session])
 
+  // Create a new article based on selected wires
+  const onCreate = useCallback(() => {
+    if (!repository || !session) return
+
+    const wires = selectedWires.length
+      ? [...selectedWires]
+      : focusedWire ? [focusedWire] : []
+
+    // FIXME: This will make focus lost
+    showModal(
+      <WireView
+        onDialogClose={hideModal}
+        asDialog
+        wires={wires}
+        onDocumentCreated={() => onAction('used')}
+      />
+    )
+  }, [selectedWires, focusedWire, repository, session, showModal, hideModal, onAction])
+
   const handleKeyDown = useCallback((event: React.KeyboardEvent<HTMLElement>) => {
     if (event.getModifierState('Control')
       || event.getModifierState('Meta')
@@ -177,8 +200,10 @@ export const Wires = (): JSX.Element => {
       onAction('read')
     } else if (event.key === 'u') {
       onAction('used')
+    } else if (event.key === 'c') {
+      onCreate()
     }
-  }, [previewWire, onAction])
+  }, [previewWire, onAction, onCreate])
 
   return (
     <View.Root>

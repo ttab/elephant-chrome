@@ -12,7 +12,7 @@ import type * as Y from 'yjs'
 export async function createArticle({
   ydoc,
   status,
-  wire,
+  wires,
   planningId,
   planningTitle,
   section,
@@ -21,7 +21,7 @@ export async function createArticle({
   ydoc: YDocument<Y.Map<unknown>>
   status: string
   session: Session
-  wire?: Wire
+  wires?: Wire[]
   planningId?: string
   planningTitle?: string
   section?: {
@@ -58,7 +58,7 @@ export async function createArticle({
     localDate,
     isoDateTime,
     section,
-    wire
+    wires
   })
 
   // Create article in repo

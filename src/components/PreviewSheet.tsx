@@ -90,7 +90,7 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, 
         }
 
         if (event.key === 'c') {
-          showModal(<Wire onDialogClose={hideModal} asDialog wire={wire} />)
+          showModal(<Wire onDialogClose={hideModal} asDialog wires={wire} />)
           return
         }
       }
@@ -216,7 +216,7 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, 
                           <Wire
                             onDialogClose={hideModal}
                             asDialog
-                            wire={wire}
+                            wires={wire}
                             onDocumentCreated={onDocumentCreated}
                           />
                         )

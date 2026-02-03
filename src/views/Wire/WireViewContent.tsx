@@ -38,7 +38,7 @@ import type { EleDocumentResponse } from '@/shared/types'
 export const WireViewContent = (props: ViewProps & {
   documentId: string
   data?: EleDocumentResponse
-  wire: WireType
+  wires: WireType[]
 }): JSX.Element | undefined => {
   // Create article using supplied data
   const ydoc = useYDocument<Y.Map<unknown>>(props.documentId, { data: props.data })
@@ -83,14 +83,30 @@ export const WireViewContent = (props: ViewProps & {
           {!!selectedPlanning && <ValidateNow />}
           <Form.Content>
             <Form.Group icon={CableIcon}>
-              <>
-                <Input
-                  className='pl-0 pt-2 h-8 text-medium border-0 truncate'
-                  readOnly
-                  value={props.wire.fields['document.title'].values?.[0]}
-                />
-              </>
+              <Input
+                className='pl-0 pt-2 h-8 text-medium font-semibold border-0 truncate'
+                readOnly
+                value={props.wires?.[0]?.fields['document.title'].values?.[0]}
+              />
             </Form.Group>
+
+            {props.wires?.length > 1 && (
+              <div className='flex flex-col gap-0.5 -mt-6 ms-10.5'>
+                {props.wires?.map((wire, index) => (
+                  <>
+                    {!!index
+                      && (
+                        <div
+                          key={wire.id}
+                          className='pl-0 pt-2 text-xs'
+                        >
+                          {wire.fields['document.title'].values?.[0]}
+                        </div>
+                      )}
+                  </>
+                ))}
+              </div>
+            )}
 
             <Form.Group icon={GanttChartSquareIcon}>
               <Awareness path='wirePlanningItem' ref={documentAwareness} ydoc={ydoc}>
@@ -251,7 +267,7 @@ export const WireViewContent = (props: ViewProps & {
                     session,
                     planningId: selectedPlanning?.value,
                     planningTitle: planningTitleRef.current?.value,
-                    wire: props.wire,
+                    wires: props.wires,
                     section: (!selectedPlanning?.value) ? section || undefined : undefined,
                     timeZone
                   })
