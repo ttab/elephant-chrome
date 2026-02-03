@@ -4,20 +4,15 @@ import { useYValue } from '@/modules/yjs/hooks/useYValue'
 import type { YDocument } from '@/modules/yjs/hooks/useYDocument'
 import { Label, Checkbox } from '@ttab/elephant-ui'
 import type * as Y from 'yjs'
-import type { Document } from '@ttab/elephant-api/newsdoc'
+import { Block, type Document } from '@ttab/elephant-api/newsdoc'
 import { LoaderIcon } from 'lucide-react'
-
-export interface Additional {
-  name: string
-  value: string
-}
 
 export const Additionals = ({ ydoc, basePath, layout}: {
   ydoc: YDocument<Y.Map<unknown>>
   basePath: string
   layout?: Document
 }): JSX.Element | null => {
-  const [articleAdditionals, setArticleAdditionals] = useYValue<Additional[]>(
+  const [articleAdditionals, setArticleAdditionals] = useYValue<Block[]>(
     ydoc.ele,
     `${basePath}.meta.tt/print-features[0].content.tt/print-feature`
   )
@@ -37,20 +32,28 @@ export const Additionals = ({ ydoc, basePath, layout}: {
   const items = layout?.content
     .find((item) => item.name === articleLayoutName)?.meta
     .find((m) => m.type === 'tt/print-features')?.content
-    .map((c) => ({ name: c.name, value: c.value }))
 
 
   const handleChange = (name: string) => {
-    if (!articleAdditionals) return
-    const updated = articleAdditionals
-      .map((articleAdditional) =>
-        articleAdditional.name === name
-          ? { ...articleAdditional, value: articleAdditional.value === 'true'
-              ? 'false'
-              : 'true' }
-          : articleAdditional
-      )
-    setArticleAdditionals(updated)
+    if (!articleAdditionals || articleAdditionals.length === 0) {
+      setArticleAdditionals([Block.create({ type: 'tt/print-feature', name, value: 'true' })])
+    } else {
+      const existingIndex = articleAdditionals.findIndex((item) => item.name === name)
+
+      if (existingIndex !== -1) {
+        const newAdditionals = [...articleAdditionals]
+        newAdditionals[existingIndex] = {
+          ...newAdditionals[existingIndex],
+          value: newAdditionals[existingIndex].value === 'true' ? 'false' : 'true'
+        }
+        setArticleAdditionals(newAdditionals)
+      } else {
+        setArticleAdditionals([
+          ...articleAdditionals,
+          Block.create({ type: 'tt/print-feature', name, value: 'true' })
+        ])
+      }
+    }
   }
 
   if (items?.length) {
@@ -79,7 +82,7 @@ export const Additionals = ({ ydoc, basePath, layout}: {
 }
 
 const Additional = ({ item, checked, onChange }: {
-  item: Additional
+  item: Block
   checked: boolean
   onChange: (name: string) => void
 }) => (
