@@ -26,10 +26,17 @@
   "placeholders": {
     "eventTitle": "Tittel på hendelse",
     "publicDescription": "Beskrivelse",
-    "accreditation": "Akkreditering"
+    "accreditation": "Akkreditering",
+    "addOrganiser": "Legg til arrangør",
+    "addCategory": "Legg til emne",
+    "addSection": "Legg til kategori"
   },
   "status": {
     "planned": "Planlagt",
     "notPlanned": "Ikke planlagt"
+  },
+  "tooltips": {
+    "createPlanning": "Skape planlegging",
+    "planningCreated": "Har blitt planlagt"
   }
 }

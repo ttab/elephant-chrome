@@ -26,10 +26,17 @@
     "placeholders": {
         "eventTitle": "Händelsetitel",
         "publicDescription": "Publik beskrivning",
-        "accreditation": "Ackreditering"
+        "accreditation": "Ackreditering",
+        "addOrganiser": "Lägg till organisatör",
+        "addCategory": "Lägg till ämne",
+        "addSection": "Lägg till sektion"
     },
     "status": {
         "planned": "Planerad",
         "notPlanned": "Ej planerad"
+    },
+    "tooltips": {
+        "createPlanning": "Skapa planering",
+        "planningCreated": "Har planerats"
     }
 }
