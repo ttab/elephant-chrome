@@ -1,0 +1,21 @@
+{
+  "contentMenu": {
+    "title": "Rubrik",
+    "subTitle": "Mellanrubrik",
+    "bodyText": "Brödtext",
+    "vignette": "Vinjett",
+    "preamble": "Ingress",
+    "tvListing": "Tablåinfo",
+    "unorderedList": "Lista",
+    "orderedList": "Punktlista"
+  },
+  "spelling": {
+    "noSuggestions": "Inga förslag"
+  },
+  "footer": {
+    "words": "Ord",
+    "numberOfWords": "Antal ord: artikel (totalt)",
+    "chars": "Tecken",
+    "numberOfChars": "Antal tecken: artikel (totalt)"
+  }
+}

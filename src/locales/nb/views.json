@@ -2,11 +2,6 @@
   "approvals": {
     "title": "Dagen",
     "charactersShort": "tgn",
-    "toolbar": {
-      "clearFilters": "Tøm",
-      "savePersonalFilter": "Lagre personlig filter",
-      "personalFilter": "Personlig filter"
-    },
     "tooltips": {
       "openPreview": "Åpne forhåndsvisning",
       "openPlanning": "Åpne planlegging",
@@ -24,24 +19,47 @@
         "error": "Kunne ikke opprette ny plan",
         "success": "Planlegging opprettet"
       },
+      "getPlanningsError": "Kunne ikke hente planene",
       "openItem": "Åpen planlegging"
     }
   },
-  "assignments": {
-    "title": "Oppdrag",
+  "events": {
+    "label": {
+      "plural": "Hendelser",
+      "singular": "Hendelse"
+    },
     "columnLabels": {
-      "assignmentTime": "Oppdragstid",
-      "type": "Oppdragstype"
+      "startTime": "Starttid",
+      "status": "Status",
+      "organiser": "Arrangør",
+      "section": "Kategori",
+      "planningStatus": "Planleggingsstatus",
+      "action": "Action"
+    },
+    "toasts": {
+      "fetch": {
+        "error": "Kunne ikke hente hendelser"
+      }
     },
     "tooltips": {
-      "assignmentStartTime": "Oppdragets starttid"
-    },
-    "actionMenu": {
-      "openArticle": "Åpne artikkel",
-      "openPlanning": "Åpne planlegging"
-    },
-    "myAssignments": "Mine oppdrag"
+      "organiser": "Arrangør"
+    }
   },
+    "assignments": {
+      "title": "Oppdrag",
+      "columnLabels": {
+        "assignmentTime": "Oppdragstid",
+        "type": "Oppdragstype"
+      },
+      "tooltips": {
+        "assignmentStartTime": "Oppdragets starttid"
+      },
+      "actionMenu": {
+        "openArticle": "Åpne artikkel",
+        "openPlanning": "Åpne planlegging"
+      },
+      "myAssignments": "Mine oppdrag"
+    },
   "factboxes": {
     "title": "Faktabokser",
     "columnLabels": {

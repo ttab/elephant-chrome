@@ -2,6 +2,7 @@ import { type ViewMetadata, type ViewProps } from '@/types'
 import { View, ViewHeader } from '@/components/View'
 import { MessageCircleWarningIcon } from '@ttab/elephant-ui/icons'
 import { type JSX } from 'react'
+import { useTranslation } from 'react-i18next'
 
 const meta: ViewMetadata = {
   name: 'Error',
@@ -25,16 +26,18 @@ export const Error = ({ title, error, message }: ViewProps & {
   error?: Error
   message?: string
 }): JSX.Element => {
+  const { t } = useTranslation('common')
+
   return (
     <View.Root>
       <ViewHeader.Root>
-        <ViewHeader.Title name='Error' title='Ett fel har uppstått!' icon={MessageCircleWarningIcon} />
+        <ViewHeader.Title name='Error' title={t('errors.errorTitle')} icon={MessageCircleWarningIcon} />
         <ViewHeader.Content />
         <ViewHeader.Action />
       </ViewHeader.Root>
 
       <View.Content className='max-w-[800px] p-6'>
-        <h1 className='text-3xl font-bold mb-6'>{title || error?.message || 'Okänt fel'}</h1>
+        <h1 className='text-3xl font-bold mb-6'>{title || error?.message || t('errors.unknown')}</h1>
         {message && (
           <p className='text-md'>
             {message}
@@ -51,7 +54,7 @@ export const Error = ({ title, error, message }: ViewProps & {
 
         {!message && !error && (
           <p className='text-md'>
-            Ett okänt fel, eller ett fel som saknar felmeddelande har uppstått. Kontakta systemadministratören.
+            {t('errors.unknownErrorAdminInfo')}
           </p>
         )}
       </View.Content>

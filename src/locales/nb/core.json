@@ -14,8 +14,10 @@
     "title": "Tittel",
     "time": "Tid",
     "status": "Status",
-    "action": "Action",
+    "type": "Type",
+    "organiser": "Arrangør",
     "category": "Kategori",
+    "action": "Action",
     "story": "Story"
   },
   "status": {
@@ -28,6 +30,8 @@
     "usable": "Publisert",
     "unpublished": "Avpublisert",
     "done": "Ferdig",
+    "print_done": "",
+    "needs_proofreading": "",
     "withheld": "Planlagt",
     "cancelled": "Kastet",
     "changed": "Endret"

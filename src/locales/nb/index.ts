@@ -4,7 +4,10 @@ import planning from './planning.json'
 import app from './app.json'
 import shared from './shared.json'
 import views from './views.json'
+import editor from './editor.json'
+import workflows from './workflows.json'
 import factbox from './factbox.json'
+import event from './event.json'
 import metaSheet from './metaSheet.json'
 
 export const nb = {
@@ -14,6 +17,9 @@ export const nb = {
   app,
   shared,
   views,
+  editor,
+  workflows,
   factbox,
+  event,
   metaSheet
 }

@@ -7,7 +7,7 @@ import type { JSX } from 'react'
 export const OptionsFilter = (props: FilterProps & {
   options: {
     value: string
-    label: string
+    label?: string
   }[]
   facets?: Map<string, number>
   filterPage: string

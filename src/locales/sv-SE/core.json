@@ -14,8 +14,10 @@
     "title": "Titel",
     "time": "Tid",
     "status": "Status",
-    "action": "Action",
+    "type": "Typ",
+    "organiser": "Organisatör",
     "category": "Kategori",
+    "action": "Action",
     "story": "Story"
   },
   "status": {
@@ -28,6 +30,8 @@
     "usable": "Publicerad",
     "unpublished": "Avpublicerad",
     "done": "Klar",
+    "print_done": "Klar",
+    "needs_proofreading": "Klar för korr",
     "withheld": "Schemalagd",
     "cancelled": "Kastad",
     "changed": "Ändrad"
