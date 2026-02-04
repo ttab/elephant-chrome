@@ -107,6 +107,7 @@
     "eslint": "^9.39.2",
     "fake-indexeddb": "^6.2.5",
     "jsdom": "^27.0.0",
+    "rollup-plugin-visualizer": "^6.0.5",
     "tailwindcss": "^4.1.17",
     "tsc-alias": "^1.8.16",
     "tsx": "^4.20.6",
