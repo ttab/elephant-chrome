@@ -43,7 +43,8 @@
     },
     "tooltips": {
       "organiser": "Organisatör"
-    },
+    }
+  },
     "assignments": {
       "title": "Uppdrag",
       "columnLabels": {
@@ -65,6 +66,10 @@
       "description": "Beskrivning",
       "lastChanged": "Senast ändrad"
     }
-    }
+  },
+  "login": {
+    "loginWith": "Logga in med",
+    "rememberMe": "Kom ihåg mig nästa gång",
+    "loggingIn": "Loggar in..."
   }
 }
