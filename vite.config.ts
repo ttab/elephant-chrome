@@ -88,6 +88,20 @@ export default defineConfig(({ mode }) => {
           inline: ['@ttab/elephant-ui']
         }
       }
+    },
+    build: {
+      chunkSizeWarningLimit: 1000,
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            'react-vendor': ['react', 'react-dom'],
+            'slate-vendor': ['slate', 'slate-react', 'slate-history', 'slate-hyperscript', '@slate-yjs/react'],
+            'yjs-vendor': ['yjs', 'y-indexeddb', '@slate-yjs/core'],
+            'ui-vendor': ['@ttab/elephant-ui', 'lucide-react', '@tanstack/react-table'],
+            'utils-vendor': ['date-fns', 'date-fns-tz']
+          }
+        }
+      }
     }
   }
 })
