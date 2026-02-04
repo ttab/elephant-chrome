@@ -55,7 +55,8 @@
     "sendDataError": "Kunne ikke sende data",
     "multipleAuthors": "Flere forfatterdokumenter funnet, kontakt support",
     "unpublishError": "Kunne ikke avpubliser dokumentet",
-    "addAssignmentToPlanningError": "Oppgaven kunne ikke legges til i en koblet tidsplan."
+    "addAssignmentToPlanningError": "Oppgaven kunne ikke legges til i en koblet tidsplan.",
+    "creationFailed": "Kunne ikke opprette tekst: {{error}}"
   },
   "operations": {
     "authorCreateSuccess": "Forfatterdokument er opprettet",

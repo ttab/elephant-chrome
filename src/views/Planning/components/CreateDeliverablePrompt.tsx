@@ -76,7 +76,7 @@ export function CreateDeliverablePrompt({ ydoc, deliverableType, payload, onClos
           .catch((ex) => {
             const errorMessage = ex instanceof Error ? ex.message : t('common:errors.unknown')
             console.error('Failed to create deliverable:', errorMessage, ex)
-            toast.error(`Misslyckades att skapa text: ${errorMessage}`)
+            toast.error(t('shared:errors.creationFailed', { error: errorMessage }))
             setIsCreating(false)
           })
       }}
