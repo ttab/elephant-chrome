@@ -16,10 +16,11 @@ export default defineConfig(({ mode }) => {
 
   const devServerPort = parsePort(env.VITE_DEV_SERVER_PORT, 5173)
   const devHmrPort = parsePort(env.VITE_HMR_PORT, 5183)
+  const BASE_URL = env.BASE_URL || '/elephant'
 
   return {
     port: devServerPort,
-    base: env.BASE_URL || '/elephant',
+    base: BASE_URL,
     plugins: [
 
       react(),
@@ -50,7 +51,10 @@ export default defineConfig(({ mode }) => {
       ]
     },
     define: {
-      'process.env': process.env
+      'process.env': JSON.stringify({
+        NODE_ENV: mode,
+        BASE_URL: BASE_URL
+      })
     },
     server: {
       hmr: {
