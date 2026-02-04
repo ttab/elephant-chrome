@@ -37,6 +37,7 @@
     "new": "Ny",
     "selected": "valgt",
     "since": "siden",
-    "missing": "Mangler"
+    "missing": "Mangler",
+    "loading": "Laster inn..."
   }
 }

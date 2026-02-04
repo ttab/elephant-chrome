@@ -37,6 +37,7 @@
     "new": "Ny",
     "selected": "valda",
     "since": "sedan",
-    "missing": "saknas"
+    "missing": "saknas",
+    "loading": "Laddar..."
   }
 }
