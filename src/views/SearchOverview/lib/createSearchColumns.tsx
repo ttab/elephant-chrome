@@ -54,9 +54,9 @@ export const createSearchColumns = (params: SearchColumnsParams, t: TFunction) =
 function getColumns({ searchType, ...params }: SearchColumnsParams, t: TFunction) {
   switch (searchType) {
     case 'plannings':
-      return planningListColumns(params)
+      return planningListColumns(params, t)
     case 'events':
-      return eventTableColumns(params)
+      return eventTableColumns(params, t)
     case 'articles':
       return articleColumns(params, t)
     default:
