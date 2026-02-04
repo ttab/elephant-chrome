@@ -7,6 +7,7 @@ import views from './views.json'
 import editor from './editor.json'
 import workflows from './workflows.json'
 import factbox from './factbox.json'
+import event from './event.json'
 
 export const nb = {
   common,
@@ -17,5 +18,6 @@ export const nb = {
   views,
   editor,
   workflows,
-  factbox
+  factbox,
+  event
 }

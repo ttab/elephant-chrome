@@ -2,6 +2,7 @@
   "actions": {
     "add": "Legg til",
     "open": "Åpne",
+    "openType": "Åpne {{type, lowercase}}",
     "edit": "Redigere",
     "remove": "Fjerne",
     "abort": "Avbryte",
@@ -35,6 +36,8 @@
     "from": "Fra",
     "new": "Ny",
     "selected": "valgt",
-    "since": "siden"
+    "since": "siden",
+    "missing": "Mangler",
+    "loading": "Laster inn..."
   }
 }

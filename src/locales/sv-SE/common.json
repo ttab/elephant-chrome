@@ -2,6 +2,7 @@
   "actions": {
     "add": "Lägg till",
     "open": "Öppna",
+    "openType": "Åpne {{type, lowercase}}",
     "edit": "Redigera",
     "remove": "Ta bort",
     "abort": "Avbryt",
@@ -35,6 +36,8 @@
     "from": "Från",
     "new": "Ny",
     "selected": "valda",
-    "since": "sedan"
+    "since": "sedan",
+    "missing": "saknas",
+    "loading": "Laddar..."
   }
 }

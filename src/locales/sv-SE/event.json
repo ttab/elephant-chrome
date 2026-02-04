@@ -1,0 +1,42 @@
+{
+    "title": "Händelse",
+    "subheadings": {
+        "plannings": "Planeringar"
+    },
+    "createEvent": "Skapa händelse",
+    "buttons": {
+        "addPlanning": "Lägg till planering"
+    },
+    "labels": {
+        "markAsCancelled": "Markera som inställd",
+        "markedAsCancelled": "Evenemanget är markerat som inställt!"
+    },
+    "error": {
+        "noEventDocument": {
+            "title": "Händelsedokument saknas",
+            "message": "Inget händelsedokument är angivet. Navigera tillbaka till översikten och försök igen."
+        }
+    },
+    "toasts": {
+        "created": {
+            "success": "Händelse skapad",
+            "error": "Kunde inte skapa ny händelse!"
+        }
+    },
+    "placeholders": {
+        "eventTitle": "Händelsetitel",
+        "publicDescription": "Publik beskrivning",
+        "accreditation": "Ackreditering",
+        "addOrganiser": "Lägg till organisatör",
+        "addCategory": "Lägg till ämne",
+        "addSection": "Lägg till sektion"
+    },
+    "status": {
+        "planned": "Planerad",
+        "notPlanned": "Ej planerad"
+    },
+    "tooltips": {
+        "createPlanning": "Skapa planering",
+        "planningCreated": "Har planerats"
+    }
+}

@@ -7,6 +7,7 @@ import { Validation } from './Validation'
 import { type FormProps } from './Form/Root'
 import { type YDocument, useYValue } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
+import { useTranslation } from 'react-i18next'
 
 interface SectionProps {
   onSelect?: (selectedOption: {
@@ -21,6 +22,7 @@ export const Section = ({ ydoc, path, onValidation, validateStateRef, onChange, 
   ydoc: YDocument<Y.Map<unknown>>
   path: string
 } & FormProps & SectionProps): JSX.Element => {
+  const { t } = useTranslation('event')
   const allSections = useSections().map((_) => {
     return {
       value: _.id,
@@ -35,7 +37,7 @@ export const Section = ({ ydoc, path, onValidation, validateStateRef, onChange, 
     <Awareness ref={setFocused} ydoc={ydoc} path={path}>
       <Validation
         ydoc={ydoc}
-        label='Sektion'
+        label={t('core:labels.section')}
         path={path}
         block='core/section[0]'
         onValidation={onValidation}
@@ -48,7 +50,7 @@ export const Section = ({ ydoc, path, onValidation, validateStateRef, onChange, 
           sortOrder='label'
           options={allSections}
           selectedOptions={selectedOptions}
-          placeholder={section?.title || 'Lägg till sektion'}
+          placeholder={section?.title || t('event:placeholders.addSection')}
           validation={!!onValidation}
           onOpenChange={(isOpen: boolean) => {
             setFocused.current(true, (isOpen) ? path : '')
