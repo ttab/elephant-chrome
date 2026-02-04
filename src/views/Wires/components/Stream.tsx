@@ -4,7 +4,7 @@ import { useDocuments } from '@/hooks/index/useDocuments'
 import { constructQuery } from '../lib/constructQuery'
 import { SortingV1 } from '@ttab/elephant-api/index'
 import { StreamEntry } from './StreamEntry'
-import { MinusIcon } from '@ttab/elephant-ui/icons'
+import { XIcon } from '@ttab/elephant-ui/icons'
 import { Button } from '@ttab/elephant-ui'
 import {
   useReactTable,
@@ -259,7 +259,7 @@ export const Stream = ({
         </div>
 
         <Button variant='ghost' className='w-9 h-9 px-0' onClick={removeThisWire}>
-          <MinusIcon strokeWidth={1.75} size={18} />
+          <XIcon strokeWidth={1.75} size={18} />
         </Button>
       </div>
 

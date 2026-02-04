@@ -2,11 +2,11 @@ export const StreamGroupHeader = ({ date, time }: { date?: string, time?: string
   return (
     <div
       className='
-        sticky top-0 z-10
+        sticky top-0
         h-7
         bg-muted px-3 py-1.5
         text-xs text-muted-foreground
-        border-b
+        border-y
       '
     >
       {time && <span>{time}</span>}

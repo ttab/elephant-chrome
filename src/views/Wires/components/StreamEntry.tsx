@@ -64,7 +64,6 @@ export const StreamEntry = ({
       grid-cols-[3rem_1fr]
       gap-3 border-s-[7px]
       bg-background
-      border-b
       text-[0.785rem]
       subpixel-antialiased
       cursor-default
@@ -78,9 +77,9 @@ export const StreamEntry = ({
       variants: {
         status: {
           draft: '',
-          read: 'border-s-approved bg-approved-background',
-          saved: 'border-s-done bg-done-background',
-          used: 'border-s-usable bg-usable-background'
+          read: 'border-s-approved bg-approved-background hover:bg-approved/20',
+          saved: 'border-s-done bg-done-background hover:bg-done/30',
+          used: 'border-s-usable bg-usable-background hover:bg-usable/30'
         },
         newsvalue: {
           6: 'border-s-red-500'
@@ -112,6 +111,7 @@ export const StreamEntry = ({
         </StreamEntryCell>
         <StreamEntryCell className={cn(
           'transition-[padding] duration-100',
+          status === 'used' ? 'opacity-70' : '',
           isSelected || statusMutation ? 'last:pe-8' : 'group-has-[.checkbox-button:hover]:last:pe-8'
         )}
         >
