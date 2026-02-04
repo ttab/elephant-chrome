@@ -7,7 +7,65 @@
     "createdBy": "Opprettet av {{author}}",
     "approvedBy": "Godkjent av {{author}}"
   },
+  "assignmentTypes": {
+    "text": "Artikkel",
+    "flash": "HAST",
+    "editorial-info": "Til red",
+    "graphic": "Grafikk",
+    "picture": "Foto",
+    "video": "Video",
+    "picture/video": "Foto/Video"
+  },
   "toolbar": {
-    "freeTextSearch": "Fritekstsøkning"
+    "clearFilters": "Tøm",
+    "savePersonalFilter": "Lagre personlig filter",
+    "personalFilter": "Personlig filter",
+    "toggleUserFilter": "Vexle brukerfilter",
+    "toggleLabel": "Vexle {{label}}",
+    "navigateToday": "Gå til idag",
+    "freeText": "Fritekst",
+    "freeTextSearch": "Fritekstsøkning",
+    "altSearch": "Søkealternativer"
+  },
+  "status_menu": {
+    "cause": "Grunn",
+    "pickCause": "Velg en grunn...",
+    "planningDate": "Dato i planen",
+    "setTime": "Skriv inn tid",
+    "asSavePlaceholder": "Publiser ny informasjon",
+    "causes": {
+      "development_short": "UV",
+      "fix_short": "KORR",
+      "correction_short": "RET",
+      "retransmission_short": "OMS"
+    }
+  },
+  "copy": {
+    "copiedTo": "Kopiert til",
+    "copiedFrom": "Kopiert fra",
+    "copyType": "Kopiere {{type}}",
+    "copyPrompt": "Vil du kopiere \"{{title}}\" til {{start}}?",
+    "copySuccess": "\"{{title}}\" har blitt kopiert til {{start}}",
+    "copyEventPrompt": "Vil du kopiere hendelsen til {{datesFormatted}}?",
+    "copyEventSuccess": "Hendelsen \"{{title}}\" har blitt kopiert til {{datesFormatted}}"
+  },
+  "errors": {
+    "loadFailed": "Kunne ikke laste",
+    "noDeliverables": "Ingen leveranser",
+    "sendDataError": "Kunne ikke sende data",
+    "multipleAuthors": "Flere forfatterdokumenter funnet, kontakt support",
+    "unpublishError": "Kunne ikke avpubliser dokumentet",
+    "addAssignmentToPlanningError": "Oppgaven kunne ikke legges til i en koblet tidsplan.",
+    "creationFailed": "Kunne ikke opprette tekst: {{error}}"
+  },
+  "operations": {
+    "authorCreateSuccess": "Forfatterdokument er opprettet",
+    "authorUpdateSuccess": "Forfatterdokumentet er oppdatert",
+    "authorSaveSuccess": "Forfatterdokumentet er lagret",
+    "authorUpdateFailure": "Kunne ikke oppdatere forfatterdokumentet: {{errorMessage}}",
+    "authorSaveFailure": "Kunne ikke lagre forfatterdokumentet: {{errorMessage}}",
+    "authorCreateFailure": "Kunne ikke opprette forfatterdokument: Failed to create author doc",
+    "authorCreateUndefinedFailed": "Kunne ikke opprette forfatterdokument: Failed to fetch author document: undefined",
+    "savedFilter": "Filteret ditt er lagret"
   }
 }
