@@ -337,7 +337,7 @@ export const EventTimeMenu = ({ ydoc, onChange }: {
               setOpen(false)
             }}
           >
-            {t?.('common:actions.done') || ''}
+            {t?.('common:actions.confirm') || ''}
           </Button>
         </div>
       </div>
