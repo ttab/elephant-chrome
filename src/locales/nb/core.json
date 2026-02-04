@@ -9,14 +9,16 @@
   "labels": {
     "newsvalue": "Nyhetesverdi",
     "section": "Kategori",
-    "organiser": "Arrangør",
-    "category": "Kategori",
     "assignee": "Oppdragstaker",
     "assignmentType": "Oppdragstype",
     "title": "Tittel",
     "time": "Tid",
     "status": "Status",
-    "action": "Action"
+    "type": "Type",
+    "organiser": "Arrangør",
+    "category": "Kategori",
+    "action": "Action",
+    "story": "Story"
   },
   "status": {
     "action": {
@@ -28,8 +30,11 @@
     "usable": "Publisert",
     "unpublished": "Avpublisert",
     "done": "Ferdig",
+    "print_done": "",
+    "needs_proofreading": "",
     "withheld": "Planlagt",
-    "cancelled": "Kastet"
+    "cancelled": "Kastet",
+    "changed": "Endret"
   },
   "timeSlots": {
     "morning": "Natt",

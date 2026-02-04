@@ -4,6 +4,7 @@ import { type DefaultValueOption } from '@/types'
 import { Button, Tooltip } from '@ttab/elephant-ui'
 import { useCallback, useMemo, type JSX } from 'react'
 import { cn } from '@ttab/elephant-ui/utils'
+import { useTranslation } from 'react-i18next'
 
 export const Type = ({ data, deliverableId, className }: {
   data: DefaultValueOption[]
@@ -12,8 +13,9 @@ export const Type = ({ data, deliverableId, className }: {
 }): JSX.Element => {
   const openArticle = useLink('Editor')
   const openFlash = useLink('Flash')
+  const { t } = useTranslation('shared')
 
-  const handleLink = useCallback((event: MouseEvent, item: DefaultValueOption) => {
+  const handleLink = useCallback((event: MouseEvent, item: Omit<DefaultValueOption, 'label'>) => {
     const openDocument = item.value === 'flash' ? openFlash : openArticle
     if (deliverableId) {
       openDocument(event, { id: deliverableId })
@@ -31,12 +33,12 @@ export const Type = ({ data, deliverableId, className }: {
             onClick={(event) => handleLink(event, item)}
             className={cn('p-0', deliverableId ? 'cursor-pointer' : 'cursor-not-allowed', className)}
           >
-            <Tooltip content={item.label}>
+            <Tooltip content={t?.(`assignmentTypes.${item.value}`)}>
               <item.icon size={18} strokeWidth={1.75} className='mr-2 text-muted-foreground' />
             </Tooltip>
           </Button>
         )
       })}
     </div>
-  ), [data, deliverableId, handleLink, className])
+  ), [data, deliverableId, handleLink, className, t])
 }

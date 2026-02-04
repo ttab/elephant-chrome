@@ -44,8 +44,7 @@ export const Search = (): JSX.Element => {
   const sections = useSections()
   const organisers = useOrganisers()
   const authors = useAuthors()
-  const { t } = useTranslation('views')
-
+  const { t } = useTranslation()
 
   const columns = useMemo(() => {
     return createSearchColumns({
@@ -54,9 +53,8 @@ export const Search = (): JSX.Element => {
       authors,
       locale,
       timeZone,
-      organisers,
-      t
-    })
+      organisers
+    }, t)
   }, [locale, timeZone, authors, sections, searchType, organisers, t])
 
   if (!validSearchTypes.map((p) => p.value).includes(searchType)) {
@@ -77,7 +75,7 @@ export const Search = (): JSX.Element => {
       >
         <ViewHeader.Root>
           <ViewHeader.Content>
-            <ViewHeader.Title name='Search' title={t('search.title')} />
+            <ViewHeader.Title name='Search' title={t('views:search.title')} />
 
             {!Object.keys(params).length
               ? null

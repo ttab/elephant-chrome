@@ -2,11 +2,6 @@
   "approvals": {
     "title": "Dagen",
     "charactersShort": "tkn",
-    "toolbar": {
-      "clearFilters": "Rensa",
-      "savePersonalFilter": "Spara personligt filter",
-      "personalFilter": "Personligt filter"
-    },
     "tooltips": {
       "openPreview": "Öppna förhandsgranskning",
       "openPlanning": "Öppna planering",
@@ -24,23 +19,53 @@
         "error": "Kunde inte skapa ny planering",
         "success": "Planering skapad"
       },
+      "getPlanningsError": "Kunde inte hämta planeringar",
       "openItem": "Öppna planering"
     }
   },
-  "assignments": {
-    "title": "Uppdrag",
+  "events": {
+    "label": {
+      "plural": "Händelser",
+      "singular": "Händelse"
+    },
     "columnLabels": {
-      "assignmentTime": "Uppdragstid",
-      "type": "Typ"
+      "startTime": "Starttid",
+      "status": "Status",
+      "organiser": "Organisatör",
+      "section": "Sektion",
+      "planningStatus": "Planeringsstatus",
+      "action": "Action"
+    },
+    "toasts": {
+      "fetch": {
+        "error": "Kunde inte hämta händelser"
+      }
     },
     "tooltips": {
-      "assignmentStartTime": "Uppdragets starttid"
+      "organiser": "Organisatör"
     },
-    "actionMenu": {
-      "openArticle": "Öppna artikel",
-      "openPlanning": "Öppna planering"
-    },
-    "myAssignments": "Mina uppdrag"
+    "assignments": {
+      "title": "Uppdrag",
+      "columnLabels": {
+        "assignmentTime": "Uppdragstid",
+        "type": "Typ"
+      },
+      "tooltips": {
+        "assignmentStartTime": "Uppdragets starttid"
+      },
+      "actionMenu": {
+        "openArticle": "Öppna artikel",
+        "openPlanning": "Öppna planering"
+      },
+      "myAssignments": "Mina uppdrag"
+  },
+  "factboxes": {
+    "title": "Faktarutor",
+    "columnLabels": {
+      "description": "Beskrivning",
+      "lastChanged": "Senast ändrad"
+    }
+    }
   },
   "search": {
     "title": "Sök",

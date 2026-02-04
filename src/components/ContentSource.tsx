@@ -6,11 +6,13 @@ import { useContentSources } from '@/hooks/useContentSources'
 import { useYValue } from '@/modules/yjs/hooks'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
+import { useTranslation } from 'react-i18next'
 
 export const ContentSource = ({ ydoc, path }: {
   ydoc: YDocument<Y.Map<unknown>>
   path: string
 }): JSX.Element => {
+  const { t } = useTranslation('metaSheet')
   const allContentSources = useContentSources().map((_) => {
     return {
       value: _.uri,
@@ -33,7 +35,7 @@ export const ContentSource = ({ ydoc, path }: {
         modal={true}
         options={allContentSources}
         selectedOptions={selectedOptions}
-        placeholder='Lägg till källa'
+        placeholder={t('placeholders.addSource')}
         onOpenChange={(isOpen: boolean) => {
           if (setFocused?.current) {
             setFocused.current(true, (isOpen) ? path : '')

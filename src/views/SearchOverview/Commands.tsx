@@ -83,7 +83,7 @@ export const Commands = (props: FilterProps & { type: SearchKeys }): JSX.Element
         <OptionsFilter
           {...props}
           options={AssignmentTypes}
-          label={t('labels.assignmentType')}
+          label={t('labels.type')}
           filterPage='aType'
           Icon={CrosshairIcon}
         />

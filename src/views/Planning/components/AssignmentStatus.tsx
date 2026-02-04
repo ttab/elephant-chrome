@@ -29,12 +29,13 @@ const TextAssignment = ({ workflowState }: {
   const StatusIcon = useMemo(() => {
     return DocumentStatuses.find((status) => status.value === workflowState)
   }, [workflowState])
-
+  console.log('🚀 ~ :32 ~ TextAssignment ~ StatusIcon:', StatusIcon)
+  const { t } = useTranslation('shared')
 
   const IconComponent = StatusIcon?.icon
 
   return (
-    <div className='flex h-8 w-12 items-center justify-start' title={StatusIcon?.label}>
+    <div className='flex h-8 w-12 items-center justify-start' title={StatusIcon?.value ? t(`core:status.${StatusIcon?.value}`) : StatusIcon?.value}>
       {IconComponent ? <IconComponent {...StatusIcon.iconProps} /> : null}
     </div>
   )

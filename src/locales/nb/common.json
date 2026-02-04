@@ -2,27 +2,42 @@
   "actions": {
     "add": "Legg til",
     "open": "Åpne",
+    "openType": "Åpne {{type, lowercase}}",
     "edit": "Redigere",
     "remove": "Fjerne",
     "abort": "Avbryte",
     "close": "Lukke",
-    "create": "Opprett ny {{documentType}}",
+    "create": "Ny",
+    "createNew": "Opprett ny {{documentType}}",
     "sort": "Sortere",
     "sortBy": "Sortere etter {{label}}",
     "presetSort": "Forhåndsinnstilt sortering",
     "grouping": "Velg gruppering",
     "nogrouping": "Ingen gruppering",
-    "group": "Gruppe"
+    "group": "Gruppe",
+    "copy": "Kopiere",
+    "confirm": "Ferdig"
   },
   "errors": {
     "unknown": "Ukjent feil",
-    "unwellEnvironment": "Du har blitt logget ut eller mistet kontakten med systemet. Prøv å logge inn på nytt."
+    "unwellEnvironment": "Du har blitt logget ut eller mistet kontakten med systemet. Prøv å logge inn på nytt.",
+    "errorTitle": "Det har oppstått en feil!",
+    "unknownErrorAdminInfo": "Det har oppstått en ukjent feil, eller en feil uten feilmelding. Kontakt systemadministratoren.",
+    "someError": "Noe gikk galt",
+    "nameMissing": "Navn mangler",
+    "nothingFound": "Ingenting ble funnet",
+    "articleMissingTitle": "Artikkeldokumentet mangler",
+    "articleMissingDescription": "Ingen artikkeldokument er oppgitt. Gå tilbake til oversikten og forsøk igjen."
   },
   "misc": {
     "unknown": "ukjent",
     "user": "bruker",
     "numberOf": "Antall",
     "from": "Fra",
+    "new": "Ny",
+    "selected": "valgt",
+    "since": "siden",
+    "missing": "Mangler",
     "loading": "Laster inn..."
   }
 }

@@ -26,9 +26,9 @@ export const SearchResult = ({ searchType, page }: {
   const organisers = useOrganisers()
   const authors = useAuthors()
   const [filter] = useQuery()
-  const { t } = useTranslation('views')
-
+  const { t } = useTranslation()
   const { locale, timeZone } = useRegistry()
+
   const getType = (searchType: SearchKeys) => searchType === 'events' ? 'Event' : searchType === 'articles' ? 'Editor' : 'Planning'
 
   const onRowSelected = useCallback((row?: Planning | Event) => {
@@ -56,9 +56,8 @@ export const SearchResult = ({ searchType, page }: {
       authors,
       locale,
       timeZone,
-      organisers,
-      t
-    })
+      organisers
+    }, t)
   }, [locale, timeZone, authors, sections, searchType, organisers, t])
 
   if (error) {

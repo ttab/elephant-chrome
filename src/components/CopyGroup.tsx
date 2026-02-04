@@ -40,7 +40,7 @@ export const CopyGroup = ({ copyGroupId, type }: { copyGroupId: string, type: 'c
 
   return (
     <div className='pl-6 border-t'>
-      <div className='text-sm font-bold pt-2'>{t('planning:copy.copiedFrom')}</div>
+      <div className='text-sm font-bold pt-2'>{t('shared:copy.copiedFrom')}</div>
       {data.map((original) => {
         const [title] = original.fields['document.title'].values
         let start

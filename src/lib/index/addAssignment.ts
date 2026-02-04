@@ -1,7 +1,9 @@
 import type { Wire } from '@/shared/schemas/wire'
 import { toast } from 'sonner'
+import i18n from '@/lib/i18n'
 
 const BASE_URL = import.meta.env.BASE_URL || ''
+
 
 /**
  * Ask the backend to create an assignment with existing deliverable and add it to a planning item.
@@ -36,7 +38,7 @@ export async function addAssignmentWithDeliverable(payload: {
 
     if (!response.ok) {
       console.error('Failed backend call to add assignment', response.status, response.statusText)
-      toast.error('Det gick inte att lägga till uppdraget i en kopplad planering.')
+      toast.error(i18n.t('shared:errors.addAssignmentToPlanningError'))
     }
 
     const result = await response.json() as { uuid: string }
@@ -47,6 +49,6 @@ export async function addAssignmentWithDeliverable(payload: {
     return result.uuid
   } catch (ex) {
     console.error('Failed backend call to add assignment', ex)
-    toast.error('Det gick inte att lägga till uppdraget i en kopplad planering.')
+    toast.error(i18n.t('shared:errors.addAssignmentToPlanningError'))
   }
 }

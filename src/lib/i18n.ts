@@ -14,7 +14,7 @@ void i18n
   .use(LanguageDetector)
   .init({
     // lng: language, // Default
-    ns: ['common', 'core', 'planning', 'shared', 'app', 'views'],
+    ns: ['common', 'core', 'planning', 'shared', 'app', 'views', 'editor', 'workflows', 'factbox', 'event', 'metaSheet'],
     defaultNS: 'common',
     detection: {
       // order: defines the priority of detection
@@ -30,7 +30,13 @@ void i18n
       return 'sv'
     },
     interpolation: {
-      escapeValue: false // React already does escaping
+      escapeValue: false, // React already does escaping,
+      format: (value, formatStr) => {
+        if (formatStr === 'lowercase' && typeof value === 'string') {
+          return value.toLowerCase()
+        }
+        return value as string
+      }
     },
     supportedLngs: ['sv', 'nb'],
     load: 'languageOnly',
