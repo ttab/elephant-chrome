@@ -14,7 +14,7 @@ describe('CommandMenu', () => {
       <NavigationProvider>
         <TableProvider<Planning>
           type='Plannings'
-          columns={planningListColumns({})}
+          columns={planningListColumns({}, i18n.t)}
         >
           <CommandMenu onKeyDown={() => { }} onChange={() => { }}>
             <p>test</p>
