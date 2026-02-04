@@ -38,7 +38,7 @@ export const Toolbar = ({ facets }: { facets: Facets }): JSX.Element => {
   const handleSaveUserFilter = () => {
     setUserFilters(filters)
 
-    toast.success('Ditt filter har sparats')
+    toast.success(t('shared:operations.savedFilter'))
   }
 
   const handleToggleGroupValue = useCallback(() => {
@@ -92,7 +92,7 @@ export const Toolbar = ({ facets }: { facets: Facets }): JSX.Element => {
           onClick={handleResetFilters}
           className='h-8 px-2 lg:px-3'
         >
-          {t('views:approvals.toolbar.clearFilters')}
+          {t('shared:toolbar.clearFilters')}
           <XIcon size={18} strokeWidth={1.75} className='ml-2' />
         </Button>
       )}
@@ -131,7 +131,7 @@ export const Toolbar = ({ facets }: { facets: Facets }): JSX.Element => {
             trigger='vertical'
             items={[
               {
-                label: t('views:approvals.toolbar.savePersonalFilter'),
+                label: t('shared:toolbar.savePersonalFilter'),
                 icon: SaveIcon,
                 item: handleSaveUserFilter
               }
@@ -149,7 +149,7 @@ export const Toolbar = ({ facets }: { facets: Facets }): JSX.Element => {
                 }
               })),
               {
-                label: t('views:approvals.toolbar.personalFilter'),
+                label: t('shared:toolbar.personalFilter'),
                 icon: UserCogIcon,
                 item: () => {
                   if (userFilters) {
@@ -158,7 +158,7 @@ export const Toolbar = ({ facets }: { facets: Facets }): JSX.Element => {
                 }
               },
               {
-                label: t('views:approvals.toolbar.savePersonalFilter'),
+                label: t('shared:toolbar.savePersonalFilter'),
                 icon: SaveIcon,
                 item: handleSaveUserFilter
               }

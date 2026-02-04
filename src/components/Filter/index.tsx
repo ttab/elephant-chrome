@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { DebouncedCommandInput } from '@/components/Commands/Menu/DebouncedCommandInput'
 import { useQuery } from '@/hooks/useQuery'
 import type { Updater } from '@tanstack/react-table'
+import { useTranslation } from 'react-i18next'
 
 export interface FilterProps {
   page: string
@@ -19,6 +20,7 @@ export const Filter = ({ page, pages, setPages, search, setSearch, children, set
   PropsWithChildren & FilterProps): JSX.Element => {
   const [open, setOpen] = useState(false)
   const [filter, setFilter] = useQuery(['query'])
+  const { t } = useTranslation()
 
   const onOpenChange = useMemo(
     () => handleOpenChange({ setOpen, setSearch, setPages }),
@@ -83,7 +85,7 @@ export const Filter = ({ page, pages, setPages, search, setSearch, children, set
             ref={inputRef}
             value={page === 'query' ? filter?.query?.[0] : search}
             onChange={(value) => page === 'query' && handleInputChange(value)}
-            placeholder={page === 'query' ? 'Fritext' : 'Sök alternativ'}
+            placeholder={page === 'query' ? t('shared:toolbar.freeText') : t('shared:toolbar.altSearch')}
             className='h-9'
           />
           {children}

@@ -14,6 +14,9 @@
     "title": "Titel",
     "time": "Tid",
     "status": "Status",
+    "type": "Typ",
+    "organiser": "Organisatör",
+    "category": "Kategori",
     "action": "Action"
   },
   "status": {
@@ -26,8 +29,11 @@
     "usable": "Publicerad",
     "unpublished": "Avpublicerad",
     "done": "Klar",
+    "print_done": "Klar",
+    "needs_proofreading": "Klar för korr",
     "withheld": "Schemalagd",
-    "cancelled": "Kastad"
+    "cancelled": "Kastad",
+    "changed": "Ändrad"
   },
   "timeSlots": {
     "morning": "Morgon",

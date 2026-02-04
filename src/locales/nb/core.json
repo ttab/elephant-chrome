@@ -14,6 +14,9 @@
     "title": "Tittel",
     "time": "Tid",
     "status": "Status",
+    "type": "Type",
+    "organiser": "Arrangør",
+    "category": "Kategori",
     "action": "Action"
   },
   "status": {
@@ -26,8 +29,11 @@
     "usable": "Publisert",
     "unpublished": "Avpublisert",
     "done": "Ferdig",
+    "print_done": "",
+    "needs_proofreading": "",
     "withheld": "Planlagt",
-    "cancelled": "Kastet"
+    "cancelled": "Kastet",
+    "changed": "Endret"
   },
   "timeSlots": {
     "morning": "Natt",

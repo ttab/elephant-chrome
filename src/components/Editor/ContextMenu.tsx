@@ -6,9 +6,11 @@ import { ContextMenuItem } from './ContextMenuItem'
 import { ContextMenuGroup } from './ContextMenuGroup'
 import { cn } from '@ttab/elephant-ui/utils'
 import type { JSX } from 'react'
+import { useTranslation } from 'react-i18next'
 
 export const ContextMenu = ({ className }: { className?: string }): JSX.Element => {
   const { spelling } = useContextMenuHints()
+  const { t } = useTranslation()
 
   if (!spelling?.suggestions) {
     return <></>
@@ -36,7 +38,7 @@ export const ContextMenu = ({ className }: { className?: string }): JSX.Element 
       <ContextMenuGroup>
         <>
           {spelling.suggestions.length === 0
-            && <ContextMenuItem apply={() => { }}>Inga förslag</ContextMenuItem>}
+            && <ContextMenuItem apply={() => { }}>{t('editor:spelling.noSuggestions')}</ContextMenuItem>}
         </>
         <>
           {spelling.suggestions.map((suggestion) => (

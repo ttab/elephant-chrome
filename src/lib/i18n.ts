@@ -14,7 +14,7 @@ void i18n
   .use(LanguageDetector)
   .init({
     // lng: language, // Default
-    ns: ['common', 'core', 'planning', 'shared', 'app', 'views', 'event'],
+    ns: ['common', 'core', 'planning', 'shared', 'app', 'views', 'editor', 'workflows', 'factbox', 'event'],
     defaultNS: 'common',
     detection: {
       // order: defines the priority of detection

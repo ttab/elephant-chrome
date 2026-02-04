@@ -26,6 +26,7 @@ import { useCategories } from '@/hooks/useCategories'
 import { useAuthors } from '@/hooks/useAuthors'
 import { AssignmentTypes } from '@/defaults/assignmentTypes'
 import { useUserTracker } from '@/hooks/useUserTracker'
+import { useTranslation } from 'react-i18next'
 
 interface SelectedBase {
   value: unknown
@@ -34,6 +35,8 @@ interface SelectedBase {
 const SelectedBadge = ({ value, options }: SelectedBase & {
   options: DefaultValueOption[] | undefined
 }): ReactNode => {
+  const { t } = useTranslation()
+
   if (Array.isArray(value)) {
     if (value.length > 2) {
       return (
@@ -43,18 +46,21 @@ const SelectedBadge = ({ value, options }: SelectedBase & {
         >
           {value.length}
           {' '}
-          selected
+          {t('common:misc.selected')}
         </Badge>
       )
     } else {
       return value.map((v, index: number) => {
+        const value = typeof v === 'string' ? options?.find((option) => option.value === v)?.value : ''
+        const label = t(`core:labels.${value}`)
+
         return (
           <div key={index}>
             <Badge
               variant='secondary'
               className='rounded-sm px-1 font-normal mr-1'
             >
-              {typeof v === 'string' ? options?.find((option) => option.value === v)?.label || v : ''}
+              {label || ''}
             </Badge>
           </div>
         )
@@ -66,6 +72,7 @@ const SelectedBadge = ({ value, options }: SelectedBase & {
 const SelectedButton = ({ type, value }: { value: string | string[] | undefined, type: string }): JSX.Element => {
   const [filters, setFilters] = useQuery(['section', 'status', 'source', 'organiser', 'category', 'author', 'newsvalue', 'aType'])
   const [currentFilters, setCurrentFilters] = useUserTracker<QueryParams | undefined>(`filters.Approvals.current`)
+  const { t } = useTranslation()
 
   const sections = useSections().map((_) => {
     return {
@@ -182,7 +189,7 @@ const SelectedButton = ({ type, value }: { value: string | string[] | undefined,
       }}
     >
       <Icon size={18} strokeWidth={1.75} className='mr-2' />
-      {type === 'from' && <span className='text-xs'>sedan</span>}
+      {type === 'from' && <span className='text-xs'>{t('common:misc.since')}</span>}
       <SelectedBadge value={value} options={options} />
       <XIcon size={18} strokeWidth={1.75} className='ml-2' />
     </Button>

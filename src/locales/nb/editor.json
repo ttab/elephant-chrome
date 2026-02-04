@@ -1,0 +1,21 @@
+{
+  "contentMenu": {
+    "title": "Tittel",
+    "subTitle": "Mellomtittel",
+    "bodyText": "Brødtekst",
+    "vignette": "Vignett",
+    "preamble": "Ingress",
+    "tvListing": "",
+    "unorderedList": "Liste",
+    "orderedList": "Punktliste"
+  },
+  "spelling": {
+    "noSuggestions": "Ingen forslag"
+  },
+  "footer": {
+    "words": "Ord",
+    "numberOfWords": "Antall ord: artikkel (totalt)",
+    "chars": "Tegn",
+    "numberOfChars": "Antall tegn: artikkel (totalt)"
+  }
+}
