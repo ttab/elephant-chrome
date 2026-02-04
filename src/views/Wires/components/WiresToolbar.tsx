@@ -1,5 +1,5 @@
 import { Button, ButtonGroup, Tooltip } from '@ttab/elephant-ui'
-import { CheckIcon, EyeIcon, FolderIcon, FolderOpenIcon, Grid2X2PlusIcon, PlusIcon, SaveIcon } from '@ttab/elephant-ui/icons'
+import { CheckIcon, EyeIcon, FolderIcon, Grid2X2PlusIcon, PlusIcon, SaveIcon } from '@ttab/elephant-ui/icons'
 
 export const WiresToolbar = ({ disabled = false, onAddStream, onAction }: {
   disabled?: boolean
@@ -8,7 +8,7 @@ export const WiresToolbar = ({ disabled = false, onAddStream, onAction }: {
 }) => {
   return (
     <div className='flex gap-2 ms-2'>
-      <ButtonGroup className='p-0 rounded-md gap-1 border z-60'>
+      <ButtonGroup className='p-0 rounded-md gap-1 border border-muted'>
         <Tooltip content='Lägg till kolumn'>
           <Button variant='ghost' className='w-9 h-9 px-0' onClick={onAddStream}>
             <Grid2X2PlusIcon strokeWidth={1.75} size={18} />
@@ -22,7 +22,7 @@ export const WiresToolbar = ({ disabled = false, onAddStream, onAction }: {
         </Tooltip>
       </ButtonGroup>
 
-      <ButtonGroup className='p-0 rounded-md gap-1 border'>
+      <ButtonGroup className='p-0 rounded-md gap-1 border border-muted'>
         <Tooltip content={!disabled ? 'Markera som sparad' : 'Välj telegram för att markera som sparad'}>
           <Button
             onMouseDown={(e) => {
@@ -32,7 +32,7 @@ export const WiresToolbar = ({ disabled = false, onAddStream, onAction }: {
             value='saved'
             aria-label='Markera som sparad'
             variant='ghost'
-            className='w-9 h-9 px-0 bg-background hover:bg-done-background'
+            className='w-9 h-9 px-0 hover:bg-done-background'
             disabled={disabled}
           >
             <FolderIcon size={16} fill='oklch(98.51% 0.0264 99.9)' />
@@ -48,7 +48,7 @@ export const WiresToolbar = ({ disabled = false, onAddStream, onAction }: {
             value='read'
             aria-label='Markera som läst'
             variant='ghost'
-            className='w-9 h-9 px-0 bg-background hover:bg-approved-background'
+            className='w-9 h-9 px-0 hover:bg-approved-background'
             disabled={disabled}
           >
             <EyeIcon size={16} fill='oklch(96.62% 0.0108 149.86)' />
@@ -65,7 +65,7 @@ export const WiresToolbar = ({ disabled = false, onAddStream, onAction }: {
             value='used'
             aria-label='Markera som använd'
             variant='ghost'
-            className='w-9 h-9 px-0 bg-background hover:bg-usable-background'
+            className='w-9 h-9 px-0 hover:bg-usable-background'
             disabled={disabled}
           >
             <CheckIcon size={16} fill='oklch(95.05% 0.022 263.19)' />
@@ -82,7 +82,7 @@ export const WiresToolbar = ({ disabled = false, onAddStream, onAction }: {
             value='used'
             aria-label='Skapa artikel från telegram'
             variant='ghost'
-            className='w-9 h-9 px-0 bg-background hover:bg-usable-background rounded-sm'
+            className='w-9 h-9 px-0 hover:bg-usable-background rounded-sm'
             disabled={disabled}
           >
             <PlusIcon size={16} fill='oklch(95.05% 0.022 263.19)' />

@@ -10,13 +10,6 @@ export const Preview = ({ wire, onClose }: {
   wire: Wire
   onClose: () => void
 }) => {
-  const statuses = [
-    { name: 'draft', label: '' },
-    { name: 'read', label: 'Läst' },
-    { name: 'saved', label: 'Sparad' },
-    { name: 'used', label: 'Använd' }
-  ]
-
   const data = {
     source: wire?.fields['document.rel.source.uri']?.values[0]
       ?.replace('wires://source/', ''),
