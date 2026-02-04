@@ -35,9 +35,16 @@ export const SearchDropdown = ({ searchType, setSearchType }: DropdownProps) => 
     }))
   }, [t])
 
+  const selectedOptions = useMemo(() => {
+    return selected.map((item) => ({
+      value: item.value,
+      label: t(`search.labels.${item.value}`)
+    }))
+  }, [selected, t])
+
   return (
     <ComboBox
-      selectedOptions={selected}
+      selectedOptions={selectedOptions}
       placeholder={t(`search.labels.${searchType}`)}
       max={1}
       options={selectOptionsTranslated}
