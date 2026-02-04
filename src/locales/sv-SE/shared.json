@@ -44,10 +44,10 @@
     "copiedTo": "Kopierad till",
     "copiedFrom": "Kopierad från",
     "copyType": "Kopiera {{type}}",
-    "copyPrompt": "Vill du kopiera {{title}} till {{start}}?",
-    "copySuccess": "{{title}} har kopierats till {{start}}",
+    "copyPrompt": "Vill du kopiera \"{{title}}\" till {{start}}?",
+    "copySuccess": "\"{{title}}\" har kopierats till {{start}}",
     "copyEventPrompt": "Vill du kopiera händelsen till {{datesFormatted}}?",
-    "copyEventSuccess": "Händelsen {{title}} har kopierats till {{datesFormatted}}"
+    "copyEventSuccess": "Händelsen \"{{title}}\" har kopierats till {{datesFormatted}}"
   },
   "errors": {
     "loadFailed": "Kunde inte ladda",
