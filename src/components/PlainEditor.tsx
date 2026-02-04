@@ -70,7 +70,7 @@ export const Editor = ({ id, version, textOnly = false, direct, versionStatusHis
   if (!content) {
     return (
       <LoadingText>
-        Laddar...
+        {t('common:misc.loading')}
       </LoadingText>
     )
   }
