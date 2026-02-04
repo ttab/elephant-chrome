@@ -3,7 +3,7 @@ import path from 'path'
 import tailwindcss from '@tailwindcss/vite'
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
-import { viteStaticCopy } from 'vite-plugin-static-copy'
+
 
 export default defineConfig(({ mode }) => {
   const fileEnv = loadEnv(mode, process.cwd(), '')
@@ -19,16 +19,9 @@ export default defineConfig(({ mode }) => {
 
   return {
     port: devServerPort,
-    base: '/elephant',
+    base: env.BASE_URL || '/elephant',
     plugins: [
-      viteStaticCopy({
-        targets: [
-          {
-            src: './node_modules/@ttab/elephant-ui/dist/styles/**/*.{woff,woff2}',
-            dest: './assets'
-          }
-        ]
-      }),
+
       react(),
       tailwindcss()
     ],
