@@ -54,8 +54,8 @@ export const QuickFilter = <TData,>(): JSX.Element => {
 
   const handleSaveUserFilter = useCallback(() => {
     setUserFilters(columnFilterToQuery(columnFilters))
-    toast.success('Ditt filter har sparats')
-  }, [setUserFilters, columnFilters])
+    toast.success(t('operations.savedFilter'))
+  }, [setUserFilters, columnFilters, t])
 
   const currentQuickFilterValue = quickFilterColumn?.getFilterValue()
 
