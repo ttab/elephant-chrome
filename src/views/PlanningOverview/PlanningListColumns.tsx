@@ -214,7 +214,7 @@ export function planningListColumns({ sections = [], authors = [] }: {
     {
       id: 'action',
       meta: {
-        name: t('core:labels.actions'),
+        name: t('core:labels.action'),
         columnIcon: NavigationIcon,
         className: 'flex-none'
       },
