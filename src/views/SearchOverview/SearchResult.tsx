@@ -70,7 +70,7 @@ export const SearchResult = ({ searchType, page }: {
     <>
       {isLoading
         ? (
-            <LoadingText>{t('common:loading.loading')}</LoadingText>
+            <LoadingText>{t('common:misc.loading')}</LoadingText>
           )
         : (
             <>
