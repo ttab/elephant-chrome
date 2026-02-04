@@ -35,7 +35,7 @@ const TextAssignment = ({ workflowState }: {
   const IconComponent = StatusIcon?.icon
 
   return (
-    <div className='flex h-8 w-12 items-center justify-start' title={t(`assignmentTypes.${StatusIcon?.value}`)}>
+    <div className='flex h-8 w-12 items-center justify-start' title={StatusIcon?.value ? t(`core:status.${StatusIcon?.value}`) : StatusIcon?.value}>
       {IconComponent ? <IconComponent {...StatusIcon.iconProps} /> : null}
     </div>
   )
