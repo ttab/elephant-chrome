@@ -38,7 +38,7 @@ export const Toolbar = ({ facets }: { facets: Facets }): JSX.Element => {
   const handleSaveUserFilter = () => {
     setUserFilters(filters)
 
-    toast.success('Ditt filter har sparats')
+    toast.success(t('shared:operations.savedFilter'))
   }
 
   const handleToggleGroupValue = useCallback(() => {

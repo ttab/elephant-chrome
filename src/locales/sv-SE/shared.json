@@ -65,6 +65,7 @@
     "authorUpdateFailure": "Kunde inte uppdatera författardokument: {{errorMessage}}",
     "authorSaveFailure": "Kunde inte skapa författardokument: {{errorMessage}}",
     "authorCreateFailure": "Kunde inte skapa författardokument: Failed to create author doc",
-    "authorCreateUndefinedFailed": "Kunde inte skapa författardokument: Failed to fetch author document: undefined"
+    "authorCreateUndefinedFailed": "Kunde inte skapa författardokument: Failed to fetch author document: undefined",
+    "savedFilter": "Ditt filter har sparats"
   }
 }

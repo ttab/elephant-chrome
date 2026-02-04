@@ -65,6 +65,7 @@
     "authorUpdateFailure": "Kunne ikke oppdatere forfatterdokumentet: {{errorMessage}}",
     "authorSaveFailure": "Kunne ikke lagre forfatterdokumentet: {{errorMessage}}",
     "authorCreateFailure": "Kunne ikke opprette forfatterdokument: Failed to create author doc",
-    "authorCreateUndefinedFailed": "Kunne ikke opprette forfatterdokument: Failed to fetch author document: undefined"
+    "authorCreateUndefinedFailed": "Kunne ikke opprette forfatterdokument: Failed to fetch author document: undefined",
+    "savedFilter": "Filteret ditt er lagret"
   }
 }
