@@ -35,19 +35,24 @@ export const promptConfig = ({
   sendPrompt: boolean
 }): PromptConfig[] => {
   const documentType = type === 'article' ? 'artikel' : 'flash'
+  const isFlash = type === 'flash'
 
   return [
     {
       visible: sendPrompt,
       key: 'send',
-      title: `Skapa och skicka ${documentType}?`,
+      title: isFlash
+        ? `Skapa och skicka ${documentType}?`
+        : `Godkänn ${documentType}?`,
       description: !selectedPlanning
         ? `En ny planering med tillhörande uppdrag för denna ${documentType} kommer att skapas åt dig.`
         : `Denna ${documentType} kommer att läggas i ett nytt uppdrag i planeringen "${selectedPlanning.label}".`,
-      secondaryDescription: `I samma planering kommer även ett textuppdrag med ${documentType}innehållet att läggas till.`,
+      secondaryDescription: isFlash
+        ? `I samma planering kommer även ett textuppdrag med ${documentType} innehållet att läggas till.`
+        : `I samma planering kommer även ett textuppdrag med ${documentType} innehållet att läggas till, med status Godkänd.`,
       secondaryLabel: 'Avbryt',
-      primaryLabel: 'Publicera',
-      documentStatus: 'usable' as CreateArticleDocumentStatus,
+      primaryLabel: isFlash ? 'Publicera' : 'Godkänn',
+      documentStatus: (isFlash ? 'usable' : 'approved') as CreateArticleDocumentStatus,
       setPrompt: setSendPrompt
     },
     {
@@ -56,7 +61,7 @@ export const promptConfig = ({
       title: `Skapa och klarmarkera ${documentType}?`,
       description: !selectedPlanning
         ? `En ny planering med tillhörande uppdrag för denna ${documentType} kommer att skapas åt dig.`
-        : `Denna ${documentType} kommer att läggas i ett nytt uppdrag i planeringen "${selectedPlanning.label}". Med status klar.`,
+        : `Denna ${documentType} kommer att läggas i ett nytt uppdrag i planeringen "${selectedPlanning.label}", med status Klar.`,
       secondaryLabel: 'Avbryt',
       primaryLabel: 'Klarmarkera',
       documentStatus: 'done' as CreateArticleDocumentStatus,
@@ -84,8 +89,11 @@ export const getLabel = (documentStatus: CreateFlashDocumentStatus, type: 'artic
     case 'usable': {
       return `${documentType} ${type === 'flash' ? 'skickad' : 'publicerad'}`
     }
-    case 'done': {
+    case 'approved': {
       return `${documentType} godkänd`
+    }
+    case 'done': {
+      return `${documentType} klar`
     }
     default: {
       return `${documentType} sparad`

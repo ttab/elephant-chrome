@@ -276,14 +276,14 @@ export const QuickArticleDialog = (props: {
                 <Form.Submit
                   onSubmit={() => handleSubmit(setSendPrompt)}
                   onSecondarySubmit={() => handleSubmit(setSavePrompt)}
-                  onTertiarySubmit={() => handleSubmit(setDonePrompt)}
+                  onTertiarySubmit={() => handleSubmit(setSendPrompt)}
                 >
                   <div className='flex justify-between'>
                     <div className='flex gap-2'>
                       <Button variant='secondary' type='button' role='secondary'>Utkast</Button>
                       <Button variant='secondary' type='button' role='tertiary'>Klarmarkera</Button>
                     </div>
-                    <Button type='submit' role='primary'>Publicera</Button>
+                    <Button type='submit' role='primary'>Godkänn</Button>
                   </div>
                 </Form.Submit>
               </Form.Footer>

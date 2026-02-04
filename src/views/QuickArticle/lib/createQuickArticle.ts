@@ -6,7 +6,7 @@ import { snapshotDocument } from '@/lib/snapshotDocument'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 
-export type CreateArticleDocumentStatus = 'usable' | 'done' | undefined
+export type CreateArticleDocumentStatus = 'usable' | 'done' | 'approved' | undefined
 
 export async function createQuickArticle({
   ydoc,

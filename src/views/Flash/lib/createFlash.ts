@@ -11,7 +11,7 @@ import type { TBElement } from '@ttab/textbit'
 import type { QuickArticleData } from '@/shared/types'
 import { Block } from '@ttab/elephant-api/newsdoc'
 
-export type CreateFlashDocumentStatus = 'usable' | 'done' | undefined
+export type CreateFlashDocumentStatus = 'usable' | 'done' | 'approved' | undefined
 export async function createFlash({
   ydoc,
   status,
