@@ -1,4 +1,14 @@
 {
+  "contentMenu": {
+    "title": "Rubrik",
+    "subTitle": "Mellanrubrik",
+    "bodyText": "Brödtext",
+    "vignette": "Vinjett",
+    "preamble": "Ingress",
+    "tvListing": "Tablåinfo",
+    "unorderedList": "Lista",
+    "orderedList": "Punktlista"
+  },
   "spelling": {
     "noSuggestions": "Inga förslag"
   },

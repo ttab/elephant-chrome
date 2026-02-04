@@ -1,4 +1,14 @@
 {
+  "contentMenu": {
+    "title": "Tittel",
+    "subTitle": "Mellomtittel",
+    "bodyText": "Brødtekst",
+    "vignette": "Vignett",
+    "preamble": "Ingress",
+    "tvListing": "",
+    "unorderedList": "Liste",
+    "orderedList": "Punktliste"
+  },
   "spelling": {
     "noSuggestions": "Ingen forslag"
   },
