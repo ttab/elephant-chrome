@@ -17,7 +17,8 @@
     "type": "Type",
     "organiser": "Arrangør",
     "category": "Kategori",
-    "action": "Action"
+    "action": "Action",
+    "story": "Story"
   },
   "status": {
     "action": {

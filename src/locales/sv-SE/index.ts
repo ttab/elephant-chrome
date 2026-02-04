@@ -8,7 +8,7 @@ import editor from './editor.json'
 import workflows from './workflows.json'
 import factbox from './factbox.json'
 import event from './event.json'
-
+import metaSheet from './metaSheet.json'
 export const sv = {
   common,
   core,
@@ -19,5 +19,6 @@ export const sv = {
   editor,
   workflows,
   factbox,
-  event
+  event,
+  metaSheet
 }

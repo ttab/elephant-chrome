@@ -5,7 +5,8 @@
     "lastDoneMarked": "Sist klarmarkert {{created}} av {{author}}",
     "doneBy": "Klarmarkert av {{author}}",
     "createdBy": "Opprettet av {{author}}",
-    "approvedBy": "Godkjent av {{author}}"
+    "approvedBy": "Godkjent av {{author}}",
+    "createdTimeBy": "Opprettet {{created}} av {{author}}"
   },
   "assignmentTypes": {
     "text": "Artikkel",
