@@ -1,5 +1,5 @@
 import { Button, ButtonGroup, Tooltip } from '@ttab/elephant-ui'
-import { CheckIcon, EyeIcon, FolderOpenIcon, FolderPlusIcon, Grid2X2PlusIcon, PlusIcon, SaveIcon } from '@ttab/elephant-ui/icons'
+import { CheckIcon, EyeIcon, FolderIcon, FolderOpenIcon, Grid2X2PlusIcon, PlusIcon, SaveIcon } from '@ttab/elephant-ui/icons'
 
 export const WiresToolbar = ({ disabled = false, onAddStream, onAction }: {
   disabled?: boolean
@@ -32,11 +32,10 @@ export const WiresToolbar = ({ disabled = false, onAddStream, onAction }: {
             value='saved'
             aria-label='Markera som sparad'
             variant='ghost'
-            className='group w-9 h-9 px-0 bg-background hover:bg-done-background'
+            className='w-9 h-9 px-0 bg-background hover:bg-done-background'
             disabled={disabled}
           >
-            <FolderPlusIcon size={16} fill='oklch(98.51% 0.0264 99.9)' className='group-hover:hidden' />
-            <FolderOpenIcon size={16} fill='oklch(98.51% 0.0264 99.9)' className='hidden group-hover:inline' />
+            <FolderIcon size={16} fill='oklch(98.51% 0.0264 99.9)' />
           </Button>
         </Tooltip>
 
