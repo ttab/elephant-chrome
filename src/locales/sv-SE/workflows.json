@@ -307,7 +307,7 @@
       }
     }
   },
-    "tt/print-article": {
+  "tt/print-article": {
     "draft": {
       "title": "Utkast",
       "description": "Du jobbar på ett utkast av printartikeln",

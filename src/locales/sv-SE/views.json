@@ -45,20 +45,20 @@
       "organiser": "Organisatör"
     }
   },
-    "assignments": {
-      "title": "Uppdrag",
-      "columnLabels": {
-        "assignmentTime": "Uppdragstid",
-        "type": "Typ"
-      },
-      "tooltips": {
-        "assignmentStartTime": "Uppdragets starttid"
-      },
-      "actionMenu": {
-        "openArticle": "Öppna artikel",
-        "openPlanning": "Öppna planering"
-      },
-      "myAssignments": "Mina uppdrag"
+  "assignments": {
+    "title": "Uppdrag",
+    "columnLabels": {
+      "assignmentTime": "Uppdragstid",
+      "type": "Typ"
+    },
+    "tooltips": {
+      "assignmentStartTime": "Uppdragets starttid"
+    },
+    "actionMenu": {
+      "openArticle": "Öppna artikel",
+      "openPlanning": "Öppna planering"
+    },
+    "myAssignments": "Mina uppdrag"
   },
   "factboxes": {
     "title": "Faktarutor",
@@ -66,6 +66,22 @@
       "description": "Beskrivning",
       "lastChanged": "Senast ändrad"
     }
+  },
+  "search": {
+    "title": "Sök",
+    "placeholders": {
+      "search": "Sök"
+    },
+    "labels": {
+      "plannings": "Planeringar",
+      "events": "Händelser",
+      "articles": "Artiklar"
+    },
+    "errors": {
+      "errorFetchingResults": "Kunde inte hämta sökresultat"
+    },
+    "columnLabels": {
+      "date": "Datum"
   },
   "login": {
     "loginWith": "Logga in med",

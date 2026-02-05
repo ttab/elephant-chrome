@@ -67,6 +67,23 @@
       "lastChanged": "Sist endret"
     }
   },
+  "search": {
+    "title": "Søk",
+    "placeholders": {
+      "search": "Søk"
+    },
+    "labels": {
+      "plannings": "Planlegging",
+      "events": "Hendelser",
+      "articles": "Artikler"
+    },
+    "errors": {
+      "errorFetchingResults": "Kunne ikke hente søkeresultatene"
+    },
+    "columnLabels": {
+      "date": "Dato"
+    }
+  },
   "login": {
     "loginWith": "Logg inn med",
     "rememberMe": "Husk meg neste gang",
