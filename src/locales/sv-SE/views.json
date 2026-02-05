@@ -88,5 +88,15 @@
     "loginWith": "Logga in med",
     "rememberMe": "Kom ihåg mig nästa gång",
     "loggingIn": "Loggar in..."
+  },
+  "editor": {
+    "goToLatestVersion": "Gå till senaste versionen",
+    "addRoleInfo" : {
+      "editorial": "Lägg till redaktionell info",
+      "internal": "Lägg till intern info"
+    },
+    "removeInfoConfirm": "Är du säker på att du vill ta bort info?",
+    "changeType": "Ändra typ",
+    "changeTypeConfirm": "Är du säker på att du vill ändra typ av info?"
   }
 }

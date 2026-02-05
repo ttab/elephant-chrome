@@ -9,6 +9,7 @@ import { Prompt } from '@/components/Prompt'
 import type { YDocument } from '@/modules/yjs/hooks'
 import { useYValue } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
+import { useTranslation } from 'react-i18next'
 
 const Note = ({ ydoc, noteIndex, handleRemove }: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -19,6 +20,7 @@ const Note = ({ ydoc, noteIndex, handleRemove }: {
   const [value] = useYValue<Y.XmlText>(ydoc.ele, `meta.core/note[${noteIndex}].data.text`, true)
   const [showVerifyRemove, setShowVerifyDialog] = useState(false)
   const [showVerifyChange, setShowVerifyChange] = useState(false)
+  const { t } = useTranslation('views')
 
   const iconProps = {
     strokeWidth: 1.75,
@@ -50,7 +52,7 @@ const Note = ({ ydoc, noteIndex, handleRemove }: {
             key={role}
             ydoc={ydoc}
             value={value}
-            placeholder={`Lägg till ${role === 'public' ? 'redaktionell' : 'intern'} info`}
+            placeholder={t(`editor.addRoleInfo.${role === 'public' ? 'editorial' : 'internal'}`)}
             className='font-thin text-sm whitespace-pre-wrap break-words'
             singleLine={true}
           />
@@ -63,10 +65,10 @@ const Note = ({ ydoc, noteIndex, handleRemove }: {
 
       {showVerifyRemove && (
         <Prompt
-          title='Ta bort?'
-          description='Är du säker på att du vill ta bort info?'
-          secondaryLabel='Avbryt'
-          primaryLabel='Ta bort'
+          title={`${t('common:actions.remove')}?`}
+          description={t('editor.removeInfoConfirm')}
+          secondaryLabel={t('common:actions.abort')}
+          primaryLabel={t('common:actions.remove')}
           onPrimary={() => {
             setShowVerifyDialog(false)
             handleRemove()
@@ -80,10 +82,10 @@ const Note = ({ ydoc, noteIndex, handleRemove }: {
 
       {showVerifyChange && (
         <Prompt
-          title='Ändra typ?'
-          description='Är du säker på att du vill ändra typ av info?'
-          secondaryLabel='Avbryt'
-          primaryLabel='Ändra typ'
+          title={`${t('editor.changeType')}?`}
+          description={t('editor.changeTypeConfirm')}
+          secondaryLabel={t('common:actions.abort')}
+          primaryLabel={t('common:actions.changeType')}
           onPrimary={() => {
             setShowVerifyChange(false)
             setRole(role === 'public' ? 'internal' : 'public')
