@@ -7,6 +7,7 @@ import { PreVersion } from './Version/PreVersion'
 import type { Status as DocumentStatuses } from '@ttab/elephant-api/repository'
 import { PreVersionInfo } from './Version/PreVersionInfo'
 import type { JSX } from 'react'
+import { cn } from '@ttab/elephant-ui/utils'
 
 const BASE_URL = import.meta.env.BASE_URL || ''
 
@@ -23,12 +24,13 @@ const fetcher = async (url: string): Promise<Element[] | EleDocument | undefined
   return result.document?.content
 }
 
-export const Editor = ({ id, version, textOnly = false, direct, versionStatusHistory }: {
+export const Editor = ({ id, version, textOnly = false, direct, versionStatusHistory, disableScroll = false }: {
   id: string
   textOnly?: boolean
   version?: bigint | undefined
   versionStatusHistory?: DocumentStatuses[]
   direct?: boolean
+  disableScroll?: boolean
 }): JSX.Element => {
   const searchParams = new URLSearchParams()
   if (typeof version !== 'undefined') {
@@ -85,7 +87,11 @@ export const Editor = ({ id, version, textOnly = false, direct, versionStatusHis
   }
 
   return (
-    <div className='flex flex-col w-full pb-6 overflow-y-auto overflow-x-hidden max-w-(--breakpoint-lg) mx-auto'>
+    <div className={cn(
+      'flex flex-col w-full pb-6 overflow-x-hidden max-w-(--breakpoint-lg) mx-auto',
+      !disableScroll && 'overflow-y-auto'
+    )}
+    >
       {versionStatusHistory && version && (
         <PreVersionInfo version={version} versionStatusHistory={versionStatusHistory} />
       )}
