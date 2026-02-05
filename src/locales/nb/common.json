@@ -16,7 +16,9 @@
     "nogrouping": "Ingen gruppering",
     "group": "Gruppe",
     "copy": "Kopiere",
-    "confirm": "Ferdig"
+    "confirm": "Ferdig",
+    "openArticle": "Åpne artikkel",
+    "openPlanning": "Åpen planlegging"
   },
   "errors": {
     "unknown": "Ukjent feil",

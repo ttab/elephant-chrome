@@ -133,7 +133,7 @@ export const useLatest = (): HitV1[] => {
         )
       } catch (error) {
         console.error(error)
-        toast.error(t('errors.fetchDocumentFailed', { documentType: 'dokument' }))
+        toast.error(t('errors.fetchDocumentFailed'))
       }
     }
 
