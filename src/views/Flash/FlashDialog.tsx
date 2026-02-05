@@ -290,7 +290,7 @@ export const FlashDialog = (props: {
                 name='slugline'
                 value={relatedDocsSlugline}
                 onChange={(e) => {
-                  const value = e.target.value.toLocaleLowerCase().replace(/\s/g, '-')
+                  const value = e.target.value.trim()
                   setSlugline(value)
                 }}
               />
