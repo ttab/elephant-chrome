@@ -51,16 +51,13 @@ const SelectedBadge = ({ value, options }: SelectedBase & {
       )
     } else {
       return value.map((v, index: number) => {
-        const value = typeof v === 'string' ? options?.find((option) => option.value === v)?.value : ''
-        const label = t(`core:labels.${value}`)
-
         return (
           <div key={index}>
             <Badge
               variant='secondary'
               className='rounded-sm px-1 font-normal mr-1'
             >
-              {label || ''}
+              {typeof v === 'string' ? options?.find((option) => option.value === v)?.label || v : ''}
             </Badge>
           </div>
         )

@@ -41,7 +41,7 @@ export const Events = (): JSX.Element => {
   const organisers = useOrganisers()
   const { locale } = useRegistry()
   const columns = useMemo(() =>
-    eventTableColumns({ sections, organisers, locale, t }), [sections, organisers, locale, t])
+    eventTableColumns({ sections, organisers, locale }, t), [sections, organisers, locale, t])
 
   // Load current filters from user tracker if any
   const columnFilters = useInitFilters<Event>({

@@ -39,7 +39,7 @@ export const Plannings = (): JSX.Element => {
   const { t } = useTranslation()
 
   const columns = useMemo(() =>
-    planningListColumns({ sections, authors, t }), [sections, authors, t])
+    planningListColumns({ sections, authors }, t), [sections, authors, t])
 
   const columnFilters = useInitFilters<Planning>({
     path: 'filters.Plannings.current',

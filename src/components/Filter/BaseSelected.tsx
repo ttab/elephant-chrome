@@ -12,11 +12,21 @@ export const BaseSelected = ({ options, filterPage, facets }: {
   filterPage: string
 }) => {
   const [filter, setFilter] = useQuery([filterPage])
-  const { t } = useTranslation('core')
+  const { t } = useTranslation('shared')
   const [currentFilters, setCurrentFilters] = useUserTracker<QueryParams | undefined>(`filters.Approvals.current`)
   const selected = new Set(filter[filterPage])
   return options.map((option) => {
     const isSelected = selected?.has?.(option.value)
+    const getTranslatedOptions = (filterType: string, option: { label?: string, value: string }) => {
+      switch (filterType) {
+        case 'aType':
+          return t(`assignmentTypes.${option.value}`)
+        case 'status':
+          return t(`core:status.${option.value}`)
+        default:
+          return option.label
+      }
+    }
 
     return (
       <CommandItem
@@ -61,7 +71,7 @@ export const BaseSelected = ({ options, filterPage, facets }: {
         >
           <CheckIcon size={18} strokeWidth={1.75} />
         </div>
-        <span>{filterPage === 'status' ? t(`labels.${option.value}`) : option.label}</span>
+        <span>{getTranslatedOptions(filterPage, option)}</span>
         <span className='ml-auto flex h-4 w-4 items-center justify-center font-mono text-xs'>
           {facets?.get(option.value) && (
             <span className='ml-auto flex h-4 w-4 items-center justify-center font-mono text-xs'>

@@ -24,11 +24,10 @@ export const Commands = (props: FilterProps & { type: SearchKeys }): JSX.Element
   if (props.page === undefined || props.pages === undefined || props.setPages === undefined || props.setSearch === undefined) {
     throw new Error('No props passed to Command component')
   }
-
+  const { t } = useTranslation('core')
   const { type } = props
 
   const [filters, setFilters] = useQuery(['section', 'organiser', 'category', 'from', 'author', 'aType', 'newsvalue'])
-  const { t } = useTranslation()
   const hasFilter = Object.values(filters).some((value) => value?.length)
 
   const { from } = filters
@@ -69,14 +68,14 @@ export const Commands = (props: FilterProps & { type: SearchKeys }): JSX.Element
       <OptionsFilter
         {...props}
         options={sections}
-        label={t('core:labels.section')}
+        label={t('labels.section')}
         filterPage='section'
         Icon={ShapesIcon}
       />
       <OptionsFilter
         {...props}
         options={Newsvalues}
-        label={t('core:labels.newsvalue')}
+        label={t('labels.newsvalue')}
         filterPage='newsvalue'
         Icon={SignalHighIcon}
       />
@@ -84,7 +83,7 @@ export const Commands = (props: FilterProps & { type: SearchKeys }): JSX.Element
         <OptionsFilter
           {...props}
           options={AssignmentTypes}
-          label={t('core:labels.type')}
+          label={t('labels.type')}
           filterPage='aType'
           Icon={CrosshairIcon}
         />
@@ -94,14 +93,14 @@ export const Commands = (props: FilterProps & { type: SearchKeys }): JSX.Element
           <OptionsFilter
             {...props}
             options={organisers}
-            label={t('core:labels.organiser')}
+            label={t('labels.organiser')}
             filterPage='organiser'
             Icon={BookUserIcon}
           />
           <OptionsFilter
             {...props}
             options={categories}
-            label={t('core:labels.category')}
+            label={t('labels.category')}
             filterPage='category'
             Icon={TagIcon}
           />
@@ -111,7 +110,7 @@ export const Commands = (props: FilterProps & { type: SearchKeys }): JSX.Element
         <OptionsFilter
           {...props}
           options={authors}
-          label={t('core:labels.assignee')}
+          label={t('labels.assignee')}
           filterPage='author'
           Icon={UsersIcon}
         />

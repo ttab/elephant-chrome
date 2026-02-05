@@ -35,7 +35,7 @@ void i18n
         if (formatStr === 'lowercase' && typeof value === 'string') {
           return value.toLowerCase()
         }
-        return value
+        return value as string
       }
     },
     supportedLngs: ['sv', 'nb'],

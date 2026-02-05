@@ -5,6 +5,5 @@
     },
     "errors": {
         "errorCreatingFactbox": "Det gick inte att skapa ny faktaruta!"
-
     }
 }
