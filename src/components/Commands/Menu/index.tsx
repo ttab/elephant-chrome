@@ -73,7 +73,7 @@ export const CommandMenu = ({ children, onKeyDown, onChange }: CommandMenuProps)
         >
           <DebouncedCommandInput
             value={search}
-            onChange={(value) => onChange(value, command)}
+            onValueChange={(value) => onChange(value, command)}
             placeholder={getPlaceholder(pages, page)}
             className='h-9'
           />

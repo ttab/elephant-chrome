@@ -8,7 +8,7 @@ import { Commands } from '@/components/Commands'
 import { Sort } from '../Sort'
 import { useMemo, useCallback, type JSX } from 'react'
 import { QuickFilter } from './QuickFilter'
-import { SearchBar } from './SearchBar'
+import { SearchBar } from '@/components/SearchBar/SearchBar'
 
 interface ToolsetProps {
   searchbar?: boolean
@@ -27,7 +27,7 @@ export const Toolbar = <TData,>({ searchbar = false, searchPlaceholder = 'Sök',
     globalFilter: string
   }
 
-  const isFiltered = useMemo(() => columnFilters.length > 0 || !!globalFilter,
+  const filterLength = useMemo(() => columnFilters.length + (globalFilter ? 1 : 0),
     [columnFilters, globalFilter])
 
   const handleResetFilters = useCallback(() => {
@@ -54,7 +54,7 @@ export const Toolbar = <TData,>({ searchbar = false, searchPlaceholder = 'Sök',
         && <Sort />}
       {selectedFilters
         && <SelectedFilters table={table} />}
-      {isFiltered && (
+      {filterLength > 1 && (
         <Button
           variant='ghost'
           onClick={handleResetFilters}
@@ -66,8 +66,10 @@ export const Toolbar = <TData,>({ searchbar = false, searchPlaceholder = 'Sök',
       )}
       {searchbar && (
         <SearchBar
+          className='w-fit'
+          onChange={(value) => table.setGlobalFilter(value ?? '')}
+          value={table.getState().globalFilter as string ?? ''}
           placeholder={searchPlaceholder}
-          setGlobalTextFilter={table.setGlobalFilter}
         />
       )}
       {quickFilter
