@@ -6,7 +6,7 @@ import {
   UserMessage
 } from '@/components'
 import { type ViewMetadata, type ViewProps } from '@/types'
-import { TagsIcon, CalendarIcon, MessageCircleIcon, TextIcon, CalendarDaysIcon } from '@ttab/elephant-ui/icons'
+import { TagsIcon, CalendarIcon, MessageCircleMoreIcon, TextIcon, CalendarDaysIcon } from '@ttab/elephant-ui/icons'
 import {
   useQuery,
   useWorkflowStatus
@@ -107,7 +107,20 @@ const PlanningViewContent = (props: ViewProps & {
   data?: EleDocumentResponse
   setNewItem?: Setter
 }): JSX.Element | undefined => {
-  const ydoc = useYDocument<Y.Map<unknown>>(props.documentId, { data: props.data })
+  const ydoc = useYDocument<Y.Map<unknown>>(props.documentId, {
+    data: props.data,
+    ignoreChangeKeys: [
+      'meta.core/description[@internalDescriptionIndex].data.text[*]', // internal description
+      'meta.core/assignment[*].meta.core/description[0].data.text[*]', // assignment description
+      'meta.core/assignment[*].data.start', // assignment start
+      // assignment deliverables
+      'meta.core/assignment[*].links.core/article',
+      'meta.core/assignment[*].links.core/flash',
+      'meta.core/assignment[*].links.core/editorial-info',
+      'meta.core/assignment[*].data.status' // assignment status (for photo, video, graphics)
+
+    ]
+  })
   const { provider, ele: document, connected } = ydoc
 
   const { data: session, status } = useSession()
@@ -120,8 +133,8 @@ const PlanningViewContent = (props: ViewProps & {
   const [slugline] = useYValue<Y.XmlText>(document, 'meta.tt/slugline[0].value', true)
   const pubIndex = useDescriptionIndex(document, 'public')
   const intIndex = useDescriptionIndex(document, 'internal')
-  const [publicDescription] = useYValue<Y.XmlText>(document, ['meta', 'core/description', pubIndex, 'data', 'text'], true)
-  const [internalDescription] = useYValue<Y.XmlText>(document, ['meta', 'core/description', intIndex, 'data', 'text'], true)
+  const [publicDescription] = useYValue<Y.XmlText>(document, `meta.core/description[${pubIndex}].data.text`, true)
+  const [internalDescription] = useYValue<Y.XmlText>(document, `meta.core/description[${intIndex}].data.text`, true)
 
   const handleSubmit = async ({ documentStatus }: {
     documentStatus: 'usable' | 'done' | undefined
@@ -205,7 +218,7 @@ const PlanningViewContent = (props: ViewProps & {
             <TextBox
               ydoc={ydoc}
               value={internalDescription}
-              icon={<MessageCircleIcon size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />}
+              icon={<MessageCircleMoreIcon size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />}
               placeholder='Internt meddelande'
             />
 

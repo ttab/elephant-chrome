@@ -1,4 +1,4 @@
-import { AppHeader } from '@/components'
+import { AppHeader } from '@/components/App/Header'
 import { AppContent } from './AppContent'
 import { ModalProvider } from './components/Modal/ModalProvider'
 import { FaroErrorBoundary } from '@grafana/faro-react'

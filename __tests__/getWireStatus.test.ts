@@ -1,16 +1,11 @@
 import { describe, it, expect } from 'vitest'
-import { getWireStatus } from '../src/components/Table/lib/getWireStatus'
+import { getWireStatus } from '../src/lib/getWireStatus'
 import type { Wire } from '@/shared/schemas/wire'
 
 describe('getWireStatus', () => {
-  it('returns null for non-Wires document types', () => {
-    const wire = { id: '1', fields: {} } as unknown as Wire
-    expect(getWireStatus('Planning', wire)).toBeNull()
-  })
-
   it('returns draft when there are no valid statuses', () => {
     const wire = { id: '2', fields: {} } as unknown as Wire
-    expect(getWireStatus('Wires', wire)).toBe('draft')
+    expect(getWireStatus(wire)).toBe('draft')
 
     const wireWithOldVersions = {
       id: '3',
@@ -23,7 +18,7 @@ describe('getWireStatus', () => {
     } as unknown as Wire
 
     // saved has invalid timestamp, read has version <= 1 -> still draft
-    expect(getWireStatus('Wires', wireWithOldVersions)).toBe('draft')
+    expect(getWireStatus(wireWithOldVersions)).toBe('draft')
   })
 
   it('returns the key of the most recent valid status', () => {
@@ -44,7 +39,7 @@ describe('getWireStatus', () => {
     } as unknown as Wire
 
     // 'used' is the most recent timestamp
-    expect(getWireStatus('Wires', wire)).toBe('used')
+    expect(getWireStatus(wire)).toBe('used')
   })
 
   it('ignores statuses with NaN timestamps', () => {
@@ -59,6 +54,6 @@ describe('getWireStatus', () => {
     } as unknown as Wire
 
     // read is invalid date, saved is valid and should be chosen
-    expect(getWireStatus('Wires', wire)).toBe('saved')
+    expect(getWireStatus(wire)).toBe('saved')
   })
 })
