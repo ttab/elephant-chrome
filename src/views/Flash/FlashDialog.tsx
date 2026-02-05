@@ -213,6 +213,12 @@ export const FlashDialog = (props: {
                     minSearchChars={2}
                     modal={props.asDialog}
                     onSelect={(option) => {
+                      const slugline = (option.payload as { slugline: string | undefined }).slugline
+
+                      if (slugline) {
+                        setSlugline(slugline)
+                      }
+
                       if (option.value !== selectedPlanning?.value) {
                         setSelectedPlanning({
                           value: option.value,
