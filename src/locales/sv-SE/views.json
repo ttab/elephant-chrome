@@ -82,6 +82,7 @@
     },
     "columnLabels": {
       "date": "Datum"
+    }
   },
   "login": {
     "loginWith": "Logga in med",
