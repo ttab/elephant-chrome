@@ -6,11 +6,14 @@ import type * as Y from 'yjs'
 import type { Descendant } from 'slate'
 import { cn } from '@ttab/elephant-ui/utils'
 
-export const TextBox = ({ icon: Icon, value, onChange, ...props }: {
+export const TextBox = ({ id, asDialog, disabled, icon: Icon, iconAction, value, onChange, className, ...props }: {
   ydoc: YDocument<Y.Map<unknown>>
   value: Y.XmlText | undefined
+  id?: string
+  asDialog?: boolean | undefined
   disabled?: boolean
   icon?: React.ReactNode
+  iconAction?: () => void
   placeholder?: string
   className?: string
   singleLine?: boolean
@@ -38,23 +41,23 @@ export const TextBox = ({ icon: Icon, value, onChange, ...props }: {
       onBlur(e)
     }
   }, [onBlur])
-
   return (
     <Awareness ydoc={props.ydoc} path={path} ref={setFocused} className='w-full'>
-      <div className='w-full flex flex-row gap-2'>
+      <div id={props.ydoc.id} className='w-full flex flex-row gap-2'>
         {Icon && (
-          <div className='pt-1.5'>
+          <div className='pt-1.5' onClick={iconAction}>
             {Icon}
           </div>
         )}
-
         {value
           ? (
               <TextboxRoot
+                className={className}
                 {...props}
                 value={value}
                 onBlur={handleOnBlur}
                 onFocus={handleOnFocus}
+                disabled={disabled}
               />
             )
           : (
@@ -73,7 +76,7 @@ export const TextBox = ({ icon: Icon, value, onChange, ...props }: {
                 whitespace-nowrap
                 bg-gray-50
                 dark:bg-input`,
-                props.className
+                className
               )}
               />
             )}

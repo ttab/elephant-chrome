@@ -26,27 +26,38 @@ export const useWorkflow = (type?: string): DocumentWorkflow => {
       return
     }
 
-    client.getStatuses({
-      type,
-      accessToken: session.accessToken || ''
-    }).then((wfStatuses) => {
-      // Filter out all status specifications based on statuses allowed for this type
-      // Draft is always included here as it is not specified in the backend.
-      const statuses = (wfStatuses || []).reduce((acc, wfStatus) => {
-        if (StatusSpecifications[wfStatus.name]) {
-          acc[wfStatus.name] = StatusSpecifications[wfStatus.name]
-        }
-
-        return acc
-      }, { draft: StatusSpecifications['draft'] } as Record<string, StatusSpecification>)
+    // Special workflow setup for sections as workflow does not exist in database.
+    if (type === 'core/section') {
+      const statuses = {
+        usable: StatusSpecifications['usable'],
+        unpublished: StatusSpecifications['unpublished']
+      }
       setWorkflow({
         workflow: WorkflowSpecifications[type] || null,
         statuses
       })
-    }).catch((err: Error) => {
-      console.error(err.message || 'Failed getting workflow specification')
-    })
-  }, [client, session?.accessToken, type])
+    } else {
+      client.getStatuses({
+        type,
+        accessToken: session.accessToken || ''
+      }).then((wfStatuses) => {
+        // Filter out all status specifications based on statuses allowed for this type
+        // Draft is always included here as it is not specified in the backend.
+        const statuses = (wfStatuses || []).reduce((acc, wfStatus) => {
+          if (StatusSpecifications[wfStatus.name]) {
+            acc[wfStatus.name] = StatusSpecifications[wfStatus.name]
+          }
 
+          return acc
+        }, { draft: StatusSpecifications['draft'] } as Record<string, StatusSpecification>)
+        setWorkflow({
+          workflow: WorkflowSpecifications[type] || null,
+          statuses
+        })
+      }).catch((err: Error) => {
+        console.error(err.message || 'Failed getting workflow specification')
+      })
+    }
+  }, [client, session?.accessToken, type])
   return workflow
 }

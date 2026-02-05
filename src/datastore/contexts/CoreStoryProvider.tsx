@@ -50,7 +50,9 @@ export const CoreStoryProvider = ({ children }: {
           id,
           title: _['document.title'][0].trim(),
           shortText: '',
-          longText: ''
+          longText: '',
+          usableVersion: BigInt(_['heads.usable.version'][0]),
+          documentType: documentType
         }
 
         if (role0 && text0) {
@@ -68,7 +70,6 @@ export const CoreStoryProvider = ({ children }: {
             story.longText = text1
           }
         }
-
         return story
       }
     )

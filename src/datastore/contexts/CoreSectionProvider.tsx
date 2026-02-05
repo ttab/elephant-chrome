@@ -16,13 +16,13 @@ export const CoreSectionContext = createContext<CoreSectionProviderState>({
 
 export const CoreSectionProvider = ({ children }: {
   children: React.ReactNode
+  usableOnly?: boolean
 }): JSX.Element => {
   const documentType = 'core/section'
   const { server: { indexUrl } } = useRegistry()
   const { data } = useSession()
   const [objects, setObjects] = useState<IDBSection[]>([])
   const IDB = useIndexedDB()
-
   /*
    * Get objects from objectStore, else from index and add replace objectStore objects
    */
@@ -31,20 +31,30 @@ export const CoreSectionProvider = ({ children }: {
       return
     }
 
-    const cachedObjects = await fetchOrRefresh<IDBSection, IndexedSection>(
-      IDB,
-      documentType,
-      indexUrl,
-      data.accessToken,
-      force,
-      (item) => {
-        const { _id: id, _source: _ } = item
-        return {
-          id,
-          title: _['document.title'][0].trim()
+    const getCachedObjects = async () => {
+      // Due to opensearches refresh_interval we need to wait 3 second before refetching
+      await new Promise((resolve) => setTimeout(resolve, 3000))
+      const newDocs = await fetchOrRefresh<IDBSection, IndexedSection>(
+        IDB,
+        documentType,
+        indexUrl,
+        data.accessToken,
+        force,
+        (item) => {
+          const { _id: id, _source: _ } = item
+          return {
+            id,
+            title: _['document.title'][0].trim(),
+            usableVersion: BigInt(_['heads.usable.version'][0]),
+            code: _['document.meta.core_section.data.code'][0],
+            documentType: documentType
+          }
         }
-      }
-    )
+      )
+      return newDocs
+    }
+
+    const cachedObjects = await getCachedObjects()
 
     if (Array.isArray(cachedObjects) && cachedObjects.length) {
       setObjects(cachedObjects)

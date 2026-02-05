@@ -18,7 +18,8 @@ export const Submit = ({
   onTertiarySubmit,
   onDocumentCreated,
   onReset,
-  disableOnSubmit
+  disableOnSubmit,
+  className
 }: FormProps & {
   documentId?: string
   onDialogClose?: (id: string, title: string) => void
@@ -28,6 +29,7 @@ export const Submit = ({
   onDocumentCreated?: () => void
   onReset?: () => void
   disableOnSubmit?: boolean
+  className?: string
 }): JSX.Element | null => {
   const [isSubmitting, setIsSubmitting] = useState<ButtonHTMLAttributes<HTMLButtonElement>['type'] | null>(null)
   const runSubmitHandler = (
@@ -238,7 +240,7 @@ export const Submit = ({
 
   if (children) {
     return (
-      <div>
+      <div className={className}>
         {React.Children.map(children, applyOnClickHandler)}
       </div>
     )

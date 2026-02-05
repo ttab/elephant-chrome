@@ -1,26 +1,35 @@
-/** Section structure in indexedDB objectStore  */
-export interface IDBSection {
+/** Concept structure in indexedDB objectStore  */
+export interface IDBAdmin {
+  title: string
+  description: string
+  documentType: string
+}
+
+export interface IDBConcept {
   id: string
   title: string
+  usableVersion: bigint
+  documentType: string
+}
+
+export interface IDBSection extends IDBConcept {
+  code: string
 }
 
 /** Section structure in indexedDB objectStore  */
-export interface IDBEditorialInfoType {
+export interface IDBEditorialInfoType extends IDBConcept {
   id: string
   title: string
 }
 
 /** Story structure in indexedDB objectStore  */
-export interface IDBStory {
-  id: string
-  title: string
+export interface IDBStory extends IDBConcept {
   shortText: string
   longText: string
 }
 
 /** Author structure in indexedDB objectStore */
-export interface IDBAuthor {
-  id: string
+export interface IDBAuthor extends IDBConcept {
   name: string
   firstName: string
   lastName: string
@@ -30,15 +39,13 @@ export interface IDBAuthor {
 }
 
 /** Category structure in indexedDB objectStore */
-export interface IDBCategory {
+export interface IDBCategory extends IDBConcept {
   id: string
   title: string
 }
 
 /** Organiser structure in indexedDB objectStore */
-export interface IDBOrganiser {
-  id: string
-  title: string
+export interface IDBOrganiser extends IDBConcept {
   city: string
   country: string
   email: string
@@ -47,14 +54,12 @@ export interface IDBOrganiser {
 }
 
 /** Category structure in indexedDB objectStore */
-export interface IDBWireSource {
+export interface IDBWireSource extends IDBConcept {
   uri: string
-  title: string
 }
 
-export interface IDBContentSource {
+export interface IDBContentSource extends IDBConcept {
   uri: string
-  title: string
 }
 
 export interface IDBLanguage {

@@ -235,12 +235,15 @@ describe('authorOutput', () => {
   it('returns first letters of first and last name', () => {
     const author: IDBAuthor = {
       id: '123',
+      title: 'Alice Johnson',
       name: 'Alice Johnson',
       firstName: 'Alice',
       lastName: 'Johnson',
       initials: '',
       email: 'aj@example.com',
-      sub: 'core://user/001'
+      sub: 'core://user/001',
+      usableVersion: 1n,
+      documentType: 'core/author'
     }
     expect(authorOutput(author)).toBe('AJ')
   })

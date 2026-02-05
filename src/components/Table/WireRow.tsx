@@ -5,12 +5,11 @@ import { type Row as RowType, flexRender } from '@tanstack/react-table'
 import { cn } from '@ttab/elephant-ui/utils'
 import type { Wire } from '@/shared/schemas/wire'
 import { cva } from 'class-variance-authority'
+import type { ViewType } from '@/types/index'
 import { getWireStatus } from '../../lib/getWireStatus'
 
-type DocumentType = 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires' | 'Factbox' | 'Print' | 'PrintEditor'
-
 export const WireRow = ({ row, handleOpen, openDocuments, type }: {
-  type: DocumentType
+  type: ViewType
   row: RowType<unknown>
   handleOpen: (event: MouseEvent<HTMLTableRowElement>, row: RowType<unknown>) => void
   openDocuments: string[]
@@ -80,7 +79,7 @@ function isUpdated(wire: Wire): boolean {
   })
 }
 
-function getDataState(openDocuments: string[], wire: Wire, type: DocumentType, row: RowType<Wire>): 'focused' | 'selected' | undefined {
+function getDataState(openDocuments: string[], wire: Wire, type: ViewType, row: RowType<Wire>): 'focused' | 'selected' | undefined {
   return ((openDocuments.includes(wire.id) && 'selected') || (type === 'Wires' && row.getIsSelected() && 'focused')) || undefined
 }
 

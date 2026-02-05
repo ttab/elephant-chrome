@@ -23,6 +23,8 @@ export const StatusOptions = ({ transitions, statuses, onSelect, children, hasCh
         })
         .map(([status, state]) => {
           const statusDef = status === 'unpublished' ? StatusSpecifications[status] : statuses[status]
+          // Remove option to deactivate a document in a change state
+          if (hasChanges && (transitions?.unpublished.title === 'Inaktivera')) return undefined
           return (
             <StatusMenuOption
               key={status}

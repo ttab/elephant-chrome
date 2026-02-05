@@ -3,7 +3,7 @@ import { Textbit } from '@ttab/textbit'
 import { cn } from '@ttab/elephant-ui/utils'
 import { ContextMenu } from '../../Editor/ContextMenu'
 
-export const TextboxEditable = ({ singleLine, autoFocus, onFocus, onBlur }: {
+export const TextboxEditable = ({ singleLine, autoFocus, onFocus, onBlur}: {
   singleLine: boolean
   spellcheck?: boolean
   autoFocus?: boolean

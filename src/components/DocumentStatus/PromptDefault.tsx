@@ -9,7 +9,8 @@ export const PromptDefault = ({
   showPrompt,
   requireCause = false,
   currentCause,
-  unPublishDocument
+  unPublishDocument,
+  resetDocument
 }: {
   prompt: {
     status: string
@@ -18,13 +19,14 @@ export const PromptDefault = ({
   showPrompt: React.Dispatch<React.SetStateAction<({
     status: string
   } & WorkflowTransition) | undefined>>
+  resetDocument: () => Promise<void>
   requireCause?: boolean
   currentCause?: string
   unPublishDocument?: (name: string) => void
 }) => {
   const [cause, setCause] = useState<string | undefined>(currentCause)
   const isUnpublishPrompt = prompt.status === 'unpublished'
-
+  const isResetPrompt = prompt.status === 'reset'
   const showCauseField = isUnpublishPrompt
     ? false
     : requireCause || cause
@@ -41,12 +43,14 @@ export const PromptDefault = ({
   const handleSubmit = useCallback(() => {
     if (isUnpublishPrompt && unPublishDocument) {
       void unPublishDocument('unpublished')
+    } else if (isResetPrompt) {
+      void resetDocument()
     } else {
       void setStatus(prompt.status, { cause })
     }
 
     showPrompt(undefined)
-  }, [cause, isUnpublishPrompt, prompt.status, setStatus, showPrompt, unPublishDocument])
+  }, [cause, isUnpublishPrompt, prompt.status, setStatus, showPrompt, unPublishDocument, isResetPrompt, resetDocument])
 
   // Handle auto-submit when verification is not required
   useEffect(() => {

@@ -1,3 +1,5 @@
+import type {
+  LucideIcon } from '@ttab/elephant-ui/icons'
 import {
   CableIcon,
   BriefcaseBusinessIcon,
@@ -9,7 +11,7 @@ import {
   UtilityPoleIcon,
   BoxesIcon,
   LibraryIcon,
-  type LucideIcon
+  CogIcon
 } from '@ttab/elephant-ui/icons'
 import type { ViewProps, View } from '../types'
 
@@ -115,6 +117,17 @@ export const applicationMenu: ApplicationMenu = {
           label: 'Print',
           icon: LibraryIcon,
           color: '#006bb3'
+        }
+      ]
+    },
+    {
+      name: 'Admin',
+      items: [
+        {
+          name: 'Admin',
+          label: 'Admin',
+          icon: CogIcon,
+          color: '#b4385b'
         }
       ]
     }

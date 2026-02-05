@@ -21,7 +21,7 @@ export const Organiser = ({ ydoc, path, asDialog, onChange }: {
 
   const [organiser, setOrganiser] = useYValue<Block | undefined>(ydoc.ele, path)
   const setFocused = useRef<(value: boolean, path: string) => void>(() => { })
-  const selectedOptions = (allOrganisers || []).filter((s) => s.value === organiser?.uuid)
+  const selectedOptions = (allOrganisers).filter((s) => s.value === organiser?.uuid)
 
   return (
     <Awareness ref={setFocused} ydoc={ydoc} path={path}>

@@ -41,7 +41,9 @@ export const TTEditorialInfoTypeProvider = ({ children }: {
         const { _id: id, _source: _ } = item
         return {
           id,
-          title: _['document.title'][0].trim()
+          title: _['document.title'][0].trim(),
+          usableVersion: BigInt(_['heads.usable.version'][0]),
+          documentType: documentType
         }
       }
     )

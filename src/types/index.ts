@@ -81,6 +81,8 @@ export interface ViewProps {
   autoFocus?: boolean
   setOpen?: (open?: boolean) => boolean
   preview?: boolean
+  documentType?: string
+  title?: string
 }
 
 export type Theme = 'dark' | 'light' | 'system'
@@ -174,3 +176,6 @@ export interface StatusData {
   workflowState: string
   workflowCheckpoint: string
 }
+
+export type ViewType = 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires' | 'Factbox' | 'Print' | 'PrintEditor' | 'Concepts' | 'Concept' | 'Admin'
+

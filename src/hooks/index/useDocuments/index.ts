@@ -28,6 +28,7 @@ export interface useDocumentsFetchOptions {
   asAssignments?: boolean
   setTableData?: boolean
   subscribe?: boolean
+  usableOnly?: boolean
 }
 
 class AbortError extends Error { }
@@ -89,7 +90,6 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
   [index, repository, session, page, size, documentType, query, fields, sort, options])
 
   const { data, error, mutate, isLoading, isValidating } = useSWR<T[], Error>(key, fetcher)
-
   // Keep refs up to date for polling
   useEffect(() => {
     subscriptionsRef.current = subscriptions
@@ -184,7 +184,6 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
     }
     // Only restart polling if these change
   }, [index, options?.subscribe, session, subscriptions])
-
   return { data, error, mutate, isValidating, isLoading }
 }
 

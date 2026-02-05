@@ -17,6 +17,9 @@ import { useHistory, useNavigation, useView } from '@/hooks/index'
 import type { View } from '@/types/index'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
+import { reset } from '@/views/Concepts/lib/reset'
+import { isConceptType } from '@/shared/isConceptType'
+import { tableDataMap } from '@/views/Concepts/lib/conceptDataTable'
 
 export const StatusMenu = ({ ydoc, publishTime, onBeforeStatusChange }: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -26,7 +29,7 @@ export const StatusMenu = ({ ydoc, publishTime, onBeforeStatusChange }: {
     data?: Record<string, unknown>
   ) => Promise<boolean>
 }) => {
-  const [documentStatus, setDocumentStatus] = useWorkflowStatus({ ydoc })
+  const [documentStatus, setDocumentStatus] = useWorkflowStatus({ ydoc, documentId: ydoc.id })
   const containerRef = useRef<HTMLDivElement>(null)
   const [dropdownWidth, setDropdownWidth] = useState<number>(0)
   const { statuses, workflow } = useWorkflow(documentStatus?.type)
@@ -93,18 +96,21 @@ export const StatusMenu = ({ ydoc, publishTime, onBeforeStatusChange }: {
           currentStatus: documentStatus
         })
 
+        const ConceptViews = Object.fromEntries(Object.keys(tableDataMap).map((key) => [key, 'Concept']))
         const viewType: Record<string, View> = {
           'core/article': 'Editor',
           'core/planning-item': 'Planning',
           'core/event': 'Event',
           'core/factbox': 'Factbox',
           'core/flash': 'Flash',
-          'tt/print-article': 'PrintEditor'
+          'tt/print-article': 'PrintEditor',
+          ...ConceptViews
         }
+
         handleLink({
           dispatch,
           viewItem: state.viewRegistry.get(viewType[documentStatus?.type || 'Error']),
-          props: { id: ydoc.id },
+          props: { id: ydoc.id, documentType: documentStatus?.type },
           viewId: crypto.randomUUID(),
           history,
           origin: viewId,
@@ -115,6 +121,12 @@ export const StatusMenu = ({ ydoc, publishTime, onBeforeStatusChange }: {
       toast.error('Det gick inte att avpublicera dokumentet')
       console.error('error while unpublishing document:', error)
     }
+  }
+
+  const resetDocument = async () => {
+    if (!ydoc.id || !session?.accessToken || !repository) return
+    await reset(repository, ydoc.id, session.accessToken)
+    ydoc.setIsChanged(false)
   }
 
   if (!documentStatus || !Object.keys(statuses).length) {
@@ -172,6 +184,24 @@ export const StatusMenu = ({ ydoc, publishTime, onBeforeStatusChange }: {
                 />
               )}
             </StatusOptions>
+            {isConceptType(documentStatus.type || '')
+              && (
+                <StatusMenuOption
+                  key='reset'
+                  status={documentStatus.name}
+                  state={{
+                    verify: true,
+                    title: `Återställ`,
+                    description: 'Återställ till senast använda version'
+                  }}
+                  onSelect={() => showPrompt({
+                    verify: true,
+                    title: 'Återställ',
+                    description: 'Återställ till senast använda version',
+                    status: 'reset' })}
+                  statusDef={currentStatusDef}
+                />
+              )}
 
             <StatusMenuContext
               icon={currentStatusDef?.icon || StatusSpecifications[currentStatusName]?.icon}
@@ -205,6 +235,7 @@ export const StatusMenu = ({ ydoc, publishTime, onBeforeStatusChange }: {
               currentCause={documentStatus.cause}
               requireCause={requireCause}
               unPublishDocument={unPublishDocument}
+              resetDocument={resetDocument}
             />
           )}
         </>

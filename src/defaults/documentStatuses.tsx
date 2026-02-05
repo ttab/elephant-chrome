@@ -4,7 +4,8 @@ import {
   CircleDotIcon,
   CircleXIcon,
   BadgeCheckIcon,
-  CircleArrowLeftIcon
+  CircleArrowLeftIcon,
+  CircleIcon
 } from '@ttab/elephant-ui/icons'
 
 export const DocumentStatuses: DefaultValueOption[] = [
@@ -170,6 +171,31 @@ export const PrintArticleStatuses: DefaultValueOption[] = [
     icon: CircleDotIcon,
     iconProps: {
       className: 'text-muted-foreground',
+      size: 18,
+      strokeWidth: 1.75
+    }
+  }
+] as const
+
+export const ConceptStatuses: DefaultValueOption[] = [
+  {
+    label: 'Inaktiva',
+    value: 'inactive',
+    icon: CircleIcon,
+    iconProps: {
+      color: '#ffffff',
+      className: 'text-zinc-400 rounded-full',
+      size: 18,
+      strokeWidth: 1.75
+    }
+  },
+  {
+    label: 'Används',
+    value: 'usable',
+    icon: CircleCheckIcon,
+    iconProps: {
+      color: '#ffffff',
+      className: 'bg-usable text-white fill-usable rounded-full',
       size: 18,
       strokeWidth: 1.75
     }

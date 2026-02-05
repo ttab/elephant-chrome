@@ -7,6 +7,9 @@ export { assignmentPlanningTemplate as assignment } from './assignmentPlanningTe
 export { planningDocumentTemplate as planning } from './planningDocumentTemplate.js'
 export { eventDocumentTemplate as event } from './eventDocumentTemplate.js'
 export { editorialInfoDocumentTemplate as editorialInfo } from './editorialInfoDocumentTemplate.js'
+export { sectionDocumentTemplate as section } from './sectionDocumentTemplate.js'
+export { storyDocumentTemplate as story } from './storyDocumentTemplate.js'
+export { organiserDocumentTemplate as organiser } from './organiserDocumentTemplate.js'
 
 export interface TemplatePayload {
   query?: Record<string, string | string[] | undefined>

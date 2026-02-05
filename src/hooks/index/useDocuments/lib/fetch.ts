@@ -9,6 +9,7 @@ import type { Dispatch, SetStateAction } from 'react'
 import { asAssignments } from './asAssignments'
 import type { Assignment } from '@/shared/schemas/assignments'
 import { getDeliverableStatuses } from './getDeliverableStatuses'
+import { getUsableVersionsOnly } from './getUsableVersionsOnly'
 
 export async function fetch<T extends HitV1, F>({
   index,
@@ -50,6 +51,7 @@ export async function fetch<T extends HitV1, F>({
     options
   })
 
+
   if (!ok) {
     throw new Error(errorMessage || 'Unknown error while fetching data')
   }
@@ -70,11 +72,15 @@ export async function fetch<T extends HitV1, F>({
     result = withStatus<T>(result)
   }
 
+  // Only meant to be used for concepts
+  if (options?.usableOnly) {
+    result = await getUsableVersionsOnly<T>({ result, repository, session })
+  }
+
   // Append _relatedPlannings
   if (options?.withPlannings) {
     result = await withPlannings<T>({ hits: result, session, index })
   }
-
 
   return result
 }

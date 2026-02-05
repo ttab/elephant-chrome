@@ -35,13 +35,14 @@ import { PreviewSheet } from '@/views/Wires/components'
 import type { Wire as WireType } from '@/shared/schemas/wire'
 import { Wire } from '@/views/Wire'
 import { GroupedRows } from './GroupedRows'
+import type { ViewType } from '@/types/index'
 import { getWireStatus } from '../../lib/getWireStatus'
 import { type View } from '@/types/index'
 const BASE_URL = import.meta.env.BASE_URL
 
 interface TableProps<TData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
-  type: 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires' | 'Factbox' | 'Print' | 'PrintEditor'
+  type: ViewType
   onRowSelected?: (row?: TData) => void
 }
 
@@ -84,8 +85,9 @@ export const Table = <TData, TValue>({
   columns,
   type,
   onRowSelected,
-  searchType
-}: TableProps<TData, TValue> & { searchType?: View }): JSX.Element => {
+  searchType,
+  documentType
+}: TableProps<TData, TValue> & { searchType?: View, documentType?: string }): JSX.Element => {
   const { state, dispatch } = useNavigation()
   const history = useHistory()
   const { viewId: origin } = useView()
@@ -127,7 +129,7 @@ export const Table = <TData, TValue>({
         return
       }
 
-      const originalRow = row.original as { _id: string | undefined, id: string, fields?: Record<string, string[]> }
+      const originalRow = row.original as { _id: string | undefined, id: string, fields?: Record<string, string[]>, documentType: string }
       const id = originalRow._id ?? originalRow.id
 
       const articleClick = type === 'Search' && searchType === 'Editor'
@@ -142,7 +144,7 @@ export const Table = <TData, TValue>({
         event,
         dispatch,
         viewItem: state.viewRegistry.get(!searchType ? type : searchType),
-        props: { id },
+        props: { id, documentType: originalRow.documentType ?? documentType },
         viewId: crypto.randomUUID(),
         origin,
         history,
@@ -154,7 +156,7 @@ export const Table = <TData, TValue>({
         })
       })
     }
-  }, [dispatch, state.viewRegistry, onRowSelected, origin, type, history, handlePreview, searchType])
+  }, [dispatch, state.viewRegistry, onRowSelected, origin, type, history, handlePreview, searchType, documentType])
 
   useNavigationKeys({
     keys: ['ArrowUp', 'ArrowDown', 'Enter', 'Escape', ' ', 's', 'r', 'c', 'u'],
@@ -321,7 +323,7 @@ export const Table = <TData, TValue>({
 
   return (
     <>
-      {!['Wires', 'Factbox', 'Search'].includes(type) && (
+      {!['Wires', 'Factbox', 'Search', 'Concept', 'Admin'].includes(type) && (
         <Toolbar />
       )}
       {(type === 'Planning' || type === 'Event') && (
@@ -334,6 +336,10 @@ export const Table = <TData, TValue>({
           />
         </NewItems.Root>
       )}
+      {type === 'Concept'
+        && <Toolbar searchbar={true} searchPlaceholder='Fritextsökning' filter={false} />}
+      {(type === 'Factbox' || type === 'Admin')
+        && <Toolbar searchbar={true} searchPlaceholder='Fritextsökning' filter={false} sort={false} quickFilter={false} />}
 
       {(type !== 'Search' || !loading) && (
         <_Table className='table-auto relative'>
@@ -342,6 +348,8 @@ export const Table = <TData, TValue>({
           </TableBody>
         </_Table>
       )}
+
+
     </>
   )
 }

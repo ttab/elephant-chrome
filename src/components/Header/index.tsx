@@ -9,22 +9,22 @@ import { useModal } from '../Modal/useModal'
 import * as Views from '@/views'
 import { getTemplateFromView } from '@/shared/templates/lib/getTemplateFromView'
 import { useQuery } from '@/hooks/useQuery'
+import { getConceptTemplateFromDocumentType } from '@/shared/templates/lib/getConceptTemplateFromDocumentType'
 
-export const Header = ({ assigneeId, type }: {
+export const Header = ({ assigneeId, type, documentType }: {
   type: View
   assigneeId?: string | undefined
+  documentType?: string
 }): JSX.Element => {
   const [query] = useQuery()
   const showButton = useMemo(() => {
-    const viewTypes: View[] = ['Planning', 'Event', 'Factbox']
+    const viewTypes: View[] = ['Planning', 'Event', 'Factbox', 'Concept']
     if (viewTypes.includes(type)) {
       return true
     }
     return false
   }, [type])
-
   const { showModal, hideModal } = useModal()
-
   const ViewDialog = Views[type]
 
   return (
@@ -35,13 +35,14 @@ export const Header = ({ assigneeId, type }: {
           className='h-8 pr-4'
           onClick={() => {
             const id = crypto.randomUUID()
-            const initialDocument = getTemplateFromView(type)(id, { query })
+            const initialDocument = type === 'Concept' ? getConceptTemplateFromDocumentType(documentType ?? 'default')(id, { query }) : getTemplateFromView(type)(id, { query })
             showModal(
               <ViewDialog
                 onDialogClose={hideModal}
                 asDialog
                 id={id}
                 document={initialDocument}
+                documentType={documentType}
               />
             )
           }}
@@ -51,12 +52,16 @@ export const Header = ({ assigneeId, type }: {
         </Button>
       )}
 
-      <div className='hidden sm:block'>
-        <TabsGrid />
-      </div>
+      {type !== 'Concept'
+        && (
+          <>
+            <div className='hidden sm:block'>
+              <TabsGrid />
+            </div>
 
-      <DateChanger type={type} />
-
+            <DateChanger type={type} />
+          </>
+        )}
       {type === 'Assignments'
         && <PersonalAssignmentsFilter assigneeId={assigneeId} />}
     </>

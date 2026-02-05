@@ -1,10 +1,12 @@
+import { tableDataMap } from '@/views/Concepts/lib/conceptDataTable'
 import {
   CircleCheckIcon,
   CircleDotIcon,
   CircleArrowLeftIcon,
   BadgeCheckIcon,
   CircleXIcon,
-  type LucideIcon
+  type LucideIcon,
+  CircleIcon
 } from '@ttab/elephant-ui/icons'
 
 interface WorkflowItem {
@@ -181,6 +183,36 @@ const baseDeliverable: WorkflowSpecification = {
   }
 }
 
+const baseConcept: WorkflowSpecification = {
+  usable: {
+    title: 'Används',
+    description: 'Nuvarande version används',
+    asSaveTitle: 'Publicera ny version',
+    asSaveCTA: 'Opublicerade ändringar',
+    asSave: true,
+    transitions: {
+      unpublished: {
+        verify: true,
+        title: 'Inaktivera',
+        description: 'Inställningen kommer att inaktiveras'
+      }
+    }
+  },
+  unpublished: {
+    title: 'Inaktiv',
+    description: 'Inställningen används inte',
+    transitions: {
+      usable: {
+        verify: true,
+        title: 'Använd',
+        description: 'Nuvarande version kommer att aktiveras för användning'
+      }
+    }
+  }
+}
+
+const conceptWorkflows = Object.fromEntries(Object.keys(tableDataMap).map((key) => [key, baseConcept]))
+
 export const StatusSpecifications: Record<string, StatusSpecification> = {
   draft: {
     icon: CircleDotIcon,
@@ -217,9 +249,12 @@ export const StatusSpecifications: Record<string, StatusSpecification> = {
   cancelled: {
     icon: CircleXIcon,
     className: 'bg-cancelled text-white fill-cancelled rounded-full dark:text-black'
+  },
+  inactive: {
+    icon: CircleIcon,
+    className: 'text-zinc-400 rounded-full'
   }
 }
-
 
 export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
   'core/event': {
@@ -581,5 +616,6 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
         }
       }
     }
-  }
+  },
+  ...conceptWorkflows
 }
