@@ -80,7 +80,7 @@ export const Search = (): JSX.Element => {
               : (
                   <>
                     <SearchBar
-                      className='w-[200px] bg-table-bg flex items-center justify-between sticky top-0 z-1 flex-auto'
+                      className='w-[200px] h-9 border border-input bg-background text-sm ring-offset-background rounded-md'
                       searchType={searchType}
                     />
                     <SearchDropdown searchType={searchType} setSearchType={setSearchType} />

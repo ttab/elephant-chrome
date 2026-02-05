@@ -62,7 +62,7 @@ export const SearchBar = ({
 
   return (
     <div className={className}>
-      <Command>
+      <Command className='[&_[cmdk-input-wrapper]]:border-none'>
         <SearchBarInput
           value={getInputValue()}
           onValueChange={handleInputChange}
