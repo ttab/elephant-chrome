@@ -39,3 +39,4 @@ flake.lock
 tsconfig.node.tsbuildinfo
 tsconfig.tsbuildinfo
 .eslintcache
+bundle-analysis.html

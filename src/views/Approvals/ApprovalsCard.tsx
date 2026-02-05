@@ -79,7 +79,7 @@ export const ApprovalsCard = ({ trackedDocument, assignment, isSelected, isFocus
               {Object.values(trackedDocument.users).map((user) => {
                 return (
                   <Tooltip key={user.id} content={user.name}>
-                    <Avatar value={user.name} size='xxs' className='bg-primary border-none' />
+                    <Avatar value={user.name} size='xxs' className='bg-primary border-none text-white dark:text-slate-500' />
                   </Tooltip>
                 )
               })}

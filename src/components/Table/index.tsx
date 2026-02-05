@@ -35,8 +35,8 @@ import { PreviewSheet } from '@/views/Wires/components'
 import type { Wire as WireType } from '@/shared/schemas/wire'
 import { Wire } from '@/views/Wire'
 import { GroupedRows } from './GroupedRows'
-import { getWireStatus } from './lib/getWireStatus'
 import type { ViewType } from '@/types/index'
+import { getWireStatus } from '../../lib/getWireStatus'
 import { type View } from '@/types/index'
 const BASE_URL = import.meta.env.BASE_URL
 
@@ -95,9 +95,12 @@ export const Table = <TData, TValue>({
   const openDocuments = useOpenDocuments({ idOnly: true })
   const { showModal, hideModal, currentModal } = useModal()
   const [, setDocumentStatus] = useWorkflowStatus({})
+
   const handlePreview = useCallback((row: RowType<unknown>): void => {
     row.toggleSelected(true)
+
     const originalId = (row.original as { id: string }).id
+
     showModal(
       <PreviewSheet
         id={originalId}
@@ -113,6 +116,7 @@ export const Table = <TData, TValue>({
     )
   }, [hideModal, showModal])
 
+
   const handleOpen = useCallback((event: MouseEvent<HTMLTableRowElement> | KeyboardEvent, row: RowType<unknown>): void => {
     if (type === 'Wires') {
       handlePreview(row)
@@ -127,12 +131,15 @@ export const Table = <TData, TValue>({
 
       const originalRow = row.original as { _id: string | undefined, id: string, fields?: Record<string, string[]>, documentType: string }
       const id = originalRow._id ?? originalRow.id
+
       const articleClick = type === 'Search' && searchType === 'Editor'
+
       let usableVersion
 
       if (articleClick) {
         usableVersion = !articleClick ? undefined : originalRow?.fields?.['heads.usable.version']?.[0] as bigint | undefined
       }
+
       handleLink({
         event,
         dispatch,
@@ -180,7 +187,7 @@ export const Table = <TData, TValue>({
       if (event.key === 'r') {
         if (selectedRow && isRowTypeWire<TData, TValue>(type)) {
           const wireRow = selectedRow as RowType<WireType>
-          const currentStatus = getWireStatus(type, wireRow.original)
+          const currentStatus = getWireStatus(wireRow.original)
           void setDocumentStatus({
             name: currentStatus === 'read' ? 'draft' : 'read',
             uuid: wireRow.original.id,
@@ -193,7 +200,7 @@ export const Table = <TData, TValue>({
       if (event.key === 'u') {
         if (selectedRow && isRowTypeWire<TData, TValue>(type)) {
           const wireRow = selectedRow as RowType<WireType>
-          const currentStatus = getWireStatus(type, wireRow.original)
+          const currentStatus = getWireStatus(wireRow.original)
 
           void setDocumentStatus({
             name: currentStatus === 'used' ? 'draft' : 'used',
@@ -207,7 +214,7 @@ export const Table = <TData, TValue>({
       if (event.key === 's') {
         if (selectedRow && isRowTypeWire<TData, TValue>(type)) {
           const wireRow = selectedRow as RowType<WireType>
-          const currentStatus = getWireStatus(type, wireRow.original)
+          const currentStatus = getWireStatus(wireRow.original)
 
           void setDocumentStatus({
             name: currentStatus === 'saved' ? 'draft' : 'saved',
@@ -313,6 +320,7 @@ export const Table = <TData, TValue>({
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rows, columns, loading, handleOpen, table, rowSelection])
+
   return (
     <>
       {!['Wires', 'Factbox', 'Search', 'Concept', 'Admin'].includes(type) && (

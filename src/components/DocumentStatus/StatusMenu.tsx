@@ -4,7 +4,7 @@ import { useWorkflow } from '@/hooks/index/useWorkflow'
 import { StatusSpecifications, WorkflowSpecifications, type WorkflowTransition } from '@/defaults/workflowSpecification'
 import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
 import { StatusOptions } from './StatusOptions'
-import { StatusMenuHeader } from './StatusMenuHeader'
+import { StatusMenuContext } from './StatusMenuContext'
 import { PromptDefault } from './PromptDefault'
 import { PromptSchedule } from './PromptSchedule'
 import { StatusMenuOption } from './StatusMenuOption'
@@ -52,11 +52,13 @@ export const StatusMenu = ({ ydoc, publishTime, onBeforeStatusChange }: {
     ? WorkflowSpecifications[documentStatus.type][documentStatus.name].requireCause || false
     : false
 
+
   useEffect(() => {
     if (containerRef.current) {
       setDropdownWidth(containerRef.current.offsetWidth)
     }
   }, [])
+
   // Callback function to set status. Will first call onBeforeStatusChange() if
   // provided by props, then proceed to change the status if allowed.
   const setStatus = useCallback(async (newStatus: string, data?: Record<string, unknown>) => {
@@ -65,6 +67,7 @@ export const StatusMenu = ({ ydoc, publishTime, onBeforeStatusChange }: {
         return
       }
     }
+
     await setDocumentStatus(
       newStatus,
       (typeof data?.cause === 'string') ? data.cause : undefined
@@ -133,6 +136,7 @@ export const StatusMenu = ({ ydoc, publishTime, onBeforeStatusChange }: {
   const currentStatusName = documentStatus.name
   const currentStatusDef = statuses[currentStatusName] || StatusSpecifications[currentStatusName]
   const transitions = workflow[currentStatusName]?.transitions || {}
+
   if (!Object.keys(transitions).length && currentStatusName !== 'unpublished') {
     return null
   }
@@ -158,7 +162,48 @@ export const StatusMenu = ({ ydoc, publishTime, onBeforeStatusChange }: {
             sideOffset={0}
             style={{ minWidth: `${dropdownWidth}px` }}
           >
-            <StatusMenuHeader
+            <StatusOptions
+              transitions={transitions}
+              statuses={statuses}
+              onSelect={showPrompt}
+              hasChanges={asSave && isChanged}
+            >
+              {asSave && isChanged && (
+                <StatusMenuOption
+                  key='save'
+                  status={documentStatus.name}
+                  hasChanges
+                  state={{
+                    verify: false,
+                    isWorkflow: false,
+                    title: workflow[currentStatusName]?.asSaveTitle || 'Publicera ny information',
+                    description: workflow[currentStatusName]?.updateDescription || workflow[currentStatusName]?.description
+                  }}
+                  onSelect={currentStatusName === 'usable' ? showPrompt : () => setStatus('usable')}
+                  statusDef={currentStatusDef}
+                />
+              )}
+            </StatusOptions>
+            {isConceptType(documentStatus.type || '')
+              && (
+                <StatusMenuOption
+                  key='reset'
+                  status={documentStatus.name}
+                  state={{
+                    verify: true,
+                    title: `Återställ`,
+                    description: 'Återställ till senast använda version'
+                  }}
+                  onSelect={() => showPrompt({
+                    verify: true,
+                    title: 'Återställ',
+                    description: 'Återställ till senast använda version',
+                    status: 'reset' })}
+                  statusDef={currentStatusDef}
+                />
+              )}
+
+            <StatusMenuContext
               icon={currentStatusDef?.icon || StatusSpecifications[currentStatusName]?.icon}
               className={currentStatusDef?.className || StatusSpecifications[currentStatusName]?.className}
               title={workflow[currentStatusName]?.title}
@@ -166,48 +211,6 @@ export const StatusMenu = ({ ydoc, publishTime, onBeforeStatusChange }: {
                 ? workflow[currentStatusName]?.changedDescription
                 : workflow[currentStatusName]?.description}
             />
-            <StatusOptions
-              transitions={transitions}
-              statuses={statuses}
-              onSelect={showPrompt}
-              hasChanges={asSave && isChanged}
-            >
-              {asSave && (
-                <>
-                  <StatusMenuOption
-                    key='save'
-                    status={documentStatus.name}
-                    hasChanges
-                    state={{
-                      verify: false,
-                      isWorkflow: false,
-                      title: `Publicera ändringar`,
-                      description: workflow[currentStatusName]?.updateDescription || workflow[currentStatusName]?.description
-                    }}
-                    onSelect={currentStatusName === 'usable' ? showPrompt : () => setStatus('usable')}
-                    statusDef={currentStatusDef}
-                  />
-                  {isConceptType(documentStatus.type || '')
-                    && (
-                      <StatusMenuOption
-                        key='reset'
-                        status={documentStatus.name}
-                        state={{
-                          verify: true,
-                          title: `Återställ`,
-                          description: 'Återställ till senast använda version'
-                        }}
-                        onSelect={() => showPrompt({
-                          verify: true,
-                          title: 'Återställ',
-                          description: 'Återställ till senast använda version',
-                          status: 'reset' })}
-                        statusDef={currentStatusDef}
-                      />
-                    )}
-                </>
-              )}
-            </StatusOptions>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
