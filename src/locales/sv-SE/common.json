@@ -16,7 +16,9 @@
     "nogrouping": "Ingen gruppering",
     "group": "Gruppera",
     "copy": "Kopiera",
-    "confirm": "Klar"
+    "confirm": "Klar",
+    "openArticle": "Öppna artikel",
+    "openPlanning": "Öppna planering"
   },
   "errors": {
     "unknown": "Okänt fel",

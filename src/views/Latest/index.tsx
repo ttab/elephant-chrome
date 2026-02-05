@@ -12,6 +12,7 @@ import { useDeliverablePlanningId } from '@/hooks/index/useDeliverablePlanningId
 import { useLatest } from './hooks/useLatest'
 import { SluglineButton } from '@/components/DataItem/Slugline'
 import { SectionBadge } from '@/components/DataItem/SectionBadge'
+import { useTranslation } from 'react-i18next'
 
 const meta: ViewMetadata = {
   name: 'Latest',
@@ -123,6 +124,7 @@ const Content = ({ documents, locale }: {
 
 const Menu = ({ articleId }: { articleId: string }): JSX.Element => {
   const planningId = useDeliverablePlanningId(articleId)
+  const { t } = useTranslation('common')
   return (
     <div className='shrink p-'>
       <ActionMenu
@@ -130,13 +132,13 @@ const Menu = ({ articleId }: { articleId: string }): JSX.Element => {
           {
             to: 'Editor',
             id: articleId,
-            title: 'Öppna artikel'
+            title: t('actions.openArticle')
           },
 
           {
             to: 'Planning',
             id: planningId,
-            title: 'Öppna planering'
+            title: t('actions.openPlanning')
           }
         ]}
       />

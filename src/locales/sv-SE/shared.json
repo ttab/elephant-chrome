@@ -57,7 +57,8 @@
     "multipleAuthors": "Flera författardokument hittades, kontakta support",
     "unpublishError": "Det gick inte att avpublicera dokumentet",
     "addAssignmentToPlanningError": "Det gick inte att lägga till uppdraget i en kopplad planering",
-    "creationFailed": "Misslyckades att skapa text: {{error}}"
+    "creationFailed": "Misslyckades att skapa text: {{error}}",
+    "fetchDocumentFailed": "Kunde inte hämta {{documentType}}"
   },
   "operations": {
     "authorCreateSuccess": "Författardokument är skapat",
