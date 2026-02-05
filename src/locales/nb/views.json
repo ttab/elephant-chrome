@@ -45,21 +45,21 @@
       "organiser": "Arrangør"
     }
   },
-    "assignments": {
-      "title": "Oppdrag",
-      "columnLabels": {
-        "assignmentTime": "Oppdragstid",
-        "type": "Oppdragstype"
-      },
-      "tooltips": {
-        "assignmentStartTime": "Oppdragets starttid"
-      },
-      "actionMenu": {
-        "openArticle": "Åpne artikkel",
-        "openPlanning": "Åpne planlegging"
-      },
-      "myAssignments": "Mine oppdrag"
+  "assignments": {
+    "title": "Oppdrag",
+    "columnLabels": {
+      "assignmentTime": "Oppdragstid",
+      "type": "Oppdragstype"
     },
+    "tooltips": {
+      "assignmentStartTime": "Oppdragets starttid"
+    },
+    "actionMenu": {
+      "openArticle": "Åpne artikkel",
+      "openPlanning": "Åpne planlegging"
+    },
+    "myAssignments": "Mine oppdrag"
+  },
   "factboxes": {
     "title": "Faktabokser",
     "columnLabels": {
