@@ -138,7 +138,7 @@ export const useLatest = (): HitV1[] => {
     }
 
     void fetchDocuments()
-  }, [data, repository, session?.accessToken])
+  }, [data, repository, session?.accessToken, t])
 
   return versionedData
 }
