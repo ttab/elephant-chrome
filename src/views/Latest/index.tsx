@@ -132,13 +132,13 @@ const Menu = ({ articleId }: { articleId: string }): JSX.Element => {
           {
             to: 'Editor',
             id: articleId,
-            title: t('actions.openArticle')
+            title: t('actions.openType', { type: t('core:documentType.article') })
           },
 
           {
             to: 'Planning',
             id: planningId,
-            title: t('actions.openPlanning')
+            title: t('actions.openType', { type: t('core:documentType.planning') })
           }
         ]}
       />
