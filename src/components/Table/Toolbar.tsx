@@ -27,7 +27,7 @@ export const Toolbar = <TData,>({ searchbar = false, searchPlaceholder = 'Sök',
     globalFilter: string
   }
 
-  const isFiltered = useMemo(() => columnFilters.length > 0 || !!globalFilter,
+  const filterLength = useMemo(() => columnFilters.length + (globalFilter ? 1 : 0),
     [columnFilters, globalFilter])
 
   const handleResetFilters = useCallback(() => {
@@ -54,7 +54,7 @@ export const Toolbar = <TData,>({ searchbar = false, searchPlaceholder = 'Sök',
         && <Sort />}
       {selectedFilters
         && <SelectedFilters table={table} />}
-      {isFiltered && (
+      {filterLength > 1 && (
         <Button
           variant='ghost'
           onClick={handleResetFilters}
