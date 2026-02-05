@@ -88,5 +88,15 @@
     "loginWith": "Logg inn med",
     "rememberMe": "Husk meg neste gang",
     "loggingIn": "Logger inn..."
+  },
+  "editor": {
+    "goToLatestVersion": "Gå til siste versjon",
+    "addRoleInfo": {
+      "editorial": "Legg til redaksjonell informasjon",
+      "internal": "Legg til intern informasjon"
+    },
+    "removeInfoConfirm": "Er du sikker på at du vil slette informasjonen?",
+    "changeType": "Endre type",
+    "changeTypeConfirm": "Er du sikker på at du vil endre informasjonstypen?"
   }
 }
