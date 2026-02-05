@@ -1,6 +1,6 @@
 import { useMemo, useState, type JSX } from 'react'
 import { View, ViewHeader } from '@/components'
-import { SearchBar } from './SearchBar'
+import { SearchBar } from '@/components/SearchBar/SearchBar'
 import { TableProvider } from '@/contexts/TableProvider'
 import { SearchResult } from './SearchResult'
 import { useRegistry } from '@/hooks/useRegistry'
@@ -79,7 +79,10 @@ export const Search = (): JSX.Element => {
               ? null
               : (
                   <>
-                    <SearchBar searchType={searchType} page={Number(query.page)} />
+                    <SearchBar
+                      className='w-[200px] bg-table-bg flex items-center justify-between sticky top-0 z-1 flex-auto'
+                      searchType={searchType}
+                    />
                     <SearchDropdown searchType={searchType} setSearchType={setSearchType} />
                   </>
                 )}
@@ -91,7 +94,10 @@ export const Search = (): JSX.Element => {
             ? (
                 <div className='w-3/4 h-fit mt-10 bg-slate-200 dark:bg-slate-800 p-6 m-auto'>
                   <div className='flex flex-col gap-2 w-full items-center'>
-                    <SearchBar width='w-full' searchType={searchType} page={0} />
+                    <SearchBar
+                      className='w-full'
+                      searchType={searchType}
+                    />
                     <div className='flex gap-2 w-full justify-center'>
                       <SearchDropdown searchType={searchType} setSearchType={setSearchType} />
                       <Toolbar type={searchType} />
