@@ -30,22 +30,6 @@ export const MenuItemSubSheet = ({
     Latest: LatestComponent
   }
 
-  const showTranslatedText = (menuItem: string): string => {
-    switch (menuItem) {
-      case 'plannings': return t('mainMenu.plans')
-      case 'approvals': return t('mainMenu.approvals')
-      case 'events': return t('mainMenu.events')
-      case 'assignments': return t('mainMenu.assignments')
-      case 'wires': return t('mainMenu.wires')
-      case 'factboxes': return t('mainMenu.factboxes')
-      case 'search': return t('mainMenu.search')
-      case 'print': return t('mainMenu.print')
-      case 'last published': return t('mainMenu.lastPublished')
-      default:
-        return 'Translation missing'
-    }
-  }
-
   const SheetItemComponent = sheetComponents[menuItem.name]
 
   return (
@@ -64,7 +48,7 @@ export const MenuItemSubSheet = ({
             </SheetClose>
 
             <div className='flex items-center gap-2'>
-              <div>{showTranslatedText(menuItem.label)}</div>
+              <div>{t(`mainMenu.${menuItem.name.toLowerCase()}`)}</div>
               <menuItem.icon strokeWidth={2.25} size={18} color={menuItem.color} />
             </div>
 
