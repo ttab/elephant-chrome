@@ -83,5 +83,10 @@
     "columnLabels": {
       "date": "Dato"
     }
+  },
+  "login": {
+    "loginWith": "Logg inn med",
+    "rememberMe": "Husk meg neste gang",
+    "loggingIn": "Logger inn..."
   }
 }

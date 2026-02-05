@@ -83,5 +83,10 @@
     "columnLabels": {
       "date": "Datum"
     }
+  },
+  "login": {
+    "loginWith": "Logga in med",
+    "rememberMe": "Kom ihåg mig nästa gång",
+    "loggingIn": "Loggar in..."
   }
 }
