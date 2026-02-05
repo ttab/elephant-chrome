@@ -100,6 +100,9 @@ export const FlashDialog = (props: {
       })
         .then((id) => {
           toast.success('Snabbartikel har skapats', {
+            classNames: {
+              title: 'whitespace-nowrap'
+            },
             action: (
               <ToastAction
                 key='open-article'
