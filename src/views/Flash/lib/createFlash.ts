@@ -20,7 +20,8 @@ export async function createFlash({
   documentStatus,
   section,
   startDate,
-  planningSection
+  planningSection,
+  relatedDocsSlugline
 }: {
   ydoc: YDocument<Y.Map<unknown>>
   status: string
@@ -41,6 +42,7 @@ export async function createFlash({
     title: string
   } | undefined
   startDate?: string
+  relatedDocsSlugline: string
 }): Promise<{
   documentStatus: CreateFlashDocumentStatus
   updatedPlanningId: string
@@ -94,6 +96,7 @@ export async function createFlash({
     type: 'flash',
     deliverableId: ydoc.id,
     title: flashTitle || 'Ny flash',
+    slugline: relatedDocsSlugline,
     priority: 5,
     publicVisibility: false,
     localDate,

@@ -65,6 +65,7 @@ export const FlashDialog = (props: {
   const readOnly = Number(props?.version) > 0 && !props.asDialog
   const allSections = useSections()
   const [, setYSection] = useYValue<Block | undefined>(ydoc.ele, 'links.core/section[0]')
+  const [relatedDocsSlugline, setSlugline] = useState<string>('') // slugline for complementary planning- and quick-article documents
 
   const handleSubmit = (setCreatePrompt: Dispatch<SetStateAction<boolean>>): void => {
     setCreatePrompt(true)
@@ -280,6 +281,21 @@ export const FlashDialog = (props: {
               </Form.Group>
             )}
 
+            <Form.Group icon={TagsIcon}>
+              <input
+                autoComplete='off'
+                placeholder='Slugg för planering och artikel'
+                min={3}
+                className='w-full text-sm rounded bg-background placeholder:pl-2 p-1 ring-offset-background'
+                name='slugline'
+                value={relatedDocsSlugline}
+                onChange={(e) => {
+                  const value = e.target.value.toLocaleLowerCase().replace(/\s/g, '-')
+                  setSlugline(value)
+                }}
+              />
+            </Form.Group>
+
             <UserMessage asDialog={!!props?.asDialog}>
               {!selectedPlanning
                 ? (<>Väljer du ingen planering kommer en ny planering med tillhörande uppdrag skapas åt dig.</>)
@@ -319,7 +335,8 @@ export const FlashDialog = (props: {
                       documentStatus: config.documentStatus,
                       startDate,
                       section: (!selectedPlanning?.value) ? section || undefined : undefined,
-                      planningSection: section
+                      planningSection: section,
+                      relatedDocsSlugline
                     })
                       .then((data) => {
                         handleCreationSuccess(data, config, startDate)
