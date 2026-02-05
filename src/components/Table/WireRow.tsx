@@ -5,8 +5,8 @@ import { type Row as RowType, flexRender } from '@tanstack/react-table'
 import { cn } from '@ttab/elephant-ui/utils'
 import type { Wire } from '@/shared/schemas/wire'
 import { cva } from 'class-variance-authority'
-import { getWireStatus } from './lib/getWireStatus'
 import type { ViewType } from '@/types/index'
+import { getWireStatus } from '../../lib/getWireStatus'
 
 export const WireRow = ({ row, handleOpen, openDocuments, type }: {
   type: ViewType
@@ -38,7 +38,7 @@ export const WireRow = ({ row, handleOpen, openDocuments, type }: {
       tabIndex={0}
       className={cn(
         'flex cursor-default scroll-mt-[70px] ring-inset focus:outline-none focus-visible:ring-2 focus-visible:ring-table-selected data-[state=selected]:bg-table-selected',
-        variants({ status: getWireStatus(type, wire) })
+        variants({ status: getWireStatus(wire) })
       )}
       data-state={getDataState(openDocuments, wire, type, wireRow)}
       onClick={(event: MouseEvent<HTMLTableRowElement>) => handleOpen(event, row)}

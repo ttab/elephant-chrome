@@ -23,8 +23,8 @@ const controlsWrapper = cva(
   {
     variants: {
       tone: {
-        warning: 'border-red-200 bg-red-50/80',
-        default: 'border-gray-200 bg-white/90 dark:bg-slate-900/40'
+        warning: 'border-red-200 bg-red-50/80 dark:bg-red-200 dark:text-slate-600',
+        default: 'border-gray-200 bg-white/90 dark:bg-slate-900/40 dark:text-slate-600'
       }
     },
     defaultVariants: {
@@ -38,7 +38,7 @@ const statusBadge = cva(
   {
     variants: {
       tone: {
-        warning: 'text-red-600 border-red-300 bg-red-100',
+        warning: 'text-red-600 border-red-300 bg-red-100 dark:text-slate-600',
         default: 'text-emerald-600 border-emerald-200 bg-emerald-50'
       }
     },

@@ -1,8 +1,8 @@
 import { Block } from '@ttab/elephant-api/newsdoc'
 import { toString } from '../../lib/toString.js'
 import type { TBElement } from '@ttab/textbit'
-import type { Descendant } from 'slate'
 import { transformSoftcrop, revertSoftcrop } from './softcrop.js'
+import { deserializeText, serializeText } from '../../serialization.js'
 
 export const transformImage = (element: Block): TBElement => {
   const { id, data, links, meta } = element
@@ -12,6 +12,7 @@ export const transformImage = (element: Block): TBElement => {
     uri: links[0].uri,
     type: links[0].type,
     text: data.text,
+    html_caption: data.html_caption,
     credit: links[0].data.credit,
     width: data.width,
     height: data.height,
@@ -32,9 +33,9 @@ export const transformImage = (element: Block): TBElement => {
         children: [{ text: '' }]
       },
       {
+        ...deserializeText({ html_caption: data.html_caption, text: data.text || '' }),
         class: 'text',
-        type: 'core/image/text',
-        children: [{ text: data.text ?? '' }]
+        type: 'core/image/text'
       },
       {
         class: 'text',
@@ -51,20 +52,9 @@ export function revertImage(element: TBElement): Block {
   const bylineNode = (children as TBElement[])?.find((c) => c.type === 'core/image/byline')
   const imageId = (properties?.uri as string).split('core://image/')[1]
 
-  function getText(node: Descendant | undefined) {
-    let text = ''
-    if (node && 'children' in node && Array.isArray(node?.children)) {
-      const [child] = node.children
 
-      if (child && 'text' in child && child?.text) {
-        text = child.text
-      }
-    }
-    return text
-  }
-
-  const captionText = getText(textNode)
-  const bylineText = getText(bylineNode)
+  const captionText = serializeText(textNode)
+  const bylineText = serializeText(bylineNode)
 
   const links = [
     {
@@ -75,18 +65,22 @@ export function revertImage(element: TBElement): Block {
     }
   ]
 
-  if (bylineText.length > 0) {
+  if (bylineText.text.length > 0) {
     links.push(Block.create({
       rel: 'author',
       type: 'core/author',
-      title: toString(bylineText),
+      title: toString(bylineText.text),
       uuid: crypto.randomUUID()
     }))
   }
 
+  const html_caption = toString(captionText.html_caption)
+  const text = toString(captionText.text)
+
   const data: Record<string, string> = {
-    text: toString(captionText),
-    credit: toString(bylineText),
+    ...(html_caption && { html_caption }),
+    text,
+    credit: toString(bylineText.text),
     height: toString(properties?.height),
     width: toString(properties?.width)
   }

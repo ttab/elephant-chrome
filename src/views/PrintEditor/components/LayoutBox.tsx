@@ -54,7 +54,7 @@ const layoutStatusStyles = cva('', {
     {
       intent: 'panel',
       tone: 'rejected',
-      className: 'bg-red-100 border-red-200 border-s-red-500'
+      className: 'bg-red-100 border-red-200 border-s-red-500 dark:bg-red-200 dark:text-slate-600'
     },
     {
       intent: 'panel',
@@ -69,12 +69,12 @@ const layoutStatusStyles = cva('', {
     {
       intent: 'rail',
       tone: 'rejected',
-      className: 'bg-red-100 border-red-200 border-l-red-500'
+      className: 'bg-red-100 border-red-200 border-l-red-500 dark:text-slate-600'
     },
     {
       intent: 'rail',
       tone: 'pending',
-      className: 'bg-gray-50 border-gray-200 border-l-gray-300'
+      className: 'bg-gray-50 border-gray-200 border-l-gray-300 dark:text-slate-600'
     }
   ]
 })
@@ -311,7 +311,7 @@ export const LayoutBox = ({
               <EyeIcon size={16} strokeWidth={1.75} />
             </Button>
             <Checkbox
-              className='mb-2'
+              className='mb-2 dark:border-slate-600'
               checked={selected.includes(layoutIdForRender)}
               onCheckedChange={() => {
                 if (selected.includes(layoutIdForRender)) {

@@ -1,9 +1,9 @@
 import { renderHook } from '@testing-library/react'
-import { useYValue } from '@/modules/yjs/hooks'
 import { type CollaborationWrapper, initializeCollaborationWrapper } from './utils/initializeCollaborationWrapper'
 import { act } from '../setupTests'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import * as Y from 'yjs'
+import { useYValue } from '@/modules/yjs/hooks/useYValue'
 
 let init: CollaborationWrapper
 let ydoc: Y.Map<unknown>
