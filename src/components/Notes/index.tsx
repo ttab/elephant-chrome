@@ -52,7 +52,7 @@ const Note = ({ ydoc, noteIndex, handleRemove }: {
             key={role}
             ydoc={ydoc}
             value={value}
-            placeholder={t(`editor.addRoleInfo.${role === 'public' ? 'editorial' : 'internal'}`)}
+            placeholder={t(`editor:addRoleInfo.${role === 'public' ? 'editorial' : 'internal'}`)}
             className='font-thin text-sm whitespace-pre-wrap break-words'
             singleLine={true}
           />
@@ -66,7 +66,7 @@ const Note = ({ ydoc, noteIndex, handleRemove }: {
       {showVerifyRemove && (
         <Prompt
           title={`${t('common:actions.remove')}?`}
-          description={t('editor.removeInfoConfirm')}
+          description={t('editor:removeInfoConfirm')}
           secondaryLabel={t('common:actions.abort')}
           primaryLabel={t('common:actions.remove')}
           onPrimary={() => {
@@ -82,8 +82,8 @@ const Note = ({ ydoc, noteIndex, handleRemove }: {
 
       {showVerifyChange && (
         <Prompt
-          title={`${t('editor.changeType')}?`}
-          description={t('editor.changeTypeConfirm')}
+          title={`${t('editor:changeType')}?`}
+          description={t('editor:changeTypeConfirm')}
           secondaryLabel={t('common:actions.abort')}
           primaryLabel={t('common:actions.changeType')}
           onPrimary={() => {

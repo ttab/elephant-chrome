@@ -127,7 +127,7 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
                       )
                     }}
                   >
-                    {t('views:editor.goToLatestVersion')}
+                    {t('editor:goToLatestVersion')}
                   </Button>
                 )}
 
