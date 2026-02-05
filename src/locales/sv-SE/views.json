@@ -43,28 +43,28 @@
     },
     "tooltips": {
       "organiser": "Organisatör"
+    }
+  },
+  "assignments": {
+    "title": "Uppdrag",
+    "columnLabels": {
+      "assignmentTime": "Uppdragstid",
+      "type": "Typ"
     },
-    "assignments": {
-      "title": "Uppdrag",
-      "columnLabels": {
-        "assignmentTime": "Uppdragstid",
-        "type": "Typ"
-      },
-      "tooltips": {
-        "assignmentStartTime": "Uppdragets starttid"
-      },
-      "actionMenu": {
-        "openArticle": "Öppna artikel",
-        "openPlanning": "Öppna planering"
-      },
-      "myAssignments": "Mina uppdrag"
+    "tooltips": {
+      "assignmentStartTime": "Uppdragets starttid"
+    },
+    "actionMenu": {
+      "openArticle": "Öppna artikel",
+      "openPlanning": "Öppna planering"
+    },
+    "myAssignments": "Mina uppdrag"
   },
   "factboxes": {
     "title": "Faktarutor",
     "columnLabels": {
       "description": "Beskrivning",
       "lastChanged": "Senast ändrad"
-    }
     }
   }
 }
