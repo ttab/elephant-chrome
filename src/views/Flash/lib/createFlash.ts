@@ -121,7 +121,13 @@ export async function createFlash({
           title: flashTitle,
           meta: {
             'core/newsvalue': [Block.create({ type: 'core/newsvalue', value: '5' })],
-            'tt/slugline': [Block.create({ type: 'tt/slugline', value: !flashTitle ? 'snabbartikel' : `${flashTitle?.toLocaleLowerCase()?.split(' ').slice(0, 3).join('-').slice(0, 20)}` })]
+            'tt/slugline': [
+              Block.create({
+                type: 'tt/slugline',
+                value: !flashTitle
+                  ? 'snabbartikel'
+                  : relatedDocsSlugline || `${flashTitle?.toLocaleLowerCase()?.split(' ').slice(0, 3).join('-').slice(0, 20)}`
+              })]
           },
           links: {
             'core/section': [Block.create({
