@@ -23,7 +23,7 @@ export const createSearchColumns = (params: SearchColumnsParams, t: TFunction) =
       id: 'date',
       enableGrouping: true,
       meta: {
-        name: 'Datum',
+        name: t('views:search.columnLabels.date'),
         columnIcon: CalendarIcon,
         className: 'flex-none w-[100px]',
         display: (value: string) => {
@@ -54,9 +54,9 @@ export const createSearchColumns = (params: SearchColumnsParams, t: TFunction) =
 function getColumns({ searchType, ...params }: SearchColumnsParams, t: TFunction) {
   switch (searchType) {
     case 'plannings':
-      return planningListColumns(params)
+      return planningListColumns(params, t)
     case 'events':
-      return eventTableColumns(params)
+      return eventTableColumns(params, t)
     case 'articles':
       return articleColumns(params, t)
     default:

@@ -49,7 +49,6 @@ export const SearchResult = ({ searchType, page }: {
       setTableData: true
     }
   })
-
   const columns = useMemo(() => {
     return createSearchColumns({
       searchType,
@@ -63,14 +62,14 @@ export const SearchResult = ({ searchType, page }: {
 
   if (error) {
     console.error('Error fetching search result items:', error)
-    toast.error('Kunde inte hämta sökresultat')
+    toast.error(t('search.errors.errorFetchingResults'))
   }
 
   return (
     <>
       {isLoading
         ? (
-            <LoadingText>Laddar...</LoadingText>
+            <LoadingText>{t('common:misc.loading')}</LoadingText>
           )
         : (
             <>

@@ -66,5 +66,27 @@
       "description": "Beskrivning",
       "lastChanged": "Senast ändrad"
     }
+  },
+  "search": {
+    "title": "Sök",
+    "placeholders": {
+      "search": "Sök"
+    },
+    "labels": {
+      "plannings": "Planeringar",
+      "events": "Händelser",
+      "articles": "Artiklar"
+    },
+    "errors": {
+      "errorFetchingResults": "Kunde inte hämta sökresultat"
+    },
+    "columnLabels": {
+      "date": "Datum"
+    }
+  },
+  "login": {
+    "loginWith": "Logga in med",
+    "rememberMe": "Kom ihåg mig nästa gång",
+    "loggingIn": "Loggar in..."
   }
 }

@@ -39,7 +39,7 @@ export const EventsList = (): JSX.Element => {
 
   })
 
-  const columns = useMemo(() => eventTableColumns({ sections, organisers, locale, t }), [sections, organisers, locale, t])
+  const columns = useMemo(() => eventTableColumns({ sections, organisers, locale }, t), [sections, organisers, locale, t])
 
   const onRowSelected = useCallback((row?: Event) => {
     if (row) {

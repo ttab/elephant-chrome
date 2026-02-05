@@ -3,6 +3,7 @@ import { useRef, type JSX } from 'react'
 import { useQuery } from '@/hooks/useQuery'
 import { Input } from '@ttab/elephant-ui'
 import type { SearchKeys } from '@/hooks/index/useDocuments/queries/views/search'
+import { useTranslation } from 'react-i18next'
 
 export const SearchBar = ({ searchType, width }: {
   searchType: SearchKeys
@@ -12,6 +13,7 @@ export const SearchBar = ({ searchType, width }: {
   const inputRef = useRef<HTMLInputElement | null>(null)
   const formRef = useRef<HTMLFormElement>(null)
   const [query, setQueryString] = useQuery()
+  const { t } = useTranslation('views')
 
   return (
     <form
@@ -27,7 +29,7 @@ export const SearchBar = ({ searchType, width }: {
         autoFocus
         placeholder={typeof query?.query === 'string'
           ? query.query
-          : 'Sök'}
+          : t('search.placeholders.search')}
         ref={inputRef}
         name='search'
       />
