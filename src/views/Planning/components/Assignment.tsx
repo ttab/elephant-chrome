@@ -66,15 +66,15 @@ export const Assignment = ({ ydoc, assignment, onAbort, onClose }: {
               ydoc={ydoc}
               rootMap={!assignmentInProgress ? ydoc.ele : ydoc.ctx}
               value={title}
-              label='Titel'
-              placeholder='Uppdragstitel'
+              label={t('core:labels.title')}
+              placeholder={t('planning:assignment.title')}
               autoFocus={true}
             />
           </Form.Title>
           <TextBox
             ydoc={ydoc}
             value={description}
-            placeholder='Internt meddelande'
+            placeholder={t('planning:description.internal')}
             icon={(
               <MessageCircleMoreIcon
                 size={18}

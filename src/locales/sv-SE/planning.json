@@ -1,5 +1,6 @@
 {
   "assignment": {
+    "title": "Uppdragstitel",
     "startEndTime": "Start- och sluttid",
     "startTime": "Starttid",
     "publishWindow": "Publiceringsfönster",
