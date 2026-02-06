@@ -28,7 +28,9 @@
     "nameMissing": "Navn mangler",
     "nothingFound": "Ingenting ble funnet",
     "articleMissingTitle": "Artikkeldokumentet mangler",
-    "articleMissingDescription": "Ingen artikkeldokument er oppgitt. Gå tilbake til oversikten og forsøk igjen."
+    "articleMissingDescription": "Ingen artikkeldokument er oppgitt. Gå tilbake til oversikten og forsøk igjen.",
+    "failedFetchingDocument": "Kunne ikke hente dokumentet.",
+    "failedUpdatingListRetrying": "Kunne ikke oppdatere listen automatisk. Prøver på nytt om {{seconds}} sekunder."
   },
   "misc": {
     "unknown": "ukjent",

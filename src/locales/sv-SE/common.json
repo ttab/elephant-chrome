@@ -28,7 +28,9 @@
     "nameMissing": "Namn saknas",
     "nothingFound": "Ingenting hittades",
     "articleMissingTitle": "Artikeldokument saknas",
-    "articleMissingDescription": "Inget artikeldokument är angivet. Navigera tillbaka till översikten och försök igen."
+    "articleMissingDescription": "Inget artikeldokument är angivet. Navigera tillbaka till översikten och försök igen.",
+    "failedFetchingDocument": "Misslyckades hämta dokument.",
+    "failedUpdatingListRetrying": "Misslyckades att automatiskt uppdatera listan. Försöker igen om {{seconds}} sekunder."
   },
   "misc": {
     "unknown": "okänd",
