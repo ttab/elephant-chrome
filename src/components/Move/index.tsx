@@ -191,7 +191,7 @@ export const Move = ({ ydoc, ...props }: ViewProps & {
                 selectedOptions={selectedPlanning ? [selectedPlanning] : []}
                 placeholder={t('planning:move.pickPlanning')}
                 modal={props.asDialog}
-                fetch={(query) => fetch(query, session, index, locale, timeZone, {
+                fetch={(query) => fetch(query, session, t, index, locale, timeZone, {
                   searchOlder
                 })
                   .then((data) =>

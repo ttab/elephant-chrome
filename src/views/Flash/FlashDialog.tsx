@@ -23,6 +23,7 @@ import { toast } from 'sonner'
 import { useYDocument, useYValue } from '@/modules/yjs/hooks'
 import type { EleDocumentResponse } from '@/shared/types'
 import type * as Y from 'yjs'
+import { useTranslation } from 'react-i18next'
 
 export const FlashDialog = (props: {
   documentId: string
@@ -48,6 +49,7 @@ export const FlashDialog = (props: {
   const readOnly = Number(props?.version) > 0 && !props.asDialog
   const allSections = useSections()
   const [, setYSection] = useYValue<Block | undefined>(ydoc.ele, 'links.core/section[0]')
+  const { t } = useTranslation()
 
   const handleSubmit = (setCreatePrompt: Dispatch<SetStateAction<boolean>>): void => {
     setCreatePrompt(true)
@@ -116,7 +118,7 @@ export const FlashDialog = (props: {
                         planningAwareness.current(isOpen)
                       }
                     }}
-                    fetch={(query) => fetch(query, session, index, locale, timeZone, { searchOlder })}
+                    fetch={(query) => fetch(query, session, t, index, locale, timeZone, { searchOlder })}
                     minSearchChars={2}
                     modal={props.asDialog}
                     onSelect={(option) => {
