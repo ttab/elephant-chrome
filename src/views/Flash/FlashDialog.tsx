@@ -312,6 +312,7 @@ export const FlashDialog = (props: {
             </UserMessage>
 
             <DialogEditor ydoc={ydoc} setTitle={setTitle} />
+            <DialogEditor ydoc={ydoc} setTitle={setTitle} type='flash' />
 
           </Form.Content>
 

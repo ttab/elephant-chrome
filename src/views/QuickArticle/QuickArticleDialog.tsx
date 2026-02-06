@@ -211,7 +211,7 @@ export const QuickArticleDialog = (props: {
                 : (<>Denna artikel kommer läggas i ett nytt uppdrag i den valda planeringen</>)}
             </UserMessage>
 
-            <DialogEditor ydoc={ydoc} setTitle={setTitle} />
+            <DialogEditor ydoc={ydoc} setTitle={setTitle} type='article' />
 
           </Form.Content>
 
