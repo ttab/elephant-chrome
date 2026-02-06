@@ -21,9 +21,10 @@ interface StatusItem {
   meta?: Record<string, unknown>
 }
 
-export const DocumentHistory = ({ uuid, currentVersion }: {
+export const DocumentHistory = ({ uuid, currentVersion, stickyStatus = true }: {
   uuid: string
   currentVersion?: bigint
+  stickyStatus?: boolean
 }) => {
   const { repository, locale, timeZone } = useRegistry()
   const { data: session } = useSession()
@@ -53,7 +54,7 @@ export const DocumentHistory = ({ uuid, currentVersion }: {
 
         pending.history = false
 
-        const history = result?.versions ? extractVersionInfo(result) : null
+        const history = result?.versions ? extractVersionInfo(result, stickyStatus) : null
         if (!history) {
           setHistory(null)
           setDocuments(null)
@@ -93,7 +94,7 @@ export const DocumentHistory = ({ uuid, currentVersion }: {
       if (pending.history) c1.abort()
       if (pending.documents) c2.abort()
     }
-  }, [uuid, repository, session])
+  }, [uuid, repository, session, stickyStatus])
 
 
   let previousVersion = 0n
@@ -123,7 +124,7 @@ export const DocumentHistory = ({ uuid, currentVersion }: {
   )
 }
 
-function extractVersionInfo(data: GetHistoryResponse): HistoryEntry[] {
+function extractVersionInfo(data: GetHistoryResponse, stickyStatus: boolean = true): HistoryEntry[] {
   const sortedVersions = [...data.versions].sort((a, b) => {
     if (a.version < b.version) return -1
     if (a.version > b.version) return 1
@@ -171,7 +172,7 @@ function extractVersionInfo(data: GetHistoryResponse): HistoryEntry[] {
         version: version.version,
         created: version.created,
         creator: version.creator,
-        status: currentStatus,
+        status: stickyStatus ? currentStatus : null,
         type: 'version'
       })
     }
