@@ -58,7 +58,11 @@
     "unpublishError": "Det gick inte att avpublicera dokumentet",
     "addAssignmentToPlanningError": "Det gick inte att lägga till uppdraget i en kopplad planering",
     "creationFailed": "Misslyckades att skapa text: {{error}}",
-    "fetchDocumentFailed": "Kunde inte hämta dokument"
+    "fetchDocumentFailed": "Kunde inte hämta dokument",
+    "fetchStatusFailed": "Ett fel uppstod när aktuell status skulle hämtas. Försök ladda om sidan.",
+    "couldNotChangeStatusReloadBrowser": "Ett fel har uppstått, aktuell status kunde inte ändras! Ladda om webbläsaren och försök igen.",
+    "couldNotChangeStatus": "Ett fel uppstod när aktuell status skulle ändras.",
+    "couldNotSaveStatus": "Ett fel uppstod när aktuell status skulle sparas."
   },
   "operations": {
     "authorCreateSuccess": "Författardokument är skapat",

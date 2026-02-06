@@ -58,7 +58,11 @@
     "unpublishError": "Kunne ikke avpubliser dokumentet",
     "addAssignmentToPlanningError": "Oppgaven kunne ikke legges til i en koblet tidsplan.",
     "creationFailed": "Kunne ikke opprette tekst: {{error}}",
-    "fetchDocumentFailed": "Kunne ikke hente dokument"
+    "fetchDocumentFailed": "Kunne ikke hente dokument",
+    "fetchStatusFailed": "Det oppsto en feil under henting av gjeldende status. Prøv å laste inn siden på nytt.",
+    "couldNotChangeStatusReloadBrowser": "Det har oppstått en feil. Gjeldende status kunne ikke endres! Last inn nettleseren på nytt og prøv på nytt.",
+    "couldNotChangeStatus": "Det oppstod en feil når aktuell status skulle endres.",
+    "couldNotSaveStatus": "Det oppstod en feil når aktuell status skulle lagres."
   },
   "operations": {
     "authorCreateSuccess": "Forfatterdokument er opprettet",
