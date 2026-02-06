@@ -13,14 +13,17 @@ void i18n
   .use(initReactI18next)
   .use(LanguageDetector)
   .init({
-    // lng: language, // Default
     ns: ['common', 'core', 'planning', 'shared', 'app', 'views', 'editor', 'workflows', 'factbox', 'event', 'metaSheet'],
     defaultNS: 'common',
     detection: {
       // order: defines the priority of detection
-      // 'navigator' is the browser/system setting
-      // localStorage: i18next saves the preferred language setting as a 'i18nextLng' key in LS
-      order: ['localStorage', 'navigator']
+      // navigator: is the browser/system setting
+      // localStorage: i18next saves the preferred language setting as a 'i18nextLng' key in localstorage
+      order: ['localStorage', 'navigator'],
+      // This is the default key used by i18next
+      lookupLocalStorage: 'i18nextLng',
+      // Ensures changeLanguage() updates localstorage
+      caches: ['localStorage']
     },
     resources,
     debug: true, // Useful during development to see loading errors
