@@ -304,15 +304,17 @@ export const FlashDialog = (props: {
               />
             </Form.Group>
 
-            <Alert className='bg-red-300/35'>
-              <InfoIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />
-              <AlertTitle>Du skapar en ny flash</AlertTitle>
-              <AlertDescription>
-                {!selectedPlanning
-                  ? (<>Väljer du ingen planering kommer en ny planering med tillhörande uppdrag skapas åt dig.</>)
-                  : (<>Denna flash kommer läggas i ett nytt uppdrag i den valda planeringen</>)}
-              </AlertDescription>
-            </Alert>
+            <>
+              <Alert className='bg-red-300/35'>
+                <InfoIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />
+                <AlertTitle>Du skapar en ny flash</AlertTitle>
+                <AlertDescription>
+                  {!selectedPlanning
+                    ? (<>Väljer du ingen planering kommer en ny planering med tillhörande uppdrag skapas åt dig.</>)
+                    : (<>Denna flash kommer läggas i ett nytt uppdrag i den valda planeringen</>)}
+                </AlertDescription>
+              </Alert>
+            </>
 
             <DialogEditor ydoc={ydoc} setTitle={setTitle} type='flash' />
 
