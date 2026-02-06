@@ -1,11 +1,9 @@
 import { useRegistry } from '@/hooks/useRegistry'
 import type { BulkGetItem, GetHistoryResponse } from '@ttab/elephant-api/repository'
 import { useSession } from 'next-auth/react'
-import { Fragment, useEffect, useState } from 'react'
-import { CircleIcon } from '@ttab/elephant-ui/icons'
+import { useEffect, useState } from 'react'
 import { dateToReadableDateTime } from '@/shared/datetime'
-import { cn } from '@ttab/elephant-ui/utils'
-import { Tooltip } from '@ttab/elephant-ui'
+import { HistoryEntry } from './HistoryEntry'
 
 interface HistoryEntry {
   version: bigint
@@ -98,120 +96,30 @@ export const DocumentHistory = ({ uuid, currentVersion }: {
   }, [uuid, repository, session])
 
 
+  let previousVersion = 0n
   return (
     <div className='grid grid-cols-[auto_auto_1fr] gap-0 text-sm text-muted-foreground'>
-      {history?.map((item, index) => {
-        const title = documents?.find((doc) => doc.version === item.version)?.document?.title
-        const isCurrent = item.version === currentVersion
+      {history?.reverse().map((item, index) => {
+        const title = (previousVersion !== item.version)
+          ? documents?.find((doc) => doc.version === item.version)?.document?.title
+          : null
+        const isCurrent = item.version === currentVersion && previousVersion !== item.version
 
-        if (index > 4 && history.length > 6) {
-          return null
-        }
-
-        if (index === 4 && history.length > 6) {
-          return (
-            <Fragment key={`${item.version}-${item.status}-${index}`}>
-              <div className='relative flex items-center justify-center pe-2 h-full'>
-                <HistoryIcon status='system' isLast={true} />
-              </div>
-
-              <div className='py-0.5 ps-3'></div>
-
-              <div className='py-1 ps-5 items-center truncate text-foreground'>
-                Ytterligare äldre versioner finns...
-              </div>
-            </Fragment>
-          )
-        }
+        previousVersion = item.version // Store for next iteration
 
         return (
-          <Fragment
+          <HistoryEntry
             key={`${item.version}-${item.status}-${index}`}
-          >
-            <div className='relative flex items-center justify-center pe-2 h-full'>
-              <HistoryIcon
-                status={item.status || 'draft'}
-                isCurrent={isCurrent}
-                isLast={index === history.length - 1}
-              />
-            </div>
-
-            <div className='py-0.5 ps-3 cursor-default'>
-              {dateToReadableDateTime(new Date(item.created), locale.code.short, timeZone)}
-            </div>
-
-
-            <div className='py-1 ps-5 items-center truncate cursor-default'>
-              <Tooltip content={(
-                <div className='flex flex-col gap-2'>
-                  <span className='font-semibold'>
-                    Version
-                    {` `}
-                    {item.version}
-                  </span>
-                  <span>
-                    {title}
-                  </span>
-                </div>
-              )}
-              >
-                {title}
-              </Tooltip>
-            </div>
-          </Fragment>
-        )
-      })}
-    </div>
-  )
-}
-
-const HistoryIcon = ({ status, isCurrent, isLast }: {
-  status: string
-  isCurrent?: boolean
-  isLast?: boolean
-}) => {
-  const colors: Record<string, string> = {
-    draft: 'oklch(75.17% 0.0138 285.94)',
-    done: 'oklch(91.62% 0.1424 100.94)',
-    saved: 'oklch(91.62% 0.1424 100.94)',
-    approved: 'oklch(68.25% 0.1005 146.77)',
-    read: 'oklch(68.25% 0.1005 146.77)',
-    usable: 'oklch(75.53% 0.1157 260.64)',
-    used: 'oklch(75.53% 0.1157 260.64)',
-    withheld: 'oklch(77.69% 0.1218 206.47)',
-    cancelled: 'oklch(63.58% 0.2088 25.41)',
-    unpublished: 'oklch(64.8% 0.42 51.56)',
-    flash: 'oklch(62.8% 0.257 29.23)',
-    system: 'oklch(20% 0.0138 285.94)'
-  }
-  const color = status ? colors[status] : colors['draft']
-
-  return (
-    <>
-      <CircleIcon
-        fill={color}
-        stroke={color}
-        className={cn(
-          'rounded-full',
-          isCurrent ? 'w-3 h-3' : 'w-4 h-4'
-        )}
-        style={{
-          outline: isCurrent ? `2px solid ${color}` : 'none',
-          outlineOffset: '3px'
-        }}
-      />
-
-      {!isLast
-        && (
-          <div
-            className='absolute left-0 top-0 bottom-0 w-0.5'
-            style={{
-              backgroundColor: color,
-              transform: 'translate(calc((var(--spacing) * 2) - 1px), 50%)'
-            }}
+            version={item.version}
+            status={item.status}
+            title={title}
+            isLast={index === history.length - 1}
+            isCurrent={isCurrent}
+            time={dateToReadableDateTime(new Date(item.created), locale.code.short, timeZone)}
           />
-        )}
-    </>
+        )
+      }).reverse()}
+    </div>
   )
 }
 
