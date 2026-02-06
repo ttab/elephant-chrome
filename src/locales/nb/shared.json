@@ -57,7 +57,8 @@
     "multipleAuthors": "Flere forfatterdokumenter funnet, kontakt support",
     "unpublishError": "Kunne ikke avpubliser dokumentet",
     "addAssignmentToPlanningError": "Oppgaven kunne ikke legges til i en koblet tidsplan.",
-    "creationFailed": "Kunne ikke opprette tekst: {{error}}"
+    "creationFailed": "Kunne ikke opprette tekst: {{error}}",
+    "fetchDocumentFailed": "Kunne ikke hente dokument"
   },
   "operations": {
     "authorCreateSuccess": "Forfatterdokument er opprettet",

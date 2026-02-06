@@ -23,7 +23,7 @@ import { useTranslation } from 'react-i18next'
 
 export const Menu = (): JSX.Element => {
   const { data } = useSession()
-  const { t } = useTranslation()
+  const { t } = useTranslation('app')
   const triggerRef = useRef<HTMLButtonElement>(null)
   const [user] = useUserTracker<object>('')
   const [mainOpen, setMainMenuOpen] = useState<boolean>(false)
@@ -42,14 +42,6 @@ export const Menu = (): JSX.Element => {
   const sheetItems = applicationMenu.groups
     .flatMap((group) => group.items)
     .filter((item) => item.target === 'sheet')
-
-  const showTranslatedText = (menuItem: string): string => {
-    switch (menuItem) {
-      case 'last published': return t('app:mainMenu.lastPublished')
-      default:
-        return ''
-    }
-  }
 
   return (
     <>
@@ -106,7 +98,7 @@ export const Menu = (): JSX.Element => {
                           >
                             <div className='flex items-center gap-3'>
                               <item.icon strokeWidth={2.25} size={18} color={item.color} />
-                              <div className='pl-2'>{showTranslatedText(item.label)}</div>
+                              <div className='pl-2'>{t(`mainMenu.${item.name.toLowerCase()}`)}</div>
                             </div>
                           </button>
                         )
