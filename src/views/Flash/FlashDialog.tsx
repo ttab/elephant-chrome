@@ -4,13 +4,12 @@ import {
   View
 } from '@/components'
 import type { DefaultValueOption, ViewProps } from '@/types'
-import { Button, Checkbox, ComboBox, Label } from '@ttab/elephant-ui'
-import { CircleXIcon, TagsIcon, GanttChartSquareIcon, NewspaperIcon, ZapIcon } from '@ttab/elephant-ui/icons'
+import { Alert, AlertDescription, AlertTitle, Button, Checkbox, ComboBox, Label } from '@ttab/elephant-ui'
+import { CircleXIcon, TagsIcon, GanttChartSquareIcon, NewspaperIcon, ZapIcon, InfoIcon } from '@ttab/elephant-ui/icons'
 import { useRegistry, useSections } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import type { Dispatch, SetStateAction } from 'react'
 import { type JSX, useMemo, useRef, useState } from 'react'
-import { UserMessage } from '@/components/UserMessage'
 import { Form } from '@/components/Form'
 import { fetch } from '@/lib/index/fetch-plannings-twirp'
 import type { CreateFlashDocumentStatus } from './lib/createFlash'
@@ -305,13 +304,16 @@ export const FlashDialog = (props: {
               />
             </Form.Group>
 
-            <UserMessage asDialog={!!props?.asDialog}>
-              {!selectedPlanning
-                ? (<>Väljer du ingen planering kommer en ny planering med tillhörande uppdrag skapas åt dig.</>)
-                : (<>Denna flash kommer läggas i ett nytt uppdrag i den valda planeringen</>)}
-            </UserMessage>
+            <Alert className='bg-red-300/35'>
+              <InfoIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />
+              <AlertTitle>Du skapar en ny flash</AlertTitle>
+              <AlertDescription>
+                {!selectedPlanning
+                  ? (<>Väljer du ingen planering kommer en ny planering med tillhörande uppdrag skapas åt dig.</>)
+                  : (<>Denna flash kommer läggas i ett nytt uppdrag i den valda planeringen</>)}
+              </AlertDescription>
+            </Alert>
 
-            <DialogEditor ydoc={ydoc} setTitle={setTitle} />
             <DialogEditor ydoc={ydoc} setTitle={setTitle} type='flash' />
 
           </Form.Content>
