@@ -18,8 +18,8 @@ import {
 } from '@ttab/elephant-ui/icons'
 import { useRegistry } from '@/hooks'
 import { useSession } from 'next-auth/react'
-import type { PropsWithChildren, JSX } from 'react'
-import { useEffect, useRef, useState } from 'react'
+import type { JSX } from 'react'
+import { useRef, useState } from 'react'
 import { UserMessage } from '@/components/UserMessage'
 import { Form } from '@/components/Form'
 import { fetch } from '@/lib/index/fetch-plannings-twirp'
@@ -29,11 +29,11 @@ import type * as Y from 'yjs'
 import { CreatePrompt } from '@/components/CreatePrompt'
 import type { Wire as WireType } from '@/shared/schemas/wire'
 import { toSlateYXmlText } from '@/shared/yUtils'
-import type { FormProps } from '@/components/Form/Root'
 import { useYDocument } from '@/modules/yjs/hooks'
 import { useYValue } from '@/modules/yjs/hooks/useYValue'
 import { TextInput } from '@/components/ui/TextInput'
 import type { EleDocumentResponse } from '@/shared/types'
+import { ValidateNow } from '@/components/ValidateNow'
 
 export const WireViewContent = (props: ViewProps & {
   documentId: string
@@ -293,14 +293,4 @@ export const WireViewContent = (props: ViewProps & {
       </View.Content>
     </View.Root>
   )
-}
-
-const ValidateNow = ({ setValidateForm }: FormProps & PropsWithChildren): null => {
-  useEffect(() => {
-    if (setValidateForm) {
-      setValidateForm(true)
-    }
-  }, [setValidateForm])
-
-  return null
 }
