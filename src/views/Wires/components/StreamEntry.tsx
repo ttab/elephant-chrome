@@ -3,10 +3,11 @@ import type { Wire } from '@/shared/schemas/wire'
 import { cn } from '@ttab/elephant-ui/utils'
 import { cva } from 'class-variance-authority'
 import { Button } from '@ttab/elephant-ui'
-import { RefreshCwIcon, SquareCheckIcon, SquareIcon } from '@ttab/elephant-ui/icons'
+import { RefreshCwIcon, SquareCheckIcon, SquareIcon, ZapIcon } from '@ttab/elephant-ui/icons'
 import { getWireStatus } from '@/lib/getWireStatus'
 import type { WireStatus } from '../lib/setWireStatus'
 import { StreamEntryCell } from './StreamEntryCell'
+import { getWireStatuses } from '@/lib/getWireStatuses'
 
 export const StreamEntry = ({
   streamId,
@@ -28,6 +29,7 @@ export const StreamEntry = ({
   onPress?: (item: Wire, event: React.MouseEvent<HTMLElement> | React.KeyboardEvent<HTMLElement>) => void
 }): JSX.Element => {
   const status = getWireStatus(entry)
+  const statuses = getWireStatuses(entry)
 
   const handleClick = useCallback((e: React.MouseEvent<HTMLElement>) => {
     onPress?.(entry, e)
@@ -61,8 +63,8 @@ export const StreamEntry = ({
     `
       relative
       grid
-      grid-cols-[3rem_1fr]
-      gap-3 border-s-[7px]
+      grid-cols-[3rem_0.75rem_1fr]
+      gap-0.5 border-s-[7px]
       bg-background
       text-[0.785rem]
       subpixel-antialiased
@@ -75,14 +77,17 @@ export const StreamEntry = ({
     `,
     {
       variants: {
+        flashLevel: {
+          // Current version is a flash
+          1: '!border-s-red-500 text-red-500',
+          // Historic version was a flash
+          2: ''
+        },
         status: {
           draft: '',
           read: 'border-s-approved bg-approved-background hover:bg-approved/20',
           saved: 'border-s-done bg-done-background hover:bg-done/30',
           used: 'border-s-usable bg-usable-background hover:bg-usable/30'
-        },
-        newsvalue: {
-          6: 'border-s-red-500'
         },
         isUpdated: {
           true: 'bg-background'
@@ -93,15 +98,21 @@ export const StreamEntry = ({
 
   const modified = new Date(entry.fields.modified.values[0])
   const newsvalue = entry.fields['document.meta.core_newsvalue.value']?.values[0] === '6' ? 6 : undefined
-  const compositeId = `${streamId}:${entry.id}`
+  let flashLevel: null | 1 | 2 = null
+  if (newsvalue === 6) {
+    flashLevel = 1
+  } else if (statuses.find((s) => s.key === 'flash')) {
+    flashLevel = 2
+  }
 
+  const compositeId = `${streamId}:${entry.id}`
   return (
     <div className='group relative'>
       <div
         data-item-id={compositeId}
         data-entry-id={entry.id}
         tabIndex={0}
-        className={cn(variants({ status, newsvalue }))}
+        className={cn(variants({ status, flashLevel }))}
         onKeyDown={handleKeyDown}
         onFocus={handleFocus}
         onClick={handleClick}
@@ -109,6 +120,13 @@ export const StreamEntry = ({
         <StreamEntryCell>
           {`${modified.getHours()}.${modified.getMinutes().toString().padStart(2, '0')}`}
         </StreamEntryCell>
+
+        <StreamEntryCell className='flex items-center justify-center'>
+          <span>
+            {!!flashLevel && <ZapIcon size={12} strokeWidth={1.95} className='text-red-500' fill='oklch(62.8% 0.257 29.23)' />}
+          </span>
+        </StreamEntryCell>
+
         <StreamEntryCell className={cn(
           'transition-[padding] duration-100',
           status === 'used' ? 'opacity-70' : '',
