@@ -88,5 +88,17 @@
     "loginWith": "Logg inn med",
     "rememberMe": "Husk meg neste gang",
     "loggingIn": "Logger inn..."
+  },
+  "imageSearch": {
+    "title": "Bilder",
+    "errors": {
+      "noSession": "Kan ikke autentisere til bildetjenesten",
+      "showPictureError": "Kan ikke vise bildet, ugyldig id"
+    },
+    "labels": {
+      "mediaType": "Medietype",
+      "image": "Bild",
+      "graphic": "Grafikk"
+    }
   }
 }
