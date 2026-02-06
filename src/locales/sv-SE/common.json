@@ -41,6 +41,7 @@
     "selected": "valda",
     "since": "sedan",
     "missing": "saknas",
-    "loading": "Laddar..."
+    "loading": "Laddar...",
+    "titleMissing": "Titel saknas"
   }
 }

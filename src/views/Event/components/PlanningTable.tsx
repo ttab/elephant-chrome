@@ -119,7 +119,7 @@ export const PlanningTable = ({ ydoc, asDialog }: {
                   'core/event': [Block.create({
                     type: 'core/event',
                     uuid: ydoc.id,
-                    title: eventData?.title || 'Titel saknas',
+                    title: eventData?.title || t('common:misc.titleMissing'),
                     rel: 'event'
                   })]
                 }

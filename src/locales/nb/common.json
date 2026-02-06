@@ -41,6 +41,7 @@
     "selected": "valgt",
     "since": "siden",
     "missing": "Mangler",
-    "loading": "Laster inn..."
+    "loading": "Laster inn...",
+    "titleMissing": "Tittel mangler"
   }
 }
