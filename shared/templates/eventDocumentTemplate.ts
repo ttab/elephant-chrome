@@ -33,7 +33,7 @@ export function eventDocumentTemplate(id: string, payload?: TemplatePayload): Do
     uuid: id,
     type: 'core/event',
     uri: `core://event/${id}`,
-    language: 'sv-se',
+    language: process.env.SYSTEM_LANGUAGE,
     meta: [
       Block.create({
         type: 'core/event',

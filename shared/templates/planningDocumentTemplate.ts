@@ -37,7 +37,7 @@ export function planningDocumentTemplate(documentId: string, payload?: TemplateP
     type: 'core/planning-item',
     uri: `core://newscoverage/${documentId}`,
     ...(payload?.title && { title: payload.title }),
-    language: 'sv-se',
+    language: process.env.SYSTEM_LANGUAGE,
     meta: [
       ...payload?.meta?.['core/planning-item'] || [Block.create({
         type: 'core/planning-item',
