@@ -38,7 +38,7 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
     isoDateTime,
     publishTime,
     section,
-    wire
+    wires
   } = req.body as {
     planningId?: string
     planningTitle?: string
@@ -55,7 +55,7 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
       uuid: string
       title: string
     }
-    wire?: Wire
+    wires?: Wire[]
   }
 
   if (!type || !deliverableId || !title || !localDate || !isoDateTime) {
@@ -132,7 +132,7 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
     const [index] = appendAssignment({
       document,
       type,
-      wire,
+      wires,
       slugLine: slugline,
       title,
       assignmentData
