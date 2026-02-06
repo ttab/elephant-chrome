@@ -26,7 +26,7 @@ void i18n
       caches: ['localStorage']
     },
     resources,
-    debug: true, // Useful during development to see loading errors
+    debug: process.env.NODE_ENV !== 'production', // Useful during development to see loading errors
     fallbackLng: (lng) => {
       const nb = ['nn', 'nb', 'no', 'nb-NO', 'nn-NO'].includes(lng)
       if (nb) return 'nb'
