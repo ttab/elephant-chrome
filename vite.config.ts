@@ -5,7 +5,6 @@ import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import { visualizer } from 'rollup-plugin-visualizer'
 
-
 export default defineConfig(({ mode }) => {
   const fileEnv = loadEnv(mode, process.cwd(), '')
   const env = { ...fileEnv, ...process.env } as Record<string, string | undefined>
@@ -23,7 +22,6 @@ export default defineConfig(({ mode }) => {
     port: devServerPort,
     base: BASE_URL,
     plugins: [
-
       react(),
       tailwindcss()
     ],
@@ -91,47 +89,18 @@ export default defineConfig(({ mode }) => {
       }
     },
     build: {
-      chunkSizeWarningLimit: 1000,
+      chunkSizeWarningLimit: 1500,
       rollupOptions: {
         output: {
-          manualChunks(id) {
-            // Vendor chunks
-            if (id.includes('node_modules/react/')) return 'react-vendor'
-            if (id.includes('node_modules/react-dom/')) return 'react-vendor'
-            if (id.includes('node_modules/slate')
-              || id.includes('node_modules/slate-hyperscript')) return 'slate-vendor'
-            if (id.includes('node_modules/yjs')
-              || id.includes('node_modules/y-indexeddb')
-              || id.includes('node_modules/@slate-yjs')) return 'yjs-vendor'
-            if (id.includes('node_modules/@ttab/elephant-ui')
-              || id.includes('node_modules/lucide-react')
-              || id.includes('node_modules/@tanstack/react-table')) return 'ui-vendor'
-            if (id.includes('node_modules/date-fns')) return 'utils-vendor'
-
-            // Keep View components together with other shared components to avoid circular deps
-            if (id.includes('/src/components/View/')) return 'comp-shared'
-
-            // Large component chunks split individually
-            if (id.includes('/src/components/Table/')) return 'comp-table'
-            if (id.includes('/src/components/Editor/')) return 'comp-editor'
-            if (id.includes('/src/components/Commands/')) return 'comp-commands'
-            if (id.includes('/src/components/AssignmentTime/')) return 'comp-assignment'
-            if (id.includes('/src/components/Form/')) return 'comp-form'
-            if (id.includes('/src/components/Filter/')) return 'comp-filter'
-            if (id.includes('/src/components/DocumentStatus/')) return 'comp-doc-status'
-            if (id.includes('/src/components/DataItem/')) return 'comp-data-item'
-            if (id.includes('/src/components/Version/')) return 'comp-version'
-            if (id.includes('/src/components/ui/')) return 'comp-ui'
-            if (id.includes('/src/components/Init/')) return 'comp-init'
-            if (id.includes('/src/components/App/')) return 'comp-app'
-
-            // Group smaller components together
-            if (id.includes('/src/components/')) return 'comp-shared'
-
-            // App code chunks
-            if (id.includes('/src/views/')) return 'views'
-            if (id.includes('/src/modules/')) return 'modules'
-            if (id.includes('/src/lib/') || id.includes('/src/hooks/')) return 'lib-core'
+          manualChunks: {
+            vendor: ['react', 'react-dom'],
+            slate: ['slate', 'slate-react', 'slate-history'],
+            yjs: ['yjs', 'y-indexeddb', '@slate-yjs/core', '@slate-yjs/react'],
+            tt: ['@ttab/elephant-ui', '@ttab/api-client'],
+            textbit: ['@ttab/textbit', '@ttab/textbit-plugins'],
+            icons: ['lucide-react'],
+            dateFns: ['date-fns', 'date-fns-tz', '@date-fns/utc'],
+            misc: ['sonner', 'zod']
           },
           plugins: [
             visualizer({
