@@ -33,7 +33,7 @@ export const Time = ({ startTime, endTime }: { startTime?: Date | undefined, end
       formattedTime = formattedStartTime
     } else {
       if (timeDifference >= 12) {
-        formattedTime = t('timeSlots.fullDay')
+        formattedTime = t('timeSlots.fullday')
       }
 
       if (timeDifference < 12) {

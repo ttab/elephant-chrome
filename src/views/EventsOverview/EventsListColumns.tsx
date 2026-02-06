@@ -44,7 +44,7 @@ export function eventTableColumns({ sections = [], organisers = [], locale}: {
         display: (value: string) => {
           const [hour, day] = value.split(' ')
           if (hour === 'undefined') {
-            return <span>{t('core:timeSlots.fullDay')}</span>
+            return <span>{t('core:timeSlots.fullday')}</span>
           }
 
           return (
@@ -70,7 +70,7 @@ export function eventTableColumns({ sections = [], organisers = [], locale}: {
         const isFullDay = (end.getTime() - start.getTime()) / (1000 * 60 * 60) > 12
 
         if (isFullDay) {
-          return t('core:timeSlots.fullDay')
+          return t('core:timeSlots.fullday')
         }
 
         return `${start.getHours()} ${start.toLocaleString(locale.code.full, { weekday: 'long', hourCycle: 'h23' })}`
