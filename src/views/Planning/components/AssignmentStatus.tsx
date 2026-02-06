@@ -29,7 +29,7 @@ const TextAssignment = ({ workflowState }: {
   const StatusIcon = useMemo(() => {
     return DocumentStatuses.find((status) => status.value === workflowState)
   }, [workflowState])
-  console.log('🚀 ~ :32 ~ TextAssignment ~ StatusIcon:', StatusIcon)
+
   const { t } = useTranslation('shared')
 
   const IconComponent = StatusIcon?.icon
