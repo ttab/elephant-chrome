@@ -16,7 +16,8 @@
     "nogrouping": "Ingen gruppering",
     "group": "Gruppera",
     "copy": "Kopiera",
-    "confirm": "Klar"
+    "confirm": "Klar",
+    "move": "Flytta"
   },
   "errors": {
     "unknown": "Okänt fel",

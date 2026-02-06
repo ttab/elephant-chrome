@@ -238,7 +238,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
       }
     },
     {
-      label: t('planning:move.label'),
+      label: t('common:actions.remove'),
       disabled: isUsable,
       icon: DeleteIcon,
       item: () => {
@@ -246,7 +246,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
       }
     },
     {
-      label: t('common:actions.edit'),
+      label: t('common:actions.move'),
       icon: MoveRightIcon,
       item: () => {
         showModal(

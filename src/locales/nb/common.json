@@ -16,7 +16,8 @@
     "nogrouping": "Ingen gruppering",
     "group": "Gruppe",
     "copy": "Kopiere",
-    "confirm": "Ferdig"
+    "confirm": "Ferdig",
+    "move": "Flytte"
   },
   "errors": {
     "unknown": "Ukjent feil",
