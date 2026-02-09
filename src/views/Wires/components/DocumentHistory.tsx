@@ -100,26 +100,31 @@ export const DocumentHistory = ({ uuid, currentVersion, stickyStatus = true }: {
   let previousVersion = 0n
   return (
     <div className='grid grid-cols-[auto_auto_1fr] gap-0 text-sm text-muted-foreground'>
-      {history?.reverse().map((item, index) => {
-        const title = (previousVersion !== item.version)
-          ? documents?.find((doc) => doc.version === item.version)?.document?.title
-          : null
-        const isCurrent = item.version === currentVersion && previousVersion !== item.version
+      {history?.length
+        && (
+          <>
+            {[...history].reverse().map((item, index) => {
+              const title = (previousVersion !== item.version)
+                ? documents?.find((doc) => doc.version === item.version)?.document?.title
+                : null
+              const isCurrent = item.version === currentVersion && previousVersion !== item.version
 
-        previousVersion = item.version // Store for next iteration
+              previousVersion = item.version
 
-        return (
-          <HistoryEntry
-            key={`${item.version}-${item.status}-${index}`}
-            version={item.version}
-            status={item.status}
-            title={title}
-            isLast={index === history.length - 1}
-            isCurrent={isCurrent}
-            time={dateToReadableDateTime(new Date(item.created), locale.code.short, timeZone)}
-          />
-        )
-      }).reverse()}
+              return (
+                <HistoryEntry
+                  key={`${item.version}-${item.status}-${index}`}
+                  version={item.version}
+                  status={item.status}
+                  title={title}
+                  isLast={index === history.length - 1}
+                  isCurrent={isCurrent}
+                  time={dateToReadableDateTime(new Date(item.created), locale.code.short, timeZone)}
+                />
+              )
+            }).reverse()}
+          </>
+        )}
     </div>
   )
 }
