@@ -85,7 +85,7 @@ const Note = ({ ydoc, noteIndex, handleRemove }: {
           title={`${t('editor:changeType')}?`}
           description={t('editor:changeTypeConfirm')}
           secondaryLabel={t('common:actions.abort')}
-          primaryLabel={t('common:actions.changeType')}
+          primaryLabel={t('editor:changeType')}
           onPrimary={() => {
             setShowVerifyChange(false)
             setRole(role === 'public' ? 'internal' : 'public')
