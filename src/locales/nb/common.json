@@ -35,7 +35,7 @@
     "failedUpdatingListRetrying": "Kunne ikke oppdatere listen automatisk. Prøver på nytt om {{seconds}} sekunder.",
     "noResultsFound": "Ingen resultater funnet",
     "copyError": "Kopier feilmelding",
-    "validationError": ""
+    "validationError": "Valideringsfeil"
   },
   "misc": {
     "unknown": "ukjent",
