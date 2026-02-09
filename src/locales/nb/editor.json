@@ -7,7 +7,9 @@
     "preamble": "Ingress",
     "tvListing": "",
     "unorderedList": "Liste",
-    "orderedList": "Punktliste"
+    "orderedList": "Punktliste",
+    "searchImages": "Bildesøk",
+    "factboxes": "Faktabokser"
   },
   "spelling": {
     "noSuggestions": "Ingen forslag"
