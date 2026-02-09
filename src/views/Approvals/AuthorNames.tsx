@@ -1,25 +1,17 @@
-import type { AssignmentInterface } from '@/hooks/index/useAssignments'
+import type { ApprovalItem } from './types'
 import { useAuthors } from '@/hooks/useAuthors'
 import { useMemo, type JSX } from 'react'
 import { UserIcon, PenIcon, AwardIcon } from 'lucide-react'
 import type { IDBAuthor } from 'src/datastore/types'
 import type { StatusMeta } from '@/types'
-import type { Status, StatusOverviewItem } from '@ttab/elephant-api/repository'
+import type { Status, DocumentMeta } from '@ttab/elephant-api/repository'
 import { getAuthorBySub } from '@/lib/getAuthorBySub'
 import { DocumentStatuses } from '@/defaults/documentStatuses'
 
-export const AuthorNames = ({ assignment }: { assignment: AssignmentInterface }): JSX.Element => {
+export const AuthorNames = ({ item }: { item: ApprovalItem }): JSX.Element => {
   const authors = useAuthors()
 
-  // Parse status data only if it exists and changes
-  const statusData = useMemo<StatusOverviewItem | null>(() => {
-    if (!assignment?._statusData) return null
-    try {
-      return JSON.parse(assignment._statusData) as StatusOverviewItem
-    } catch {
-      return null
-    }
-  }, [assignment?._statusData])
+  const statusData = item.deliverable?.meta || null
 
   // Memoize sorted status entries
   const entries = useMemo<[string, Status][]>(() => {
@@ -38,8 +30,8 @@ export const AuthorNames = ({ assignment }: { assignment: AssignmentInterface })
 
   // Get display and full text for tooltip
   const { display, full } = useMemo(
-    () => getDisplayAndFull(assignment, authors, entries, statusData),
-    [assignment, authors, entries, statusData]
+    () => getDisplayAndFull(item, authors, entries, statusData),
+    [item, authors, entries, statusData]
   )
 
   // Optionally append last status setter if not draft/done
@@ -92,13 +84,13 @@ export const AuthorNames = ({ assignment }: { assignment: AssignmentInterface })
 
 // Helper to get display and full tooltip text
 function getDisplayAndFull(
-  assignment: AssignmentInterface,
+  item: ApprovalItem,
   authors: IDBAuthor[],
   entries: [string, Status][],
-  statusData: StatusOverviewItem | null
+  statusData: DocumentMeta | null
 ) {
   // Prefer byline from deliverable document
-  const byline = (assignment?._deliverableDocument?.links ?? [])
+  const byline = (item.deliverable?.document?.links ?? [])
     .filter((l) => l.type === 'core/author')
     .map((author) => author.title)
     .join(', ')

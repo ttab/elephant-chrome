@@ -1,6 +1,5 @@
 
 import { type ColumnDef } from '@tanstack/react-table'
-import { type Planning } from '@/shared/schemas/planning'
 import { Newsvalue } from '@/components/Table/Items/Newsvalue'
 import { Title } from '@/components/Table/Items/Title'
 import { Assignees } from '@/components/Table/Items/Assignees'
@@ -21,11 +20,14 @@ import { SectionBadge } from '@/components/DataItem/SectionBadge'
 import { type IDBAuthor, type IDBSection } from 'src/datastore/types'
 import { FacetedFilter } from '@/components/Commands/FacetedFilter'
 import { getNestedFacetedUniqueValues } from '@/components/Table/lib/getNestedFacetedUniqueValues'
+import { getStatusFromMeta } from '@/lib/getStatusFromMeta'
+import type { DocumentStateWithDecorators } from '@/hooks/useRepositorySocket/types'
 
-export function planningListColumns({ sections = [], authors = [] }: {
+export function planningListColumns({ sections = [], authors = [], user }: {
   sections?: IDBSection[]
   authors?: IDBAuthor[]
-}): Array<ColumnDef<Planning>> {
+  user?: string
+}): Array<ColumnDef<DocumentStateWithDecorators>> {
   return [
     {
       id: 'documentStatus',
@@ -44,22 +46,16 @@ export function planningListColumns({ sections = [], authors = [] }: {
         )
       },
       accessorFn: (data) => {
-        const currentStatus = data?.fields['document.meta.status']?.values[0]
-        const isUnpublished = data?.fields['heads.usable.version']?.values[0] === '-1'
-        if (currentStatus === 'usable' && isUnpublished) {
-          const lastModified = data?.fields['modified']?.values[0]
-          const lastUsableCreated = data?.fields['heads.usable.created']?.values[0]
-
-          if (lastModified > lastUsableCreated) {
-            return 'draft'
-          }
-          return 'unpublished'
+        if (!data.meta) {
+          return 'draft'
         }
-        return currentStatus
+
+        return getStatusFromMeta(data.meta, false).name
       },
       cell: ({ row }) => {
         const status = row.getValue<string>('documentStatus')
-        return <DocumentStatus type='core/planning-item' status={status} />
+        const updated = row.original.__updater && user !== row.original.__updater.sub
+        return <DocumentStatus type='core/planning-item' status={status} updated={updated} />
       },
       filterFn: (row, id, value: string[]) =>
         value.includes(row.getValue(id)),
@@ -78,7 +74,8 @@ export function planningListColumns({ sections = [], authors = [] }: {
         columnIcon: SignalHighIcon,
         className: 'flex-none hidden @3xl/view:[display:revert]'
       },
-      accessorFn: (data) => data.fields['document.meta.core_newsvalue.value']?.values[0],
+      accessorFn: (data) => data.document?.meta
+        .find((d) => d.type === 'core/newsvalue')?.value,
       cell: ({ row }) => {
         const value: string = row.getValue('newsvalue') || ''
         const newsvalue = NewsvalueMap[value]
@@ -98,9 +95,10 @@ export function planningListColumns({ sections = [], authors = [] }: {
         columnIcon: PenIcon,
         className: 'flex-1 w-[200px]'
       },
-      accessorFn: (data) => data.fields['document.title']?.values[0],
+      accessorFn: (data) => data.document?.title,
       cell: ({ row }) => {
-        const slugline = row.original.fields['document.meta.tt_slugline.value']?.values[0]
+        const slugline = row.original.document?.meta
+          .find((d) => d.type === 'tt/slugline')?.value
         const title = row.getValue('title')
 
         return <Title title={title as string} slugline={slugline} />
@@ -130,11 +128,11 @@ export function planningListColumns({ sections = [], authors = [] }: {
           </span>
         )
       },
-      accessorFn: (data) => {
-        return data.fields['document.rel.section.uuid']?.values[0]
-      },
+      accessorFn: (data) => data.document?.links
+        .find((d) => d.type === 'core/section')?.uuid,
       cell: ({ row }) => {
-        const sectionTitle = row.original.fields['document.rel.section.title']?.values[0]
+        const sectionTitle = row.original.document?.links
+          .find((d) => d.type === 'core/section')?.title
         return (
           <>
             {sectionTitle && <SectionBadge title={sectionTitle} color='bg-[#BD6E11]' />}
@@ -155,7 +153,16 @@ export function planningListColumns({ sections = [], authors = [] }: {
         columnIcon: UsersIcon,
         className: 'flex-none w-[112px] hidden @5xl/view:[display:revert]'
       },
-      accessorFn: (data) => data.fields['document.meta.core_assignment.rel.assignee.uuid']?.values,
+      accessorFn: (data) =>
+        data.document?.meta?.reduce<string[]>((uuids, d) => {
+          if (d.type === 'core/assignment' && Array.isArray(d.links)) {
+            d.links.forEach((link) => {
+              if (link.type === 'core/author') uuids.push(link.uuid)
+            })
+          }
+          return uuids
+        }, []) || [],
+
       cell: ({ row }) => {
         const assignees = (row.getValue<string[]>('assignees') || []).map((assigneeId) => {
           return authors.find((author) => author.id === assigneeId)?.name || ''
@@ -193,7 +200,15 @@ export function planningListColumns({ sections = [], authors = [] }: {
           )
         }
       },
-      accessorFn: (data) => data.fields['document.meta.core_assignment.meta.core_assignment_type.value']?.values,
+      accessorFn: (data) =>
+        data.document?.meta?.reduce<string[]>((values, d) => {
+          if (d.type === 'core/assignment' && Array.isArray(d.meta)) {
+            d.meta.forEach((meta) => {
+              if (meta.type === 'core/assignment-type') values.push(meta.value)
+            })
+          }
+          return values
+        }, []) || [],
       cell: ({ row }) => {
         const data = AssignmentTypes.filter(
           (assignmentType) => (row.getValue<string[]>('type') || []).includes(assignmentType.value)
@@ -215,8 +230,16 @@ export function planningListColumns({ sections = [], authors = [] }: {
         className: 'flex-none'
       },
       cell: ({ row }) => {
-        const deliverableUuids = row.original.fields['document.meta.core_assignment.rel.deliverable.uuid']?.values || []
-        const planningId = row.original.id
+        const deliverableUuids = row.original?.document?.meta?.reduce<string[]>((uuids, meta) => {
+          if (meta.type === 'core/assignment' && Array.isArray(meta.links)) {
+            meta.links.forEach((link) => {
+              if (link.rel === 'deliverable') uuids.push(link.uuid)
+            })
+          }
+          return uuids
+        }, []) || []
+
+        const planningId = row.original.document?.uuid || ''
 
         return <Actions deliverableUuids={deliverableUuids} planningId={planningId} />
       },

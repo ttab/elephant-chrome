@@ -1,5 +1,4 @@
 import { type ColumnDef } from '@tanstack/react-table'
-import { type Event } from '@/shared/schemas/event'
 import { Newsvalue } from '@/components/Table/Items/Newsvalue'
 import { type MouseEvent } from 'react'
 import {
@@ -8,7 +7,6 @@ import {
   ShapesIcon,
   Clock3Icon,
   NavigationIcon,
-  NotebookPenIcon,
   EditIcon,
   DeleteIcon,
   CircleCheckIcon,
@@ -20,18 +18,19 @@ import { Newsvalues, NewsvalueMap, PlanningEventStatuses } from '@/defaults'
 import { Time } from '@/components/Table/Items/Time'
 import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
 import { Title } from '@/components/Table/Items/Title'
-import { Status } from '@/components/Table/Items/Status'
 import { SectionBadge } from '@/components/DataItem/SectionBadge'
 import { type IDBOrganiser, type IDBSection } from 'src/datastore/types'
 import { FacetedFilter } from '@/components/Commands/FacetedFilter'
 import { Tooltip } from '@ttab/elephant-ui'
 import type { LocaleData } from '@/types/index'
+import type { DocumentState } from '@ttab/elephant-api/repositorysocket'
+import { getStatusFromMeta } from '@/lib/getStatusFromMeta'
 
 export function eventTableColumns({ sections = [], organisers = [], locale }: {
   sections?: IDBSection[]
   organisers?: IDBOrganiser[]
   locale: LocaleData
-}): Array<ColumnDef<Event>> {
+}): Array<ColumnDef<DocumentState>> {
   return [
     {
       id: 'startTime',
@@ -56,8 +55,9 @@ export function eventTableColumns({ sections = [], organisers = [], locale }: {
         }
       },
       accessorFn: (data) => {
-        const startTime = data?.fields['document.meta.core_event.data.start']?.values?.[0]
-        const endTime = data?.fields['document.meta.core_event.data.end']?.values?.[0]
+        const event = data.document?.meta.find((m) => m.type === 'core/event')
+        const startTime = event?.data.start
+        const endTime = event?.data.end
 
         if (!startTime || !endTime) {
           return 'N/A'
@@ -91,18 +91,11 @@ export function eventTableColumns({ sections = [], organisers = [], locale }: {
         )
       },
       accessorFn: (data) => {
-        const currentStatus = data?.fields['document.meta.status']?.values[0]
-        const isUnpublished = data?.fields['heads.usable.version']?.values[0] === '-1'
-        if (currentStatus === 'usable' && isUnpublished) {
-          const lastModified = data?.fields['modified']?.values[0]
-          const lastUsableCreated = data?.fields['heads.usable.created']?.values[0]
-
-          if (lastModified > lastUsableCreated) {
-            return 'draft'
-          }
-          return 'unpublished'
+        if (!data.meta) {
+          return 'draft'
         }
-        return currentStatus
+
+        return getStatusFromMeta(data.meta, false).name
       },
       cell: ({ row }) => {
         const status = row.getValue<string>('documentStatus')
@@ -121,7 +114,7 @@ export function eventTableColumns({ sections = [], organisers = [], locale }: {
         columnIcon: SignalHighIcon,
         className: 'flex-none hidden @3xl/view:[display:revert]'
       },
-      accessorFn: (data) => data?.fields['document.meta.core_newsvalue.value']?.values?.[0] || 'N/A',
+      accessorFn: (data) => data.document?.meta.find((m) => m.type === 'core/newsvalue')?.value,
       cell: ({ row }) => {
         const value: string = row.getValue('newsvalue') || ''
         const newsvalue = NewsvalueMap[value]
@@ -142,16 +135,11 @@ export function eventTableColumns({ sections = [], organisers = [], locale }: {
           </span>
         )
       },
-      accessorFn: (data) => data.fields['document.title']?.values[0],
+      accessorFn: (data) => data.document?.title,
       cell: ({ row }) => {
-        const slugline = row.original.fields['document.meta.tt_slugline.value']?.values[0]
         const title = row.getValue('title')
-        const cancelled = row.original.fields['document.meta.core_event.data.cancelled']?.values[0]
-        if (cancelled) {
-          const isCancelled = cancelled === 'true'
-          return <Title title={title as string} slugline={slugline} cancelled={isCancelled} />
-        }
-        return <Title title={title as string} slugline={slugline} />
+        const cancelled = row.original.document?.meta.find((m) => m.type === 'core/event')?.data.cancelled
+        return <Title title={title as string} cancelled={cancelled === 'true'} />
       },
       enableGrouping: false
     },
@@ -171,7 +159,9 @@ export function eventTableColumns({ sections = [], organisers = [], locale }: {
           <FacetedFilter column={column} setSearch={setSearch} />
         )
       },
-      accessorFn: (data) => data?.fields['document.rel.organiser.title']?.values[0],
+      accessorFn: (data) => data?.document?.links
+        .find((link) => link.rel === 'organiser')?.title,
+      // fields['document.rel.organiser.title']?.values[0],
       cell: ({ row }) => {
         const value: string = row?.getValue('organiser') || ''
 
@@ -211,41 +201,11 @@ export function eventTableColumns({ sections = [], organisers = [], locale }: {
         ),
         quickFilter: true
       },
-      accessorFn: (data) => data.fields['document.rel.section.uuid']?.values[0],
+      accessorFn: (data) => data.document?.links
+        .find((d) => d.type === 'core/section')?.uuid,
       cell: ({ row }) => {
-        const sectionTitle = row.original.fields['document.rel.section.title']?.values[0]
-        return (
-          <>
-            {sectionTitle && <SectionBadge title={sectionTitle} color='bg-[#BD6E11]' />}
-          </>
-        )
-      },
-      filterFn: (row, id, value: string[]) =>
-        value.includes(row.getValue(id))
-    },
-    {
-      id: 'planning_status',
-      meta: {
-        Filter: ({ column, setSearch }) => (
-          <FacetedFilter column={column} setSearch={setSearch} />
-        ),
-        options: [{ label: 'Planerad', value: 'planned' }, { label: 'Ej planerad', value: 'unplanned' }],
-        name: 'Planeringsstatus',
-        columnIcon: NotebookPenIcon,
-        className: 'flex-none w-[112px] hidden @5xl/view:[display:revert]',
-        display: (value: string) => (
-          <span>
-            {value === 'planned' ? 'Planerad' : 'Ej planerad'}
-          </span>
-        )
-
-      },
-      accessorFn: (data) => Array.isArray(data?._relatedPlannings)
-        ? 'planned'
-        : 'unplanned',
-      cell: ({ row }) => {
-        const _status = row.original._relatedPlannings?.[0]
-        return <Status status={_status} />
+        const sectionTitle = row.original.document?.links.find((link) => link.type === 'core/section')?.title
+        return <SectionBadge title={sectionTitle} color='bg-[#BD6E11]' />
       },
       filterFn: (row, id, value: string[]) =>
         value.includes(row.getValue(id))
@@ -262,8 +222,8 @@ export function eventTableColumns({ sections = [], organisers = [], locale }: {
         )
       },
       accessorFn: (data) => {
-        const startTime = data.fields['document.meta.core_event.data.start']?.values[0]
-        const endTime = data.fields['document.meta.core_event.data.end']?.values[0]
+        const startTime = data.document?.meta.find((m) => m.type === 'core/event')?.data.start
+        const endTime = data.document?.meta.find((m) => m.type === 'core/event')?.data.end
         return [startTime, endTime]
       },
       cell: ({ row }) => {

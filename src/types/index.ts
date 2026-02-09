@@ -4,6 +4,7 @@ import { type LucideIcon } from '@ttab/elephant-ui/icons'
 import type { TemplatePayload } from '@/shared/templates'
 import type { Locale } from 'date-fns'
 import type { RefObject } from 'react'
+import type { StatusOverviewItem } from '@ttab/elephant-api/repository'
 
 export enum NavigationActionType {
   SET = 'set',
@@ -160,17 +161,7 @@ export interface StatusMeta {
   version: bigint
 }
 
-export interface StatusData {
-  heads: {
-    usable?: StatusMeta
-    done?: StatusMeta
-    approved?: StatusMeta
-    withheld?: StatusMeta
-    cancelled?: StatusMeta
-  }
-  modified: string
-  uuid: string
-  version: string
-  workflowState: string
-  workflowCheckpoint: string
-}
+
+// FIXME: Test to see if it breaks
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface StatusData extends StatusOverviewItem {}

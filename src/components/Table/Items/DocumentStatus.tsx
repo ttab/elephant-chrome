@@ -3,9 +3,10 @@ import { StatusSpecifications, WorkflowSpecifications } from '@/defaults/workflo
 import type { JSX } from 'react'
 import { selectableStatuses } from '@/views/Planning/components/AssignmentStatus'
 
-export const DocumentStatus = ({ type, status }: {
+export const DocumentStatus = ({ type, status, updated = false }: {
   type: string
   status: string
+  updated?: boolean
 }): JSX.Element => {
   const visualStatus = selectableStatuses.find((s) => s.value === status)
 
@@ -20,8 +21,9 @@ export const DocumentStatus = ({ type, status }: {
   const Icon = docStatus?.icon
 
   return (
-    <div className='flex items-center' title={label || undefined}>
+    <div className='relative flex items-center z-0' title={label || undefined}>
       {Icon ? <Icon strokeWidth={1.75} className={docStatus?.className} /> : null}
+      {updated && <div className='absolute -left-3 w-2 h-2 bg-gray-400 rounded-full' style={{ top: '50%', transform: 'translateY(-50%)' }} />}
     </div>
   )
 }

@@ -43,7 +43,7 @@ export interface CommandArgs {
 
 export interface TableProviderState<TData> {
   table: Table<TData>
-  setData: Dispatch<TData[]>
+  setData: Dispatch<SetStateAction<TData[]>>
   loading: boolean
   command: CommandArgs
   type: View
@@ -69,10 +69,13 @@ export const TableProvider = <T,>({
   type: View
   initialState?: Partial<TableState>
 }>): JSX.Element => {
-  const [data, setData] = useState<T[] | null>(null)
-
+  const [data, setData] = useState<T[]>([])
   const [rowSelection, setRowSelection] = useState({})
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({ startTime: false, modified: false, date: false })
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
+    startTime: false,
+    modified: false,
+    date: false
+  })
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(initialState?.columnFilters || [])
   const [sorting, setSorting] = useState<SortingState>(initialState?.sorting || [])
 

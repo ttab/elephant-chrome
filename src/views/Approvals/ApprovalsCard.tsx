@@ -1,9 +1,8 @@
 import { Card } from '@/components/Card'
 import { Avatar, Link } from '@/components/index'
-import type { AssignmentInterface } from '@/hooks/index/useAssignments'
+import type { ApprovalItem } from './types'
 import { useLink } from '@/hooks/useLink'
 import { CalendarDaysIcon, EyeIcon, FileWarningIcon, MessageSquarePlusIcon, ZapIcon } from '@ttab/elephant-ui/icons'
-import type { StatusData } from '@/types'
 import { useSections } from '@/hooks/useSections'
 import type { StatusSpecification } from '@/defaults/workflowSpecification'
 import { AvatarGroup } from '@/components/AvatarGroup'
@@ -13,9 +12,10 @@ import { CAUSE_KEYS } from '@/defaults/causekeys'
 import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
 import { TimeCard } from './TimeCard'
 import type { TrackedDocument } from '@/hooks/useTrackedDocuments'
+import { getNewsvalue, getSection } from '@/lib/documentHelpers'
 
-export const ApprovalsCard = ({ trackedDocument, assignment, isSelected, isFocused, status, openEditors }: {
-  assignment: AssignmentInterface
+export const ApprovalsCard = ({ trackedDocument, item, isSelected, isFocused, status, openEditors }: {
+  item: ApprovalItem
   status: StatusSpecification
   isSelected: boolean
   isFocused: boolean
@@ -25,38 +25,40 @@ export const ApprovalsCard = ({ trackedDocument, assignment, isSelected, isFocus
   const sections = useSections()
   const openArticle = useLink('Editor')
   const openFlash = useLink('Flash')
-  const [documentStatus] = useWorkflowStatus({ documentId: assignment._deliverableId })
+  const [documentStatus] = useWorkflowStatus({ documentId: item.deliverable?.id })
 
-  const openType = (assignmentType: string) => assignmentType === 'core/flash' ? openFlash : openArticle
+  const openType = (deliverableType: string) => deliverableType === 'core/flash' ? openFlash : openArticle
 
-  const documentId = assignment._deliverableId
+  const documentId = item.deliverable?.id
+  const deliverableDoc = item.deliverable?.document
+  const deliverableMeta = item.deliverable?.meta
+  const deliverableType = item.deliverable?.type
+  const deliverableStatus = item.deliverable?.status
 
-  const statusData = assignment?._statusData
-    ? JSON.parse(assignment._statusData) as StatusData
-    : null
+  const title = deliverableDoc?.title
 
-  const title = assignment._deliverableDocument?.title
+  const slugline = item.assignment.meta.find((m) => m.type === 'tt/slugline')?.value
+  const lastUsableOrder = deliverableMeta?.heads.usable?.id
 
-  const slugline = assignment.meta.find((m) => m.type === 'tt/slugline')?.value
-  const lastUsableOrder = statusData?.heads.usable?.id
-
-  const internalInfo = assignment._deliverableDocument?.meta.find((block) => block.type === 'core/note' && block.role === 'internal')?.data?.text
+  const internalInfo = deliverableDoc?.meta.find((block) => block.type === 'core/note' && block.role === 'internal')?.data?.text
 
   const cause = documentStatus?.cause ? CAUSE_KEYS[documentStatus.cause as keyof typeof CAUSE_KEYS].short : ''
+  const newsvalue = getNewsvalue(item.deliverable)
+  const section = getSection(item.deliverable)
 
   return (
     <Card.Root
-      status={assignment._deliverableStatus || 'draft'}
+      status={deliverableStatus || 'draft'}
       isFocused={isFocused}
       isSelected={isSelected}
       onSelect={(event) => {
-        const openDocument = openType(assignment._deliverableType!)
+        const openDocument = openType(deliverableType!)
 
         if (event instanceof KeyboardEvent && event.key == ' ' && documentId) {
           openDocument(event, { id: documentId, autoFocus: false, preview: true }, openEditors.length > 0 ? undefined : 'last', undefined, true)
         } else if (documentId) {
-          if (assignment._deliverableStatus === 'usable') {
-            const lastUsableVersion = statusData?.heads.usable?.version
+          if (deliverableStatus === 'usable') {
+            const lastUsableVersion = deliverableMeta?.heads.usable?.version
             openDocument(event, { id: documentId, preview: false }, 'last', undefined, undefined, { version: lastUsableVersion as bigint })
           } else {
             openDocument(event, { id: documentId })
@@ -68,11 +70,11 @@ export const ApprovalsCard = ({ trackedDocument, assignment, isSelected, isFocus
         <div className='flex flex-row gap-2 items-center'>
           {status.icon && <status.icon size={15} strokeWidth={1.75} className={status.className} />}
           <span className='bg-secondary inline-block px-1 rounded'>
-            {assignment._deliverableType === 'core/flash'
+            {deliverableType === 'core/flash'
               ? <ZapIcon strokeWidth={1.75} size={14} className='text-red-500' />
-              : assignment._deliverableType === 'core/editorial-info'
+              : deliverableType === 'core/editorial-info'
                 ? <FileWarningIcon size={14} />
-                : assignment._newsvalue}
+                : newsvalue}
           </span>
           {!!trackedDocument?.users?.length && (
             <AvatarGroup size='xxs'>
@@ -101,7 +103,7 @@ export const ApprovalsCard = ({ trackedDocument, assignment, isSelected, isFocus
             </Popover>
           )}
         </div>
-        <TimeCard assignment={assignment} />
+        <TimeCard item={item} />
       </Card.Header>
 
       <Card.Content>
@@ -109,8 +111,8 @@ export const ApprovalsCard = ({ trackedDocument, assignment, isSelected, isFocus
           <div className='truncate'>{title}</div>
           <div className='text-xs font-normal opacity-60 flex gap-1'>
             {slugline && <div>{slugline}</div>}
-            {slugline && lastUsableOrder && Number(lastUsableOrder) >= 1 && ('workflowState' in statusData) && !(statusData.workflowState === 'usable' && Number(lastUsableOrder) === 1) && (
-              <div>{`- v${statusData?.workflowState !== 'usable' ? Number(lastUsableOrder) + 1 : Number(lastUsableOrder)}`}</div>
+            {slugline && lastUsableOrder && Number(lastUsableOrder) >= 1 && deliverableMeta && ('workflowState' in deliverableMeta) && !(deliverableMeta.workflowState === 'usable' && Number(lastUsableOrder) === 1) && (
+              <div>{`- v${deliverableMeta?.workflowState !== 'usable' ? Number(lastUsableOrder) + 1 : Number(lastUsableOrder)}`}</div>
             )}
             {cause && <div>{`- ${cause}`}</div>}
           </div>
@@ -120,20 +122,20 @@ export const ApprovalsCard = ({ trackedDocument, assignment, isSelected, isFocus
       <Card.Footer>
         <div className='flex flex-col w-full'>
           <div className='truncate'>
-            <AuthorNames assignment={assignment} />
+            <AuthorNames item={item} />
           </div>
           <div className='flex grow justify-between align-middle'>
             <div className='flex flex-row content-center opacity-60 gap-1'>
               {sections
-                .find((section) => section.id === assignment._section)
+                .find((s) => s.id === section)
                 ?.title}
 
-              {assignment._metricsData?.charCount && (
+              {item.metrics?.charCount !== undefined && (
                 <span>
                   <span className='pr-1'>
                     &middot;
                   </span>
-                  {assignment._metricsData?.charCount}
+                  {item.metrics?.charCount || '0' }
                   {' '}
                   tkn
                 </span>
@@ -142,8 +144,8 @@ export const ApprovalsCard = ({ trackedDocument, assignment, isSelected, isFocus
 
             <div className='flex flex-row gap-3'>
               <Link
-                to={assignment._deliverableType === 'core/flash' ? 'Flash' : 'Editor'}
-                props={{ id: assignment._deliverableId, autoFocus: false, preview: true }}
+                to={deliverableType === 'core/flash' ? 'Flash' : 'Editor'}
+                props={{ id: documentId, autoFocus: false, preview: true }}
                 className='block p-1 -m-1 rounded transition-all opacity-70 md:opacity-0 md:group-hover:opacity-70 md:group-focus:opacity-70 md:group-focus-within:opacity-70 hover:bg-gray-300 dark:hover:bg-table-focused'
                 keepFocus
                 onClick={(e) => e.stopPropagation()}
@@ -154,7 +156,7 @@ export const ApprovalsCard = ({ trackedDocument, assignment, isSelected, isFocus
               </Link>
               <Link
                 to='Planning'
-                props={{ id: assignment._id }}
+                props={{ id: item.planning.id }}
                 className='block p-1 -m-1 rounded transition-all opacity-70 md:opacity-0 md:group-hover:opacity-70 md:group-focus:opacity-70 md:group-focus-within:opacity-70 hover:bg-gray-300 dark:hover:bg-table-focused'
                 onClick={(e) => e.stopPropagation()}
               >

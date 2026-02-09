@@ -1,30 +1,29 @@
 import { toZonedTime } from 'date-fns-tz'
 import { parseISO, getHours } from 'date-fns'
-import type { AssignmentInterface } from './types'
-import type { StatusData } from '@/types'
+import type { ApprovalItem } from '@/views/Approvals/types'
 import { getTimeValue } from './getTimeValue'
+import { getPublishSlot, getStartTime, getPublishTime } from '@/lib/documentHelpers'
 
 export interface AssignmentResponseInterface {
   key?: string
   label?: string
   hours?: number[]
-  items: AssignmentInterface[]
+  items: ApprovalItem[]
 }
 
 /**
- * Split the assignments into the different time slots
- *
+ * Split the approval items into the different time slots
  * @param {string} timeZone - The time zone to use for converting publish times
- * @param {AssignmentInterface[] | undefined} assignments - The list of assignments to structure
- * @param {Object[]} [slots] - The time slots to categorize assignments into
+ * @param {ApprovalItem[]} items - The list of approval items to structure
+ * @param {Object[]} [slots] - The time slots to categorize items into
  * @param {string} slots[].key - The key for the time slot
  * @param {string} slots[].label - The label for the time slot
  * @param {number[]} slots[].hours - The hours that define the time slot
- * @returns {AssignmentResponseInterface[]} - The structured assignments categorized into time slots
+ * @returns {AssignmentResponseInterface[]} - The structured items categorized into time slots
  */
 export function structureAssignments(
   timeZone: string,
-  assignments: AssignmentInterface[],
+  items: ApprovalItem[],
   slots?: {
     key: string
     label: string
@@ -33,35 +32,35 @@ export function structureAssignments(
 ): AssignmentResponseInterface[] {
   if (!slots) {
     return [{
-      items: assignments
+      items
     }]
   }
 
   const response = slots.map((slot) => {
     return {
       ...slot,
-      items: [] as AssignmentInterface[]
+      items: [] as ApprovalItem[]
     }
   })
 
-  assignments.forEach((assignment) => {
-    const status = assignment._deliverableStatus
-    const statusData = assignment?._statusData
-      ? JSON.parse(assignment._statusData) as StatusData
-      : null
-    const hasUsable = statusData?.heads.usable?.id
+  items.forEach((item) => {
+    const status = item.deliverable?.status
+    const meta = item.deliverable?.meta
+    const hasUsable = meta?.heads.usable?.id
 
-    const { publish, start, publish_slot } = assignment.data
+    const publish = getPublishTime(item.assignment)
+    const start = getStartTime(item.assignment)
+    const publishSlot = getPublishSlot(item.assignment)
     let hour: number | undefined
 
     if (status === 'withheld' && publish) {
       // When scheduled, we want it in that particular hour.
       hour = getHours(toZonedTime(parseISO(publish), timeZone))
-    } else if (hasUsable && statusData.modified) {
-      hour = getHours(parseISO(statusData.modified))
-    } else if (publish_slot) {
+    } else if (hasUsable && meta?.modified) {
+      hour = getHours(parseISO(meta.modified))
+    } else if (publishSlot) {
       // If assigned a publish slot, then we use that. Publish slot is already an hour.
-      hour = parseInt(publish_slot)
+      hour = parseInt(publishSlot)
     } else if (start) {
       // In all other cases we rely on the start time.
       hour = getHours(toZonedTime(parseISO(start), timeZone))
@@ -70,51 +69,55 @@ export function structureAssignments(
     let assigned = false
     for (const slot of response) {
       if (Number.isInteger(hour) && slot.hours.includes(hour as number)) {
-        slot.items.push(assignment)
+        slot.items.push(item)
         assigned = true
         break
       }
     }
 
     if (!assigned) {
-      response[0].items.push(assignment)
+      response[0].items.push(item)
     }
   })
 
   response.forEach((slot) => {
     slot.items.sort((a, b) => {
-      if (a?._statusData && b?._statusData) {
-        const aData = JSON.parse(a._statusData) as StatusData
-        const bData = JSON.parse(b._statusData) as StatusData
-        const aWithheld = a._deliverableStatus === 'withheld' && a.data.publish
-        const bWithheld = b._deliverableStatus === 'withheld' && b.data.publish
+      const aMeta = a.deliverable?.meta
+      const bMeta = b.deliverable?.meta
+      const aPublish = getPublishTime(a.assignment)
+      const bPublish = getPublishTime(b.assignment)
 
-        if (aWithheld && bWithheld) {
-          return a.data.publish.localeCompare(b.data.publish)
+      if (aMeta && bMeta) {
+        const aWithheld = a.deliverable?.status === 'withheld' && aPublish
+        const bWithheld = b.deliverable?.status === 'withheld' && bPublish
+
+        if (aWithheld && bWithheld && aPublish && bPublish) {
+          return aPublish.localeCompare(bPublish)
         }
 
         if (aWithheld) return -1
         if (bWithheld) return 1
 
-        return getTimeValue(aData?.modified) > getTimeValue(bData.modified) ? -1 : 1
+        return getTimeValue(aMeta?.modified) > getTimeValue(bMeta.modified) ? -1 : 1
       }
 
-      const aHasSlot = !!a.data.publish_slot
-      const bHasSlot = !!b.data.publish_slot
+      const aHasSlot = !!getPublishSlot(a.assignment)
+      const bHasSlot = !!getPublishSlot(b.assignment)
       if (aHasSlot && !bHasSlot) return -1
       if (!aHasSlot && bHasSlot) return 1
 
-      const aWithheld = a._deliverableStatus === 'withheld' && a.data.publish
-      const bWithheld = b._deliverableStatus === 'withheld' && b.data.publish
-      if (aWithheld && bWithheld) {
-        return a.data.publish.localeCompare(b.data.publish)
+      const aWithheld = a.deliverable?.status === 'withheld' && aPublish
+      const bWithheld = b.deliverable?.status === 'withheld' && bPublish
+      if (aWithheld && bWithheld && aPublish && bPublish) {
+        return aPublish.localeCompare(bPublish)
       }
       if (aWithheld) return -1
       if (bWithheld) return 1
 
-
-      if (a.data.start && b.data.start) {
-        return a.data.start.localeCompare(b.data.start)
+      const aStart = getStartTime(a.assignment)
+      const bStart = getStartTime(b.assignment)
+      if (aStart && bStart) {
+        return aStart.localeCompare(bStart)
       }
       return 0
     })

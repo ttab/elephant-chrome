@@ -16,6 +16,7 @@ import { Workflow } from '@/shared/Workflow'
 import { User } from '@/shared/User'
 import type { LocaleData } from '@/types'
 import { Baboon } from '@/shared/Baboon'
+import { RepositorySocket } from '@/shared/RepositorySocket'
 import { DEFAULT_TIMEZONE } from '@/defaults/defaultTimezone'
 import { Collaboration } from '@/defaults'
 import { defaultLocale } from '@/defaults/locale'
@@ -41,6 +42,7 @@ export interface RegistryProviderState {
   spellchecker?: Spellchecker
   user?: User
   baboon?: Baboon
+  repositorySocket?: RepositorySocket
   dispatch: React.Dispatch<Partial<RegistryProviderState>>
   userColor: string
 }
@@ -88,6 +90,7 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
         const spellchecker = new Spellchecker(server.spellcheckUrl.href)
         const user = new User(server.userUrl.href)
         const baboon = new Baboon(server.baboonUrl.href)
+        const repositorySocket = new RepositorySocket('wss://repository.stage.tt.se/websocket', repository) // FIXMR: Use server url
 
         dispatch({
           server,
@@ -97,7 +100,8 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
           index,
           spellchecker,
           user,
-          baboon
+          baboon,
+          repositorySocket
         })
         setIsInitialized(true)
       } catch (ex) {
@@ -124,7 +128,7 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
  * Registry context reducer
  */
 const reducer = (state: RegistryProviderState, action: Partial<RegistryProviderState>): RegistryProviderState => {
-  const { locale, timeZone, server, repository, workflow, index, spellchecker, user, baboon } = action
+  const { locale, timeZone, server, repository, workflow, index, spellchecker, user, baboon, repositorySocket } = action
   const partialState: Partial<RegistryProviderState> = {}
 
   if (typeof locale === 'object') {
@@ -161,6 +165,10 @@ const reducer = (state: RegistryProviderState, action: Partial<RegistryProviderS
 
   if (typeof baboon === 'object') {
     partialState.baboon = baboon
+  }
+
+  if (typeof repositorySocket === 'object') {
+    partialState.repositorySocket = repositorySocket
   }
 
   return {

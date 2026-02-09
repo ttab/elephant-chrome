@@ -1,53 +1,74 @@
-import type { AssignmentInterface } from './types'
-
-const filterKeys = [{ key: '_section', label: 'section' }, { key: '_deliverableStatus', label: 'status' }]
+import type { ApprovalItem } from '@/views/Approvals/types'
+import { getSection } from '@/lib/documentHelpers'
 
 export interface Facets {
   [key: string]: Map<string, number>
 }
 
 /**
- * Filters assignments based on the provided statuses.
+ * Filters approval items based on the provided filters.
  *
- * @param {AssignmentInterface[] | undefined} assignments - The list of assignments to filter.
- * @param {string[]} filters - What to filter by.
- * @returns {AssignmentInterface[] | undefined} - The filtered list of assignments or undefined
- * @todo Add more generic filtering options.
+ * @param {ApprovalItem[] | undefined} items - The list of approval items to filter.
+ * @param {Record<string, string | string[]>} filters - What to filter by.
+ * @returns {ApprovalItem[] | undefined} - The filtered list of approval items or undefined
  */
-export function filterAssignments(assignments: AssignmentInterface[] | undefined, filters: Record<string, string | string[]>):
-  AssignmentInterface[] | undefined {
-  if (!assignments) {
+export function filterAssignments(
+  items: ApprovalItem[] | undefined,
+  filters: Record<string, string | string[]>
+): ApprovalItem[] | undefined {
+  if (!items) {
     return
   }
 
-  return assignments.filter((assignment) =>
-    (filters?.status?.length ? assignment?._deliverableStatus && filters?.status?.includes(assignment?._deliverableStatus) : true)
-    && (filters?.section?.length ? assignment?._section && filters?.section?.includes(assignment?._section) : true)
-  )
+  return items.filter((item) => {
+    const status = item.deliverable?.status
+    const section = getSection(item.deliverable)
+
+    const statusMatch = filters?.status?.length
+      ? status && filters.status.includes(status)
+      : true
+
+    const sectionMatch = filters?.section?.length
+      ? section && filters.section.includes(section)
+      : true
+
+    return statusMatch && sectionMatch
+  })
 }
 
 /**
  * Gets facets for the specified keys.
  *
- * @param {AssignmentInterface[] | undefined} assignments - The list of assignments to get facets from.
+ * @param {ApprovalItem[] | undefined} items - The list of approval items to get facets from.
  * @returns {Facets} - The facets for the specified keys.
  */
-export function getFacets(assignments: AssignmentInterface[] | undefined): Facets {
-  if (!assignments) return {}
+export function getFacets(items: ApprovalItem[] | undefined): Facets {
+  if (!items) return {}
 
-  return assignments.reduce((acc, assignment) => {
-    filterKeys.forEach(({ key, label }) => {
-      const value = assignment[key as keyof AssignmentInterface]
-      if (value) {
-        if (!acc[label]) {
-          acc[label] = new Map<string, number>()
-        }
-        if (!acc[label].has(value as string)) {
-          acc[label].set(value as string, 0)
-        }
-        acc[label].set(value as string, acc[label].get(value as string)! + 1)
+  return items.reduce((acc, item) => {
+    const status = item.deliverable?.status
+    const section = getSection(item.deliverable)
+
+    if (status) {
+      if (!acc.status) {
+        acc.status = new Map<string, number>()
       }
-    })
+      if (!acc.status.has(status)) {
+        acc.status.set(status, 0)
+      }
+      acc.status.set(status, acc.status.get(status)! + 1)
+    }
+
+    if (section) {
+      if (!acc.section) {
+        acc.section = new Map<string, number>()
+      }
+      if (!acc.section.has(section)) {
+        acc.section.set(section, 0)
+      }
+      acc.section.set(section, acc.section.get(section)! + 1)
+    }
+
     return acc
   }, {} as Facets)
 }

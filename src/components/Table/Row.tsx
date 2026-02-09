@@ -5,10 +5,10 @@ import { cn } from '@ttab/elephant-ui/utils'
 
 type DocumentType = 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires' | 'Factbox' | 'Print' | 'PrintEditor'
 
-export const Row = ({ row, handleOpen, type, openDocuments }: {
+export const Row = <TData, >({ row, handleOpen, type, openDocuments }: {
   type: DocumentType
-  row: RowType<unknown>
-  handleOpen: (event: MouseEvent<HTMLTableRowElement>, row: RowType<unknown>) => void
+  row: RowType<TData>
+  handleOpen: (event: MouseEvent<HTMLTableRowElement>, row: RowType<TData>) => void
   openDocuments: string[]
 }): JSX.Element => {
   const { id } = row.original as { id: string }

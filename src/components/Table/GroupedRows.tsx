@@ -6,10 +6,10 @@ import { WireRow } from './WireRow'
 
 export const GroupedRows = <TData, TValue>({ row, columns, handleOpen, openDocuments, type }: {
   activeId?: string
-  row: RowType<unknown>
+  row: RowType<TData>
   type: 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires' | 'Factbox' | 'Print' | 'PrintEditor'
   columns: Array<ColumnDef<TData, TValue>>
-  handleOpen: (event: MouseEvent<HTMLTableRowElement> | KeyboardEvent, subRow: RowType<unknown>) => void
+  handleOpen: (event: MouseEvent<HTMLTableRowElement> | KeyboardEvent, subRow: RowType<TData>) => void
   openDocuments: string[]
 }): JSX.Element => {
   if (!row.subRows.length) {
@@ -26,7 +26,7 @@ export const GroupedRows = <TData, TValue>({ row, columns, handleOpen, openDocum
           key={subRow.id}
           type={type}
           row={subRow}
-          handleOpen={handleOpen}
+          handleOpen={handleOpen as (event: MouseEvent<HTMLTableRowElement>, row: RowType<unknown>) => void}
           openDocuments={openDocuments}
         />
       ))}

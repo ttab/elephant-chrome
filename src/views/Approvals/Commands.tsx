@@ -42,7 +42,7 @@ export const Commands = (props: {
         label='Status'
         filterPage='status'
         Icon={CircleCheckIcon}
-        facets={props.facets?.section}
+        facets={props.facets?.status}
       />
       <OptionsFilter
         {...props}
