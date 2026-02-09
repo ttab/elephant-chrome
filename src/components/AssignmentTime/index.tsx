@@ -53,7 +53,7 @@ export const AssignmentTime = ({ assignment, onChange }: {
       const ts = getTimeSlot(publishSlot, timeSlotTypes)
 
       if (ts && ts.value === option.value) {
-        selectedLabel = option.label
+        selectedLabel = t(`core:timeSlots.${option.value}`)
         return true
       }
     }
