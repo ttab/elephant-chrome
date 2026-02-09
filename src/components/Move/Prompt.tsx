@@ -66,7 +66,7 @@ export const MovePrompt = ({
 
     setIsSubmitting(true)
 
-    if (status === 'authenticated' || !session || !provider?.synced) {
+    if (status !== 'authenticated' || !session || !provider?.synced) {
       toast.error(t('planning:move.assignmentMoveErrorNotLoggedIn'))
       setIsSubmitting(false)
       return
