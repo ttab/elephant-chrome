@@ -59,6 +59,7 @@
     "addAssignmentToPlanningError": "Det gick inte att lägga till uppdraget i en kopplad planering",
     "creationFailed": "Misslyckades att skapa text: {{error}}",
     "fetchDocumentFailed": "Kunde inte hämta dokument",
+    "savedDocumentFailed": "Kunde inte spara dokument",
     "fetchStatusFailed": "Ett fel uppstod när aktuell status skulle hämtas. Försök ladda om sidan.",
     "couldNotChangeStatusReloadBrowser": "Ett fel har uppstått, aktuell status kunde inte ändras! Ladda om webbläsaren och försök igen.",
     "couldNotChangeStatus": "Ett fel uppstod när aktuell status skulle ändras.",
@@ -73,5 +74,9 @@
     "authorCreateFailure": "Kunde inte skapa författardokument: Failed to create author doc",
     "authorCreateUndefinedFailed": "Kunde inte skapa författardokument: Failed to fetch author document: undefined",
     "savedFilter": "Ditt filter har sparats"
+  },
+  "prompts": {
+    "publishBeforeClose": "Vill du publicera ändringarna innan du stänger?",
+    "savedButNotPublished": "Ändringarna är sparade men inte publicerade."
   }
 }

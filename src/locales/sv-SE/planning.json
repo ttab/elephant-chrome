@@ -26,7 +26,8 @@
     },
     "errors": {
       "saveAssignmentError": "Kunde inte spara uppdraget",
-      "createDeliverableError": "Kan inte skapa leverabel"
+      "createDeliverableError": "Kan inte skapa leverabel",
+      "changeStatusError": "Det gick inte att ändra status. Uppdragets publiceringstid kunde inte ändras i den kopplade planeringen."
     }
   },
   "description": {
@@ -73,5 +74,6 @@
   "slugline": "Lägg till slugg",
   "story": "Lägg till story",
   "title": "Planeringstitel",
-  "yourNewType": "Din nya skapade {{type, lowercase}}"
+  "yourNewType": "Dina nya skapade {{type, lowercase}}",
+  "preview": "Förhandsvisning"
 }

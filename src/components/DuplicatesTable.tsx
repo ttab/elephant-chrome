@@ -57,7 +57,7 @@ export const DuplicatesTable = ({ documentId, type }: {
   })
 
   if (isLoading) {
-    return <>Loading...</>
+    return <>{t('common:misc.loading')}</>
   }
 
   if (error) {

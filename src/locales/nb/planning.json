@@ -26,7 +26,8 @@
     },
     "errors": {
       "saveAssignmentError": "Kunne ikke lagre oppdraget",
-      "createDeliverableError": "Kan ikke opprette leveransen"
+      "createDeliverableError": "Kan ikke opprette leveransen",
+      "changeStatusError": "Statusen kunne ikke endres. Oppgavens publiseringstidspunkt kunne ikke endres i den lenkede planleggingen."
     }
   },
   "description": {
@@ -73,5 +74,6 @@
   "slugline": "Legg til stikkord",
   "story": "Legg til story",
   "title": "Planleggingstittel",
-  "yourNewType": "Din nye skapede {{type, lowercase}}"
+  "yourNewType": "Din nye skapede {{type, lowercase}}",
+  "preview": "Forhåndsvisning"
 }

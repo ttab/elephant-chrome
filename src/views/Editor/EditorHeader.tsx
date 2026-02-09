@@ -14,6 +14,7 @@ import { updateAssignmentTime } from '@/lib/index/updateAssignmentPublishTime'
 import type { YDocument } from '@/modules/yjs/hooks'
 import { useYValue } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
+import { useTranslation } from 'react-i18next'
 
 export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: propPlanningId }: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -29,6 +30,7 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
   const [publishTime] = useState<string | null>(null)
   const [workflowStatus] = useWorkflowStatus({ ydoc, documentId: ydoc.id })
   const [documentType] = useYValue<string>(ydoc.ele, 'root.type')
+  const { t } = useTranslation()
 
   const openLatestVersion = useLink('Editor')
 
@@ -79,11 +81,11 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
         ? data.time
         : new Date()
 
-      await updateAssignmentTime(ydoc.id, planningId, newStatus, newTime)
+      await updateAssignmentTime(ydoc.id, planningId, newStatus, newTime, t)
     }
 
     return true
-  }, [planningId, dispatch, ydoc.id, history, state.viewRegistry, viewId])
+  }, [planningId, dispatch, ydoc.id, history, state.viewRegistry, viewId, t])
 
   const title = documentType === 'core/editorial-info' ? 'Till red' : 'Artikel'
 

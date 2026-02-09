@@ -17,7 +17,9 @@
     "group": "Gruppera",
     "copy": "Kopiera",
     "confirm": "Klar",
-    "move": "Flytta"
+    "move": "Flytta",
+    "yes": "Ja",
+    "no": "Nej"
   },
   "errors": {
     "unknown": "Okänt fel",
@@ -31,7 +33,9 @@
     "articleMissingDescription": "Inget artikeldokument är angivet. Navigera tillbaka till översikten och försök igen.",
     "failedFetchingDocument": "Misslyckades hämta dokument.",
     "failedUpdatingListRetrying": "Misslyckades att automatiskt uppdatera listan. Försöker igen om {{seconds}} sekunder.",
-    "noResultsFound": "Inga resultat hittades"
+    "noResultsFound": "Inga resultat hittades",
+    "copyError": "Kopiera felmeddelande",
+    "validationError": "Valideringsfel"
   },
   "misc": {
     "unknown": "okänd",

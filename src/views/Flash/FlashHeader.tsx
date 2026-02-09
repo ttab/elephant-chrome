@@ -10,6 +10,7 @@ import { useView } from '@/hooks/useView'
 import { useHistory, useNavigation, useWorkflowStatus } from '@/hooks/index'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
+import { useTranslation } from 'react-i18next'
 
 export const FlashHeader = ({
   ydoc,
@@ -58,6 +59,7 @@ const StatusMenuHeader = ({ ydoc, planningId: propPlanningId }: {
   const { state, dispatch } = useNavigation()
   const history = useHistory()
   const [workflowStatus] = useWorkflowStatus({ ydoc })
+  const { t } = useTranslation()
 
   // FIXME: We must have a way to retrieve the publish time defined in the planning.
   // FIXME: When yjs opening of related planning have been fixed this should be readded/remade.
@@ -126,11 +128,11 @@ const StatusMenuHeader = ({ ydoc, planningId: propPlanningId }: {
       : new Date()
 
     if (ydoc.id) {
-      await updateAssignmentTime(ydoc.id, planningId, newStatus, newPublishTime)
+      await updateAssignmentTime(ydoc.id, planningId, newStatus, newPublishTime, t)
     }
 
     return true
-  }, [planningId, ydoc.id, dispatch, history, state.viewRegistry, viewId, workflowStatus])
+  }, [planningId, ydoc.id, dispatch, history, state.viewRegistry, viewId, workflowStatus, t])
 
   return (
     <>
