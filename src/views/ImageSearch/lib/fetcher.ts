@@ -4,7 +4,7 @@ import type { Session } from 'next-auth'
 import { toast } from 'sonner'
 import { productCodes } from './productCodes'
 import type { MediaTypes } from '..'
-import type { TFunction } from 'node_modules/i18next/typescript/t'
+import type { TFunction } from 'i18next'
 
 function apiClient(token: string, host: URL): Api {
   const client = new Api({ host: host.origin, token, timeout: 6000 })

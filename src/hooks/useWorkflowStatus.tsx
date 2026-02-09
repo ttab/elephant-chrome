@@ -12,7 +12,7 @@ import { WorkflowSpecifications } from '@/defaults/workflowSpecification'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import { useTranslation } from 'react-i18next'
-import type { TFunction } from 'node_modules/i18next/typescript/t'
+import type { TFunction } from 'i18next'
 
 export const useWorkflowStatus = ({ ydoc, documentId: docId }: {
   ydoc?: YDocument<Y.Map<unknown>>
