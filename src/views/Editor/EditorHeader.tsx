@@ -85,7 +85,7 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
     }
 
     return true
-  }, [planningId, dispatch, ydoc.id, history, state.viewRegistry, viewId])
+  }, [planningId, dispatch, ydoc.id, history, state.viewRegistry, viewId, t])
 
   const title = documentType === 'core/editorial-info' ? t('assignmentTypes.editorial-info') : t('assignmentTypes.text')
 
