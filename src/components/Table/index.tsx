@@ -288,7 +288,7 @@ export const Table = <TData, TValue>({
                 ? isSearchTable
                   ? ''
                   : t('common:misc.loading')
-                : t('common:noResultsFound')}
+                : t('common:errors.noResultsFound')}
             </LoadingText>
           </TableCell>
         </TableRow>
