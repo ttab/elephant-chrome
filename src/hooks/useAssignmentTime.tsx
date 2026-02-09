@@ -44,7 +44,7 @@ export function useAssignmentTime(
           combineDateAndTime(newDate, originalStart),
           combineDateAndTime(newDate, originalEnd)
         ],
-        tooltip: t('assignment.startAndEndTime'),
+        tooltip: t('assignment.startEndTime'),
         icon: ClockFadingIcon
       }
     }
@@ -95,7 +95,7 @@ export function useAssignmentTime(
         combineDateAndTime(newDate, originalStart),
         combineDateAndTime(newDate, originalEnd)
       ],
-      tooltip: t('assignment.startAndEndTime'),
+      tooltip: t('assignment.startEndTime'),
       icon: ClockFadingIcon
     }
   }

@@ -107,13 +107,13 @@ const displayMessageToast = (message: Message, t: TFunction) => {
   }
 
   toast.error(
-    t('common.errors.someError'),
+    t('common:errors.someError'),
     {
       description: desc.join(' '),
       duration: Infinity,
       closeButton: true,
       action: {
-        label: t('common.errors.copyError'),
+        label: t('common:errors.copyError'),
         onClick: () => void navigator.clipboard.writeText(JSON.stringify(msg, null, 2))
       }
     }

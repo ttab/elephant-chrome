@@ -77,6 +77,6 @@
   },
   "prompts": {
     "publishBeforeClose": "Vil du publisere endringer innen du stenger?",
-    "savedButNotPublished": "The changes are saved but not published."
+    "savedButNotPublished": "Ändringarna er sparede men ikke publisert."
   }
 }
