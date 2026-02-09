@@ -58,6 +58,7 @@
     "unpublishError": "Det gick inte att avpublicera dokumentet",
     "addAssignmentToPlanningError": "Det gick inte att lägga till uppdraget i en kopplad planering",
     "creationFailed": "Misslyckades att skapa text: {{error}}",
+    "fetchDocumentFailed": "Kunde inte hämta dokument",
     "couldNotScheduleArticle": "Kunde inte schemalägga artikel! Tid eller datum är felaktigt angivet."
   },
   "operations": {

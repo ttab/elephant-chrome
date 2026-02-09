@@ -20,7 +20,7 @@
         "success": "Planlegging opprettet"
       },
       "getPlanningsError": "Kunne ikke hente planene",
-      "openItem": "Åpen planlegging"
+      "openItem": "Åpne planlegging"
     }
   },
   "events": {
