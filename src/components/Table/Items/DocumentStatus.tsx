@@ -12,7 +12,7 @@ export const DocumentStatus = ({ type, status }: {
   const { t } = useTranslation()
 
   const label = isVisualAssignmentType(type)
-    ? t(`planning:assignment.status.${visualStatus?.value}`) || null
+    ? t(`core:status.${visualStatus?.value}`) || null
     : status ? t(`core:status.${status}`) : ''
 
   const docStatus = isVisualAssignmentType(type)

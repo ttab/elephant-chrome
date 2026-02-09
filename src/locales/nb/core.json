@@ -35,7 +35,10 @@
     "withheld": "Planlagt",
     "cancelled": "Kastet",
     "changed": "Endret",
-    "moved": "flyttet"
+    "moved": "flyttet",
+    "todo": "Å gjøre",
+    "started": "Startet",
+    "public": "Offentlig"
   },
   "timeSlots": {
     "morning": "Natt",

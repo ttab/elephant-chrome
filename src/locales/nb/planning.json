@@ -17,13 +17,6 @@
       "inProgress": "Ny oppdrag opprettes av",
       "overtake": "Ta over"
     },
-    "status": {
-      "todo": "Å gjøre",
-      "started": "Startet",
-      "done": "Ferdig",
-      "public": "Offentlig",
-      "internal": "Intern"
-    },
     "errors": {
       "saveAssignmentError": "Kunne ikke lagre oppdraget",
       "createDeliverableError": "Kan ikke opprette leveransen",

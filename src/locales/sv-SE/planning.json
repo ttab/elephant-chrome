@@ -17,13 +17,6 @@
       "inProgress": "Nytt uppdrag skapas av",
       "overtake": "Ta över"
     },
-    "status": {
-      "todo": "Att göra",
-      "started": "Påbörjad",
-      "done": "Klar",
-      "public": "Publik",
-      "internal": "Internt"
-    },
     "errors": {
       "saveAssignmentError": "Kunde inte spara uppdraget",
       "createDeliverableError": "Kan inte skapa leverabel",
