@@ -145,7 +145,7 @@ export const ExtensionToolbar = ({ items, locked, onButtonClick }: ExtensionTool
                   return i === 0 ? null : <DropdownMenuSeparator key={`sep-${i}`} />
                 }
 
-                              const isDisabled = !!item.disabled
+                const isDisabled = !!item.disabled
 
                 return (
                   <DropdownMenuItem
