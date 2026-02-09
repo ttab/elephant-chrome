@@ -36,6 +36,7 @@ import { ChannelComboBox } from './components/ChannelComboBox'
 import { useYDocument, useYValue, type YDocument } from '@/modules/yjs/hooks'
 import { View } from '@/components/View'
 import { BaseEditor } from '@/components/Editor/BaseEditor'
+import { useTranslation } from 'react-i18next'
 
 const meta: ViewMetadata = {
   name: 'PrintEditor',
@@ -89,6 +90,7 @@ function EditorWrapper(props: ViewProps & {
   const openFactboxEditor = useLink('Factbox')
   const openImageSearch = useLink('ImageSearch')
   const openFactboxes = useLink('Factboxes')
+  const { t } = useTranslation()
 
   // Plugin configuration
   const configuredPlugins = useMemo(() => {
@@ -112,9 +114,14 @@ function EditorWrapper(props: ViewProps & {
         channelComponent: () => ChannelComboBox()
       }),
       TTVisual({
+        captionLabel: t('editor:image.captionLabel'),
+        bylineLabel: t('editor:image.bylineLabel'),
         enableCrop: true
       }),
       Factbox({
+        headerTitle: t('editor:factbox.headerTitle'),
+        modifiedLabel: t('editor:factbox.modifiedLabel'),
+        footerTitle: t('editor:factbox.footerTitle'),
         onEditOriginal: (id: string) => {
           openFactboxEditor(undefined, { id })
         },
@@ -122,7 +129,7 @@ function EditorWrapper(props: ViewProps & {
         ...contentMenuLabels
       })
     ]
-  }, [openFactboxEditor, data, repository, openFactboxes, openImageSearch])
+  }, [openFactboxEditor, data, repository, openFactboxes, openImageSearch, t])
 
   if (!content) {
     return <View.Root />

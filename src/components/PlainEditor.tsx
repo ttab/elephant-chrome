@@ -49,9 +49,14 @@ export const Editor = ({ id, version, textOnly = false, direct, versionStatusHis
       ...basePlugins.map((initPlugin) => initPlugin()),
       Text(),
       TTVisual({
+        captionLabel: t('editor:image.captionLabel'),
+        bylineLabel: t('editor:image.bylineLabel'),
         removable: false
       }),
       Factbox({
+        headerTitle: t('editor:factbox.headerTitle'),
+        modifiedLabel: t('editor:factbox.modifiedLabel'),
+        footerTitle: t('editor:factbox.footerTitle'),
         removable: false
       })
     ]

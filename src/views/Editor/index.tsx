@@ -22,6 +22,7 @@ import { contentMenuLabels } from '@/defaults/contentMenuLabels'
 import type { YDocument } from '@/modules/yjs/hooks'
 import { useYDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
+import { useTranslation } from 'react-i18next'
 
 // Metadata definition
 const meta: ViewMetadata = {
@@ -101,6 +102,7 @@ function EditorWrapper(props: ViewProps & {
   const openFactboxEditor = useLink('Factbox')
   const openImageSearch = useLink('ImageSearch')
   const openFactboxes = useLink('Factboxes')
+  const { t } = useTranslation()
 
   // Plugin configuration
   const configuredPlugins = useMemo(() => {
@@ -113,6 +115,8 @@ function EditorWrapper(props: ViewProps & {
       Table(),
       LocalizedQuotationMarks(),
       TTVisual({
+        captionLabel: t('editor:image.captionLabel'),
+        bylineLabel: t('editor:image.bylineLabel'),
         enableCrop: false
       }),
       Text({
@@ -120,13 +124,16 @@ function EditorWrapper(props: ViewProps & {
         ...contentMenuLabels
       }),
       Factbox({
+        headerTitle: t('editor:factbox.headerTitle'),
+        modifiedLabel: t('editor:factbox.modifiedLabel'),
+        footerTitle: t('editor:factbox.footerTitle'),
         onEditOriginal: (id: string) => {
           openFactboxEditor(undefined, { id })
         },
         removable: true
       })
     ]
-  }, [openFactboxEditor, openFactboxes, openImageSearch])
+  }, [openFactboxEditor, openFactboxes, openImageSearch, t])
 
   if (!content) {
     return <View.Root />

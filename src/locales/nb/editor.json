@@ -9,8 +9,18 @@
     "unorderedList": "Liste",
     "orderedList": "Punktliste"
   },
+  "numberOfChars": "Antall tegn",
   "spelling": {
     "noSuggestions": "Ingen forslag"
+  },
+  "factbox": {
+    "headerTitle": "Rediger originalen",
+    "modifiedLabel": "Originalen er fra",
+    "footerTitle": "Endringer i faktaboksteksten gjelder kun for denne artikkelen"
+  },
+  "image": {
+    "captionLabel": "Tekst",
+    "bylineLabel": "Bild"
   },
   "footer": {
     "words": "Ord",
