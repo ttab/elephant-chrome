@@ -213,7 +213,7 @@ export const Wires = (): JSX.Element => {
 
   return (
     <View.Root>
-      <ViewHeader.Root className='z-100'>
+      <ViewHeader.Root className='z-10'>
         <ViewHeader.Title title='Telegram' name='Wires' />
 
         <ViewHeader.Content>
