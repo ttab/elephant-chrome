@@ -72,5 +72,6 @@
   },
   "slugline": "Lägg till slugg",
   "story": "Lägg till story",
-  "title": "Planeringstitel"
+  "title": "Planeringstitel",
+  "yourNewType": "Din nya skapade {{type, lowercase}}"
 }

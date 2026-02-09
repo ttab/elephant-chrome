@@ -72,5 +72,6 @@
   },
   "slugline": "Legg til stikkord",
   "story": "Legg til story",
-  "title": "Planleggingstittel"
+  "title": "Planleggingstittel",
+  "yourNewType": "Din nye skapede {{type, lowercase}}"
 }

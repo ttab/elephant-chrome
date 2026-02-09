@@ -37,6 +37,7 @@ import { Wire } from '@/views/Wire'
 import { GroupedRows } from './GroupedRows'
 import { getWireStatus } from '../../lib/getWireStatus'
 import { type View } from '@/types/index'
+import { useTranslation } from 'react-i18next'
 const BASE_URL = import.meta.env.BASE_URL
 
 interface TableProps<TData, TValue> {
@@ -93,6 +94,7 @@ export const Table = <TData, TValue>({
   const openDocuments = useOpenDocuments({ idOnly: true })
   const { showModal, hideModal, currentModal } = useModal()
   const [, setDocumentStatus] = useWorkflowStatus({})
+  const { t } = useTranslation()
 
   const handlePreview = useCallback((row: RowType<unknown>): void => {
     row.toggleSelected(true)
@@ -285,8 +287,8 @@ export const Table = <TData, TValue>({
               {loading
                 ? isSearchTable
                   ? ''
-                  : 'Laddar...'
-                : 'Inga resultat hittades'}
+                  : t('common:errors.loading')
+                : t('common:noResultsFound')}
             </LoadingText>
           </TableCell>
         </TableRow>
@@ -327,9 +329,7 @@ export const Table = <TData, TValue>({
       {(type === 'Planning' || type === 'Event') && (
         <NewItems.Root>
           <NewItems.Table
-            header={`Dina nya skapade ${type === 'Planning'
-              ? 'planeringar'
-              : 'händelser'}`}
+            header={t('planning:yourNewType', { type: (type === 'Planning' ? t('event:subheadings.plannings') : t('event:subheadings.events')) })}
             type={type}
           />
         </NewItems.Root>

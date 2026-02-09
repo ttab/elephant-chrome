@@ -1,7 +1,8 @@
 {
   "title": "Hendelse",
   "subheadings": {
-    "plannings": "Planlegginger"
+    "plannings": "Planlegginger",
+    "events": "Hendelser"
   },
   "createEvent": "Opprett hendelse",
   "buttons": {

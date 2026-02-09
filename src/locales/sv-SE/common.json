@@ -30,7 +30,8 @@
     "articleMissingTitle": "Artikeldokument saknas",
     "articleMissingDescription": "Inget artikeldokument är angivet. Navigera tillbaka till översikten och försök igen.",
     "failedFetchingDocument": "Misslyckades hämta dokument.",
-    "failedUpdatingListRetrying": "Misslyckades att automatiskt uppdatera listan. Försöker igen om {{seconds}} sekunder."
+    "failedUpdatingListRetrying": "Misslyckades att automatiskt uppdatera listan. Försöker igen om {{seconds}} sekunder.",
+    "noResultsFound": "Inga resultat hittades"
   },
   "misc": {
     "unknown": "okänd",
