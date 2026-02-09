@@ -61,6 +61,7 @@ export const Wires = (): JSX.Element => {
   const { repository } = useRegistry()
   const { data: session } = useSession()
   const { showModal, hideModal } = useModal()
+  const [previewKey, setPreviewKey] = useState(0)
   const [previewWire, setPreviewWire] = useState<Wire | null>(null)
   const [focusedWire, setFocusedWire] = useState<Wire | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -150,6 +151,11 @@ export const Wires = (): JSX.Element => {
       setTimeout(() => {
         setStatusMutations([])
 
+        // Force preview to reload if it's showing one of the updated wires
+        if (previewWire && nextStatuses.find((s) => s.uuid === previewWire.id)) {
+          setPreviewKey((prev) => prev + 1)
+        }
+
         // Restore focus if we had a focused item
         if (focusedItemId) {
           requestAnimationFrame(() => {
@@ -163,7 +169,7 @@ export const Wires = (): JSX.Element => {
         toast.error('Någon eller några status-ändringar misslyckades!')
       }
     })
-  }, [selectedWires, focusedWire, repository, session])
+  }, [selectedWires, focusedWire, repository, session, previewWire])
 
   // Create a new article based on selected wires
   const onCreate = useCallback(() => {
@@ -264,6 +270,7 @@ export const Wires = (): JSX.Element => {
               >
                 <Preview
                   wire={previewWire}
+                  key={previewKey}
                   onClose={() => setPreviewWire(null)}
                 />
               </div>
