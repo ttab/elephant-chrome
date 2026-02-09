@@ -34,7 +34,8 @@
     "needs_proofreading": "Klar för korr",
     "withheld": "Schemalagd",
     "cancelled": "Kastad",
-    "changed": "Ändrad"
+    "changed": "Ändrad",
+    "moved": "flyttad"
   },
   "timeSlots": {
     "morning": "Morgon",

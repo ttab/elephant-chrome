@@ -34,7 +34,8 @@
     "needs_proofreading": "",
     "withheld": "Planlagt",
     "cancelled": "Kastet",
-    "changed": "Endret"
+    "changed": "Endret",
+    "moved": "flyttet"
   },
   "timeSlots": {
     "morning": "Natt",
