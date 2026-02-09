@@ -10,7 +10,8 @@ import {
   BoxesIcon,
   LibraryIcon,
   type LucideIcon,
-  NewspaperIcon
+  NewspaperIcon,
+  PuzzleIcon
 } from '@ttab/elephant-ui/icons'
 import type { ViewProps, View } from '../types'
 
@@ -123,6 +124,17 @@ export const applicationMenu: ApplicationMenu = {
           label: 'Print',
           icon: LibraryIcon,
           color: '#006bb3'
+        }
+      ]
+    },
+    {
+      name: 'Extensions',
+      items: [
+        {
+          name: 'Extension',
+          label: 'Extension',
+          icon: PuzzleIcon,
+          color: '#8B5CF6'
         }
       ]
     }
