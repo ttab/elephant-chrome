@@ -59,6 +59,7 @@
     "addAssignmentToPlanningError": "Oppgaven kunne ikke legges til i en koblet tidsplan.",
     "creationFailed": "Kunne ikke opprette tekst: {{error}}",
     "fetchDocumentFailed": "Kunne ikke hente dokument",
+    "couldNotScheduleArticle": "Kunne ikke planlegge artikkelen! Tid eller dato angitt feil.",
     "savedDocumentFailed": "Kunde ikke spare dokument",
     "fetchStatusFailed": "Det oppsto en feil under henting av gjeldende status. Prøv å laste inn siden på nytt.",
     "couldNotChangeStatusReloadBrowser": "Det har oppstått en feil. Gjeldende status kunne ikke endres! Last inn nettleseren på nytt og prøv på nytt.",

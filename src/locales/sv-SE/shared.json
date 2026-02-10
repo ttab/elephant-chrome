@@ -59,6 +59,7 @@
     "addAssignmentToPlanningError": "Det gick inte att lägga till uppdraget i en kopplad planering",
     "creationFailed": "Misslyckades att skapa text: {{error}}",
     "fetchDocumentFailed": "Kunde inte hämta dokument",
+    "couldNotScheduleArticle": "Kunde inte schemalägga artikel! Tid eller datum är felaktigt angivet.",
     "savedDocumentFailed": "Kunde inte spara dokument",
     "fetchStatusFailed": "Ett fel uppstod när aktuell status skulle hämtas. Försök ladda om sidan.",
     "couldNotChangeStatusReloadBrowser": "Ett fel har uppstått, aktuell status kunde inte ändras! Ladda om webbläsaren och försök igen.",
