@@ -1,7 +1,7 @@
 import { View, ViewHeader } from '@/components/View'
 import { type ViewMetadata } from '@/types/index'
 import { useCallback, useRef, useState, type JSX, useEffect } from 'react'
-import { useRegistry, useView } from '@/hooks'
+import { useRegistry, useView, useNavigationKeysView } from '@/hooks'
 import { cn } from '@ttab/elephant-ui/utils'
 import { Stream } from './components/Stream'
 import { useStreamNavigation } from './hooks/useStreamNavigation'
@@ -190,29 +190,48 @@ export const Wires = (): JSX.Element => {
     )
   }, [selectedWires, focusedWire, repository, session, showModal, hideModal, onAction])
 
-  const handleKeyDown = useCallback((event: React.KeyboardEvent<HTMLElement>) => {
-    if (event.getModifierState('Control')
-      || event.getModifierState('Meta')
-      || event.getModifierState('Alt')
-    ) {
-      return
-    }
+  const viewRef = useNavigationKeysView({
+    keys: ['Escape', 's', 'r', 'u', 'c'],
+    onNavigation: (event) => {
+      if (
+        event.getModifierState('Control')
+        || event.getModifierState('Meta')
+        || event.getModifierState('Alt')
+      ) {
+        return
+      }
 
-    if (event.key === 'Escape' && !previewWire) {
-      setSelectedWires([])
-    } else if (event.key === 's') {
-      onAction('saved')
-    } else if (event.key === 'r') {
-      onAction('read')
-    } else if (event.key === 'u') {
-      onAction('used')
-    } else if (event.key === 'c') {
-      onCreate()
+      switch (event.key) {
+        case 'Escape':
+          if (previewWire) {
+            setPreviewWire(null)
+          } else {
+            setSelectedWires([])
+          }
+          break
+
+        case 's':
+          onAction('saved')
+          break
+
+        case 'r':
+          onAction('read')
+          break
+
+        case 'u':
+          onAction('used')
+          break
+
+        case 'c':
+          onCreate()
+          break
+      }
     }
-  }, [previewWire, onAction, onCreate])
+  })
+
 
   return (
-    <View.Root>
+    <View.Root ref={viewRef}>
       <ViewHeader.Root className='z-10'>
         <ViewHeader.Title title='Telegram' name='Wires' />
 
@@ -232,7 +251,6 @@ export const Wires = (): JSX.Element => {
             'h-full overflow-hidden @7xl/view:grid-cols-[auto_1fr]',
             previewWire && 'grid grid-rows-2 @7xl/view:grid-rows-1'
           )}
-          onKeyDown={handleKeyDown}
         >
           <div
             className={cn(
@@ -294,7 +312,7 @@ export const Wires = (): JSX.Element => {
               </div>
               <div className='text-center text-muted-foreground text-xs'>
                 <span className='bg-muted px-2 py-0.5 rounded-md text-xs font-semibold'>ESC</span>
-                <span> för att ta avmarkera valda telegram</span>
+                <span> för att avmarkera valda telegram</span>
               </div>
             </div>
           </div>
