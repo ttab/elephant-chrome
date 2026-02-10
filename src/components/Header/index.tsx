@@ -13,7 +13,7 @@ export const Header = ({ assigneeId, type, docType }: {
 }): JSX.Element => {
   const [query] = useQuery()
   const showButton = useMemo(() => {
-    const viewTypes: View[] = ['Planning', 'Event', 'Factbox']
+    const viewTypes: View[] = ['Planning', 'Event', 'Factbox', 'Approvals']
     if (viewTypes.includes(type)) {
       return true
     }
