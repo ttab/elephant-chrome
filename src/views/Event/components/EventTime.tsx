@@ -66,7 +66,7 @@ const dateLabel = ({ fromDate, toDate, locale, timeZone, t }: { fromDate?: strin
   const sameDay = isSameDate(fromDate, toDate)
   const from = dateToReadableDay(fromDateObject, locale, timeZone)
   const to = dateToReadableDay(toDateObject, locale, timeZone)
-  return `${t('core:timeSlots.fullDay')} ${sameDay ? ` ${from}` : ` ${from} - ${to}`}`
+  return `${t('core:timeSlots.fullday')} ${sameDay ? ` ${from}` : ` ${from} - ${to}`}`
 }
 
 const testValid = (time: string): boolean => {
@@ -272,7 +272,7 @@ export const EventTimeMenu = ({ ydoc, onChange }: {
             checked={fullDay}
             className='self-center'
           />
-          <label htmlFor='wholeDaySwitch' className='text-sm self-center p-2'>{t?.('core:timeSlots.fullDay') || ''}</label>
+          <label htmlFor='wholeDaySwitch' className='text-sm self-center p-2'>{t?.('core:timeSlots.fullday') || ''}</label>
         </div>
         <div className={`${!fullDay && startDateValue && endDateValue && startDateValue > endDateValue ? 'border-2 rounded-md border-red-400 relative' : ''}`}>
           {!fullDay && startDateValue && endDateValue && startDateValue > endDateValue && (

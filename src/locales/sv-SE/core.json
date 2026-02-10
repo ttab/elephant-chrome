@@ -34,13 +34,17 @@
     "needs_proofreading": "Klar för korr",
     "withheld": "Schemalagd",
     "cancelled": "Kastad",
-    "changed": "Ändrad"
+    "changed": "Ändrad",
+    "moved": "flyttad",
+    "todo": "Att göra",
+    "started": "Påbörjad",
+    "public": "Publik"
   },
   "timeSlots": {
     "morning": "Morgon",
     "forenoon": "Förmiddag",
     "afternoon": "Eftermiddag",
     "evening": "Kväll",
-    "fullDay": "Heldag"
+    "fullday": "Heldag"
   }
 }

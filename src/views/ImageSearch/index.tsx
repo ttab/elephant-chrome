@@ -11,6 +11,7 @@ import { createFetcher } from './lib/fetcher'
 import { useRegistry } from '@/hooks/useRegistry'
 import { type ttninjs } from '@ttab/api-client'
 import { useSession } from 'next-auth/react'
+import { useTranslation } from 'react-i18next'
 
 export type MediaTypes = 'image' | 'graphic'
 
@@ -47,9 +48,10 @@ export const ImageSearch = (): JSX.Element => {
   const { server: { contentApiUrl } } = useRegistry()
   const { data: session } = useSession()
   const [mediaType, setMediaType] = useState<MediaTypes>('image')
+  const { t } = useTranslation()
 
   return (
-    <SWRConfig value={{ fetcher: createFetcher(contentApiUrl, session, mediaType) }}>
+    <SWRConfig value={{ fetcher: createFetcher(contentApiUrl, session, mediaType, t) }}>
       <ImageSearchContent setMediaType={setMediaType} mediaType={mediaType} />
     </SWRConfig>
   )
@@ -64,6 +66,7 @@ const ImageSearchContent = ({
 }): JSX.Element => {
   const [queryString, setQueryString] = useState('')
   const SIZE = 10
+  const { t } = useTranslation('views')
 
   const swr = useSWRInfinite<{ hits: ttninjs[] }, Error>(
     (index) => {
@@ -79,7 +82,7 @@ const ImageSearchContent = ({
       <ViewHeader.Root>
         <ViewHeader.Title
           name='ImageSearch'
-          title='Bilder'
+          title={t('imageSearch.title')}
           icon={ImageIcon}
         />
         <ViewHeader.Content>

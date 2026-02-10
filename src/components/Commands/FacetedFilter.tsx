@@ -4,6 +4,8 @@ import { type Column } from '@tanstack/react-table'
 import { cn } from '@ttab/elephant-ui/utils'
 import { CommandItem } from '@ttab/elephant-ui'
 import type { SetStateAction, Dispatch, JSX } from 'react'
+import { useTranslation } from 'react-i18next'
+import type { DefaultValueOption } from '@/types/index'
 
 interface FacetedFilterProps<TData, TValue> {
   column?: Column<TData, TValue>
@@ -19,9 +21,23 @@ export const FacetedFilter = <TData, TValue>({
   facetFn = column?.getFacetedUniqueValues
 }: FacetedFilterProps<TData, TValue>): JSX.Element[] => {
   const facets = facetFn?.()
-
   const selectedValues = new Set(column?.getFilterValue() as string[])
   const options = column?.columnDef.meta?.options
+  const { t } = useTranslation()
+  const getOptionLabel = (option: DefaultValueOption) => {
+    switch (column?.id) {
+      case 'documentStatus':
+      case 'deliverableStatus':
+        return t(`core:status.${option.value}`)
+      case 'type':
+      case 'assignmentType':
+        return t(`shared:assignmentTypes.${option.value}`)
+      case 'assignment_time':
+        return t(`core:timeSlots.${option.value}`)
+      default:
+        return option.label
+    }
+  }
 
   return options
     ? options.map((option, index) => {
@@ -61,7 +77,7 @@ export const FacetedFilter = <TData, TValue>({
                 className={option.iconProps?.className}
               />
             )}
-            <span>{option.label}</span>
+            <span>{getOptionLabel(option)}</span>
           </div>
           <span className='ml-auto flex h-4 w-4 items-center justify-center font-mono text-xs'>
             {facets?.get(option.value) && (

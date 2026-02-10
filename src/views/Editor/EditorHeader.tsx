@@ -81,7 +81,7 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
         ? data.time
         : new Date()
 
-      await updateAssignmentTime(ydoc.id, planningId, newStatus, newTime)
+      await updateAssignmentTime(ydoc.id, planningId, newStatus, newTime, t)
     }
 
     return true

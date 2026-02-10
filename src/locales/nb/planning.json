@@ -1,5 +1,6 @@
 {
   "assignment": {
+    "title": "Oppgavetittel",
     "startEndTime": "Start- og sluttid",
     "startTime": "Starttid",
     "publishWindow": "Publiseringsvindu",
@@ -16,16 +17,10 @@
       "inProgress": "Ny oppdrag opprettes av",
       "overtake": "Ta over"
     },
-    "status": {
-      "todo": "Å gjøre",
-      "started": "Startet",
-      "done": "Ferdig",
-      "public": "Offentlig",
-      "internal": "Intern"
-    },
     "errors": {
       "saveAssignmentError": "Kunne ikke lagre oppdraget",
-      "createDeliverableError": "Kan ikke opprette leveransen"
+      "createDeliverableError": "Kan ikke opprette leveransen",
+      "changeStatusError": "Statusen kunne ikke endres. Oppgavens publiseringstidspunkt kunne ikke endres i den lenkede planleggingen."
     }
   },
   "description": {
@@ -56,6 +51,9 @@
     "dateSwitchDescription": "Planleggingen og alle tekstoppdragen endrer dato til",
     "dateSwitchAssignments": "Velg nedenfor om bilde- og videooppdrag også skal endre datoer.",
     "assignmentMoveError": "Oppdraget kunne ikke flyttes",
+    "assignmentMoveErrorNotLoggedIn": "Oppdraget kunne ikke flyttes. Du er ikke logget inn.",
+    "assignmentMoveErrorTryAgain": "Oppdraget kunne ikke flyttes. Vennligst prøv igjen.",
+    "couldNotSaveAfterMove": "Kunne ikke lagre etter flytting.",
     "assignmentCreateInfo": "Hvis du ikke velger en timeplan, vil en ny timeplan med denne oppgaven bli opprettet for deg på den valgte datoen.",
     "assignmentAddInfo": "Denne oppgaven vil bli lagt til i den valgte planleggingen.",
     "assignmentMoveSuccess": "Oppdraget er flyttet",
@@ -68,5 +66,7 @@
   },
   "slugline": "Legg til stikkord",
   "story": "Legg til story",
-  "title": "Planleggingstittel"
+  "title": "Planleggingstittel",
+  "yourNewType": "Din nye skapede {{type, lowercase}}",
+  "preview": "Forhåndsvisning"
 }

@@ -1,5 +1,6 @@
 {
   "assignment": {
+    "title": "Uppdragstitel",
     "startEndTime": "Start- och sluttid",
     "startTime": "Starttid",
     "publishWindow": "Publiceringsfönster",
@@ -16,16 +17,10 @@
       "inProgress": "Nytt uppdrag skapas av",
       "overtake": "Ta över"
     },
-    "status": {
-      "todo": "Att göra",
-      "started": "Påbörjad",
-      "done": "Klar",
-      "public": "Publik",
-      "internal": "Internt"
-    },
     "errors": {
       "saveAssignmentError": "Kunde inte spara uppdraget",
-      "createDeliverableError": "Kan inte skapa leverabel"
+      "createDeliverableError": "Kan inte skapa leverabel",
+      "changeStatusError": "Det gick inte att ändra status. Uppdragets publiceringstid kunde inte ändras i den kopplade planeringen."
     }
   },
   "description": {
@@ -56,6 +51,9 @@
     "dateSwitchDescription": "Planeringen och alla dess textuppdrag byter datum till",
     "dateSwitchAssignments": "Välj nedan om även bild- och videouppdrag ska byta datum",
     "assignmentMoveError": "Uppdraget kunde inte flyttas",
+    "assignmentMoveErrorNotLoggedIn": "Uppdraget kunde inte flyttas. Du är inte inloggad.",
+    "assignmentMoveErrorTryAgain": "Uppdraget kunde inte flyttas. Var god försök igen.",
+    "couldNotSaveAfterMove": "Kunde inte spara efter flytt.",
     "assignmentCreateInfo": "Väljer du ingen planering kommer en ny planering med detta uppdrag att skapas åt dig på valt datum.",
     "assignmentAddInfo": "Detta uppdrag kommer läggas i den valda planeringen",
     "assignmentMoveSuccess": "Uppdraget har flyttats",
@@ -68,5 +66,7 @@
   },
   "slugline": "Lägg till slugg",
   "story": "Lägg till story",
-  "title": "Planeringstitel"
+  "title": "Planeringstitel",
+  "yourNewType": "Dina nya skapade {{type, lowercase}}",
+  "preview": "Förhandsvisning"
 }

@@ -88,5 +88,17 @@
     "loginWith": "Logga in med",
     "rememberMe": "Kom ihåg mig nästa gång",
     "loggingIn": "Loggar in..."
+  },
+  "imageSearch": {
+    "title": "Bilder",
+    "errors": {
+      "noSession": "Kan inte autentisera mot bildtjänsten",
+      "showPictureError": "Kan inte visa bild, ogiltigt id"
+    },
+    "labels": {
+      "mediaType": "Medietyp",
+      "image": "Bild",
+      "graphic": "Grafik"
+    }
   }
 }

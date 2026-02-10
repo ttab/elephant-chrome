@@ -14,5 +14,10 @@
     "actions": {
       "toggleTheme": "Vexle tema"
     }
+  },
+  "systemMessages": {
+    "reloadWindowTitle": "Du må laste inn vinduet på nytt.",
+    "reloadWindowDescription": "Systemet har blitt oppdatert med nye eller endrede funksjoner. Laste inn vinduet på nytt for å fortsette å jobbe i den nye versjonen.",
+    "connectionFailed": "Kunne ikke koble til meldingstjenesten. Last inn vinduet på nytt."
   }
 }

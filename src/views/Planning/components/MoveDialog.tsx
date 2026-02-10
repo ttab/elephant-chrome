@@ -99,7 +99,7 @@ export const MoveDialog = ({ ydoc, onClose, newDate }: {
             variant='secondary'
             onClick={onClose}
           >
-            {t('planning:move.abort')}
+            {t('common:actions.abort')}
           </Button>
 
           <Button

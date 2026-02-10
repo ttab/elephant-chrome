@@ -59,7 +59,12 @@
     "addAssignmentToPlanningError": "Oppgaven kunne ikke legges til i en koblet tidsplan.",
     "creationFailed": "Kunne ikke opprette tekst: {{error}}",
     "fetchDocumentFailed": "Kunne ikke hente dokument",
-    "couldNotScheduleArticle": "Kunne ikke planlegge artikkelen! Tid eller dato angitt feil."
+    "couldNotScheduleArticle": "Kunne ikke planlegge artikkelen! Tid eller dato angitt feil.",
+    "savedDocumentFailed": "Kunde ikke spare dokument",
+    "fetchStatusFailed": "Det oppsto en feil under henting av gjeldende status. Prøv å laste inn siden på nytt.",
+    "couldNotChangeStatusReloadBrowser": "Det har oppstått en feil. Gjeldende status kunne ikke endres! Last inn nettleseren på nytt og prøv på nytt.",
+    "couldNotChangeStatus": "Det oppstod en feil når aktuell status skulle endres.",
+    "couldNotSaveStatus": "Det oppstod en feil når aktuell status skulle lagres."
   },
   "operations": {
     "authorCreateSuccess": "Forfatterdokument er opprettet",
@@ -70,5 +75,9 @@
     "authorCreateFailure": "Kunne ikke opprette forfatterdokument: Failed to create author doc",
     "authorCreateUndefinedFailed": "Kunne ikke opprette forfatterdokument: Failed to fetch author document: undefined",
     "savedFilter": "Filteret ditt er lagret"
+  },
+  "prompts": {
+    "publishBeforeClose": "Vil du publisere endringer innen du stenger?",
+    "savedButNotPublished": "Ändringarna er sparede men ikke publisert."
   }
 }

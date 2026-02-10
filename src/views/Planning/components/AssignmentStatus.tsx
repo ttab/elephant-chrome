@@ -63,7 +63,7 @@ const VisualAssignment = ({ ydoc, path }: {
     ?? selectableStatuses[0]
 
   return (
-    <div className='w-12' title={t(`planning:assignment.status.${currentStatus.value}`)}>
+    <div className='w-12' title={t(`core:status.${currentStatus.value}`)}>
       <Select
         name='AssignmentStatus'
         onValueChange={onValueChange}
@@ -84,13 +84,13 @@ const VisualAssignment = ({ ydoc, path }: {
               key={value}
               value={value}
               className='flex justify-start'
-              aria-label={t(`planning:assignment.status.${value}`)}
+              aria-label={t(`core:status.${value}`)}
               onPointerDownCapture={stopRowClick}
               onClick={stopRowClick}
             >
               <span className='flex flex-row items-center justify-start gap-2'>
                 {IconComponent && <IconComponent {...iconProps} />}
-                <span>{t(`planning:assignment.status.${value}`)}</span>
+                <span>{t(`core:status.${value}`)}</span>
               </span>
             </SelectItem>
           ))}

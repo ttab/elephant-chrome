@@ -16,7 +16,10 @@
     "nogrouping": "Ingen gruppering",
     "group": "Gruppera",
     "copy": "Kopiera",
-    "confirm": "Klar"
+    "confirm": "Klar",
+    "move": "Flytta",
+    "yes": "Ja",
+    "no": "Nej"
   },
   "errors": {
     "unknown": "Okänt fel",
@@ -27,7 +30,12 @@
     "nameMissing": "Namn saknas",
     "nothingFound": "Ingenting hittades",
     "articleMissingTitle": "Artikeldokument saknas",
-    "articleMissingDescription": "Inget artikeldokument är angivet. Navigera tillbaka till översikten och försök igen."
+    "articleMissingDescription": "Inget artikeldokument är angivet. Navigera tillbaka till översikten och försök igen.",
+    "failedFetchingDocument": "Misslyckades hämta dokument.",
+    "failedUpdatingListRetrying": "Misslyckades att automatiskt uppdatera listan. Försöker igen om {{seconds}} sekunder.",
+    "noResultsFound": "Inga resultat hittades",
+    "copyError": "Kopiera felmeddelande",
+    "validationError": "Valideringsfel"
   },
   "misc": {
     "unknown": "okänd",
@@ -38,6 +46,7 @@
     "selected": "valda",
     "since": "sedan",
     "missing": "saknas",
-    "loading": "Laddar..."
+    "loading": "Laddar...",
+    "titleMissing": "Titel saknas"
   }
 }

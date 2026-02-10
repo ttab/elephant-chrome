@@ -23,7 +23,7 @@ export const AssignmentTime = ({ assignment, onChange }: {
 
   const selectedOption = timeSlotTypes.concat(timePickTypes).find((option) => {
     if (fullDay === 'true' && option.value === 'fullday') {
-      selectedLabel = t('timeSlots.fullDay')
+      selectedLabel = t('timeSlots.fullday')
       return true
     }
     if (assignmentType === 'text' && start && end && start !== end) {
@@ -53,7 +53,7 @@ export const AssignmentTime = ({ assignment, onChange }: {
       const ts = getTimeSlot(publishSlot, timeSlotTypes)
 
       if (ts && ts.value === option.value) {
-        selectedLabel = option.label
+        selectedLabel = t(`core:timeSlots.${option.value}`)
         return true
       }
     }

@@ -34,13 +34,17 @@
     "needs_proofreading": "",
     "withheld": "Planlagt",
     "cancelled": "Kastet",
-    "changed": "Endret"
+    "changed": "Endret",
+    "moved": "flyttet",
+    "todo": "Å gjøre",
+    "started": "Startet",
+    "public": "Offentlig"
   },
   "timeSlots": {
     "morning": "Natt",
     "forenoon": "Morgen",
     "afternoon": "Ettermiddag",
     "evening": "Kveld",
-    "fullDay": "Hel dag"
+    "fullday": "Hel dag"
   }
 }

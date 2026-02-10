@@ -33,9 +33,10 @@ const meta: ViewMetadata = {
 export const Latest = ({ setOpen }: { setOpen?: (open: boolean) => void }) => {
   const { locale } = useRegistry()
   const data = useLatest()
+  const { t } = useTranslation('common')
 
   if (!data?.length) {
-    return <div className='min-h-screen text-center py-2'>Laddar...</div>
+    return <div className='min-h-screen text-center py-2'>{t('misc.loading')}</div>
   }
 
   return (

@@ -1,7 +1,8 @@
 {
     "title": "Händelse",
     "subheadings": {
-        "plannings": "Planeringar"
+        "plannings": "Planeringar",
+        "events": "Händelser"
     },
     "createEvent": "Skapa händelse",
     "buttons": {

@@ -56,13 +56,13 @@ export const AssignmentVisibility = ({ ydoc, path, editable, disabled, className
           <SelectItem key='true' value='true'>
             <span className='flex flex-row gap-2'>
               <GlobeIcon size={18} strokeWidth={1.75} />
-              {t('planning:assignment.status.public')}
+              {t('core:status.public')}
             </span>
           </SelectItem>
           <SelectItem key='false' value='false'>
             <span className='flex flex-row gap-2'>
               <BuildingIcon size={18} strokeWidth={1.75} />
-              {t('planning:assignment.status.internal')}
+              {t('core:status.internal')}
             </span>
           </SelectItem>
         </SelectContent>
