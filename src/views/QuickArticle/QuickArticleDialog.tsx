@@ -28,6 +28,7 @@ import { DialogEditor } from '@/components/QuickDocument/DialogEditor'
 import { toSlateYXmlText } from '@/shared/yUtils'
 import { getLabel, type PromptConfig, promptConfig } from '@/components/QuickDocument/dialogConfig'
 import { ValidateNow } from '@/components/ValidateNow'
+import { useTranslation } from 'react-i18next'
 
 export const QuickArticleDialog = (props: {
   documentId: string
@@ -44,6 +45,7 @@ export const QuickArticleDialog = (props: {
   const [, setTitle] = useYValue<string | undefined>(ydoc.ele, 'root.title')
   const { index, locale, timeZone } = useRegistry()
   const [searchOlder, setSearchOlder] = useState(false)
+  const { t } = useTranslation()
 
   const [section, setSection] = useState<{
     type: string
@@ -108,7 +110,7 @@ export const QuickArticleDialog = (props: {
                         planningAwareness.current(isOpen)
                       }
                     }}
-                    fetch={(query) => fetch(query, session, index, locale, timeZone, { searchOlder, sluglines: true })}
+                    fetch={(query) => fetch(query, session, t, index, locale, timeZone, { searchOlder, sluglines: true })}
                     minSearchChars={2}
                     modal={props.asDialog}
                     onSelect={(option) => {
