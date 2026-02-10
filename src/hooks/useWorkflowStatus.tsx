@@ -127,7 +127,7 @@ export const useWorkflowStatus = ({ ydoc, documentId: docId }: {
         toast.error(ex instanceof Error ? ex.message : t('errors.couldNotChangeStatus'))
       }
     },
-    [session, documentId, ydoc?.provider?.document, repository, CACHE_KEY]
+    [session, documentId, ydoc?.provider?.document, repository, CACHE_KEY, t]
   )
 
   return [documentStatus, setDocumentStatus, mutate]

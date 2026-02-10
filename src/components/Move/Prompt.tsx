@@ -57,7 +57,7 @@ export const MovePrompt = ({
     })
 
     return { documentId, initialDocument }
-  }, [selectedPlanning, payload])
+  }, [selectedPlanning, payload, t])
 
   const { document: planning, documentId: planningId, provider } = useCollaborationDocument(collaborationPayload)
 
