@@ -33,7 +33,7 @@ import { getTemplateFromView } from '@/shared/templates/lib/getTemplateFromView'
 import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
 import { TextBox } from '@/components/ui'
 import type { Document } from '@ttab/elephant-api/newsdoc'
-import { ToastAction } from '../Wire/ToastAction'
+import { ToastAction } from '@/components/ToastAction'
 import { useTranslation } from 'react-i18next'
 
 const meta: ViewMetadata = {

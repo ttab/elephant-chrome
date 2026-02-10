@@ -65,7 +65,7 @@ export const Plannings = (): JSX.Element => {
         <ViewHeader.Root>
           <ViewHeader.Content>
             <ViewHeader.Title name='Plannings' title={t('views:plannings.label.plural')} />
-            <Header type='Planning' />
+            <Header type='Planning' docType='core/planning-item' />
           </ViewHeader.Content>
 
           <ViewHeader.Action />

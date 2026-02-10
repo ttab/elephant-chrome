@@ -20,5 +20,6 @@ export const productCodes = [
   'GRKULW',
   'GRUTRP',
   'GRUTRW',
-  'GRSPTP'
+  'GRSPTP',
+  'GRSPTW'
 ]

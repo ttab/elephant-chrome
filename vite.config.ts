@@ -3,7 +3,7 @@ import path from 'path'
 import tailwindcss from '@tailwindcss/vite'
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
-import { viteStaticCopy } from 'vite-plugin-static-copy'
+import { visualizer } from 'rollup-plugin-visualizer'
 
 export default defineConfig(({ mode }) => {
   const fileEnv = loadEnv(mode, process.cwd(), '')
@@ -16,19 +16,12 @@ export default defineConfig(({ mode }) => {
 
   const devServerPort = parsePort(env.VITE_DEV_SERVER_PORT, 5173)
   const devHmrPort = parsePort(env.VITE_HMR_PORT, 5183)
+  const BASE_URL = env.BASE_URL || '/elephant'
 
   return {
     port: devServerPort,
-    base: '/elephant',
+    base: BASE_URL,
     plugins: [
-      viteStaticCopy({
-        targets: [
-          {
-            src: './node_modules/@ttab/elephant-ui/dist/styles/**/*.{woff,woff2}',
-            dest: './assets'
-          }
-        ]
-      }),
       react(),
       tailwindcss()
     ],
@@ -57,7 +50,10 @@ export default defineConfig(({ mode }) => {
       ]
     },
     define: {
-      'process.env': process.env
+      'process.env': JSON.stringify({
+        NODE_ENV: mode,
+        BASE_URL: BASE_URL
+      })
     },
     server: {
       hmr: {
@@ -89,6 +85,30 @@ export default defineConfig(({ mode }) => {
       server: {
         deps: {
           inline: ['@ttab/elephant-ui']
+        }
+      }
+    },
+    build: {
+      chunkSizeWarningLimit: 1500,
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            vendor: ['react', 'react-dom'],
+            slate: ['slate', 'slate-react', 'slate-history'],
+            yjs: ['yjs', 'y-indexeddb', '@slate-yjs/core', '@slate-yjs/react'],
+            tt: ['@ttab/elephant-ui', '@ttab/api-client'],
+            textbit: ['@ttab/textbit', '@ttab/textbit-plugins'],
+            icons: ['lucide-react'],
+            dateFns: ['date-fns', 'date-fns-tz', '@date-fns/utc'],
+            misc: ['sonner', 'zod']
+          },
+          plugins: [
+            visualizer({
+              open: false,
+              filename: './bundle-analysis.html',
+              gzipSize: true
+            })
+          ]
         }
       }
     }

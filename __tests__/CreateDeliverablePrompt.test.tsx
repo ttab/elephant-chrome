@@ -1,4 +1,3 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { CreateDeliverablePrompt } from '@/views/Planning/components/CreateDeliverablePrompt'
@@ -10,7 +9,29 @@ import type * as Y from 'yjs'
 import type { TemplatePayload } from '@/shared/templates'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import type { HocuspocusProvider } from '@hocuspocus/provider'
-import type { RegistryProviderState } from '@/contexts/RegistryProvider'
+import { initialState, type RegistryProviderState } from '@/contexts/RegistryProvider'
+
+
+vi.mock('@/hooks/useRegistry', () => ({
+  useRegistry: vi.fn()
+}))
+
+vi.mock('sonner', () => ({
+  toast: {
+    error: vi.fn(),
+    success: vi.fn(),
+    info: vi.fn(),
+    warning: vi.fn(),
+    loading: vi.fn(),
+    promise: vi.fn(),
+    custom: vi.fn(),
+    message: vi.fn(),
+    dismiss: vi.fn()
+  },
+  Toaster: vi.fn(() => null)
+}))
+
+vi.mocked(useRegistry).mockReturnValue(initialState)
 
 describe('CreateDeliverablePrompt', () => {
   const mockSaveDocument = vi.fn()

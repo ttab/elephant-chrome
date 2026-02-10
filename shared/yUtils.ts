@@ -98,7 +98,7 @@ export function getValueFromPath<T>(root: unknown, path: YPath | string, raw = f
  */
 export function setValueByPath<T>(ystruct: Y.Map<unknown> | Y.Array<unknown>, path: YPath | string, newValue: T): boolean {
   const yPath = Array.isArray(path) ? path : stringToYPath(path)
-  const current = getParent(ystruct, yPath)
+  const current = getOrCreateParent(ystruct, yPath)
   if (!current) {
     return false
   }
@@ -192,7 +192,16 @@ export function setValueByYPath(yRoot: Y.Map<unknown> | undefined, path: YPath |
   return setValueByPath(yRoot, path, value)
 }
 
-function getParent(yRoot: Y.Map<unknown> | Y.Array<unknown>, yPath: YPath): Y.Map<unknown> | Y.Array<unknown> | undefined {
+/**
+ * Navigate through a Yjs path structure and return the parent container at the final path level.
+ * Creates missing containers (Arrays or Maps) as needed based on the next path segment type.
+ *
+ * @param {Y.Map<unknown> | Y.Array<unknown>} yRoot - The root Yjs container to start navigation from
+ * @param {YPath} yPath - The path array containing keys (strings) and indices (numbers) to traverse
+ * @returns {Y.Map<unknown> | Y.Array<unknown> | undefined} The parent container at the final path level, or undefined if path is empty
+ * @throws {Error} If path validation fails (e.g., expecting array but found map, or vice versa)
+ */
+function getOrCreateParent(yRoot: Y.Map<unknown> | Y.Array<unknown>, yPath: YPath): Y.Map<unknown> | Y.Array<unknown> | undefined {
   let current = yRoot
 
   for (let i = 0; i < yPath.length - 1; i++) {
@@ -205,9 +214,28 @@ function getParent(yRoot: Y.Map<unknown> | Y.Array<unknown>, yPath: YPath): Y.Ma
         throw new Error(`Invalid path. Expected an array, but encountered a map at '${currentKey}'.`)
       }
 
-      current = current.get(currentKey) as Y.Map<unknown> | Y.Array<unknown>
+      const yarray = current
+      let child = yarray.get(currentKey)
+
+      if (child == null) {
+        // Create a container for the missing array element depending on the next path segment
+        const newChild = isNextArrayIndex ? new Y.Array<unknown>() : new Y.Map<unknown>()
+        if (currentKey <= yarray.length) {
+          yarray.insert(currentKey, [newChild])
+        } else {
+          // If the requested index is beyond the current length, push the new child
+          yarray.push([newChild])
+        }
+        child = newChild
+      }
+
+      current = child as Y.Map<unknown> | Y.Array<unknown>
     } else {
-      if (current instanceof Y.Map && !current.has(currentKey)) {
+      if (!(current instanceof Y.Map)) {
+        throw new Error(`Invalid path. Expected a map, but encountered a non-map at '${currentKey}'.`)
+      }
+
+      if (!current.has(currentKey)) {
         current.set(currentKey, isNextArrayIndex ? new Y.Array() : new Y.Map())
       }
 

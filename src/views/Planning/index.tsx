@@ -36,7 +36,7 @@ import type { EleDocumentResponse } from '@/shared/types'
 import { TextBox } from '@/components/ui'
 import { useDescriptionIndex } from './hooks/useDescriptionIndex'
 import { TextInput } from '@/components/ui/TextInput'
-import { ToastAction } from '../Wire/ToastAction'
+import { ToastAction } from '@/components/ToastAction'
 import { useTranslation } from 'react-i18next'
 
 type Setter = React.Dispatch<SetStateAction<NewItem>>
@@ -113,9 +113,15 @@ const PlanningViewContent = (props: ViewProps & {
   const ydoc = useYDocument<Y.Map<unknown>>(props.documentId, {
     data: props.data,
     ignoreChangeKeys: [
-      'meta.core/description[@internalDescriptionIndex].data.text[0]', // internal description
-      'meta.core/assignment[*].meta.core/description[0].data.text[0]', // assignment description
-      'meta.core/assignment[*].data.start' // assignment start
+      'meta.core/description[@internalDescriptionIndex].data.text[*]', // internal description
+      'meta.core/assignment[*].meta.core/description[0].data.text[*]', // assignment description
+      'meta.core/assignment[*].data.start', // assignment start
+      // assignment deliverables
+      'meta.core/assignment[*].links.core/article',
+      'meta.core/assignment[*].links.core/flash',
+      'meta.core/assignment[*].links.core/editorial-info',
+      'meta.core/assignment[*].data.status' // assignment status (for photo, video, graphics)
+
     ]
   })
   const { provider, ele: document, connected } = ydoc

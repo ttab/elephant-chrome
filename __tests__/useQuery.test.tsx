@@ -1,12 +1,47 @@
 import { renderHook, act } from '@testing-library/react'
-import { useQuery } from '@/hooks'
+import { useNavigation, useQuery, useView } from '@/hooks'
 import { vi, type Mock } from 'vitest'
+import type { NavigationAction, ViewProviderState } from '@/types/index'
+import { initializeNavigationState } from '@/navigation/lib'
+import type { Dispatch } from 'react'
 const BASE_URL = import.meta.env.BASE_URL
+
+vi.mock('@/navigation/hooks/useNavigation', () => ({
+  useNavigation: vi.fn()
+}))
+const mockState = initializeNavigationState()
+
+history.pushState({
+  viewId: 'eddbfe39-57d4-4b32-b9a1-a555e39139ea',
+  contentState: [
+    {
+      viewId: 'eddbfe39-57d4-4b32-b9a1-a555e39139ea',
+      name: 'Plannings',
+      props: {},
+      path: '/'
+    }
+  ]
+}, '', '/')
+
+const mockDispatch = vi.fn() as Dispatch<NavigationAction>
+
+
+vi.mocked(useNavigation).mockReturnValue({
+  state: mockState,
+  dispatch: mockDispatch
+})
+
+vi.mock('@/hooks/useView', () => ({
+  useView: vi.fn()
+}))
+
+vi.mocked(useView).mockReturnValue({
+  viewId: 'eddbfe39-57d4-4b32-b9a1-a555e39139ea'
+} as ViewProviderState)
 
 describe('useQuery hook', () => {
   type ReplaceState = typeof window.history['replaceState']
   let replaceStateMock: Mock<ReplaceState>
-
   beforeEach(() => {
     // Mock window.history.replaceState
     vi.clearAllMocks()

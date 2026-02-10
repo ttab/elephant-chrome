@@ -1,8 +1,8 @@
 import { Block } from '@ttab/elephant-api/newsdoc'
 import { toString } from '../../lib/toString.js'
 import type { TBElement } from '@ttab/textbit'
-import type { Descendant } from 'slate'
 import { transformSoftcrop, revertSoftcrop } from '../core/softcrop.js'
+import { serializeText, deserializeText } from '../../serialization.js'
 
 type EnvLike = { BASE_URL?: string }
 
@@ -33,6 +33,7 @@ export const transformVisual = (element: Block): TBElement => {
     type: links[0].type,
     credit: links[0].data.credit,
     text: data.caption,
+    html_caption: data.html_caption,
     width: links[0].data.width,
     height: links[0].data.height,
     ...transformSoftcrop(meta) || {}
@@ -51,9 +52,9 @@ export const transformVisual = (element: Block): TBElement => {
         children: [{ text: '' }]
       },
       {
+        ...deserializeText({ html_caption: data.html_caption, text: data.caption || '' }),
         type: 'tt/visual/text',
-        class: 'text',
-        children: [{ text: data.caption ?? '' }]
+        class: 'text'
       },
       {
         type: 'tt/visual/byline',
@@ -71,32 +72,24 @@ export function revertVisual(element: TBElement): Block {
   const textNode = children?.find((c) => c.type === 'tt/visual/text')
   const bylineNode = children?.find((c) => c.type === 'tt/visual/byline')
 
-  function getText(node: Descendant | undefined) {
-    let text = ''
-    if (node && 'children' in node && Array.isArray(node?.children)) {
-      const [child] = node.children
-
-      if (child && 'text' in child && child?.text) {
-        text = child.text
-      }
-    }
-    return text
-  }
-
-  const captionText = getText(textNode)
-  const bylineText = getText(bylineNode)
+  const captionText = serializeText(textNode)
+  const bylineText = serializeText(bylineNode)
 
   const data: Record<string, string> = {
-    credit: toString(bylineText),
+    credit: toString(bylineText.text),
     height: toString(properties?.height),
     width: toString(properties?.width)
   }
+
+  const caption = toString(captionText.text)
+  const html_caption = toString(captionText.html_caption)
 
   return Block.create({
     id,
     type: 'tt/visual',
     data: {
-      caption: toString(captionText)
+      caption,
+      ...(html_caption && { html_caption })
     },
     meta: revertSoftcrop(element),
     links: [
