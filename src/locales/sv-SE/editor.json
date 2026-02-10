@@ -11,8 +11,18 @@
     "searchImages": "Sök bilder",
     "factboxes": "Faktarutor"
   },
+  "numberOfChars": "Antal tecken",
   "spelling": {
     "noSuggestions": "Inga förslag"
+  },
+  "factbox": {
+    "headerTitle": "Redigera faktarutans original",
+    "modifiedLabel": "Originalet är från",
+    "footerTitle": "Ändringar i faktarutans text sker endast för denna artikel"
+  },
+  "image": {
+    "captionLabel": "Text",
+    "bylineLabel": "Foto"
   },
   "footer": {
     "words": "Ord",

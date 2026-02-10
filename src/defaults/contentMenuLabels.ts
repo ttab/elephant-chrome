@@ -8,5 +8,6 @@ export const contentMenuLabels = {
   preambleLabel: i18n.t('editor:contentMenu.preamble'),
   tvListingLabel: i18n.t('editor:contentMenu.tvListing'),
   unorderedLabel: i18n.t('editor:contentMenu.unorderedList'),
-  orderedLabel: i18n.t('editor:contentMenu.orderedList')
+  orderedLabel: i18n.t('editor:contentMenu.orderedList'),
+  characterCountLabel: i18n.t('editor:numberOfChars')
 }
