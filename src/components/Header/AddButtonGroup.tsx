@@ -9,41 +9,39 @@ import { useModal } from '../Modal/useModal'
 import {
   ButtonGroup,
   ButtonGroupSeparator,
-  Dialog,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-  SheetClose
+  DropdownMenuTrigger
 } from '@ttab/elephant-ui'
 import { documentTypeValueFormat } from '@/defaults/documentTypeFormats'
 import type { buttonVariants } from '@ttab/elephant-ui'
 import type { VariantProps } from 'class-variance-authority'
 import type { QueryParams } from '@/hooks/useQuery'
+import { applicationMenu } from '@/defaults/applicationMenuItems'
+import type { LucideIcon } from 'lucide-react'
 
 type Variant = VariantProps<typeof buttonVariants>['variant']
+type ButtonView = { name: View, type: string, icon?: { icon?: LucideIcon, color?: string } }
 
 const AddButton = ({
-  type,
   withNew,
   variant = 'default',
   className,
   showModal,
   hideModal,
-  docType,
+  view,
   query
 }: {
-  type: View
   query: QueryParams
   withNew?: boolean
   variant?: Variant
   className?: string
   showModal?: (content: ReactNode, type?: 'dialog') => void
   hideModal?: () => void
-  docType?: string
+  view: ButtonView
 }) => {
-  const ViewDialog = Views[type]
+  const ViewDialog = Views[view.name]
   const typeLabel = (t?: string) => t ? documentTypeValueFormat[t].label : ''
 
   return (
@@ -53,7 +51,7 @@ const AddButton = ({
       className={!withNew ? '' : cn('h-8 pr-4', className)}
       onClick={() => {
         const id = crypto.randomUUID()
-        const initialDocument = getTemplateFromView(type)(id, { query })
+        const initialDocument = getTemplateFromView(view.name)(id, { query })
 
         if (showModal) {
           showModal(
@@ -68,22 +66,38 @@ const AddButton = ({
       }}
     >
       {withNew && <PlusIcon size={18} strokeWidth={1.75} />}
-      <span className='pl-0.5'>{`${withNew ? 'Ny' : typeLabel(docType)}`}</span>
+      <span className='pl-0.5'>{`${withNew ? 'Ny' : typeLabel(view.type)}`}</span>
     </Button>
   )
 }
 
-export const AddButtonGroup = ({ type, docType, query }: { type: View, query: QueryParams, docType?: string }) => {
+export const AddButtonGroup = ({ docType = 'core/article', query }: { type: View, query: QueryParams, docType?: string }) => {
   const { showModal, hideModal } = useModal()
-  const ArticleViewDialog = Views['QuickArticle' as View]
+  const getIcon = (t: View): { icon: LucideIcon | undefined, color?: string } => {
+    const group = applicationMenu.groups.find((g) => g.items.find((itm) => itm.name.includes(t)))
+    const icon = group?.items.find((item) => item.name.includes(t))
+    return { icon: icon?.icon, color: icon?.color }
+  }
+
+  const views: Array<{ name: View, type: string, icon?: { icon?: LucideIcon, color?: string } }> = [
+    { name: 'Planning', type: 'core/planning-item', icon: getIcon('Planning') },
+    { name: 'Event', type: 'core/event', icon: getIcon('Event') },
+    { name: 'QuickArticle', type: 'core/article', icon: getIcon('QuickArticle') },
+    { name: 'Factbox', type: 'core/factbox', icon: getIcon('Factbox') },
+    { name: 'Flash', type: 'core/flash', icon: getIcon('Flash') }
+  ]
+
+  const firstItem = views.find((view) => view.type === docType) as ButtonView
+  const ItemIcon = firstItem.icon
+
+
   return (
     <ButtonGroup>
       <AddButton
         withNew
-        type={type}
         showModal={showModal}
         hideModal={hideModal}
-        docType={docType}
+        view={firstItem?.type ? firstItem : views[0]}
         query={query}
       />
       <ButtonGroupSeparator />
@@ -99,33 +113,36 @@ export const AddButtonGroup = ({ type, docType, query }: { type: View, query: Qu
           </DropdownMenuTrigger>
         </div>
         <DropdownMenuContent>
-          <DropdownMenuItem inset={false} className='p-0'>
-            <AddButton
-              type={type}
-              variant='ghost'
-              className='px-0'
-              showModal={showModal}
-              hideModal={hideModal}
-              docType={docType}
-              query={query}
-            />
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <Dialog>
-            <SheetClose
-              key='article'
-              className='w-full flex gap-3 items-center px-3 py-2 rounded-md hover:bg-table-focused hover:cursor-pointer'
-              onClick={() => {
-                showModal(
-                  <ArticleViewDialog onDialogClose={hideModal} asDialog />
-                )
-              }}
-            >
-              <DropdownMenuItem inset={false} className='p-0 cursor-pointer'>
-                <div>Artikel</div>
+          {firstItem?.type && (
+            <DropdownMenuItem inset={false} className='py-0 px-1'>
+              {ItemIcon?.icon && <ItemIcon.icon strokeWidth={1.75} size={18} color={ItemIcon.color} />}
+              <AddButton
+                variant='ghost'
+                className='px-0'
+                showModal={showModal}
+                hideModal={hideModal}
+                view={firstItem}
+                query={query}
+              />
+            </DropdownMenuItem>
+          )}
+          {views.filter((view) => view.type !== docType).map((view) => {
+            const ViewIcon = view.icon
+
+            return (
+              <DropdownMenuItem inset={false} className='py-0 px-1' key={view.name}>
+                {ViewIcon?.icon && <ViewIcon.icon strokeWidth={1.75} size={18} color={ViewIcon.color} />}
+                <AddButton
+                  variant='ghost'
+                  className='px-0'
+                  showModal={showModal}
+                  hideModal={hideModal}
+                  view={view}
+                  query={query}
+                />
               </DropdownMenuItem>
-            </SheetClose>
-          </Dialog>
+            )
+          })}
         </DropdownMenuContent>
       </DropdownMenu>
     </ButtonGroup>
