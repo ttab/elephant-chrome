@@ -190,45 +190,46 @@ export const Wires = (): JSX.Element => {
     )
   }, [selectedWires, focusedWire, repository, session, showModal, hideModal, onAction])
 
+  const handleNavigation = useCallback((event: KeyboardEvent) => {
+    if (
+      event.getModifierState('Control')
+      || event.getModifierState('Meta')
+      || event.getModifierState('Alt')
+    ) {
+      return
+    }
+
+    switch (event.key) {
+      case 'Escape':
+        if (selectedWires.length > 0) {
+          setSelectedWires([])
+        } else if (previewWire) {
+          setPreviewWire(null)
+        }
+        break
+
+      case 's':
+        onAction('saved')
+        break
+
+      case 'r':
+        onAction('read')
+        break
+
+      case 'u':
+        onAction('used')
+        break
+
+      case 'c':
+        onCreate()
+        break
+    }
+  }, [selectedWires, previewWire, onAction, onCreate])
+
   const viewRef = useNavigationKeysView({
     keys: ['Escape', 's', 'r', 'u', 'c'],
-    onNavigation: (event) => {
-      if (
-        event.getModifierState('Control')
-        || event.getModifierState('Meta')
-        || event.getModifierState('Alt')
-      ) {
-        return
-      }
-
-      switch (event.key) {
-        case 'Escape':
-          if (previewWire) {
-            setPreviewWire(null)
-          } else {
-            setSelectedWires([])
-          }
-          break
-
-        case 's':
-          onAction('saved')
-          break
-
-        case 'r':
-          onAction('read')
-          break
-
-        case 'u':
-          onAction('used')
-          break
-
-        case 'c':
-          onCreate()
-          break
-      }
-    }
+    onNavigation: handleNavigation
   })
-
 
   return (
     <View.Root ref={viewRef}>

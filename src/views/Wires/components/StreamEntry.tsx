@@ -16,7 +16,6 @@ export const StreamEntry = ({
   statusMutation,
   onToggleSelected,
   onFocus,
-  onUnpress,
   onPress
 }: {
   streamId: string
@@ -25,7 +24,6 @@ export const StreamEntry = ({
   statusMutation: WireStatus | undefined
   onToggleSelected: (event: unknown) => void
   onFocus?: (item: Wire, event: React.FocusEvent<HTMLElement>) => void
-  onUnpress?: (item: Wire, event: React.KeyboardEvent<HTMLElement>) => void
   onPress?: (item: Wire, event: React.MouseEvent<HTMLElement> | React.KeyboardEvent<HTMLElement>) => void
 }): JSX.Element => {
   const status = getWireStatus(entry)
@@ -44,11 +42,8 @@ export const StreamEntry = ({
         e.preventDefault()
         onToggleSelected(e)
       }
-    } else if (e.key === 'Escape') {
-      e.preventDefault()
-      onUnpress?.(entry, e)
     }
-  }, [entry, onPress, onToggleSelected, onUnpress, status])
+  }, [entry, onPress, onToggleSelected, status])
 
   const handleFocus = useCallback((e: React.FocusEvent<HTMLElement>) => {
     onFocus?.(entry, e)
