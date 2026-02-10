@@ -267,7 +267,7 @@ export const QuickArticleDialog = (props: {
                       })
                   }}
                   onSecondary={() => {
-                    handleClose(config)
+                    config.setPrompt(false)
                   }}
                 />
               )
