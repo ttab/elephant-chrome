@@ -1,6 +1,6 @@
 import type { LocaleData } from '@/types/index'
 import { type ViewMetadata } from '@/types/index'
-import { useRef, type JSX } from 'react'
+import { use, useRef, type JSX } from 'react'
 import { format } from 'date-fns'
 import { useRegistry } from '@/hooks/useRegistry'
 import { handleLink } from '@/components/Link/lib/handleLink'
@@ -33,9 +33,10 @@ const meta: ViewMetadata = {
 export const Latest = ({ setOpen }: { setOpen?: (open: boolean) => void }) => {
   const { locale } = useRegistry()
   const data = useLatest()
+  const { t } = useTranslation('common')
 
   if (!data?.length) {
-    return <div className='min-h-screen text-center py-2'>Laddar...</div>
+    return <div className='min-h-screen text-center py-2'>{t('misc.loading')}</div>
   }
 
   return (
