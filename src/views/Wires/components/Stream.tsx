@@ -64,19 +64,32 @@ export const Stream = ({
     options
   })
 
-  // Merge new data with existing data
+  // Merge new data with existing data and reconcile updates from SWR
   useEffect(() => {
-    if (data && !isLoading) {
-      setAllData((prev) => {
-        if (page === 1) return data
+    if (!data || isLoading) return
 
-        // Merge and deduplicate by wire ID
-        const existingIds = new Set(prev.map((w) => w.id))
-        const newWires = data.filter((w) => !existingIds.has(w.id))
-        return [...prev, ...newWires]
+    setAllData((prev) => {
+      // First page replaces everything
+      if (page === 1) {
+        return data
+      }
+
+      // Reconcile existing wires and merge in updates
+      const byId = new Map(prev.map((w) => [w.id, w]))
+
+      data.forEach((wire) => {
+        const existing = byId.get(wire.id)
+
+        byId.set(
+          wire.id,
+          (existing) ? { ...existing, fields: wire.fields } : wire
+        )
       })
-      loadingRef.current = false
-    }
+
+      return Array.from(byId.values())
+    })
+
+    loadingRef.current = false
   }, [data, isLoading, page])
 
   // Reset to page 1 when filters change
