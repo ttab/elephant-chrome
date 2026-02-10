@@ -5,7 +5,7 @@ import {
 } from '@/components'
 import type { DefaultValueOption, ViewProps } from '@/types'
 import { Alert, AlertDescription, AlertTitle, Button, Checkbox, ComboBox, Label } from '@ttab/elephant-ui'
-import { CircleXIcon, TagsIcon, GanttChartSquareIcon, NewspaperIcon, ZapIcon, InfoIcon } from '@ttab/elephant-ui/icons'
+import { CircleXIcon, TagsIcon, GanttChartSquareIcon, NewspaperIcon, ZapIcon, InfoIcon, TriangleAlertIcon } from '@ttab/elephant-ui/icons'
 import { useRegistry, useSections } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import type { Dispatch, SetStateAction } from 'react'
@@ -65,8 +65,15 @@ export const FlashDialog = (props: {
   const allSections = useSections()
   const [, setYSection] = useYValue<Block | undefined>(ydoc.ele, 'links.core/section[0]')
   const [relatedDocsSlugline, setSlugline] = useState<string>('') // slugline for complementary planning- and quick-article documents
+  const [invalidSlug, setInvalidSlug] = useState(false)
 
   const handleSubmit = (setCreatePrompt: Dispatch<SetStateAction<boolean>>): void => {
+    if (!relatedDocsSlugline.length) {
+      setInvalidSlug(true)
+      return
+    }
+
+    setInvalidSlug(false)
     setCreatePrompt(true)
   }
 
@@ -290,18 +297,24 @@ export const FlashDialog = (props: {
             )}
 
             <Form.Group icon={TagsIcon}>
-              <input
-                autoComplete='off'
-                placeholder='Slugg för planering och artikel'
-                min={3}
-                className='w-full text-sm rounded bg-background placeholder:pl-2 p-1 ring-offset-background'
-                name='slugline'
-                value={relatedDocsSlugline}
-                onChange={(e) => {
-                  const value = e.target.value.trim()
-                  setSlugline(value)
-                }}
-              />
+              <div className='relative w-full'>
+                {invalidSlug && (
+                  <div className='absolute -top-1 right-0 h-2 w-2 z-10'>
+                    <TriangleAlertIcon color='red' fill='#ffffff' size={15} strokeWidth={1.75} />
+                  </div>
+                )}
+                <input
+                  autoComplete='off'
+                  placeholder='Slugg för planering och artikel'
+                  className='w-full text-sm rounded bg-background placeholder:pl-2 p-1 ring-offset-background'
+                  name='slugline'
+                  value={relatedDocsSlugline}
+                  onChange={(e) => {
+                    const value = e.target.value.trim()
+                    setSlugline(value)
+                  }}
+                />
+              </div>
             </Form.Group>
 
             <>
@@ -373,6 +386,7 @@ export const FlashDialog = (props: {
                 onSubmit={() => handleSubmit(setSendPrompt)}
                 onSecondarySubmit={() => handleSubmit(setSavePrompt)}
                 onTertiarySubmit={() => handleSubmit(setDonePrompt)}
+                disableOnSubmit={relatedDocsSlugline.length > 0}
               >
                 <div className='flex justify-between'>
                   <div className='flex gap-2'>
