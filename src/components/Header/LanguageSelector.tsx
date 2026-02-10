@@ -14,6 +14,7 @@ export const LanguageSelector = (): JSX.Element => {
 
   const changeLanguage = (value: string) => {
     i18n.changeLanguage(value).then(() => {
+      window.location.reload()
     }).catch((err) => {
       console.error('Error changing language:', err)
     })
