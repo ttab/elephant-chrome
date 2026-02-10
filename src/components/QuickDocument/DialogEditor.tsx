@@ -49,7 +49,6 @@ export const DialogEditor = ({ ydoc, setTitle, onValidation, validateStateRef, t
         plugins={[
           ...plugins.map((initPlugin) => initPlugin()),
           Text({
-            countCharacters: ['heading-1', 'body'],
             preventHotkeys: ['heading-1', 'heading-2', 'preamble'],
             ...contentMenuLabels,
             titleLabel: type === 'flash' ? 'Flashrubrik' : 'Rubrik'
