@@ -44,6 +44,7 @@ const meta: ViewMetadata = {
 // Main Editor Component - Handles document initialization
 const Editor = (props: ViewProps): JSX.Element => {
   const [query] = useQuery()
+  const { t } = useTranslation('common')
   const documentId = props.id || query.id as string
   const preview = query.preview === 'true'
 
@@ -53,8 +54,8 @@ const Editor = (props: ViewProps): JSX.Element => {
   if (!documentId || typeof documentId !== 'string') {
     return (
       <Error
-        title='Artikeldokument saknas'
-        message='Inget artikeldokument är angivet. Navigera tillbaka till översikten och försök igen.'
+        title={t('errors.articleMissingTitle')}
+        message={t('errors.articleMissingDescription')}
       />
     )
   }
