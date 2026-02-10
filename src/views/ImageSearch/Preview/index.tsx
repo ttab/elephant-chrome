@@ -3,6 +3,7 @@ import { DialogDescription, DialogTitle } from '@ttab/elephant-ui'
 import { toast } from 'sonner'
 import { useEffect, useRef, type Dispatch, type JSX, type SetStateAction } from 'react'
 import { XIcon } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 const BASE_URL = import.meta.env.BASE_URL || ''
 
@@ -12,6 +13,7 @@ export const Preview = ({ ttninjs, setOpen }: {
 }): JSX.Element => {
   const id = new URL(ttninjs.uri).pathname.split('/').filter(Boolean).pop()
   const previewRef = useRef<HTMLDivElement>(null)
+  const { t } = useTranslation()
 
   useEffect(() => {
     const handleOutsideClick = (e: MouseEvent) => {
@@ -30,7 +32,7 @@ export const Preview = ({ ttninjs, setOpen }: {
 
   if (!id) {
     console.error('No id found in ttninjs.uri')
-    toast.error('Kan inte visa bild, ogiltigt id')
+    toast.error(t('views:imageSearch.errors.showPictureError'))
   }
 
   const mediaType = ttninjs.type === 'graphic' ? 'graphics' : 'images'

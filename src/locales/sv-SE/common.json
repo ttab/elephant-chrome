@@ -1,0 +1,52 @@
+{
+  "actions": {
+    "add": "Lägg till",
+    "open": "Öppna",
+    "openType": "Öppna {{type, lowercase}}",
+    "edit": "Redigera",
+    "remove": "Ta bort",
+    "abort": "Avbryt",
+    "close": "Stäng",
+    "create": "Skapa",
+    "createNew": "Skapa ny {{documentType}}",
+    "sort": "Sortera",
+    "sortBy": "Sortera efter {{label}}",
+    "presetSort": "Förinställd sortering",
+    "grouping": "Välj gruppering",
+    "nogrouping": "Ingen gruppering",
+    "group": "Gruppera",
+    "copy": "Kopiera",
+    "confirm": "Klar",
+    "move": "Flytta",
+    "yes": "Ja",
+    "no": "Nej"
+  },
+  "errors": {
+    "unknown": "Okänt fel",
+    "unwellEnvironment": "Du har blivit utloggad eller tappat kontakt med systemet. Vänligen försök logga in igen.",
+    "errorTitle": "Ett fel har uppstått!",
+    "unknownErrorAdminInfo": "Ett okänt fel, eller ett fel som saknar felmeddelande har uppstått. Kontakta systemadministratören.",
+    "someError": "Något gick fel",
+    "nameMissing": "Namn saknas",
+    "nothingFound": "Ingenting hittades",
+    "articleMissingTitle": "Artikeldokument saknas",
+    "articleMissingDescription": "Inget artikeldokument är angivet. Navigera tillbaka till översikten och försök igen.",
+    "failedFetchingDocument": "Misslyckades hämta dokument.",
+    "failedUpdatingListRetrying": "Misslyckades att automatiskt uppdatera listan. Försöker igen om {{seconds}} sekunder.",
+    "noResultsFound": "Inga resultat hittades",
+    "copyError": "Kopiera felmeddelande",
+    "validationError": "Valideringsfel"
+  },
+  "misc": {
+    "unknown": "okänd",
+    "user": "användare",
+    "numberOf": "Antal",
+    "from": "Från",
+    "new": "Ny",
+    "selected": "valda",
+    "since": "sedan",
+    "missing": "saknas",
+    "loading": "Laddar...",
+    "titleMissing": "Titel saknas"
+  }
+}

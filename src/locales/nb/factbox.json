@@ -1,0 +1,9 @@
+{
+  "title": "Faktaboks",
+  "action": {
+    "createFactbox": "Ny faktaboks"
+  },
+  "errors": {
+    "errorCreatingFactbox": "Det gikk ikke å opprette ny faktaboks!"
+  }
+}

@@ -37,6 +37,7 @@ import { TextBox } from '@/components/ui'
 import { useDescriptionIndex } from './hooks/useDescriptionIndex'
 import { TextInput } from '@/components/ui/TextInput'
 import { ToastAction } from '../Wire/ToastAction'
+import { useTranslation } from 'react-i18next'
 
 type Setter = React.Dispatch<SetStateAction<NewItem>>
 
@@ -62,6 +63,8 @@ export const Planning = (props: ViewProps & {
 }): JSX.Element => {
   const [query] = useQuery()
   const documentId = props.id || query.id
+
+  const { t } = useTranslation()
 
   // Planning should be responsible for creating new as well as editing
   const data = useMemo(() => {
@@ -94,8 +97,8 @@ export const Planning = (props: ViewProps & {
           )
         : (
             <Error
-              title='Planeringsdokument saknas'
-              message='Inget planeringsdokument är angivet. Navigera tillbaka till översikten och försök igen.'
+              title={t('planning:prompts.planningDocumentMissing')}
+              message={t('planning:prompts.documentMissingMessage')}
             />
           )}
     </>
@@ -129,6 +132,7 @@ const PlanningViewContent = (props: ViewProps & {
   const intIndex = useDescriptionIndex(document, 'internal')
   const [publicDescription] = useYValue<Y.XmlText>(document, `meta.core/description[${pubIndex}].data.text`, true)
   const [internalDescription] = useYValue<Y.XmlText>(document, `meta.core/description[${intIndex}].data.text`, true)
+  const { t } = useTranslation()
 
   const handleSubmit = async ({ documentStatus }: {
     documentStatus: 'usable' | 'done' | undefined
@@ -148,7 +152,7 @@ const PlanningViewContent = (props: ViewProps & {
           props.onDialogClose()
         }
 
-        toast.success(`Planering skapad`, {
+        toast.success(t('views:plannings.toasts.create.success'), {
           classNames: {
             title: 'whitespace-nowrap'
           },
@@ -157,7 +161,7 @@ const PlanningViewContent = (props: ViewProps & {
               key='open-planning'
               documentId={props.documentId}
               withView='Planning'
-              label='Öppna planering'
+              label={t('views:plannings.toasts.openItem')}
               Icon={CalendarDaysIcon}
               target='last'
             />
@@ -165,7 +169,7 @@ const PlanningViewContent = (props: ViewProps & {
         })
       } catch (ex) {
         console.error('Failed to snapshot document', ex)
-        toast.error('Kunde inte skapa ny planering!', {
+        toast.error(t('views:plannings.toasts.create.error'), {
           duration: 5000,
           position: 'top-center'
         })
@@ -196,8 +200,8 @@ const PlanningViewContent = (props: ViewProps & {
               <TextInput
                 ydoc={ydoc}
                 value={title}
-                label='Titel'
-                placeholder='Planeringstitel'
+                label={t('core:labels.title')}
+                placeholder={t('planning:title')}
                 autoFocus={props.asDialog === true}
               />
             </Form.Title>
@@ -206,14 +210,14 @@ const PlanningViewContent = (props: ViewProps & {
               ydoc={ydoc}
               value={publicDescription}
               icon={<TextIcon size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />}
-              placeholder='Publik beskrivning'
+              placeholder={t('planning:description.public')}
             />
 
             <TextBox
               ydoc={ydoc}
               value={internalDescription}
               icon={<MessageCircleMoreIcon size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />}
-              placeholder='Internt meddelande'
+              placeholder={t('planning:description.internal')}
             />
 
             <Form.Group icon={CalendarIcon}>
@@ -250,8 +254,7 @@ const PlanningViewContent = (props: ViewProps & {
           <Form.Footer>
             {!environmentIsSane && (
               <UserMessage asDialog={!!props.asDialog} className='pb-6'>
-                Du har blivit utloggad eller tappat kontakt med systemet.
-                Vänligen försök logga in igen.
+                {t('common:errors.unwellEnvironment')}
               </UserMessage>
 
             )}
@@ -265,14 +268,14 @@ const PlanningViewContent = (props: ViewProps & {
               <div className='flex justify-between'>
                 <div className='flex gap-2'>
                   <Button type='button' variant='secondary' role='tertiary' disabled={!environmentIsSane}>
-                    Utkast
+                    {t('core:status.draft')}
                   </Button>
                   <Button type='button' variant='secondary' role='secondary' disabled={!environmentIsSane}>
-                    Intern
+                    {t('core:status.internal')}
                   </Button>
                 </div>
                 <Button type='submit' disabled={!environmentIsSane}>
-                  Publicera
+                  {t('core:status.action.publish')}
                 </Button>
               </div>
             </Form.Submit>

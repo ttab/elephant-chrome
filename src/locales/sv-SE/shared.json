@@ -1,0 +1,83 @@
+{
+  "authors": {
+    "from": "av {{author}}",
+    "byline": "Byline {{author}}",
+    "lastDoneMarked": "Senast klarmarkerad {{created}} av {{author}}",
+    "doneBy": "Klar av {{author}}",
+    "createdBy": "Skapad av {{author}}",
+    "approvedBy": "Godkänd av {{author}}",
+    "createdTimeBy": "Skapad {{created}} av {{author}}"
+  },
+  "assignmentTypes": {
+    "text": "Artikel",
+    "flash": "Flash",
+    "editorial-info": "Till red",
+    "graphic": "Grafik",
+    "picture": "Bild",
+    "video": "Video",
+    "picture/video": "Bild/Video"
+  },
+  "toolbar": {
+    "clearFilters": "Rensa",
+    "savePersonalFilter": "Spara personligt filter",
+    "personalFilter": "Personligt filter",
+    "toggleUserFilter": "Växla användarfilter",
+    "toggleLabel": "Växla {{label}}",
+    "navigateToday": "Gå till idag",
+    "freeText": "Fritext",
+    "freeTextSearch": "Fritextsökning",
+    "altSearch": "Sök alternativ"
+  },
+  "status_menu": {
+    "cause": "Anledning",
+    "pickCause": "Välj anledning...",
+    "planningDate": "Datum i planeringen",
+    "setTime": "Ange tid",
+    "asSavePlaceholder": "Publicera ny information",
+    "causes": {
+      "development_short": "UV",
+      "fix_short": "KORR",
+      "correction_short": "RÄ",
+      "retransmission_short": "OMS"
+    }
+  },
+  "copy": {
+    "copiedTo": "Kopierad till",
+    "copiedFrom": "Kopierad från",
+    "copyType": "Kopiera {{type}}",
+    "copyPrompt": "Vill du kopiera \"{{title}}\" till {{start}}?",
+    "copySuccess": "\"{{title}}\" har kopierats till {{start}}",
+    "copyEventPrompt": "Vill du kopiera händelsen till {{datesFormatted}}?",
+    "copyEventSuccess": "Händelsen \"{{title}}\" har kopierats till {{datesFormatted}}"
+  },
+  "errors": {
+    "loadFailed": "Kunde inte ladda",
+    "noDeliverables": "Inga leverabler",
+    "sendDataError": "Kunde inte skicka data",
+    "multipleAuthors": "Flera författardokument hittades, kontakta support",
+    "unpublishError": "Det gick inte att avpublicera dokumentet",
+    "addAssignmentToPlanningError": "Det gick inte att lägga till uppdraget i en kopplad planering",
+    "creationFailed": "Misslyckades att skapa text: {{error}}",
+    "fetchDocumentFailed": "Kunde inte hämta dokument",
+    "couldNotScheduleArticle": "Kunde inte schemalägga artikel! Tid eller datum är felaktigt angivet.",
+    "savedDocumentFailed": "Kunde inte spara dokument",
+    "fetchStatusFailed": "Ett fel uppstod när aktuell status skulle hämtas. Försök ladda om sidan.",
+    "couldNotChangeStatusReloadBrowser": "Ett fel har uppstått, aktuell status kunde inte ändras! Ladda om webbläsaren och försök igen.",
+    "couldNotChangeStatus": "Ett fel uppstod när aktuell status skulle ändras.",
+    "couldNotSaveStatus": "Ett fel uppstod när aktuell status skulle sparas."
+  },
+  "operations": {
+    "authorCreateSuccess": "Författardokument är skapat",
+    "authorUpdateSuccess": "Författardokument har uppdaterats",
+    "authorSaveSuccess": "Författardokument har sparats",
+    "authorUpdateFailure": "Kunde inte uppdatera författardokument: {{errorMessage}}",
+    "authorSaveFailure": "Kunde inte skapa författardokument: {{errorMessage}}",
+    "authorCreateFailure": "Kunde inte skapa författardokument: Failed to create author doc",
+    "authorCreateUndefinedFailed": "Kunde inte skapa författardokument: Failed to fetch author document: undefined",
+    "savedFilter": "Ditt filter har sparats"
+  },
+  "prompts": {
+    "publishBeforeClose": "Vill du publicera ändringarna innan du stänger?",
+    "savedButNotPublished": "Ändringarna är sparade men inte publicerade."
+  }
+}

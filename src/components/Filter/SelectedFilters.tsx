@@ -26,6 +26,7 @@ import { useCategories } from '@/hooks/useCategories'
 import { useAuthors } from '@/hooks/useAuthors'
 import { AssignmentTypes } from '@/defaults/assignmentTypes'
 import { useUserTracker } from '@/hooks/useUserTracker'
+import { useTranslation } from 'react-i18next'
 
 interface SelectedBase {
   value: unknown
@@ -34,6 +35,8 @@ interface SelectedBase {
 const SelectedBadge = ({ value, options }: SelectedBase & {
   options: DefaultValueOption[] | undefined
 }): ReactNode => {
+  const { t } = useTranslation()
+
   if (Array.isArray(value)) {
     if (value.length > 2) {
       return (
@@ -43,7 +46,7 @@ const SelectedBadge = ({ value, options }: SelectedBase & {
         >
           {value.length}
           {' '}
-          selected
+          {t('common:misc.selected')}
         </Badge>
       )
     } else {
@@ -66,6 +69,7 @@ const SelectedBadge = ({ value, options }: SelectedBase & {
 const SelectedButton = ({ type, value }: { value: string | string[] | undefined, type: string }): JSX.Element => {
   const [filters, setFilters] = useQuery(['section', 'status', 'source', 'organiser', 'category', 'author', 'newsvalue', 'aType'])
   const [currentFilters, setCurrentFilters] = useUserTracker<QueryParams | undefined>(`filters.Approvals.current`)
+  const { t } = useTranslation()
 
   const sections = useSections().map((_) => {
     return {
@@ -182,7 +186,7 @@ const SelectedButton = ({ type, value }: { value: string | string[] | undefined,
       }}
     >
       <Icon size={18} strokeWidth={1.75} className='mr-2' />
-      {type === 'from' && <span className='text-xs'>sedan</span>}
+      {type === 'from' && <span className='text-xs'>{t('common:misc.since')}</span>}
       <SelectedBadge value={value} options={options} />
       <XIcon size={18} strokeWidth={1.75} className='ml-2' />
     </Button>

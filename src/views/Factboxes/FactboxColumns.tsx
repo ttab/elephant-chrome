@@ -4,6 +4,7 @@ import { dateToReadableDateTime } from '@/shared/datetime'
 import type { LocaleData } from '@/types/index'
 import type { ColumnDef, Row } from '@tanstack/react-table'
 import { BoxesIcon } from '@ttab/elephant-ui/icons'
+import type { TFunction } from 'i18next'
 
 interface FactboxData {
   title: string
@@ -13,7 +14,7 @@ interface FactboxData {
   version: string
 }
 
-export function factboxColumns({ locale, timeZone }: { locale: LocaleData, timeZone: string }): Array<ColumnDef<Factbox>> {
+export function factboxColumns({ locale, timeZone, t }: { locale: LocaleData, timeZone: string, t: TFunction }): Array<ColumnDef<Factbox>> {
   const handleDragStart = (event: React.DragEvent<HTMLDivElement>, row: Row<Factbox>) => {
     const factboxData: FactboxData = {
       title: row.getValue<string>('title'),
@@ -37,7 +38,7 @@ export function factboxColumns({ locale, timeZone }: { locale: LocaleData, timeZ
     {
       id: 'title',
       meta: {
-        name: 'Titel',
+        name: t('core:labels.title'),
         columnIcon: BoxesIcon,
         className: 'flex-none'
       },
@@ -56,7 +57,7 @@ export function factboxColumns({ locale, timeZone }: { locale: LocaleData, timeZ
     {
       id: 'description',
       meta: {
-        name: 'Beskrivning',
+        name: t('factboxes.columnLabels.description'),
         columnIcon: BoxesIcon,
         className: 'flex-1 w-[200px]'
       },
@@ -76,7 +77,7 @@ export function factboxColumns({ locale, timeZone }: { locale: LocaleData, timeZ
     {
       id: 'edited',
       meta: {
-        name: 'Senast ändrad',
+        name: t('factboxes.columnLabels.lastChanged'),
         columnIcon: BoxesIcon,
         className: 'flex-none'
       },
@@ -87,7 +88,7 @@ export function factboxColumns({ locale, timeZone }: { locale: LocaleData, timeZ
         return (
           <div className='truncate space-x-2 justify-start items-center'>
             <span className='font-thin text-xs text-muted-foreground'>
-              Ändrad
+              {t('core:status.changed')}
             </span>
             <span className='font-thin text-sm'>
               {readableDateTime}

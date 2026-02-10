@@ -1,0 +1,412 @@
+{
+  "base": {
+    "draft": {
+      "title": "Utkast",
+      "description": "Du jobbar på ett utkast av artikeln",
+      "transitions": {
+        "done": {
+          "title": "Klarmarkera",
+          "description": "Markera artikeln som klar"
+        },
+        "approved": {
+          "title": "Godkänn",
+          "description": "Godkänn artikeln för publicering"
+        },
+        "usable": {
+          "title": "Publicera",
+          "description": "Publicera artikeln"
+        },
+        "withheld": {
+          "title": "Schemalägg publicering",
+          "description": "Ange datum och tid för publicering"
+        }
+      }
+    },
+    "done": {
+      "title": "Klar",
+      "description": "Artikeln är klar och väntar på godkännande",
+      "transitions": {
+        "approved": {
+          "title": "Godkänn",
+          "description": "Godkänn artikeln för publicering"
+        },
+        "usable": {
+          "title": "Publicera",
+          "description": "Publicera artikeln direkt"
+        },
+        "withheld": {
+          "title": "Schemalägg publicering",
+          "description": "Ange datum och tid för publicering"
+        },
+        "draft": {
+          "title": "Till utkast",
+          "description": "Gör om artikeln till ett utkast igen"
+        },
+        "unpublished": {
+          "title": "Avpublicera",
+          "description": "Avbryt och arkivera artikeln"
+        }
+      }
+    },
+    "approved": {
+      "title": "Godkänd",
+      "description": "Artikeln är godkänd att publicera",
+      "transitions": {
+        "usable": {
+          "title": "Publicera",
+          "description": "Publicera artikeln"
+        },
+        "withheld": {
+          "title": "Schemalägg publicering",
+          "description": "Ange datum och tid för publicering"
+        },
+        "draft": {
+          "title": "Till utkast",
+          "description": "Gör om artikeln till ett utkast igen"
+        },
+        "unpublished": {
+          "title": "Avpublicera",
+          "description": "Avbryt och arkivera artikeln"
+        }
+      }
+    },
+    "usable": {
+      "title": "Publicerad",
+      "description": "Artikeln är publicerad",
+      "transitions": {
+        "draft": {
+          "title": "Ny version",
+          "description": "Fortsätt jobba på en ny version av artikeln"
+        },
+        "unpublished": {
+          "title": "Avpublicera",
+          "description": "Avbryt publiceringen och arkivera artikeln"
+        }
+      }
+    },
+    "withheld": {
+      "title": "Schemalagd",
+      "description": "Artikeln är schemalagd för automatisk publicering",
+      "transitions": {
+        "usable": {
+          "title": "Publicera direkt",
+          "description": "Publicera artikeln direkt"
+        },
+        "draft": {
+          "title": "Till utkast",
+          "description": "Avbryt schemalagd publicering och gör om till utkast igen"
+        }
+      }
+    },
+    "unpublished": {
+      "title": "Avpublicerad",
+      "description": "Artikeln har avpublicerats",
+      "transitions": {
+        "draft": {
+          "title": "Ny version",
+          "description": "Fortsätt jobba på en ny version av artikeln"
+        }
+      }
+    }
+  },
+  "core/event": {
+    "draft": {
+      "title": "Utkast",
+      "description": "Du jobbar på ett utkast av denna händelse",
+      "transitions": {
+        "done": {
+          "title": "Använd internt",
+          "description": "Gör händelsen internt synlig"
+        },
+        "usable": {
+          "title": "Publicera externt",
+          "description": "Publicera händelsen externt"
+        }
+      }
+    },
+    "done": {
+      "title": "Intern",
+      "description": "Händelsen är internt synlig",
+      "transitions": {
+        "usable": {
+          "title": "Publicera",
+          "description": "Publicera händelsen externt"
+        },
+        "unpublished": {
+          "title": "Avpublicera",
+          "description": "Avpublicera händelsen"
+        }
+      }
+    },
+    "usable": {
+      "title": "Publicerad",
+      "asSaveCTA": "Opublicerade ändringar",
+      "asSaveTitle": "Publicera ny version",
+      "description": "Händelsen är publicerad externt",
+      "changedDescription": "Händelsen har ändrats sedan den senaste publiceringen",
+      "updateDescription": "Uppdatera den publicerade händelsen med de nya ändringarna",
+      "transitions": {
+        "unpublished": {
+          "title": "Avpublicera",
+          "description": "Avpublicera händelsen externt"
+        }
+      }
+    },
+    "unpublished": {
+      "title": "Avpublicerad",
+      "description": "Händelsen har avpublicerats",
+      "transitions": {
+        "draft": {
+          "title": "Utkast",
+          "description": "Gör om händelsen till ett utkast igen"
+        }
+      }
+    }
+  },
+  "core/planning-item": {
+    "draft": {
+      "title": "Utkast",
+      "description": "Du jobbar på ett utkast av denna planering",
+      "transitions": {
+        "done": {
+          "title": "Använd internt",
+          "description": "Gör planeringen internt synlig"
+        },
+        "usable": {
+          "title": "Publicera externt",
+          "description": "Publicera planeringen externt"
+        }
+      }
+    },
+    "done": {
+      "title": "Intern",
+      "description": "Planeringen är internt synlig",
+      "transitions": {
+        "usable": {
+          "title": "Publicera",
+          "description": "Publicera planeringen externt"
+        },
+        "unpublished": {
+          "title": "Avpublicera",
+          "description": "Avpublicera planeringen"
+        }
+      }
+    },
+    "usable": {
+      "title": "Publicerad",
+      "asSaveCTA": "Opublicerade ändringar",
+      "asSaveTitle": "Publicera ändrad version",
+      "description": "Planeringen är publicerad",
+      "changedDescription": "Planeringen har ändrats sedan den senaste publiceringen",
+      "updateDescription": "Uppdatera den publicerade planeringen med de nya ändringarna",
+      "transitions": {
+        "unpublished": {
+          "title": "Avpublicera",
+          "description": "Avpublicera planeringen externt"
+        }
+      }
+    },
+    "unpublished": {
+      "title": "Avpublicerad",
+      "description": "Planeringen har avpublicerats",
+      "transitions": {
+        "draft": {
+          "title": "Utkast",
+          "description": "Gör om planeringen till ett utkast igen"
+        }
+      }
+    }
+  },
+  "core/factbox": {
+    "draft": {
+      "title": "Utkast",
+      "description": "Du jobbar på ett utkast av faktarutan",
+      "transitions": {
+        "usable": {
+          "title": "Publicera",
+          "description": "Publicera faktarutan för användning"
+        }
+      }
+    },
+    "usable": {
+      "title": "Användbar",
+      "asSaveCTA": "Ändrad",
+      "asSaveTitle": "Publicera ny information",
+      "description": "Faktarutan är användbar",
+      "transitions": {
+        "draft": {
+          "title": "Till utkast",
+          "description": "Gör om faktarutan till ett utkast igen"
+        }
+      }
+    }
+  },
+  "core/editorial-info": {
+    "draft": {
+      "title": "Utkast",
+      "description": "Du jobbar på ett utkast av detta till red",
+      "transitions": {
+        "done": {
+          "title": "Klarmarkera",
+          "description": "Markera till red som klar"
+        },
+        "approved": {
+          "title": "Godkänn",
+          "description": "Godkänn till red för intern användning"
+        },
+        "usable": {
+          "title": "Publicera",
+          "description": "Publicera till red externt synlig"
+        }
+      }
+    },
+    "done": {
+      "title": "Klar",
+      "description": "Till red är klar och väntar på godkännande",
+      "transitions": {
+        "approved": {
+          "title": "Godkänn",
+          "description": "Godkänn till red för intern användning"
+        },
+        "usable": {
+          "title": "Publicera",
+          "description": "Publicera till red externt synlig"
+        },
+        "draft": {
+          "title": "Till utkast",
+          "description": "Gör om till red till ett utkast igen"
+        }
+      }
+    },
+    "approved": {
+      "title": "Intern",
+      "description": "Till red är internt publicerad och går att publicera externt",
+      "transitions": {
+        "usable": {
+          "title": "Publicera",
+          "description": "Publicera till red externt synlig"
+        },
+        "draft": {
+          "title": "Till utkast",
+          "description": "Gör om till red till ett utkast igen"
+        }
+      }
+    },
+    "usable": {
+      "title": "Publicerad",
+      "description": "Till red är publicerad",
+      "transitions": {
+        "draft": {
+          "title": "Till utkast",
+          "description": "Gör om till red till ett utkast igen"
+        },
+        "unpublished": {
+          "title": "Dra tillbaka",
+          "description": "Avbryt publiceringen och arkivera till red"
+        }
+      }
+    }
+  },
+  "tt/print-article": {
+    "draft": {
+      "title": "Utkast",
+      "description": "Du jobbar på ett utkast av printartikeln",
+      "transitions": {
+        "needs_proofreading": {
+          "title": "Begär korrläsning",
+          "description": "Behöver korrläsning av printartikeln"
+        },
+        "print_done": {
+          "title": "Klarmarkera",
+          "description": "Markera printartikeln som klar"
+        },
+        "usable": {
+          "title": "Exportera",
+          "description": "Exportera printartikeln"
+        }
+      }
+    },
+    "needs_proofreading": {
+      "title": "Klar för korr",
+      "description": "Printartikeln behöver korrläsning",
+      "transitions": {
+        "print_done": {
+          "title": "Klarmarkera",
+          "description": "Markera printartikeln som klar"
+        },
+        "usable": {
+          "title": "Exportera",
+          "description": "Exportera printartikeln"
+        },
+        "cancelled": {
+          "title": "Kasta",
+          "description": "Kasta printartikeln"
+        },
+        "draft": {
+          "title": "Till utkast",
+          "description": "Gör om printartikeln till ett utkast igen"
+        }
+      }
+    },
+    "print_done": {
+      "title": "Klar",
+      "description": "Printartikeln är klar och väntar på godkännande",
+      "transitions": {
+        "approved": {
+          "title": "Godkänn",
+          "description": "Godkänn printartikeln"
+        },
+        "usable": {
+          "title": "Exportera",
+          "description": "Exportera printartikeln"
+        },
+        "needs_proofreading": {
+          "title": "Begär korrläsning",
+          "description": "Behöver korrläsning av printartikeln"
+        },
+        "cancelled": {
+          "title": "Kasta",
+          "description": "Kasta printartikeln"
+        },
+        "draft": {
+          "title": "Till utkast",
+          "description": "Gör om printartikeln till ett utkast igen"
+        }
+      }
+    },
+    "usable": {
+      "title": "Exporterad",
+      "asSaveCTA": "Oexporterade ändringar",
+      "asSaveTitle": "Exportera ändrad version",
+      "description": "Printartikeln är exporterad",
+      "changedDescription": "Printartikeln har ändrats sedan den senaste exporten",
+      "updateDescription": "Uppdatera den exporterade printartikeln med de nya ändringarna",
+      "transitions": {
+        "unpublished": {
+          "title": "Dra tillbaka",
+          "description": "Avbryt export och arkivera printartikeln"
+        }
+      }
+    },
+    "unpublished": {
+      "title": "Inställd",
+      "description": "Printartikeln är avpublicerad",
+      "transitions": {
+        "draft": {
+          "title": "Till utkast",
+          "description": "Gör om printartikeln till ett utkast igen"
+        }
+      }
+    },
+    "cancelled": {
+      "title": "Kastad",
+      "description": "Printartikeln är kastad",
+      "transitions": {
+        "draft": {
+          "title": "Till utkast",
+          "description": "Gör om printartikeln till ett utkast igen"
+        }
+      }
+    }
+  }
+}

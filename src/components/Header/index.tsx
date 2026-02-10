@@ -9,6 +9,7 @@ import { useModal } from '../Modal/useModal'
 import * as Views from '@/views'
 import { getTemplateFromView } from '@/shared/templates/lib/getTemplateFromView'
 import { useQuery } from '@/hooks/useQuery'
+import { useTranslation } from 'react-i18next'
 
 export const Header = ({ assigneeId, type }: {
   type: View
@@ -24,6 +25,7 @@ export const Header = ({ assigneeId, type }: {
   }, [type])
 
   const { showModal, hideModal } = useModal()
+  const { t } = useTranslation()
 
   const ViewDialog = Views[type]
 
@@ -47,7 +49,7 @@ export const Header = ({ assigneeId, type }: {
           }}
         >
           <PlusIcon size={18} strokeWidth={1.75} />
-          <span className='pl-0.5'>Ny</span>
+          <span className='pl-0.5'>{t('common:misc.new')}</span>
         </Button>
       )}
 

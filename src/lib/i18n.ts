@@ -1,24 +1,21 @@
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
-import svSE from '../locales/sv-SE/translation.json'
-import nb from '../locales/nb/translation.json'
+import { sv } from '../locales/sv-SE/index'
+import { nb } from '../locales/nb/index'
 import LanguageDetector from 'i18next-browser-languagedetector'
 
 const resources = {
-  sv: {
-    translation: svSE
-  },
-  nb: {
-    translation: nb
-  }
+  sv,
+  nb
 }
-
 
 void i18n
   .use(initReactI18next)
   .use(LanguageDetector)
   .init({
     // lng: language, // Default
+    ns: ['common', 'core', 'planning', 'shared', 'app', 'views', 'editor', 'workflows', 'factbox', 'event', 'metaSheet'],
+    defaultNS: 'common',
     detection: {
       // order: defines the priority of detection
       // 'navigator' is the browser/system setting
@@ -27,9 +24,19 @@ void i18n
     },
     resources,
     debug: true, // Useful during development to see loading errors
-    fallbackLng: 'sv',
+    fallbackLng: (lng) => {
+      const nb = ['nn', 'nb', 'no', 'nb-NO', 'nn-NO'].includes(lng)
+      if (nb) return 'nb'
+      return 'sv'
+    },
     interpolation: {
-      escapeValue: false // React already does escaping
+      escapeValue: false, // React already does escaping,
+      format: (value, formatStr) => {
+        if (formatStr === 'lowercase' && typeof value === 'string') {
+          return value.toLowerCase()
+        }
+        return value as string
+      }
     },
     supportedLngs: ['sv', 'nb'],
     load: 'languageOnly',

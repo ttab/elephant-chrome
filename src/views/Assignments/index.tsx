@@ -17,6 +17,7 @@ import { newLocalDate } from '@/shared/datetime'
 import { useSections } from '@/hooks/useSections'
 import type { Assignment } from '@/shared/schemas/assignments'
 import { useInitFilters } from '@/hooks/useInitFilters'
+import { useTranslation } from 'react-i18next'
 
 const meta: ViewMetadata = {
   name: 'Assignments',
@@ -41,6 +42,7 @@ export const Assignments = (): JSX.Element => {
   const { locale, timeZone } = useRegistry()
   const { data: session } = useSession()
   const sections = useSections()
+  const { t } = useTranslation()
 
   const assigneeId = useMemo(() => {
     const userSub = session?.user?.sub
@@ -60,7 +62,7 @@ export const Assignments = (): JSX.Element => {
 
 
   const columns = useMemo(() =>
-    assignmentColumns({ authors, locale, timeZone, sections, currentDate: date }), [authors, locale, timeZone, sections, date])
+    assignmentColumns({ authors, locale, timeZone, sections, currentDate: date, t }), [authors, locale, timeZone, sections, date, t])
 
   const columnFilters = useInitFilters({
     path: 'filters.Assignments.current',
@@ -88,7 +90,7 @@ export const Assignments = (): JSX.Element => {
 
         <ViewHeader.Root>
           <ViewHeader.Content>
-            <ViewHeader.Title name={meta.name} title='Uppdrag' />
+            <ViewHeader.Title name={meta.name} title={t('views:assignments.title')} />
             <Header type={meta.name} assigneeId={assigneeId} />
           </ViewHeader.Content>
 

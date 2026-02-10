@@ -1,0 +1,104 @@
+{
+  "approvals": {
+    "title": "Dagen",
+    "charactersShort": "tgn",
+    "tooltips": {
+      "openPreview": "Åpne forhåndsvisning",
+      "openPlanning": "Åpne planlegging",
+      "lastChanged": "Sist endret",
+      "scheduledAt": "Planlagt kl"
+    }
+  },
+  "plannings": {
+    "label": {
+      "plural": "Planer",
+      "singular": "Planlegging"
+    },
+    "toasts": {
+      "create": {
+        "error": "Kunne ikke opprette ny plan",
+        "success": "Planlegging opprettet"
+      },
+      "getPlanningsError": "Kunne ikke hente planene",
+      "openItem": "Åpne planlegging"
+    }
+  },
+  "events": {
+    "label": {
+      "plural": "Hendelser",
+      "singular": "Hendelse"
+    },
+    "columnLabels": {
+      "startTime": "Starttid",
+      "status": "Status",
+      "organiser": "Arrangør",
+      "section": "Kategori",
+      "planningStatus": "Planleggingsstatus",
+      "action": "Action"
+    },
+    "toasts": {
+      "fetch": {
+        "error": "Kunne ikke hente hendelser"
+      }
+    },
+    "tooltips": {
+      "organiser": "Arrangør"
+    }
+  },
+  "assignments": {
+    "title": "Oppdrag",
+    "columnLabels": {
+      "assignmentTime": "Oppdragstid",
+      "type": "Oppdragstype"
+    },
+    "tooltips": {
+      "assignmentStartTime": "Oppdragets starttid"
+    },
+    "actionMenu": {
+      "openArticle": "Åpne artikkel",
+      "openPlanning": "Åpne planlegging"
+    },
+    "myAssignments": "Mine oppdrag"
+  },
+  "factboxes": {
+    "title": "Faktabokser",
+    "columnLabels": {
+      "description": "Beskrivelse",
+      "lastChanged": "Sist endret"
+    }
+  },
+  "search": {
+    "title": "Søk",
+    "placeholders": {
+      "search": "Søk"
+    },
+    "labels": {
+      "plannings": "Planlegging",
+      "events": "Hendelser",
+      "articles": "Artikler"
+    },
+    "errors": {
+      "errorFetchingResults": "Kunne ikke hente søkeresultatene"
+    },
+    "columnLabels": {
+      "date": "Dato"
+    }
+  },
+  "login": {
+    "loginWith": "Logg inn med",
+    "rememberMe": "Husk meg neste gang",
+    "loggingIn": "Logger inn..."
+  },
+  "imageSearch": {
+    "title": "Bilder",
+    "errors": {
+      "noSession": "Kan ikke autentisere til bildetjenesten",
+      "showPictureError": "Kan ikke vise bildet, ugyldig id"
+    },
+    "labels": {
+      "mediaType": "Medietype",
+      "image": "Bild",
+      "graphic": "Grafikk"
+    }
+  }
+}

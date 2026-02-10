@@ -1,0 +1,41 @@
+{
+  "contentMenu": {
+    "title": "Tittel",
+    "subTitle": "Mellomtittel",
+    "bodyText": "Brødtekst",
+    "vignette": "Vignett",
+    "preamble": "Ingress",
+    "tvListing": "",
+    "unorderedList": "Liste",
+    "orderedList": "Punktliste",
+    "searchImages": "Bildesøk",
+    "factboxes": "Faktabokser"
+  },
+  "numberOfChars": "Antall tegn",
+  "spelling": {
+    "noSuggestions": "Ingen forslag"
+  },
+  "factbox": {
+    "headerTitle": "Rediger originalen",
+    "modifiedLabel": "Originalen er fra",
+    "footerTitle": "Endringer i faktaboksteksten gjelder kun for denne artikkelen"
+  },
+  "image": {
+    "captionLabel": "Tekst",
+    "bylineLabel": "Bild"
+  },
+  "footer": {
+    "words": "Ord",
+    "numberOfWords": "Antall ord: artikkel (totalt)",
+    "chars": "Tegn",
+    "numberOfChars": "Antall tegn: artikkel (totalt)"
+  },
+  "goToLatestVersion": "Gå til siste versjon",
+  "addRoleInfo": {
+    "editorial": "Legg til redaksjonell informasjon",
+    "internal": "Legg til intern informasjon"
+  },
+  "removeInfoConfirm": "Er du sikker på at du vil slette informasjonen?",
+  "changeType": "Endre type",
+  "changeTypeConfirm": "Er du sikker på at du vil endre informasjonstypen?"
+}
