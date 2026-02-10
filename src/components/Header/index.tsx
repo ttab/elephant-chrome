@@ -5,7 +5,6 @@ import { PersonalAssignmentsFilter } from './PersonalAssignmentsFilter'
 import { useMemo, type JSX } from 'react'
 import { AddButtonGroup } from './AddButtonGroup'
 import { useQuery } from '@/hooks/useQuery'
-import { useTranslation } from 'react-i18next'
 
 export const Header = ({ assigneeId, type, docType }: {
   type: View
