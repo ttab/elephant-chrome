@@ -65,7 +65,7 @@
     "couldNotChangeStatusReloadBrowser": "Det har oppstått en feil. Gjeldende status kunne ikke endres! Last inn nettleseren på nytt og prøv på nytt.",
     "couldNotChangeStatus": "Det oppstod en feil når aktuell status skulle endres.",
     "couldNotSaveStatus": "Det oppstod en feil når aktuell status skulle lagres.",
-    "couldNotFindPlanningSection": "Finner ikke planleggingsdelen"
+    "couldNotFindPlanningSection": "Finner ikke planleggingskategorien"
   },
   "operations": {
     "authorCreateSuccess": "Forfatterdokument er opprettet",

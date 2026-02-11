@@ -21,7 +21,7 @@ export const ViewMap: Record<DocumentView, ViewConfig> = {
     newDialogTitle: i18next.t('flash:titles.newFlashTitle'),
     iconColor: '#FF5150',
     linkTarget: 'Flash',
-    statusErrorText: i18next.t('flash:statusErrorText')
+    statusErrorText: i18next.t('flash:errors.statusErrorText')
   },
   QuickArticle: {
     icon: NewspaperIcon,

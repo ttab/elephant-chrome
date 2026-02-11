@@ -168,13 +168,13 @@ export const FlashDialog = (props: {
 
     if (ex?.message === 'FlashCreationError') {
       // Both flash and quick-article creation were unsuccessful
-      toast.error(t('flash:errors.createFlashFailed'), {
+      toast.error(t('flash:errors.flashCreationFailed'), {
         action: <ToastAction documentId={ydoc.id} withView='Flash' />
       })
     }
 
     if (ex?.message === 'CreateAssignmentError') {
-      toast.error(t('flash.errors.createAssignmentError'), {
+      toast.error(t('flash:errors.createAssignmentError'), {
         action: <ToastAction documentId={ydoc.id} withView='Flash' />
       })
     }

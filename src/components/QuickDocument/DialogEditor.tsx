@@ -54,7 +54,7 @@ export const DialogEditor = ({ ydoc, setTitle, onValidation, validateStateRef, t
             countCharacters: ['heading-1', 'body'],
             preventHotkeys: ['heading-1', 'heading-2', 'preamble'],
             ...contentMenuLabels,
-            titleLabel: type === 'flash' ? t('placeholders.flashTitle') : t('editer:title')
+            titleLabel: type === 'flash' ? t('placeholders.flashTitle') : t('editor:contentMenu.title')
           })
         ]}
         className='h-auto min-h-auto rounded-md border'

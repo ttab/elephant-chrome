@@ -42,9 +42,9 @@
     "started": "Påbörjad",
     "public": "Publik",
     "sent": "Skickad",
-    "typeApproved": " {{type}} godkänd",
-    "typeDone": " {{type}} klar",
-    "typeSaved": " {{type}} sparad"
+    "typeApproved": "{{type}} godkänd",
+    "typeDone": "{{type}} klar",
+    "typeSaved": "{{type}} sparad"
   },
   "timeSlots": {
     "morning": "Morgon",

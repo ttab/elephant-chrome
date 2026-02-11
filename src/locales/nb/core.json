@@ -5,7 +5,7 @@
     "assignment": "oppdrag",
     "article": "artikkel",
     "flash": "HAST",
-    "quickArticle": "Direkteartikkel"
+    "quickArticle": "direkteartikkel"
   },
   "labels": {
     "newsvalue": "Nyhetesverdi",
@@ -42,7 +42,7 @@
     "started": "Startet",
     "public": "Offentlig",
     "sent": "Sendt",
-    "typeApproved": "{{type}} godtjent",
+    "typeApproved": "{{type}} godkjent",
     "typeDone": "{{type}} ferdig",
     "typeSaved": "{{type}} lagret"
   },

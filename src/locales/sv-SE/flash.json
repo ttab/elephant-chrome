@@ -23,7 +23,6 @@
         "createQuickArticleFailed": "Fel när snabbartikel skapades.",
         "flashCreationFailed": "Flashen kunde inte skapas.",
         "createAssignmentError": "Flashen har skapats. Tyvärr misslyckades det att koppla den till en planering."
-        
     },
     "operations": {
         "quickArticleCreated": "Snabbartikel har skapats"
