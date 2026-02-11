@@ -17,9 +17,13 @@
     "group": "Gruppera",
     "copy": "Kopiera",
     "confirm": "Klar",
+    "markAsDone": "Klarmarkera",
     "move": "Flytta",
     "yes": "Ja",
-    "no": "Nej"
+    "no": "Nej",
+    "approve": "Godkänn",
+    "saveType": "Spara {{type}}",
+    "save": "Spara"
   },
   "errors": {
     "unknown": "Okänt fel",
