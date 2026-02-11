@@ -17,9 +17,13 @@
     "group": "Gruppe",
     "copy": "Kopiere",
     "confirm": "Ferdig",
+    "markAsDone": "Sett som klar",
     "move": "Flytte",
     "yes": "Ja",
-    "no": "Nei"
+    "no": "Nei",
+    "approve": "Godkjenn",
+    "saveType": "Lagre {{type}}",
+    "save": "Lagre"
   },
   "errors": {
     "unknown": "Ukjent feil",

@@ -2,6 +2,7 @@ import { type Dispatch, type SetStateAction } from 'react'
 import type { CreateArticleDocumentStatus } from '@/views/QuickArticle/lib/createQuickArticle'
 import type { DefaultValueOption } from '@/types/index'
 import type { CreateFlashDocumentStatus } from '@/views/Flash/lib/createFlash'
+import i18next from 'i18next'
 
 export type PromptConfig = {
   visible: boolean
@@ -34,7 +35,7 @@ export const promptConfig = ({
   donePrompt: boolean
   sendPrompt: boolean
 }): PromptConfig[] => {
-  const documentType = type === 'article' ? 'artikel' : 'flash'
+  const documentType = type === 'article' ? i18next.t('core:documentType.article') : i18next.t('core:documentType.flash')
   const isFlash = type === 'flash'
 
   return [
@@ -42,40 +43,40 @@ export const promptConfig = ({
       visible: sendPrompt,
       key: 'send',
       title: isFlash
-        ? `Skapa och skicka ${documentType}?`
-        : `Godkänn ${documentType}?`,
+        ? i18next.t(`flash:titles.createAndSendType`, { type: documentType })
+        : i18next.t(`flash:titles.approveType`, { type: documentType }),
       description: !selectedPlanning
-        ? `En ny planering med tillhörande uppdrag för denna ${documentType} kommer att skapas åt dig.`
-        : `Denna ${documentType} kommer att läggas i ett nytt uppdrag i planeringen "${selectedPlanning.label}".`,
+        ? i18next.t(`flash:promptDescriptions.newPlanningWillBeCreated`, { type: documentType })
+        : i18next.t(`flash:promptDescriptions.typeWillBeAddedToPlanning`, { type: documentType, planningName: selectedPlanning.label }),
       secondaryDescription: isFlash
-        ? `I samma planering kommer även ett textuppdrag med ${documentType} innehållet att läggas till.`
-        : `I samma planering kommer även ett textuppdrag med ${documentType} innehållet att läggas till, med status Godkänd.`,
-      secondaryLabel: 'Avbryt',
-      primaryLabel: isFlash ? 'Publicera' : 'Godkänn',
+        ? i18next.t(`flash:promptDescriptions.alsoTypeCreated`, { type: documentType })
+        : i18next.t(`flash:promptDescriptions.alsoTypeCreatedWithApproved`, { type: documentType }),
+      secondaryLabel: i18next.t('common:actions.abort'),
+      primaryLabel: isFlash ? i18next.t('common:actions.publish') : i18next.t('common:actions.approve'),
       documentStatus: (isFlash ? 'usable' : 'approved') as CreateArticleDocumentStatus,
       setPrompt: setSendPrompt
     },
     {
       visible: donePrompt,
       key: 'done',
-      title: `Skapa och klarmarkera ${documentType}?`,
+      title: i18next.t(`flash:titles.createAndMarkTypeAsDone`, { type: documentType }),
       description: !selectedPlanning
-        ? `En ny planering med tillhörande uppdrag för denna ${documentType} kommer att skapas åt dig.`
-        : `Denna ${documentType} kommer att läggas i ett nytt uppdrag i planeringen "${selectedPlanning.label}", med status Klar.`,
-      secondaryLabel: 'Avbryt',
-      primaryLabel: 'Klarmarkera',
+        ? i18next.t(`flash:promptDescriptions.newPlanningWillBeCreated`, { type: documentType })
+        : i18next.t(`flash:promptDescriptions.typeWillBeAddedToPlanning`, { type: documentType, planningName: selectedPlanning.label }),
+      secondaryLabel: i18next.t('common:actions.abort'),
+      primaryLabel: i18next.t('common:actions.markAsDone'),
       documentStatus: 'done' as CreateArticleDocumentStatus,
       setPrompt: setDonePrompt
     },
     {
       visible: savePrompt,
       key: 'save',
-      title: `Spara ${documentType}?`,
+      title: i18next.t(`common:actions.saveType`, { type: documentType }),
       description: !selectedPlanning
-        ? `En ny planering med tillhörande uppdrag för denna ${documentType} kommer att skapas åt dig.`
-        : `Denna ${documentType} kommer att läggas i ett nytt uppdrag i planeringen "${selectedPlanning.label}"`,
-      secondaryLabel: 'Avbryt',
-      primaryLabel: 'Spara',
+        ? i18next.t(`flash:promptDescriptions.newPlanningWillBeCreated`, { type: documentType })
+        : i18next.t(`flash:promptDescriptions.typeWillBeAddedToPlanning`, { type: documentType, planningName: selectedPlanning.label }),
+      secondaryLabel: i18next.t('common:actions.abort'),
+      primaryLabel: i18next.t('common:actions.save'),
       documentStatus: undefined,
       setPrompt: setSavePrompt
     }
@@ -83,20 +84,20 @@ export const promptConfig = ({
 }
 
 export const getLabel = (documentStatus: CreateFlashDocumentStatus, type: 'article' | 'flash'): string => {
-  const documentType = type === 'article' ? 'Artikel' : 'Flash'
+  const documentType = type === 'article' ? i18next.t('core:documentType.article') : i18next.t('core:documentType.flash')
 
   switch (documentStatus) {
     case 'usable': {
-      return `${documentType} ${type === 'flash' ? 'skickad' : 'publicerad'}`
+      return `${documentType} ${type === 'flash' ? i18next.t('core:status.sent') : i18next.t('core:status.usable')}`
     }
     case 'approved': {
-      return `${documentType} godkänd`
+      return i18next.t('core:status.typeApproved', { type: documentType })
     }
     case 'done': {
-      return `${documentType} klar`
+      return i18next.t('core:status.typeDone', { type: documentType })
     }
     default: {
-      return `${documentType} sparad`
+      return i18next.t('core:status.typeSaved', { type: documentType })
     }
   }
 }

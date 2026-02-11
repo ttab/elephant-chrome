@@ -4,7 +4,8 @@
     "event": "hendelse",
     "assignment": "oppdrag",
     "article": "artikkel",
-    "flash": "HAST"
+    "flash": "HAST",
+    "quickArticle": "Direkteartikkel"
   },
   "labels": {
     "newsvalue": "Nyhetesverdi",
@@ -18,7 +19,8 @@
     "organiser": "Arrangør",
     "category": "Kategori",
     "action": "Action",
-    "story": "Story"
+    "story": "Story",
+    "showOlder": "Vis eldre"
   },
   "status": {
     "action": {
@@ -38,7 +40,11 @@
     "moved": "flyttet",
     "todo": "Å gjøre",
     "started": "Startet",
-    "public": "Offentlig"
+    "public": "Offentlig",
+    "sent": "Sendt",
+    "typeApproved": "{{type}} godtjent",
+    "typeDone": "{{type}} ferdig",
+    "typeSaved": "{{type}} lagret"
   },
   "timeSlots": {
     "morning": "Natt",

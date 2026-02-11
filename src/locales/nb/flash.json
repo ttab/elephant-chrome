@@ -1,0 +1,34 @@
+{
+  "title": "HAST",
+  "createFlashAlertTitle": "Du lager en ny HAST",
+  "alertDescription1": "Hvis du ikke velger en plan, vil det bli opprettet en ny plan med tilhørende oppgaver for deg.",
+  "alertDescription2": "Denne flashen vil bli lagt til i en ny oppgave i den valgte planleggingen.",
+  "titles": {
+    "newFlashTitle": "Lag ny flash",
+    "createAndSendType": "Opprett og send {{type}}",
+    "createAndMarkTypeAsDone": "Opprett og fjern merke {{type}}",
+    "approveType": "Godkjenn {{type}}"
+  },
+  "promptDescriptions": {
+    "newPlanningWillBeCreated": "En ny planlegging med tilhørende oppgaver for denne {{type}} vil bli opprettet for deg.",
+    "typeWillBeAddedToPlanning": "Denne {{type}} vil bli lagt til i en ny oppgave i planleggingen \"{{planningName}}\"",
+    "alsoTypeCreated": "I samme planlegging vil det også bli lagt til en tekstoppgave med {{type}}-innhold.",
+    "alsoTypeCreatedWithApproved": "I samme planlegging vil det også bli lagt til en tekstoppgave med {{type}}-innhold, med status godkjent."
+  },
+  "errors": {
+    "flashDocumentMissing": "HAST-dokument mangler",
+    "flashDocumentMissingDescription": "Ingen HAST-dokumenter er spesifisert. Gå tilbake til oversikten og prøv på nytt.",
+    "statusErrorText": "Kunne ikke endre status på Flash! Finner ikke en lenket timeplan.",
+    "scheduleArticleFailed": "Kunne ikke planlegge artikkelen! Tid eller dato angitt feil.",
+    "createQuickArticleFailed": "Feil ved oppretting av direkteartikkel.",
+    "flashCreationFailed": "HAST kunne ikke opprettes.",
+    "createAssignmentError": "HAST er opprettet. Dessverre klarte den ikke å koble til en tidsplan."
+  },
+  "operations": {
+    "quickArticleCreated": "Hurtigartikkel opprettet"
+  },
+  "placeholders": {
+    "flashTitle": "HAST tittel",
+    "sluggForTypes": "Stikkord for {{type1}} og {{type2}}"
+  }
+}

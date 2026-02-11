@@ -64,7 +64,8 @@
     "fetchStatusFailed": "Ett fel uppstod när aktuell status skulle hämtas. Försök ladda om sidan.",
     "couldNotChangeStatusReloadBrowser": "Ett fel har uppstått, aktuell status kunde inte ändras! Ladda om webbläsaren och försök igen.",
     "couldNotChangeStatus": "Ett fel uppstod när aktuell status skulle ändras.",
-    "couldNotSaveStatus": "Ett fel uppstod när aktuell status skulle sparas."
+    "couldNotSaveStatus": "Ett fel uppstod när aktuell status skulle sparas.",
+    "couldNotFindPlanningSection": "Kunde inte hitta sektionen för planeringen"
   },
   "operations": {
     "authorCreateSuccess": "Författardokument är skapat",
