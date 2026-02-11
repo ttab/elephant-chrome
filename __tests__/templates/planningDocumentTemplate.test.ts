@@ -10,6 +10,9 @@ Object.defineProperty(global, 'crypto', {
   }
 })
 
+// Mock environment variables
+const originalEnv = process.env
+
 describe('planningDocumentTemplate', () => {
   const fixedDate = new Date('2024-06-01T10:00:00.000Z')
 
@@ -24,6 +27,11 @@ describe('planningDocumentTemplate', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
+    process.env = { ...originalEnv, SYSTEM_LANGUAGE: 'sv-se' }
+  })
+
+  afterEach(() => {
+    process.env = originalEnv
   })
 
   it('creates a document with correct basic properties', () => {

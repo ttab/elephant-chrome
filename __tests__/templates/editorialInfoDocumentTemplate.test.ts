@@ -3,9 +3,18 @@ import { editorialInfoDocumentTemplate } from '@/shared/templates/editorialInfoD
 import type { TemplatePayload } from '@/shared/templates'
 import { Block } from '@ttab/elephant-api/newsdoc'
 
+// Mock environment variables
+// const originalEnv = process.env
+
 describe('editorialInfoDocumentTemplate', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    vi.stubEnv('SYSTEM_LANGUAGE', 'sv-se')
+  })
+
+  afterEach(() => {
+    // process.env = originalEnv
+    vi.unstubAllEnvs()
   })
 
   it('creates a document with correct basic properties', () => {
