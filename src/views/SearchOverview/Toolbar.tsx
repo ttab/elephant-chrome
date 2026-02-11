@@ -17,7 +17,8 @@ export const Toolbar = ({ type }: { type: SearchKeys }): JSX.Element => {
     pages,
     setPages,
     search,
-    setSearch
+    setSearch,
+    freeTextFilter: false
   }
 
   return (
