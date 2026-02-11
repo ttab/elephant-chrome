@@ -2,17 +2,14 @@ import { vi } from 'vitest'
 import { eventDocumentTemplate } from '@/shared/templates/eventDocumentTemplate'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 
-// Mock environment variables
-const originalEnv = process.env
-
 describe('eventDocumentTemplate', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    process.env = { ...originalEnv, SYSTEM_LANGUAGE: 'sv-se' }
+    vi.stubEnv('SYSTEM_LANGUAGE', 'sv-se')
   })
 
   afterEach(() => {
-    process.env = originalEnv
+    vi.unstubAllEnvs()
   })
 
   it('creates a document with correct basic properties', () => {

@@ -3,17 +3,14 @@ import { Block } from '@ttab/elephant-api/newsdoc'
 import { articleDocumentTemplate } from '@/shared/templates/articleDocumentTemplate'
 import type { TemplatePayload } from '@/shared/templates'
 
-// Mock environment variables
-const originalEnv = process.env
-
 describe('articleDocumentTemplate', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    process.env = { ...originalEnv, SYSTEM_LANGUAGE: 'sv-se' }
+    vi.stubEnv('SYSTEM_LANGUAGE', 'sv-se')
   })
 
   afterEach(() => {
-    process.env = originalEnv
+    vi.unstubAllEnvs()
   })
 
   it('creates a document with correct id and type', () => {

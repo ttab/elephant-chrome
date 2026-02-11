@@ -3,9 +3,6 @@ import { editorialInfoDocumentTemplate } from '@/shared/templates/editorialInfoD
 import type { TemplatePayload } from '@/shared/templates'
 import { Block } from '@ttab/elephant-api/newsdoc'
 
-// Mock environment variables
-// const originalEnv = process.env
-
 describe('editorialInfoDocumentTemplate', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -13,7 +10,6 @@ describe('editorialInfoDocumentTemplate', () => {
   })
 
   afterEach(() => {
-    // process.env = originalEnv
     vi.unstubAllEnvs()
   })
 
