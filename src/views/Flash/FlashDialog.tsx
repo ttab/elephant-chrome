@@ -366,6 +366,9 @@ export const FlashDialog = (props: {
                       relatedDocsSlugline
                     })
                       .then((data) => {
+                        if (props?.onDialogClose) {
+                          props.onDialogClose()
+                        }
                         handleCreationSuccess(data, config, startDate)
                       })
                       .catch((ex: Error) => {
