@@ -13,9 +13,10 @@ export interface FilterProps {
   search: string | undefined
   setSearch: Dispatch<SetStateAction<string | undefined>>
   setGlobalTextFilter?: (updater: Updater<unknown>) => void
+  freeTextFilter?: boolean
 }
 
-export const Filter = ({ page, pages, setPages, search, setSearch, children, setGlobalTextFilter }:
+export const Filter = ({ page, pages, setPages, search, setSearch, children, setGlobalTextFilter, freeTextFilter = true }:
   PropsWithChildren & FilterProps): JSX.Element => {
   const [open, setOpen] = useState(false)
   const [filter, setFilter] = useQuery(['query'])
@@ -78,14 +79,15 @@ export const Filter = ({ page, pages, setPages, search, setSearch, children, set
             }
           }}
         >
-
-          <DebouncedCommandInput
-            ref={inputRef}
-            value={page === 'query' ? filter?.query?.[0] : search}
-            onChange={(value) => handleInputChange(value)}
-            placeholder='Fritext'
-            className='h-9'
-          />
+          {freeTextFilter && (
+            <DebouncedCommandInput
+              ref={inputRef}
+              value={filter.query ? filter?.query?.[0] : search}
+              onChange={(value) => handleInputChange(value)}
+              placeholder='Fritext'
+              className='h-9'
+            />
+          )}
           {children}
         </Command>
       </PopoverContent>
