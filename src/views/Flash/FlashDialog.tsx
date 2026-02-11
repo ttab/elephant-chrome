@@ -137,6 +137,9 @@ export const FlashDialog = (props: {
   } | undefined, config: PromptConfig, startDate: string | undefined) => {
     // After flash has been successfully created, we celebrate with a toast
     toast.success(getLabel(data?.documentStatus, 'flash'), {
+      classNames: {
+        title: 'whitespace-nowrap'
+      },
       action: (
         <ToastAction
           key='open-flash-1'
@@ -144,7 +147,7 @@ export const FlashDialog = (props: {
           withView='Flash'
           target='last'
           Icon={ZapIcon}
-          label='Öppna planering'
+          label='Öppna flash'
         />
       )
     })
