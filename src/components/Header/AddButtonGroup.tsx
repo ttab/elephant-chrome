@@ -12,7 +12,8 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger
+  DropdownMenuTrigger,
+  DropdownMenuSeparator
 } from '@ttab/elephant-ui'
 import { documentTypeValueFormat } from '@/defaults/documentTypeFormats'
 import type { buttonVariants } from '@ttab/elephant-ui'
@@ -126,6 +127,7 @@ export const AddButtonGroup = ({ docType = 'core/article', query }: { type: View
               />
             </DropdownMenuItem>
           )}
+          <DropdownMenuSeparator />
           {views.filter((view) => view.type !== docType).map((view) => {
             const ViewIcon = view.icon
 
