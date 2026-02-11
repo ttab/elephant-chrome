@@ -82,8 +82,8 @@ export const Filter = ({ page, pages, setPages, search, setSearch, children, set
           <DebouncedCommandInput
             ref={inputRef}
             value={page === 'query' ? filter?.query?.[0] : search}
-            onChange={(value) => page === 'query' && handleInputChange(value)}
-            placeholder={page === 'query' ? 'Fritext' : 'Sök alternativ'}
+            onChange={(value) => handleInputChange(value)}
+            placeholder='Fritext'
             className='h-9'
           />
           {children}
