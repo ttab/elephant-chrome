@@ -10,6 +10,7 @@ import type { YXmlText } from 'node_modules/yjs/dist/src/internals'
 import type { TBElement } from '@ttab/textbit'
 import type { QuickArticleData } from '@/shared/types'
 import { Block } from '@ttab/elephant-api/newsdoc'
+import i18Next from 'i18next'
 
 export type CreateFlashDocumentStatus = 'usable' | 'done' | 'approved' | undefined
 export async function createFlash({
@@ -125,7 +126,7 @@ export async function createFlash({
               Block.create({
                 type: 'tt/slugline',
                 value: !flashTitle
-                  ? 'snabbartikel'
+                  ? i18Next.t('core:documentType.quickArticle')
                   : relatedDocsSlugline || `${flashTitle?.toLocaleLowerCase()?.split(' ').slice(0, 3).join('-').slice(0, 20)}`
               })]
           },

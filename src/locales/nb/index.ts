@@ -9,6 +9,7 @@ import workflows from './workflows.json'
 import factbox from './factbox.json'
 import event from './event.json'
 import metaSheet from './metaSheet.json'
+import flash from './flash.json'
 
 export const nb = {
   common,
@@ -21,5 +22,6 @@ export const nb = {
   workflows,
   factbox,
   event,
-  metaSheet
+  metaSheet,
+  flash
 }

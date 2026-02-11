@@ -27,6 +27,7 @@ import { quickArticleDocumentTemplate } from '@/shared/templates/quickArticleDoc
 import { DocumentHeader } from '@/components/QuickDocument/DocumentHeader'
 import { DialogEditor } from '@/components/QuickDocument/DialogEditor'
 import { getLabel, promptConfig } from '@/components/QuickDocument/dialogConfig'
+import { useTranslation } from 'react-i18next'
 
 type PromptConfig = {
   visible: boolean
@@ -39,7 +40,6 @@ type PromptConfig = {
   documentStatus: CreateFlashDocumentStatus
   setPrompt: Dispatch<SetStateAction<boolean>>
 }
-import { useTranslation } from 'react-i18next'
 
 export const FlashDialog = (props: {
   documentId: string
@@ -100,7 +100,7 @@ export const FlashDialog = (props: {
         data: quickArticleData
       })
         .then((id) => {
-          toast.success('Snabbartikel har skapats', {
+          toast.success(t('flash:operations.quickArticleCreated'), {
             classNames: {
               title: 'whitespace-nowrap'
             },
@@ -111,14 +111,14 @@ export const FlashDialog = (props: {
                 withView='Editor'
                 target='last'
                 Icon={NewspaperIcon}
-                label='Öppna artikel'
+                label={t('common:actions.openType', { type: t('core:documentType.article') })}
               />
             )
           })
         })
         .catch(() => {
           // Flash creation OK, quick-article creation unsuccessful
-          toast.error('Fel när snabbartikel skapades', {
+          toast.error(t('flash:errors.createQuickArticleFailed'), {
             action: <ToastAction withView='Flash' documentId={data.updatedPlanningId} />
           })
         })
@@ -139,7 +139,7 @@ export const FlashDialog = (props: {
           withView='Flash'
           target='last'
           Icon={ZapIcon}
-          label='Öppna planering'
+          label={t('common:actions.openType', { type: t('core:documentType.planning') })}
         />
       )
     })
@@ -168,13 +168,13 @@ export const FlashDialog = (props: {
 
     if (ex?.message === 'FlashCreationError') {
       // Both flash and quick-article creation were unsuccessful
-      toast.error('Flashen kunde inte skapas.', {
+      toast.error(t('flash:errors.flashCreationFailed'), {
         action: <ToastAction documentId={ydoc.id} withView='Flash' />
       })
     }
 
     if (ex?.message === 'CreateAssignmentError') {
-      toast.error('Flashen har skapats. Tyvärr misslyckades det att koppla den till en planering.', {
+      toast.error(t('flash:errors.createAssignmentError'), {
         action: <ToastAction documentId={ydoc.id} withView='Flash' />
       })
     }
@@ -204,7 +204,7 @@ export const FlashDialog = (props: {
                     size='xs'
                     className='min-w-0 w-full truncate justify-start max-w-48'
                     selectedOptions={selectedPlanning ? [selectedPlanning] : []}
-                    placeholder='Välj planering'
+                    placeholder={t('planning:move.pickPlanning')}
                     onOpenChange={(isOpen: boolean) => {
                       if (planningAwareness?.current) {
                         planningAwareness.current(isOpen)
@@ -249,7 +249,7 @@ export const FlashDialog = (props: {
                             uuid: sectionPayload.section
                           }))
                         } else {
-                          toast.error('Kunde inte hitta sektionen för planeringen')
+                          toast.error(t('shared:errors.couldNotFindPlanningSection'))
                         }
                       } else {
                         setSelectedPlanning(undefined)
@@ -279,7 +279,7 @@ export const FlashDialog = (props: {
                     defaultChecked={searchOlder}
                     onCheckedChange={(checked: boolean) => { setSearchOlder(checked) }}
                   />
-                  <Label htmlFor='SearchOlder' className='text-muted-foreground'>Visa äldre</Label>
+                  <Label htmlFor='SearchOlder' className='text-muted-foreground'>{t('core:labels.showOlder')}</Label>
                 </>
               </Form.Group>
             )}
@@ -294,7 +294,7 @@ export const FlashDialog = (props: {
             <Form.Group icon={TagsIcon}>
               <input
                 autoComplete='off'
-                placeholder='Slugg för planering och artikel'
+                placeholder={t('flash:placeholders.sluggForTypes', { type1: t('core:documentType.planning'), type2: t('core:documentType.article') })}
                 min={3}
                 className='w-full text-sm rounded bg-background placeholder:pl-2 p-1 ring-offset-background'
                 name='slugline'
@@ -309,11 +309,11 @@ export const FlashDialog = (props: {
             <>
               <Alert className='bg-red-300/35'>
                 <InfoIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />
-                <AlertTitle>Du skapar en ny flash</AlertTitle>
+                <AlertTitle>{t('flash:createFlashAlertTitle')}</AlertTitle>
                 <AlertDescription>
                   {!selectedPlanning
-                    ? (<>Väljer du ingen planering kommer en ny planering med tillhörande uppdrag skapas åt dig.</>)
-                    : (<>Denna flash kommer läggas i ett nytt uppdrag i den valda planeringen</>)}
+                    ? (<>{t('flash:alertDescription1')}</>)
+                    : (<>{t('flash:alertDescription2')}</>)}
                 </AlertDescription>
               </Alert>
             </>
@@ -378,10 +378,10 @@ export const FlashDialog = (props: {
               >
                 <div className='flex justify-between'>
                   <div className='flex gap-2'>
-                    <Button variant='secondary' type='button' role='secondary'>Utkast</Button>
-                    <Button variant='secondary' type='button' role='tertiary'>Klarmarkera</Button>
+                    <Button variant='secondary' type='button' role='secondary'>{t('core:status.draft')}</Button>
+                    <Button variant='secondary' type='button' role='tertiary'>{t('common:actions.markAsDone')}</Button>
                   </div>
-                  <Button type='submit' role='primary'>Publicera</Button>
+                  <Button type='submit' role='primary'>{t('core:status.action.publish')}</Button>
                 </div>
               </Form.Submit>
             </Form.Footer>

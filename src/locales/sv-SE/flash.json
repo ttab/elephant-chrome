@@ -1,0 +1,35 @@
+{
+    "title": "Flash",
+    "createFlashAlertTitle": "Du skapar en ny flash",
+    "alertDescription1": "Väljer du ingen planering kommer en ny planering med tillhörande uppdrag skapas åt dig.",
+    "alertDescription2": "Denna flash kommer läggas i ett nytt uppdrag i den valda planeringen.",
+    "titles": {
+        "newFlashTitle": "Skapa ny flash",
+        "createAndSendType": "Skapa och skicka {{type}}",
+        "createAndMarkTypeAsDone": "Skapa och klarmarkera {{type}}",
+        "approveType": "Godkänn {{type}}"
+    },
+    "promptDescriptions": {
+        "newPlanningWillBeCreated": "En ny planering med tillhörande uppdrag för denna {{type}} kommer att skapas åt dig.",
+        "typeWillBeAddedToPlanning": "Denna {{type}} kommer att läggas i ett nytt uppdrag i planeringen \"{{planningName}}\".",
+        "alsoTypeCreated": "I samma planering kommer även ett textuppdrag med {{type}} innehållet att läggas till.",
+        "alsoTypeCreatedWithApproved": "I samma planering kommer även ett textuppdrag med {{type}} innehållet att läggas till, med status godkänd."
+    },
+    "errors": {
+        "flashDocumentMissing": "Flashdokument saknas",
+        "flashDocumentMissingDescription": "Inget flashdokument är angivet. Navigera tillbaka till översikten och försök igen.",
+        "statusErrorText": "Kunde inte ändra status på flash! Det gick inte att hitta en kopplad planering.",
+        "scheduleArticleFailed": "Kunde inte schemalägga artikel! Tid eller datum är felaktigt angivet.",
+        "createQuickArticleFailed": "Fel när snabbartikel skapades.",
+        "flashCreationFailed": "Flashen kunde inte skapas.",
+        "createAssignmentError": "Flashen har skapats. Tyvärr misslyckades det att koppla den till en planering."
+    },
+    "operations": {
+        "quickArticleCreated": "Snabbartikel har skapats"
+    },
+    "placeholders": {
+        "flashTitle": "Flashrubrik",
+        "sluggForTypes": "Slugg för {{type1}} och {{type2}}"
+    }
+    
+}

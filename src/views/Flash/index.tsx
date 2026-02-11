@@ -14,6 +14,7 @@ import type { YDocument } from '@/modules/yjs/hooks'
 import type { Document } from '@ttab/elephant-api/newsdoc'
 import { DocumentHeader } from '@/components/QuickDocument/DocumentHeader'
 import { useDeliverablePlanningId } from '@/hooks/index/useDeliverablePlanningId'
+import { useTranslation } from 'react-i18next'
 
 const meta: ViewMetadata = {
   name: 'Flash',
@@ -36,6 +37,7 @@ export const Flash = (props: ViewProps & {
 }): JSX.Element => {
   const [query] = useQuery()
   const [workflowStatus] = useWorkflowStatus({ documentId: props.id || undefined })
+  const { t } = useTranslation('flash')
 
   const persistentDocumentId = useRef<string>('')
   if (!persistentDocumentId.current) {
@@ -63,8 +65,8 @@ export const Flash = (props: ViewProps & {
   if ((!props.asDialog && !documentId) || typeof documentId !== 'string') {
     return (
       <Error
-        title='Flashdokument saknas'
-        message='Inget flashdokument är angivet. Navigera tillbaka till översikten och försök igen.'
+        title={t('errors.flashDocumentMissing')}
+        message={t('errors.flashDocumentMissingDescription')}
       />
     )
   }

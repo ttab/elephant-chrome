@@ -4,7 +4,8 @@
     "event": "händelse",
     "assignment": "uppdrag",
     "article": "artikel",
-    "flash": "flash"
+    "flash": "flash",
+    "quickArticle": "snabbartikel"
   },
   "labels": {
     "newsvalue": "Nyhetsvärde",
@@ -18,7 +19,8 @@
     "organiser": "Organisatör",
     "category": "Kategori",
     "action": "Action",
-    "story": "Story"
+    "story": "Story",
+    "showOlder": "Visa äldre"
   },
   "status": {
     "action": {
@@ -38,7 +40,11 @@
     "moved": "flyttad",
     "todo": "Att göra",
     "started": "Påbörjad",
-    "public": "Publik"
+    "public": "Publik",
+    "sent": "Skickad",
+    "typeApproved": "{{type}} godkänd",
+    "typeDone": "{{type}} klar",
+    "typeSaved": "{{type}} sparad"
   },
   "timeSlots": {
     "morning": "Morgon",
