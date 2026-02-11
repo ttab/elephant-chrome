@@ -386,7 +386,6 @@ export const FlashDialog = (props: {
                 onSubmit={() => handleSubmit(setSendPrompt)}
                 onSecondarySubmit={() => handleSubmit(setSavePrompt)}
                 onTertiarySubmit={() => handleSubmit(setDonePrompt)}
-                disableOnSubmit={relatedDocsSlugline.length > 0}
               >
                 <div className='flex justify-between'>
                   <div className='flex gap-2'>
