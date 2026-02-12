@@ -45,7 +45,7 @@ export const QuickArticleDialog = (props: {
   const [, setTitle] = useYValue<string | undefined>(ydoc.ele, 'root.title')
   const { index, locale, timeZone } = useRegistry()
   const [searchOlder, setSearchOlder] = useState(false)
-  const { t } = useTranslation('flash')
+  const { t } = useTranslation('common')
 
   const [section, setSection] = useState<{
     type: string
@@ -209,8 +209,8 @@ export const QuickArticleDialog = (props: {
 
             <UserMessage asDialog={!!props?.asDialog}>
               {!selectedPlanning
-                ? (<>{t('alertDescription1')}</>)
-                : (<>{t('alertDescription2', { documentType: t('core:documentType.article') })}</>)}
+                ? (<>{t('flash:alertDescription1')}</>)
+                : (<>{t('flash:alertDescription2', { documentType: t('core:documentType.article') })}</>)}
             </UserMessage>
 
             <DialogEditor ydoc={ydoc} setTitle={setTitle} type='article' />
@@ -257,7 +257,7 @@ export const QuickArticleDialog = (props: {
                               withView='Editor'
                               target='last'
                               Icon={NewspaperIcon}
-                              label={t('common:actions.openType', { type: t('core:documentType.article') })}
+                              label={t('actions.openType', { type: t('core:documentType.article') })}
                             />
                           )
                         })
@@ -287,9 +287,9 @@ export const QuickArticleDialog = (props: {
                   <div className='flex justify-between'>
                     <div className='flex gap-2'>
                       <Button variant='secondary' type='button' role='secondary'>{t('core:status.draft')}</Button>
-                      <Button variant='secondary' type='button' role='tertiary'>{t('common:actions.markAsDone')}</Button>
+                      <Button variant='secondary' type='button' role='tertiary'>{t('actions.markAsDone')}</Button>
                     </div>
-                    <Button type='submit' role='primary'>{t('common:actions.approve')}</Button>
+                    <Button type='submit' role='primary'>{t('actions.approve')}</Button>
                   </div>
                 </Form.Submit>
               </Form.Footer>
