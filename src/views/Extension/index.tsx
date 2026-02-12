@@ -5,6 +5,7 @@ import { useRegistry, useNavigation, useHistory, useView } from '@/hooks'
 import { handleLink, type Target } from '@/components/Link/lib/handleLink'
 import type { ViewMetadata, View as ViewName, ViewProps } from '@/types'
 import { ExtensionToolbar, type ToolbarItem } from './ExtensionToolbar'
+import { usePostMessageCollab } from './usePostMessageCollab'
 
 const meta: ViewMetadata = {
   name: 'Extension',
@@ -43,6 +44,8 @@ const Extension = (): JSX.Element => {
       win.postMessage(data, EXTENSION_ORIGIN)
     }
   }, [])
+
+  const { handleCollabMessage } = usePostMessageCollab(postToIframe)
 
   const handleButtonClick = useCallback((name: string) => {
     setButtonsLocked(true)
@@ -130,6 +133,14 @@ const Extension = (): JSX.Element => {
           break
         }
 
+        case 'open_collab':
+        case 'collab_update':
+        case 'close_collab': {
+          const collabPayload = (event.data as { payload?: { uuid?: string, update?: number[] } })?.payload ?? {}
+          handleCollabMessage(msgType, collabPayload)
+          break
+        }
+
         default:
           console.warn('Extension: unknown message type from iframe:', msgType)
           break
@@ -138,7 +149,7 @@ const Extension = (): JSX.Element => {
 
     window.addEventListener('message', handleMessage)
     return () => window.removeEventListener('message', handleMessage)
-  }, [session?.accessToken, server, postToIframe, navState.viewRegistry, dispatch, origin, history])
+  }, [session?.accessToken, server, postToIframe, navState.viewRegistry, dispatch, origin, history, handleCollabMessage])
 
   // Forward token refresh to iframe
   useEffect(() => {

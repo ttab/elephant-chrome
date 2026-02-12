@@ -8,6 +8,7 @@ APIs on behalf of the user without implementing their own auth flow.
 ## File structure
 
 - `index.tsx` — Extension view component (iframe host, message handling)
+- `usePostMessageCollab.tsx` — Hook bridging Y.js collaboration over postMessage
 - `ExtensionToolbar.tsx` — Responsive toolbar with overflow dropdown
 
 ## Iframe sandbox
@@ -103,6 +104,112 @@ sequence of buttons delimited by separators — so partial groups never appear i
 the toolbar. In the dropdown, buttons show their icon and title, and separators
 render as horizontal dividers.
 
+## Collaboration protocol
+
+Extensions can request real-time collaborative editing of documents via Y.js.
+The host manages the connection to Hocuspocus (via `CollaborationClientRegistry`)
+and bridges Y.js binary updates over postMessage so the extension keeps a local
+replica of the document in sync with all other clients.
+
+### Extension to host (collab)
+
+| type | payload | description |
+|------|---------|-------------|
+| `open_collab` | `{ uuid }` | Request collaborative access to a document. |
+| `collab_update` | `{ uuid, update }` | Y.js incremental update from the extension. `update` is a `number[]` (serialized `Uint8Array`). |
+| `close_collab` | `{ uuid }` | End the collaboration session and release the client. |
+
+### Host to extension (collab)
+
+| type | payload | description |
+|------|---------|-------------|
+| `collab_synced` | `{ uuid, update }` | Full document state (`Y.encodeStateAsUpdate`). Signals the session is ready. |
+| `collab_update` | `{ uuid, update }` | Incremental Y.js update from the host / other clients. |
+| `collab_awareness` | `{ uuid, states }` | Read-only awareness state of other users. Each state has `{ clientId, data: { name, color, initials, avatar }, focus?: { key, path } }`. |
+| `collab_error` | `{ uuid, error }` | Error message (e.g. client creation failed). |
+
+### Sync flow
+
+```
+Extension                              Host
+    |                                    |
+    |-- open_collab { uuid } ----------->|
+    |                                    |-- Get/create CollaborationClient
+    |                                    |-- Wait for Hocuspocus sync
+    |                                    |
+    |<-- collab_synced { uuid, update } -|  (full state)
+    |                                    |-- Start relaying awareness changes
+    |                                    |
+    |<-- collab_update { uuid, ... } ----|  (incremental from other clients)
+    |--- collab_update { uuid, ... } --->|  (incremental from extension)
+    |                                    |
+    |<-- collab_awareness { uuid, ... } -|  (awareness state changes)
+    |                                    |
+    |--- close_collab { uuid } --------->|
+    |                                    |-- Remove handlers, release client
+```
+
+### Echo prevention
+
+Both sides use Y.js origin tagging to prevent echoed updates:
+
+- **Host:** `Y.applyUpdate(doc, update, 'extension')` — the update handler
+  skips updates with origin `'extension'`.
+- **Extension:** `Y.applyUpdate(doc, update, 'host')` — the update handler
+  skips updates with origin `'host'`.
+
+### Awareness
+
+Awareness is read-only for extensions. The extension receives awareness states
+of other users (name, color, initials, focus) but does not set its own. This
+avoids conflicts when the same document is open in both an editor view and an
+extension (the `CollaborationClientRegistry` uses ref counting to share
+clients).
+
+### Extension-side implementation
+
+Extensions use the `ElephantExt` library from `public/lib/elephant-ext.mjs`
+which handles all protocol boilerplate (origin handshake, token/services
+management, toolbar button wiring, Y.js collaboration). The library imports
+Y.js from `public/lib/yjs.mjs` automatically.
+
+Minimal example using `ElephantExt`:
+
+```js
+import { ElephantExt } from '../../lib/elephant-ext.mjs'
+
+const ext = new ElephantExt({ title: 'My Extension' })
+
+ext.addEventListener('token', () => {
+  // ext.accessToken is updated, make API calls
+})
+
+ext.addEventListener('services', () => {
+  // ext.services.repositoryUrl etc. are available
+})
+
+// Collaboration
+const session = ext.openCollab(documentUuid)
+
+session.addEventListener('synced', (e) => {
+  // e.detail.doc is populated — read from doc.getMap('ele')
+})
+
+session.addEventListener('update', (e) => {
+  // incremental update applied to e.detail.doc
+})
+
+session.addEventListener('awareness', (e) => {
+  // e.detail.states is an array of { clientId, data, focus? }
+})
+
+// Disconnect when done
+ext.closeCollab(documentUuid)
+```
+
+Extensions can also use Y.js directly by importing from `../../lib/yjs.mjs`
+and handling the postMessage protocol manually (see the protocol tables above).
+
 ## Sample extension
 
 `public/extensions/sample/index.html` is a self-contained example that fetches
@@ -114,6 +221,8 @@ the last 10 repository eventlog items. It demonstrates:
 - Acknowledging button clicks with updated state
 - Opening views via the `open` message (clickable document UUIDs)
 - Updating the view title dynamically
+- Requesting Y.js collaboration sessions (collab connect/disconnect per row)
+- Displaying document title and connected user avatars from the Y.Doc
 
 ## Static file serving
 

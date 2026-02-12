@@ -164,19 +164,128 @@
       color: hsl(var(--muted-foreground));
       font-size: 0.8125rem;
     }
+
+    /* Collab UUID input — matches the badge pill */
+    .collab-input {
+      padding: 0.125rem 0.625rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+      font-weight: 500;
+      line-height: 1.25rem;
+      border: 1px solid hsl(var(--border));
+      background: hsl(var(--background));
+      color: hsl(var(--muted-foreground));
+      outline: none;
+      width: 22rem;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .collab-input:focus {
+      border-color: hsl(var(--ring));
+      color: hsl(var(--foreground));
+    }
+    .collab-input::placeholder {
+      color: hsl(var(--muted-foreground) / 0.6);
+    }
+
+    /* Collab views container */
+    .collab-views { display: none; margin-top: 1rem; }
+    .collab-views.active { display: flex; flex-direction: column; gap: 0.75rem; }
+
+    /* Individual collab card */
+    .collab-card {
+      border: 1px solid hsl(var(--border));
+      border-radius: var(--radius);
+      background: hsl(var(--card));
+      overflow: hidden;
+    }
+    .collab-card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      border-bottom: 1px solid hsl(var(--border));
+    }
+    .collab-card.collapsed .collab-card-header {
+      border-bottom: none;
+    }
+    .collab-card.collapsed .collab-json {
+      display: none;
+    }
+    .collab-card-header .doc-title {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: hsl(var(--foreground));
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .collab-card-header .uuid {
+      font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+      font-size: 0.6875rem;
+      color: hsl(var(--muted-foreground));
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 10rem;
+    }
+    .collab-avatars {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      margin-left: auto;
+    }
+    .collab-avatar {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.5rem;
+      height: 1.5rem;
+      border-radius: 50%;
+      color: #fff;
+      font-size: 0.625rem;
+      font-weight: 600;
+    }
+    .collab-card-header button {
+      padding: 0.125rem 0.5rem;
+      border: 1px solid hsl(var(--border));
+      border-radius: var(--radius);
+      background: hsl(var(--background));
+      color: hsl(var(--foreground));
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: background 0.15s;
+      line-height: 1.25;
+      flex-shrink: 0;
+    }
+    .collab-card-header button:hover { background: hsl(var(--muted)); }
+    .collab-json {
+      background: hsl(var(--muted));
+      padding: 1rem;
+      font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+      font-size: 0.75rem;
+      line-height: 1.6;
+      overflow: auto;
+      max-height: 50vh;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <div id="status" class="badge"><span class="dot"></span><span id="status-text">Connecting...</span></div>
+    <div style="display:flex;align-items:center;gap:0.5rem;">
+      <div id="status" class="badge"><span class="dot"></span><span id="status-text">Connecting...</span></div>
+      <input id="collab-input" type="text" class="collab-input" placeholder="Paste UUID to connect..." spellcheck="false">
+    </div>
     <div id="content" style="margin-top: 1rem;"></div>
+    <div id="collab-views" class="collab-views"></div>
   </div>
 
-  <script>
-    (function () {
-      let hostOrigin = null
-      let accessToken = null
-      let services = null
+  <script type="module">
+    import { ElephantExt } from '../../lib/elephant-ext.mjs'
+
+    ;(function () {
       let autoRefreshTimer = null
       let autoRefreshActive = false
 
@@ -249,9 +358,18 @@
         return buttons
       }
 
+      // Per-session UI state: uuid -> { cardEl, titleCleanup }
+      const collabUI = new Map()
+
       const statusEl = document.getElementById('status')
       const statusText = document.getElementById('status-text')
       const contentEl = document.getElementById('content')
+      const collabViewsEl = document.getElementById('collab-views')
+      const collabInput = document.getElementById('collab-input')
+
+      // Initialize the extension
+      const ext = new ElephantExt({ title: 'Eventlog', buttons: makeButtons() })
+      setStatus('', 'Waiting for parent...')
 
       function setStatus(state, text) {
         statusEl.className = 'badge ' + state
@@ -259,15 +377,15 @@
       }
 
       async function fetchEventlog() {
-        if (!accessToken || !services) return
+        if (!ext.accessToken || !ext.services) return
 
         setStatus('connected', 'Fetching eventlog...')
 
         try {
-          const res = await fetch(services.repositoryUrl + '/twirp/elephant.repository.Documents/Eventlog', {
+          const res = await fetch(ext.services.repositoryUrl + '/twirp/elephant.repository.Documents/Eventlog', {
             method: 'POST',
             headers: {
-              'authorization': 'Bearer ' + accessToken,
+              'authorization': 'Bearer ' + ext.accessToken,
               'content-type': 'application/json'
             },
             body: JSON.stringify({ after: -10 })
@@ -302,7 +420,7 @@
           + '<div class="card-header"><p>Showing ' + items.length + ' most recent events</p></div>'
           + '<table><thead><tr>'
           + '<th>ID</th><th>Event</th><th>UUID</th>'
-          + '<th>Timestamp</th><th>Type</th><th>Updater</th>'
+          + '<th>Timestamp</th><th>Type</th><th>Updater</th><th>Collab</th>'
           + '</tr></thead><tbody>'
 
         for (const item of items) {
@@ -315,6 +433,10 @@
               + escapeHtml(uuid) + '</span>'
             : escapeHtml(uuid)
 
+          const collabCell = uuid
+            ? '<span class="link" data-collab-connect="' + escapeHtml(uuid) + '">Collab</span>'
+            : ''
+
           html += '<tr>'
             + '<td class="mono muted">' + escapeHtml(String(item.id ?? '')) + '</td>'
             + '<td>' + escapeHtml(String(item.event ?? '')) + '</td>'
@@ -322,114 +444,309 @@
             + '<td class="muted">' + escapeHtml(String(item.timestamp ?? '')) + '</td>'
             + '<td>' + escapeHtml(docType) + '</td>'
             + '<td class="muted">' + escapeHtml(String(item.updater_uri ?? '')) + '</td>'
+            + '<td>' + collabCell + '</td>'
             + '</tr>'
         }
 
         html += '</tbody></table></div>'
         contentEl.innerHTML = html
 
-        postToHost({ type: 'set_title', payload: { title: 'Eventlog: ' + items.length + ' items' } })
+        if (collabUI.size === 0) {
+          ext.setTitle('Eventlog: ' + items.length + ' items')
+        }
       }
 
-      // Button click handlers
-      async function handleRefresh() {
-        // Acknowledge with refresh disabled while loading
-        const loading = makeButtons()
-        loading[0].disabled = true
-        postToHost({ type: 'button_click_ack', payload: { buttons: loading } })
+      // Token and services events — fetch eventlog when either arrives
+      ext.addEventListener('token', function () {
+        fetchEventlog()
+      })
 
-        await fetchEventlog()
+      ext.addEventListener('services', function () {
+        fetchEventlog()
+      })
 
-        // Re-enable refresh
-        postToHost({ type: 'set_buttons', payload: { buttons: makeButtons() } })
-      }
+      // Button click handling
+      ext.addEventListener('button', function (e) {
+        const name = e.detail.name
 
-      function handleAutoRefresh() {
-        autoRefreshActive = !autoRefreshActive
+        if (name === 'refresh') {
+          const loading = makeButtons()
+          loading[0].disabled = true
+          e.detail.ack(loading)
 
-        // Acknowledge with updated active state
-        postToHost({ type: 'button_click_ack', payload: { buttons: makeButtons() } })
+          fetchEventlog().then(function () {
+            ext.setButtons(makeButtons())
+          })
+        } else if (name === 'auto_refresh') {
+          autoRefreshActive = !autoRefreshActive
+          e.detail.ack(makeButtons())
 
-        if (autoRefreshActive) {
-          fetchEventlog()
-          autoRefreshTimer = setInterval(function () {
+          if (autoRefreshActive) {
             fetchEventlog()
-          }, 5000)
+            autoRefreshTimer = setInterval(function () {
+              fetchEventlog()
+            }, 5000)
+          } else {
+            clearInterval(autoRefreshTimer)
+            autoRefreshTimer = null
+          }
         } else {
-          clearInterval(autoRefreshTimer)
-          autoRefreshTimer = null
+          e.detail.ack(makeButtons())
+        }
+      })
+
+      // --- Collab: multi-document support ---
+
+      function getDocTitle(session, uuid) {
+        const ele = session.doc.getMap('ele')
+        const root = ele && ele.get('root')
+        const raw = root && root.get('title')
+        if (!raw) return 'Collab: ' + uuid.slice(0, 8) + '...'
+        const title = String(raw)
+        return title.length > 40 ? title.slice(0, 40) + '...' : title
+      }
+
+      function updateViewTitle() {
+        const count = collabUI.size
+        if (count === 0) {
+          ext.setTitle('Eventlog')
+        } else if (count === 1) {
+          const uuid = collabUI.keys().next().value
+          const session = ext.getCollab(uuid)
+          ext.setTitle(session ? getDocTitle(session, uuid) : 'Collab')
+        } else {
+          ext.setTitle('Multiple docs')
         }
       }
 
-      function handleClear() {
-        // Button is disabled, but acknowledge anyway
-        postToHost({ type: 'button_click_ack', payload: { buttons: makeButtons() } })
+      function createCollabCard(uuid, session) {
+        const card = document.createElement('div')
+        card.className = 'collab-card'
+        card.dataset.collabUuid = uuid
+
+        const header = document.createElement('div')
+        header.className = 'collab-card-header'
+
+        const closeBtn = document.createElement('button')
+        closeBtn.textContent = 'Close'
+        closeBtn.title = 'Disconnect'
+        closeBtn.dataset.collabClose = uuid
+
+        const titleSpan = document.createElement('span')
+        titleSpan.className = 'doc-title'
+        titleSpan.textContent = getDocTitle(session, uuid)
+
+        const uuidSpan = document.createElement('span')
+        uuidSpan.className = 'uuid'
+        uuidSpan.textContent = uuid
+        uuidSpan.title = uuid
+
+        const avatarsDiv = document.createElement('div')
+        avatarsDiv.className = 'collab-avatars'
+
+        const toggleBtn = document.createElement('button')
+        toggleBtn.textContent = '\u25BE'
+        toggleBtn.title = 'Collapse'
+        toggleBtn.dataset.collabToggle = uuid
+
+        header.append(closeBtn, titleSpan, uuidSpan, avatarsDiv, toggleBtn)
+
+        const jsonPre = document.createElement('pre')
+        jsonPre.className = 'collab-json'
+
+        card.append(header, jsonPre)
+        return card
       }
 
-      function postToHost(data) {
-        if (hostOrigin) {
-          window.parent.postMessage(data, hostOrigin)
+      function showCollabViews() {
+        contentEl.style.display = 'none'
+        collabViewsEl.classList.add('active')
+        ext.setButtons([])
+      }
+
+      function hideCollabViews() {
+        collabViewsEl.classList.remove('active')
+        contentEl.style.display = ''
+        ext.setButtons(makeButtons())
+      }
+
+      // Strip empty strings and empty objects from a value (recursive, display only)
+      function stripEmpty(val) {
+        if (Array.isArray(val)) {
+          return val.map(stripEmpty)
         }
+        if (val && typeof val === 'object') {
+          const out = {}
+          for (const k in val) {
+            const v = val[k]
+            if (v === '') continue
+            const cleaned = stripEmpty(v)
+            if (cleaned && typeof cleaned === 'object' && !Array.isArray(cleaned) && Object.keys(cleaned).length === 0) continue
+            out[k] = cleaned
+          }
+          return out
+        }
+        return val
       }
 
-      window.addEventListener('message', function (event) {
-        const msg = event.data
-        if (!msg || !msg.type) return
+      function renderCollabJson(uuid) {
+        const ui = collabUI.get(uuid)
+        if (!ui) return
 
-        // Capture the host origin from the first message we receive
-        if (!hostOrigin) {
-          hostOrigin = event.origin
-        } else if (event.origin !== hostOrigin) {
+        const session = ext.getCollab(uuid)
+        if (!session) return
+
+        const jsonEl = ui.cardEl.querySelector('.collab-json')
+        const ele = session.doc.getMap('ele')
+        const ctx = session.doc.getMap('ctx')
+        const data = stripEmpty({ ele: ele.toJSON(), ctx: ctx.toJSON() })
+        jsonEl.textContent = JSON.stringify(data, null, 2)
+      }
+
+      function renderCollabAvatars(uuid) {
+        const ui = collabUI.get(uuid)
+        if (!ui) return
+
+        const session = ext.getCollab(uuid)
+        const states = session ? (session.awarenessStates || []) : []
+        const avatarsEl = ui.cardEl.querySelector('.collab-avatars')
+        avatarsEl.innerHTML = states.map(function (s) {
+          const name = s.data.name || '?'
+          const color = s.data.color || '#888'
+          const initials = s.data.initials || name.charAt(0).toUpperCase()
+          return '<span class="collab-avatar" style="background:' + escapeHtml(color)
+            + '" title="' + escapeHtml(name) + '">' + escapeHtml(initials) + '</span>'
+        }).join('')
+      }
+
+      function updateCardTitle(uuid) {
+        const ui = collabUI.get(uuid)
+        if (!ui) return
+        const session = ext.getCollab(uuid)
+        if (!session) return
+        const titleEl = ui.cardEl.querySelector('.doc-title')
+        titleEl.textContent = getDocTitle(session, uuid)
+      }
+
+      function connectCollab(uuid) {
+        if (ext.getCollab(uuid)) return
+
+        const session = ext.openCollab(uuid)
+        setStatus('connected', 'Connecting to document...')
+
+        session.addEventListener('synced', function () {
+          const card = createCollabCard(uuid, session)
+          collabViewsEl.appendChild(card)
+
+          // Watch for title changes in the Y.Doc
+          let lastTitle = getDocTitle(session, uuid)
+          const onDocUpdate = () => {
+            const current = getDocTitle(session, uuid)
+            if (current !== lastTitle) {
+              lastTitle = current
+              updateCardTitle(uuid)
+              updateViewTitle()
+            }
+          }
+          session.doc.on('update', onDocUpdate)
+
+          collabUI.set(uuid, {
+            cardEl: card,
+            titleCleanup: () => session.doc.off('update', onDocUpdate)
+          })
+
+          showCollabViews()
+          setStatus('connected', collabUI.size + ' doc' + (collabUI.size > 1 ? 's' : '') + ' synced')
+          renderCollabJson(uuid)
+          renderCollabAvatars(uuid)
+          updateViewTitle()
+        })
+
+        session.addEventListener('update', function () {
+          renderCollabJson(uuid)
+        })
+
+        session.addEventListener('awareness', function () {
+          renderCollabAvatars(uuid)
+        })
+
+        session.addEventListener('error', function (e) {
+          console.error('Collab error for', uuid, ':', e.detail.error)
+          removeCollabCard(uuid)
+        })
+      }
+
+      function removeCollabCard(uuid) {
+        const ui = collabUI.get(uuid)
+        if (ui) {
+          if (ui.titleCleanup) ui.titleCleanup()
+          ui.cardEl.remove()
+          collabUI.delete(uuid)
+        }
+
+        if (collabUI.size === 0) {
+          hideCollabViews()
+          setStatus('connected', 'Connected')
+        } else {
+          setStatus('connected', collabUI.size + ' doc' + (collabUI.size > 1 ? 's' : '') + ' synced')
+        }
+        updateViewTitle()
+      }
+
+      function disconnectCollab(uuid) {
+        ext.closeCollab(uuid)
+        removeCollabCard(uuid)
+      }
+
+      // Event delegation for close and toggle buttons inside collab cards
+      collabViewsEl.addEventListener('click', function (e) {
+        const closeBtn = e.target.closest('[data-collab-close]')
+        if (closeBtn) {
+          disconnectCollab(closeBtn.dataset.collabClose)
           return
         }
 
-        switch (msg.type) {
-          case 'access_token':
-            if (msg.payload) {
-              accessToken = msg.payload.accessToken
-              fetchEventlog()
-            }
-            break
+        const toggleBtn = e.target.closest('[data-collab-toggle]')
+        if (toggleBtn) {
+          const uuid = toggleBtn.dataset.collabToggle
+          const ui = collabUI.get(uuid)
+          if (!ui) return
 
-          case 'services':
-            if (msg.payload) {
-              services = msg.payload
-              fetchEventlog()
-            }
-            break
-
-          case 'button_click': {
-            const name = msg.payload && msg.payload.name
-            if (name === 'refresh') handleRefresh()
-            else if (name === 'auto_refresh') handleAutoRefresh()
-            else if (name === 'clear') handleClear()
-            else postToHost({ type: 'button_click_ack', payload: { buttons: makeButtons() } })
-            break
-          }
+          const card = ui.cardEl
+          const collapsed = card.classList.toggle('collapsed')
+          toggleBtn.textContent = collapsed ? '\u25B8' : '\u25BE'
+          toggleBtn.title = collapsed ? 'Expand' : 'Collapse'
         }
       })
 
-      // Handle clicks on elements with data-open-view attribute
+      // UUID input — connect on Enter
+      collabInput.addEventListener('keydown', function (e) {
+        if (e.key !== 'Enter') return
+        const uuid = collabInput.value.trim()
+        if (!uuid) return
+
+        connectCollab(uuid)
+        collabInput.value = ''
+      })
+
+      // Handle clicks on collab connect and open-view elements
       document.addEventListener('click', function (e) {
+        const connectEl = e.target.closest('[data-collab-connect]')
+        if (connectEl) {
+          const uuid = connectEl.dataset.collabConnect
+          if (uuid) connectCollab(uuid)
+          return
+        }
+
         const el = e.target.closest('[data-open-view]')
         if (el) {
-          postToHost({
-            type: 'open',
-            payload: {
-              name: el.dataset.openView,
-              props: { id: el.dataset.openId },
-              target: e.shiftKey ? 'last' : undefined
-            }
-          })
+          ext.openView(
+            el.dataset.openView,
+            { id: el.dataset.openId },
+            e.shiftKey ? 'last' : undefined
+          )
         }
       })
-
-      // Signal to parent that we are ready (use '*' since we don't know the host origin yet)
-      window.parent.postMessage({
-        type: 'loaded',
-        payload: { title: 'Eventlog', buttons: makeButtons() }
-      }, '*')
-      setStatus('', 'Waiting for parent...')
     })()
   </script>
 </body>
