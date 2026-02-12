@@ -2,7 +2,7 @@
   "title": "HAST",
   "createFlashAlertTitle": "Du oppretter en ny HAST",
   "alertDescription1": "Hvis du ikke velger en plan, vil det bli opprettet en ny plan med tilhørende oppgaver for deg.",
-  "alertDescription2": "Denne HAST vil bli lagt til i en ny oppgave i den valgte planleggingen.",
+  "alertDescription2": "Denne {{documentType}} vil bli lagt til i en ny oppgave i den valgte planleggingen.",
   "titles": {
     "newFlashTitle": "Lag ny HAST",
     "createAndSendType": "Opprett og send {{type}}",

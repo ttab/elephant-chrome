@@ -11,6 +11,7 @@
     "print": "",
     "search": "Søk",
     "wires": "Byråimport",
+    "quickarticle": "Ny hurtigartikkel",
     "actions": {
       "toggleTheme": "Vexle tema"
     }

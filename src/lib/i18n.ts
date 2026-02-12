@@ -16,7 +16,8 @@ void i18n
   .use(initReactI18next)
   .use(LanguageDetector)
   .init({
-    ns: ['common', 'core', 'planning', 'shared', 'app', 'views', 'editor', 'workflows', 'factbox', 'event', 'metaSheet', 'flash'],
+    // lng: language, // Default
+    ns: ['common', 'core', 'planning', 'shared', 'app', 'views', 'editor', 'workflows', 'factbox', 'event', 'metaSheet', 'flash', 'quickArticle'],
     defaultNS: 'common',
     detection: {
       // order: defines the priority of detection
