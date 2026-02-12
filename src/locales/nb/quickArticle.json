@@ -1,0 +1,10 @@
+{
+  "title": "Hurtigartikkel",
+  "newQuickArticleTitle": "Opprett ny hurtigartikkel",
+  "errors": {
+    "quickArticleMissing": "Hurtigartikkel mangler",
+    "quickArticleMissingDescription": "Ingen artikkeldokument er oppgitt. Gå tilbake til oversikten og forsøk igjen.",
+    "createQuickArticleFailed": "Feil ved oppretting av hurtigartikkel.",
+    "changeStatusFailed": "Kunne ikke endre status på hurtigartikkel! Finner ikke en lenket timeplan."
+  }
+}

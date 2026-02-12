@@ -313,7 +313,7 @@ export const FlashDialog = (props: {
                 <AlertDescription>
                   {!selectedPlanning
                     ? (<>{t('flash:alertDescription1')}</>)
-                    : (<>{t('flash:alertDescription2')}</>)}
+                    : (<>{t('flash:alertDescription2', { documentType: t('core:documentType.flash') })}</>)}
                 </AlertDescription>
               </Alert>
             </>
