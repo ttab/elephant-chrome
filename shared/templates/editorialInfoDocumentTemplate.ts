@@ -13,7 +13,7 @@ export function editorialInfoDocumentTemplate(id: string, payload?: TemplatePayl
     uuid: id,
     type: 'core/editorial-info',
     uri: `core://editorial-info/${id}`, // Migrated documents have core://article/...
-    language: process.env.SYSTEM_LANGUAGE || 'sv-se',
+    language: process.env.VITE_SYSTEM_LANGUAGE || 'sv-se',
     title: payload?.title,
     content: [
       {

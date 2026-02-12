@@ -24,7 +24,7 @@ describe('planningDocumentTemplate', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    vi.stubEnv('SYSTEM_LANGUAGE', 'sv-se')
+    vi.stubEnv('VITE_SYSTEM_LANGUAGE', 'sv-se')
   })
 
   afterEach(() => {

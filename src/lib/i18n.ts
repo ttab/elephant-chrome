@@ -9,7 +9,7 @@ const resources = {
   nb
 }
 
-const envLang = process.env.SYSTEM_LANGUAGE ? process.env.SYSTEM_LANGUAGE.split('-')[0] : 'sv'
+const envLang = process.env.VITE_SYSTEM_LANGUAGE ? process.env.VITE_SYSTEM_LANGUAGE.split('-')[0] : 'sv'
 const supported = Object.keys(resources)
 
 void i18n

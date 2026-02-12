@@ -10,7 +10,7 @@ export function factboxDocumentTemplate(id: string): Document {
     uuid: id,
     type: 'core/factbox',
     uri: `core://factbox/${id}`,
-    language: process.env.SYSTEM_LANGUAGE || 'sv-se',
+    language: process.env.VITE_SYSTEM_LANGUAGE || 'sv-se',
     title: '',
     content: [
       Block.create({
