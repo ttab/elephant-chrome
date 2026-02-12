@@ -1,0 +1,10 @@
+{
+    "title": "Snabbartikel",
+    "newQuickArticleTitle": "Skapa ny snabbartikel",
+    "errors": {
+        "quickArticleMissing": "Snabbartikel saknas",
+        "quickArticleMissingDescription": "Inget artikeldokument är angivet. Navigera tillbaka till översikten och försök igen.",
+        "createQuickArticleFailed": "Fel när snabbartikel skapades.",
+        "changeStatusFailed": "Kunde inte ändra status på snabbartikel! Det gick inte att hitta en kopplad planering."
+    }
+}

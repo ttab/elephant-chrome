@@ -25,10 +25,10 @@ export const ViewMap: Record<DocumentView, ViewConfig> = {
   },
   QuickArticle: {
     icon: NewspaperIcon,
-    baseTitle: 'Snabbartikel',
-    newDialogTitle: 'Skapa ny snabbartikel',
+    baseTitle: i18next.t('quickArticle:title'),
+    newDialogTitle: i18next.t('quickArticle:newQuickArticleTitle'),
     iconColor: '#aabbcc',
     linkTarget: 'Planning',
-    statusErrorText: 'Kunde inte ändra status på snabbartikel! Det gick inte att hitta en kopplad planering.'
+    statusErrorText: i18next.t('quickArticle:errors.changeStatusFailed')
   }
 }
