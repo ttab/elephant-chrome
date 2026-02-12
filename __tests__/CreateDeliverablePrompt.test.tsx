@@ -40,13 +40,13 @@ beforeEach(() => {
   vi.clearAllMocks()
 })
 
-beforeAll(() => {
+beforeEach(() => {
   vi.clearAllMocks()
   process.env = { ...originalEnv, SYSTEM_LANGUAGE: 'sv-se' }
 })
 
 afterEach(() => {
-  process.env = originalEnv
+  vi.unstubAllEnvs()
 })
 
 describe('CreateDeliverablePrompt', () => {
@@ -382,7 +382,7 @@ describe('CreateDeliverablePrompt', () => {
     })
 
     afterEach(() => {
-      process.env = originalEnv
+      vi.unstubAllEnvs()
     })
 
     it('calls saveDocument with session access token', async () => {
