@@ -43,7 +43,7 @@ beforeEach(() => {
 
 beforeAll(() => {
   vi.clearAllMocks()
-  process.env = { ...originalEnv, VITE_SYSTEM_LANGUAGE: 'sv-se' }
+  process.env = { ...originalEnv, SYSTEM_LANGUAGE: 'sv-se' }
 })
 
 afterEach(() => {
@@ -379,7 +379,7 @@ describe('CreateDeliverablePrompt', () => {
   describe('Repository Integration', () => {
     beforeEach(() => {
       vi.clearAllMocks()
-      process.env = { ...originalEnv, VITE_SYSTEM_LANGUAGE: 'sv-se' }
+      process.env = { ...originalEnv, SYSTEM_LANGUAGE: 'sv-se' }
     })
 
     afterEach(() => {

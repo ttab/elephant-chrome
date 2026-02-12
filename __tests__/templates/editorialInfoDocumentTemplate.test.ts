@@ -6,7 +6,7 @@ import { Block } from '@ttab/elephant-api/newsdoc'
 describe('editorialInfoDocumentTemplate', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    vi.stubEnv('VITE_SYSTEM_LANGUAGE', 'sv-se')
+    vi.stubEnv('SYSTEM_LANGUAGE', 'sv-se')
   })
 
   afterEach(() => {

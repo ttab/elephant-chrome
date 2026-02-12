@@ -381,7 +381,7 @@ export class Repository {
       const document = Document.create({
         uuid,
         uri: `core://image/${uuid}`,
-        language: process.env.VITE_SYSTEM_LANGUAGE || 'sv-se',
+        language: process.env.SYSTEM_LANGUAGE || 'sv-se',
         title: name,
         type: 'core/image',
         meta: [

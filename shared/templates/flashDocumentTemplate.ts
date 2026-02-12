@@ -16,7 +16,7 @@ export function flashDocumentTemplate(id: string, payload?: TemplatePayload): Do
     uuid: id,
     type: 'core/flash',
     uri: `core://flash/${id}`,
-    language: process.env.VITE_SYSTEM_LANGUAGE || 'sv-se',
+    language: process.env.SYSTEM_LANGUAGE || 'sv-se',
     title: payload?.title,
     content: [
       Block.create({

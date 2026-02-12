@@ -22,7 +22,7 @@ export function articleDocumentTemplate(id: string, payload?: TemplatePayload): 
     uuid: id,
     type: 'core/article',
     uri: `core://article/${id}`,
-    language: process.env.VITE_SYSTEM_LANGUAGE || 'sv-se',
+    language: process.env.SYSTEM_LANGUAGE || 'sv-se',
     title: payload?.title,
     content: [
       Block.create({

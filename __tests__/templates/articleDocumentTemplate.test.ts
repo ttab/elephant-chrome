@@ -6,7 +6,7 @@ import type { TemplatePayload } from '@/shared/templates'
 describe('articleDocumentTemplate', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    vi.stubEnv('VITE_SYSTEM_LANGUAGE', 'sv-se')
+    vi.stubEnv('SYSTEM_LANGUAGE', 'sv-se')
   })
 
   afterEach(() => {

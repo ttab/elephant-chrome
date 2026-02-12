@@ -20,7 +20,7 @@ function constructQuery(filter: QueryParams | undefined): QueryV1 | undefined {
     return
   }
 
-  const envLang = import.meta.env.VITE_SYSTEM_LANGUAGE ?? 'sv-se'
+  const envLang = import.meta.env.SYSTEM_LANGUAGE ?? 'sv-se'
 
   const query = QueryV1.create({
     conditions: {

@@ -5,7 +5,7 @@ import type { Block } from '@ttab/elephant-api/newsdoc'
 describe('eventDocumentTemplate', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    vi.stubEnv('VITE_SYSTEM_LANGUAGE', 'sv-se')
+    vi.stubEnv('SYSTEM_LANGUAGE', 'sv-se')
   })
 
   afterEach(() => {

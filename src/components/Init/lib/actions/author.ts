@@ -80,7 +80,7 @@ export async function initializeAuthor({ url, session, repository, t }: {
     // Create a new author document if it doesn't exist or is invalid
     const document = isValid === false
       ? (operation = 'update', appendSub(authorDoc.hits[0].document!, session, envRole))
-      : createAuthorDoc(session, envRole, process.env.VITE_SYSTEM_LANGUAGE || 'sv-se')
+      : createAuthorDoc(session, envRole, process.env.SYSTEM_LANGUAGE || 'sv-se')
 
     const result = await repository.saveDocument(document, session.accessToken, 'usable')
     if (result?.status.code !== 'OK') {
