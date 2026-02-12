@@ -22,7 +22,7 @@ export const ValidationAlert = ({ validateStateRef }: {
   const { data: session } = useSession()
   const { server: { repositoryUrl }, repository } = useRegistry()
   const { provider, synced } = useCollaboration()
-  const { t } = useTranslation()
+  const { t } = useTranslation('errors')
 
   const fetcher = async (): Promise<string | undefined | null> => {
     if (!session || !repositoryUrl || !documentId) return undefined
@@ -66,7 +66,7 @@ export const ValidationAlert = ({ validateStateRef }: {
     <Alert variant='destructive'>
       <FileWarningIcon strokeWidth={1.75} size={18} />
       <FilesIcon size={18} strokeWidth={1.75} />
-      <AlertTitle>{t('common:errors.validationError')}</AlertTitle>
+      <AlertTitle>{t('messages.validationError')}</AlertTitle>
       <AlertDescription>
         <pre className='whitespace-pre-wrap break-words'>{validationError}</pre>
       </AlertDescription>

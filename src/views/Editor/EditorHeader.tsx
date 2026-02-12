@@ -73,7 +73,7 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
     if (['withheld', 'draft'].includes(newStatus)) {
       // We require a valid publish time if scheduling
       if (newStatus === 'withheld' && !(data?.time instanceof Date)) {
-        toast.error(t('errors.couldNotScheduleArticle'))
+        toast.error(t('errors:toasts.couldNotScheduleArticle'))
         return false
       }
 

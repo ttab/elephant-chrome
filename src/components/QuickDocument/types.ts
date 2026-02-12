@@ -21,7 +21,7 @@ export const ViewMap: Record<DocumentView, ViewConfig> = {
     newDialogTitle: i18next.t('flash:titles.newFlashTitle'),
     iconColor: '#FF5150',
     linkTarget: 'Flash',
-    statusErrorText: i18next.t('flash:errors.statusErrorText')
+    statusErrorText: i18next.t('errors:messages.statusChangeforDocumentTypeFailed', { documentType: i18next.t('flash:title') })
   },
   QuickArticle: {
     icon: NewspaperIcon,
@@ -29,6 +29,6 @@ export const ViewMap: Record<DocumentView, ViewConfig> = {
     newDialogTitle: i18next.t('quickArticle:newQuickArticleTitle'),
     iconColor: '#aabbcc',
     linkTarget: 'Planning',
-    statusErrorText: i18next.t('quickArticle:errors.changeStatusFailed')
+    statusErrorText: i18next.t('errors:messages.statusChangeforDocumentTypeFailed', { documentType: i18next.t('quickArticle:title') })
   }
 }

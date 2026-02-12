@@ -16,11 +16,6 @@
     "collaboration": {
       "inProgress": "Ny oppdrag opprettes av",
       "overtake": "Ta over"
-    },
-    "errors": {
-      "saveAssignmentError": "Kunne ikke lagre oppdraget",
-      "createDeliverableError": "Kan ikke opprette leveransen",
-      "changeStatusError": "Statusen kunne ikke endres. Oppgavens publiseringstidspunkt kunne ikke endres i den lenkede planleggingen."
     }
   },
   "description": {
@@ -33,16 +28,10 @@
   "prompts": {
     "slugMissing": "Stikkord mangler",
     "slugMissingDescription": "Vennligst legg til en stikkord i oppgaven. Etter det kan du lage en tekst.",
-    "planningDocumentMissing": "Plandokumenter mangler",
-    "documentMissingMessage": "Ingen planleggingsdokumenter er spesifisert. Gå tilbake til oversikten og prøv på nytt.",
     "createPrompt": "Vil du opprette en {{documentLabel}} for oppdraget{{title}}?"
   },
   "toasts": {
-    "snapshotError": "Planen er endret lokalt, men kunne ikke lagres.",
-    "createDeliverableLinkError": "Kunne ikke koble til leveransen",
-    "saveError": "Kunne ikke lagre planen",
-    "saveChangeError": "Kunne ikke lagre endringen",
-    "missingMetadata": "Mangler nyhetsverdi eller seksjon"
+   
   },
   "move": {
     "pickPlanning": "Velg plan",
@@ -50,10 +39,6 @@
     "dateSwitch": "Endre dato på planlegging",
     "dateSwitchDescription": "Planleggingen og alle tekstoppdragen endrer dato til",
     "dateSwitchAssignments": "Velg nedenfor om bilde- og videooppdrag også skal endre datoer.",
-    "assignmentMoveError": "Oppdraget kunne ikke flyttes",
-    "assignmentMoveErrorNotLoggedIn": "Oppdraget kunne ikke flyttes. Du er ikke logget inn.",
-    "assignmentMoveErrorTryAgain": "Oppdraget kunne ikke flyttes. Vennligst prøv igjen.",
-    "couldNotSaveAfterMove": "Kunne ikke lagre etter flytting.",
     "assignmentCreateInfo": "Hvis du ikke velger en timeplan, vil en ny timeplan med denne oppgaven bli opprettet for deg på den valgte datoen.",
     "assignmentAddInfo": "Denne oppgaven vil bli lagt til i den valgte planleggingen.",
     "assignmentMoveSuccess": "Oppdraget er flyttet",

@@ -83,7 +83,7 @@ export const fetch = async (
   })
 
   if (!ok) {
-    toast.error(t('views:plannings.toasts.getPlanningsError'))
+    toast.error(t('errors:toasts.getPlanningsFailed'))
     console.error(errorMessage || 'Unknown error while searching for planning items')
     return []
   }

@@ -67,13 +67,13 @@ export const MovePrompt = ({
     setIsSubmitting(true)
 
     if (status !== 'authenticated' || !session || !provider?.synced) {
-      toast.error(t('planning:move.assignmentMoveErrorNotLoggedIn'))
+      toast.error(t('errors:toasts.assignmentMoveErrorNotLoggedIn'))
       setIsSubmitting(false)
       return
     }
 
     if (!planning) {
-      toast.error(t('planning:move.assignmentMoveErrorTryAgain'))
+      toast.error(t('errors:toasts.assignmentMoveErrorTryAgain'))
       onSecondary?.()
       setIsSubmitting(false)
       return
@@ -85,7 +85,7 @@ export const MovePrompt = ({
         onPrimary(planning)
       })
       .catch((ex: unknown) => {
-        toast.error(ex instanceof Error ? ex.message : t('planning:move.couldNotSaveAfterMove'))
+        toast.error(ex instanceof Error ? ex.message : t('errors:toasts.couldNotSaveAfterMove'))
         setIsSubmitting(false)
       })
       .finally(() => {

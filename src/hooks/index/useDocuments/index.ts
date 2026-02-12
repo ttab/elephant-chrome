@@ -100,7 +100,7 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
 
   if (error) {
     console.error('Document fetch failed:', error)
-    toast.error(t('errors.failedFetchingDocument'))
+    toast.error(t('errors:messages.failedFetchingDocument'))
   }
 
   // Set table data after fetch
@@ -135,7 +135,7 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
         const interval = getInterval(20, 30)
 
         console.error('Polling error:', error)
-        toast.error(t('errors.failedUpdatingListRetrying', { seconds: interval / 1000 }))
+        toast.error(t('errors:messages.failedUpdatingListRetrying', { seconds: interval / 1000 }))
         // Wait before next retry if failed
         await new Promise((resolve) => setTimeout(resolve, interval))
       }

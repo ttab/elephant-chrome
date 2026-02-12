@@ -16,10 +16,8 @@
     },
     "toasts": {
       "create": {
-        "error": "Kunne ikke opprette ny plan",
         "success": "Planlegging opprettet"
       },
-      "getPlanningsError": "Kunne ikke hente planene",
       "openItem": "Åpne planlegging"
     }
   },
@@ -35,11 +33,6 @@
       "section": "Kategori",
       "planningStatus": "Planleggingsstatus",
       "action": "Action"
-    },
-    "toasts": {
-      "fetch": {
-        "error": "Kunne ikke hente hendelser"
-      }
     },
     "tooltips": {
       "organiser": "Arrangør"
@@ -77,9 +70,6 @@
       "events": "Hendelser",
       "articles": "Artikler"
     },
-    "errors": {
-      "errorFetchingResults": "Kunne ikke hente søkeresultatene"
-    },
     "columnLabels": {
       "date": "Dato"
     }
@@ -91,10 +81,6 @@
   },
   "imageSearch": {
     "title": "Bilder",
-    "errors": {
-      "noSession": "Kan ikke autentisere til bildetjenesten",
-      "showPictureError": "Kan ikke vise bildet, ugyldig id"
-    },
     "labels": {
       "mediaType": "Medietype",
       "image": "Bild",

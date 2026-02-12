@@ -19,6 +19,5 @@
   "systemMessages": {
     "reloadWindowTitle": "Du behöver ladda om fönstret",
     "reloadWindowDescription": "Systemet har uppdaterats med nya eller ändrade funktioner. Ladda om fönstret för att jobba vidare i den nya versionen.",
-    "connectionFailed": "Misslyckades att ansluta till meddelandetjänsten, vänligen ladda om fönstret."
   }
 }

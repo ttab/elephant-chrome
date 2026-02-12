@@ -26,7 +26,7 @@ export const UserInfo = ({ user, data }: {
       </div>
 
       <div className='p-2 py-4 pb-4 leading-loose text-center'>
-        <div className='font-bold'>{data?.user.name || `(${t('common:errors.nameMissing') as unknown as string})`}</div>
+        <div className='font-bold'>{data?.user.name || `(${t('errors:messages.nameMissing') as unknown as string})`}</div>
         <div className='text-xs opacity-60'></div>
       </div>
 

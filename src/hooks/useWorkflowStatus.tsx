@@ -70,7 +70,7 @@ export const useWorkflowStatus = ({ ydoc, documentId: docId }: {
 
   if (error) {
     console.error('Unable to get documentStatus', error)
-    toast.error(t('errors.fetchStatusFailed'))
+    toast.error(t('errors:toasts.fetchStatusFailed'))
   }
 
   // Listen to repository events and revalidate if the current document is affected
@@ -100,7 +100,7 @@ export const useWorkflowStatus = ({ ydoc, documentId: docId }: {
       const uuid = typeof newStatus === 'object' ? newStatus.uuid : documentId
 
       if (!session || !uuid) {
-        toast.error(t('errors.couldNotChangeStatusReloadBrowser'))
+        toast.error(t('errors:toasts.couldNotChangeStatusReloadBrowser'))
         return
       }
 
@@ -124,7 +124,7 @@ export const useWorkflowStatus = ({ ydoc, documentId: docId }: {
         // Revalidate after the mutation completes
         await globalMutate([CACHE_KEY])
       } catch (ex) {
-        toast.error(ex instanceof Error ? ex.message : t('errors.couldNotChangeStatus'))
+        toast.error(ex instanceof Error ? ex.message : t('errors:toasts.couldNotChangeStatus'))
       }
     },
     [session, documentId, ydoc?.provider?.document, repository, CACHE_KEY, t]
@@ -146,6 +146,6 @@ async function setWireStatus(newStatus: Status, repository: Repository, session:
     })
   } catch (error) {
     console.error('Failed to set wire status', error)
-    toast.error(t('errors.couldNotSaveStatus'))
+    toast.error(t('errors:toasts.couldNotSaveStatus'))
   }
 }

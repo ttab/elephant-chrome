@@ -25,22 +25,6 @@
     "saveType": "Lagre {{type}}",
     "save": "Lagre"
   },
-  "errors": {
-    "unknown": "Ukjent feil",
-    "unwellEnvironment": "Du har blitt logget ut eller mistet kontakten med systemet. Prøv å logge inn på nytt.",
-    "errorTitle": "Det har oppstått en feil!",
-    "unknownErrorAdminInfo": "Det har oppstått en ukjent feil, eller en feil uten feilmelding. Kontakt systemadministratoren.",
-    "someError": "Noe gikk galt",
-    "nameMissing": "Navn mangler",
-    "nothingFound": "Ingenting ble funnet",
-    "articleMissingTitle": "Artikkeldokumentet mangler",
-    "articleMissingDescription": "Ingen artikkeldokument er oppgitt. Gå tilbake til oversikten og forsøk igjen.",
-    "failedFetchingDocument": "Kunne ikke hente dokumentet.",
-    "failedUpdatingListRetrying": "Kunne ikke oppdatere listen automatisk. Prøver på nytt om {{seconds}} sekunder.",
-    "noResultsFound": "Ingen resultater funnet",
-    "copyError": "Kopier feilmelding",
-    "validationError": "Valideringsfeil"
-  },
   "misc": {
     "unknown": "ukjent",
     "user": "bruker",

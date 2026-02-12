@@ -2,8 +2,5 @@
     "title": "Faktaruta",
     "action": {
         "createFactbox": "Skapa faktaruta"
-    },
-    "errors": {
-        "errorCreatingFactbox": "Det gick inte att skapa ny faktaruta!"
     }
 }

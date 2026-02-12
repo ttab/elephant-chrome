@@ -114,7 +114,7 @@ export const StatusMenu = ({ ydoc, publishTime, onBeforeStatusChange }: {
         })
       })().catch((err) => console.error(err))
     } catch (error) {
-      toast.error(t('shared:errors.unpublishError'))
+      toast.error(t('errors:toasts.unpublishError'))
       console.error('error while unpublishing document:', error)
     }
   }

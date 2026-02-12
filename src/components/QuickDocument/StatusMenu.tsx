@@ -76,7 +76,7 @@ export const StatusMenuLogic = ({ ydoc, propPlanningId, view }: StatusMenuHeader
 
     // We require a valid publish time if scheduling
     if (!(data?.time instanceof Date)) {
-      toast.error(t('flash:errors.scheduleArticleFailed'))
+      toast.error(t('errors:messages.scheduleArticleFailed'))
       return false
     }
 

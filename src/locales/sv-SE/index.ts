@@ -11,6 +11,7 @@ import event from './event.json'
 import metaSheet from './metaSheet.json'
 import flash from './flash.json'
 import quickArticle from './quickArticle.json'
+import errors from './errors.json'
 
 export const sv = {
   common,
@@ -25,5 +26,6 @@ export const sv = {
   event,
   metaSheet,
   flash,
-  quickArticle
+  quickArticle,
+  errors
 }

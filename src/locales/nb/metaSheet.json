@@ -24,10 +24,6 @@
     "internalNote": "Intern beskjed",
     "infoToCustomer": "Info til kunde"
   },
-  "errors": {
-    "failedToLoadHistory": "Det oppsto en feil under henting av dokumenthistorikken.",
-    "failedToLoadMetaData": "Det oppsto en feil under henting av metadata."
-  },
   "misc": {
     "lastUpdated": "Sist oppdatert: {{date}}",
     "noType": "Ingen type"

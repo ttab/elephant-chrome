@@ -141,7 +141,7 @@ export const QuickArticleDialog = (props: {
                             uuid: sectionPayload
                           }))
                         } else {
-                          toast.error(t('shared:errors.couldNotFindPlanningSection'))
+                          toast.error(t('errors:toasts.couldNotFindPlanningSection'))
                         }
                       } else {
                         setSelectedPlanning(undefined)
@@ -265,7 +265,7 @@ export const QuickArticleDialog = (props: {
                         handleClose(config)
                       })
                       .catch(() => {
-                        toast.error(t('errors.createQuickArticleFailed'))
+                        toast.error(t('errors:messages.createQuickArticleFailed'))
                       })
                   }}
                   onSecondary={() => {

@@ -31,13 +31,13 @@ export const Error = ({ title, error, message }: ViewProps & {
   return (
     <View.Root>
       <ViewHeader.Root>
-        <ViewHeader.Title name='Error' title={t('errors.errorTitle')} icon={MessageCircleWarningIcon} />
+        <ViewHeader.Title name='Error' title={t('errors:messages.errorTitle')} icon={MessageCircleWarningIcon} />
         <ViewHeader.Content />
         <ViewHeader.Action />
       </ViewHeader.Root>
 
       <View.Content className='max-w-[800px] p-6'>
-        <h1 className='text-3xl font-bold mb-6'>{title || error?.message || t('errors.unknown')}</h1>
+        <h1 className='text-3xl font-bold mb-6'>{title || error?.message || t('errors:messages.unknown')}</h1>
         {message && (
           <p className='text-md'>
             {message}
@@ -54,7 +54,7 @@ export const Error = ({ title, error, message }: ViewProps & {
 
         {!message && !error && (
           <p className='text-md'>
-            {t('errors.unknownErrorAdminInfo')}
+            {t('errors:messages.unknownErrorAdminInfo')}
           </p>
         )}
       </View.Content>

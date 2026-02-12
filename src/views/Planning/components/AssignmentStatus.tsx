@@ -53,7 +53,7 @@ const VisualAssignment = ({ ydoc, path }: {
     snapshotDocument(ydoc.id, undefined, ydoc.provider?.document)
       .catch((ex) => {
         console.error('Failed to snapshot document after changing visual assignment status', ex)
-        toast.error(t('planning:toasts.saveChangeError'))
+        toast.error(t('errors:toasts.saveChangeError'))
       })
   }, [setVisualAssignmentStatus, ydoc, t])
 

@@ -74,8 +74,8 @@ export const Event = (props: ViewProps & { document?: Document }): JSX.Element =
   if (typeof documentId !== 'string' || !documentId) {
     return (
       <Error
-        title={t('event:error.noEventDocument.title')}
-        message={t('event:error.noEventDocument.message')}
+        title={t('errors:messages.documentTypeMissing', { documentType: t('event:eventDocument') })}
+        message={t('errors:messages.documentTypeMissingDescription', { documentType: t('event:eventDocument') })}
       />
     )
   }
@@ -136,7 +136,7 @@ const EventViewContent = (props: ViewProps & {
         })
       } catch (ex) {
         console.error('Failed to snapshot event', ex)
-        toast.error(t('event:toasts.created.error'), {
+        toast.error(t('errors:toasts.couldNotCreateNewEvent'), {
           duration: 5000,
           position: 'top-center'
         })
@@ -213,7 +213,7 @@ const EventViewContent = (props: ViewProps & {
           <Form.Footer>
             {!environmentIsSane && (
               <UserMessage asDialog={!!props.asDialog} className='pb-6'>
-                {t('common:errors.unwellEnvironment')}
+                {t('errors:messages.unwellEnvironment')}
               </UserMessage>
             )}
 

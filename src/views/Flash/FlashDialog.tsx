@@ -118,7 +118,7 @@ export const FlashDialog = (props: {
         })
         .catch(() => {
           // Flash creation OK, quick-article creation unsuccessful
-          toast.error(t('flash:errors.createQuickArticleFailed'), {
+          toast.error(t('errors:messages.createQuickArticleFailed'), {
             action: <ToastAction withView='Flash' documentId={data.updatedPlanningId} />
           })
         })
@@ -168,13 +168,13 @@ export const FlashDialog = (props: {
 
     if (ex?.message === 'FlashCreationError') {
       // Both flash and quick-article creation were unsuccessful
-      toast.error(t('flash:errors.flashCreationFailed'), {
+      toast.error(t('errors:messages.flashCreationFailed'), {
         action: <ToastAction documentId={ydoc.id} withView='Flash' />
       })
     }
 
     if (ex?.message === 'CreateAssignmentError') {
-      toast.error(t('flash:errors.createAssignmentError'), {
+      toast.error(t('errors:messages.createAssignmentError'), {
         action: <ToastAction documentId={ydoc.id} withView='Flash' />
       })
     }
@@ -249,7 +249,7 @@ export const FlashDialog = (props: {
                             uuid: sectionPayload.section
                           }))
                         } else {
-                          toast.error(t('shared:errors.couldNotFindPlanningSection'))
+                          toast.error(t('errors:toasts.couldNotFindPlanningSection'))
                         }
                       } else {
                         setSelectedPlanning(undefined)

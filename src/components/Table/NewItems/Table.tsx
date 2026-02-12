@@ -83,7 +83,7 @@ export const Table = ({ type, header }: {
     console.warn('Unable to fetch NewItems: ', error)
     return (
       <div>
-        {`${t('errors.loadFailed')}:`}
+        {`${t('errors:messages.loadFailed')}:`}
         {error.message}
       </div>
     )

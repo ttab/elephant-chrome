@@ -25,22 +25,6 @@
     "saveType": "Spara {{type}}",
     "save": "Spara"
   },
-  "errors": {
-    "unknown": "Okänt fel",
-    "unwellEnvironment": "Du har blivit utloggad eller tappat kontakt med systemet. Vänligen försök logga in igen.",
-    "errorTitle": "Ett fel har uppstått!",
-    "unknownErrorAdminInfo": "Ett okänt fel, eller ett fel som saknar felmeddelande har uppstått. Kontakta systemadministratören.",
-    "someError": "Något gick fel",
-    "nameMissing": "Namn saknas",
-    "nothingFound": "Ingenting hittades",
-    "articleMissingTitle": "Artikeldokument saknas",
-    "articleMissingDescription": "Inget artikeldokument är angivet. Navigera tillbaka till översikten och försök igen.",
-    "failedFetchingDocument": "Misslyckades hämta dokument.",
-    "failedUpdatingListRetrying": "Misslyckades att automatiskt uppdatera listan. Försöker igen om {{seconds}} sekunder.",
-    "noResultsFound": "Inga resultat hittades",
-    "copyError": "Kopiera felmeddelande",
-    "validationError": "Valideringsfel"
-  },
   "misc": {
     "unknown": "okänd",
     "user": "användare",
