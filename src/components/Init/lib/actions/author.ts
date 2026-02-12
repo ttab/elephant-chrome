@@ -168,7 +168,6 @@ function appendSub(document: Document, session: Session, role: 'stage' | 'prod')
  * @returns The created author document after appending the "same-as" link.
  */
 function createAuthorDoc(session: Session, envRole: 'stage' | 'prod', language: string) {
-  console.log('running createauthordoc')
   const decodedToken = decodeJwt(session.accessToken) as {
     given_name: string
     family_name: string

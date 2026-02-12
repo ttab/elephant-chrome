@@ -123,7 +123,7 @@ describe('CreateDeliverablePrompt', () => {
           documentLabel={i18next.t('shared:assignmentTypes.flash')}
         />
       )
-      console.log(screen)
+
       expect(screen.getByText(`${i18next.t('common:actions.create')} ${i18next.t('shared:assignmentTypes.flash')}?`)).toBeInTheDocument()
       expect(screen.getByText(i18next.t('planning:prompts.createPrompt', { documentLabel: i18next.t('shared:assignmentTypes.flash'), title: ' Test Title' }))).toBeInTheDocument()
     })
