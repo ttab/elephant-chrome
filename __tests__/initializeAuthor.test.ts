@@ -136,7 +136,7 @@ describe('initializeAuthor', () => {
       })
     ).rejects.toThrow('More than one author document found')
 
-    expect(toast.error).toHaveBeenCalledWith(i18n.t('shared:errors.multipleAuthors'))
+    expect(toast.error).toHaveBeenCalledWith(i18n.t('errors:toasts.multipleAuthors'))
   })
 
 
@@ -152,6 +152,6 @@ describe('initializeAuthor', () => {
       })
     ).rejects.toThrow('Failed to initialize author: Failed to fetch author document: undefined')
 
-    expect(toast.error).toHaveBeenCalledWith(i18n.t('shared:operations.authorCreateUndefinedFailed'))
+    expect(toast.error).toHaveBeenCalledWith(i18n.t('errors:toasts.authorCreateUndefinedFailed'))
   })
 })
