@@ -6,6 +6,7 @@ import {
   BoxesIcon,
   type LucideIcon
 } from '@ttab/elephant-ui/icons'
+import { ZapIcon } from 'lucide-react'
 
 export const documentTypeValueFormat: Record<string, { icon: LucideIcon, key: string, label: string, color: string }> = {
   'core/event': {
@@ -37,5 +38,11 @@ export const documentTypeValueFormat: Record<string, { icon: LucideIcon, key: st
     label: 'Faktaruta',
     key: 'Factbox',
     color: '#99c5c4'
+  },
+  'core/flash': {
+    icon: ZapIcon,
+    label: 'Flash',
+    key: 'Flash',
+    color: '#FF5150'
   }
 }

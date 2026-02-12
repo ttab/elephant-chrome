@@ -5,7 +5,7 @@ import {
 } from '@/components'
 import type { DefaultValueOption, ViewProps } from '@/types'
 import { Alert, AlertDescription, AlertTitle, Button, Checkbox, ComboBox, Label } from '@ttab/elephant-ui'
-import { CircleXIcon, TagsIcon, GanttChartSquareIcon, NewspaperIcon, ZapIcon, InfoIcon } from '@ttab/elephant-ui/icons'
+import { CircleXIcon, TagsIcon, GanttChartSquareIcon, NewspaperIcon, ZapIcon, InfoIcon, TriangleAlertIcon } from '@ttab/elephant-ui/icons'
 import { useRegistry, useSections } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import type { Dispatch, SetStateAction } from 'react'
@@ -67,8 +67,15 @@ export const FlashDialog = (props: {
   const [, setYSection] = useYValue<Block | undefined>(ydoc.ele, 'links.core/section[0]')
   const [relatedDocsSlugline, setSlugline] = useState<string>('') // slugline for complementary planning- and quick-article documents
   const { t } = useTranslation()
+  const [invalidSlug, setInvalidSlug] = useState(false)
 
   const handleSubmit = (setCreatePrompt: Dispatch<SetStateAction<boolean>>): void => {
+    if (!relatedDocsSlugline.length) {
+      setInvalidSlug(true)
+      return
+    }
+
+    setInvalidSlug(false)
     setCreatePrompt(true)
   }
 
@@ -132,6 +139,9 @@ export const FlashDialog = (props: {
   } | undefined, config: PromptConfig, startDate: string | undefined) => {
     // After flash has been successfully created, we celebrate with a toast
     toast.success(getLabel(data?.documentStatus, 'flash'), {
+      classNames: {
+        title: 'whitespace-nowrap'
+      },
       action: (
         <ToastAction
           key='open-flash-1'
@@ -139,7 +149,7 @@ export const FlashDialog = (props: {
           withView='Flash'
           target='last'
           Icon={ZapIcon}
-          label={t('common:actions.openType', { type: t('core:documentType.planning') })}
+          label={t('common:actions.openType', { type: t('core:documentType.flash') })}
         />
       )
     })
@@ -292,18 +302,24 @@ export const FlashDialog = (props: {
             )}
 
             <Form.Group icon={TagsIcon}>
-              <input
-                autoComplete='off'
-                placeholder={t('flash:placeholders.sluggForTypes', { type1: t('core:documentType.planning'), type2: t('core:documentType.article') })}
-                min={3}
-                className='w-full text-sm rounded bg-background placeholder:pl-2 p-1 ring-offset-background'
-                name='slugline'
-                value={relatedDocsSlugline}
-                onChange={(e) => {
-                  const value = e.target.value.trim()
-                  setSlugline(value)
-                }}
-              />
+              <div className='relative w-full'>
+                {invalidSlug && (
+                  <div className='absolute -top-1 right-0 h-2 w-2 z-10'>
+                    <TriangleAlertIcon color='red' fill='#ffffff' size={15} strokeWidth={1.75} />
+                  </div>
+                )}
+                <input
+                  autoComplete='off'
+                  placeholder={t('flash:placeholders.sluggForTypes', { type1: t('core:documentType.planning'), type2: t('core:documentType.article') })}
+                  className='w-full text-sm rounded bg-background placeholder:pl-2 p-1 ring-offset-background'
+                  name='slugline'
+                  value={relatedDocsSlugline}
+                  onChange={(e) => {
+                    const value = e.target.value.trim()
+                    setSlugline(value)
+                  }}
+                />
+              </div>
             </Form.Group>
 
             <>
@@ -355,6 +371,9 @@ export const FlashDialog = (props: {
                       relatedDocsSlugline
                     })
                       .then((data) => {
+                        if (props?.onDialogClose) {
+                          props.onDialogClose()
+                        }
                         handleCreationSuccess(data, config, startDate)
                       })
                       .catch((ex: Error) => {

@@ -269,7 +269,7 @@ export const QuickArticleDialog = (props: {
                       })
                   }}
                   onSecondary={() => {
-                    handleClose(config)
+                    config.setPrompt(false)
                   }}
                 />
               )
@@ -282,7 +282,7 @@ export const QuickArticleDialog = (props: {
                 <Form.Submit
                   onSubmit={() => handleSubmit(setSendPrompt)}
                   onSecondarySubmit={() => handleSubmit(setSavePrompt)}
-                  onTertiarySubmit={() => handleSubmit(setSendPrompt)}
+                  onTertiarySubmit={() => handleSubmit(setDonePrompt)}
                 >
                   <div className='flex justify-between'>
                     <div className='flex gap-2'>
