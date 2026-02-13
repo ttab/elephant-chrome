@@ -88,7 +88,7 @@ export const Preview = ({ wire, onClose }: {
       </div>
 
       <div className='grid-rows-[auto_1fr] max-w-full w-full overflow-y-auto mx-auto'>
-        <div className='mx-12 bg-muted rounded-md py-2 px-4 mt-2'>
+        <div className='mx-12 bg-muted rounded-md py-2 px-4 mt-2 border'>
           <DocumentHistory
             uuid={wire.id}
             currentVersion={data?.version}

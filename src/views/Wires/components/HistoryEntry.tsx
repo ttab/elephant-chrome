@@ -25,7 +25,7 @@ export const HistoryEntry = ({ version, isCurrent = false, status, isLast, title
       <div className={cn(
         'py-1 ps-3 cursor-default',
         !title && 'text-muted-foreground',
-        selected ? 'font-bold' : 'opacity-70'
+        selected && 'font-bold'
       )}
       >
         {time}
