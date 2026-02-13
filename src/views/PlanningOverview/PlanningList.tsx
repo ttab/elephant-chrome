@@ -50,7 +50,7 @@ export const PlanningList = ({ columns }: {
 
   if (error) {
     console.error('Error fetching planning items:', error)
-    toast.error(t('plannings.toasts.getPlanningsError'))
+    toast.error(t('errors:toasts.getPlanningsFailed'))
   }
 
 

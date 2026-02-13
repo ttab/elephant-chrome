@@ -31,7 +31,7 @@ export const Editor = ({ id, version, textOnly = false, direct, versionStatusHis
   versionStatusHistory?: DocumentStatuses[]
   direct?: boolean
 }): JSX.Element => {
-  const { t } = useTranslation('shared')
+  const { t } = useTranslation('editor')
   const searchParams = new URLSearchParams()
   if (typeof version !== 'undefined') {
     searchParams.set('version', version.toString())
@@ -49,14 +49,14 @@ export const Editor = ({ id, version, textOnly = false, direct, versionStatusHis
       ...basePlugins.map((initPlugin) => initPlugin()),
       Text(),
       TTVisual({
-        captionLabel: t('editor:image.captionLabel'),
-        bylineLabel: t('editor:image.bylineLabel'),
+        captionLabel: t('image.captionLabel'),
+        bylineLabel: t('image.bylineLabel'),
         removable: false
       }),
       Factbox({
-        headerTitle: t('editor:factbox.headerTitle'),
-        modifiedLabel: t('editor:factbox.modifiedLabel'),
-        footerTitle: t('editor:factbox.footerTitle'),
+        headerTitle: t('factbox.headerTitle'),
+        modifiedLabel: t('factbox.modifiedLabel'),
+        footerTitle: t('factbox.footerTitle'),
         removable: false
       })
     ]
@@ -69,7 +69,7 @@ export const Editor = ({ id, version, textOnly = false, direct, versionStatusHis
   )
 
   if (error) {
-    return <div>{t('errors.loadFailed')}</div>
+    return <div>{t('errors:messages.loadFailed')}</div>
   }
 
   if (!content) {

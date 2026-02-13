@@ -30,7 +30,7 @@ export const List = ({ type, createdId, asDialog }: {
     }
   )
 
-  if (error) return <div>{t('errors.loadFailed')}</div>
+  if (error) return <div>{t('errors:messages.loadFailed')}</div>
   if (!document) return null
 
   return (

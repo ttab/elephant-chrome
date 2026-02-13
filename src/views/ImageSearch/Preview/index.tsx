@@ -32,7 +32,7 @@ export const Preview = ({ ttninjs, setOpen }: {
 
   if (!id) {
     console.error('No id found in ttninjs.uri')
-    toast.error(t('views:imageSearch.errors.showPictureError'))
+    toast.error(t('errors:toasts.showPictureFailed'))
   }
 
   const mediaType = ttninjs.type === 'graphic' ? 'graphics' : 'images'

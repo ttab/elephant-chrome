@@ -50,31 +50,10 @@
     "copyEventPrompt": "Vill du kopiera händelsen till {{datesFormatted}}?",
     "copyEventSuccess": "Händelsen \"{{title}}\" har kopierats till {{datesFormatted}}"
   },
-  "errors": {
-    "loadFailed": "Kunde inte ladda",
-    "noDeliverables": "Inga leverabler",
-    "sendDataError": "Kunde inte skicka data",
-    "multipleAuthors": "Flera författardokument hittades, kontakta support",
-    "unpublishError": "Det gick inte att avpublicera dokumentet",
-    "addAssignmentToPlanningError": "Det gick inte att lägga till uppdraget i en kopplad planering",
-    "creationFailed": "Misslyckades att skapa text: {{error}}",
-    "fetchDocumentFailed": "Kunde inte hämta dokument",
-    "couldNotScheduleArticle": "Kunde inte schemalägga artikel! Tid eller datum är felaktigt angivet.",
-    "savedDocumentFailed": "Kunde inte spara dokument",
-    "fetchStatusFailed": "Ett fel uppstod när aktuell status skulle hämtas. Försök ladda om sidan.",
-    "couldNotChangeStatusReloadBrowser": "Ett fel har uppstått, aktuell status kunde inte ändras! Ladda om webbläsaren och försök igen.",
-    "couldNotChangeStatus": "Ett fel uppstod när aktuell status skulle ändras.",
-    "couldNotSaveStatus": "Ett fel uppstod när aktuell status skulle sparas.",
-    "couldNotFindPlanningSection": "Kunde inte hitta sektionen för planeringen"
-  },
   "operations": {
     "authorCreateSuccess": "Författardokument är skapat",
     "authorUpdateSuccess": "Författardokument har uppdaterats",
     "authorSaveSuccess": "Författardokument har sparats",
-    "authorUpdateFailure": "Kunde inte uppdatera författardokument: {{errorMessage}}",
-    "authorSaveFailure": "Kunde inte spara författardokument: {{errorMessage}}",
-    "authorCreateFailure": "Kunde inte skapa författardokument: Failed to create author doc",
-    "authorCreateUndefinedFailed": "Kunde inte skapa författardokument: Failed to fetch author document: undefined",
     "savedFilter": "Ditt filter har sparats"
   },
   "prompts": {

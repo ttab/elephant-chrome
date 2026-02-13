@@ -52,7 +52,7 @@ export const EventsList = (): JSX.Element => {
 
   if (error) {
     console.error('Error fetching event items:', error)
-    toast.error(t('views:events.toasts.fetch.error'))
+    toast.error(t('errors:toasts.getEventsFailed'))
   }
 
   return (

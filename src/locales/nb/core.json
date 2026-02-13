@@ -23,9 +23,6 @@
     "showOlder": "Vis eldre"
   },
   "status": {
-    "action": {
-      "publish": "Publiser"
-    },
     "draft": "Utkast",
     "internal": "Intern",
     "approved": "Godkjent",

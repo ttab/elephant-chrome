@@ -24,12 +24,12 @@ export async function updateAssignmentTime(
 
     if (!response.ok) {
       console.error('Failed backend call to set assignment publish time', response.status, response.statusText)
-      toast.error(t('planning:assignment.errors.changeStatusError'))
+      toast.error(t('errors:messages.changeStatusError'))
       return false
     }
   } catch (ex) {
     console.error('Failed backend call to set publish time when changing status', (ex as Error).message)
-    toast.error(t('planning:assignment.errors.changeStatusError'))
+    toast.error(t('errors:messages.changeStatusError'))
     return false
   }
 }

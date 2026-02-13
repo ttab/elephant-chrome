@@ -1,5 +1,6 @@
 {
   "title": "Hendelse",
+  "eventDocument": "Hendelsesdokument",
   "subheadings": {
     "plannings": "Planlegginger",
     "events": "Hendelser"
@@ -12,16 +13,9 @@
     "markAsCancelled": "Merk som avlyst",
     "markedAsCancelled": "Hendelsen er merket som avlyst!"
   },
-  "error": {
-    "noEventDocument": {
-      "title": "Hendelsesdokument mangler",
-      "message": "Inget hendelsesdokument er oppgitt. Naviger tilbake til oversikten og forsøk igjen."
-    }
-  },
   "toasts": {
     "created": {
-      "success": "Hendelse skapt",
-      "error": "Kunne ikke skape ny hendelse!"
+      "success": "Hendelse skapt"
     }
   },
   "placeholders": {

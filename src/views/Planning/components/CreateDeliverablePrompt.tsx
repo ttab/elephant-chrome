@@ -34,14 +34,14 @@ export function CreateDeliverablePrompt({ ydoc, deliverableType, payload, onClos
       hasAccessToken: !!session?.accessToken,
       hasRepository: !!repository
     })
-    toast.error(t('planning:assignment.errors.createDeliverableError'))
+    toast.error(t('errors:messages.createDeliverableError'))
     return <></>
   }
 
   const onCreateDocument = async () => {
     // Validate payload contains required fields
     if (!payload.meta?.['core/newsvalue'] || !payload.links?.['core/section']) {
-      throw new Error(t('planning:toasts.missingMetadata'))
+      throw new Error(t('errors:toasts.missingMetadata'))
     }
 
     const id = crypto.randomUUID()
@@ -74,9 +74,9 @@ export function CreateDeliverablePrompt({ ydoc, deliverableType, payload, onClos
             onClose(id)
           })
           .catch((ex) => {
-            const errorMessage = ex instanceof Error ? ex.message : t('common:errors.unknown')
+            const errorMessage = ex instanceof Error ? ex.message : t('errors:messages.unknown')
             console.error('Failed to create deliverable:', errorMessage, ex)
-            toast.error(t('shared:errors.creationFailed', { error: errorMessage }))
+            toast.error(t('errors:toasts.creationFailed', { error: errorMessage }))
             setIsCreating(false)
           })
       }}

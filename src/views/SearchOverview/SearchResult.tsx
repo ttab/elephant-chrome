@@ -62,7 +62,7 @@ export const SearchResult = ({ searchType, page }: {
 
   if (error) {
     console.error('Error fetching search result items:', error)
-    toast.error(t('search.errors.errorFetchingResults'))
+    toast.error(t('errors:toasts.getSearchResultsFailed'))
   }
 
   return (

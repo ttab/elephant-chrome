@@ -16,10 +16,8 @@
     },
     "toasts": {
       "create": {
-        "error": "Kunde inte skapa ny planering",
         "success": "Planering skapad"
       },
-      "getPlanningsError": "Kunde inte hämta planeringar",
       "openItem": "Öppna planering"
     }
   },
@@ -35,11 +33,6 @@
       "section": "Sektion",
       "planningStatus": "Planeringsstatus",
       "action": "Action"
-    },
-    "toasts": {
-      "fetch": {
-        "error": "Kunde inte hämta händelser"
-      }
     },
     "tooltips": {
       "organiser": "Organisatör"
@@ -77,9 +70,6 @@
       "events": "Händelser",
       "articles": "Artiklar"
     },
-    "errors": {
-      "errorFetchingResults": "Kunde inte hämta sökresultat"
-    },
     "columnLabels": {
       "date": "Datum"
     }
@@ -91,10 +81,6 @@
   },
   "imageSearch": {
     "title": "Bilder",
-    "errors": {
-      "noSession": "Kan inte autentisera mot bildtjänsten",
-      "showPictureError": "Kan inte visa bild, ogiltigt id"
-    },
     "labels": {
       "mediaType": "Medietyp",
       "image": "Bild",

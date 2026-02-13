@@ -55,8 +55,8 @@ export const QuickArticle = (props: ViewProps & {
   if ((!props.asDialog && !documentId) || typeof documentId !== 'string') {
     return (
       <Error
-        title={t('errors.quickArticleMissing')}
-        message={t('errors.quickArticleMissingDescription')}
+        title={t('errors:messages.documentTypeMissing', { documentType: t('quickArticle:title') })}
+        message={t('errors:messages.articleMissingDescription')}
       />
     )
   }

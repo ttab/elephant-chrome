@@ -182,7 +182,7 @@ export const Version = ({ documentId, hideDetails = false, textOnly = true }: { 
     return (
       <Error
         title='Fel'
-        message={t('errors.failedToLoadHistory')}
+        message={t('errors:messages.failedToLoadHistory')}
       />
     )
   }

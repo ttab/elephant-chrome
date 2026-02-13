@@ -61,8 +61,8 @@ const Factbox = (props: ViewProps & { document?: Document }): JSX.Element => {
   if (!documentId || typeof documentId !== 'string') {
     return (
       <Error
-        title={t('errors.articleMissingTitle')}
-        message={t('errors.articleMissingDescription')}
+        title={t('errors:messages.articleMissingTitle')}
+        message={t('errors:messages.articleMissingDescription')}
       />
     )
   }
@@ -144,7 +144,7 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
             <div className='mx-12'>
               {!environmentIsSane && (
                 <UserMessage asDialog={!!props?.asDialog} variant='destructive'>
-                  {t('common:errors.unwellEnvironment')}
+                  {t('errors:messages.unwellEnvironment')}
                 </UserMessage>
               )}
 
@@ -192,7 +192,7 @@ const FactboxDialogFooter = ({ ydoc, disabled, onSuccess, onError}: {
       .then(() => {
         onSuccess?.()
       }).catch((ex) => {
-        onError(t('errors.errorCreatingFactbox'))
+        onError(t('errors:messages.couldNotCreateNewFactbox'))
         console.error(ex)
       })
   }

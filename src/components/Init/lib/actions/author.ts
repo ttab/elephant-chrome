@@ -96,9 +96,9 @@ export async function initializeAuthor({ url, session, repository, t }: {
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
     if (operation === 'update') {
-      toast.error(t('shared:operations.authorUpdateFailure', { errorMessage }))
+      toast.error(t('errors:toasts.authorUpdateFailure', { errorMessage }))
     } else {
-      toast.error(t('shared:operations.authorSaveFailure', { errorMessage }))
+      toast.error(t('errors:toasts.authorSaveFailure', { errorMessage }))
     }
     throw new Error(`Failed to initialize author: ${errorMessage}`)
   }
@@ -115,7 +115,7 @@ export async function initializeAuthor({ url, session, repository, t }: {
  */
 function verifyAuthorDoc(document: IndexSearchResult<Author>, envRole: 'stage' | 'prod', session: Session, t: TFunction): boolean | undefined {
   if (document.hits?.length > 1) {
-    toast.error(t('shared:errors.multipleAuthors'))
+    toast.error(t('errors:toasts.multipleAuthors'))
     throw new Error(`More than one author document found for sub: ${session.user.sub} email: ${session.user.email}`)
   }
 

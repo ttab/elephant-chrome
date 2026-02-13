@@ -24,10 +24,6 @@
         "internalNote": "Intern notering",
         "infoToCustomer": "Info till kund"
     },
-    "errors": {
-        "failedToLoadHistory": "Det uppstod ett fel när dokumenthistoriken skulle hämtas.",
-        "failedToLoadMetaData": "Ett fel uppstod vid hämtning av metadata."
-    },
     "misc": {
         "lastUpdated": "Senast uppdaterad: {{date}}",
         "noType": "Ingen typ"

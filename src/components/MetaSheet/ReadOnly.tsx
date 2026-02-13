@@ -45,7 +45,7 @@ export const ReadOnly = ({ documentId, version }: { documentId: string, version:
 
     if (!response.ok) {
       console.error(`Fetch metadata error for ${documentId}:`, error)
-      toast.error(t('errors.failedToLoadMetaData'))
+      toast.error(t('errors:messages.failedToLoadMetaData'))
       throw new Error('Readonly: Network response was not ok')
     }
 

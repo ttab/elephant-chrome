@@ -94,13 +94,13 @@ export const Move = ({ ydoc, ...props }: ViewProps & {
       )
 
       if (originalAssignmentIndex < 0) {
-        toast.error(t('planning:move.assignmentMoveError'))
+        toast.error(t('errors:toasts.assignmentMoveError'))
         return
       }
 
       const originalAssignment = getValueByYPath<Block>(yRootOriginal, `meta.core/assignment[${originalAssignmentIndex}]`)?.[0]
       if (!originalAssignment) {
-        toast.error(t('planning:move.assignmentMoveError'))
+        toast.error(t('errors:toasts.assignmentMoveError'))
         return
       }
 
@@ -123,7 +123,7 @@ export const Move = ({ ydoc, ...props }: ViewProps & {
       const newAssignmentIndex = newAssignmentArray.length
 
       if (!setValueByYPath(newEle, `meta.core/assignment[${newAssignmentIndex}]`, toYStructure(updatedAssignment))) {
-        toast.error(t('planning:move.assignmentMoveError'))
+        toast.error(t('errors:toasts.assignmentMoveError'))
         return
       }
 
@@ -150,7 +150,7 @@ export const Move = ({ ydoc, ...props }: ViewProps & {
       props.onDialogClose?.()
     } catch (error) {
       console.error('Error moving assignment', error)
-      toast.error(t('planning:move.assignmentMoveError'))
+      toast.error(t('errors:toasts.assignmentMoveError'))
     }
   }
 

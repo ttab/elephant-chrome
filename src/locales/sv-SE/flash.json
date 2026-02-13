@@ -1,5 +1,6 @@
 {
     "title": "Flash",
+    "flashDocument": "Flashdokument",
     "createFlashAlertTitle": "Du skapar en ny flash",
     "alertDescription1": "Väljer du ingen planering kommer en ny planering med tillhörande uppdrag skapas åt dig.",
     "alertDescription2": "Denna {{documentType}} kommer läggas i ett nytt uppdrag i den valda planeringen.",
@@ -14,15 +15,6 @@
         "typeWillBeAddedToPlanning": "Denna {{type}} kommer att läggas i ett nytt uppdrag i planeringen \"{{planningName}}\".",
         "alsoTypeCreated": "I samma planering kommer även ett textuppdrag med {{type}}innehållet att läggas till.",
         "alsoTypeCreatedWithApproved": "En ny, intern planering med tillhörande uppdrag för denna artikel kommer att skapas åt dig. Artikeln kommer att ha status Godkänd. Kom ihåg att uppdatera och publicera planeringen!"
-    },
-    "errors": {
-        "flashDocumentMissing": "Flashdokument saknas",
-        "flashDocumentMissingDescription": "Inget flashdokument är angivet. Navigera tillbaka till översikten och försök igen.",
-        "statusErrorText": "Kunde inte ändra status på flash! Det gick inte att hitta en kopplad planering.",
-        "scheduleArticleFailed": "Kunde inte schemalägga artikel! Tid eller datum är felaktigt angivet.",
-        "createQuickArticleFailed": "Fel när snabbartikel skapades.",
-        "flashCreationFailed": "Flashen kunde inte skapas.",
-        "createAssignmentError": "Flashen har skapats. Tyvärr misslyckades det att koppla den till en planering."
     },
     "operations": {
         "quickArticleCreated": "Snabbartikel har skapats"

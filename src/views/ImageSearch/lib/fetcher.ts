@@ -24,7 +24,7 @@ export const createFetcher = (url: URL, session: Session | null, mediaType: Medi
     }
   }> => {
     if (!session) {
-      toast.error(t('views:imageSearch.errors.noSession'))
+      toast.error(t('errors:toasts.unableToAutorise'))
       throw new Error('ImageSearch Error: No session for user')
     }
     const client = apiClient(session.accessToken, url)

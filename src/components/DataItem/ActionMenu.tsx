@@ -46,7 +46,7 @@ export const ActionMenu = ({ deliverableUuids, planningId }: { deliverableUuids:
                   </DropdownMenuItem>
                 )
               })
-              : t('shared:errors.noDeliverables')}
+              : t('errors:messages.noDeliverables')}
           </DropdownMenuSubContent>
         </DropdownMenuSub>
       </DropdownMenuContent>

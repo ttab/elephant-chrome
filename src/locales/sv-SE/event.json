@@ -1,5 +1,6 @@
 {
     "title": "Händelse",
+    "eventDocument": "Händelsedokument",
     "subheadings": {
         "plannings": "Planeringar",
         "events": "Händelser"
@@ -12,16 +13,9 @@
         "markAsCancelled": "Markera som inställd",
         "markedAsCancelled": "Evenemanget är markerat som inställt!"
     },
-    "error": {
-        "noEventDocument": {
-            "title": "Händelsedokument saknas",
-            "message": "Inget händelsedokument är angivet. Navigera tillbaka till översikten och försök igen."
-        }
-    },
     "toasts": {
         "created": {
-            "success": "Händelse skapad",
-            "error": "Kunde inte skapa ny händelse!"
+            "success": "Händelse skapad"
         }
     },
     "placeholders": {

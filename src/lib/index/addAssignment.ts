@@ -41,7 +41,7 @@ export async function addAssignmentWithDeliverable(payload: {
 
     if (!response.ok) {
       console.error('Failed backend call to add assignment', response.status, response.statusText)
-      toast.error(i18n.t('shared:errors.addAssignmentToPlanningError'))
+      toast.error(i18n.t('errors:toasts.addAssignmentToPlanningError'))
     }
 
     const result = await response.json() as { uuid: string }
@@ -52,6 +52,6 @@ export async function addAssignmentWithDeliverable(payload: {
     return result.uuid
   } catch (ex) {
     console.error('Failed backend call to add assignment', ex)
-    toast.error(i18n.t('shared:errors.addAssignmentToPlanningError'))
+    toast.error(i18n.t('errors:toasts.addAssignmentToPlanningError'))
   }
 }

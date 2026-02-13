@@ -97,8 +97,8 @@ export const Planning = (props: ViewProps & {
           )
         : (
             <Error
-              title={t('planning:prompts.planningDocumentMissing')}
-              message={t('planning:prompts.documentMissingMessage')}
+              title={t('errors:messages.documentTypeMissing', { documentType: t('planning:planningDocument') })}
+              message={t('errors:messages.documentTypeMissingDescription', { documentType: t('planning:planningDocument') })}
             />
           )}
     </>
@@ -175,7 +175,7 @@ const PlanningViewContent = (props: ViewProps & {
         })
       } catch (ex) {
         console.error('Failed to snapshot document', ex)
-        toast.error(t('views:plannings.toasts.create.error'), {
+        toast.error(t('errors:toasts.couldNotCreateNewPlanning'), {
           duration: 5000,
           position: 'top-center'
         })
@@ -260,7 +260,7 @@ const PlanningViewContent = (props: ViewProps & {
           <Form.Footer>
             {!environmentIsSane && (
               <UserMessage asDialog={!!props.asDialog} className='pb-6'>
-                {t('common:errors.unwellEnvironment')}
+                {t('errors:messages.unwellEnvironment')}
               </UserMessage>
 
             )}
@@ -281,7 +281,7 @@ const PlanningViewContent = (props: ViewProps & {
                   </Button>
                 </div>
                 <Button type='submit' disabled={!environmentIsSane}>
-                  {t('core:status.action.publish')}
+                  {t('common:actions.publish')}
                 </Button>
               </div>
             </Form.Submit>

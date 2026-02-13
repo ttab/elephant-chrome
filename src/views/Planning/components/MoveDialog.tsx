@@ -152,7 +152,7 @@ export const MoveDialog = ({ ydoc, onClose, newDate }: {
                   onClose()
                 }).catch((err) => {
                   console.error(err)
-                  toast.error(t('planning:toasts.snapshotError'))
+                  toast.error(t('errors:toasts.snapshotError'))
                 })
               }
             }}

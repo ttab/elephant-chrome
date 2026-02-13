@@ -69,7 +69,7 @@ export const ViewDialogClose = ({ ydoc, onClick, Icon = XIcon, asDialog }: {
                 })
                 .catch((error) => {
                   setShowVerifyDialog(false)
-                  toast.error(t('errors.savedDocumentFailed'))
+                  toast.error(t('errors:toasts.savedDocumentFailed'))
                   console.error('Could not snapshot document before closing view.', error)
                 })
             }

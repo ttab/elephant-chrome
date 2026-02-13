@@ -11,7 +11,7 @@ import type { TFunction } from 'i18next'
 export const UserMessagesReceiver = ({ children }: React.PropsWithChildren) => {
   const { user } = useRegistry()
   const { data } = useSession()
-  const { t } = useTranslation()
+  const { t } = useTranslation('errors')
 
   /**
    * Start polling messages on first load
@@ -81,7 +81,7 @@ async function execPolling(accessToken: string, user: User, lastId: number, abor
     if (ex instanceof AbortError) {
       throw ex
     }
-    toast.error(t('app:systemMessages.connectionFailed'))
+    toast.error(t('systemMessages.connectionFailed'))
     throw ex
   }
 }
@@ -107,13 +107,13 @@ const displayMessageToast = (message: Message, t: TFunction) => {
   }
 
   toast.error(
-    t('common:errors.someError'),
+    t('messages.someError'),
     {
       description: desc.join(' '),
       duration: Infinity,
       closeButton: true,
       action: {
-        label: t('common:errors.copyError'),
+        label: t('messages.copyError'),
         onClick: () => void navigator.clipboard.writeText(JSON.stringify(msg, null, 2))
       }
     }

@@ -162,7 +162,7 @@ export const Submit = ({
       if (child.props && typeof child.props === 'object' && 'type' in child.props) {
         if (childProps.type === 'button' && !childProps.role) {
           console.error('Button without role, please add a role to the button')
-          toast.error(t('shared:errors.sendDataError'))
+          toast.error(t('errors:toasts.sendDataError'))
         }
 
         switch (childProps.type) {

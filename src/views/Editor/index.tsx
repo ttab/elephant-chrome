@@ -54,8 +54,8 @@ const Editor = (props: ViewProps): JSX.Element => {
   if (!documentId || typeof documentId !== 'string') {
     return (
       <Error
-        title={t('errors.articleMissingTitle')}
-        message={t('errors.articleMissingDescription')}
+        title={t('errors:messages.articleMissingTitle')}
+        message={t('errors:messages.articleMissingDescription')}
       />
     )
   }

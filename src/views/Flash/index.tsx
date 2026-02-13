@@ -65,8 +65,8 @@ export const Flash = (props: ViewProps & {
   if ((!props.asDialog && !documentId) || typeof documentId !== 'string') {
     return (
       <Error
-        title={t('errors.flashDocumentMissing')}
-        message={t('errors.flashDocumentMissingDescription')}
+        title={t('errors:messages.documentTypeMissing', { documentType: t('flashDocument') })}
+        message={t('errors:messages.documentTypeMissingDescription', { documentType: t('flashDocument') })}
       />
     )
   }
