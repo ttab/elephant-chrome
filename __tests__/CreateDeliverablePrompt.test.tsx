@@ -235,7 +235,7 @@ describe('CreateDeliverablePrompt', () => {
 
       await waitFor(() => {
         expect(toast.error).toHaveBeenCalledWith(
-          i18n.t(`shared:errors.creationFailed`, { error: i18n.t('planning:toasts.missingMetadata') })
+          i18n.t(`errors:toasts.creationFailed`, { error: i18n.t('errors:toasts.missingMetadata') })
         )
       })
 
@@ -264,7 +264,7 @@ describe('CreateDeliverablePrompt', () => {
 
       await waitFor(() => {
         expect(toast.error).toHaveBeenCalledWith(
-          i18n.t(`shared:errors.creationFailed`, { error: i18n.t('planning:toasts.missingMetadata') })
+          i18n.t(`errors:toasts.creationFailed`, { error: i18n.t('errors:toasts.missingMetadata') })
         )
       })
 
@@ -286,7 +286,7 @@ describe('CreateDeliverablePrompt', () => {
 
       await waitFor(() => {
         expect(toast.error).toHaveBeenCalledWith(
-          i18n.t(`shared:errors.creationFailed`, { error: errorMessage })
+          i18n.t(`errors:toasts.creationFailed`, { error: errorMessage })
         )
       })
 
@@ -304,7 +304,7 @@ describe('CreateDeliverablePrompt', () => {
 
       await waitFor(() => {
         expect(toast.error).toHaveBeenCalledWith(
-          i18n.t(`shared:errors.creationFailed`, { error: i18n.t('common:errors.unknown') })
+          i18n.t(`errors:toasts.creationFailed`, { error: i18n.t('errors:messages.unknown') })
         )
       })
     })
@@ -364,7 +364,7 @@ describe('CreateDeliverablePrompt', () => {
       await user.click(createButton)
       await waitFor(() => {
         expect(toast.error).toHaveBeenCalledWith(
-          i18n.t(`shared:errors.creationFailed`, { error: 'First failure' })
+          i18n.t(`errors:toasts.creationFailed`, { error: 'First failure' })
         )
       })
 
