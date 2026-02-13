@@ -86,10 +86,6 @@ export const Wires = (): JSX.Element => {
     setPreviewWire(wire)
   }, [])
 
-  const handleOnUnpress = useCallback(() => {
-    setPreviewWire(null)
-  }, [])
-
   const handleOnFocus = useCallback((wire: Wire) => {
     setFocusedWire(wire)
     setPreviewWire((curr) => {
@@ -265,7 +261,6 @@ export const Wires = (): JSX.Element => {
                   key={wireStream.uuid}
                   wireStream={wireStream}
                   onPress={handleOnPress}
-                  onUnpress={handleOnUnpress}
                   onFocus={handleOnFocus}
                   selectedWires={selectedWires}
                   statusMutations={statusMutations}

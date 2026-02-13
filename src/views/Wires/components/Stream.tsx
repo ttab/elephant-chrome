@@ -25,7 +25,6 @@ const PAGE_SIZE = 80
 export const Stream = ({
   wireStream,
   onFocus,
-  onUnpress,
   onPress,
   selectedWires,
   statusMutations,
@@ -36,7 +35,6 @@ export const Stream = ({
 }: {
   wireStream: WireStream
   onFocus?: (item: Wire, event: React.FocusEvent<HTMLElement>) => void
-  onUnpress?: (item: Wire, event: React.KeyboardEvent<HTMLElement>) => void
   onPress?: (item: Wire, event: React.MouseEvent<HTMLElement> | React.KeyboardEvent<HTMLElement>) => void
   selectedWires: Wire[]
   statusMutations: WireStatus[]
@@ -176,13 +174,12 @@ export const Stream = ({
             statusMutation={statusMutations.find((m) => m.uuid === row.original.id)}
             onToggleSelected={row.getToggleSelectedHandler()}
             onPress={onPress}
-            onUnpress={onUnpress}
             onFocus={onFocus}
           />
         )
       }
     ],
-    [wireStream.uuid, onPress, onUnpress, onFocus, statusMutations]
+    [wireStream.uuid, onPress, onFocus, statusMutations]
   )
 
   const table = useReactTable({
