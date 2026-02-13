@@ -4,6 +4,7 @@ import { TabsContent } from '@ttab/elephant-ui'
 import { TableProvider } from '@/contexts/TableProvider'
 import { TableCommandMenu } from '@/components/Commands/TableCommand'
 import { Header } from '@/components/Header'
+import type { PreprocessedAssignmentData } from './preprocessor'
 import { AssignmentsList } from './AssignmentsList'
 import { assignmentColumns } from './AssignmentColumns'
 import { Commands } from '@/components/Commands'
@@ -15,7 +16,6 @@ import { type IDBAuthor } from 'src/datastore/types'
 import { useQuery } from '@/hooks/useQuery'
 import { newLocalDate } from '@/shared/datetime'
 import { useSections } from '@/hooks/useSections'
-import type { Assignment } from '@/shared/schemas/assignments'
 import { useInitFilters } from '@/hooks/useInitFilters'
 
 const meta: ViewMetadata = {
@@ -69,7 +69,7 @@ export const Assignments = (): JSX.Element => {
 
   return (
     <View.Root tab={currentTab} onTabChange={setCurrentTab}>
-      <TableProvider<Assignment>
+      <TableProvider<PreprocessedAssignmentData>
         type={meta.name}
         columns={columns}
         initialState={{
@@ -97,7 +97,7 @@ export const Assignments = (): JSX.Element => {
 
         <View.Content>
           <TabsContent value='list' className='mt-0'>
-            <AssignmentsList date={date} columns={columns} />
+            <AssignmentsList columns={columns} />
           </TabsContent>
         </View.Content>
 

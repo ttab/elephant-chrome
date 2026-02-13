@@ -22,6 +22,7 @@ import { fromYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc.js'
 import { fromGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc.js'
 
 import { meta } from './meta.js'
+import { getSession } from 'next-auth/react'
 
 export interface Status {
   name: string
@@ -431,5 +432,23 @@ export class Repository {
     }
 
     return attachments[0]
+  }
+
+  /**
+   * Get a token for WebSocket authentication.
+   */
+  async getSocketToken(): Promise<string> {
+    const session = await getSession()
+
+    if (!session?.accessToken) {
+      throw new Error('No access token found in session')
+    }
+
+    try {
+      const { response } = await this.#client.getSocketToken({}, meta(session.accessToken))
+      return response.token
+    } catch (err: unknown) {
+      throw new Error(`Unable to get socket token: ${(err as Error)?.message || 'Unknown error'}`)
+    }
   }
 }

@@ -9,14 +9,14 @@ import { getWireStatus } from '../../lib/getWireStatus'
 
 type DocumentType = 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires' | 'Factbox' | 'Print' | 'PrintEditor'
 
-export const WireRow = ({ row, handleOpen, openDocuments, type }: {
+export const WireRow = <TData, >({ row, handleOpen, openDocuments, type }: {
   type: DocumentType
-  row: RowType<unknown>
-  handleOpen: (event: MouseEvent<HTMLTableRowElement>, row: RowType<unknown>) => void
+  row: RowType<TData>
+  handleOpen: (event: MouseEvent<HTMLTableRowElement>, row: RowType<TData>) => void
   openDocuments: string[]
 }): JSX.Element => {
   const wire = row.original as Wire
-  const wireRow = row as RowType<Wire>
+  const wireRow = row as unknown as RowType<Wire>
 
   const isFlash = !!wire.fields?.['heads.flash.version']?.values?.[0]
     || wire.fields['document.meta.core_newsvalue.value']?.values[0] === '6'
@@ -84,7 +84,7 @@ function getDataState(openDocuments: string[], wire: Wire, type: DocumentType, r
   return ((openDocuments.includes(wire.id) && 'selected') || (type === 'Wires' && row.getIsSelected() && 'focused')) || undefined
 }
 
-function handleRef(el: HTMLTableRowElement | null, row: RowType<Wire>): void {
+function handleRef<T extends Wire>(el: HTMLTableRowElement | null, row: RowType<T>): void {
   if (el && row.getIsSelected()) {
     el.focus()
   }
