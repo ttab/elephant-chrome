@@ -30,7 +30,9 @@ export function WebSocketProvider({ url, children }: PropsWithChildren & {
     })
 
     wsp.current.on('disconnect', ({ event }: { event?: CloseEvent }) => {
-      console.warn('❌ WebSocket provider disconnected:', event?.code, event?.reason)
+      if (event?.code !== 1001) {
+        console.warn('❌ WebSocket provider disconnected:', event?.code, event?.reason)
+      }
       setIsConnected(false)
     })
 

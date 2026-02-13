@@ -1,3 +1,6 @@
+import type {
+  PropsWithChildren
+} from 'react'
 import {
   type MouseEvent,
   useEffect,
@@ -37,7 +40,7 @@ import { type View } from '@/types/index'
 import type { DocumentState } from '@ttab/elephant-api/repositorysocket'
 const BASE_URL = import.meta.env.BASE_URL
 
-interface TableProps<TData, TValue> {
+interface TableProps<TData, TValue> extends PropsWithChildren {
   columns: Array<ColumnDef<TData, TValue>>
   type: 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires' | 'Factbox' | 'Print' | 'PrintEditor'
   onRowSelected?: (row?: TData) => void
@@ -51,6 +54,7 @@ export const Table = <TData, TValue>({
   columns,
   type,
   onRowSelected,
+  children,
   searchType
 }: TableProps<TData, TValue> & { searchType?: View }): JSX.Element => {
   const { state, dispatch } = useNavigation()
@@ -321,6 +325,8 @@ export const Table = <TData, TValue>({
           />
         </NewItems.Root>
       )}
+
+      {children}
 
       {(type !== 'Search') && (
         <_Table className='table-auto relative'>

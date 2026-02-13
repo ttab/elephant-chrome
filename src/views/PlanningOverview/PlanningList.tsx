@@ -8,6 +8,7 @@ import { TableSkeleton } from '@/components/Table/Skeleton'
 import type { PreprocessedPlanningData } from './preprocessor'
 import { preprocessPlanningData } from './preprocessor'
 import { Error as ErrorView } from '../Error'
+import { SocketStatus } from '@/hooks/useRepositorySocket/lib/components/SocketStatus'
 
 export const PlanningList = ({ columns }: {
   columns: ColumnDef<PreprocessedPlanningData>[]
@@ -19,7 +20,7 @@ export const PlanningList = ({ columns }: {
       ? new Date(query?.from as string)
       : new Date(), timeZone), [query, timeZone])
 
-  const { error, isLoading } = useRepositorySocket({
+  const { error, isLoading, status } = useRepositorySocket({
     type: 'core/planning-item',
     from,
     to,
@@ -45,6 +46,8 @@ export const PlanningList = ({ columns }: {
       type='Planning'
       columns={columns}
       onRowSelected={onRowSelected}
-    />
+    >
+      <SocketStatus status={status} />
+    </Table>
   )
 }

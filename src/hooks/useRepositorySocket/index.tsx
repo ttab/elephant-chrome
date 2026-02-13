@@ -7,6 +7,7 @@ import type {
   InclusionBatch
 } from '@ttab/elephant-api/repositorysocket'
 import { toast } from 'sonner'
+import type { SocketStatus } from '@/shared/RepositorySocket'
 import { useTable } from '@/hooks/useTable'
 import type { DocumentStateWithDecorators, DecoratorDataBase } from './types'
 import {
@@ -93,6 +94,7 @@ export function useRepositorySocket<TDecoratorData extends DecoratorDataBase = D
   data: DocumentStateWithDecorators<TDecoratorData>[]
   error: Error | null
   isLoading: boolean
+  status: SocketStatus | null
 } {
   const { data: session } = useSession()
   const { repositorySocket } = useRegistry()
@@ -102,6 +104,7 @@ export function useRepositorySocket<TDecoratorData extends DecoratorDataBase = D
   const [isLoading, setIsLoading] = useState(true)
 
   const [reconnectCount, setReconnectCount] = useState(0)
+  const [status, setStatus] = useState<SocketStatus | null>(null)
   const cleanupRef = useRef<(() => void) | null>(null)
   const setNameRef = useRef<string>('')
   const callIdRef = useRef<string>('')
@@ -132,6 +135,11 @@ export function useRepositorySocket<TDecoratorData extends DecoratorDataBase = D
   useEffect(() => {
     if (!repositorySocket) return
     return repositorySocket.onReconnect(() => setReconnectCount((c) => c + 1))
+  }, [repositorySocket])
+
+  useEffect(() => {
+    if (!repositorySocket) return
+    return repositorySocket.onStatusChange(setStatus)
   }, [repositorySocket])
 
   useEffect(() => {
@@ -250,7 +258,7 @@ export function useRepositorySocket<TDecoratorData extends DecoratorDataBase = D
         })
       }
     }
-  // We only want to re-run this effect when accessToken changes or after reconnect
+  // We dont want to re-run this effect when accessToken changes
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [repositorySocket, from, to, include, type, asTable, reconnectCount])
 
@@ -259,5 +267,5 @@ export function useRepositorySocket<TDecoratorData extends DecoratorDataBase = D
     decoratorsRef.current = decorators
   }, [decorators])
 
-  return { data, error, isLoading }
+  return { data, error, isLoading, status }
 }

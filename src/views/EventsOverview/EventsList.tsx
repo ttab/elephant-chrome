@@ -8,6 +8,7 @@ import { TableSkeleton } from '@/components/Table/Skeleton'
 import type { PreprocessedEventData } from './preprocessor'
 import { preprocessEventData } from './preprocessor'
 import { Error as ErrorView } from '../Error'
+import { SocketStatus } from '@/hooks/useRepositorySocket/lib/components/SocketStatus'
 
 export const EventsList = ({ columns }: {
   columns: ColumnDef<PreprocessedEventData>[]
@@ -19,7 +20,7 @@ export const EventsList = ({ columns }: {
       ? new Date(query?.from as string)
       : new Date(), timeZone), [query, timeZone])
 
-  const { error, isLoading } = useRepositorySocket({
+  const { error, isLoading, status } = useRepositorySocket({
     type: 'core/event',
     from,
     to,
@@ -46,6 +47,8 @@ export const EventsList = ({ columns }: {
       type='Event'
       columns={columns}
       onRowSelected={onRowSelected}
-    />
+    >
+      <SocketStatus status={status} />
+    </Table>
   )
 }
