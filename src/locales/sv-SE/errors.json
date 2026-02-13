@@ -17,7 +17,7 @@
         "documentTypeMissing": "{{documentType}} saknas",
         "documentTypeMissingDescription": "Inget {{documentType, lowercase}} är angivet. Navigera tillbaka till översikten och försök igen.",
         "couldNotCreateNewFactbox": "Kunde inte skapa ny faktaruta!",
-        "statusChangeforDocumentTypeFailed": "Kunde inte ändra status på {{documentType, lowerCase}}! Det gick inte att hitta en kopplad planering.",
+        "statusChangeforDocumentTypeFailed": "Kunde inte ändra status på {{documentType, lowercase}}! Det gick inte att hitta en kopplad planering.",
         "scheduleArticleFailed": "Kunde inte schemalägga artikel! Tid eller datum är felaktigt angivet.",
         "createQuickArticleFailed": "Fel när snabbartikel skapades.",
         "flashCreationFailed": "Flashen kunde inte skapas.",
@@ -61,7 +61,7 @@
         "couldNotSaveStatus": "Ett fel uppstod när aktuell status skulle sparas.",
         "couldNotFindPlanningSection": "Kunde inte hitta sektionen för planeringen",
         "authorUpdateFailure": "Kunde inte uppdatera författardokument: {{errorMessage}}",
-        "authorSaveFailure": "Kunde inte skapa författardokument: {{errorMessage}}",
+        "authorSaveFailure": "Kunde inte spara författardokument: {{errorMessage}}",
         "authorCreateFailure": "Kunde inte skapa författardokument: Failed to create author doc",
         "authorCreateUndefinedFailed": "Kunde inte skapa författardokument: Failed to fetch author document: undefined"
     },

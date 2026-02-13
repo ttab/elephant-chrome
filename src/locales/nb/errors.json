@@ -17,7 +17,7 @@
         "documentTypeMissing": "{{documentType}} mangler",
         "documentTypeMissingDescription": "Inget {{documentType, lowercase}} er oppgitt. Naviger tilbake til oversikten og forsøk igjen.",
         "couldNotCreateNewFactbox": "Det gikk ikke å opprette ny faktaboks!",
-        "statusChangeforDocumentTypeFailed": "Kunde inte ändra status på {{documentType, lowerCase}}! Det gick inte att hitta en kopplad planering.",
+        "statusChangeforDocumentTypeFailed": "Kunne ikke endre status på {{documentType, lowercase}}! Det gikk ikke å finne en koblet planlegging.",
         "scheduleArticleFailed": "Kunne ikke planlegge artikkelen! Tid eller dato angitt feil.",
         "createQuickArticleFailed": "Feil ved oppretting av hurtigartikkel.",
         "flashCreationFailed": "HAST kunne ikke opprettes.",
@@ -31,8 +31,8 @@
         "noDeliverables": "Ingen leveranser"
     },
     "toasts": {
-        "couldNotCreateNewEvent": "Kunne ikke skape ny hendelse!",
-        "couldNotCreateNewPlanning": "Kunne ikke skape ny hendelse!",
+        "couldNotCreateNewEvent": "Kunne ikke opprette ny hendelse!",
+        "couldNotCreateNewPlanning": "Kunne ikke opprette ny plan!",
         "snapshotError": "Planen er endret lokalt, men kunne ikke lagres.",
         "createDeliverableLinkError": "Kunne ikke koble til leveransen",
         "saveError": "Kunne ikke lagre planen",
@@ -54,7 +54,7 @@
         "creationFailed": "Kunne ikke opprette tekst: {{error}}",
         "fetchDocumentFailed": "Kunne ikke hente dokument",
         "couldNotScheduleArticle": "Kunne ikke planlegge artikkelen! Tid eller dato angitt feil.",
-        "savedDocumentFailed": "Kunde ikke spare dokument",
+        "savedDocumentFailed": "Kunne ikke lagre dokument",
         "fetchStatusFailed": "Det oppsto en feil under henting av gjeldende status. Prøv å laste inn siden på nytt.",
         "couldNotChangeStatusReloadBrowser": "Det har oppstått en feil. Gjeldende status kunne ikke endres! Last inn nettleseren på nytt og prøv på nytt.",
         "couldNotChangeStatus": "Det oppstod en feil når aktuell status skulle endres.",

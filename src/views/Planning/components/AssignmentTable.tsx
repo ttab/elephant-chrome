@@ -107,7 +107,7 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId }: {
       snapshotDocument(documentId, { force: true }, ydoc.provider.document)
         .catch((ex) => {
           console.error('Error closing assignment:', ex)
-          toast.error(t('errorMesssages:saveAssignmentError'))
+          toast.error(t('errors:messages.saveAssignmentError'))
         })
     }
   }
