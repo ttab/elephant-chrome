@@ -5,6 +5,7 @@ import type { Wire } from '@/shared/schemas/wire'
 import { Editor } from '@/components/PlainEditor'
 import { getWireStatus } from '@/lib/getWireStatus'
 import { DocumentHistory } from './DocumentHistory'
+import { useState } from 'react'
 
 export const Preview = ({ wire, onClose }: {
   wire: Wire
@@ -20,6 +21,8 @@ export const Preview = ({ wire, onClose }: {
     status: getWireStatus(wire),
     version: BigInt(wire?.fields['current_version'].values[0]) ?? 1n
   }
+
+  const [wireVersion, setWireVersion] = useState<bigint | undefined>(undefined)
 
   return (
     <>
@@ -90,10 +93,13 @@ export const Preview = ({ wire, onClose }: {
             uuid={wire.id}
             currentVersion={data?.version}
             stickyStatus={false}
+            onSelectVersion={setWireVersion}
+            selectedVersion={wireVersion}
           />
         </div>
         <Editor
           id={wire.id}
+          version={wireVersion}
           textOnly={true}
           direct
           disableScroll={true}

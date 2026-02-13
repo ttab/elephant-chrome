@@ -2,13 +2,15 @@ import { Tooltip } from '@ttab/elephant-ui'
 import { cn } from '@ttab/elephant-ui/utils'
 import { HistoryIcon } from './HistoryIcon'
 
-export const HistoryEntry = ({ version, isCurrent = false, status, isLast, title, time }: {
+export const HistoryEntry = ({ version, isCurrent = false, status, isLast, title, time, onSelect, selected = false }: {
   version?: bigint
   isCurrent?: boolean
   status: string | null
   isLast?: boolean
   title?: string | null
   time?: string
+  onSelect: (version: bigint) => void
+  selected?: boolean
 }) => {
   return (
     <>
@@ -22,14 +24,26 @@ export const HistoryEntry = ({ version, isCurrent = false, status, isLast, title
 
       <div className={cn(
         'py-1 ps-3 cursor-default',
-        !title && 'text-muted-foreground opacity-70'
+        !title && 'text-muted-foreground',
+        selected ? 'font-bold' : 'opacity-70'
       )}
       >
         {time}
       </div>
 
 
-      <div className='py-1 ps-5 items-center truncate cursor-default'>
+      <a
+        className={cn(
+          'py-1 ps-5 items-center truncate cursor-default',
+          version && !selected && 'hover:cursor-pointer hover:underline',
+          selected && 'font-bold'
+        )}
+        onClick={() => {
+          if (version) {
+            onSelect(version)
+          }
+        }}
+      >
         {(title && version)
           ? (
               <Tooltip content={(
@@ -50,11 +64,15 @@ export const HistoryEntry = ({ version, isCurrent = false, status, isLast, title
               </Tooltip>
             )
           : (
-              <span className='text-muted-foreground opacity-70'>
+              <span className={cn(
+                'text-muted-foreground',
+                selected && ' opacity-70'
+              )}
+              >
                 <HistoryEntryTitle status={status} />
               </span>
             )}
-      </div>
+      </a>
     </>
   )
 }

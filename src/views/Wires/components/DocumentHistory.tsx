@@ -21,10 +21,12 @@ interface StatusItem {
   meta?: Record<string, unknown>
 }
 
-export const DocumentHistory = ({ uuid, currentVersion, stickyStatus = true }: {
+export const DocumentHistory = ({ uuid, currentVersion, stickyStatus = true, onSelectVersion, selectedVersion }: {
   uuid: string
   currentVersion?: bigint
   stickyStatus?: boolean
+  onSelectVersion: (version: bigint) => void
+  selectedVersion: bigint | undefined
 }) => {
   const { repository, locale, timeZone } = useRegistry()
   const { data: session } = useSession()
@@ -96,7 +98,7 @@ export const DocumentHistory = ({ uuid, currentVersion, stickyStatus = true }: {
     }
   }, [uuid, repository, session, stickyStatus])
 
-
+  console.log(selectedVersion)
   let previousVersion = 0n
   return (
     <div className='grid grid-cols-[auto_auto_1fr] gap-0 text-sm text-muted-foreground'>
@@ -120,6 +122,8 @@ export const DocumentHistory = ({ uuid, currentVersion, stickyStatus = true }: {
                   isLast={index === history.length - 1}
                   isCurrent={isCurrent}
                   time={dateToReadableDateTime(new Date(item.created), locale.code.short, timeZone)}
+                  onSelect={onSelectVersion}
+                  selected={selectedVersion === item.version || (!selectedVersion && isCurrent)}
                 />
               )
             }).reverse()}
