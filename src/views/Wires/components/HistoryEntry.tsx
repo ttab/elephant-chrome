@@ -38,7 +38,8 @@ export const HistoryEntry = ({ version, isCurrent = false, status, isLast, title
           version && !selected && 'hover:cursor-pointer hover:underline',
           selected && 'font-bold'
         )}
-        onClick={() => {
+        onMouseDownCapture={(e) => {
+          e.preventDefault()
           if (version) {
             onSelect(version)
           }
