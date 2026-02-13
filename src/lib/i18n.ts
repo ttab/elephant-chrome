@@ -9,6 +9,9 @@ const resources = {
   nb
 }
 
+const envLang = process.env.SYSTEM_LANGUAGE ? process.env.SYSTEM_LANGUAGE.split('-')[0] : 'sv'
+const supported = Object.keys(resources)
+
 void i18n
   .use(initReactI18next)
   .use(LanguageDetector)
@@ -18,16 +21,21 @@ void i18n
     defaultNS: 'common',
     detection: {
       // order: defines the priority of detection
-      // 'navigator' is the browser/system setting
-      // localStorage: i18next saves the preferred language setting as a 'i18nextLng' key in LS
-      order: ['localStorage', 'navigator']
+      // navigator: is the browser/system setting
+      // localStorage: i18next saves the preferred language setting as a 'i18nextLng' key in localstorage
+      order: ['localStorage', 'navigator'],
+      // This is the default key used by i18next
+      lookupLocalStorage: 'i18nextLng',
+      // Ensures changeLanguage() updates localstorage
+      caches: ['localStorage']
     },
     resources,
-    debug: true, // Useful during development to see loading errors
+    debug: process.env.NODE_ENV !== 'production', // Useful during development to see loading errors
     fallbackLng: (lng) => {
       const nb = ['nn', 'nb', 'no', 'nb-NO', 'nn-NO'].includes(lng)
       if (nb) return 'nb'
-      return 'sv'
+
+      return supported.includes(envLang) ? envLang : 'sv'
     },
     interpolation: {
       escapeValue: false, // React already does escaping,

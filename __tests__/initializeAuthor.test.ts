@@ -6,6 +6,7 @@ import type { Repository } from '@/shared/Repository'
 import { toast } from 'sonner'
 import type { Session } from 'next-auth'
 import i18n from '@/lib/i18n'
+import i18next from 'i18next'
 
 vi.mock('@/shared/Index')
 vi.mock('@/shared/Repository')
@@ -121,7 +122,7 @@ describe('initializeAuthor', () => {
       })
     ).rejects.toThrow('Failed to initialize author: Failed to create author doc')
 
-    expect(toast.error).toHaveBeenCalledWith('Kunde inte skapa författardokument: Failed to create author doc')
+    expect(toast.error).toHaveBeenCalledWith(i18next.t('shared:operations.authorSaveFailure', { errorMessage: 'Failed to create author doc' }))
   })
 
   it('should throw an error if multiple author documents are found', async () => {
@@ -152,6 +153,6 @@ describe('initializeAuthor', () => {
       })
     ).rejects.toThrow('Failed to initialize author: Failed to fetch author document: undefined')
 
-    expect(toast.error).toHaveBeenCalledWith(i18n.t('errors:toasts.authorCreateUndefinedFailed'))
+    expect(toast.error).toHaveBeenCalledWith(i18n.t('errors:toasts.authorSaveFailure', { errorMessage: 'Failed to fetch author document: undefined' }))
   })
 })

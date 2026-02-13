@@ -17,6 +17,7 @@ export default defineConfig(({ mode }) => {
   const devServerPort = parsePort(env.VITE_DEV_SERVER_PORT, 5173)
   const devHmrPort = parsePort(env.VITE_HMR_PORT, 5183)
   const BASE_URL = env.BASE_URL || '/elephant'
+  const SYSTEM_LANGUAGE = env.SYSTEM_LANGUAGE || 'sv-se'
 
   return {
     port: devServerPort,
@@ -52,7 +53,8 @@ export default defineConfig(({ mode }) => {
     define: {
       'process.env': JSON.stringify({
         NODE_ENV: mode,
-        BASE_URL: BASE_URL
+        BASE_URL: BASE_URL,
+        SYSTEM_LANGUAGE: SYSTEM_LANGUAGE
       })
     },
     server: {

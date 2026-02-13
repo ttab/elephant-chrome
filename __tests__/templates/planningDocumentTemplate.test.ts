@@ -24,6 +24,11 @@ describe('planningDocumentTemplate', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
+    vi.stubEnv('SYSTEM_LANGUAGE', 'sv-se')
+  })
+
+  afterEach(() => {
+    vi.unstubAllEnvs()
   })
 
   it('creates a document with correct basic properties', () => {

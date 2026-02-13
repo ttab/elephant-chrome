@@ -50,7 +50,7 @@ export const promptConfig = ({
         : i18next.t(`flash:promptDescriptions.typeWillBeAddedToPlanning`, { type: documentType, planningName: selectedPlanning.label }),
       secondaryDescription: isFlash
         ? i18next.t(`flash:promptDescriptions.alsoTypeCreated`, { type: documentType })
-        : i18next.t(`flash:promptDescriptions.alsoTypeCreatedWithApproved`, { type: documentType }),
+        : i18next.t('flash:promptDescriptions.alsoTypeCreatedWithApproved'),
       secondaryLabel: i18next.t('common:actions.abort'),
       primaryLabel: isFlash ? i18next.t('common:actions.publish') : i18next.t('common:actions.approve'),
       documentStatus: (isFlash ? 'usable' : 'approved') as CreateArticleDocumentStatus,

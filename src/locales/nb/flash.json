@@ -13,8 +13,8 @@
   "promptDescriptions": {
     "newPlanningWillBeCreated": "En ny planlegging med tilhørende oppgaver for denne {{type}} vil bli opprettet for deg.",
     "typeWillBeAddedToPlanning": "Denne {{type}} vil bli lagt til i en ny oppgave i planleggingen \"{{planningName}}\"",
-    "alsoTypeCreated": "I samme planlegging vil det også bli lagt til en tekstoppgave med {{type}}-innhold.",
-    "alsoTypeCreatedWithApproved": "I samme planlegging vil det også bli lagt til en tekstoppgave med {{type}}-innhold, med status godkjent."
+    "alsoTypeCreated": "I samme planlegging vil det også bli lagt til en tekstoppdrag med {{type}}-innhold.",
+    "alsoTypeCreatedWithApproved": "En ny, intern planlegging med tilhørende oppgaver for denne artikkelen vil bli opprettet for deg. Artikkelen vil ha statusen Godkjent. Husk å oppdatere og publisere planleggingen!"
   },
   "operations": {
     "quickArticleCreated": "Hurtigartikkel opprettet"
