@@ -1,18 +1,13 @@
 import type { Index } from '@/shared/Index'
 import type { Session } from 'next-auth'
 import type { HitV1, QueryV1, SortingV1, SubscriptionReference } from '@ttab/elephant-api/index'
-import type { Repository } from '@/shared/Repository'
 import { withStatus } from './withStatus'
 import { withPlannings } from './withPlannings'
 import type { useDocumentsFetchOptions } from '../'
 import type { Dispatch, SetStateAction } from 'react'
-import { asAssignments } from './asAssignments'
-import type { Assignment } from '@/shared/schemas/assignments'
-import { getDeliverableStatuses } from './getDeliverableStatuses'
 
 export async function fetch<T extends HitV1, F>({
   index,
-  repository,
   session,
   query,
   page = 1,
@@ -25,7 +20,6 @@ export async function fetch<T extends HitV1, F>({
 }: {
   index: Index | undefined
   session: Session | null
-  repository?: Repository
   query?: QueryV1
   page?: number
   size?: number
@@ -60,11 +54,6 @@ export async function fetch<T extends HitV1, F>({
 
   let result = hits
 
-  // Format planning result as assignments
-  if (options?.asAssignments && query) {
-    const statuses = await getDeliverableStatuses({ result, repository, session })
-    return asAssignments(result as unknown as Assignment[], query, statuses) as unknown as T[]
-  }
   // Append and format statuses
   if (options?.withStatus) {
     result = withStatus<T>(result)

@@ -21,7 +21,7 @@ export const handleDocumentEvent = async ({
   source: string | string[] | undefined
   data: Wire[] | undefined
   mutate: (data?: Wire[] | Promise<Wire[]>, shouldRevalidate?: boolean) => Promise<Wire[] | undefined>
-  timeoutRef: React.MutableRefObject<NodeJS.Timeout | null>
+  timeoutRef: React.RefObject<NodeJS.Timeout | null>
 }) => {
   if (session?.accessToken && repository && source && data) {
     try {

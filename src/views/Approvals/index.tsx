@@ -1,16 +1,24 @@
 import { View, ViewHeader } from '@/components'
 import { type ViewMetadata } from '@/types'
-import { timesSlots as Slots } from '@/defaults/assignmentTimeslots'
 import { TimeSlot } from './TimeSlot'
-import { useAssignments } from '@/hooks/index/useAssignments'
 import { useEffect, useMemo, useState, type JSX } from 'react'
-import { useQuery, useNavigationKeys, useOpenDocuments, useRegistry } from '@/hooks'
+import { useNavigationKeys, useOpenDocuments, useQuery, useRegistry, useRepositorySocket } from '@/hooks'
 import { Header } from '@/components/Header'
-import { newLocalDate } from '@/shared/datetime.ts'
 import { ApprovalsCard } from './ApprovalsCard'
 import { Toolbar } from './Toolbar.tsx'
 import { StatusSpecifications } from '@/defaults/workflowSpecification'
 import { useTrackedDocuments } from '@/hooks/useTrackedDocuments.tsx'
+import { Error } from '../Error/index.tsx'
+import { ApprovalsSkeleton } from './ApprovalsSkeleton'
+import { useInitFilters } from '@/hooks/useInitFilters'
+import { columnFilterToQuery } from '@/lib/loadFilters'
+import { filterAssignments, getFacets } from '@/hooks/index/lib/assignments/filterAssignments'
+import { structureAssignments } from '@/hooks/index/lib/assignments/structureAssignments'
+import { preprocessApprovalData } from './preprocessor'
+import { getUTCDateRange } from '@/shared/datetime'
+import { timesSlots as Slots } from '@/defaults/assignmentTimeslots'
+import type { Planning } from '@/shared/schemas/planning'
+import { createMetricsDecorator, type MetricsDecorator } from '@/hooks/useRepositorySocket/decorators/metrics'
 
 const meta: ViewMetadata = {
   name: 'Approvals',
@@ -36,32 +44,84 @@ export const Approvals = (): JSX.Element => {
 
 export const ApprovalsView = (): JSX.Element => {
   const trackedDocuments = useTrackedDocuments()
+  const [query] = useQuery()
+  const { timeZone, repository } = useRegistry()
 
-  const { timeZone } = useRegistry()
+  const { from, to } = useMemo(() =>
+    getUTCDateRange(query?.from
+      ? new Date(query?.from as string)
+      : new Date(), timeZone), [query, timeZone])
 
-  const slots = Object.keys(Slots).map((key) => {
+  const include = useMemo(() => {
+    return ['.meta(type=\'core/assignment\').links(rel=\'deliverable\')@{uuid:doc}']
+  }, [])
+
+  const decorators = useMemo(() => {
+    if (!repository) return []
+
+    return [
+      createMetricsDecorator({
+        repository,
+        kinds: ['charcount']
+      })
+    ]
+  }, [repository])
+
+  const { data, error, isLoading } = useRepositorySocket<MetricsDecorator>({
+    type: 'core/planning-item',
+    from,
+    to,
+    include,
+    decorators
+  })
+
+  const columnFilters = useInitFilters<Planning>({
+    path: 'filters.Approvals.current'
+  })
+  const filters = useMemo(() => columnFilterToQuery(columnFilters), [columnFilters])
+
+  const filtersWithDefaults = useMemo(() => {
+    const defaultStatuses = ['draft', 'done', 'approved', 'withheld']
     return {
+      ...filters,
+      status: filters?.status?.length ? filters.status : defaultStatuses
+    }
+  }, [filters])
+
+  // Transform socket data to preprocessed approval items
+  const approvalItems = useMemo(() =>
+    preprocessApprovalData(data || []),
+  [data]
+  )
+
+  // Apply filters
+  const filteredData = useMemo(() =>
+    filterAssignments(approvalItems, filtersWithDefaults),
+  [approvalItems, filtersWithDefaults]
+  )
+
+  // Prepare time slots configuration
+  const slots = useMemo(() =>
+    Object.keys(Slots).map((key) => ({
       key,
       label: Slots[key].label,
       hours: Slots[key].slots
-    }
-  })
-  const [query] = useQuery()
+    })), []
+  )
 
-  const date = useMemo(() => {
-    return (typeof query.from === 'string')
-      ? newLocalDate(timeZone, { date: query.from })
-      : newLocalDate(timeZone)
-  }, [query.from, timeZone])
+  // Skeleton card counts per column while loading
+  const cardCounts = [2, 4, 3, 1]
 
-  const [data, facets] = useAssignments({
-    type: ['flash', 'text', 'editorial-info'],
-    requireDeliverable: true,
-    requireMetrics: ['charcount'],
-    date,
-    dateType: 'combined-date',
-    slots
-  })
+  // Structure data by time slots
+  const structuredData = useMemo(() =>
+    structureAssignments(timeZone, filteredData || [], slots),
+  [timeZone, filteredData, slots]
+  )
+
+  const facets = useMemo(() =>
+    getFacets(approvalItems),
+  [approvalItems]
+  )
 
   const [focusedColumn, setFocusedColumn] = useState<number>()
   const [focusedCard, setFocusedCard] = useState<number>()
@@ -80,19 +140,19 @@ export const ApprovalsView = (): JSX.Element => {
 
     // FIXME: Focus is set but focus ring is not visible when clicking link
     // in the main menu navigation sheet.
-    if (currentColumnIndex !== -1 && data[currentColumnIndex]?.items.length > 0) {
+    if (currentColumnIndex !== -1 && structuredData[currentColumnIndex]?.items.length > 0) {
       // Current column has cards, focus on first card
       setFocusedColumn(currentColumnIndex)
       setFocusedCard(0)
     } else {
       // As fallback, find first column with card and focus on first card
-      const firstNonEmptyColumnIndex = data.findIndex((column) => column.items.length > 0)
+      const firstNonEmptyColumnIndex = structuredData.findIndex((column) => column.items.length > 0)
       if (firstNonEmptyColumnIndex !== -1) {
         setFocusedColumn(firstNonEmptyColumnIndex)
         setFocusedCard(0)
       }
     }
-  }, [slots, data, focusedColumn, focusedCard])
+  }, [slots, structuredData, focusedColumn, focusedCard])
 
   const [currentTab, setCurrentTab] = useState<string>('grid')
   const openEditors = useOpenDocuments({ idOnly: true, name: 'Editor' })
@@ -120,26 +180,31 @@ export const ApprovalsView = (): JSX.Element => {
 
         if (focusedCard === undefined) {
           setFocusedCard(0)
-        } else if (focusedCard > data[n].items.length - 1) {
-          setFocusedCard(Math.max(0, data[n].items.length - 1))
+        } else if (focusedCard > structuredData[n].items.length - 1) {
+          setFocusedCard(Math.max(0, structuredData[n].items.length - 1))
         }
 
         // Don't let view navigation handle this
         event.stopPropagation()
       } else {
         const n = focusedColumn || 0
-        const l = data[n].items.length
+        const l = structuredData[n].items.length
         const m = (focusedCard === undefined)
           ? (event.key === 'ArrowDown' ? 0 : l - 1)
           : (focusedCard + (event.key === 'ArrowDown' ? 1 : -1) + l) % l
 
-        if (m !== focusedColumn) {
+        if (n !== focusedColumn) {
           setFocusedColumn(n)
         }
         setFocusedCard(m)
       }
     }
   })
+
+  if (error) {
+    console.error('Error fetching approvals:', error)
+    return <Error message='Kunde inte hämta dokument för Dagen' error={error} />
+  }
 
   return (
     <View.Root tab={currentTab} onTabChange={setCurrentTab}>
@@ -153,30 +218,29 @@ export const ApprovalsView = (): JSX.Element => {
 
       <Toolbar facets={facets} />
       <View.Content variant='grid' columns={slots.length}>
-        {data.map((slot, colN) => {
-          return (
-            <View.Column key={slot.key}>
-              <TimeSlot label={slot.label || ''} slots={slot.hours || []} />
+        {slots.map((slot, colN) => (
+          <View.Column key={slot.key}>
+            <TimeSlot label={slot.label} slots={slot.hours} />
 
-              {slot.items.map((assignment, cardN) => {
-                const isSelected = ((assignment._deliverableId && openEditors.includes(assignment._deliverableId)) || openPlannings.includes(assignment._id))
+            {isLoading
+              ? <ApprovalsSkeleton count={cardCounts[colN]} />
+              : structuredData[colN]?.items.map((item, cardN) => {
+                const isSelected = ((item._deliverable?.id && openEditors.includes(item._deliverable.id)) || openPlannings.includes(item._preprocessed.planningId))
 
                 return (
                   <ApprovalsCard
-                    key={assignment.id}
-                    assignment={assignment}
-                    status={StatusSpecifications[assignment._deliverableStatus || 'draft']}
+                    key={item._assignment.id}
+                    item={item}
+                    status={StatusSpecifications[item._deliverable?.status || 'draft']}
                     isFocused={colN === focusedColumn && cardN === focusedCard}
                     isSelected={isSelected}
                     openEditors={openEditors}
-                    trackedDocument={trackedDocuments.documents.find((doc) => doc.id === assignment._deliverableId)}
+                    trackedDocument={trackedDocuments.documents.find((doc) => doc.id === item._deliverable?.id)}
                   />
                 )
               })}
-            </View.Column>
-          )
-        })}
-
+          </View.Column>
+        ))}
       </View.Content>
     </View.Root>
   )

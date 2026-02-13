@@ -12,9 +12,7 @@ import {
 
 import {
   Table as _Table,
-  TableBody,
-  TableCell,
-  TableRow
+  TableBody
 } from '@ttab/elephant-ui'
 import { Toolbar } from './Toolbar'
 import {
@@ -28,15 +26,15 @@ import {
 } from '@/hooks'
 import { handleLink } from '@/components/Link/lib/handleLink'
 import { NewItems } from './NewItems'
-import { LoadingText } from '../LoadingText'
 import { Row } from './Row'
 import { useModal } from '../Modal/useModal'
 import { PreviewSheet } from '@/views/Wires/components'
 import type { Wire as WireType } from '@/shared/schemas/wire'
-import { Wire } from '@/views/Wire'
+import { Wire as WireComponent } from '@/views/Wire'
 import { GroupedRows } from './GroupedRows'
 import { getWireStatus } from '../../lib/getWireStatus'
 import { type View } from '@/types/index'
+import type { DocumentState } from '@ttab/elephant-api/repositorysocket'
 const BASE_URL = import.meta.env.BASE_URL
 
 interface TableProps<TData, TValue> {
@@ -49,37 +47,6 @@ function isRowTypeWire<TData, TValue>(type: TableProps<TData, TValue>['type']): 
   return type === 'Wires'
 }
 
-function getNextTableIndex(
-  rows: Record<string, RowType<unknown>>,
-  selectedRowIndex: number | undefined,
-  direction: 'ArrowUp' | 'ArrowDown'): number | undefined {
-  const keys = Object.keys(rows)
-    .map(Number)
-    .filter((numKey) => !isNaN(numKey))
-
-  if (keys.length === 0) {
-    return undefined
-  }
-
-  let currentIndex = selectedRowIndex !== undefined ? keys.indexOf(selectedRowIndex) : -1
-
-  if (direction === 'ArrowDown') {
-    if (currentIndex < keys.length - 1) {
-      currentIndex += 1
-    } else {
-      return undefined
-    }
-  } else if (direction === 'ArrowUp') {
-    if (currentIndex > 0) {
-      currentIndex -= 1
-    } else {
-      return undefined
-    }
-  }
-
-  return keys[currentIndex]
-}
-
 export const Table = <TData, TValue>({
   columns,
   type,
@@ -89,12 +56,35 @@ export const Table = <TData, TValue>({
   const { state, dispatch } = useNavigation()
   const history = useHistory()
   const { viewId: origin } = useView()
-  const { table, loading } = useTable()
+  const { table } = useTable()
   const openDocuments = useOpenDocuments({ idOnly: true })
   const { showModal, hideModal, currentModal } = useModal()
   const [, setDocumentStatus] = useWorkflowStatus({})
 
-  const handlePreview = useCallback((row: RowType<unknown>): void => {
+  const availableRows = table.getRowModel().rows as unknown as Array<RowType<TData>>
+  const groupingLength = table.getState().grouping.length
+
+  const { navigableRows, rowIndexMap } = useMemo(() => {
+    const hasGrouping = groupingLength > 0
+    const rows = hasGrouping
+      ? availableRows.flatMap((row) =>
+        row.subRows && row.subRows.length > 0 ? row.subRows : []
+      )
+      : availableRows
+
+    // Create O(1) lookup map: row.id -> index
+    const indexMap = new Map<string, number>()
+    rows.forEach((row, index) => {
+      indexMap.set(row.id, index)
+    })
+
+    return {
+      navigableRows: rows as unknown as Array<RowType<TData>>,
+      rowIndexMap: indexMap
+    }
+  }, [availableRows, groupingLength])
+
+  const handlePreview = useCallback((row: RowType<TData>): void => {
     row.toggleSelected(true)
 
     const originalId = (row.original as { id: string }).id
@@ -115,7 +105,7 @@ export const Table = <TData, TValue>({
   }, [hideModal, showModal])
 
 
-  const handleOpen = useCallback((event: MouseEvent<HTMLTableRowElement> | KeyboardEvent, row: RowType<unknown>): void => {
+  const handleOpen = useCallback((event: MouseEvent<HTMLTableRowElement> | KeyboardEvent, row: RowType<TData>): void => {
     if (type === 'Wires') {
       handlePreview(row)
       return
@@ -127,15 +117,19 @@ export const Table = <TData, TValue>({
         return
       }
 
-      const originalRow = row.original as { _id: string | undefined, id: string, fields?: Record<string, string[]> }
-      const id = originalRow._id ?? originalRow.id
+      const originalRow = row.original as DocumentState
+      const id = originalRow.document?.uuid
 
       const articleClick = type === 'Search' && searchType === 'Editor'
 
       let usableVersion
 
       if (articleClick) {
-        usableVersion = !articleClick ? undefined : originalRow?.fields?.['heads.usable.version']?.[0] as bigint | undefined
+        usableVersion = !articleClick ? undefined : originalRow?.meta?.heads.usable.version
+      }
+
+      if ('__updater' in originalRow && originalRow.__updater) {
+        delete originalRow.__updater
       }
 
       handleLink({
@@ -159,12 +153,11 @@ export const Table = <TData, TValue>({
   useNavigationKeys({
     keys: ['ArrowUp', 'ArrowDown', 'Enter', 'Escape', ' ', 's', 'r', 'c', 'u'],
     onNavigation: (event) => {
-      const rows = table.getRowModel().rowsById
-      if (!Object.values(rows)?.length) {
+      if (!navigableRows?.length) {
         return
       }
 
-      const selectedRow = table.getGroupedSelectedRowModel()?.flatRows?.[0]
+      const selectedRow = table.getGroupedSelectedRowModel()?.flatRows?.[0] as RowType<TData> | undefined
 
       if (event.key === 'Enter' && selectedRow) {
         hideModal()
@@ -184,7 +177,7 @@ export const Table = <TData, TValue>({
 
       if (event.key === 'r') {
         if (selectedRow && isRowTypeWire<TData, TValue>(type)) {
-          const wireRow = selectedRow as RowType<WireType>
+          const wireRow = selectedRow as unknown as RowType<WireType>
           const currentStatus = getWireStatus(wireRow.original)
           void setDocumentStatus({
             name: currentStatus === 'read' ? 'draft' : 'read',
@@ -197,7 +190,7 @@ export const Table = <TData, TValue>({
 
       if (event.key === 'u') {
         if (selectedRow && isRowTypeWire<TData, TValue>(type)) {
-          const wireRow = selectedRow as RowType<WireType>
+          const wireRow = selectedRow as unknown as RowType<WireType>
           const currentStatus = getWireStatus(wireRow.original)
 
           void setDocumentStatus({
@@ -211,7 +204,7 @@ export const Table = <TData, TValue>({
 
       if (event.key === 's') {
         if (selectedRow && isRowTypeWire<TData, TValue>(type)) {
-          const wireRow = selectedRow as RowType<WireType>
+          const wireRow = selectedRow as unknown as RowType<WireType>
           const currentStatus = getWireStatus(wireRow.original)
 
           void setDocumentStatus({
@@ -225,7 +218,7 @@ export const Table = <TData, TValue>({
 
       if (event.key === 'c') {
         if (selectedRow && isRowTypeWire<TData, TValue>(type)) {
-          const wireRow = selectedRow as RowType<WireType>
+          const wireRow = selectedRow as unknown as RowType<WireType>
 
           const onDocumentCreated = () => {
             void setDocumentStatus({
@@ -235,7 +228,7 @@ export const Table = <TData, TValue>({
             }, undefined, true)
           }
           showModal(
-            <Wire
+            <WireComponent
               onDialogClose={hideModal}
               asDialog
               wire={wireRow.original}
@@ -246,14 +239,26 @@ export const Table = <TData, TValue>({
       }
 
       if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
-        const nextKey = getNextTableIndex(rows, selectedRow?.index, event.key)
-        if (nextKey !== undefined) {
-          rows[nextKey].toggleSelected(true)
+        const currentIndex = selectedRow ? (rowIndexMap.get(selectedRow.id) ?? -1) : -1
+
+        let nextIndex: number | undefined
+
+        if (currentIndex === -1) {
+          // No row selected, select first or last based on direction
+          nextIndex = event.key === 'ArrowDown' ? 0 : navigableRows.length - 1
+        } else if (event.key === 'ArrowDown' && currentIndex < navigableRows.length - 1) {
+          nextIndex = currentIndex + 1
+        } else if (event.key === 'ArrowUp' && currentIndex > 0) {
+          nextIndex = currentIndex - 1
         }
 
-        // Open next row if PreviewSheet is open
-        if (currentModal && nextKey) {
-          handleOpen(event, rows[nextKey])
+        if (nextIndex !== undefined && navigableRows[nextIndex]) {
+          navigableRows[nextIndex].toggleSelected(true)
+
+          // Open next row if PreviewSheet is open
+          if (currentModal) {
+            handleOpen(event, navigableRows[nextIndex])
+          }
         }
 
         return
@@ -269,37 +274,19 @@ export const Table = <TData, TValue>({
     }
   }, [table, onRowSelected])
 
-  const rows = table.getRowModel().rows
+  const rows = table.getRowModel().rows as unknown as Array<RowType<TData>>
   const rowSelection = table.getState().rowSelection
 
   const TableBodyElement = useMemo(() => {
-    if (loading || !rows?.length) {
-      const isSearchTable = window.location.pathname.includes(`${BASE_URL}/search`)
-      return (
-        <TableRow>
-          <TableCell
-            colSpan={columns.length}
-            className='h-24 text-center'
-          >
-            <LoadingText>
-              {loading
-                ? isSearchTable
-                  ? ''
-                  : 'Laddar...'
-                : 'Inga resultat hittades'}
-            </LoadingText>
-          </TableCell>
-        </TableRow>
-      )
-    }
     const isAssignmentsTable = window.location.pathname.includes(`${BASE_URL}/assignments`)
+    const isGrouped = table.getState().grouping.length > 0
+    const rowType = isAssignmentsTable ? 'Assignments' : type
 
-    return rows.map((row, index) => (
-      table.getState().grouping.length)
+    return rows.map((row) => isGrouped
       ? (
           <GroupedRows<TData, TValue>
-            key={index}
-            type={isAssignmentsTable ? 'Assignments' : type}
+            key={row.id}
+            type={rowType}
             row={row}
             columns={columns}
             handleOpen={handleOpen}
@@ -308,8 +295,8 @@ export const Table = <TData, TValue>({
         )
       : (
           <Row
-            key={index}
-            type={isAssignmentsTable ? 'Assignments' : type}
+            key={row.id}
+            type={rowType}
             row={row}
             handleOpen={handleOpen}
             openDocuments={openDocuments}
@@ -317,7 +304,7 @@ export const Table = <TData, TValue>({
         )
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rows, columns, loading, handleOpen, table, rowSelection])
+  }, [rows, columns, handleOpen, table, rowSelection])
 
   return (
     <>
@@ -335,7 +322,7 @@ export const Table = <TData, TValue>({
         </NewItems.Root>
       )}
 
-      {(type !== 'Search' || !loading) && (
+      {(type !== 'Search') && (
         <_Table className='table-auto relative'>
           <TableBody>
             {TableBodyElement}
