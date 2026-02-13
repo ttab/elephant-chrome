@@ -20,6 +20,8 @@ function constructQuery(filter: QueryParams | undefined): QueryV1 | undefined {
     return
   }
 
+  const envLang = import.meta.env.SYSTEM_LANGUAGE ?? 'sv-se'
+
   const query = QueryV1.create({
     conditions: {
       oneofKind: 'bool',
@@ -30,7 +32,7 @@ function constructQuery(filter: QueryParams | undefined): QueryV1 | undefined {
               oneofKind: 'terms',
               terms: TermsQueryV1.create({
                 field: 'document.language',
-                values: ['sv-se', 'sv']
+                values: [envLang, envLang.split('-')[0]]
               })
             }
           },

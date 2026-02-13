@@ -72,7 +72,7 @@
     "authorUpdateSuccess": "Författardokument har uppdaterats",
     "authorSaveSuccess": "Författardokument har sparats",
     "authorUpdateFailure": "Kunde inte uppdatera författardokument: {{errorMessage}}",
-    "authorSaveFailure": "Kunde inte skapa författardokument: {{errorMessage}}",
+    "authorSaveFailure": "Kunde inte spara författardokument: {{errorMessage}}",
     "authorCreateFailure": "Kunde inte skapa författardokument: Failed to create author doc",
     "authorCreateUndefinedFailed": "Kunde inte skapa författardokument: Failed to fetch author document: undefined",
     "savedFilter": "Ditt filter har sparats"
