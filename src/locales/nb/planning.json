@@ -1,4 +1,5 @@
 {
+  "planningDocument": "Planleggingsdokument",
   "assignment": {
     "title": "Oppgavetittel",
     "startEndTime": "Start- og sluttid",
@@ -29,9 +30,6 @@
     "slugMissing": "Stikkord mangler",
     "slugMissingDescription": "Vennligst legg til en stikkord i oppgaven. Etter det kan du lage en tekst.",
     "createPrompt": "Vil du opprette en {{documentLabel}} for oppdraget{{title}}?"
-  },
-  "toasts": {
-   
   },
   "move": {
     "pickPlanning": "Velg plan",
