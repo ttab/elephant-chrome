@@ -23,7 +23,8 @@
     "no": "Nei",
     "approve": "Godkjenn",
     "saveType": "Lagre {{type}}",
-    "save": "Lagre"
+    "save": "Lagre",
+    "publish": "Publiser"
   },
   "misc": {
     "unknown": "ukjent",

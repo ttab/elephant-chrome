@@ -381,7 +381,7 @@ export const FlashDialog = (props: {
                     <Button variant='secondary' type='button' role='secondary'>{t('core:status.draft')}</Button>
                     <Button variant='secondary' type='button' role='tertiary'>{t('common:actions.markAsDone')}</Button>
                   </div>
-                  <Button type='submit' role='primary'>{t('core:status.action.publish')}</Button>
+                  <Button type='submit' role='primary'>{t('common:actions.publish')}</Button>
                 </div>
               </Form.Submit>
             </Form.Footer>

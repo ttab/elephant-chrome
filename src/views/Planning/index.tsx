@@ -281,7 +281,7 @@ const PlanningViewContent = (props: ViewProps & {
                   </Button>
                 </div>
                 <Button type='submit' disabled={!environmentIsSane}>
-                  {t('core:status.action.publish')}
+                  {t('common:actions.publish')}
                 </Button>
               </div>
             </Form.Submit>

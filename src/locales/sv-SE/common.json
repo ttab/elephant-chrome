@@ -23,7 +23,8 @@
     "no": "Nej",
     "approve": "Godkänn",
     "saveType": "Spara {{type}}",
-    "save": "Spara"
+    "save": "Spara",
+    "publish": "Publicera"
   },
   "misc": {
     "unknown": "okänd",

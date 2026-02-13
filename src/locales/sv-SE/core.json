@@ -23,9 +23,6 @@
     "showOlder": "Visa äldre"
   },
   "status": {
-    "action": {
-      "publish": "Publicera"
-    },
     "draft": "Utkast",
     "internal": "Intern",
     "approved": "Godkänd",
