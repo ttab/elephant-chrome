@@ -1,0 +1,412 @@
+{
+  "base": {
+    "draft": {
+      "title": "Draft",
+      "description": "You are working on a draft of the article",
+      "transitions": {
+        "done": {
+          "title": "Mark as done",
+          "description": "Mark the article as done"
+        },
+        "approved": {
+          "title": "Approve",
+          "description": "Approve the article for publishing"
+        },
+        "usable": {
+          "title": "Publish",
+          "description": "Publish the article"
+        },
+        "withheld": {
+          "title": "Schedule publishing",
+          "description": "Set a date and time for publishing"
+        }
+      }
+    },
+    "done": {
+      "title": "Done",
+      "description": "The article is done and awaiting approval",
+      "transitions": {
+        "approved": {
+          "title": "Approve",
+          "description": "Approve the article for publishing"
+        },
+        "usable": {
+          "title": "Publish",
+          "description": "Publish the article directly"
+        },
+        "withheld": {
+          "title": "Schedule publishing",
+          "description": "Set a date and time for publishing"
+        },
+        "draft": {
+          "title": "To draft",
+          "description": "Revert the article to a draft"
+        },
+        "unpublished": {
+          "title": "Unpublish",
+          "description": "Cancel and archive the article"
+        }
+      }
+    },
+    "approved": {
+      "title": "Approved",
+      "description": "The article is approved for publishing",
+      "transitions": {
+        "usable": {
+          "title": "Publish",
+          "description": "Publish the article"
+        },
+        "withheld": {
+          "title": "Schedule publishing",
+          "description": "Set a date and time for publishing"
+        },
+        "draft": {
+          "title": "To draft",
+          "description": "Revert the article to a draft"
+        },
+        "unpublished": {
+          "title": "Unpublish",
+          "description": "Cancel and archive the article"
+        }
+      }
+    },
+    "usable": {
+      "title": "Published",
+      "description": "The article is published",
+      "transitions": {
+        "draft": {
+          "title": "New version",
+          "description": "Continue working on a new version of the article"
+        },
+        "unpublished": {
+          "title": "Unpublish",
+          "description": "Cancel the publication and archive the article"
+        }
+      }
+    },
+    "withheld": {
+      "title": "Scheduled",
+      "description": "The article is scheduled for automatic publishing",
+      "transitions": {
+        "usable": {
+          "title": "Publish now",
+          "description": "Publish the article immediately"
+        },
+        "draft": {
+          "title": "To draft",
+          "description": "Cancel the scheduled publishing and revert to a draft"
+        }
+      }
+    },
+    "unpublished": {
+      "title": "Unpublished",
+      "description": "The article has been unpublished",
+      "transitions": {
+        "draft": {
+          "title": "New version",
+          "description": "Continue working on a new version of the article"
+        }
+      }
+    }
+  },
+  "core/event": {
+    "draft": {
+      "title": "Draft",
+      "description": "You are working on a draft of this event",
+      "transitions": {
+        "done": {
+          "title": "Use internally",
+          "description": "Make the event internally visible"
+        },
+        "usable": {
+          "title": "Publish externally",
+          "description": "Publish the event externally"
+        }
+      }
+    },
+    "done": {
+      "title": "Internal",
+      "description": "The event is internally visible",
+      "transitions": {
+        "usable": {
+          "title": "Publish",
+          "description": "Publish the event externally"
+        },
+        "unpublished": {
+          "title": "Unpublish",
+          "description": "Unpublish the event"
+        }
+      }
+    },
+    "usable": {
+      "title": "Published",
+      "asSaveCTA": "Unpublished changes",
+      "asSaveTitle": "Publish new version",
+      "description": "The event is published externally",
+      "changedDescription": "The event has been changed since the last publication",
+      "updateDescription": "Update the published event with the new changes",
+      "transitions": {
+        "unpublished": {
+          "title": "Unpublish",
+          "description": "Unpublish the event externally"
+        }
+      }
+    },
+    "unpublished": {
+      "title": "Unpublished",
+      "description": "The event has been unpublished",
+      "transitions": {
+        "draft": {
+          "title": "Draft",
+          "description": "Revert the event to a draft"
+        }
+      }
+    }
+  },
+  "core/planning-item": {
+    "draft": {
+      "title": "Draft",
+      "description": "You are working on a draft of this planning",
+      "transitions": {
+        "done": {
+          "title": "Use internally",
+          "description": "Make the planning internally visible"
+        },
+        "usable": {
+          "title": "Publish externally",
+          "description": "Publish the planning externally"
+        }
+      }
+    },
+    "done": {
+      "title": "Internal",
+      "description": "The planning is internally visible",
+      "transitions": {
+        "usable": {
+          "title": "Publish",
+          "description": "Publish the planning externally"
+        },
+        "unpublished": {
+          "title": "Unpublish",
+          "description": "Unpublish the planning"
+        }
+      }
+    },
+    "usable": {
+      "title": "Published",
+      "asSaveCTA": "Unpublished changes",
+      "asSaveTitle": "Publish changed version",
+      "description": "The planning is published",
+      "changedDescription": "The planning has been changed since the last publication",
+      "updateDescription": "Update the published planning with the new changes",
+      "transitions": {
+        "unpublished": {
+          "title": "Unpublish",
+          "description": "Unpublish the planning externally"
+        }
+      }
+    },
+    "unpublished": {
+      "title": "Unpublished",
+      "description": "The planning has been unpublished",
+      "transitions": {
+        "draft": {
+          "title": "Draft",
+          "description": "Revert the planning to a draft"
+        }
+      }
+    }
+  },
+  "core/factbox": {
+    "draft": {
+      "title": "Draft",
+      "description": "You are working on a draft of the factbox",
+      "transitions": {
+        "usable": {
+          "title": "Publish",
+          "description": "Publish the factbox for use"
+        }
+      }
+    },
+    "usable": {
+      "title": "Usable",
+      "asSaveCTA": "Changed",
+      "asSaveTitle": "Publish new information",
+      "description": "The factbox is usable",
+      "transitions": {
+        "draft": {
+          "title": "To draft",
+          "description": "Revert the factbox to a draft"
+        }
+      }
+    }
+  },
+  "core/editorial-info": {
+    "draft": {
+      "title": "Draft",
+      "description": "You are working on a draft of this editorial info",
+      "transitions": {
+        "done": {
+          "title": "Mark as done",
+          "description": "Mark the editorial info as done"
+        },
+        "approved": {
+          "title": "Approve",
+          "description": "Approve the editorial info for internal use"
+        },
+        "usable": {
+          "title": "Publish",
+          "description": "Publish the editorial info externally"
+        }
+      }
+    },
+    "done": {
+      "title": "Done",
+      "description": "The editorial info is done and awaiting approval",
+      "transitions": {
+        "approved": {
+          "title": "Approve",
+          "description": "Approve the editorial info for internal use"
+        },
+        "usable": {
+          "title": "Publish",
+          "description": "Publish the editorial info externally"
+        },
+        "draft": {
+          "title": "To draft",
+          "description": "Revert the editorial info to a draft"
+        }
+      }
+    },
+    "approved": {
+      "title": "Internal",
+      "description": "The editorial info is published internally and can be published externally",
+      "transitions": {
+        "usable": {
+          "title": "Publish",
+          "description": "Publish the editorial info externally"
+        },
+        "draft": {
+          "title": "To draft",
+          "description": "Revert the editorial info to a draft"
+        }
+      }
+    },
+    "usable": {
+      "title": "Published",
+      "description": "The editorial info is published",
+      "transitions": {
+        "draft": {
+          "title": "To draft",
+          "description": "Revert the editorial info to a draft"
+        },
+        "unpublished": {
+          "title": "Withdraw",
+          "description": "Cancel the publication and archive the editorial info"
+        }
+      }
+    }
+  },
+  "tt/print-article": {
+    "draft": {
+      "title": "Draft",
+      "description": "You are working on a draft of the print article",
+      "transitions": {
+        "needs_proofreading": {
+          "title": "Request proofreading",
+          "description": "The print article needs proofreading"
+        },
+        "print_done": {
+          "title": "Mark as done",
+          "description": "Mark the print article as done"
+        },
+        "usable": {
+          "title": "Export",
+          "description": "Export the print article"
+        }
+      }
+    },
+    "needs_proofreading": {
+      "title": "Ready for proofing",
+      "description": "The print article needs proofreading",
+      "transitions": {
+        "print_done": {
+          "title": "Mark as done",
+          "description": "Mark the print article as done"
+        },
+        "usable": {
+          "title": "Export",
+          "description": "Export the print article"
+        },
+        "cancelled": {
+          "title": "Discard",
+          "description": "Discard the print article"
+        },
+        "draft": {
+          "title": "To draft",
+          "description": "Revert the print article to a draft"
+        }
+      }
+    },
+    "print_done": {
+      "title": "Done",
+      "description": "The print article is done and awaiting approval",
+      "transitions": {
+        "approved": {
+          "title": "Approve",
+          "description": "Approve the print article"
+        },
+        "usable": {
+          "title": "Export",
+          "description": "Export the print article"
+        },
+        "needs_proofreading": {
+          "title": "Request proofreading",
+          "description": "The print article needs proofreading"
+        },
+        "cancelled": {
+          "title": "Discard",
+          "description": "Discard the print article"
+        },
+        "draft": {
+          "title": "To draft",
+          "description": "Revert the print article to a draft"
+        }
+      }
+    },
+    "usable": {
+      "title": "Exported",
+      "asSaveCTA": "Unexported changes",
+      "asSaveTitle": "Export changed version",
+      "description": "The print article is exported",
+      "changedDescription": "The print article has been changed since the last export",
+      "updateDescription": "Update the exported print article with the new changes",
+      "transitions": {
+        "unpublished": {
+          "title": "Withdraw",
+          "description": "Cancel the export and archive the print article"
+        }
+      }
+    },
+    "unpublished": {
+      "title": "Withdrawn",
+      "description": "The print article has been unpublished",
+      "transitions": {
+        "draft": {
+          "title": "To draft",
+          "description": "Revert the print article to a draft"
+        }
+      }
+    },
+    "cancelled": {
+      "title": "Discarded",
+      "description": "The print article has been discarded",
+      "transitions": {
+        "draft": {
+          "title": "To draft",
+          "description": "Revert the print article to a draft"
+        }
+      }
+    }
+  }
+}
