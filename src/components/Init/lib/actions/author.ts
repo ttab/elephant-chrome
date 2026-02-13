@@ -10,6 +10,7 @@ import { toast } from 'sonner'
 import { fields } from '@/shared/schemas/author'
 import type { Author, AuthorFields } from '@/shared/schemas/author'
 import type { TFunction } from 'i18next'
+import getSystemLanguage from '@/lib/getLanguage'
 
 /**
  * Initializes the author by verifying or creating an author document in the repository.
@@ -80,7 +81,7 @@ export async function initializeAuthor({ url, session, repository, t }: {
     // Create a new author document if it doesn't exist or is invalid
     const document = isValid === false
       ? (operation = 'update', appendSub(authorDoc.hits[0].document!, session, envRole))
-      : createAuthorDoc(session, envRole, process.env.SYSTEM_LANGUAGE || 'sv-se')
+      : createAuthorDoc(session, envRole, getSystemLanguage())
 
     const result = await repository.saveDocument(document, session.accessToken, 'usable')
     if (result?.status.code !== 'OK') {

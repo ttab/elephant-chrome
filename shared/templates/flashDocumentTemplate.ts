@@ -1,5 +1,6 @@
 import { Block, Document } from '@ttab/elephant-api/newsdoc'
 import type { TemplatePayload } from './index.js'
+import getSystemLanguage from '@/lib/getLanguage.js'
 
 /**
  * Generates a document template for a flash.
@@ -16,7 +17,7 @@ export function flashDocumentTemplate(id: string, payload?: TemplatePayload): Do
     uuid: id,
     type: 'core/flash',
     uri: `core://flash/${id}`,
-    language: process.env.SYSTEM_LANGUAGE || 'sv-se',
+    language: getSystemLanguage(),
     title: payload?.title,
     content: [
       Block.create({
