@@ -61,6 +61,7 @@ export const Filter = ({ page, pages, setPages, search, setSearch, children, set
       </PopoverTrigger>
       <PopoverContent className='w-[200px] p-0' align='start'>
         <Command
+          shouldFilter={false}
           onKeyDown={(e) => {
             if (e.key === 'Enter' && page === 'query') {
               handleInputChange(inputRef.current?.value)
