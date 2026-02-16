@@ -12,8 +12,6 @@ import { StatusSpecifications } from '@/defaults/workflowSpecification'
 import { getUTCDateRange } from '@/shared/datetime'
 import { format } from 'date-fns'
 import { getStatusFromMeta } from '@/lib/getStatusFromMeta'
-import { getNewsValues } from './getNewsvalues'
-
 
 // We want to fetch all known statuses for deliverables and then
 // filter them using the supplied "statuses" prop.
@@ -78,14 +76,12 @@ export async function fetchAssignments({ index, repository, type, requireDeliver
     // TODO: Take withheld/publish into account?
     const uuids: string[] = []
 
-    const deliverableNewsValues = await getNewsValues(hits, repository, session)
-
     for (const { document } of hits) {
       if (!document) continue
 
       const sameDay = getPlanningDate(document) === dateStr
 
-      for (const assignment of getAssignmentsFromDocument(document, type, deliverableNewsValues)) {
+      for (const assignment of getAssignmentsFromDocument(document, type)) {
         const sameDayAssignment = getAssignmentDate(assignment) === dateStr
 
         if (!sameDay && (hasPublishSlot(assignment) || !sameDayAssignment)) {
@@ -188,6 +184,8 @@ export async function fetchAssignments({ index, repository, type, requireDeliver
 
         if (matchingAssignment) {
           matchingAssignment._deliverableDocument = item.document
+          matchingAssignment._newsvalue = item.document?.meta
+            .find((block) => block.type === 'core/newsvalue')?.value
         }
       })
     } else if (result.status === 'rejected') {
