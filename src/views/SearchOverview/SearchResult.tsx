@@ -16,6 +16,7 @@ import search from '@/hooks/index/useDocuments/queries/views/search'
 import { useQuery } from '@/hooks/useQuery'
 import type { ColumnDef } from '@tanstack/react-table'
 import { toast } from 'sonner'
+import { TableSkeleton } from '@/components/Table/Skeleton'
 
 export const SearchResult = ({ searchType, page }: {
   searchType: SearchKeys
@@ -64,23 +65,19 @@ export const SearchResult = ({ searchType, page }: {
     toast.error('Kunde inte hämta sökresultat')
   }
 
+  if (isLoading) {
+    return <TableSkeleton columns={columns as ColumnDef<Planning | Event>[]} />
+  }
+
   return (
     <>
-      {isLoading
-        ? (
-            <LoadingText>Laddar...</LoadingText>
-          )
-        : (
-            <>
-              <Toolbar type={searchType} />
-              <Table
-                type='Search'
-                searchType={getType(searchType)}
-                columns={columns as ColumnDef<Planning | Event>[]}
-                onRowSelected={onRowSelected}
-              />
-            </>
-          )}
+      <Toolbar type={searchType} />
+      <Table
+        type='Search'
+        searchType={getType(searchType)}
+        columns={columns as ColumnDef<Planning | Event>[]}
+        onRowSelected={onRowSelected}
+      />
     </>
   )
 }

@@ -122,7 +122,7 @@ export const Table = <TData, TValue>({
       }
 
       const originalRow = row.original as DocumentState
-      const id = originalRow.document?.uuid
+      const id = originalRow.document?.uuid || (originalRow as unknown as { id: string }).id
 
       const articleClick = type === 'Search' && searchType === 'Editor'
 
@@ -328,13 +328,11 @@ export const Table = <TData, TValue>({
 
       {children}
 
-      {(type !== 'Search') && (
-        <_Table className='table-auto relative'>
-          <TableBody>
-            {TableBodyElement}
-          </TableBody>
-        </_Table>
-      )}
+      <_Table className='table-auto relative'>
+        <TableBody>
+          {TableBodyElement}
+        </TableBody>
+      </_Table>
     </>
   )
 }
