@@ -11,7 +11,7 @@
     "print": "Print",
     "search": "Search",
     "wires": "Wires",
-    "quickarticle": "New quick article",
+    "quickarticle": "Create quick-article",
     "actions": {
       "toggleTheme": "Toggle theme"
     }
