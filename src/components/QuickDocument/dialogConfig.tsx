@@ -42,14 +42,14 @@ export const promptConfig = ({
       visible: sendPrompt,
       key: 'send',
       title: isFlash
-        ? `Skapa och skicka ${documentType}?`
-        : `Godkänn ${documentType}?`,
+        ? `Skapa och skicka flash?`
+        : `Godkänn artikel?`,
       description: !selectedPlanning
         ? `En ny planering med tillhörande uppdrag för denna ${documentType} kommer att skapas åt dig.`
         : `Denna ${documentType} kommer att läggas i ett nytt uppdrag i planeringen "${selectedPlanning.label}".`,
       secondaryDescription: isFlash
-        ? `I samma planering kommer även ett textuppdrag med ${documentType} innehållet att läggas till.`
-        : `I samma planering kommer även ett textuppdrag med ${documentType} innehållet att läggas till, med status Godkänd.`,
+        ? `I samma planering kommer även ett textuppdrag med flashinnehållet att läggas till.`
+        : `En ny, intern planering med tillhörande uppdrag för denna artikel kommer att skapas åt dig. Artikeln kommer att ha status Godkänd. Kom ihåg att uppdatera och publicera planeringen!`,
       secondaryLabel: 'Avbryt',
       primaryLabel: isFlash ? 'Publicera' : 'Godkänn',
       documentStatus: (isFlash ? 'usable' : 'approved') as CreateArticleDocumentStatus,
