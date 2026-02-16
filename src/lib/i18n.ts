@@ -12,7 +12,6 @@ const resources = {
 }
 
 const envLang = process.env.SYSTEM_LANGUAGE ? process.env.SYSTEM_LANGUAGE.split('-')[0] : 'en'
-console.log('🚀 ~ :15 ~ envLang:', envLang)
 const supported = Object.keys(resources)
 
 void i18n
