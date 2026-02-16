@@ -1,5 +1,6 @@
 import { Document } from '@ttab/elephant-api/newsdoc'
 import type { TemplatePayload } from './index.js'
+import getSystemLanguage from '@/shared/getLanguage.js'
 
 /**
  * Generates a document template for type editorial-info
@@ -13,7 +14,7 @@ export function editorialInfoDocumentTemplate(id: string, payload?: TemplatePayl
     uuid: id,
     type: 'core/editorial-info',
     uri: `core://editorial-info/${id}`, // Migrated documents have core://article/...
-    language: process.env.SYSTEM_LANGUAGE || 'sv-se',
+    language: getSystemLanguage(),
     title: payload?.title,
     content: [
       {

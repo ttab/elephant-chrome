@@ -2,14 +2,16 @@ import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
 import { sv } from '../locales/sv-SE/index'
 import { nb } from '../locales/nb/index'
+import { en } from '../locales/en/index'
 import LanguageDetector from 'i18next-browser-languagedetector'
 
 const resources = {
   sv,
-  nb
+  nb,
+  en
 }
 
-const envLang = process.env.SYSTEM_LANGUAGE ? process.env.SYSTEM_LANGUAGE.split('-')[0] : 'sv'
+const envLang = process.env.SYSTEM_LANGUAGE ? process.env.SYSTEM_LANGUAGE.split('-')[0] : 'en'
 const supported = Object.keys(resources)
 
 void i18n
@@ -23,7 +25,7 @@ void i18n
       // order: defines the priority of detection
       // navigator: is the browser/system setting
       // localStorage: i18next saves the preferred language setting as a 'i18nextLng' key in localstorage
-      order: ['localStorage', 'navigator'],
+      order: ['localStorage'],
       // This is the default key used by i18next
       lookupLocalStorage: 'i18nextLng',
       // Ensures changeLanguage() updates localstorage
@@ -35,7 +37,7 @@ void i18n
       const nb = ['nn', 'nb', 'no', 'nb-NO', 'nn-NO'].includes(lng)
       if (nb) return 'nb'
 
-      return supported.includes(envLang) ? envLang : 'sv'
+      return supported.includes(envLang) ? envLang : 'en'
     },
     interpolation: {
       escapeValue: false, // React already does escaping,
@@ -46,7 +48,7 @@ void i18n
         return value as string
       }
     },
-    supportedLngs: ['sv', 'nb'],
+    supportedLngs: ['sv', 'nb', 'en'],
     load: 'languageOnly',
     nonExplicitSupportedLngs: true
   })

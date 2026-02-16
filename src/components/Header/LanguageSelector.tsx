@@ -9,7 +9,8 @@ export const LanguageSelector = (): JSX.Element => {
 
   const languages = [
     { code: 'sv', short: 'sv', label: 'Svenska' },
-    { code: 'nb', short: 'nb', label: 'Norsk bokmål' }
+    { code: 'nb', short: 'nb', label: 'Norsk bokmål' },
+    { code: 'en', short: 'en', label: 'English' }
   ]
 
   const changeLanguage = (value: string) => {

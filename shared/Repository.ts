@@ -22,6 +22,7 @@ import { fromYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc.js'
 import { fromGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc.js'
 
 import { meta } from './meta.js'
+import getSystemLanguage from '../shared/getLanguage.js'
 
 export interface Status {
   name: string
@@ -381,7 +382,7 @@ export class Repository {
       const document = Document.create({
         uuid,
         uri: `core://image/${uuid}`,
-        language: process.env.SYSTEM_LANGUAGE || 'sv-se',
+        language: getSystemLanguage(),
         title: name,
         type: 'core/image',
         meta: [

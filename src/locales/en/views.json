@@ -1,0 +1,90 @@
+{
+  "approvals": {
+    "title": "Today",
+    "charactersShort": "chars",
+    "tooltips": {
+      "openPreview": "Open preview",
+      "openPlanning": "Open planning",
+      "lastChanged": "Last changed",
+      "scheduledAt": "Scheduled at"
+    }
+  },
+  "plannings": {
+    "label": {
+      "plural": "Plannings",
+      "singular": "Planning"
+    },
+    "toasts": {
+      "create": {
+        "success": "Planning created"
+      },
+      "openItem": "Open planning"
+    }
+  },
+  "events": {
+    "label": {
+      "plural": "Events",
+      "singular": "Event"
+    },
+    "columnLabels": {
+      "startTime": "Start time",
+      "status": "Status",
+      "organiser": "Organiser",
+      "section": "Section",
+      "planningStatus": "Planning status",
+      "action": "Action"
+    },
+    "tooltips": {
+      "organiser": "Organiser"
+    }
+  },
+  "assignments": {
+    "title": "Assignments",
+    "columnLabels": {
+      "assignmentTime": "Assignment time",
+      "type": "Type"
+    },
+    "tooltips": {
+      "assignmentStartTime": "Assignment start time"
+    },
+    "actionMenu": {
+      "openArticle": "Open article",
+      "openPlanning": "Open planning"
+    },
+    "myAssignments": "My assignments"
+  },
+  "factboxes": {
+    "title": "Factboxes",
+    "columnLabels": {
+      "description": "Description",
+      "lastChanged": "Last changed"
+    }
+  },
+  "search": {
+    "title": "Search",
+    "placeholders": {
+      "search": "Search"
+    },
+    "labels": {
+      "plannings": "Plannings",
+      "events": "Events",
+      "articles": "Articles"
+    },
+    "columnLabels": {
+      "date": "Date"
+    }
+  },
+  "login": {
+    "loginWith": "Log in with",
+    "rememberMe": "Remember me next time",
+    "loggingIn": "Logging in..."
+  },
+  "imageSearch": {
+    "title": "Images",
+    "labels": {
+      "mediaType": "Media type",
+      "image": "Image",
+      "graphic": "Graphic"
+    }
+  }
+}
