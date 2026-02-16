@@ -155,12 +155,14 @@ export async function fetchAssignments({ index, repository, type, requireDeliver
   // Apply status to all assignments
   assignments.forEach((assignment) => {
     const statusOverview = statusOverviews.find((si) => si.uuid === assignment._deliverableId)
+    const statusFromMeta = statusOverview ? getStatusFromMeta(statusOverview, true) : undefined
     const charCount = metricsOverviews[assignment._deliverableId]?.metrics
       .find((metric) => metric.kind === 'charcount')?.value.toString() || undefined
 
     filteredTextAssignments.push({
       ...assignment,
-      _deliverableStatus: statusOverview ? getStatusFromMeta(statusOverview, true)?.name || 'draft' : 'draft',
+      _deliverableStatus: statusFromMeta?.name || 'draft',
+      _deliverableCause: statusFromMeta?.cause,
       _statusData: statusOverview
         ? JSON.stringify(statusOverview, (_, val) => (
           typeof val === 'bigint' ? val.toString() : val as unknown), 2)
