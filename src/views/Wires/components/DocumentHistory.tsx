@@ -143,7 +143,10 @@ export const DocumentHistory = ({ uuid, currentVersion, stickyStatus = true, onS
       {isCollapsible && (
         <button
           type='button'
-          onClick={() => setShowAll((prev) => !prev)}
+          onMouseDownCapture={(event) => {
+            event.preventDefault()
+            setShowAll((prev) => !prev)
+          }}
           className='mt-1 text-xs text-muted-foreground/70 hover:text-foreground transition-colors text-left cursor-pointer'
         >
           {showAll
