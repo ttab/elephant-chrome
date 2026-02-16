@@ -21,6 +21,9 @@ interface StatusItem {
   meta?: Record<string, unknown>
 }
 
+const COLLAPSED_MAX = 4
+const COLLAPSE_THRESHOLD = 5
+
 export const DocumentHistory = ({ uuid, currentVersion, stickyStatus = true, onSelectVersion, selectedVersion }: {
   uuid: string
   currentVersion?: bigint
@@ -32,6 +35,7 @@ export const DocumentHistory = ({ uuid, currentVersion, stickyStatus = true, onS
   const { data: session } = useSession()
   const [history, setHistory] = useState<HistoryEntry[] | null>(null)
   const [documents, setDocuments] = useState<BulkGetItem[] | null>(null)
+  const [showAll, setShowAll] = useState(false)
 
   useEffect(() => {
     if (!repository || !session?.accessToken) {
@@ -98,37 +102,55 @@ export const DocumentHistory = ({ uuid, currentVersion, stickyStatus = true, onS
     }
   }, [uuid, repository, session, stickyStatus])
 
-  console.log(selectedVersion)
+  const isCollapsible = (history?.length ?? 0) > COLLAPSE_THRESHOLD
+  const visibleHistory = history && isCollapsible && !showAll
+    ? history.slice(0, COLLAPSED_MAX)
+    : history
+
   let previousVersion = 0n
   return (
-    <div className='grid grid-cols-[auto_auto_1fr] gap-0 text-sm text-muted-foreground'>
-      {history?.length
-        && (
-          <>
-            {[...history].reverse().map((item, index) => {
-              const title = (previousVersion !== item.version)
-                ? documents?.find((doc) => doc.version === item.version)?.document?.title
-                : null
-              const isCurrent = item.version === currentVersion && previousVersion !== item.version
+    <div className='flex flex-col gap-0 text-sm text-muted-foreground'>
+      <div className='grid grid-cols-[auto_auto_1fr] gap-0'>
+        {visibleHistory?.length
+          && (
+            <>
+              {[...visibleHistory].reverse().map((item, index) => {
+                const title = (previousVersion !== item.version)
+                  ? documents?.find((doc) => doc.version === item.version)?.document?.title
+                  : null
+                const isCurrent = item.version === currentVersion && previousVersion !== item.version
 
-              previousVersion = item.version
+                previousVersion = item.version
 
-              return (
-                <HistoryEntry
-                  key={`${item.version}-${item.status}-${index}`}
-                  version={item.version}
-                  status={item.status}
-                  title={title}
-                  isLast={index === history.length - 1}
-                  isCurrent={isCurrent}
-                  time={dateToReadableDateTime(new Date(item.created), locale.code.short, timeZone)}
-                  onSelect={onSelectVersion}
-                  selected={selectedVersion === item.version || (!selectedVersion && isCurrent)}
-                />
-              )
-            }).reverse()}
-          </>
-        )}
+                return (
+                  <HistoryEntry
+                    key={`${item.version}-${item.status}-${index}`}
+                    version={item.version}
+                    status={item.status}
+                    title={title}
+                    isLast={index === visibleHistory.length - 1}
+                    isCurrent={isCurrent}
+                    time={dateToReadableDateTime(new Date(item.created), locale.code.short, timeZone)}
+                    onSelect={onSelectVersion}
+                    selected={selectedVersion === item.version || (!selectedVersion && isCurrent)}
+                  />
+                )
+              }).reverse()}
+            </>
+          )}
+      </div>
+
+      {isCollapsible && (
+        <button
+          type='button'
+          onClick={() => setShowAll((prev) => !prev)}
+          className='mt-1 text-xs text-muted-foreground/70 hover:text-foreground transition-colors text-left cursor-pointer'
+        >
+          {showAll
+            ? 'Visa färre'
+            : `Visa alla ${history?.length ?? 0}...`}
+        </button>
+      )}
     </div>
   )
 }

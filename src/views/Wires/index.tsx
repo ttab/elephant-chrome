@@ -277,7 +277,7 @@ export const Wires = (): JSX.Element => {
             && (
               <div
                 className={cn(
-                  'rounded-lg grid shadow-xl border border-default-foreground/20 mx-1',
+                  'rounded-lg grid shadow-xl border border-default-foreground/20 mx-1 justify-center',
                   'grid-rows-[auto_1fr]',
                   '@7xl/view:ml-0 @7xl/view:w-xl @7xl/view:my-2 @7xl/view:mx-0'
                 )}
