@@ -22,7 +22,7 @@ import { fromYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc.js'
 import { fromGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc.js'
 
 import { meta } from './meta.js'
-import getSystemLanguage from '@/lib/getLanguage.js'
+import getSystemLanguage from '../shared/getLanguage.js'
 
 export interface Status {
   name: string

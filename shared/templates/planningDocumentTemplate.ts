@@ -3,7 +3,7 @@ import type { TemplatePayload } from './index.js'
 import { getUserTimeZone } from '../../src/lib/getUserTimeZone.js'
 import { getUTCDateRange, parseDate } from '@/shared/datetime.js'
 import { DEFAULT_TIMEZONE } from '../../src/defaults/defaultTimezone.js'
-import getSystemLanguage from '@/lib/getLanguage.js'
+import getSystemLanguage from '@/shared/getLanguage.js'
 
 /**
  * Create a template structure for a planning document

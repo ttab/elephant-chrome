@@ -1,4 +1,4 @@
-import getSystemLanguage from '@/lib/getLanguage'
+import getSystemLanguage from '../getLanguage.js'
 import { Block, Document } from '@ttab/elephant-api/newsdoc'
 
 /**

@@ -10,7 +10,7 @@ import { toast } from 'sonner'
 import { fields } from '@/shared/schemas/author'
 import type { Author, AuthorFields } from '@/shared/schemas/author'
 import type { TFunction } from 'i18next'
-import getSystemLanguage from '@/lib/getLanguage'
+import getSystemLanguage from '@/shared/getLanguage'
 
 /**
  * Initializes the author by verifying or creating an author document in the repository.
