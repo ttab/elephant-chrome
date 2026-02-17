@@ -44,7 +44,8 @@ export function useTrackedDocuments(includeInvisible: boolean = false): OpenDocu
     {
       // Set yDocument.ele to point at the root Y.Map "documents"
       // where we will find the open documents map instead of in ele.
-      rootMap: 'documents'
+      rootMap: 'documents',
+      skipIndexedDB: true
     }
   )
 
