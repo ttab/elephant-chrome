@@ -6,6 +6,7 @@ export interface AssignmentInterface extends Block {
   _id: string
   _deliverableId: string
   _deliverableStatus?: string
+  _deliverableCause?: string
   _deliverableType?: string
   _deliverableDocument?: Document
   _title: string

@@ -9,7 +9,7 @@ import { isValidAssignment } from './isValidAssignment'
  * @param type - The type of assignments to extract.
  * @returns An array of assignments matching the given type.
  */
-export function getAssignmentsFromDocument(document: Document, type?: string | string[], newsvalues?: Array<{ id: string | undefined, newsvalue: string | undefined }>): AssignmentInterface[] {
+export function getAssignmentsFromDocument(document: Document, type?: string | string[]): AssignmentInterface[] {
   const { meta, links } = document
   const assignments: AssignmentInterface[] = []
 
@@ -23,14 +23,12 @@ export function getAssignmentsFromDocument(document: Document, type?: string | s
     const deliverable = assignmentMeta.links.find((l) => l.rel === 'deliverable')
     const _deliverableId = deliverable?.uuid
     const _deliverableType = deliverable?.type
-    const _deliverableNewsValue = newsvalues?.find((value) => value.id === _deliverableId)?.newsvalue
 
     assignments.push({
       _planningId: document.uuid,
       _planningTitle: document.title,
       _id: document.uuid,
       _title: document.title,
-      _newsvalue: _deliverableNewsValue,
       _section: links.find((l) => l.type === 'core/section')?.uuid,
       _deliverableId: _deliverableId || '',
       _deliverableType: _deliverableType || '',
