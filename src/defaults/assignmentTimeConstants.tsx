@@ -9,7 +9,7 @@ import {
   Clock1Icon
 } from '@ttab/elephant-ui/icons'
 import { type AssignmentValueOption } from '../components/AssignmentTime/types'
-
+import i18n from '@/lib/i18n'
 
 const iconProps = {
   size: 18,
@@ -20,14 +20,14 @@ const iconProps = {
 // FIXME: These constants should be merged with ./assignmentTimeslots.ts
 export const timeSlotTypes: AssignmentValueOption[] = [
   {
-    label: 'Heldag',
+    label: i18n.t('core:timeSlots.fullday'),
     value: 'fullday',
     icon: CalendarFoldIcon,
     iconProps,
     slots: []
   },
   {
-    label: 'Morgon',
+    label: i18n.t('core:timeSlots.morning'),
     value: 'morning',
     icon: Clock5Icon,
     iconProps,
@@ -35,7 +35,7 @@ export const timeSlotTypes: AssignmentValueOption[] = [
     median: '5'
   },
   {
-    label: 'Förmiddag',
+    label: i18n.t('core:timeSlots.forenoon'),
     value: 'forenoon',
     icon: Clock10Icon,
     iconProps,
@@ -43,7 +43,7 @@ export const timeSlotTypes: AssignmentValueOption[] = [
     median: '10'
   },
   {
-    label: 'Eftermiddag',
+    label: i18n.t('core:timeSlots.afternoon'),
     value: 'afternoon',
     icon: Clock2Icon,
     iconProps,
@@ -51,7 +51,7 @@ export const timeSlotTypes: AssignmentValueOption[] = [
     median: '16'
   },
   {
-    label: 'Kväll',
+    label: i18n.t('core:timeSlots.evening'),
     value: 'evening',
     icon: Clock6Icon,
     iconProps,
