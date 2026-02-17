@@ -36,6 +36,12 @@
     "since": "siden",
     "missing": "Mangler",
     "loading": "Laster inn...",
-    "titleMissing": "Tittel mangler"
+    "titleMissing": "Tittel mangler",
+    "fetchingSession": "Henter sesjon...",
+    "fetchingUserData": "Henter brukerdata...",
+    "headingAndContent": "Overskrift og innhold",
+    "markedAsCancelled": "Merket som avlyst",
+    "error": "Feil",
+    "selectTime": "Velg tid"
   }
 }

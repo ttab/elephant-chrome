@@ -72,7 +72,7 @@ export const Init = ({ children }: PropsWithChildren): JSX.Element => {
         <View.Content>
           <div className='flex items-center justify-center h-screen'>
             <div className='flex flex-col w-1/3'>
-              <LoadingText>Hämtar användardata...</LoadingText>
+              <LoadingText>{t('misc.fetchingUserData')}</LoadingText>
 
               <div className='flex flex-col items-center justify-center gap-2 mt-4'>
                 {Object.entries(isInitialized).map(([key, value]) => {

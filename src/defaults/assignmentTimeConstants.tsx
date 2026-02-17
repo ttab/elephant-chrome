@@ -62,19 +62,19 @@ export const timeSlotTypes: AssignmentValueOption[] = [
 
 export const timePickTypes: AssignmentValueOption[] = [
   {
-    label: 'Välj tid',
+    label: i18n.t('common:misc.selectTime'),
     value: 'endexecution',
     icon: CalendarClockIcon,
     iconProps
   },
   {
-    label: 'Välj tid',
+    label: i18n.t('common:misc.selectTime'),
     value: 'start-end-execution',
     icon: ClockFadingIcon,
     iconProps
   },
   {
-    label: 'Välj tid',
+    label: i18n.t('common:misc.selectTime'),
     value: 'start-end-execution',
     icon: Clock1Icon,
     iconProps
