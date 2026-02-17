@@ -31,7 +31,10 @@ export const Editor = ({ id, version, textOnly = false, direct, versionStatusHis
   versionStatusHistory?: DocumentStatuses[]
   direct?: boolean
 }): JSX.Element => {
-  const { t } = useTranslation('editor')
+  const { t, i18n } = useTranslation('editor')
+
+  const activeLocale = i18n.resolvedLanguage
+
   const searchParams = new URLSearchParams()
   if (typeof version !== 'undefined') {
     searchParams.set('version', version.toString())
@@ -57,7 +60,8 @@ export const Editor = ({ id, version, textOnly = false, direct, versionStatusHis
         headerTitle: t('factbox.headerTitle'),
         modifiedLabel: t('factbox.modifiedLabel'),
         footerTitle: t('factbox.footerTitle'),
-        removable: false
+        removable: false,
+        locale: activeLocale
       })
     ]
   }
