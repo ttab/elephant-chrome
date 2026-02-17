@@ -40,7 +40,7 @@ export interface OpenDocumentsState {
  */
 export function useTrackedDocuments(includeInvisible: boolean = false): OpenDocumentsState {
   const yDocument = useYDocument<Y.Map<Y.Array<UserConnection>>>(
-    'tracked-documents',
+    'tracked-documents-v1',
     {
       // Set yDocument.ele to point at the root Y.Map "documents"
       // where we will find the open documents map instead of in ele.
