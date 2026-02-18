@@ -37,10 +37,6 @@ export class CollaborationClient {
   #isConnecting: boolean = false
   #isConnected: boolean = false
   #statusChangeListeners: Set<(status: CollaborationClientStatus) => void> = new Set()
-
-  // Whether to cleanup IndexedDB when last client is removed, this does not
-  // sync across browser tabs which could lead to data not being persisted locally.
-  #cleanupIndexedDB = false
   #skipIndexedDB = false
 
   constructor(documentName: string, options: CollaborationClientOptions) {
