@@ -90,7 +90,9 @@ function EditorWrapper(props: ViewProps & {
   const openFactboxEditor = useLink('Factbox')
   const openImageSearch = useLink('ImageSearch')
   const openFactboxes = useLink('Factboxes')
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+
+  const activeLanguage = i18n.resolvedLanguage
 
   // Plugin configuration
   const configuredPlugins = useMemo(() => {
@@ -126,10 +128,11 @@ function EditorWrapper(props: ViewProps & {
           openFactboxEditor(undefined, { id })
         },
         removable: true,
+        locale: activeLanguage,
         ...contentMenuLabels
       })
     ]
-  }, [openFactboxEditor, data, repository, openFactboxes, openImageSearch, t])
+  }, [openFactboxEditor, data, repository, openFactboxes, openImageSearch, t, activeLanguage])
 
   if (!content) {
     return <View.Root />

@@ -103,7 +103,9 @@ function EditorWrapper(props: ViewProps & {
   const openFactboxEditor = useLink('Factbox')
   const openImageSearch = useLink('ImageSearch')
   const openFactboxes = useLink('Factboxes')
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+
+  const activeLocale = i18n.resolvedLanguage
 
   // Plugin configuration
   const configuredPlugins = useMemo(() => {
@@ -131,7 +133,8 @@ function EditorWrapper(props: ViewProps & {
         onEditOriginal: (id: string) => {
           openFactboxEditor(undefined, { id })
         },
-        removable: true
+        removable: true,
+        locale: activeLocale
       })
     ]
   }, [openFactboxEditor, openFactboxes, openImageSearch, t])
