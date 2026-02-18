@@ -8,7 +8,8 @@
         "newFlashTitle": "Skapa ny flash",
         "createAndSendType": "Skapa och skicka {{type}}",
         "createAndMarkTypeAsDone": "Skapa och klarmarkera {{type}}",
-        "approveType": "Godkänn {{type}}"
+        "approveType": "Godkänn {{type}}",
+        "shortFirstText": "Kort första text"
     },
     "promptDescriptions": {
         "newPlanningWillBeCreated": "En ny planering med tillhörande uppdrag för denna {{type}} kommer att skapas åt dig.",

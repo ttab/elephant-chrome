@@ -38,6 +38,12 @@
     "loading": "Loading...",
     "titleMissing": "Title missing",
     "searching": "Searching...",
-    "nothingFound": "Nothing found"
+    "nothingFound": "Nothing found",
+    "fetchingSession": "Fetching session...",
+    "fetchingUserData": "Fetching user data...",
+    "headingAndContent": "Heading and content",
+    "markedAsCancelled": "Marked as cancelled",
+    "error": "Error",
+    "selectTime": "Select time"
   }
 }

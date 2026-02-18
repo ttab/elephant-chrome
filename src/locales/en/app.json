@@ -12,6 +12,7 @@
     "search": "Search",
     "wires": "Wires",
     "quickarticle": "Create quick-article",
+    "title": "Main menu",
     "actions": {
       "toggleTheme": "Toggle theme"
     }

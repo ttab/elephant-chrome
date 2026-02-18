@@ -4,6 +4,7 @@ import { SearchIcon, XIcon } from '@ttab/elephant-ui/icons'
 import type { ColumnFiltersState } from '@tanstack/react-table'
 import { type Table } from '@tanstack/react-table'
 import { type DefaultValueOption } from '@/types/index'
+import i18n from '@/lib/i18n'
 
 interface SelectedBase {
   id: string
@@ -22,7 +23,7 @@ const SelectedBadge = ({ value, options }: SelectedBase & {
         >
           {value.length}
           {' '}
-          valda
+          {i18n.t('misc.selected')}
         </Badge>
       )
     } else {

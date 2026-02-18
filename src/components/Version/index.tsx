@@ -181,7 +181,7 @@ export const Version = ({ documentId, hideDetails = false, textOnly = true }: { 
     console.error('Error fetching version history', error)
     return (
       <Error
-        title='Fel'
+        title={t('common:misc.error')}
         message={t('errors:messages.failedToLoadHistory')}
       />
     )

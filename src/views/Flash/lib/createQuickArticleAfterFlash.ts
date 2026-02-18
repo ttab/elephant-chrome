@@ -1,6 +1,7 @@
 import { addAssignmentWithDeliverable } from '@/lib/index/addAssignment'
 import { convertToISOStringInTimeZone } from '@/shared/datetime'
 import type { QuickArticleData } from '@/shared/types'
+import i18n from '@/lib/i18n'
 
 /**
  * After creating a flash document, an article (text assignment) with the contents of the
@@ -39,7 +40,7 @@ export async function createQuickArticleAfterFlash({
     planningId,
     type: 'text',
     deliverableId,
-    title: 'Kort första text',
+    title: i18n.t('flash:titles.shortFirstText'),
     slugline: data?.payload.meta['tt/slugline'][0].value,
     priority: 5,
     publicVisibility: true,

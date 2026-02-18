@@ -38,6 +38,12 @@
     "loading": "Laster inn...",
     "titleMissing": "Tittel mangler",
     "searching": "Søker...",
-    "nothingFound": "Ingenting ble funnet"
+    "nothingFound": "Ingenting ble funnet",
+    "fetchingSession": "Henter sesjon...",
+    "fetchingUserData": "Henter brukerdata...",
+    "headingAndContent": "Overskrift og innhold",
+    "markedAsCancelled": "Merket som avlyst",
+    "error": "Feil",
+    "selectTime": "Velg tid"
   }
 }

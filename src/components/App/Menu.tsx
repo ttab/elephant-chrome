@@ -64,7 +64,7 @@ export const Menu = (): JSX.Element => {
         >
           <div>
             <SheetHeader className='h-14'>
-              <SheetTitle className='sr-only'>Huvudmeny</SheetTitle>
+              <SheetTitle className='sr-only'>{t('mainMenu.title')}</SheetTitle>
               <SheetDescription className='sr-only' />
 
               <div className='flex flex-row gap-4 justify-between justify-items-center items-center h-14 px-4'>

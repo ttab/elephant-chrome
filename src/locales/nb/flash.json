@@ -8,7 +8,8 @@
     "newFlashTitle": "Lag ny HAST",
     "createAndSendType": "Opprett og send {{type}}",
     "createAndMarkTypeAsDone": "Opprett og ferdigmerk {{type}}",
-    "approveType": "Godkjenn {{type}}"
+    "approveType": "Godkjenn {{type}}",
+    "shortFirstText": "Kort første tekst"
   },
   "promptDescriptions": {
     "newPlanningWillBeCreated": "En ny planlegging med tilhørende oppgaver for denne {{type}} vil bli opprettet for deg.",
