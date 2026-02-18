@@ -84,6 +84,8 @@ export const FlashDialog = (props: {
       return
     }
 
+    // Slugs from planning and quick-article should not be the same, as they cannot
+    // be changed at a later point in time, invalidate if they are same
     if (selectedPlanning?.payload?.slugline === relatedDocsSlugline) {
       setInvalidSlug(true)
       return
