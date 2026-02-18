@@ -55,6 +55,7 @@ export const FlashDialog = (props: {
   const [, setTitle] = useYValue<string | undefined>(ydoc.ele, 'root.title')
   const { index, locale, timeZone, repository } = useRegistry()
   const [searchOlder, setSearchOlder] = useState(false)
+  const [shouldCreateQuickArticle, setShouldCreateQuickArticle] = useState(true)
   const [section, setSection] = useState<{
     type: string
     rel: string
@@ -78,7 +79,7 @@ export const FlashDialog = (props: {
   }, [relatedDocsSlugline, selectedPlanning])
 
   const handleSubmit = (setCreatePrompt: Dispatch<SetStateAction<boolean>>): void => {
-    if (!relatedDocsSlugline.length) {
+    if (shouldCreateQuickArticle && !relatedDocsSlugline.length) {
       setInvalidSlug(true)
       return
     }
@@ -183,8 +184,18 @@ export const FlashDialog = (props: {
     setSavePrompt,
     setSendPrompt,
     setDonePrompt,
-    selectedPlanning
-  }), [donePrompt, savePrompt, sendPrompt, selectedPlanning, setDonePrompt, setSavePrompt, setSendPrompt])
+    selectedPlanning,
+    shouldCreateQuickArticle
+  }), [
+    donePrompt,
+    savePrompt,
+    sendPrompt,
+    selectedPlanning,
+    setDonePrompt,
+    setSavePrompt,
+    setSendPrompt,
+    shouldCreateQuickArticle
+  ])
 
   const handleCreationErrors = (ex: Error) => {
     console.error(ex)
@@ -313,7 +324,17 @@ export const FlashDialog = (props: {
                 <Section ydoc={ydoc} path='links.core/section[0]' onSelect={setSection} />
               </Form.Group>
             )}
+            <Form.Group icon={NewspaperIcon}>
 
+              <div className='flex gap-2 items-center'>
+                <Checkbox
+                  id='createQuickArticle'
+                  defaultChecked={shouldCreateQuickArticle}
+                  onCheckedChange={(checked: boolean) => { setShouldCreateQuickArticle(checked) }}
+                />
+                <Label htmlFor='createQuickArticle' className='text-muted-foreground'>Skapa två på två</Label>
+              </div>
+            </Form.Group>
             <Form.Group icon={TagsIcon}>
               <div className='w-1/2 relative'>
                 {invalidSlug && (
@@ -323,6 +344,7 @@ export const FlashDialog = (props: {
                 )}
                 <input
                   autoComplete='off'
+                  disabled={!shouldCreateQuickArticle}
                   placeholder='Slugg för planering och artikel'
                   className={`
                     h-6
@@ -401,7 +423,8 @@ export const FlashDialog = (props: {
                       startDate,
                       section: (!selectedPlanning?.value) ? section || undefined : undefined,
                       planningSection: section,
-                      relatedDocsSlugline
+                      relatedDocsSlugline,
+                      shouldCreateQuickArticle
                     })
                       .then((data) => {
                         if (props?.onDialogClose) {

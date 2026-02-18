@@ -23,7 +23,8 @@ export const promptConfig = ({
   setDonePrompt,
   savePrompt,
   donePrompt,
-  sendPrompt
+  sendPrompt,
+  shouldCreateQuickArticle
 }: {
   type: 'article' | 'flash'
   selectedPlanning: Omit<DefaultValueOption, 'payload'> & { payload: unknown } | undefined
@@ -33,9 +34,13 @@ export const promptConfig = ({
   savePrompt: boolean
   donePrompt: boolean
   sendPrompt: boolean
+  shouldCreateQuickArticle: boolean
 }): PromptConfig[] => {
   const documentType = type === 'article' ? 'artikel' : 'flash'
   const isFlash = type === 'flash'
+
+  const flashUsableDescription = shouldCreateQuickArticle ? `I samma planering läggs det även till ett nytt textuppdrag med flashinnehållet.` : ''
+  const articleUsableDescription = 'Artikeln kommer att ha status Godkänd. Kom ihåg att uppdatera och publicera planeringen!'
 
   return [
     {
@@ -48,8 +53,8 @@ export const promptConfig = ({
         ? `En ny planering med tillhörande uppdrag för denna ${documentType} skapas åt dig.`
         : `Denna ${documentType} kommer att läggas i ett nytt uppdrag i planeringen "${selectedPlanning.label}".`,
       secondaryDescription: isFlash
-        ? `I samma planering läggs det även till ett nytt textuppdrag med flashinnehållet.`
-        : `En ny, intern planering med tillhörande uppdrag för denna artikel skapas åt dig. Artikeln kommer att ha status Godkänd. Kom ihåg att uppdatera och publicera planeringen!`,
+        ? flashUsableDescription
+        : articleUsableDescription,
       secondaryLabel: 'Avbryt',
       primaryLabel: isFlash ? 'Publicera' : 'Godkänn',
       documentStatus: (isFlash ? 'usable' : 'approved') as CreateArticleDocumentStatus,
