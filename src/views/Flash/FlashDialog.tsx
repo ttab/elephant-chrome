@@ -9,7 +9,7 @@ import { CircleXIcon, TagsIcon, GanttChartSquareIcon, NewspaperIcon, ZapIcon, In
 import { useRegistry, useSections } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import type { Dispatch, SetStateAction } from 'react'
-import { type JSX, useMemo, useRef, useState } from 'react'
+import { type JSX, useEffect, useMemo, useRef, useState } from 'react'
 import { Form } from '@/components/Form'
 import { fetch } from '@/lib/index/fetch-plannings-twirp'
 import type { CreateFlashDocumentStatus } from './lib/createFlash'
@@ -51,7 +51,7 @@ export const FlashDialog = (props: {
   const [sendPrompt, setSendPrompt] = useState(false)
   const [savePrompt, setSavePrompt] = useState(false)
   const [donePrompt, setDonePrompt] = useState(false)
-  const [selectedPlanning, setSelectedPlanning] = useState<Omit<DefaultValueOption, 'payload'> & { payload: unknown } | undefined>(undefined)
+  const [selectedPlanning, setSelectedPlanning] = useState<Omit<DefaultValueOption, 'payload'> & { payload: { slugline: string } } | undefined>(undefined)
   const [, setTitle] = useYValue<string | undefined>(ydoc.ele, 'root.title')
   const { index, locale, timeZone, repository } = useRegistry()
   const [searchOlder, setSearchOlder] = useState(false)
@@ -67,8 +67,23 @@ export const FlashDialog = (props: {
   const [relatedDocsSlugline, setSlugline] = useState<string>('') // slugline for complementary planning- and quick-article documents
   const [invalidSlug, setInvalidSlug] = useState(false)
 
+  useEffect(() => {
+    if (selectedPlanning?.payload?.slugline) {
+      setInvalidSlug(selectedPlanning.payload.slugline === relatedDocsSlugline)
+    }
+
+    return () => {
+      setInvalidSlug(false)
+    }
+  }, [relatedDocsSlugline, selectedPlanning])
+
   const handleSubmit = (setCreatePrompt: Dispatch<SetStateAction<boolean>>): void => {
     if (!relatedDocsSlugline.length) {
+      setInvalidSlug(true)
+      return
+    }
+
+    if (selectedPlanning?.payload?.slugline === relatedDocsSlugline) {
       setInvalidSlug(true)
       return
     }
@@ -232,7 +247,7 @@ export const FlashDialog = (props: {
                         setSelectedPlanning({
                           value: option.value,
                           label: option.label,
-                          payload: option.payload
+                          payload: option.payload as { slugline: string }
                         })
 
                         const sectionPayload = option.payload as { section: string | undefined }
