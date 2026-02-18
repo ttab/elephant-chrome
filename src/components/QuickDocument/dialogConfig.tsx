@@ -45,11 +45,11 @@ export const promptConfig = ({
         ? `Skapa och skicka flash?`
         : `Godkänn artikel?`,
       description: !selectedPlanning
-        ? `En ny planering med tillhörande uppdrag för denna ${documentType} kommer att skapas åt dig.`
+        ? `En ny planering med tillhörande uppdrag för denna ${documentType} skapas åt dig.`
         : `Denna ${documentType} kommer att läggas i ett nytt uppdrag i planeringen "${selectedPlanning.label}".`,
       secondaryDescription: isFlash
-        ? `I samma planering kommer även ett textuppdrag med flashinnehållet att läggas till.`
-        : `En ny, intern planering med tillhörande uppdrag för denna artikel kommer att skapas åt dig. Artikeln kommer att ha status Godkänd. Kom ihåg att uppdatera och publicera planeringen!`,
+        ? `I samma planering läggs det även till ett nytt textuppdrag med flashinnehållet.`
+        : `En ny, intern planering med tillhörande uppdrag för denna artikel skapas åt dig. Artikeln kommer att ha status Godkänd. Kom ihåg att uppdatera och publicera planeringen!`,
       secondaryLabel: 'Avbryt',
       primaryLabel: isFlash ? 'Publicera' : 'Godkänn',
       documentStatus: (isFlash ? 'usable' : 'approved') as CreateArticleDocumentStatus,
@@ -60,7 +60,7 @@ export const promptConfig = ({
       key: 'done',
       title: `Skapa och klarmarkera ${documentType}?`,
       description: !selectedPlanning
-        ? `En ny planering med tillhörande uppdrag för denna ${documentType} kommer att skapas åt dig.`
+        ? `En ny planering med tillhörande uppdrag för denna ${documentType} skapas åt dig.`
         : `Denna ${documentType} kommer att läggas i ett nytt uppdrag i planeringen "${selectedPlanning.label}", med status Klar.`,
       secondaryLabel: 'Avbryt',
       primaryLabel: 'Klarmarkera',
@@ -72,7 +72,7 @@ export const promptConfig = ({
       key: 'save',
       title: `Spara ${documentType}?`,
       description: !selectedPlanning
-        ? `En ny planering med tillhörande uppdrag för denna ${documentType} kommer att skapas åt dig.`
+        ? `En ny planering med tillhörande uppdrag för denna ${documentType} skapas åt dig.`
         : `Denna ${documentType} kommer att läggas i ett nytt uppdrag i planeringen "${selectedPlanning.label}"`,
       secondaryLabel: 'Avbryt',
       primaryLabel: 'Spara',
