@@ -1,18 +1,20 @@
+import i18n from '@/lib/i18n'
+
 export const CAUSE_KEYS = {
   development: {
-    short: 'UV',
-    long: 'Utveckling'
+    get short() { return i18n.t('shared:status_menu.causes.development_short') },
+    get long() { return i18n.t('shared:status_menu.causes.development_long') }
   },
   correction: {
-    short: 'RÄ',
-    long: 'Rättelse'
+    get short() { return i18n.t('shared:status_menu.causes.correction_short') },
+    get long() { return i18n.t('shared:status_menu.causes.correction_long') }
   },
   retransmission: {
-    short: 'OMS',
-    long: 'Omsändning'
+    get short() { return i18n.t('shared:status_menu.causes.retransmission_short') },
+    get long() { return i18n.t('shared:status_menu.causes.retransmission_long') }
   },
   fix: {
-    short: 'KORR',
-    long: 'Korrigering'
+    get short() { return i18n.t('shared:status_menu.causes.fix_short') },
+    get long() { return i18n.t('shared:status_menu.causes.fix_long') }
   }
 }

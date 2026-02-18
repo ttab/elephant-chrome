@@ -36,6 +36,12 @@
     "since": "since",
     "missing": "missing",
     "loading": "Loading...",
-    "titleMissing": "Title missing"
+    "titleMissing": "Title missing",
+    "fetchingSession": "Fetching session...",
+    "fetchingUserData": "Fetching user data...",
+    "headingAndContent": "Heading and content",
+    "markedAsCancelled": "Marked as cancelled",
+    "error": "Error",
+    "selectTime": "Select time"
   }
 }

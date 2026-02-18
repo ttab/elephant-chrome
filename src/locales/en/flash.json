@@ -8,7 +8,8 @@
     "newFlashTitle": "Create new flash",
     "createAndSendType": "Create and send {{type}}",
     "createAndMarkTypeAsDone": "Create and mark {{type}} as done",
-    "approveType": "Approve {{type}}"
+    "approveType": "Approve {{type}}",
+    "shortFirstText": "Short first text"
   },
   "promptDescriptions": {
     "newPlanningWillBeCreated": "A new planning with an associated assignment for this {{type}} will be created for you.",

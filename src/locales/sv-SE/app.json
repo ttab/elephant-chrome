@@ -12,6 +12,7 @@
     "search": "Sök",
     "wires": "Telegram",
     "quickarticle": "Ny snabbartikel",
+    "title": "Huvudmeny",
     "actions": {
       "toggleTheme": "Växla tema"
     }

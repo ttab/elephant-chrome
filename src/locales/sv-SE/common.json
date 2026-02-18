@@ -36,6 +36,12 @@
     "since": "sedan",
     "missing": "saknas",
     "loading": "Laddar...",
-    "titleMissing": "Titel saknas"
+    "titleMissing": "Titel saknas",
+    "fetchingSession": "Hämtar session...",
+    "fetchingUserData": "Hämtar användardata...",
+    "headingAndContent": "Rubrik och innehåll",
+    "markedAsCancelled": "Markerad som inställd",
+    "error": "Fel",
+    "selectTime": "Välj tid"
   }
 }

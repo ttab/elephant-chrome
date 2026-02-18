@@ -12,6 +12,7 @@
     "search": "Søk",
     "wires": "Byråimport",
     "quickarticle": "Ny hurtigartikkel",
+    "title": "Hovedmeny",
     "actions": {
       "toggleTheme": "Vexle tema"
     }

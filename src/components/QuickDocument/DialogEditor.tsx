@@ -38,7 +38,7 @@ export const DialogEditor = ({ ydoc, setTitle, onValidation, validateStateRef, t
   return (
     <Validation
       ydoc={ydoc}
-      label='Rubrik och innehåll'
+      label={t('common:misc.headingAndContent')}
       path='root.title'
       block='title'
       onValidation={onValidation}

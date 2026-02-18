@@ -36,9 +36,13 @@
     "asSavePlaceholder": "Publicera ny information",
     "causes": {
       "development_short": "UV",
+      "development_long": "Utveckling",
       "fix_short": "KORR",
+      "fix_long": "Korrigering",
       "correction_short": "RÄ",
-      "retransmission_short": "OMS"
+      "correction_long": "Rättelse",
+      "retransmission_short": "OMS",
+      "retransmission_long": "Omsändning"
     }
   },
   "copy": {

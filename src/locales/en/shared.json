@@ -36,9 +36,13 @@
     "asSavePlaceholder": "Publish new information",
     "causes": {
       "development_short": "DEV",
+      "development_long": "Development",
       "fix_short": "FIX",
+      "fix_long": "Fix",
       "correction_short": "CORR",
-      "retransmission_short": "RET"
+      "correction_long": "Correction",
+      "retransmission_short": "RET",
+      "retransmission_long": "Retransmission"
     }
   },
   "copy": {
