@@ -462,4 +462,43 @@ describe('useYDocument', () => {
       }).not.toThrow()
     })
   })
+
+  describe('skipIndexedDB flag', () => {
+    it('accepts skipIndexedDB option without throwing', () => {
+      expect(() => {
+        renderHook(() => useYDocument('doc-skip-idb', { skipIndexedDB: true }))
+      }).not.toThrow()
+    })
+
+    it('defaults to undefined skipIndexedDB when not provided', () => {
+      const { result } = renderHook(() => useYDocument('doc-no-skip-idb'))
+
+      expect(result.current.id).toBe('doc-no-skip-idb')
+      expect(result.current.ele).toBeDefined()
+    })
+
+    it('can be set to false explicitly', () => {
+      expect(() => {
+        renderHook(() => useYDocument('doc-skip-idb-false', { skipIndexedDB: false }))
+      }).not.toThrow()
+    })
+
+    it('works with skipIndexedDB alongside other options', () => {
+      const mockData = createMockDocumentData()
+
+      const { result } = renderHook(() =>
+        useYDocument('doc-skip-idb-with-others', {
+          skipIndexedDB: true,
+          data: mockData,
+          visibility: true,
+          rootMap: 'ele',
+          ignoreChangeKeys: ['meta.*.title']
+        })
+      )
+
+      expect(result.current.id).toBe('doc-skip-idb-with-others')
+      expect(result.current.visibility).toBe(true)
+      expect(result.current.ele).toBeDefined()
+    })
+  })
 })

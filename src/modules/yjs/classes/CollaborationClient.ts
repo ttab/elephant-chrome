@@ -9,6 +9,7 @@ export interface CollaborationClientOptions {
   document: Y.Doc
   persistent?: boolean
   cleanupIndexedDB?: boolean
+  skipIndexedDB?: boolean
 }
 
 export interface CollaborationClientStatus {
@@ -42,6 +43,7 @@ export class CollaborationClient {
   // Whether to cleanup IndexedDB when last client is removed, this does not
   // sync across browser tabs which could lead to data not being persisted locally.
   #cleanupIndexedDB = false
+  #skipIndexedDB = false
 
   constructor(documentName: string, options: CollaborationClientOptions) {
     this.#hpWebsocketProvider = options.hpWebsocketProvider
@@ -49,6 +51,7 @@ export class CollaborationClient {
     this.#documentName = documentName
     this.#document = options.document
     this.#persistent = options.persistent ?? false
+    this.#skipIndexedDB = options.skipIndexedDB ?? false
 
     console.log('📄 CollaborationClient created for', documentName)
   }
@@ -132,8 +135,10 @@ export class CollaborationClient {
     this.#isConnecting = true
 
     try {
-      // Initialize IndexedDB first
-      await this.#connectIndexedDB()
+      // Initialize IndexedDB first (unless skipped)
+      if (!this.#skipIndexedDB) {
+        await this.#connectIndexedDB()
+      }
 
       // Then initialize Hocuspocus
       this.#connectHocuspocus()
