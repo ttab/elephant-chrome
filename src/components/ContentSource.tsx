@@ -55,6 +55,10 @@ export const ContentSource = ({ ydoc, path }: {
             })])
           }
         }}
+        translationStrings={{
+          searching: t('common:misc.searching'),
+          nothingFound: t('common:misc.nothingFound')
+        }}
       />
     </Awareness>
   )

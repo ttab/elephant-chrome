@@ -51,6 +51,10 @@ export const Story = ({ ydoc, path, onChange, asSubject }: {
               title: option.label
             }))
         }}
+        translationStrings={{
+          searching: t('common:misc.searching'),
+          nothingFound: t('common:misc.nothingFound')
+        }}
       />
     </Awareness>
   )

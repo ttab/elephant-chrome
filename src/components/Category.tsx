@@ -57,6 +57,10 @@ export const Category = ({ ydoc, path, asDialog, onChange }: {
             })])
           }
         }}
+        translationStrings={{
+          searching: t('common:misc.searching'),
+          nothingFound: t('common:misc.nothingFound')
+        }}
       />
     </Awareness>
   )

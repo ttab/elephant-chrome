@@ -147,6 +147,10 @@ export const QuickArticleDialog = (props: {
                         setSelectedPlanning(undefined)
                       }
                     }}
+                    translationStrings={{
+                      searching: t('common:misc.searching'),
+                      nothingFound: t('common:misc.nothingFound')
+                    }}
                   >
                   </ComboBox>
                 </Awareness>

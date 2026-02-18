@@ -75,6 +75,10 @@ export const Section = ({ ydoc, path, onValidation, validateStateRef, onChange, 
               setSection(Block.create(value))
             }
           }}
+          translationStrings={{
+            searching: t('common:misc.searching'),
+            nothingFound: t('common:misc.nothingFound')
+          }}
         />
       </Validation>
     </Awareness>

@@ -49,6 +49,10 @@ export const Newsvalue = ({ ydoc, path, onValidation, validateStateRef, onChange
               setNewsvalue(option.value)
             }
           }}
+          translationStrings={{
+            searching: t('common:misc.searching'),
+            nothingFound: t('common:misc.nothingFound')
+          }}
         >
 
           {selectedOptions?.[0] && SelectedIcon && (

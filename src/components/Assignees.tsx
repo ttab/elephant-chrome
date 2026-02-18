@@ -10,6 +10,7 @@ import type { EleBlock } from '@/shared/types'
 import { type FormProps } from './Form/Root'
 import { type YDocument, useYValue } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
+import { useTranslation } from 'react-i18next'
 
 export const Assignees = ({ ydoc, path, rootMap, placeholder, asDialog, onChange }: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -17,6 +18,7 @@ export const Assignees = ({ ydoc, path, rootMap, placeholder, asDialog, onChange
   placeholder: string
   path: string
 } & FormProps): JSX.Element | undefined => {
+  const { t } = useTranslation()
   const allAuthors = useAuthors().map((_) => {
     return {
       value: _.id,
@@ -63,6 +65,10 @@ export const Assignees = ({ ydoc, path, rootMap, placeholder, asDialog, onChange
               })[0]
               ])
             }
+          }}
+          translationStrings={{
+            searching: t('common:misc.searching'),
+            nothingFound: t('common:misc.nothingFound')
           }}
         >
           <UserPlusIcon size={20} strokeWidth={1.75} />

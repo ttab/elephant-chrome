@@ -53,6 +53,10 @@ export const SearchDropdown = ({ searchType, setSearchType }: DropdownProps) => 
         setSearchType(e.value as SearchKeys)
         setQueryString({ type: e.value })
       }}
+      translationStrings={{
+        searching: t('common:misc.searching'),
+        nothingFound: t('common:misc.nothingFound')
+      }}
     />
   )
 }
