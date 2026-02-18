@@ -43,7 +43,6 @@ export function useYDocument<T>(
   id: string,
   options?: {
     data?: EleDocumentResponse
-    persistent?: boolean
     visibility?: boolean
     rootMap?: string
     ignoreChangeKeys?: string[]

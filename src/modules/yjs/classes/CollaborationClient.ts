@@ -7,7 +7,6 @@ export interface CollaborationClientOptions {
   hpWebsocketProvider: HocuspocusProviderWebsocket
   accessToken: string
   document: Y.Doc
-  persistent?: boolean
   cleanupIndexedDB?: boolean
 }
 
@@ -34,21 +33,15 @@ export class CollaborationClient {
   #documentName: string
   #document: Y.Doc
   #accessToken: string
-  #persistent: boolean
   #isConnecting: boolean = false
   #isConnected: boolean = false
   #statusChangeListeners: Set<(status: CollaborationClientStatus) => void> = new Set()
-
-  // Whether to cleanup IndexedDB when last client is removed, this does not
-  // sync across browser tabs which could lead to data not being persisted locally.
-  #cleanupIndexedDB = false
 
   constructor(documentName: string, options: CollaborationClientOptions) {
     this.#hpWebsocketProvider = options.hpWebsocketProvider
     this.#accessToken = options.accessToken
     this.#documentName = documentName
     this.#document = options.document
-    this.#persistent = options.persistent ?? false
 
     console.log('📄 CollaborationClient created for', documentName)
   }
@@ -233,14 +226,8 @@ export class CollaborationClient {
 
     console.log('🔌 Disconnecting CollaborationClient:', this.#documentName)
 
-    // Clean up IndexedDB if not persistent
+    // Close IndexedDB connection
     if (this.#idb) {
-      if (!this.#persistent && this.#hp?.hasUnsyncedChanges === false && this.#cleanupIndexedDB) {
-        // CAVEAT: Can remove data that a provider in another tab is syncing to
-        await this.#idb.clearData()
-        console.log('🗑️ IndexedDB data cleared for:', this.#documentName)
-      }
-
       await this.#idb.destroy()
       this.#idb = null
     }
