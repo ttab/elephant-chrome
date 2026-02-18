@@ -125,7 +125,7 @@ export async function createFlash({
               Block.create({
                 type: 'tt/slugline',
                 value: !flashTitle
-                  ? 'snabbartikel'
+                  ? 'två-på-två'
                   : relatedDocsSlugline || `${flashTitle?.toLocaleLowerCase()?.split(' ').slice(0, 3).join('-').slice(0, 20)}`
               })]
           },

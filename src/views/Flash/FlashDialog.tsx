@@ -120,7 +120,7 @@ export const FlashDialog = (props: {
         data: quickArticleData
       })
         .then((id) => {
-          toast.success('Snabbartikel har skapats', {
+          toast.success('Två på två har skapats', {
             classNames: {
               title: 'whitespace-nowrap'
             },
@@ -138,7 +138,7 @@ export const FlashDialog = (props: {
         })
         .catch(() => {
           // Flash creation OK, quick-article creation unsuccessful
-          toast.error('Fel när snabbartikel skapades', {
+          toast.error('Fel när två på två skapades', {
             action: <ToastAction withView='Flash' documentId={data.updatedPlanningId} />
           })
         })

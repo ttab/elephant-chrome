@@ -71,7 +71,7 @@ export async function createQuickArticle({
     type: 'text',
     deliverableId: ydoc.id,
     slugline,
-    title: title || 'Ny snabbartikel',
+    title: title || 'Ny två på två',
     priority: Number(newsvalue),
     publicVisibility: true,
     localDate,

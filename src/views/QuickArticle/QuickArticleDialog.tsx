@@ -263,7 +263,7 @@ export const QuickArticleDialog = (props: {
                         handleClose(config)
                       })
                       .catch(() => {
-                        toast.error('Fel när snabbartikel skapades')
+                        toast.error('Fel när två på två skapades')
                       })
                   }}
                   onSecondary={() => {
