@@ -51,9 +51,7 @@ export const CollaborationProviderContext = ({ documentId, children }: PropsWith
     throw new Error('Collaboration is not allowed without a valid access_token')
   }
 
-  const { connected, synced, provider, user } = useYDocument(documentId || '', {
-    persistent: true
-  })
+  const { connected, synced, provider, user } = useYDocument(documentId || '')
 
   const state: CollaborationProviderState = {
     provider: provider || undefined,

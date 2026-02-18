@@ -11,7 +11,6 @@ export interface CollaborationClientRegistryConfig {
 
 export interface GetClientOptions {
   document: Y.Doc
-  persistent?: boolean
   skipIndexedDB?: boolean
 }
 
@@ -86,7 +85,6 @@ export class CollaborationClientRegistry {
       accessToken: this.#accessToken,
       hpWebsocketProvider: this.#hpWebsocketProvider,
       document: options.document,
-      persistent: options.persistent,
       cleanupIndexedDB: this.#cleanupIndexedDB,
       skipIndexedDB: options.skipIndexedDB
     })
