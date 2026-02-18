@@ -300,7 +300,7 @@ export const FlashDialog = (props: {
             )}
 
             <Form.Group icon={TagsIcon}>
-              <div className='relative w-full'>
+              <div className='w-1/2 relative'>
                 {invalidSlug && (
                   <div className='absolute -top-1 right-0 h-2 w-2 z-10'>
                     <TriangleAlertIcon color='red' fill='#ffffff' size={15} strokeWidth={1.75} />
@@ -309,7 +309,27 @@ export const FlashDialog = (props: {
                 <input
                   autoComplete='off'
                   placeholder='Slugg för planering och artikel'
-                  className='w-full text-sm rounded bg-background placeholder:pl-2 p-1 ring-offset-background'
+                  className={`
+                    h-6
+                    text-sm
+                    w-full
+                    bg-background
+                    py-0
+                    px-1
+                    ring-offset-background
+                    ring-indigo-200
+                    placeholder:pl-1
+                    text-black
+                    dark:text-white
+                    caret-black
+                    dark:caret-white
+                    placeholder:text-[#5D709F]
+                    border
+                    border-[#5D709F]
+                    rounded-md
+                    focus-visible:outline-none focus-visible:0
+                    disabled:cursor-not-allowed
+                    disabled:opacity-50`}
                   name='slugline'
                   value={relatedDocsSlugline}
                   onChange={(e) => {
