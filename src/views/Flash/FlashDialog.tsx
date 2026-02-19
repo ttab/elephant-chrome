@@ -337,7 +337,12 @@ export const FlashDialog = (props: {
                 <Checkbox
                   id='createQuickArticle'
                   defaultChecked={shouldCreateQuickArticle}
-                  onCheckedChange={(checked: boolean) => { setShouldCreateQuickArticle(checked) }}
+                  onCheckedChange={(checked: boolean) => {
+                    setShouldCreateQuickArticle(checked)
+                    if (!checked) {
+                      setSlugline('')
+                    }
+                  }}
                 />
                 <Label htmlFor='createQuickArticle' className='text-muted-foreground'>Skapa två på två</Label>
               </div>
