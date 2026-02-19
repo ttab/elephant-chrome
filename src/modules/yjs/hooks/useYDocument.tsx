@@ -43,7 +43,6 @@ export function useYDocument<T>(
   id: string,
   options?: {
     data?: EleDocumentResponse
-    persistent?: boolean
     skipIndexedDB?: boolean
     visibility?: boolean
     rootMap?: string
