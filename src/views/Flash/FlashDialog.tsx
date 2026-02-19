@@ -79,13 +79,16 @@ export const FlashDialog = (props: {
   }, [relatedDocsSlugline, selectedPlanning])
 
   const handleSubmit = (setCreatePrompt: Dispatch<SetStateAction<boolean>>): void => {
-    if (!relatedDocsSlugline.length) {
+    // Only validate slug length if we also create a quick-article, OR if flash is added
+    // to an already existing planning. For new plannings, empty sluglines are fine
+    // as they can be changed at a later time.
+    if (shouldCreateQuickArticle && !relatedDocsSlugline.length) {
       setInvalidSlug(true)
       return
     }
 
     // Slugs from planning and quick-article should not be the same, as they cannot
-    // be changed at a later point in time, invalidate if they are same
+    // be changed at a later point in time, invalidate if they are same.
     if (selectedPlanning?.payload?.slugline === relatedDocsSlugline) {
       setInvalidSlug(true)
       return
