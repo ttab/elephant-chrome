@@ -346,8 +346,7 @@ export const FlashDialog = (props: {
                 )}
                 <input
                   autoComplete='off'
-                  disabled={!shouldCreateQuickArticle}
-                  placeholder='Slugg för planering och artikel'
+                  placeholder={`Slugg för planering${shouldCreateQuickArticle ? ' och artikel' : ''}`}
                   className={`
                     h-6
                     text-sm
