@@ -7,7 +7,7 @@ import type { Wire } from '@/shared/schemas/wire'
 import { cva } from 'class-variance-authority'
 import { getWireStatus } from '../../lib/getWireStatus'
 
-type DocumentType = 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires' | 'Factbox' | 'Print' | 'PrintEditor'
+type DocumentType = 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires' | 'Factbox' | 'Print' | 'PrintEditor' | 'Editor'
 
 export const WireRow = <TData, >({ row, handleOpen, openDocuments, type }: {
   type: DocumentType

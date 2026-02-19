@@ -4,7 +4,7 @@ import { type Row as RowType, flexRender } from '@tanstack/react-table'
 import { cn } from '@ttab/elephant-ui/utils'
 import type { DocumentState } from '@ttab/elephant-api/repositorysocket'
 
-type DocumentType = 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires' | 'Factbox' | 'Print' | 'PrintEditor'
+type DocumentType = 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires' | 'Factbox' | 'Print' | 'PrintEditor' | 'Editor'
 
 export const Row = <TData,>({ row, handleOpen, type, openDocuments }: {
   type: DocumentType

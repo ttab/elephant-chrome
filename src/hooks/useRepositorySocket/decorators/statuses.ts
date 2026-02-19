@@ -26,8 +26,10 @@ export interface StatusDecorator extends DecoratorDataBase {
  */
 export function createStatusesDecorator(options: {
   repository: Repository
+  statuses?: string[]
 }): Decorator<StatusOverviewItem> {
   const { repository } = options
+  const statuses = options.statuses || Object.keys(StatusSpecifications)
 
   return {
     namespace: 'statuses',
@@ -42,7 +44,7 @@ export function createStatusesDecorator(options: {
         return new Map()
       }
 
-      return await fetchStatuses(uuids, repository)
+      return await fetchStatuses(uuids, repository, statuses)
     },
 
     async onUpdate(update: DocumentUpdate) {
@@ -55,7 +57,7 @@ export function createStatusesDecorator(options: {
         return new Map()
       }
 
-      return await fetchStatuses([uuid], repository)
+      return await fetchStatuses([uuid], repository, statuses)
     }
   }
 }
@@ -65,7 +67,8 @@ export function createStatusesDecorator(options: {
  */
 async function fetchStatuses(
   uuids: string[],
-  repository: Repository
+  repository: Repository,
+  statuses: string[]
 ): Promise<Map<string, StatusOverviewItem>> {
   const session = await getSession()
   if (!session?.accessToken) {
@@ -73,23 +76,28 @@ async function fetchStatuses(
     return new Map()
   }
 
-  try {
-    const knownStatuses = Object.keys(StatusSpecifications)
-    const response = await repository.getStatuses({
-      uuids,
-      statuses: knownStatuses,
-      accessToken: session.accessToken
-    })
 
-    if (!response || !response.items) {
-      console.warn('📋 Assignment statuses decorator: No status data returned')
-      return new Map()
+  try {
+    const statusesMap = new Map<string, StatusOverviewItem>()
+    const chunkSize = 50
+
+    for (let i = 0; i < uuids.length; i += chunkSize) {
+      const chunk = uuids.slice(i, i + chunkSize)
+      const response = await repository.getStatuses({
+        uuids: chunk,
+        statuses,
+        accessToken: session.accessToken
+      })
+
+      if (response?.items) {
+        for (const documentStatus of response.items) {
+          statusesMap.set(documentStatus.uuid, documentStatus)
+        }
+      }
     }
 
-    const statusesMap = new Map<string, StatusOverviewItem>()
-
-    for (const documentStatus of response.items) {
-      statusesMap.set(documentStatus.uuid, documentStatus)
+    if (statusesMap.size === 0 && uuids.length > 0) {
+      console.warn('📋 Assignment statuses decorator: No status data returned')
     }
 
     return statusesMap

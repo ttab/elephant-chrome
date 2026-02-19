@@ -6,7 +6,7 @@ import { WireRow } from './WireRow'
 
 export const GroupedRows = <TData, TValue>({ row, columns, handleOpen, openDocuments, type }: {
   row: RowType<TData>
-  type: 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires' | 'Factbox' | 'Print' | 'PrintEditor'
+  type: 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires' | 'Factbox' | 'Print' | 'PrintEditor' | 'Editor'
   columns: Array<ColumnDef<TData, TValue>>
   handleOpen: (event: MouseEvent<HTMLTableRowElement> | KeyboardEvent, subRow: RowType<TData>) => void
   openDocuments: string[]

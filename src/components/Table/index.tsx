@@ -34,12 +34,18 @@ import { Wire as WireComponent } from '@/views/Wire'
 import { GroupedRows } from './GroupedRows'
 import { getWireStatus } from '../../lib/getWireStatus'
 import { type View } from '@/types/index'
-import type { DocumentState } from '@ttab/elephant-api/repositorysocket'
 const BASE_URL = import.meta.env.BASE_URL
+
+type RowOriginal = {
+  id?: string
+  document?: { uuid?: string }
+  meta?: { heads: { usable?: { version?: number } } }
+  __updater?: unknown
+}
 
 interface TableProps<TData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
-  type: 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires' | 'Factbox' | 'Print' | 'PrintEditor'
+  type: 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires' | 'Factbox' | 'Print' | 'PrintEditor' | 'Editor'
   onRowSelected?: (row?: TData) => void
 }
 
@@ -117,19 +123,19 @@ export const Table = <TData, TValue>({
         return
       }
 
-      const originalRow = row.original as DocumentState
-      const id = originalRow.document?.uuid
+      const original = row.original as RowOriginal
+      const id = original.document?.uuid ?? original.id
 
       const articleClick = type === 'Search' && searchType === 'Editor'
 
       let usableVersion
 
       if (articleClick) {
-        usableVersion = !articleClick ? undefined : originalRow?.meta?.heads.usable.version
+        usableVersion = !articleClick ? undefined : original.meta?.heads.usable?.version
       }
 
-      if ('__updater' in originalRow && originalRow.__updater) {
-        delete originalRow.__updater
+      if ('__updater' in original && original.__updater) {
+        delete original.__updater
       }
 
       handleLink({
@@ -323,7 +329,7 @@ export const Table = <TData, TValue>({
       )}
 
       {(type !== 'Search') && (
-        <_Table className='table-auto relative'>
+        <_Table className='table-fixed relative'>
           <TableBody>
             {TableBodyElement}
           </TableBody>
