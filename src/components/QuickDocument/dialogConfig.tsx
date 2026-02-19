@@ -34,7 +34,7 @@ export const promptConfig = ({
   savePrompt: boolean
   donePrompt: boolean
   sendPrompt: boolean
-  shouldCreateQuickArticle: boolean
+  shouldCreateQuickArticle?: boolean
 }): PromptConfig[] => {
   const documentType = type === 'article' ? 'artikel' : 'flash'
   const isFlash = type === 'flash'
