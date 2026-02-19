@@ -79,7 +79,7 @@ export const FlashDialog = (props: {
   }, [relatedDocsSlugline, selectedPlanning])
 
   const handleSubmit = (setCreatePrompt: Dispatch<SetStateAction<boolean>>): void => {
-    if (shouldCreateQuickArticle && !relatedDocsSlugline.length) {
+    if (!relatedDocsSlugline.length) {
       setInvalidSlug(true)
       return
     }
