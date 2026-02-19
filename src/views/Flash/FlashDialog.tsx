@@ -265,6 +265,10 @@ export const FlashDialog = (props: {
                         setSelectedPlanning(undefined)
                       }
                     }}
+                    translationStrings={{
+                      nothingFound: t('common:misc.nothingFound'),
+                      searching: t('common:misc.searching')
+                    }}
                   >
                   </ComboBox>
                 </Awareness>

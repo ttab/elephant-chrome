@@ -42,6 +42,8 @@
     "headingAndContent": "Overskrift og innhold",
     "markedAsCancelled": "Merket som avlyst",
     "error": "Feil",
-    "selectTime": "Velg tid"
+    "selectTime": "Velg tid",
+    "searching": "Søker...",
+    "nothingFound": "Ingenting ble funnet"
   }
 }

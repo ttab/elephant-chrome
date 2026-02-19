@@ -60,6 +60,10 @@ export const Byline = ({ ydoc, path, onValidation, validateStateRef }: {
               })])
             }
           }}
+          translationStrings={{
+            nothingFound: t('common:misc.nothingFound'),
+            searching: t('common:misc.searching')
+          }}
         />
       </Validation>
     </Awareness>
