@@ -98,7 +98,7 @@ export async function createFlash({
     type: 'flash',
     deliverableId: ydoc.id,
     title: flashTitle || 'Ny flash',
-    slugline: relatedDocsSlugline,
+    ...(relatedDocsSlugline && { slugline: relatedDocsSlugline }),
     priority: 5,
     publicVisibility: false,
     localDate,
