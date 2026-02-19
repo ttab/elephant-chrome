@@ -45,6 +45,8 @@ export class RepositorySocket {
   #shouldReconnect = true
   #accessToken?: string
   #reconnectListeners = new Set<() => void>()
+  #connectingPromise: Promise<void> | null = null
+  #authenticatingPromise: Promise<void> | null = null
 
   constructor(url: string, repository: Repository) {
     this.#url = url
@@ -52,6 +54,19 @@ export class RepositorySocket {
   }
 
   async connect(accessToken: string): Promise<void> {
+    if (this.isConnected) return
+
+    if (this.#connectingPromise) {
+      return this.#connectingPromise
+    }
+
+    this.#connectingPromise = this.#initiateConnect(accessToken)
+      .finally(() => { this.#connectingPromise = null })
+
+    return this.#connectingPromise
+  }
+
+  async #initiateConnect(accessToken: string): Promise<void> {
     this.#accessToken = accessToken
     const token = await this.#getSocketToken()
     const urlWithToken = `${this.#url}/${token}`
@@ -97,6 +112,7 @@ export class RepositorySocket {
         this.#ws.onclose = (event) => {
           console.info('WebSocket closed:', event.code, event.reason)
           this.#authenticated = false
+          this.#authenticatingPromise = null
 
           // Clear orphaned message handlers from previous connection
           this.#messageHandlers.clear()
@@ -158,6 +174,8 @@ export class RepositorySocket {
       clearTimeout(this.#reconnectTimer)
       this.#reconnectTimer = undefined
     }
+    this.#connectingPromise = null
+    this.#authenticatingPromise = null
     this.#messageHandlers.clear()
     this.#updateHandlers.clear()
     this.#reconnectListeners.clear()
@@ -173,6 +191,19 @@ export class RepositorySocket {
   }
 
   async authenticate(): Promise<void> {
+    if (this.#authenticated) return
+
+    if (this.#authenticatingPromise) {
+      return this.#authenticatingPromise
+    }
+
+    this.#authenticatingPromise = this.#initiateAuthenticate()
+      .finally(() => { this.#authenticatingPromise = null })
+
+    return this.#authenticatingPromise
+  }
+
+  async #initiateAuthenticate(): Promise<void> {
     const session = await getSession()
     const token = session?.accessToken
 
@@ -186,7 +217,6 @@ export class RepositorySocket {
       callId,
       authenticate: { token }
     })
-
 
     return new Promise((resolve, reject) => {
       this.#messageHandlers.set(callId, (response) => {
