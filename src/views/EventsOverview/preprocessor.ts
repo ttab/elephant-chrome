@@ -33,6 +33,7 @@ export function preprocessEventData(data: DocumentStateWithDecorators<DecoratorD
 
     return {
       ...item,
+      id: item.document?.uuid,
       _preprocessed: {
         newsvalue,
         sectionUuid,

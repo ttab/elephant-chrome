@@ -36,24 +36,23 @@ import { getWireStatus } from '../../lib/getWireStatus'
 import { type View } from '@/types/index'
 const BASE_URL = import.meta.env.BASE_URL
 
-type RowOriginal = {
+interface WithDocumentId {
   id?: string
-  document?: { uuid?: string }
-  meta?: { heads: { usable?: { version?: number } } }
+  meta?: { heads: { [key: string]: { version?: bigint } } }
   __updater?: unknown
 }
 
-interface TableProps<TData, TValue> {
+interface TableProps<TData extends WithDocumentId, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
   type: 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires' | 'Factbox' | 'Print' | 'PrintEditor' | 'Editor'
   onRowSelected?: (row?: TData) => void
 }
 
-function isRowTypeWire<TData, TValue>(type: TableProps<TData, TValue>['type']): type is 'Wires' {
+function isRowTypeWire<TData extends WithDocumentId, TValue>(type: TableProps<TData, TValue>['type']): type is 'Wires' {
   return type === 'Wires'
 }
 
-export const Table = <TData, TValue>({
+export const Table = <TData extends WithDocumentId, TValue>({
   columns,
   type,
   onRowSelected,
@@ -98,7 +97,7 @@ export const Table = <TData, TValue>({
     showModal(
       <PreviewSheet
         id={originalId}
-        wire={row.original as WireType}
+        wire={row.original as unknown as WireType}
         textOnly
         handleClose={hideModal}
       />,
@@ -123,19 +122,18 @@ export const Table = <TData, TValue>({
         return
       }
 
-      const original = row.original as RowOriginal
-      const id = original.document?.uuid ?? original.id
+      const id = row.original.id
 
       const articleClick = type === 'Search' && searchType === 'Editor'
 
       let usableVersion
 
       if (articleClick) {
-        usableVersion = !articleClick ? undefined : original.meta?.heads.usable?.version
+        usableVersion = !articleClick ? undefined : row.original.meta?.heads.usable?.version
       }
 
-      if ('__updater' in original && original.__updater) {
-        delete original.__updater
+      if (row.original?.__updater) {
+        delete row.original.__updater
       }
 
       handleLink({

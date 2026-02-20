@@ -59,6 +59,7 @@ export function preprocessPlanningData(data: DocumentStateWithDecorators<Decorat
 
     return {
       ...item,
+      id: item.document?.uuid,
       _preprocessed: {
         newsvalue,
         slugline,

@@ -43,7 +43,7 @@ export const LatestList = ({ columns }: {
   }
 
   return (
-    <Table
+    <Table<PreprocessedLatestData, unknown>
       type='Editor'
       columns={columns}
       onRowSelected={onRowSelected}
