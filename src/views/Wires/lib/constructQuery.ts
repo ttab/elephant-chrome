@@ -40,7 +40,7 @@ export function constructQuery(filters: WireFilter[]): QueryV1 | undefined {
   }
 
   filters.forEach((filter) => {
-    if (filter.type === 'tt/source') {
+    if (filter.type === 'core/source') {
       addCondition('document.rel.source.uri', filter.values)
     } else if (filter.type === 'core/section') {
       addCondition('document.rel.section.uuid', filter.values)

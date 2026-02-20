@@ -198,8 +198,8 @@ export const FilterMenu = ({ currentFilters, onFilterChange }: FilterPopoverProp
           {page === 'source' && (
             <OptionsFilterList
               options={filterOptions(optionsSources)}
-              selectedValues={getCurrentFilterValues('tt/source')}
-              onToggle={(value) => handleToggleOption('tt/source', value)}
+              selectedValues={getCurrentFilterValues('core/source')}
+              onToggle={(value) => handleToggleOption('core/source', value)}
             />
           )}
 

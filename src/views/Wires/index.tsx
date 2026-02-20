@@ -15,6 +15,8 @@ import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
 import { useModal } from '@/components/Modal/useModal'
 import { Wire as WireView } from '@/views'
+import { useSettings } from '@/modules/userSettings'
+import { Document, Block } from '@ttab/elephant-api/newsdoc'
 
 const BASE_URL = import.meta.env.BASE_URL
 
@@ -34,27 +36,12 @@ const meta: ViewMetadata = {
   }
 }
 
-const EXAMPLE_STATE = {
-  title: 'Utrikesbevakning',
-  type: 'tt/wires-panes',
-  content: [
-    {
-      uuid: '1582b455-682b-496e-8d1e-94ef809f6e5e',
-      title: 'APA Economy',
-      meta: [
-        { role: 'filter', type: 'core/section', value: '111932dc-99f3-4ba4-acf2-ed9d9f2f1c7c' },
-        { role: 'filter', type: 'tt/source', value: 'wires://source/apa' }
-      ]
-    },
-    {
-      uuid: '3d2542c0-39ca-4438-9c87-7a3efdb9e7b7',
-      title: 'NTB',
-      meta: [
-        { role: 'filter', type: 'tt/source', value: 'wires://source/ntb' }
-      ]
-    }
-  ]
-}
+// Used when settings have loaded but no stored settings exist yet
+const EMPTY_STATE = Document.create({
+  title: 'standard',
+  type: 'core/wire-panes-setting',
+  content: []
+})
 
 export const Wires = (): JSX.Element => {
   const { isActive } = useView()
@@ -65,16 +52,63 @@ export const Wires = (): JSX.Element => {
   const [previewWire, setPreviewWire] = useState<Wire | null>(null)
   const [focusedWire, setFocusedWire] = useState<Wire | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+  const [isDirty, setIsDirty] = useState<null | boolean>(null)
+
+  const { isLoading, settings, updateSettings } = useSettings('core/wire-panes-setting')
   const {
     streams,
     addStream,
     removeStream,
     setFilter,
     clearFilter
-  } = useWireViewState(EXAMPLE_STATE)
+  } = useWireViewState(EMPTY_STATE, () => {
+    setIsDirty((v) => {
+      return v !== null ? true : v
+    })
+  })
 
   const [selectedWires, setSelectedWires] = useState<Wire[]>([])
   const [statusMutations, setStatusMutations] = useState<WireStatus[]>([])
+
+  const onSaveStreams = useCallback(async () => {
+    try {
+      const doc = Document.create({
+        title: settings?.title ?? 'Default',
+        type: 'core/wire-panes-setting',
+        content: streams.map((stream) => {
+          return Block.create({
+            uuid: stream.uuid,
+            type: 'core/wire-pane',
+            title: stream.title || 'Wire stream',
+            meta: stream.filters.reduce((currentFilters, filter) => {
+              const addedFilters = filter.values.map((value) => {
+                const { type } = filter
+                switch (type) {
+                  case 'core/source':
+                    return Block.create({ type, uri: value, title: 'default', rel: 'source' })
+                  case 'core/section':
+                    return Block.create({ type, uuid: value, title: 'default', rel: 'section' })
+                  case 'query':
+                  case 'core/newsvalue':
+                  default:
+                    return Block.create({ type, value, title: 'default', rel: 'value' })
+                }
+              })
+              return [...currentFilters, ...addedFilters]
+            }, [] as Block[])
+          })
+        })
+      })
+
+      console.log(doc)
+      debugger
+      await updateSettings(doc)
+      setIsDirty(false)
+    } catch (error) {
+      // TODO: Display error message to user
+      console.error(error)
+    }
+  }, [streams, settings?.title, updateSettings])
 
   useStreamNavigation({
     isActive,
@@ -93,12 +127,40 @@ export const Wires = (): JSX.Element => {
     })
   }, [])
 
+  // Apply loaded settings
+  useEffect(() => {
+    if (isLoading) return
+
+    if (!settings?.payload) {
+      // If no settings was received add a default wire stream w/o filtering
+      return addStream()
+    }
+
+    settings.payload.content.forEach(({ uuid, type, meta }) => {
+      if (type !== 'core/wire-pane') return
+
+      const sections = meta.filter((meta) => meta.type === 'core/section').map((meta) => meta.uuid)
+      const sources = meta.filter((meta) => meta.type === 'core/source').map((meta) => meta.uri)
+      const texts = meta.filter((meta) => meta.type === 'query').map((meta) => meta.value)
+      const newsvalues = meta.filter((meta) => meta.type === 'core/newsvalue').map((meta) => meta.value)
+
+      addStream(uuid, {
+        'core/section': sections,
+        'core/source': sources,
+        query: texts,
+        'core/newsvalue': newsvalues
+      })
+    })
+
+    requestAnimationFrame(() => {
+      setIsDirty(false)
+    })
+  }, [isLoading, settings, addStream, setFilter])
+
   // Track focus loss
   useEffect(() => {
     const container = containerRef.current
-    if (!container) {
-      return
-    }
+    if (!container) return
 
     const handleFocusOut = (event: FocusEvent) => {
       const relatedTarget = event.relatedTarget as HTMLElement | null
@@ -234,8 +296,10 @@ export const Wires = (): JSX.Element => {
 
         <ViewHeader.Content>
           <WiresToolbar
-            disabled={selectedWires.length === 0 && !focusedWire}
+            isDirty={!!isDirty}
+            disabled={(selectedWires.length === 0 && !focusedWire) || isDirty === null}
             onAddStream={addStream}
+            onSaveStreams={onSaveStreams}
             onAction={onAction}
           />
         </ViewHeader.Content>

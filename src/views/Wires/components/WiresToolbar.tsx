@@ -1,23 +1,32 @@
 import { Button, ButtonGroup, Tooltip } from '@ttab/elephant-ui'
 import { CheckIcon, EyeIcon, FolderIcon, Grid2X2PlusIcon, PlusIcon, SaveIcon } from '@ttab/elephant-ui/icons'
 
-export const WiresToolbar = ({ disabled = false, onAddStream, onAction }: {
+export const WiresToolbar = ({ disabled = false, onAddStream, onSaveStreams, onAction, isDirty }: {
   disabled?: boolean
   onAddStream: () => void
+  onSaveStreams: () => Promise<void>
   onAction: (action: 'read' | 'saved' | 'used') => void
+  isDirty: boolean
 }) => {
+  const handleAddStream = () => {
+    void onAddStream()
+  }
+
+  const handleSaveStreams = () => {
+    void onSaveStreams()
+  }
+
   return (
     <div className='flex gap-2 ms-2'>
       <ButtonGroup className='p-0 rounded-md gap-1 border border-muted'>
-        <Tooltip content='Lägg till kolumn'>
-          <Button variant='ghost' className='w-9 h-9 px-0' onClick={onAddStream}>
-            <Grid2X2PlusIcon strokeWidth={1.75} size={18} />
+        <Tooltip content='Spara inställningar för vyn'>
+          <Button variant='ghost' disabled={!isDirty} className='w-9 h-9 px-0' onClick={handleSaveStreams}>
+            <SaveIcon strokeWidth={1.75} size={18} />
           </Button>
         </Tooltip>
-
-        <Tooltip content='Spara inställningar för vyn'>
-          <Button variant='ghost' disabled={true} className='w-9 h-9 px-0' onClick={() => {}}>
-            <SaveIcon strokeWidth={1.75} size={18} />
+        <Tooltip content='Lägg till kolumn'>
+          <Button variant='ghost' className='w-9 h-9 px-0' onClick={handleAddStream}>
+            <Grid2X2PlusIcon strokeWidth={1.75} size={18} />
           </Button>
         </Tooltip>
       </ButtonGroup>

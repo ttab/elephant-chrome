@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef } from 'react'
 
 // Storage format (external)
 export interface ViewFilter {
@@ -41,27 +41,12 @@ export function useWireViewState(
   initialState?: UserViewState,
   onStateChange?: (streams: WireStream[]) => void
 ) {
+  const onStateChangeRef = useRef(onStateChange)
+  onStateChangeRef.current = onStateChange
+
   const [wireStreams, setWireStreams] = useState<WireStreams>(() =>
     fromUserViewState(initialState)
   )
-
-  // Add a new stream
-  const addStream = useCallback(() => {
-    setWireStreams((prev) => {
-      const newStreams = {
-        ...prev,
-        streams: [
-          ...prev.streams,
-          {
-            uuid: crypto.randomUUID(),
-            filters: []
-          }
-        ]
-      }
-      onStateChange?.(newStreams.streams)
-      return newStreams
-    })
-  }, [onStateChange])
 
   // Remove a stream by UUID
   const removeStream = useCallback((uuid: string) => {
@@ -70,10 +55,10 @@ export function useWireViewState(
         ...prev,
         streams: prev.streams.filter((stream) => stream.uuid !== uuid)
       }
-      onStateChange?.(newStreams.streams)
+      onStateChangeRef.current?.(newStreams.streams)
       return newStreams
     })
-  }, [onStateChange])
+  }, [])
 
   // Clear a specific filter from a stream (or all filters if type not provided)
   const clearFilter = useCallback((uuid: string, type?: string) => {
@@ -115,10 +100,10 @@ export function useWireViewState(
         streams: newStreamsArray
       }
 
-      onStateChange?.(newStreams.streams)
+      onStateChangeRef.current?.(newStreams.streams)
       return newStreams
     })
-  }, [onStateChange])
+  }, [])
 
   // Set a filter on a stream (replaces existing filter of same type)
   const setFilter = useCallback((uuid: string, type: string, values: string[]) => {
@@ -160,10 +145,42 @@ export function useWireViewState(
         streams: newStreamsArray
       }
 
-      onStateChange?.(newStreams.streams)
+      onStateChangeRef.current?.(newStreams.streams)
       return newStreams
     })
-  }, [onStateChange])
+  }, [])
+
+  // Add a new stream
+  const addStream = useCallback((
+    inUuid?: string,
+    filters?: Record<string, string[]>
+  ) => {
+    const uuid = inUuid ?? crypto.randomUUID()
+    setWireStreams((prev) => {
+      const newStreams = {
+        ...prev,
+        streams: [
+          ...prev.streams,
+          {
+            uuid,
+            filters: []
+          }
+        ]
+      }
+
+      onStateChangeRef.current?.(newStreams.streams)
+      return newStreams
+    })
+
+    // Add initial filters
+    if (filters) {
+      Object.keys(filters).forEach((type) => {
+        if (filters[type].length) {
+          setFilter(uuid, type, filters[type])
+        }
+      })
+    }
+  }, [setFilter])
 
   // Get the full wire state in storage format
   const getWireState = useCallback((): UserViewState => {
@@ -244,7 +261,7 @@ function toUserViewState(wireStreams: WireStreams): UserViewState {
 
   return {
     title: wireStreams.title,
-    type: 'tt/wires-panes',
+    type: 'core/wire-panes-setting',
     content
   }
 }

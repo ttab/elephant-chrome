@@ -42,7 +42,7 @@ const SpecificFilterValue = ({ type, values }: {
   switch (type) {
     case 'core/section':
       return <SectionFilterValue values={values} />
-    case 'tt/source':
+    case 'core/source':
       return <WireSourceFilterValue values={values} />
     case 'core/newsvalue':
       return <NewsvalueFilterValue values={values} />

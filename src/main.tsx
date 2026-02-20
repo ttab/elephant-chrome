@@ -10,6 +10,7 @@ import { Init } from './components/Init/index.tsx'
 import { UserMessagesReceiver } from './components/UserMessagesReceiver.tsx'
 import { Toaster } from '@ttab/elephant-ui'
 import './index.css'
+import { SettingsProvider } from './modules/userSettings/SettingsProvider.tsx'
 
 banner()
 
@@ -28,9 +29,11 @@ ReactDOM.createRoot(root).render(
             <SupportedLanguagesProvider>
               <ThemeProvider defaultTheme='light' storageKey='ele-ui-theme'>
                 <Init>
-                  <UserMessagesReceiver>
-                    <App />
-                  </UserMessagesReceiver>
+                  <SettingsProvider application='se.ecms.elephant-chrome'>
+                    <UserMessagesReceiver>
+                      <App />
+                    </UserMessagesReceiver>
+                  </SettingsProvider>
                 </Init>
               </ThemeProvider>
             </SupportedLanguagesProvider>
