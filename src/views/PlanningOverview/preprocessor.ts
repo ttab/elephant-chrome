@@ -1,19 +1,21 @@
 import type { DocumentStateWithDecorators, DecoratorDataBase } from '@/hooks/useRepositorySocket/types'
+import type { PreprocessedTableData } from '@/components/Table/types'
 
-export type PreprocessedPlanningData = DocumentStateWithDecorators<DecoratorDataBase> & {
-  _preprocessed: {
-    newsvalue?: string
-    slugline?: string
-    sectionUuid?: string
-    sectionTitle?: string
-    assignees: string[]
-    types: string[]
-    deliverableUuids: string[]
-  }
-}
+export type PreprocessedPlanningData = PreprocessedTableData<DecoratorDataBase, {
+  newsvalue?: string
+  slugline?: string
+  sectionUuid?: string
+  sectionTitle?: string
+  assignees: string[]
+  types: string[]
+  deliverableUuids: string[]
+}>
 
 export function preprocessPlanningData(data: DocumentStateWithDecorators<DecoratorDataBase>[]): PreprocessedPlanningData[] {
-  return data.map((item) => {
+  return data.flatMap((item) => {
+    const uuid = item.document?.uuid
+    if (!uuid) return []
+
     // Precompute newsvalue
     const newsvalue = item.document?.meta?.find((d) => d.type === 'core/newsvalue')?.value
 
@@ -59,7 +61,7 @@ export function preprocessPlanningData(data: DocumentStateWithDecorators<Decorat
 
     return {
       ...item,
-      id: item.document?.uuid,
+      id: uuid,
       _preprocessed: {
         newsvalue,
         slugline,
@@ -69,6 +71,6 @@ export function preprocessPlanningData(data: DocumentStateWithDecorators<Decorat
         types,
         deliverableUuids
       }
-    } as PreprocessedPlanningData
+    }
   })
 }

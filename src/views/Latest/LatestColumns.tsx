@@ -12,14 +12,12 @@ import { SectionBadge } from '@/components/DataItem/SectionBadge'
 import { ActionMenu } from '@/components/ActionMenu'
 import { dateInTimestampOrShortMonthDayTimestamp } from '@/shared/datetime'
 import type { LocaleData } from '@/types/index'
-import type { IDBSection } from 'src/datastore/types'
 import type { PreprocessedLatestData } from './preprocessor'
 import { Title } from '@/components/Table/Items/Title'
 
-export function latestColumns({ locale, timeZone, sections = [] }: {
+export function latestColumns({ locale, timeZone }: {
   locale: LocaleData
   timeZone: string
-  sections?: IDBSection[]
 }): ColumnDef<PreprocessedLatestData>[] {
   return [
     {
@@ -68,7 +66,6 @@ export function latestColumns({ locale, timeZone, sections = [] }: {
       accessorFn: (data) => data._preprocessed.sectionUuid || '',
       cell: ({ row }) => {
         const sectionTitle = row.original._preprocessed.sectionTitle
-          || sections.find((s) => s.id === row.getValue('section'))?.title
         return (
           <>
             {sectionTitle && <SectionBadge title={sectionTitle} color='bg-[#BD6E11]' />}

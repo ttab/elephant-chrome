@@ -40,13 +40,15 @@ export const FactboxList = ({ columns }: {
   }, [])
 
   return (
-    <>
+    <Table
+      columns={columns}
+      onRowSelected={onRowSelected}
+      resolveNavigation={(row) => ({
+        id: row.id,
+        opensWith: 'Factbox'
+      })}
+    >
       <Toolbar />
-      <Table
-        type='Factbox'
-        columns={columns}
-        onRowSelected={onRowSelected}
-      />
-    </>
+    </Table>
   )
 }

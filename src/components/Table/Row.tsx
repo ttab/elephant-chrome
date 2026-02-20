@@ -1,34 +1,37 @@
-import { type MouseEvent, type JSX } from 'react'
+import { type MouseEvent, type JSX, useCallback } from 'react'
 import { TableRow, TableCell } from '@ttab/elephant-ui'
 import { type Row as RowType, flexRender } from '@tanstack/react-table'
 import { cn } from '@ttab/elephant-ui/utils'
-import type { DocumentState } from '@ttab/elephant-api/repositorysocket'
+import type { TableRowData } from './types'
 
-type DocumentType = 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires' | 'Factbox' | 'Print' | 'PrintEditor' | 'Editor'
+const BASE_URL = import.meta.env.BASE_URL
 
-export const Row = <TData,>({ row, handleOpen, type, openDocuments }: {
-  type: DocumentType
+export const Row = <TData extends TableRowData,>({ row, handleOpen, openDocuments }: {
   row: RowType<TData>
   handleOpen: (event: MouseEvent<HTMLTableRowElement>, row: RowType<TData>) => void
   openDocuments: string[]
 }): JSX.Element => {
-  const uuid = (row.original as unknown as DocumentState).document?.uuid
+  const uuid = row.original.id
   const selected = !!uuid && openDocuments.includes(uuid)
+  const isSelected = row.getIsSelected()
 
+  const rowRef = useCallback((el: HTMLTableRowElement | null) => {
+    if (el && isSelected) {
+      el.focus()
+    }
+  }, [isSelected])
+
+  const isAssignmentsTable = window.location.pathname.includes(`${BASE_URL}/assignments`)
   return (
     <TableRow
       tabIndex={0}
       data-state={selected && 'selected'}
       className={cn(
         'flex cursor-default scroll-mt-10 ring-inset focus:outline-none focus-visible:ring-2 focus-visible:ring-table-selected data-[state=selected]:bg-table-focused',
-        type === 'Assignments' ? 'items-start' : 'items-center'
+        isAssignmentsTable ? 'items-start' : 'items-center'
       )}
       onClick={(event: MouseEvent<HTMLTableRowElement>) => handleOpen(event, row)}
-      ref={(el) => {
-        if (el && row.getIsSelected()) {
-          el.focus()
-        }
-      }}
+      ref={rowRef}
     >
       {row.getVisibleCells().map((cell) => (
         <TableCell

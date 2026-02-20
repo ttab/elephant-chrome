@@ -2,23 +2,23 @@ import type { DocumentStateWithDecorators } from '@/hooks/useRepositorySocket/ty
 import type { StatusDecorator } from '@/hooks/useRepositorySocket/decorators/statuses'
 import type { MetricsDecorator } from '@/hooks/useRepositorySocket/decorators/metrics'
 import type { Block } from '@ttab/elephant-api/newsdoc'
+import type { PreprocessedTableData } from '@/components/Table/types'
 
 export type LatestDecorator = StatusDecorator & MetricsDecorator
 
-export type PreprocessedLatestData = DocumentStateWithDecorators<LatestDecorator> & {
+export type PreprocessedLatestData = PreprocessedTableData<LatestDecorator, {
+  planningId: string
+  deliverableUuid?: string
+  deliverableType?: string
+  deliverableVersion?: string
+  title?: string
+  slugline?: string
+  sectionTitle?: string
+  sectionUuid?: string
+  publishTime?: string
+  documentType?: string
+}> & {
   _assignment?: Block
-  id?: string
-  _preprocessed: {
-    planningId: string
-    deliverableUuid?: string
-    deliverableType?: string
-    title?: string
-    slugline?: string
-    sectionTitle?: string
-    sectionUuid?: string
-    publishTime?: string
-    documentType?: string
-  }
 }
 
 export function latestPreprocessor(data: DocumentStateWithDecorators<LatestDecorator>[]): PreprocessedLatestData[] {
@@ -42,9 +42,6 @@ export function latestPreprocessor(data: DocumentStateWithDecorators<LatestDecor
           && block.links?.some((link) => link.rel === 'deliverable' && link.uuid === included.uuid)
       )
 
-      const publishTime = (included as { __updater?: { time: string } })?.__updater?.time
-        || included.state?.meta?.heads?.usable?.created
-
       flattened.push({
         ...doc,
         _assignment: assignment,
@@ -52,12 +49,13 @@ export function latestPreprocessor(data: DocumentStateWithDecorators<LatestDecor
         _preprocessed: {
           planningId,
           deliverableUuid: included.uuid,
+          deliverableVersion: hasUsable.toString(),
           title: included.state?.document?.title,
           deliverableType: included.state?.document?.type,
           slugline,
           sectionTitle,
           sectionUuid,
-          publishTime,
+          publishTime: included.__updater?.time || included.state?.meta?.heads?.usable?.created,
           documentType: included.state?.document?.uri
         }
       })

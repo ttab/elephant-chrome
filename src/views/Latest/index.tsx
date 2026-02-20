@@ -8,7 +8,6 @@ import { LatestList } from './LatestList'
 import { latestColumns } from './LatestColumns'
 import { useRegistry } from '@/hooks/useRegistry'
 import { type ViewMetadata } from '@/types'
-import { useSections } from '@/hooks/useSections'
 
 const meta: ViewMetadata = {
   name: 'Latest',
@@ -29,10 +28,9 @@ const meta: ViewMetadata = {
 export const Latest = (): JSX.Element => {
   const [currentTab, setCurrentTab] = useState<string>('list')
   const { locale, timeZone } = useRegistry()
-  const sections = useSections()
 
   const columns = useMemo(() =>
-    latestColumns({ locale, timeZone, sections }), [locale, timeZone, sections])
+    latestColumns({ locale, timeZone }), [locale, timeZone])
 
   return (
     <View.Root tab={currentTab} onTabChange={setCurrentTab}>

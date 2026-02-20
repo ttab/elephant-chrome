@@ -8,6 +8,7 @@ import { getUTCDateRange } from '@/shared/datetime'
 import { createStatusesDecorator, type StatusDecorator } from '@/hooks/useRepositorySocket/decorators/statuses'
 import type { PreprocessedAssignmentData } from './preprocessor'
 import { createAssignmentPreprocessor } from './preprocessor'
+import { Toolbar } from '@/components/Table/Toolbar'
 
 export const AssignmentsList = ({ columns }: {
   columns: ColumnDef<PreprocessedAssignmentData>[]
@@ -61,10 +62,15 @@ export const AssignmentsList = ({ columns }: {
   }
 
   return (
-    <Table
-      type='Planning'
+    <Table<PreprocessedAssignmentData, unknown>
       columns={columns}
       onRowSelected={onRowSelected}
-    />
+      resolveNavigation={(row) => ({
+        id: row.id,
+        opensWith: 'Planning'
+      })}
+    >
+      <Toolbar />
+    </Table>
   )
 }

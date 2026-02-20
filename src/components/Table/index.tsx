@@ -1,3 +1,6 @@
+import type {
+  PropsWithChildren
+} from 'react'
 import {
   type MouseEvent,
   useEffect,
@@ -14,7 +17,6 @@ import {
   Table as _Table,
   TableBody
 } from '@ttab/elephant-ui'
-import { Toolbar } from './Toolbar'
 import {
   useNavigation,
   useView,
@@ -25,7 +27,6 @@ import {
   useWorkflowStatus
 } from '@/hooks'
 import { handleLink } from '@/components/Link/lib/handleLink'
-import { NewItems } from './NewItems'
 import { Row } from './Row'
 import { useModal } from '../Modal/useModal'
 import { PreviewSheet } from '@/views/Wires/components'
@@ -34,30 +35,27 @@ import { Wire as WireComponent } from '@/views/Wire'
 import { GroupedRows } from './GroupedRows'
 import { getWireStatus } from '../../lib/getWireStatus'
 import { type View } from '@/types/index'
-const BASE_URL = import.meta.env.BASE_URL
+import type { TableRowData, NavigationParams } from './types'
 
-interface WithDocumentId {
-  id?: string
-  meta?: { heads: { [key: string]: { version?: bigint } } }
-  __updater?: unknown
-}
-
-interface TableProps<TData extends WithDocumentId, TValue> {
+interface TableProps<TData extends TableRowData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
-  type: 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires' | 'Factbox' | 'Print' | 'PrintEditor' | 'Editor'
   onRowSelected?: (row?: TData) => void
+  resolveNavigation?: (row: TData) => NavigationParams
 }
 
-function isRowTypeWire<TData extends WithDocumentId, TValue>(type: TableProps<TData, TValue>['type']): type is 'Wires' {
-  return type === 'Wires'
+// Type guard to check if a row is a WireType based on the presence of 'document.meta.tt_wire.role' in fields
+// Can be removed once Wire refinement is done
+export function isWire<TData extends TableRowData>(original: TData): original is TData & WireType {
+  const fields = (original as Record<string, unknown>).fields
+  return typeof fields === 'object' && fields !== null && 'document.meta.tt_wire.role' in fields
 }
 
-export const Table = <TData extends WithDocumentId, TValue>({
+export const Table = <TData extends TableRowData, TValue>({
   columns,
-  type,
   onRowSelected,
-  searchType
-}: TableProps<TData, TValue> & { searchType?: View }): JSX.Element => {
+  resolveNavigation,
+  children
+}: TableProps<TData, TValue> & { searchType?: View } & PropsWithChildren): JSX.Element => {
   const { state, dispatch } = useNavigation()
   const history = useHistory()
   const { viewId: origin } = useView()
@@ -92,7 +90,7 @@ export const Table = <TData extends WithDocumentId, TValue>({
   const handlePreview = useCallback((row: RowType<TData>): void => {
     row.toggleSelected(true)
 
-    const originalId = (row.original as { id: string }).id
+    const originalId = row.original.id
 
     showModal(
       <PreviewSheet
@@ -111,7 +109,7 @@ export const Table = <TData extends WithDocumentId, TValue>({
 
 
   const handleOpen = useCallback((event: MouseEvent<HTMLTableRowElement> | KeyboardEvent, row: RowType<TData>): void => {
-    if (type === 'Wires') {
+    if (isWire(row.original)) {
       handlePreview(row)
       return
     }
@@ -122,37 +120,33 @@ export const Table = <TData extends WithDocumentId, TValue>({
         return
       }
 
-      const id = row.original.id
-
-      const articleClick = type === 'Search' && searchType === 'Editor'
-
-      let usableVersion
-
-      if (articleClick) {
-        usableVersion = !articleClick ? undefined : row.original.meta?.heads.usable?.version
+      if ('__updater' in row.original) {
+        delete (row.original as Record<string, unknown>).__updater
       }
 
-      if (row.original?.__updater) {
-        delete row.original.__updater
-      }
+      const navParams = resolveNavigation
+        ? resolveNavigation(row.original)
+        : { id: row.original.id }
 
       handleLink({
         event,
         dispatch,
-        viewItem: state.viewRegistry.get(!searchType ? type : searchType),
-        props: { id },
+        // TODO: Fix this, how do we identify searchtype
+        // viewItem: state.viewRegistry.get(!searchType ? type : searchType),
+        viewItem: state.viewRegistry.get(navParams.opensWith || 'Error'),
+        props: { id: navParams.id, version: navParams.version },
         viewId: crypto.randomUUID(),
         origin,
         history,
         keepFocus: (event as KeyboardEvent)?.key === ' ',
-        ...((articleClick && usableVersion) && {
+        ...(navParams.version && {
           readOnly: {
-            version: BigInt(usableVersion)
+            version: BigInt(navParams.version)
           }
         })
       })
     }
-  }, [dispatch, state.viewRegistry, onRowSelected, origin, type, history, handlePreview, searchType])
+  }, [dispatch, state.viewRegistry, onRowSelected, origin, history, handlePreview, resolveNavigation])
 
   useNavigationKeys({
     keys: ['ArrowUp', 'ArrowDown', 'Enter', 'Escape', ' ', 's', 'r', 'c', 'u'],
@@ -180,7 +174,7 @@ export const Table = <TData extends WithDocumentId, TValue>({
       }
 
       if (event.key === 'r') {
-        if (selectedRow && isRowTypeWire<TData, TValue>(type)) {
+        if (selectedRow && isWire(selectedRow.original)) {
           const wireRow = selectedRow as unknown as RowType<WireType>
           const currentStatus = getWireStatus(wireRow.original)
           void setDocumentStatus({
@@ -193,7 +187,7 @@ export const Table = <TData extends WithDocumentId, TValue>({
       }
 
       if (event.key === 'u') {
-        if (selectedRow && isRowTypeWire<TData, TValue>(type)) {
+        if (selectedRow && isWire(selectedRow.original)) {
           const wireRow = selectedRow as unknown as RowType<WireType>
           const currentStatus = getWireStatus(wireRow.original)
 
@@ -207,7 +201,7 @@ export const Table = <TData extends WithDocumentId, TValue>({
       }
 
       if (event.key === 's') {
-        if (selectedRow && isRowTypeWire<TData, TValue>(type)) {
+        if (selectedRow && isWire(selectedRow.original)) {
           const wireRow = selectedRow as unknown as RowType<WireType>
           const currentStatus = getWireStatus(wireRow.original)
 
@@ -221,7 +215,7 @@ export const Table = <TData extends WithDocumentId, TValue>({
       }
 
       if (event.key === 'c') {
-        if (selectedRow && isRowTypeWire<TData, TValue>(type)) {
+        if (selectedRow && isWire(selectedRow.original)) {
           const wireRow = selectedRow as unknown as RowType<WireType>
 
           const onDocumentCreated = () => {
@@ -282,15 +276,12 @@ export const Table = <TData extends WithDocumentId, TValue>({
   const rowSelection = table.getState().rowSelection
 
   const TableBodyElement = useMemo(() => {
-    const isAssignmentsTable = window.location.pathname.includes(`${BASE_URL}/assignments`)
     const isGrouped = table.getState().grouping.length > 0
-    const rowType = isAssignmentsTable ? 'Assignments' : type
 
     return rows.map((row) => isGrouped
       ? (
           <GroupedRows<TData, TValue>
             key={row.id}
-            type={rowType}
             row={row}
             columns={columns}
             handleOpen={handleOpen}
@@ -300,7 +291,6 @@ export const Table = <TData extends WithDocumentId, TValue>({
       : (
           <Row
             key={row.id}
-            type={rowType}
             row={row}
             handleOpen={handleOpen}
             openDocuments={openDocuments}
@@ -312,27 +302,12 @@ export const Table = <TData extends WithDocumentId, TValue>({
 
   return (
     <>
-      {!['Wires', 'Factbox', 'Search'].includes(type) && (
-        <Toolbar />
-      )}
-      {(type === 'Planning' || type === 'Event') && (
-        <NewItems.Root>
-          <NewItems.Table
-            header={`Dina nya skapade ${type === 'Planning'
-              ? 'planeringar'
-              : 'händelser'}`}
-            type={type}
-          />
-        </NewItems.Root>
-      )}
-
-      {(type !== 'Search') && (
-        <_Table className='table-fixed relative'>
-          <TableBody>
-            {TableBodyElement}
-          </TableBody>
-        </_Table>
-      )}
+      {children}
+      <_Table className='table-fixed relative'>
+        <TableBody>
+          {TableBodyElement}
+        </TableBody>
+      </_Table>
     </>
   )
 }

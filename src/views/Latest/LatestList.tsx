@@ -7,6 +7,7 @@ import { TableSkeleton } from '@/components/Table/Skeleton'
 import type { PreprocessedLatestData, LatestDecorator } from './preprocessor'
 import { latestPreprocessor } from './preprocessor'
 import { getUTCDateRange } from '@/shared/datetime'
+import { Toolbar } from '@/components/Table/Toolbar'
 
 export const LatestList = ({ columns }: {
   columns: ColumnDef<PreprocessedLatestData>[]
@@ -44,9 +45,15 @@ export const LatestList = ({ columns }: {
 
   return (
     <Table<PreprocessedLatestData, unknown>
-      type='Editor'
       columns={columns}
       onRowSelected={onRowSelected}
-    />
+      resolveNavigation={(row) => ({
+        id: row.id,
+        version: row._preprocessed.deliverableVersion,
+        opensWith: row._preprocessed.deliverableType === 'core/flash' ? 'Flash' : 'Editor'
+      })}
+    >
+      <Toolbar />
+    </Table>
   )
 }

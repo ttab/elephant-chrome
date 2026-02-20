@@ -2,21 +2,20 @@ import type { DocumentStateWithDecorators } from '@/hooks/useRepositorySocket/ty
 import type { StatusDecorator } from '@/hooks/useRepositorySocket/decorators/statuses'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { isWithinInterval, parseISO } from 'date-fns'
+import type { PreprocessedTableData } from '@/components/Table/types'
 
-export type PreprocessedAssignmentData = DocumentStateWithDecorators<StatusDecorator> & {
+export type PreprocessedAssignmentData = PreprocessedTableData<StatusDecorator, {
+  newsvalue?: string
+  sectionUuid?: string
+  assignmentTitle?: string
+  assignmentTypes: string[]
+  assigneeUuids: string[]
+  deliverableUuid?: string
+  startValue?: string
+  startType?: string
+}> & {
   _assignment?: Block
   _assignmentIndex?: number
-  id?: string
-  _preprocessed: {
-    newsvalue?: string
-    sectionUuid?: string
-    assignmentTitle?: string
-    assignmentTypes: string[]
-    assigneeUuids: string[]
-    deliverableUuid?: string
-    startValue?: string
-    startType?: string
-  }
 }
 
 /**
@@ -31,6 +30,9 @@ export function createAssignmentPreprocessor(range: { gte: string, lte: string }
     const flattened: PreprocessedAssignmentData[] = []
 
     for (const doc of data) {
+      const uuid = doc.document?.uuid
+      if (!uuid) continue
+
       const assignments = doc.document?.meta?.filter(
         (block: Block) => block.type === 'core/assignment'
       ) || []
@@ -68,7 +70,7 @@ export function createAssignmentPreprocessor(range: { gte: string, lte: string }
           ...doc,
           _assignment: assignment,
           _assignmentIndex: index,
-          id: doc.document?.uuid,
+          id: `${uuid}-assignment-${index}`,
           _preprocessed: {
             newsvalue,
             sectionUuid,

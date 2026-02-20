@@ -3,10 +3,11 @@ import { type ColumnDef, type Row as RowType } from '@tanstack/react-table'
 import { GroupedRowsHeader } from './GroupedRowsHeader'
 import { Row as RegularRow } from './Row'
 import { WireRow } from './WireRow'
+import type { TableRowData } from './types'
+import { isWire } from '.'
 
-export const GroupedRows = <TData, TValue>({ row, columns, handleOpen, openDocuments, type }: {
+export const GroupedRows = <TData extends TableRowData, TValue>({ row, columns, handleOpen, openDocuments }: {
   row: RowType<TData>
-  type: 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires' | 'Factbox' | 'Print' | 'PrintEditor' | 'Editor'
   columns: Array<ColumnDef<TData, TValue>>
   handleOpen: (event: MouseEvent<HTMLTableRowElement> | KeyboardEvent, subRow: RowType<TData>) => void
   openDocuments: string[]
@@ -15,7 +16,8 @@ export const GroupedRows = <TData, TValue>({ row, columns, handleOpen, openDocum
     return <></>
   }
 
-  const Row = type === 'Wires' ? WireRow : RegularRow
+  const Row = isWire(row.original) ? WireRow : RegularRow
+
   return (
     <React.Fragment key={row.id}>
       <GroupedRowsHeader row={row} columns={columns} />
@@ -23,7 +25,6 @@ export const GroupedRows = <TData, TValue>({ row, columns, handleOpen, openDocum
       {row.subRows.map((subRow) => (
         <Row
           key={subRow.id}
-          type={type}
           row={subRow}
           handleOpen={handleOpen}
           openDocuments={openDocuments}

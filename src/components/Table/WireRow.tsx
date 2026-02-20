@@ -7,10 +7,7 @@ import type { Wire } from '@/shared/schemas/wire'
 import { cva } from 'class-variance-authority'
 import { getWireStatus } from '../../lib/getWireStatus'
 
-type DocumentType = 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires' | 'Factbox' | 'Print' | 'PrintEditor' | 'Editor'
-
-export const WireRow = <TData, >({ row, handleOpen, openDocuments, type }: {
-  type: DocumentType
+export const WireRow = <TData, >({ row, handleOpen, openDocuments }: {
   row: RowType<TData>
   handleOpen: (event: MouseEvent<HTMLTableRowElement>, row: RowType<TData>) => void
   openDocuments: string[]
@@ -41,7 +38,7 @@ export const WireRow = <TData, >({ row, handleOpen, openDocuments, type }: {
         'flex cursor-default scroll-mt-[70px] ring-inset focus:outline-none focus-visible:ring-2 focus-visible:ring-table-selected data-[state=selected]:bg-table-selected',
         variants({ status: getWireStatus(wire) })
       )}
-      data-state={getDataState(openDocuments, wire, type, wireRow)}
+      data-state={getDataState(openDocuments, wire, wireRow)}
       onClick={(event: MouseEvent<HTMLTableRowElement>) => handleOpen(event, row)}
       ref={(el) => handleRef(el, wireRow)}
     >
@@ -80,8 +77,8 @@ function isUpdated(wire: Wire): boolean {
   })
 }
 
-function getDataState(openDocuments: string[], wire: Wire, type: DocumentType, row: RowType<Wire>): 'focused' | 'selected' | undefined {
-  return ((openDocuments.includes(wire.id) && 'selected') || (type === 'Wires' && row.getIsSelected() && 'focused')) || undefined
+function getDataState(openDocuments: string[], wire: Wire, row: RowType<Wire>): 'focused' | 'selected' | undefined {
+  return ((openDocuments.includes(wire.id) && 'selected') || (row.getIsSelected() && 'focused')) || undefined
 }
 
 function handleRef<T extends Wire>(el: HTMLTableRowElement | null, row: RowType<T>): void {

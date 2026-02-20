@@ -56,12 +56,13 @@ export const PrintArticleList = ({ columns }: {
   }, [])
 
   return (
-    <>
-      <Table
-        type='PrintEditor'
-        columns={columns}
-        onRowSelected={onRowSelected}
-      />
-    </>
+    <Table
+      columns={columns}
+      onRowSelected={onRowSelected}
+      resolveNavigation={(row) => ({
+        id: row.id,
+        opensWith: 'Planning'
+      })}
+    />
   )
 }

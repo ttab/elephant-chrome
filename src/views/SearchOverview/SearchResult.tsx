@@ -71,15 +71,14 @@ export const SearchResult = ({ searchType, page }: {
             <LoadingText>Laddar...</LoadingText>
           )
         : (
-            <>
+            <Table
+              searchType={getType(searchType)}
+              columns={columns as ColumnDef<Planning | Event>[]}
+              onRowSelected={onRowSelected}
+            >
+
               <Toolbar type={searchType} />
-              <Table
-                type='Search'
-                searchType={getType(searchType)}
-                columns={columns as ColumnDef<Planning | Event>[]}
-                onRowSelected={onRowSelected}
-              />
-            </>
+            </Table>
           )}
     </>
   )

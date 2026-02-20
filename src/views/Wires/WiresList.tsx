@@ -43,13 +43,11 @@ export const WireList = ({ columns }: {
   }, [])
 
   return (
-    <>
+    <Table
+      columns={columns}
+      onRowSelected={onRowSelected}
+    >
       <Toolbar />
-      <Table
-        type='Wires'
-        columns={columns}
-        onRowSelected={onRowSelected}
-      />
-    </>
+    </Table>
   )
 }
