@@ -32,7 +32,6 @@ export function latestColumns({ locale, timeZone, sections = [] }: {
       accessorFn: (data) => data._preprocessed.deliverableType || '',
       cell: ({ row }) => {
         const type = row.getValue<string>('deliverableType')
-        console.log('deliverableType', type)
         if (!type) return null
 
         if (type === 'core/flash') {

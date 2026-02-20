@@ -68,7 +68,7 @@ export function createAssignmentPreprocessor(range: { gte: string, lte: string }
           ...doc,
           _assignment: assignment,
           _assignmentIndex: index,
-          id: `${doc.document?.uuid}-assignment-${index}`,
+          id: doc.document?.uuid,
           _preprocessed: {
             newsvalue,
             sectionUuid,
