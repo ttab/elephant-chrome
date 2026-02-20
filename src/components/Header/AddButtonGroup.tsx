@@ -72,7 +72,7 @@ const AddButton = ({
   )
 }
 
-export const AddButtonGroup = ({ docType = 'core/article', query }: { type: View, query: QueryParams, docType?: string }) => {
+export const AddButtonGroup = ({ docType = 'core/planning-item', query }: { type: View, query: QueryParams, docType?: string }) => {
   const { showModal, hideModal } = useModal()
   const getIcon = (t: View): { icon: LucideIcon | undefined, color?: string } => {
     const group = applicationMenu.groups.find((g) => g.items.find((itm) => itm.name.includes(t)))
