@@ -2,7 +2,6 @@ import { Popover, PopoverTrigger, Button, PopoverContent, Command } from '@ttab/
 import { ListFilterIcon } from '@ttab/elephant-ui/icons'
 import type { Dispatch, PropsWithChildren, SetStateAction, JSX } from 'react'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { DebouncedCommandInput } from '@/components/Commands/Menu/DebouncedCommandInput'
 import { useQuery } from '@/hooks/useQuery'
 import type { Updater } from '@tanstack/react-table'
 
@@ -16,17 +15,16 @@ export interface FilterProps {
   freeTextFilter?: boolean
 }
 
-export const Filter = ({ page, pages, setPages, search, setSearch, children, setGlobalTextFilter, freeTextFilter = true }:
+export const Filter = ({ page, pages, setPages, setSearch, children, setGlobalTextFilter }:
   PropsWithChildren & FilterProps): JSX.Element => {
   const [open, setOpen] = useState(false)
-  const [filter, setFilter] = useQuery(['query'])
+  const [,setFilter] = useQuery(['query'])
 
   const onOpenChange = useMemo(
     () => handleOpenChange({ setOpen, setSearch, setPages }),
     [setOpen, setSearch, setPages])
 
   const inputRef = useRef<HTMLInputElement>(null)
-
   const handleInputChange = (value: string | undefined) => {
     if (value) {
       if (setGlobalTextFilter) {
@@ -42,7 +40,6 @@ export const Filter = ({ page, pages, setPages, search, setSearch, children, set
       inputRef.current.focus()
     }
   }, [page])
-
   return (
     <Popover open={open} onOpenChange={onOpenChange} modal>
       <PopoverTrigger asChild>
@@ -80,15 +77,6 @@ export const Filter = ({ page, pages, setPages, search, setSearch, children, set
             }
           }}
         >
-          {freeTextFilter && (
-            <DebouncedCommandInput
-              ref={inputRef}
-              value={filter.query ? filter?.query?.[0] : search}
-              onChange={(value) => handleInputChange(value)}
-              placeholder='Fritext'
-              className='h-9'
-            />
-          )}
           {children}
         </Command>
       </PopoverContent>
