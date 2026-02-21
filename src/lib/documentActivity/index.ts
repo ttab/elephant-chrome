@@ -2,9 +2,9 @@ export { DocumentActivityProvider } from './DocumentActivityProvider'
 export { CoreActivityRegistrar } from './CoreActivityRegistrar'
 export { useDocumentActivities } from './useDocumentActivities'
 export { useRegisterDocumentActivity } from './useRegisterDocumentActivity'
-export { useActivity } from './useActivity'
+export { useActivity, resolveEventOptions } from './useActivity'
 export { documentActivityRegistry } from './registry'
-export type { ActivityHandle } from './useActivity'
+export type { ActivityHandle, ExecuteOptions } from './useActivity'
 export type {
   DocumentType,
   ActivityId,
@@ -13,5 +13,6 @@ export type {
   MatchFunc,
   ActivityDefinition,
   ActivityEntry,
-  ResolvedActivity
+  ResolvedActivity,
+  ActivityExecuteOptions
 } from './types'

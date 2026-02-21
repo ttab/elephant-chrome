@@ -130,6 +130,7 @@ describe('useActivity', () => {
     expect(result.current).not.toBeNull()
     expect(result.current?.title).toBe('Open planning')
     expect(typeof result.current?.execute).toBe('function')
+    expect(typeof result.current?.executeEvent).toBe('function')
   })
 
   it('execute calls handleLink with resolved route', async () => {
@@ -150,7 +151,6 @@ describe('useActivity', () => {
 
     result.current?.execute('plan-123')
 
-    // Wait for the async viewRouteFunc to resolve
     await vi.waitFor(() => {
       expect(handleLink).toHaveBeenCalled()
     })
@@ -167,7 +167,95 @@ describe('useActivity', () => {
     )
   })
 
-  it('execute calls preventDefault and stopPropagation on event', async () => {
+  it('execute passes target option to handleLink', async () => {
+    unregisters.push(
+      documentActivityRegistry.register('core/planning-item', 'open', {
+        title: 'Open planning',
+        viewRouteFunc: (docId) => Promise.resolve({
+          viewName: 'Planning',
+          props: { id: docId }
+        })
+      })
+    )
+
+    const { result } = renderHook(
+      () => useActivity('open', 'core/planning-item'),
+      { wrapper }
+    )
+
+    result.current?.execute('plan-123', { target: 'last' })
+
+    await vi.waitFor(() => {
+      expect(handleLink).toHaveBeenCalled()
+    })
+
+    expect(handleLink).toHaveBeenCalledWith(
+      expect.objectContaining({
+        target: 'last'
+      })
+    )
+  })
+
+  it('execute passes keepFocus option to handleLink', async () => {
+    unregisters.push(
+      documentActivityRegistry.register('core/planning-item', 'open', {
+        title: 'Open planning',
+        viewRouteFunc: (docId) => Promise.resolve({
+          viewName: 'Planning',
+          props: { id: docId }
+        })
+      })
+    )
+
+    const { result } = renderHook(
+      () => useActivity('open', 'core/planning-item'),
+      { wrapper }
+    )
+
+    result.current?.execute('plan-123', { keepFocus: true })
+
+    await vi.waitFor(() => {
+      expect(handleLink).toHaveBeenCalled()
+    })
+
+    expect(handleLink).toHaveBeenCalledWith(
+      expect.objectContaining({
+        keepFocus: true
+      })
+    )
+  })
+
+  it('resolved route target takes precedence over options target', async () => {
+    unregisters.push(
+      documentActivityRegistry.register('core/planning-item', 'open', {
+        title: 'Open planning',
+        viewRouteFunc: (docId) => Promise.resolve({
+          viewName: 'Planning',
+          props: { id: docId },
+          target: 'self'
+        })
+      })
+    )
+
+    const { result } = renderHook(
+      () => useActivity('open', 'core/planning-item'),
+      { wrapper }
+    )
+
+    result.current?.execute('plan-123', { target: 'last' })
+
+    await vi.waitFor(() => {
+      expect(handleLink).toHaveBeenCalled()
+    })
+
+    expect(handleLink).toHaveBeenCalledWith(
+      expect.objectContaining({
+        target: 'self'
+      })
+    )
+  })
+
+  it('executeEvent calls preventDefault and stopPropagation', async () => {
     unregisters.push(
       documentActivityRegistry.register('core/planning-item', 'open', {
         title: 'Open planning',
@@ -193,7 +281,7 @@ describe('useActivity', () => {
       stopPropagation
     } as unknown as ReactMouseEvent<Element>
 
-    result.current?.execute('plan-123', mockEvent)
+    result.current?.executeEvent('plan-123', mockEvent)
 
     expect(preventDefault).toHaveBeenCalled()
     expect(stopPropagation).toHaveBeenCalled()
@@ -203,7 +291,7 @@ describe('useActivity', () => {
     })
   })
 
-  it('returns early on ctrlKey', async () => {
+  it('executeEvent returns early on ctrlKey', async () => {
     unregisters.push(
       documentActivityRegistry.register('core/planning-item', 'open', {
         title: 'Open planning',
@@ -228,7 +316,7 @@ describe('useActivity', () => {
       stopPropagation: vi.fn()
     } as unknown as ReactMouseEvent<Element>
 
-    result.current?.execute('plan-123', mockEvent)
+    result.current?.executeEvent('plan-123', mockEvent)
 
     // Give time for async to potentially run
     await new Promise((r) => setTimeout(r, 10))
@@ -237,7 +325,7 @@ describe('useActivity', () => {
     expect(handleLink).not.toHaveBeenCalled()
   })
 
-  it('passes target "last" when shiftKey is pressed', async () => {
+  it('executeEvent passes target "last" when shiftKey is pressed', async () => {
     unregisters.push(
       documentActivityRegistry.register('core/planning-item', 'open', {
         title: 'Open planning',
@@ -261,7 +349,7 @@ describe('useActivity', () => {
       stopPropagation: vi.fn()
     } as unknown as ReactMouseEvent<Element>
 
-    result.current?.execute('plan-123', mockEvent)
+    result.current?.executeEvent('plan-123', mockEvent)
 
     await vi.waitFor(() => {
       expect(handleLink).toHaveBeenCalled()
@@ -274,7 +362,7 @@ describe('useActivity', () => {
     )
   })
 
-  it('passes keepFocus when Space key is pressed', async () => {
+  it('executeEvent passes keepFocus when Space key is pressed', async () => {
     unregisters.push(
       documentActivityRegistry.register('core/planning-item', 'open', {
         title: 'Open planning',
@@ -294,7 +382,7 @@ describe('useActivity', () => {
     vi.spyOn(mockEvent, 'preventDefault')
     vi.spyOn(mockEvent, 'stopPropagation')
 
-    result.current?.execute('plan-123', mockEvent)
+    result.current?.executeEvent('plan-123', mockEvent)
 
     await vi.waitFor(() => {
       expect(handleLink).toHaveBeenCalled()
@@ -329,7 +417,7 @@ describe('useActivity', () => {
     })
 
     expect(toast.error).toHaveBeenCalledWith(
-      'Could not execute "Open planning": Something went wrong'
+      'Could not open "Open planning": Something went wrong'
     )
     expect(handleLink).not.toHaveBeenCalled()
   })

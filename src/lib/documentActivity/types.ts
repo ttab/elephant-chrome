@@ -32,9 +32,13 @@ export interface ActivityEntry {
   definition: ActivityDefinition
 }
 
+export interface ActivityExecuteOptions {
+  target?: Target
+}
+
 export interface ResolvedActivity {
   activityId: ActivityId
   title: string
   icon?: LucideIcon
-  execute: () => Promise<void>
+  execute: (options?: ActivityExecuteOptions) => Promise<void>
 }

@@ -1,10 +1,7 @@
 import { useContext, useMemo } from 'react'
 import { DocumentActivityContext } from './documentActivityContext'
-import { useHistory, useNavigation, useView } from '@/hooks'
-import { handleLink } from '@/components/Link/lib/handleLink'
-import type { View } from '@/types'
+import { useActivityExecutor } from './useActivityExecutor'
 import type { ResolvedActivity } from './types'
-import { toast } from 'sonner'
 
 export function useDocumentActivities(
   docType: string,
@@ -17,9 +14,7 @@ export function useDocumentActivities(
     throw new Error('useDocumentActivities must be used within a DocumentActivityProvider')
   }
 
-  const history = useHistory()
-  const { state, dispatch } = useNavigation()
-  const { viewId: origin } = useView()
+  const { executeActivity } = useActivityExecutor()
 
   return useMemo(() => {
     const entries = context.getEntries(docType)
@@ -28,25 +23,9 @@ export function useDocumentActivities(
       activityId: entry.activityId,
       title: entry.definition.title,
       icon: entry.definition.icon,
-      execute: async () => {
-        try {
-          const resolved = await entry.definition.viewRouteFunc(docId, args)
-          const viewItem = state.viewRegistry.get(resolved.viewName as View)
-
-          handleLink({
-            dispatch,
-            viewItem,
-            props: resolved.props,
-            viewId: crypto.randomUUID(),
-            origin,
-            target: resolved.target,
-            history
-          })
-        } catch (error) {
-          const message = error instanceof Error ? error.message : 'Unknown error'
-          toast.error(`Could not open "${entry.definition.title}": ${message}`)
-        }
+      execute: async (options) => {
+        executeActivity(entry, docId, args, options)
       }
     }))
-  }, [context, docType, docId, args, state.viewRegistry, dispatch, origin, history])
+  }, [context, docType, docId, args, executeActivity])
 }

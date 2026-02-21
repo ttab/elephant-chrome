@@ -9,11 +9,13 @@ import { RepositoryEventsProvider } from './contexts/RepositoryEventsProvider.ts
 import { Init } from './components/Init/index.tsx'
 import { UserMessagesReceiver } from './components/UserMessagesReceiver.tsx'
 import { DocumentActivityProvider, CoreActivityRegistrar } from './lib/documentActivity'
+import { initPluginHost, PluginProvider, PluginHostCompleter } from './lib/plugins'
 import { Toaster } from '@ttab/elephant-ui'
 import './index.css'
 import { SettingsProvider } from './modules/userSettings/SettingsProvider.tsx'
 
 banner()
+initPluginHost()
 
 const root = document.getElementById('root')
 
@@ -31,13 +33,16 @@ ReactDOM.createRoot(root).render(
               <ThemeProvider defaultTheme='light' storageKey='ele-ui-theme'>
                 <DocumentActivityProvider>
                   <CoreActivityRegistrar />
-                  <Init>
-                    <SettingsProvider application='se.ecms.elephant-chrome'>
-                      <UserMessagesReceiver>
-                        <App />
-                      </UserMessagesReceiver>
-                    </SettingsProvider>
-                  </Init>
+                  <PluginProvider>
+                    <Init>
+                      <PluginHostCompleter />
+                      <SettingsProvider application='se.ecms.elephant-chrome'>
+                        <UserMessagesReceiver>
+                          <App />
+                        </UserMessagesReceiver>
+                      </SettingsProvider>
+                    </Init>
+                  </PluginProvider>
                 </DocumentActivityProvider>
               </ThemeProvider>
             </SupportedLanguagesProvider>

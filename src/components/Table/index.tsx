@@ -32,6 +32,7 @@ import { Row } from './Row'
 import { useModal } from '../Modal/useModal'
 import { GroupedRows } from './GroupedRows'
 import { type View } from '@/types/index'
+import { isActionMenuBusy } from '@/components/DataItem/ActionMenu'
 const BASE_URL = import.meta.env.BASE_URL
 
 interface TableProps<TData, TValue> {
@@ -87,6 +88,11 @@ export const Table = <TData, TValue>({
   const { hideModal, currentModal } = useModal()
 
   const handleOpen = useCallback((event: MouseEvent<HTMLTableRowElement> | KeyboardEvent, row: RowType<unknown>): void => {
+    if (isActionMenuBusy()) {
+      return
+    }
+
+
     const target = event.target as HTMLElement
     if (target && 'dataset' in target && !target.dataset.rowAction) {
       if (!onRowSelected) {

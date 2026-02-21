@@ -60,7 +60,7 @@ export const PlanningList = ({ columns }: {
       type='Planning'
       columns={columns}
       onRowSelected={onRowSelected}
-      onOpen={(event, id) => open?.execute(id, event)}
+      onOpen={(event, id) => open?.executeEvent(id, event)}
     />
   )
 }
