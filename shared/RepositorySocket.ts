@@ -39,6 +39,7 @@ export class RepositorySocket {
   #ws: WebSocket | null = null
   #authenticated = false
   #messageHandlers = new Map<string, MessageHandler>()
+  #rejectHandlers = new Map<string, (error: Error) => void>()
   #updateHandlers = new Set<MessageHandler>()
   #errorHandler?: ErrorHandler
   #reconnectTimer?: number
@@ -114,9 +115,7 @@ export class RepositorySocket {
           this.#authenticated = false
           this.#authenticatingPromise = null
 
-          // Clear orphaned message handlers from previous connection
-          this.#messageHandlers.clear()
-          this.#updateHandlers.clear()
+          this.#rejectPendingHandlers('WebSocket connection closed')
 
           if (this.#shouldReconnect && !event.wasClean) {
             this.#reconnect()
@@ -134,6 +133,16 @@ export class RepositorySocket {
 
   async #getSocketToken(): Promise<string> {
     return await this.#repository.getSocketToken()
+  }
+
+  #rejectPendingHandlers(reason: string): void {
+    const error = new Error(reason)
+    for (const reject of this.#rejectHandlers.values()) {
+      reject(error)
+    }
+    this.#rejectHandlers.clear()
+    this.#messageHandlers.clear()
+    this.#updateHandlers.clear()
   }
 
   #reconnect(): void {
@@ -176,8 +185,7 @@ export class RepositorySocket {
     }
     this.#connectingPromise = null
     this.#authenticatingPromise = null
-    this.#messageHandlers.clear()
-    this.#updateHandlers.clear()
+    this.#rejectPendingHandlers('WebSocket disconnected')
     this.#reconnectListeners.clear()
     this.#ws?.close()
     this.#ws = null
@@ -219,8 +227,11 @@ export class RepositorySocket {
     })
 
     return new Promise((resolve, reject) => {
+      this.#rejectHandlers.set(callId, reject)
+
       this.#messageHandlers.set(callId, (response) => {
         this.#messageHandlers.delete(callId)
+        this.#rejectHandlers.delete(callId)
 
         if (response.error?.errorMessage) {
           reject(new Error(response.error.errorMessage))
@@ -274,13 +285,17 @@ export class RepositorySocket {
     })
 
     return new Promise((resolve, reject) => {
+      this.#rejectHandlers.set(callId, reject)
+
       this.#messageHandlers.set(callId, (response) => {
         if (response.error?.errorMessage) {
           this.#messageHandlers.delete(callId)
+          this.#rejectHandlers.delete(callId)
           reject(new Error(response.error.errorMessage))
           return
         } else if (response.error) {
           this.#messageHandlers.delete(callId)
+          this.#rejectHandlers.delete(callId)
           reject(new Error('Failed to get documents'))
           return
         }
@@ -324,6 +339,7 @@ export class RepositorySocket {
 
         if (response.handled) {
           this.#messageHandlers.delete(callId)
+          this.#rejectHandlers.delete(callId)
 
           const onUpdate = (handler: (update: DocumentUpdate | DocumentRemoved | InclusionBatch) => void) => {
             const updateHandler: MessageHandler = (response) => {
@@ -369,8 +385,11 @@ export class RepositorySocket {
     })
 
     return new Promise((resolve, reject) => {
+      this.#rejectHandlers.set(callId, reject)
+
       this.#messageHandlers.set(callId, (response) => {
         this.#messageHandlers.delete(callId)
+        this.#rejectHandlers.delete(callId)
 
         if (response.error?.errorMessage) {
           reject(new Error(response.error.errorMessage))
