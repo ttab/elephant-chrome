@@ -6,6 +6,7 @@ import type {
   DocumentRemoved,
   InclusionBatch
 } from '@ttab/elephant-api/repositorysocket'
+import type { DocumentFilter } from '@ttab/elephant-api/repository'
 import { toast } from 'sonner'
 import { useTable } from '@/hooks/useTable'
 import type { DocumentStateWithDecorators, DecoratorDataBase } from './types'
@@ -78,6 +79,8 @@ export function useRepositorySocket<TDecoratorData extends DecoratorDataBase = D
   from,
   to,
   include,
+  labels,
+  filter,
   type,
   asTable = false,
   decorators = [],
@@ -87,6 +90,8 @@ export function useRepositorySocket<TDecoratorData extends DecoratorDataBase = D
   to?: string
   type: string
   include?: string[]
+  labels?: string[]
+  filter?: DocumentFilter
   asTable?: boolean
   decorators?: Array<Decorator<object>>
   preprocessor?: (data: DocumentStateWithDecorators<TDecoratorData>[]) => DocumentStateWithDecorators<TDecoratorData>[]
@@ -109,9 +114,11 @@ export function useRepositorySocket<TDecoratorData extends DecoratorDataBase = D
   const decoratorsRef = useRef(decorators)
   const accessTokenRef = useRef<string>(session?.accessToken ?? '')
   accessTokenRef.current = session?.accessToken ?? ''
+  const dataRef = useRef<DocumentStateWithDecorators<TDecoratorData>[]>([])
+  dataRef.current = data
   const schedulerRef = useRef<ScheduleDecoratorUpdate<TDecoratorData>>(null!)
   if (!schedulerRef.current) {
-    schedulerRef.current = new ScheduleDecoratorUpdate<TDecoratorData>(setData, decoratorsRef, accessTokenRef, runUpdateDecorators)
+    schedulerRef.current = new ScheduleDecoratorUpdate<TDecoratorData>(setData, dataRef, decoratorsRef, accessTokenRef, runUpdateDecorators)
   }
 
   // When session is updated, make sure to authenticate the socket if it's connected
@@ -168,6 +175,8 @@ export function useRepositorySocket<TDecoratorData extends DecoratorDataBase = D
           type,
           timespan,
           include,
+          labels,
+          filter,
           resolveParentIndex: findDeliverableParentIndex
         })
 
@@ -276,7 +285,7 @@ export function useRepositorySocket<TDecoratorData extends DecoratorDataBase = D
     }
   // We only want to re-run this effect when accessToken changes or after reconnect
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [repositorySocket, from, to, include, type, asTable, reconnectCount])
+  }, [repositorySocket, from, to, include, labels, filter, type, asTable, reconnectCount])
 
   // Update decorators ref when decorators prop changes
   useEffect(() => {

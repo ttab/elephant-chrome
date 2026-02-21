@@ -15,8 +15,6 @@ export interface Decorator<TEnrichment = unknown> {
   ) => Promise<TEnrichment | Map<string, TEnrichment> | undefined>
 }
 
-export type DecoratorConfig<TEnrichment = unknown> = Decorator<TEnrichment>[]
-
 export interface DocumentStateWithDecorators<TDecoratorData = object>
   extends DocumentStateWithIncludes {
   decoratorData?: TDecoratorData

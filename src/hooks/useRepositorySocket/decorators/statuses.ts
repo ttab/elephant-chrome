@@ -64,6 +64,9 @@ export function createStatusesDecorator(options: {
 /**
  * Fetches deliverable statuses for all assignments in planning documents
  */
+/** Max UUIDs per getStatuses API call to avoid request size limits */
+const STATUS_BATCH_SIZE = 50
+
 async function fetchStatuses(
   uuids: string[],
   repository: Repository,
@@ -72,7 +75,7 @@ async function fetchStatuses(
 ): Promise<Map<string, StatusOverviewItem>> {
   try {
     const statusesMap = new Map<string, StatusOverviewItem>()
-    const chunkSize = 50
+    const chunkSize = STATUS_BATCH_SIZE
 
     for (let i = 0; i < uuids.length; i += chunkSize) {
       const chunk = uuids.slice(i, i + chunkSize)

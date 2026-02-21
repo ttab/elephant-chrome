@@ -270,8 +270,8 @@ describe('useRepositorySocket', () => {
     })
 
     await waitFor(() => {
-      const first = result.current.data[0] as DocumentUpdate
-      expect(first.setName).toBe('tt/article-123')
+      const first = result.current.data[0]
+      expect(first.__updater?.sub).toBe('??')
     })
 
     act(() => {

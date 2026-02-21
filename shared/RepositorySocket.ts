@@ -9,9 +9,9 @@ import type {
 } from '@ttab/elephant-api/repositorysocket'
 
 import { Timespan } from '@ttab/elephant-api/repository'
+import type { DocumentFilter } from '@ttab/elephant-api/repository'
 import { Call as CallType, Response as ResponseType } from '@ttab/elephant-api/repositorysocket'
 import type { Repository } from './Repository'
-import { getSession } from 'next-auth/react'
 
 interface InclusionDocumentWithUpdater extends InclusionDocument {
   __updater?: {
@@ -248,8 +248,7 @@ export class RepositorySocket {
   }
 
   async #initiateAuthenticate(): Promise<void> {
-    const session = await getSession()
-    const token = session?.accessToken
+    const token = this.#accessToken
 
     if (!token) {
       throw new Error('Authentication failed: no access token available')
@@ -290,6 +289,7 @@ export class RepositorySocket {
     timespan,
     include = [],
     labels = [],
+    filter,
     resolveParentIndex
   }: {
     setName: string
@@ -297,6 +297,7 @@ export class RepositorySocket {
     timespan?: { from: string, to: string }
     include?: string[]
     labels?: string[]
+    filter?: DocumentFilter
     resolveParentIndex?: (documents: DocumentStateWithIncludes[], targetUuid: string) => number
   }): Promise<{
     callId: string
@@ -317,6 +318,7 @@ export class RepositorySocket {
         type,
         labels,
         timespan: timespan ? Timespan.create(timespan) : undefined,
+        filter,
         include,
         includeAcls: true
       }

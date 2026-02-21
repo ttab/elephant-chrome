@@ -45,53 +45,56 @@ export async function runInitialDecorators<TDecoratorData extends DecoratorDataB
     ...doc
   })) as DocumentStateWithDecorators<TDecoratorData>[]
 
-  // Run each decorator sequentially
-  for (const decorator of decorators) {
-    if (!decorator.onInitialData) {
+  // Run decorators in parallel — each writes to its own namespace
+  const activeDecorators = decorators.filter((d) => d.onInitialData)
+  const results = await Promise.allSettled(
+    activeDecorators.map(async (decorator) => decorator.onInitialData!(documents, accessToken))
+  )
+
+  for (let i = 0; i < results.length; i++) {
+    const result = results[i]
+    if (result.status === 'rejected') {
+      console.error('Decorator failed silently:', result.reason)
       continue
     }
 
-    try {
-      const decoratorDataMap = await decorator.onInitialData(documents, accessToken)
+    const decorator = activeDecorators[i]
+    const decoratorDataMap = result.value
 
-      // Merge decorator data into each document's decoratorData
-      // Apply under decorator's namespace: decoratorData[namespace][uuid] = enrichment
-      for (const doc of enrichedDocs) {
-        // Get all UUIDs present in this document state
-        const allUuids = [
-          doc.document?.uuid,
-          ...(doc.includedDocuments?.map((d) => d?.uuid).filter(Boolean) || [])
-        ].filter((uuid): uuid is string => !!uuid)
+    // Merge decorator data into each document's decoratorData
+    // Apply under decorator's namespace: decoratorData[namespace][uuid] = enrichment
+    for (const doc of enrichedDocs) {
+      // Get all UUIDs present in this document state
+      const allUuids = [
+        doc.document?.uuid,
+        ...(doc.includedDocuments?.map((d) => d?.uuid).filter(Boolean) || [])
+      ].filter((uuid): uuid is string => !!uuid)
 
-        // Check if any enrichment data exists for this document's UUIDs
-        const hasEnrichment = allUuids.some((uuid) => decoratorDataMap.has(uuid))
-        if (!hasEnrichment) {
-          continue
-        }
+      // Check if any enrichment data exists for this document's UUIDs
+      const hasEnrichment = allUuids.some((uuid) => decoratorDataMap.has(uuid))
+      if (!hasEnrichment) {
+        continue
+      }
 
-        // Initialize decoratorData if not present
-        if (!doc.decoratorData) {
-          doc.decoratorData = {} as TDecoratorData
-        }
+      // Initialize decoratorData if not present
+      if (!doc.decoratorData) {
+        doc.decoratorData = {} as TDecoratorData
+      }
 
-        // Initialize namespace object if not present
-        const namespace = decorator.namespace
-        const decoratorData = doc.decoratorData as DecoratorDataBase
-        if (!decoratorData[namespace]) {
-          decoratorData[namespace] = {}
-        }
+      // Initialize namespace object if not present
+      const namespace = decorator.namespace
+      const decoratorData = doc.decoratorData as DecoratorDataBase
+      if (!decoratorData[namespace]) {
+        decoratorData[namespace] = {}
+      }
 
-        // Merge enrichment data under namespace for UUIDs present in this document state
-        for (const uuid of allUuids) {
-          const enrichment = decoratorDataMap.get(uuid)
-          if (enrichment !== undefined) {
-            decoratorData[namespace][uuid] = enrichment
-          }
+      // Merge enrichment data under namespace for UUIDs present in this document state
+      for (const uuid of allUuids) {
+        const enrichment = decoratorDataMap.get(uuid)
+        if (enrichment !== undefined) {
+          decoratorData[namespace][uuid] = enrichment
         }
       }
-    } catch (error) {
-      // Silent failure - log but don't throw
-      console.error('🎨 Decorator failed silently:', error)
     }
   }
 
@@ -152,42 +155,46 @@ export async function runUpdateDecorators<TDecoratorData extends DecoratorDataBa
     return enrichedDoc
   }
 
-  // Run each decorator sequentially
-  for (const decorator of decorators) {
-    if (!decorator.onUpdate) {
+  // Run decorators in parallel — each writes to its own namespace
+  const activeDecorators = decorators.filter((d) => d.onUpdate)
+  const results = await Promise.allSettled(
+    activeDecorators.map(async (decorator) => decorator.onUpdate!(update, accessToken))
+  )
+
+  for (let i = 0; i < results.length; i++) {
+    const result = results[i]
+    if (result.status === 'rejected') {
+      console.warn('Update decorator failed silently:', result.reason)
       continue
     }
 
-    try {
-      const enrichment = await decorator.onUpdate(update, accessToken)
-      if (enrichment !== undefined) {
-        // Initialize decoratorData if not present
-        if (!enrichedDoc.decoratorData) {
-          enrichedDoc.decoratorData = {} as TDecoratorData
-        }
+    const enrichment = result.value
+    if (enrichment !== undefined) {
+      const decorator = activeDecorators[i]
 
-        const namespace = decorator.namespace
-        const decoratorData = enrichedDoc.decoratorData as DecoratorDataBase
-
-        // Initialize namespace object if not present
-        if (!decoratorData[namespace]) {
-          decoratorData[namespace] = {}
-        }
-
-        // Handle Map return type - extract value for the updated document UUID
-        if (enrichment instanceof Map) {
-          const enrichmentForDoc = enrichment.get(documentUuid)
-          if (enrichmentForDoc !== undefined) {
-            decoratorData[namespace][documentUuid] = enrichmentForDoc
-          }
-          // If Map has no entry for this UUID, preserve existing data (do nothing)
-        } else {
-          // Handle plain object return - assign it to the document UUID under namespace
-          decoratorData[namespace][documentUuid] = enrichment
-        }
+      // Initialize decoratorData if not present
+      if (!enrichedDoc.decoratorData) {
+        enrichedDoc.decoratorData = {} as TDecoratorData
       }
-    } catch (error) {
-      console.warn('Update decorator failed silently:', error)
+
+      const namespace = decorator.namespace
+      const decoratorData = enrichedDoc.decoratorData as DecoratorDataBase
+
+      // Initialize namespace object if not present
+      if (!decoratorData[namespace]) {
+        decoratorData[namespace] = {}
+      }
+
+      // Handle Map return type - extract value for the updated document UUID
+      if (enrichment instanceof Map) {
+        const enrichmentForDoc = enrichment.get(documentUuid)
+        if (enrichmentForDoc !== undefined) {
+          decoratorData[namespace][documentUuid] = enrichmentForDoc
+        }
+      } else {
+        // Handle plain object return - assign it to the document UUID under namespace
+        decoratorData[namespace][documentUuid] = enrichment
+      }
     }
   }
 
