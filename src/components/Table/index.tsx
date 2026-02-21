@@ -35,19 +35,13 @@ import { Wire as WireComponent } from '@/views/Wire'
 import { GroupedRows } from './GroupedRows'
 import { getWireStatus } from '../../lib/getWireStatus'
 import type { TableRowData, NavigationParams } from './types'
+import { isWire } from './lib/isWire'
 
 interface TableProps<TData extends TableRowData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
   onRowSelected?: (row?: TData) => void
   resolveNavigation?: (row: TData) => NavigationParams
   rowAlign?: 'start' | 'center'
-}
-
-// Type guard to check if a row is a WireType based on the presence of 'document.meta.tt_wire.role' in fields
-// Can be removed once Wire refinement is done
-export function isWire<TData extends TableRowData>(original: TData): original is TData & WireType {
-  const fields = (original as Record<string, unknown>).fields
-  return typeof fields === 'object' && fields !== null && 'document.meta.tt_wire.role' in fields
 }
 
 export const Table = <TData extends TableRowData, TValue>({

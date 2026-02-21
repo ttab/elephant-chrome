@@ -1,7 +1,6 @@
 import type { Dispatch, SetStateAction } from 'react'
 import { type PropsWithChildren } from 'react'
 import { renderHook, act, waitFor } from '@testing-library/react'
-import { describe, it, expect, vi, beforeEach } from 'vitest'
 import type { DocumentRemoved, DocumentUpdate } from '@ttab/elephant-api/repositorysocket'
 
 import { TableContext } from '@/contexts'

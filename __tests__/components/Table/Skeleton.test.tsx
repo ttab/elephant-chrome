@@ -1,4 +1,3 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { render, act } from '@testing-library/react'
 import type { ColumnDef } from '@tanstack/react-table'
 import { TableSkeleton } from '@/components/Table/Skeleton'

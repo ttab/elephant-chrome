@@ -1,4 +1,3 @@
-import { describe, it, expect } from 'vitest'
 import { createAssignmentPreprocessor } from '@/views/Assignments/preprocessor'
 import type { DocumentStateWithDecorators } from '@/hooks/useRepositorySocket/types'
 import type { StatusDecorator } from '@/hooks/useRepositorySocket/decorators/statuses'

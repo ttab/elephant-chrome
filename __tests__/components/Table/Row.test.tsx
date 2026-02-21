@@ -1,11 +1,8 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import React from 'react'
 import type { Cell } from '@tanstack/react-table'
 import * as ReactTable from '@tanstack/react-table'
 import { makeRow, plainRowData } from '../../data/tableMocks'
-
-const BASE_URL = import.meta.env.BASE_URL
 
 vi.mock('@ttab/elephant-ui', () => ({
   TableRow: ({ children, ...props }: React.HTMLProps<HTMLTableRowElement>) => (
@@ -39,22 +36,9 @@ const makeCell = (id: string, className?: string): Cell<typeof plainRowData, unk
   getContext: vi.fn(() => ({}))
 } as unknown as Cell<typeof plainRowData, unknown>)
 
-const savedPathname = window.location.pathname
-
 describe('Row', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    Object.defineProperty(window, 'location', {
-      writable: true,
-      value: { pathname: '/' }
-    })
-  })
-
-  afterEach(() => {
-    Object.defineProperty(window, 'location', {
-      writable: true,
-      value: { pathname: savedPathname }
-    })
   })
 
   describe('data-state attribute', () => {
@@ -99,16 +83,12 @@ describe('Row', () => {
   })
 
   describe('className alignment', () => {
-    it('has "items-start" class when pathname includes assignments path', () => {
-      Object.defineProperty(window, 'location', {
-        writable: true,
-        value: { pathname: `${BASE_URL}/assignments` }
-      })
+    it('has "items-start" class when align prop is "start"', () => {
       const row = makeRow(plainRowData)
       render(
         <table>
           <tbody>
-            <Row row={row} handleOpen={vi.fn()} openDocuments={[]} />
+            <Row row={row} handleOpen={vi.fn()} openDocuments={[]} align='start' />
           </tbody>
         </table>
       )
@@ -117,11 +97,7 @@ describe('Row', () => {
       expect(tr.className).not.toContain('items-center')
     })
 
-    it('has "items-center" class when pathname does not include assignments', () => {
-      Object.defineProperty(window, 'location', {
-        writable: true,
-        value: { pathname: `${BASE_URL}/planning` }
-      })
+    it('has "items-center" class by default', () => {
       const row = makeRow(plainRowData)
       render(
         <table>

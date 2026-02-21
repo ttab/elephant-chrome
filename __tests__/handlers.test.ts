@@ -1,4 +1,3 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { Document } from '@ttab/elephant-api/newsdoc'
 import type { DocumentRemoved, InclusionBatch, DocumentUpdate, DocumentState } from '@ttab/elephant-api/repositorysocket'
 import type { DocumentStateWithDecorators } from '@/hooks/useRepositorySocket/types'

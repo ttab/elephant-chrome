@@ -1,4 +1,3 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import type { MetricsData } from '@/hooks/useRepositorySocket/decorators/metrics'
 import { createMetricsDecorator } from '@/hooks/useRepositorySocket/decorators/metrics'
 import type { Repository } from '@/shared/Repository'
@@ -287,7 +286,7 @@ describe('createMetricsDecorator', () => {
         expect((result as Map<string, unknown>).size).toBe(0)
       })
 
-      it('should return empty map when inclusion update has no document uuid', async () => {
+      it('should return empty map when inclusion update has no document', async () => {
         const includedDocumentUpdate: DocumentUpdate = {
           setName: 'test-set',
           event: undefined,

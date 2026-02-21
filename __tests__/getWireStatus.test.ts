@@ -1,5 +1,4 @@
-import { describe, it, expect } from 'vitest'
-import { getWireStatus } from '../src/lib/getWireStatus'
+import { getWireStatus } from '@/lib/getWireStatus'
 import type { Wire } from '@/shared/schemas/wire'
 
 describe('getWireStatus', () => {
@@ -104,6 +103,32 @@ describe('getWireStatus', () => {
       fields: {
         'heads.used.created': { values: ['2025-06-01T09:00:00Z'] },
         'heads.used.version': { values: ['1'] }
+      }
+    } as unknown as Wire
+
+    expect(getWireStatus(wire)).toBe('used')
+  })
+
+  it('ignores flash head — returns draft when only flash version is set', () => {
+    const wire = {
+      id: '10',
+      fields: {
+        'heads.flash.version': { values: ['1'] },
+        'heads.read.version': { values: ['0'] },
+        'heads.read.created': { values: [''] }
+      }
+    } as unknown as Wire
+
+    expect(getWireStatus(wire)).toBe('draft')
+  })
+
+  it('returns valid status even when flash head is present', () => {
+    const wire = {
+      id: '11',
+      fields: {
+        'heads.flash.version': { values: ['1'] },
+        'heads.used.created': { values: ['2025-06-01T09:00:00Z'] },
+        'heads.used.version': { values: ['2'] }
       }
     } as unknown as Wire
 

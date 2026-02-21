@@ -4,7 +4,7 @@ import { GroupedRowsHeader } from './GroupedRowsHeader'
 import { Row as RegularRow } from './Row'
 import { WireRow } from './WireRow'
 import type { TableRowData } from './types'
-import { isWire } from '.'
+import { isWire } from './lib/isWire'
 
 export const GroupedRows = <TData extends TableRowData, TValue>({ row, columns, handleOpen, openDocuments, align }: {
   row: RowType<TData>

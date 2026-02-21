@@ -1,4 +1,3 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { render, screen, act } from '@testing-library/react'
 import React from 'react'
 import type { Row as RowType, ColumnDef } from '@tanstack/react-table'
@@ -542,7 +541,6 @@ describe('Table', () => {
       const selectedRow = makeTableRow('sel-1')
       const wireRow = makeWireTableRow('wire-sel')
       const rows = [selectedRow, wireRow]
-      setupDefaultMocks(rows)
       const { mockHideModal, mockShowModal } = setupDefaultMocks(rows)
       vi.mocked(useTable).mockReturnValue({
         table: {

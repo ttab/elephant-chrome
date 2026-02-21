@@ -1,21 +1,4 @@
-import { describe, it, expect, vi } from 'vitest'
-
-// Mock heavy dependencies so the barrel loads cleanly
-vi.mock('@/views/Wires/components', () => ({ PreviewSheet: vi.fn() }))
-vi.mock('@/views/Wire', () => ({ Wire: vi.fn() }))
-vi.mock('@/hooks', () => ({
-  useNavigation: vi.fn(),
-  useView: vi.fn(),
-  useTable: vi.fn(),
-  useHistory: vi.fn(),
-  useNavigationKeys: vi.fn(),
-  useOpenDocuments: vi.fn(),
-  useWorkflowStatus: vi.fn()
-}))
-vi.mock('@/components/Modal/useModal', () => ({ useModal: vi.fn() }))
-vi.mock('@/components/Link/lib/handleLink', () => ({ handleLink: vi.fn() }))
-
-import { isWire } from '@/components/Table/index'
+import { isWire } from '@/components/Table/lib/isWire'
 
 describe('isWire', () => {
   it('returns true when fields contains "document.meta.tt_wire.role"', () => {

@@ -1,4 +1,3 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import type { Row as RowType, ColumnDef } from '@tanstack/react-table'
 import type { TableRowData } from '@/components/Table/types'
@@ -15,13 +14,12 @@ vi.mock('@/components/Table/GroupedRowsHeader', () => ({
   GroupedRowsHeader: vi.fn(() => <tr data-testid='group-header' />)
 }))
 
-// GroupedRows imports isWire from '.' (the barrel index.tsx)
-vi.mock('@/components/Table', () => ({
+vi.mock('@/components/Table/lib/isWire', () => ({
   isWire: vi.fn()
 }))
 
 import { GroupedRows } from '@/components/Table/GroupedRows'
-import { isWire } from '@/components/Table'
+import { isWire } from '@/components/Table/lib/isWire'
 import { Row } from '@/components/Table/Row'
 import { GroupedRowsHeader } from '@/components/Table/GroupedRowsHeader'
 

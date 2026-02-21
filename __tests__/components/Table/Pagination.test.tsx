@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, vi, type Mock } from 'vitest'
+import type { Mock } from 'vitest'
 import { render, screen, fireEvent, act } from '@testing-library/react'
 import { useNavigation } from '@/navigation/hooks/useNavigation'
 import { useView } from '@/hooks/useView'

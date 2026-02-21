@@ -1,4 +1,3 @@
-import { describe, it, expect } from 'vitest'
 import { getNestedFacetedUniqueValues } from '@/components/Table/lib/getNestedFacetedUniqueValues'
 import type { Column } from '@tanstack/react-table'
 

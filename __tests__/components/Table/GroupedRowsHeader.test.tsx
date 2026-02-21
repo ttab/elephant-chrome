@@ -1,6 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
-import React from 'react'
 import type { Row, ColumnDef } from '@tanstack/react-table'
 import { useTable } from '@/hooks/useTable'
 

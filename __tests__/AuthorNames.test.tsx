@@ -320,7 +320,7 @@ describe('AuthorNames with various statusData assert tooltip', () => {
       expect(screen.getByTitle('Byline John Doe')).toBeInTheDocument()
     })
 
-    it('renders correctly with statusDataBylineCreator', () => {
+    it('renders byline text content with statusDataBylineCreator', () => {
       const item = approvalItem(byline, statusDataBylineCreator)
       render(<AuthorNames item={item} />)
       expect(screen.getByTitle('Byline John Doe'))

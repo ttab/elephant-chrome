@@ -1,6 +1,5 @@
-import { vi } from 'vitest'
 import type { Wire } from '@/shared/schemas/wire'
-import type { Row as RowType, Cell, ColumnDef } from '@tanstack/react-table'
+import type { Row as RowType, Cell } from '@tanstack/react-table'
 import type { TableRowData } from '@/components/Table/types'
 
 // Minimal Wire fixture factory
@@ -21,30 +20,6 @@ export function makeWire(fieldOverrides: Partial<Wire['fields']> = {}): Wire {
       ...fieldOverrides
     }
   } as unknown as Wire
-}
-
-export function makeReadWire(): Wire {
-  return makeWire({
-    current_version: { values: ['2'] },
-    'heads.read.version': { values: ['2'] },
-    'heads.read.created': { values: ['2025-01-01T10:00:00Z'] }
-  })
-}
-
-export function makeSavedWire(): Wire {
-  return makeWire({
-    current_version: { values: ['2'] },
-    'heads.saved.version': { values: ['2'] },
-    'heads.saved.created': { values: ['2025-01-01T10:00:00Z'] }
-  })
-}
-
-export function makeUsedWire(): Wire {
-  return makeWire({
-    current_version: { values: ['2'] },
-    'heads.used.version': { values: ['2'] },
-    'heads.used.created': { values: ['2025-01-01T10:00:00Z'] }
-  })
 }
 
 export function makeFlashWire(): Wire {
@@ -70,13 +45,3 @@ export function makeRow<TData extends TableRowData>(
 
 // Simple non-wire row data
 export const plainRowData: TableRowData = { id: 'doc-001' }
-
-// Minimal ColumnDef factory
-export function makeColumnDef<TData>(id: string, overrides: Partial<ColumnDef<TData>> = {}): ColumnDef<TData> {
-  return {
-    id,
-    cell: vi.fn(),
-    meta: undefined,
-    ...overrides
-  } as ColumnDef<TData>
-}
