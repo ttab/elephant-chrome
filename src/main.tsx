@@ -8,6 +8,7 @@ import { SupportedLanguagesProvider } from './datastore/contexts/SupportedLangua
 import { RepositoryEventsProvider } from './contexts/RepositoryEventsProvider.tsx'
 import { Init } from './components/Init/index.tsx'
 import { UserMessagesReceiver } from './components/UserMessagesReceiver.tsx'
+import { DocumentActivityProvider, CoreActivityRegistrar } from './lib/documentActivity'
 import { Toaster } from '@ttab/elephant-ui'
 import './index.css'
 
@@ -27,11 +28,14 @@ ReactDOM.createRoot(root).render(
           <RepositoryEventsProvider>
             <SupportedLanguagesProvider>
               <ThemeProvider defaultTheme='light' storageKey='ele-ui-theme'>
-                <Init>
-                  <UserMessagesReceiver>
-                    <App />
-                  </UserMessagesReceiver>
-                </Init>
+                <DocumentActivityProvider>
+                  <CoreActivityRegistrar />
+                  <Init>
+                    <UserMessagesReceiver>
+                      <App />
+                    </UserMessagesReceiver>
+                  </Init>
+                </DocumentActivityProvider>
               </ThemeProvider>
             </SupportedLanguagesProvider>
           </RepositoryEventsProvider>

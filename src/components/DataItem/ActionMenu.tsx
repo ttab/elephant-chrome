@@ -11,8 +11,15 @@ import {
   DropdownMenuTrigger
 } from '@ttab/elephant-ui'
 import type { JSX } from 'react'
+import { useDocumentActivities } from '@/lib/documentActivity'
 
-export const ActionMenu = ({ deliverableUuids, planningId }: { deliverableUuids: string[], planningId: string }): JSX.Element => {
+export const ActionMenu = ({ deliverableUuids, planningId, docType }: {
+  deliverableUuids: string[]
+  planningId: string
+  docType: string
+}): JSX.Element => {
+  const activities = useDocumentActivities(docType, planningId)
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -25,11 +32,11 @@ export const ActionMenu = ({ deliverableUuids, planningId }: { deliverableUuids:
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className='w-56'>
-        <DropdownMenuItem>
-          <Link to='Planning' props={{ id: planningId }}>
-            Open
-          </Link>
-        </DropdownMenuItem>
+        {activities.map((activity) => (
+          <DropdownMenuItem key={activity.activityId} onClick={() => void activity.execute()}>
+            {activity.title}
+          </DropdownMenuItem>
+        ))}
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>Assignments</DropdownMenuSubTrigger>
           <DropdownMenuSubContent>

@@ -10,6 +10,7 @@ import { useDocuments } from '@/hooks/index/useDocuments'
 import { SortingV1 } from '@ttab/elephant-api/index'
 import { toast } from 'sonner'
 import { getUTCDateRange } from '@/shared/datetime'
+import { useActivity } from '@/lib/documentActivity'
 
 export const EventsList = (): JSX.Element => {
   const sections = useSections()
@@ -40,6 +41,8 @@ export const EventsList = (): JSX.Element => {
 
   const columns = useMemo(() => eventTableColumns({ sections, organisers, locale }), [sections, organisers, locale])
 
+  const open = useActivity('open', 'core/event')
+
   const onRowSelected = useCallback((row?: Event) => {
     if (row) {
       console.info(`Selected planning item ${row.id}`)
@@ -59,6 +62,7 @@ export const EventsList = (): JSX.Element => {
       type='Event'
       columns={columns}
       onRowSelected={onRowSelected}
+      onOpen={(event, id) => open?.execute(id, event)}
     />
   )
 }
