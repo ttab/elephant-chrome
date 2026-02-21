@@ -1,21 +1,17 @@
-import { useRegistry, useRepositorySocket } from '@/hooks'
+import { useDateRange, useRepositorySocket } from '@/hooks'
 import { Table } from '@/components/Table'
 import type { ColumnDef } from '@tanstack/react-table'
 import { Error as ErrorView } from '../Error'
-import { useMemo, type JSX } from 'react'
+import { type JSX } from 'react'
 import { TableSkeleton } from '@/components/Table/Skeleton'
 import type { PreprocessedLatestData, LatestDecorator } from './preprocessor'
 import { latestPreprocessor } from './preprocessor'
-import { getUTCDateRange } from '@/shared/datetime'
 import { Toolbar } from '@/components/Table/Toolbar'
 
 export const LatestList = ({ columns }: {
   columns: ColumnDef<PreprocessedLatestData>[]
 }): JSX.Element => {
-  const { timeZone } = useRegistry()
-
-  const { from, to } = useMemo(() =>
-    getUTCDateRange(new Date(), timeZone), [timeZone])
+  const { from, to } = useDateRange()
 
   const { error, isLoading } = useRepositorySocket<LatestDecorator>({
     type: 'core/planning-item',

@@ -1,7 +1,6 @@
-import { useMemo, type JSX } from 'react'
+import { type JSX } from 'react'
 import { Table } from '@/components/Table'
-import { useQuery, useRegistry, useRepositorySocket } from '@/hooks'
-import { getUTCDateRange } from '@/shared/datetime'
+import { useDateRange, useRepositorySocket } from '@/hooks'
 import type { ColumnDef } from '@tanstack/react-table'
 import { TableSkeleton } from '@/components/Table/Skeleton'
 import type { PreprocessedPlanningData } from './preprocessor'
@@ -13,12 +12,7 @@ import { Toolbar } from '@/components/Table/Toolbar'
 export const PlanningList = ({ columns }: {
   columns: ColumnDef<PreprocessedPlanningData>[]
 }): JSX.Element => {
-  const [query] = useQuery()
-  const { timeZone } = useRegistry()
-  const { from, to } = useMemo(() =>
-    getUTCDateRange(query?.from
-      ? new Date(query?.from as string)
-      : new Date(), timeZone), [query, timeZone])
+  const { from, to } = useDateRange()
 
   const { error, isLoading } = useRepositorySocket({
     type: 'core/planning-item',

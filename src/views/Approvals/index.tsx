@@ -2,7 +2,7 @@ import { View, ViewHeader } from '@/components'
 import { type ViewMetadata } from '@/types'
 import { TimeSlot } from './TimeSlot'
 import { useEffect, useMemo, useState, type JSX } from 'react'
-import { useNavigationKeys, useOpenDocuments, useQuery, useRegistry, useRepositorySocket } from '@/hooks'
+import { useDateRange, useNavigationKeys, useOpenDocuments, useRegistry, useRepositorySocket } from '@/hooks'
 import { Header } from '@/components/Header'
 import { ApprovalsCard } from './ApprovalsCard'
 import { Toolbar } from './Toolbar.tsx'
@@ -15,7 +15,6 @@ import { columnFilterToQuery } from '@/lib/loadFilters'
 import { filterAssignments, getFacets } from './lib/filterAssignments'
 import { structureAssignments } from './lib/structureAssignments'
 import { preprocessApprovalData } from './preprocessor'
-import { getUTCDateRange } from '@/shared/datetime'
 import { timesSlots as Slots } from '@/defaults/assignmentTimeslots'
 import type { Planning } from '@/shared/schemas/planning'
 import { createMetricsDecorator, type MetricsDecorator } from '@/hooks/useRepositorySocket/decorators/metrics'
@@ -44,13 +43,8 @@ export const Approvals = (): JSX.Element => {
 
 export const ApprovalsView = (): JSX.Element => {
   const trackedDocuments = useTrackedDocuments()
-  const [query] = useQuery()
   const { timeZone, repository } = useRegistry()
-
-  const { from, to } = useMemo(() =>
-    getUTCDateRange(query?.from
-      ? new Date(query?.from as string)
-      : new Date(), timeZone), [query, timeZone])
+  const { from, to } = useDateRange()
 
   const decorators = useMemo(() => {
     if (!repository) return []
