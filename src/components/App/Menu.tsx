@@ -8,7 +8,7 @@ import {
   SheetTrigger
 } from '@ttab/elephant-ui'
 import { Link, Logo } from '@/components'
-import { MenuIcon, XIcon } from '@ttab/elephant-ui/icons'
+import { MenuIcon, XIcon, PuzzleIcon } from '@ttab/elephant-ui/icons'
 import { ThemeSwitcher } from './ThemeSwitcher'
 import { MenuItem } from './MenuItem'
 import { useSession } from 'next-auth/react'
@@ -17,6 +17,7 @@ import { useUserTracker } from '@/hooks/useUserTracker'
 import { useCallback, useRef, useState, type JSX } from 'react'
 import { UserInfo } from './UserInfo'
 import { MenuItemSubSheet } from './MenuItemSubSheet'
+import { PluginDialog } from '@/components/Plugins'
 
 
 export const Menu = (): JSX.Element => {
@@ -25,6 +26,7 @@ export const Menu = (): JSX.Element => {
   const [user] = useUserTracker<object>('')
   const [mainOpen, setMainMenuOpen] = useState<boolean>(false)
   const [activeSubSheet, setActiveSubSheet] = useState<ApplicationMenuItem | null>(null)
+  const [pluginDialogOpen, setPluginDialogOpen] = useState(false)
 
   const handleSubSheetClick = useCallback((menuItem: ApplicationMenuItem) => {
     setMainMenuOpen(false) // Close main menu first
@@ -110,6 +112,20 @@ export const Menu = (): JSX.Element => {
                 )
               })}
             </div>
+
+            <div className='px-3 pt-2 border-t'>
+              <SheetClose asChild>
+                <button
+                  onClick={() => setPluginDialogOpen(true)}
+                  className='rounded-md hover:bg-table-focused h-9 px-3 w-full'
+                >
+                  <div className='flex items-center gap-3'>
+                    <PuzzleIcon strokeWidth={2.25} size={18} color='#8B5CF6' />
+                    <div className='pl-2'>Plugins</div>
+                  </div>
+                </button>
+              </SheetClose>
+            </div>
           </div>
 
           <UserInfo user={user} data={data} />
@@ -125,6 +141,8 @@ export const Menu = (): JSX.Element => {
           onClose={handleSubSheetClose}
         />
       ))}
+
+      <PluginDialog open={pluginDialogOpen} onOpenChange={setPluginDialogOpen} />
     </>
   )
 }

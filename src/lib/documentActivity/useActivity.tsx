@@ -1,15 +1,38 @@
 import { type MouseEvent as ReactMouseEvent, useContext, useMemo } from 'react'
 import { DocumentActivityContext } from './documentActivityContext'
-import { useHistory, useNavigation, useView } from '@/hooks'
-import { handleLink } from '@/components/Link/lib/handleLink'
-import type { View } from '@/types'
 import type { LucideIcon } from '@ttab/elephant-ui/icons'
-import { toast } from 'sonner'
+import { useActivityExecutor, type ExecuteActivityOptions } from './useActivityExecutor'
+
+export type ExecuteOptions = ExecuteActivityOptions
 
 export interface ActivityHandle {
   title: string
   icon?: LucideIcon
-  execute: (id: string, event?: ReactMouseEvent<Element> | KeyboardEvent) => void
+  execute: (id: string, options?: ExecuteOptions) => void
+  executeEvent: (id: string, event: ReactMouseEvent<Element> | KeyboardEvent) => void
+}
+
+/**
+ * Process a DOM event into activity execution options.
+ *
+ * Returns null when the event indicates "open in new tab" (ctrl/meta key),
+ * meaning the caller should not execute the activity. Otherwise returns
+ * the extracted target and keepFocus options and consumes the event.
+ */
+export function resolveEventOptions(
+  event: ReactMouseEvent<Element> | KeyboardEvent
+): ExecuteOptions | null {
+  if (event.ctrlKey || event.metaKey) {
+    return null
+  }
+
+  event.preventDefault()
+  event.stopPropagation()
+
+  return {
+    keepFocus: event instanceof KeyboardEvent && event.key === ' ',
+    target: event.shiftKey ? 'last' : undefined
+  }
 }
 
 export function useActivity(
@@ -23,9 +46,7 @@ export function useActivity(
     throw new Error('useActivity must be used within a DocumentActivityProvider')
   }
 
-  const history = useHistory()
-  const { state, dispatch } = useNavigation()
-  const { viewId: origin } = useView()
+  const { executeActivity } = useActivityExecutor()
 
   return useMemo(() => {
     const entries = context.getEntries(docType)
@@ -38,37 +59,15 @@ export function useActivity(
     return {
       title: entry.definition.title,
       icon: entry.definition.icon,
-      execute: (id: string, event?: ReactMouseEvent<Element> | KeyboardEvent) => {
-        if (event) {
-          if (event.ctrlKey || event.metaKey) {
-            return
-          }
-
-          event.preventDefault()
-          event.stopPropagation()
+      execute: (id: string, options?: ExecuteOptions) => {
+        executeActivity(entry, id, args, options)
+      },
+      executeEvent: (id: string, event: ReactMouseEvent<Element> | KeyboardEvent) => {
+        const opts = resolveEventOptions(event)
+        if (opts) {
+          executeActivity(entry, id, args, opts)
         }
-
-        const keepFocus = event instanceof KeyboardEvent && event.key === ' '
-        const shiftKey = event?.shiftKey
-
-        entry.definition.viewRouteFunc(id, args).then((resolved) => {
-          const viewItem = state.viewRegistry.get(resolved.viewName as View)
-
-          handleLink({
-            dispatch,
-            viewItem,
-            props: resolved.props,
-            viewId: crypto.randomUUID(),
-            origin,
-            target: resolved.target ?? (shiftKey ? 'last' : undefined),
-            history,
-            keepFocus
-          })
-        }).catch((error) => {
-          const message = error instanceof Error ? error.message : 'Unknown error'
-          toast.error(`Could not execute "${entry.definition.title}": ${message}`)
-        })
       }
     }
-  }, [context, activityId, docType, args, state.viewRegistry, dispatch, origin, history])
+  }, [context, activityId, docType, args, executeActivity])
 }

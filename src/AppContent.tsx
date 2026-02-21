@@ -1,4 +1,4 @@
-import React, { useMemo, type JSX } from 'react'
+import React, { useMemo, useSyncExternalStore, type JSX } from 'react'
 import { useHistory, useNavigation, useResize } from '@/hooks'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@ttab/elephant-ui'
 import { calculateViewWidths, minimumSpaceRequired } from '@/navigation/lib'
@@ -16,13 +16,19 @@ export const AppContent = (): JSX.Element => {
 
   useResize()
 
+  // Re-render when plugin views are registered/unregistered
+  const registryVersion = useSyncExternalStore(
+    state.viewRegistry.subscribe,
+    state.viewRegistry.getVersion
+  )
+
   const { components, content } = useMemo(() => {
     return getVisibleContent(state, setActiveView)
-  }, [state, setActiveView])
+  }, [state, setActiveView, registryVersion])
 
   const views = useMemo(() => {
     return calculateViewWidths(state.viewRegistry, content)
-  }, [state, content])
+  }, [state, content, registryVersion])
 
   return (
     <>

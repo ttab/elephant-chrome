@@ -9,10 +9,12 @@ import { RepositoryEventsProvider } from './contexts/RepositoryEventsProvider.ts
 import { Init } from './components/Init/index.tsx'
 import { UserMessagesReceiver } from './components/UserMessagesReceiver.tsx'
 import { DocumentActivityProvider, CoreActivityRegistrar } from './lib/documentActivity'
+import { initPluginHost, PluginProvider, PluginHostCompleter } from './lib/plugins'
 import { Toaster } from '@ttab/elephant-ui'
 import './index.css'
 
 banner()
+initPluginHost()
 
 const root = document.getElementById('root')
 
@@ -30,11 +32,14 @@ ReactDOM.createRoot(root).render(
               <ThemeProvider defaultTheme='light' storageKey='ele-ui-theme'>
                 <DocumentActivityProvider>
                   <CoreActivityRegistrar />
-                  <Init>
-                    <UserMessagesReceiver>
-                      <App />
-                    </UserMessagesReceiver>
-                  </Init>
+                  <PluginProvider>
+                    <Init>
+                      <PluginHostCompleter />
+                      <UserMessagesReceiver>
+                        <App />
+                      </UserMessagesReceiver>
+                    </Init>
+                  </PluginProvider>
                 </DocumentActivityProvider>
               </ThemeProvider>
             </SupportedLanguagesProvider>

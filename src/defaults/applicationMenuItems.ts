@@ -12,7 +12,7 @@ import {
   type LucideIcon,
   NewspaperIcon
 } from '@ttab/elephant-ui/icons'
-import type { ViewProps, View } from '../types'
+import type { ViewProps, BuiltinView } from '../types'
 
 /**
  * Defines a menu item in the main application menu.
@@ -32,7 +32,7 @@ interface ApplicationMenu {
   groups: MenuGroups[]
 }
 export interface ApplicationMenuItem {
-  name: View
+  name: BuiltinView
   label: string
   icon: LucideIcon
   target?: 'view' | 'dialog' | 'sheet'

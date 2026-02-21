@@ -1,14 +1,23 @@
-import type { NavigationState, ViewRegistryItem, View } from '@/types'
+import type { NavigationState, ViewRegistryItem, BuiltinView } from '@/types'
 import * as views from '@/views'
+import { PendingView } from '@/views/PendingView'
 import { currentView } from '@/navigation/lib'
 import { type HistoryState } from '../hooks/useHistory'
 
 const registeredComponents = new Map<string, ViewRegistryItem>()
+const listeners = new Set<() => void>()
+let version = 0
+
+function notifyListeners(): void {
+  for (const listener of listeners) {
+    listener()
+  }
+}
 
 Object.keys(views).forEach((name) => {
   registeredComponents.set(name, {
-    component: views[name as View],
-    meta: views[name as View].meta
+    component: views[name as BuiltinView],
+    meta: views[name as BuiltinView].meta
   })
 })
 
@@ -17,12 +26,52 @@ if (!registeredComponents.has('Error')) {
   throw new Error('Error view must be registered')
 }
 
+const pendingViewItem: ViewRegistryItem = {
+  component: PendingView,
+  meta: (registeredComponents.get('Error') as ViewRegistryItem).meta
+}
+
 const viewRegistry = {
-  get: (name: View) => {
-    return registeredComponents.get(name) ?? registeredComponents.get('Error') as ViewRegistryItem
+  get: (name: string) => {
+    const exact = registeredComponents.get(name)
+    if (exact) {
+      return exact
+    }
+
+    // Fall back to path-based lookup for plugin views that use namespaced
+    // names (e.g. "plugin:dummy-plugin:DummyView") where the URL-derived
+    // name won't match the registered key.
+    const currentPath = window.location.pathname
+    for (const item of registeredComponents.values()) {
+      if (item.meta.path === currentPath) {
+        return item
+      }
+    }
+
+    // Show a loading skeleton while plugins are still registering.
+    // PendingView falls back to Error after a 3 s timeout.
+    return pendingViewItem
   },
-  set: () => {
-    throw new Error('"Set" is not implemented')
+  set: (name: string, item: ViewRegistryItem): (() => void) => {
+    registeredComponents.set(name, item)
+    version++
+    notifyListeners()
+
+    return () => {
+      registeredComponents.delete(name)
+      version++
+      notifyListeners()
+    }
+  },
+  subscribe: (listener: () => void): (() => void) => {
+    listeners.add(listener)
+
+    return () => {
+      listeners.delete(listener)
+    }
+  },
+  getVersion: (): number => {
+    return version
   }
 }
 

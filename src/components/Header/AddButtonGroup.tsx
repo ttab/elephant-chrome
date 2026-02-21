@@ -4,7 +4,7 @@ import { type ReactNode } from 'react'
 import * as Views from '@/views'
 import { getTemplateFromView } from '@/shared/templates/lib/getTemplateFromView'
 import { cn } from '@ttab/elephant-ui/utils'
-import type { View } from '@/types/index'
+import type { BuiltinView } from '@/types/index'
 import { useModal } from '../Modal/useModal'
 import {
   ButtonGroup,
@@ -23,7 +23,7 @@ import { applicationMenu } from '@/defaults/applicationMenuItems'
 import type { LucideIcon } from 'lucide-react'
 
 type Variant = VariantProps<typeof buttonVariants>['variant']
-type ButtonView = { name: View, type: string, icon?: { icon?: LucideIcon, color?: string } }
+type ButtonView = { name: BuiltinView, type: string, icon?: { icon?: LucideIcon, color?: string } }
 
 const AddButton = ({
   withNew,
@@ -72,15 +72,15 @@ const AddButton = ({
   )
 }
 
-export const AddButtonGroup = ({ docType = 'core/article', query }: { type: View, query: QueryParams, docType?: string }) => {
+export const AddButtonGroup = ({ docType = 'core/article', query }: { type: BuiltinView, query: QueryParams, docType?: string }) => {
   const { showModal, hideModal } = useModal()
-  const getIcon = (t: View): { icon: LucideIcon | undefined, color?: string } => {
+  const getIcon = (t: BuiltinView): { icon: LucideIcon | undefined, color?: string } => {
     const group = applicationMenu.groups.find((g) => g.items.find((itm) => itm.name.includes(t)))
     const icon = group?.items.find((item) => item.name.includes(t))
     return { icon: icon?.icon, color: icon?.color }
   }
 
-  const views: Array<{ name: View, type: string, icon?: { icon?: LucideIcon, color?: string } }> = [
+  const views: Array<{ name: BuiltinView, type: string, icon?: { icon?: LucideIcon, color?: string } }> = [
     { name: 'Planning', type: 'core/planning-item', icon: getIcon('Planning') },
     { name: 'Event', type: 'core/event', icon: getIcon('Event') },
     { name: 'QuickArticle', type: 'core/article', icon: getIcon('QuickArticle') },

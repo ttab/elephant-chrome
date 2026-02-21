@@ -203,7 +203,11 @@ describe('useDocumentActivities', () => {
       { wrapper }
     )
 
-    await result.current[0].execute()
+    result.current[0].execute()
+
+    await vi.waitFor(() => {
+      expect(toast.error).toHaveBeenCalled()
+    })
 
     expect(toast.error).toHaveBeenCalledWith(
       'Could not open "Open planning": No planning ID provided'
