@@ -6,11 +6,12 @@ import { WireRow } from './WireRow'
 import type { TableRowData } from './types'
 import { isWire } from '.'
 
-export const GroupedRows = <TData extends TableRowData, TValue>({ row, columns, handleOpen, openDocuments }: {
+export const GroupedRows = <TData extends TableRowData, TValue>({ row, columns, handleOpen, openDocuments, align }: {
   row: RowType<TData>
   columns: Array<ColumnDef<TData, TValue>>
   handleOpen: (event: MouseEvent<HTMLTableRowElement> | KeyboardEvent, subRow: RowType<TData>) => void
   openDocuments: string[]
+  align?: 'start' | 'center'
 }): JSX.Element => {
   if (!row.subRows.length) {
     return <></>
@@ -28,6 +29,7 @@ export const GroupedRows = <TData extends TableRowData, TValue>({ row, columns, 
           row={subRow}
           handleOpen={handleOpen}
           openDocuments={openDocuments}
+          align={align}
         />
       ))}
     </React.Fragment>

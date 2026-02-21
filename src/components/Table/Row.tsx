@@ -4,12 +4,11 @@ import { type Row as RowType, flexRender } from '@tanstack/react-table'
 import { cn } from '@ttab/elephant-ui/utils'
 import type { TableRowData } from './types'
 
-const BASE_URL = import.meta.env.BASE_URL
-
-export const Row = <TData extends TableRowData,>({ row, handleOpen, openDocuments }: {
+export const Row = <TData extends TableRowData,>({ row, handleOpen, openDocuments, align = 'center' }: {
   row: RowType<TData>
   handleOpen: (event: MouseEvent<HTMLTableRowElement>, row: RowType<TData>) => void
   openDocuments: string[]
+  align?: 'start' | 'center'
 }): JSX.Element => {
   const uuid = row.original.id
   const selected = !!uuid && openDocuments.includes(uuid)
@@ -21,14 +20,13 @@ export const Row = <TData extends TableRowData,>({ row, handleOpen, openDocument
     }
   }, [isSelected])
 
-  const isAssignmentsTable = window.location.pathname.includes(`${BASE_URL}/assignments`)
   return (
     <TableRow
       tabIndex={0}
       data-state={selected && 'selected'}
       className={cn(
         'flex cursor-default scroll-mt-10 ring-inset focus:outline-none focus-visible:ring-2 focus-visible:ring-table-selected data-[state=selected]:bg-table-focused',
-        isAssignmentsTable ? 'items-start' : 'items-center'
+        align === 'start' ? 'items-start' : 'items-center'
       )}
       onClick={(event: MouseEvent<HTMLTableRowElement>) => handleOpen(event, row)}
       ref={rowRef}

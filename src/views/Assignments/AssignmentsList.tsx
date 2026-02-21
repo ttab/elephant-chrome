@@ -65,6 +65,7 @@ export const AssignmentsList = ({ columns }: {
     <Table<PreprocessedAssignmentData, unknown>
       columns={columns}
       onRowSelected={onRowSelected}
+      rowAlign='start'
       resolveNavigation={(row) => ({
         id: row.id,
         opensWith: 'Planning'

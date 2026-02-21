@@ -41,6 +41,7 @@ interface TableProps<TData extends TableRowData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
   onRowSelected?: (row?: TData) => void
   resolveNavigation?: (row: TData) => NavigationParams
+  rowAlign?: 'start' | 'center'
 }
 
 // Type guard to check if a row is a WireType based on the presence of 'document.meta.tt_wire.role' in fields
@@ -54,6 +55,7 @@ export const Table = <TData extends TableRowData, TValue>({
   columns,
   onRowSelected,
   resolveNavigation,
+  rowAlign,
   children
 }: TableProps<TData, TValue> & { searchType?: View } & PropsWithChildren): JSX.Element => {
   const { state, dispatch } = useNavigation()
@@ -286,6 +288,7 @@ export const Table = <TData extends TableRowData, TValue>({
             columns={columns}
             handleOpen={handleOpen}
             openDocuments={openDocuments}
+            align={rowAlign}
           />
         )
       : (
@@ -294,6 +297,7 @@ export const Table = <TData extends TableRowData, TValue>({
             row={row}
             handleOpen={handleOpen}
             openDocuments={openDocuments}
+            align={rowAlign}
           />
         )
     )

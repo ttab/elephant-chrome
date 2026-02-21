@@ -283,7 +283,7 @@ export function useRepositorySocket<TDecoratorData extends DecoratorDataBase = D
         })
       }
     }
-  // We only want to re-run this effect when accessToken changes or after reconnect
+  // We dont want to re-run this effect when accessToken changes
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [repositorySocket, from, to, include, labels, filter, type, asTable, reconnectCount])
 
