@@ -154,7 +154,6 @@ export class RepositorySocket {
     }
     this.#rejectHandlers.clear()
     this.#messageHandlers.clear()
-    this.#updateHandlers.clear()
   }
 
   #reconnect(): void {
@@ -217,6 +216,7 @@ export class RepositorySocket {
     this.#connectingPromise = null
     this.#authenticatingPromise = null
     this.#rejectPendingHandlers('WebSocket disconnected')
+    this.#updateHandlers.clear()
     this.#reconnectListeners.clear()
     this.#ws?.close()
     this.#ws = null
