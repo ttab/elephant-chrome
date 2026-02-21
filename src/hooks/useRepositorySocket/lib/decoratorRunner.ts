@@ -33,7 +33,8 @@ import type { DocumentStateWithIncludes } from '@/shared/RepositorySocket'
  */
 export async function runInitialDecorators<TDecoratorData extends DecoratorDataBase = DecoratorDataBase>(
   documents: DocumentStateWithIncludes[],
-  decorators: Array<Decorator<object>>
+  decorators: Array<Decorator<object>>,
+  accessToken: string
 ): Promise<DocumentStateWithDecorators<TDecoratorData>[]> {
   if (!decorators.length) {
     return documents as DocumentStateWithDecorators<TDecoratorData>[]
@@ -51,7 +52,7 @@ export async function runInitialDecorators<TDecoratorData extends DecoratorDataB
     }
 
     try {
-      const decoratorDataMap = await decorator.onInitialData(documents)
+      const decoratorDataMap = await decorator.onInitialData(documents, accessToken)
 
       // Merge decorator data into each document's decoratorData
       // Apply under decorator's namespace: decoratorData[namespace][uuid] = enrichment
@@ -124,7 +125,8 @@ export async function runInitialDecorators<TDecoratorData extends DecoratorDataB
 export async function runUpdateDecorators<TDecoratorData extends DecoratorDataBase = DecoratorDataBase>(
   parent: DocumentStateWithDecorators<TDecoratorData>,
   update: DocumentUpdate,
-  decorators: Array<Decorator<object>>
+  decorators: Array<Decorator<object>>,
+  accessToken: string
 ): Promise<DocumentStateWithDecorators<TDecoratorData>> {
   if (!decorators.length) {
     return parent
@@ -157,7 +159,7 @@ export async function runUpdateDecorators<TDecoratorData extends DecoratorDataBa
     }
 
     try {
-      const enrichment = await decorator.onUpdate(update)
+      const enrichment = await decorator.onUpdate(update, accessToken)
       if (enrichment !== undefined) {
         // Initialize decoratorData if not present
         if (!enrichedDoc.decoratorData) {

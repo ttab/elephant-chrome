@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { createStatusesDecorator } from '@/hooks/useRepositorySocket/decorators/statuses'
 import type { Repository } from '@/shared/Repository'
 import type { DocumentStateWithIncludes } from '@/shared/RepositorySocket'
-import * as nextAuth from 'next-auth/react'
 import { Document } from '@ttab/elephant-api/newsdoc'
 import type { DocumentUpdate } from '@ttab/elephant-api/repositorysocket'
 import type { StatusOverviewItem } from '@ttab/elephant-api/repository'
@@ -19,16 +18,6 @@ describe('createStatusesDecorator', () => {
     mockRepository = {
       getStatuses: mockGetStatuses
     } as unknown as Repository
-
-    vi.mocked(nextAuth.getSession).mockResolvedValue({
-      expires: new Date(Date.now() + 2 * 86400).toISOString(),
-      user: { name: 'Test User', sub: 'test-user-id', email: '', image: '', id: 'test-user-id' },
-      accessToken: 'test-access-token',
-      refreshToken: 'test-refresh',
-      accessTokenExpires: Date.now() + 2 * 86400,
-      status: 'authenticated',
-      error: ''
-    })
   })
 
   afterEach(() => {
@@ -66,12 +55,12 @@ describe('createStatusesDecorator', () => {
       ]
 
       const decorator = createStatusesDecorator({ repository: mockRepository })
-      const result = await decorator.onInitialData!(documents)
+      const result = await decorator.onInitialData!(documents, 'test-token')
 
       expect(mockGetStatuses).toHaveBeenCalledWith({
         uuids: ['included-1', 'included-2'],
         statuses: expect.any(Array) as string[],
-        accessToken: 'test-access-token'
+        accessToken: 'test-token'
       })
       expect(result.get('included-1')).toBe(statusItem)
     })
@@ -88,32 +77,10 @@ describe('createStatusesDecorator', () => {
       ]
 
       const decorator = createStatusesDecorator({ repository: mockRepository })
-      const result = await decorator.onInitialData!(documents)
+      const result = await decorator.onInitialData!(documents, 'test-token')
 
       expect(result.size).toBe(0)
       expect(mockGetStatuses).not.toHaveBeenCalled()
-    })
-
-    it('should return empty Map when no access token', async () => {
-      const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
-      vi.mocked(nextAuth.getSession).mockResolvedValue(null)
-
-      const documents: DocumentStateWithIncludes[] = [
-        {
-          document: Document.create({
-            uuid: 'parent-1',
-            type: 'core/planning-item'
-          }),
-          includedDocuments: [{ uuid: 'included-1' }]
-        }
-      ]
-
-      const decorator = createStatusesDecorator({ repository: mockRepository })
-      const result = await decorator.onInitialData!(documents)
-
-      expect(result.size).toBe(0)
-      expect(mockGetStatuses).not.toHaveBeenCalled()
-      consoleWarnSpy.mockRestore()
     })
 
     it('should return empty Map when response has no items', async () => {
@@ -131,7 +98,7 @@ describe('createStatusesDecorator', () => {
       ]
 
       const decorator = createStatusesDecorator({ repository: mockRepository })
-      const result = await decorator.onInitialData!(documents)
+      const result = await decorator.onInitialData!(documents, 'test-token')
 
       expect(result.size).toBe(0)
       consoleWarnSpy.mockRestore()
@@ -152,7 +119,7 @@ describe('createStatusesDecorator', () => {
       ]
 
       const decorator = createStatusesDecorator({ repository: mockRepository })
-      const result = await decorator.onInitialData!(documents)
+      const result = await decorator.onInitialData!(documents, 'test-token')
 
       expect(result.size).toBe(0)
       expect(consoleWarnSpy).toHaveBeenCalled()
@@ -173,7 +140,7 @@ describe('createStatusesDecorator', () => {
       ]
 
       const decorator = createStatusesDecorator({ repository: mockRepository })
-      await decorator.onInitialData!(documents)
+      await decorator.onInitialData!(documents, 'test-token')
 
       const calledStatuses = (mockGetStatuses.mock.calls[0][0] as { statuses: string[] }).statuses
       expect(calledStatuses).toContain('draft')
@@ -205,12 +172,12 @@ describe('createStatusesDecorator', () => {
       }
 
       const decorator = createStatusesDecorator({ repository: mockRepository })
-      const result = await decorator.onUpdate!(update)
+      const result = await decorator.onUpdate!(update, 'test-token')
 
       expect(mockGetStatuses).toHaveBeenCalledWith({
         uuids: ['doc-1'],
         statuses: expect.any(Array) as string[],
-        accessToken: 'test-access-token'
+        accessToken: 'test-token'
       })
       expect(result).toBeInstanceOf(Map)
       expect((result as Map<string, StatusOverviewItem>).get('doc-1')).toBe(statusItem)
@@ -227,7 +194,7 @@ describe('createStatusesDecorator', () => {
       }
 
       const decorator = createStatusesDecorator({ repository: mockRepository })
-      const result = await decorator.onUpdate!(update)
+      const result = await decorator.onUpdate!(update, 'test-token')
 
       expect(result).toBeUndefined()
       expect(mockGetStatuses).not.toHaveBeenCalled()
@@ -240,7 +207,7 @@ describe('createStatusesDecorator', () => {
       }
 
       const decorator = createStatusesDecorator({ repository: mockRepository })
-      const result = await decorator.onUpdate!(update)
+      const result = await decorator.onUpdate!(update, 'test-token')
 
       expect(result).toBeInstanceOf(Map)
       expect((result as Map<string, StatusOverviewItem>).size).toBe(0)

@@ -540,6 +540,7 @@ describe('handlers', () => {
     const createMockScheduleDecoratorUpdate = () => new ScheduleDecoratorUpdate(
       vi.fn(),
       { current: [] },
+      { current: 'test-token' },
       vi.fn()
     )
 
@@ -577,6 +578,7 @@ describe('handlers', () => {
       const scheduler = new ScheduleDecoratorUpdate(
         vi.fn(),
         { current: [] },
+        { current: 'test-token' },
         vi.fn()
       )
       scheduler.execute = mockExecute
@@ -787,7 +789,7 @@ describe('handlers', () => {
       const decoratorsRef = { current: [] }
       const runUpdateDecorators = vi.fn()
 
-      const scheduler = new ScheduleDecoratorUpdate(setData, decoratorsRef, runUpdateDecorators)
+      const scheduler = new ScheduleDecoratorUpdate(setData, decoratorsRef, { current: 'test-token' }, runUpdateDecorators)
 
       const update: DocumentUpdate = {
         setName: 'test-set',
@@ -806,7 +808,7 @@ describe('handlers', () => {
       const decoratorsRef = { current: [] }
       const runUpdateDecorators = vi.fn()
 
-      const scheduler = new ScheduleDecoratorUpdate(setData, decoratorsRef, runUpdateDecorators)
+      const scheduler = new ScheduleDecoratorUpdate(setData, decoratorsRef, { current: 'test-token' }, runUpdateDecorators)
 
       const update: DocumentUpdate = {
         setName: 'test-set',
@@ -848,7 +850,7 @@ describe('handlers', () => {
       const decoratorsRef = { current: [] }
       const runUpdateDecorators = vi.fn().mockResolvedValue(enrichedDoc)
 
-      const scheduler = new ScheduleDecoratorUpdate(setData, decoratorsRef, runUpdateDecorators)
+      const scheduler = new ScheduleDecoratorUpdate(setData, decoratorsRef, { current: 'test-token' }, runUpdateDecorators)
 
       const update: DocumentUpdate = {
         setName: 'test-set',
@@ -863,7 +865,7 @@ describe('handlers', () => {
       scheduler.execute(update, parent)
       await vi.advanceTimersByTimeAsync(300)
 
-      expect(runUpdateDecorators).toHaveBeenCalledWith(parent, update, [])
+      expect(runUpdateDecorators).toHaveBeenCalledWith(parent, update, [], 'test-token')
       // Called twice: once to read current state, once to write enriched result
       expect(setData).toHaveBeenCalledTimes(2)
     })
@@ -882,7 +884,7 @@ describe('handlers', () => {
       const runUpdateDecorators = vi.fn().mockRejectedValue(new Error('Decorator error'))
       const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
 
-      const scheduler = new ScheduleDecoratorUpdate(setData, decoratorsRef, runUpdateDecorators)
+      const scheduler = new ScheduleDecoratorUpdate(setData, decoratorsRef, { current: 'test-token' }, runUpdateDecorators)
 
       const update: DocumentUpdate = {
         setName: 'test-set',
@@ -950,7 +952,7 @@ describe('handlers', () => {
         .mockReturnValueOnce(secondPromise)
 
       // Use 0 debounce to test the sequence counter independently
-      const scheduler = new ScheduleDecoratorUpdate(setData, decoratorsRef, runUpdateDecorators, 0)
+      const scheduler = new ScheduleDecoratorUpdate(setData, decoratorsRef, { current: 'test-token' }, runUpdateDecorators, 0)
 
       const update1: DocumentUpdate = {
         setName: 'test-set',
@@ -1034,7 +1036,7 @@ describe('handlers', () => {
         .mockReturnValueOnce(firstPromise)
         .mockResolvedValueOnce(freshResult)
 
-      const scheduler = new ScheduleDecoratorUpdate(setData, decoratorsRef, runUpdateDecorators, 100)
+      const scheduler = new ScheduleDecoratorUpdate(setData, decoratorsRef, { current: 'test-token' }, runUpdateDecorators, 100)
 
       const makeUpdate = (title: string): DocumentUpdate => ({
         setName: 'test-set',
@@ -1091,7 +1093,7 @@ describe('handlers', () => {
       const decoratorsRef = { current: [] }
       const runUpdateDecorators = vi.fn().mockResolvedValue(enrichedDoc)
 
-      const scheduler = new ScheduleDecoratorUpdate(setData, decoratorsRef, runUpdateDecorators)
+      const scheduler = new ScheduleDecoratorUpdate(setData, decoratorsRef, { current: 'test-token' }, runUpdateDecorators)
 
       const makeUpdate = (title: string): DocumentUpdate => ({
         setName: 'test-set',
@@ -1115,7 +1117,7 @@ describe('handlers', () => {
       await vi.advanceTimersByTimeAsync(300)
 
       expect(runUpdateDecorators).toHaveBeenCalledTimes(1)
-      expect(runUpdateDecorators).toHaveBeenCalledWith(parent, update3, [])
+      expect(runUpdateDecorators).toHaveBeenCalledWith(parent, update3, [], 'test-token')
     })
 
     it('should cancel pending timers on cleanup', async () => {
@@ -1123,7 +1125,7 @@ describe('handlers', () => {
       const decoratorsRef = { current: [] }
       const runUpdateDecorators = vi.fn()
 
-      const scheduler = new ScheduleDecoratorUpdate(setData, decoratorsRef, runUpdateDecorators)
+      const scheduler = new ScheduleDecoratorUpdate(setData, decoratorsRef, { current: 'test-token' }, runUpdateDecorators)
 
       const parent: DocumentStateWithDecorators = {
         document: Document.create({

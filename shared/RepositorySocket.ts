@@ -72,7 +72,7 @@ export class RepositorySocket {
 
   async #initiateConnect(accessToken: string): Promise<void> {
     this.#accessToken = accessToken
-    const token = await this.#getSocketToken()
+    const token = await this.#getSocketToken(accessToken)
     const urlWithToken = `${this.#url}/${token}`
 
     return new Promise((resolve, reject) => {
@@ -147,8 +147,8 @@ export class RepositorySocket {
     })
   }
 
-  async #getSocketToken(): Promise<string> {
-    return await this.#repository.getSocketToken()
+  async #getSocketToken(accessToken: string): Promise<string> {
+    return await this.#repository.getSocketToken(accessToken)
   }
 
   #rejectPendingHandlers(reason: string): void {
@@ -289,13 +289,15 @@ export class RepositorySocket {
     type,
     timespan,
     include = [],
-    labels = []
+    labels = [],
+    resolveParentIndex
   }: {
     setName: string
     type: string
     timespan?: { from: string, to: string }
     include?: string[]
     labels?: string[]
+    resolveParentIndex?: (documents: DocumentStateWithIncludes[], targetUuid: string) => number
   }): Promise<{
     callId: string
     documents: DocumentStateWithIncludes[]
@@ -340,30 +342,13 @@ export class RepositorySocket {
           documents.push(...response.documentBatch.documents)
         }
 
-        if (response.inclusionBatch) {
-          // build map of deliverable uuid -> index
-          const uuidToIndex = new Map<string, number>()
-          documents.forEach((doc, i) => {
-            const metas = doc.document?.meta?.filter((a) => a.type === 'core/assignment')
-            if (!metas?.length) {
-              return
-            }
-
-            for (const meta of metas) {
-              for (const link of meta.links ?? []) {
-                if (link.rel !== 'deliverable' || !link.uuid) {
-                  continue
-                }
-
-                uuidToIndex.set(link.uuid, i)
-              }
-            }
-          })
-
+        if (response.inclusionBatch && resolveParentIndex) {
           for (const includedDoc of response.inclusionBatch.documents) {
             const targetUuid = includedDoc.state?.document?.uuid
-            const index = targetUuid ? uuidToIndex.get(targetUuid) : undefined
-            if (index !== undefined) {
+            if (!targetUuid) continue
+
+            const index = resolveParentIndex(documents, targetUuid)
+            if (index >= 0) {
               if (!documents[index].includedDocuments) {
                 documents[index].includedDocuments = []
               }

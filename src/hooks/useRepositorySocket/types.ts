@@ -6,10 +6,12 @@ export type DecoratorDataBase = Record<string, Record<string, object>>
 export interface Decorator<TEnrichment = unknown> {
   namespace: string
   onInitialData?: (
-    documents: DocumentStateWithIncludes[]
+    documents: DocumentStateWithIncludes[],
+    accessToken: string
   ) => Promise<Map<string, TEnrichment>>
   onUpdate?: (
-    update: DocumentUpdate
+    update: DocumentUpdate,
+    accessToken: string
   ) => Promise<TEnrichment | Map<string, TEnrichment> | undefined>
 }
 

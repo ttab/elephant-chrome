@@ -1,6 +1,5 @@
 import type { Decorator, DecoratorDataBase } from '../types'
 import type { DocumentStateWithIncludes } from '@/shared/RepositorySocket'
-import { getSession } from 'next-auth/react'
 import type { Repository } from '@/shared/Repository'
 import type { DocumentUpdate } from '@ttab/elephant-api/repositorysocket'
 import { StatusSpecifications } from '@/defaults/workflowSpecification'
@@ -34,7 +33,7 @@ export function createStatusesDecorator(options: {
   return {
     namespace: 'statuses',
 
-    async onInitialData(documents: DocumentStateWithIncludes[]) {
+    async onInitialData(documents: DocumentStateWithIncludes[], accessToken: string) {
       const uuids = documents
         .flatMap((d) => d.includedDocuments)
         .map((doc) => doc?.uuid)
@@ -44,10 +43,10 @@ export function createStatusesDecorator(options: {
         return new Map()
       }
 
-      return await fetchStatuses(uuids, repository, statuses)
+      return await fetchStatuses(uuids, repository, statuses, accessToken)
     },
 
-    async onUpdate(update: DocumentUpdate) {
+    async onUpdate(update: DocumentUpdate, accessToken: string) {
       if (!isInclusionUpdate(update)) {
         return undefined
       }
@@ -57,7 +56,7 @@ export function createStatusesDecorator(options: {
         return new Map()
       }
 
-      return await fetchStatuses([uuid], repository, statuses)
+      return await fetchStatuses([uuid], repository, statuses, accessToken)
     }
   }
 }
@@ -68,15 +67,9 @@ export function createStatusesDecorator(options: {
 async function fetchStatuses(
   uuids: string[],
   repository: Repository,
-  statuses: string[]
+  statuses: string[],
+  accessToken: string
 ): Promise<Map<string, StatusOverviewItem>> {
-  const session = await getSession()
-  if (!session?.accessToken) {
-    console.warn('📋 Assignment statuses decorator: No access token available')
-    return new Map()
-  }
-
-
   try {
     const statusesMap = new Map<string, StatusOverviewItem>()
     const chunkSize = 50
@@ -86,7 +79,7 @@ async function fetchStatuses(
       const response = await repository.getStatuses({
         uuids: chunk,
         statuses,
-        accessToken: session.accessToken
+        accessToken
       })
 
       if (response?.items) {

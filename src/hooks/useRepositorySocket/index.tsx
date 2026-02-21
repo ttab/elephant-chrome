@@ -10,6 +10,7 @@ import { toast } from 'sonner'
 import { useTable } from '@/hooks/useTable'
 import type { DocumentStateWithDecorators, DecoratorDataBase } from './types'
 import {
+  findDeliverableParentIndex,
   handleDocumentUpdate,
   handleInclusionBatchUpdate,
   handleRemoved,
@@ -106,9 +107,11 @@ export function useRepositorySocket<TDecoratorData extends DecoratorDataBase = D
   const setNameRef = useRef<string>('')
   const callIdRef = useRef<string>('')
   const decoratorsRef = useRef(decorators)
+  const accessTokenRef = useRef<string>(session?.accessToken ?? '')
+  accessTokenRef.current = session?.accessToken ?? ''
   const schedulerRef = useRef<ScheduleDecoratorUpdate<TDecoratorData>>(null!)
   if (!schedulerRef.current) {
-    schedulerRef.current = new ScheduleDecoratorUpdate<TDecoratorData>(setData, decoratorsRef, runUpdateDecorators)
+    schedulerRef.current = new ScheduleDecoratorUpdate<TDecoratorData>(setData, decoratorsRef, accessTokenRef, runUpdateDecorators)
   }
 
   // When session is updated, make sure to authenticate the socket if it's connected
@@ -164,7 +167,8 @@ export function useRepositorySocket<TDecoratorData extends DecoratorDataBase = D
           setName,
           type,
           timespan,
-          include
+          include,
+          resolveParentIndex: findDeliverableParentIndex
         })
 
         const { callId, documents, onUpdate } = response
@@ -181,7 +185,8 @@ export function useRepositorySocket<TDecoratorData extends DecoratorDataBase = D
             try {
               const enrichedDocs = await runInitialDecorators<TDecoratorData>(
                 documents,
-                decoratorsRef.current
+                decoratorsRef.current,
+                session.accessToken
               )
 
               if (!isActive) return

@@ -55,7 +55,7 @@ describe('decoratorRunner', () => {
 
   describe('runInitialDecorators', () => {
     it('should return documents unchanged when no decorators provided', async () => {
-      const result = await runInitialDecorators([mockDocument], [])
+      const result = await runInitialDecorators([mockDocument], [], 'test-token')
       expect(result).toEqual([mockDocument])
     })
 
@@ -70,9 +70,9 @@ describe('decoratorRunner', () => {
         })
       }
 
-      const result = await runInitialDecorators([mockDocument], [mockDecorator])
+      const result = await runInitialDecorators([mockDocument], [mockDecorator], 'test-token')
 
-      expect(mockDecorator.onInitialData).toHaveBeenCalledWith([mockDocument])
+      expect(mockDecorator.onInitialData).toHaveBeenCalledWith([mockDocument], 'test-token')
       expect(result[0].decoratorData).toEqual({
         test: {
           'doc-1': { charCount: 100 },
@@ -107,7 +107,7 @@ describe('decoratorRunner', () => {
       const result = await runInitialDecorators([mockDocument], [
         decorator1,
         decorator2
-      ])
+      ], 'test-token')
 
       expect(callOrder).toEqual(['decorator1', 'decorator2'])
       // Second decorator's data overwrites first for same UUID
@@ -136,7 +136,7 @@ describe('decoratorRunner', () => {
       const result = await runInitialDecorators([mockDocument], [
         decorator1,
         decorator2
-      ])
+      ], 'test-token')
 
       expect(decorator1.onInitialData).toHaveBeenCalled()
       expect(result[0].decoratorData).toEqual({
@@ -168,7 +168,7 @@ describe('decoratorRunner', () => {
       const result = await runInitialDecorators([mockDocument], [
         badDecorator,
         goodDecorator
-      ])
+      ], 'test-token')
 
       expect(consoleErrorSpy).toHaveBeenCalled()
       expect(result[0].decoratorData).toEqual({
@@ -192,7 +192,7 @@ describe('decoratorRunner', () => {
         })
       }
 
-      const result = await runInitialDecorators([mockDocument], [mockDecorator])
+      const result = await runInitialDecorators([mockDocument], [mockDecorator], 'test-token')
 
       expect(result[0].decoratorData).toEqual({
         test: {
@@ -226,7 +226,8 @@ describe('decoratorRunner', () => {
 
       const result = await runInitialDecorators(
         [mockDocument, doc2],
-        [mockDecorator]
+        [mockDecorator],
+        'test-token'
       )
 
       expect(result[0].decoratorData).toEqual({ test: { 'doc-1': { type: 'article' } } })
@@ -234,7 +235,7 @@ describe('decoratorRunner', () => {
     })
 
     it('should create shallow copies to trigger React re-renders', async () => {
-      const result = await runInitialDecorators([mockDocument], [])
+      const result = await runInitialDecorators([mockDocument], [], 'test-token')
 
       // Result is a new array, but may reference same objects without decorators
       expect(result).not.toBe([mockDocument])
@@ -247,7 +248,7 @@ describe('decoratorRunner', () => {
         onInitialData: vi.fn(() => Promise.resolve(new Map()))
       }
 
-      const result = await runInitialDecorators([mockDocument], [mockDecorator])
+      const result = await runInitialDecorators([mockDocument], [mockDecorator], 'test-token')
 
       expect(result[0].decoratorData).toBeUndefined()
     })
@@ -263,7 +264,7 @@ describe('decoratorRunner', () => {
         })
       }
 
-      const result = await runInitialDecorators([mockDocument], [mockDecorator])
+      const result = await runInitialDecorators([mockDocument], [mockDecorator], 'test-token')
 
       // undefined values should not be included
       expect(result[0].decoratorData).toEqual({
@@ -288,7 +289,7 @@ describe('decoratorRunner', () => {
     }
 
     it('should return parent unchanged when no decorators provided', async () => {
-      const result = await runUpdateDecorators(mockParent, mockUpdate, [])
+      const result = await runUpdateDecorators(mockParent, mockUpdate, [], 'test-token')
       expect(result).toEqual(mockParent)
     })
 
@@ -307,7 +308,7 @@ describe('decoratorRunner', () => {
 
       const result = await runUpdateDecorators(mockParent, updateNoUuid, [
         mockDecorator
-      ])
+      ], 'test-token')
 
       expect(mockDecorator.onUpdate).not.toHaveBeenCalled()
       expect(result).toEqual(mockParent)
@@ -321,9 +322,9 @@ describe('decoratorRunner', () => {
 
       const result = await runUpdateDecorators(mockParent, mockUpdate, [
         mockDecorator
-      ])
+      ], 'test-token')
 
-      expect(mockDecorator.onUpdate).toHaveBeenCalledWith(mockUpdate)
+      expect(mockDecorator.onUpdate).toHaveBeenCalledWith(mockUpdate, 'test-token')
       expect(result.decoratorData).toEqual({
         test: {
           'doc-1': { charCount: 150 },
@@ -354,7 +355,7 @@ describe('decoratorRunner', () => {
       const result = await runUpdateDecorators(mockParent, mockUpdate, [
         decorator1,
         decorator2
-      ])
+      ], 'test-token')
 
       expect(callOrder).toEqual(['decorator1', 'decorator2'])
       // Each decorator spread overwrites previous for same UUID
@@ -380,7 +381,7 @@ describe('decoratorRunner', () => {
       const result = await runUpdateDecorators(mockParent, mockUpdate, [
         decorator1,
         decorator2
-      ])
+      ], 'test-token')
 
       expect(decorator1.onUpdate).toHaveBeenCalled()
       expect(result.decoratorData).toEqual({
@@ -404,7 +405,7 @@ describe('decoratorRunner', () => {
 
       const result = await runUpdateDecorators(mockParent, mockUpdate, [
         mockDecorator
-      ])
+      ], 'test-token')
 
       // Should only use the value for updated document's UUID
       expect(result.decoratorData).toEqual({
@@ -427,7 +428,7 @@ describe('decoratorRunner', () => {
 
       const result = await runUpdateDecorators(mockParent, mockUpdate, [
         mockDecorator
-      ])
+      ], 'test-token')
 
       // Should preserve existing data since Map has no entry for doc-1
       expect(result.decoratorData).toEqual({
@@ -446,7 +447,7 @@ describe('decoratorRunner', () => {
 
       const result = await runUpdateDecorators(mockParent, mockUpdate, [
         mockDecorator
-      ])
+      ], 'test-token')
 
       // Should preserve existing decorator data when undefined
       expect(result.decoratorData).toEqual({
@@ -465,7 +466,7 @@ describe('decoratorRunner', () => {
 
       const result = await runUpdateDecorators(mockParent, mockUpdate, [
         mockDecorator
-      ])
+      ], 'test-token')
 
       // Data for other-uuid should be preserved
       expect(result.decoratorData).toEqual({
@@ -494,7 +495,7 @@ describe('decoratorRunner', () => {
       const result = await runUpdateDecorators(mockParent, mockUpdate, [
         badDecorator,
         goodDecorator
-      ])
+      ], 'test-token')
 
       expect(consoleWarnSpy).toHaveBeenCalled()
       expect(result.decoratorData).toEqual({
@@ -515,7 +516,7 @@ describe('decoratorRunner', () => {
 
       const result = await runUpdateDecorators(mockParent, mockUpdate, [
         mockDecorator
-      ])
+      ], 'test-token')
 
       // Spread operator creates new object reference when decorators run
       expect(result).not.toBe(mockParent)
@@ -538,7 +539,8 @@ describe('decoratorRunner', () => {
         // @ts-expect-error Testing missing decoratorData
         parentNoDecorators,
         mockUpdate,
-        [mockDecorator]
+        [mockDecorator],
+        'test-token'
       )
 
       expect(result.decoratorData).toEqual({
@@ -569,7 +571,7 @@ describe('decoratorRunner', () => {
       const result = await runUpdateDecorators(parent, mockUpdate, [
         decorator1,
         decorator2
-      ])
+      ], 'test-token')
 
       // Each decorator replaces decoratorData with spread, so only last decorator wins
       expect(result.decoratorData).toEqual({
@@ -602,7 +604,7 @@ describe('decoratorRunner', () => {
       const result = await runUpdateDecorators(parent, mockUpdate, [
         decorator1,
         decorator2
-      ])
+      ], 'test-token')
 
       // Decorator 2 should overwrite decorator 1's value for same key
       expect(result.decoratorData).toEqual({

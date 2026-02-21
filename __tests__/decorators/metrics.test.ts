@@ -3,7 +3,6 @@ import type { MetricsData } from '@/hooks/useRepositorySocket/decorators/metrics
 import { createMetricsDecorator } from '@/hooks/useRepositorySocket/decorators/metrics'
 import type { Repository } from '@/shared/Repository'
 import type { DocumentStateWithIncludes } from '@/shared/RepositorySocket'
-import * as nextAuth from 'next-auth/react'
 import { Document } from '@ttab/elephant-api/newsdoc'
 import type { DocumentUpdate } from '@ttab/elephant-api/repositorysocket'
 import type { DocumentMeta } from '@ttab/elephant-api/repository'
@@ -20,16 +19,6 @@ describe('createMetricsDecorator', () => {
     mockRepository = {
       getMetrics: mockGetMetrics
     } as unknown as Repository
-
-    vi.mocked(nextAuth.getSession).mockResolvedValue({
-      expires: new Date(Date.now() + 2 * 86400).toISOString(),
-      user: { name: 'Test User', sub: 'test-user-id', email: '', image: '', id: 'test-user-id' },
-      accessToken: 'test-access-token',
-      refreshToken: 'test-refresh',
-      accessTokenExpires: Date.now() + 2 * 86400,
-      status: 'authenticated',
-      error: ''
-    })
   })
 
   afterEach(() => {
@@ -80,12 +69,12 @@ describe('createMetricsDecorator', () => {
         repository: mockRepository
       })
 
-      const result = await decorator.onInitialData!(documents)
+      const result = await decorator.onInitialData!(documents, 'test-token')
 
       expect(mockGetMetrics).toHaveBeenCalledWith(
         [testUuid1, testUuid2],
         ['char_count', 'word_count'],
-        'test-access-token'
+        'test-token'
       )
 
       // Assert: Verify result contains correct metrics data
@@ -118,7 +107,7 @@ describe('createMetricsDecorator', () => {
         repository: mockRepository
       })
 
-      const result = await decorator.onInitialData!(documents)
+      const result = await decorator.onInitialData!(documents, 'test-token')
 
       expect(mockGetMetrics).not.toHaveBeenCalled()
       expect(result).toBeInstanceOf(Map)
@@ -147,47 +136,13 @@ describe('createMetricsDecorator', () => {
         repository: mockRepository
       })
 
-      const result = await decorator.onInitialData!(documents)
+      const result = await decorator.onInitialData!(documents, 'test-token')
 
       expect(result).toBeInstanceOf(Map)
       expect(result.size).toBe(0)
       expect(consoleWarnSpy).toHaveBeenCalledWith(
         '📊 Metrics decorator: failed to fetch batch metrics:',
         expect.any(Error)
-      )
-
-      consoleWarnSpy.mockRestore()
-    })
-
-    it('should return empty Map when no access token', async () => {
-      const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
-      vi.mocked(nextAuth.getSession).mockResolvedValue(null)
-
-      const documents: DocumentStateWithIncludes[] = [
-        {
-          document: Document.create({
-            uuid: 'parent-uuid',
-            type: 'core/planning-item',
-            uri: 'core://planning/parent-uuid',
-            title: 'Test Planning'
-          }),
-          includedDocuments: [
-            { uuid: 'uuid-1' }
-          ]
-        }
-      ]
-
-      const decorator = createMetricsDecorator({
-        repository: mockRepository
-      })
-
-      const result = await decorator.onInitialData!(documents)
-
-      expect(mockGetMetrics).not.toHaveBeenCalled()
-      expect(result).toBeInstanceOf(Map)
-      expect(result.size).toBe(0)
-      expect(consoleWarnSpy).toHaveBeenCalledWith(
-        '📊 Metrics decorator: No access token available'
       )
 
       consoleWarnSpy.mockRestore()
@@ -220,7 +175,7 @@ describe('createMetricsDecorator', () => {
           repository: mockRepository
         })
 
-        const result = await decorator.onUpdate!(documentUpdate)
+        const result = await decorator.onUpdate!(documentUpdate, 'test-token')
 
         expect(mockGetMetrics).not.toHaveBeenCalled()
         expect(result).toBeUndefined()
@@ -242,7 +197,7 @@ describe('createMetricsDecorator', () => {
           repository: mockRepository
         })
 
-        const result = await decorator.onUpdate!(documentUpdate)
+        const result = await decorator.onUpdate!(documentUpdate, 'test-token')
 
         expect(mockGetMetrics).not.toHaveBeenCalled()
         expect(result).toBeInstanceOf(Map)
@@ -288,12 +243,12 @@ describe('createMetricsDecorator', () => {
           repository: mockRepository
         })
 
-        const result = await decorator.onUpdate?.(includedDocumentUpdate)
+        const result = await decorator.onUpdate?.(includedDocumentUpdate, 'test-token')
 
         expect(mockGetMetrics).toHaveBeenCalledWith(
           [testUuid],
           ['char_count', 'word_count'],
-          'test-access-token'
+          'test-token'
         )
 
         expect(result).toBeInstanceOf(Map)
@@ -325,7 +280,7 @@ describe('createMetricsDecorator', () => {
           repository: mockRepository
         })
 
-        const result = await decorator.onUpdate!(includedDocumentUpdate)
+        const result = await decorator.onUpdate!(includedDocumentUpdate, 'test-token')
 
         expect(mockGetMetrics).not.toHaveBeenCalled()
         expect(result).toBeInstanceOf(Map)
@@ -348,7 +303,7 @@ describe('createMetricsDecorator', () => {
           repository: mockRepository
         })
 
-        const result = await decorator.onUpdate!(includedDocumentUpdate)
+        const result = await decorator.onUpdate!(includedDocumentUpdate, 'test-token')
 
         expect(mockGetMetrics).not.toHaveBeenCalled()
         expect(result).toBeInstanceOf(Map)

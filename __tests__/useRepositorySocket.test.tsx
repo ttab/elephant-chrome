@@ -192,7 +192,7 @@ describe('useRepositorySocket', () => {
       return expect(doc.decoratorData).toBeDefined()
     })
 
-    expect(mockDecorator.onInitialData).toHaveBeenCalledWith(documents)
+    expect(mockDecorator.onInitialData).toHaveBeenCalledWith(documents, 'abc123')
 
     const decoratorData = result.current.data[0].decoratorData as Record<string, Record<string, object>>
     expect(decoratorData.testNs['included-1']).toEqual({ score: 42 })

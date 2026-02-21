@@ -200,10 +200,12 @@ export class ScheduleDecoratorUpdate<TDecoratorData extends object = object> {
   constructor(
     private setData: Dispatch<SetStateAction<DocumentStateWithDecorators<TDecoratorData>[]>>,
     private decoratorsRef: React.RefObject<Decorator<Partial<TDecoratorData>>[]>,
+    private accessTokenRef: React.RefObject<string>,
     private runUpdateDecorators: (
       parent: DocumentStateWithDecorators<TDecoratorData>,
       update: DocumentUpdate,
-      decorators: Decorator<Partial<TDecoratorData>>[]
+      decorators: Decorator<Partial<TDecoratorData>>[],
+      accessToken: string
     ) => Promise<DocumentStateWithDecorators<TDecoratorData>>,
     private debounceMs = 300
   ) {}
@@ -246,10 +248,14 @@ export class ScheduleDecoratorUpdate<TDecoratorData extends object = object> {
         return
       }
 
+      const accessToken = this.accessTokenRef.current
+      if (!accessToken) return
+
       const enrichedDoc = await this.runUpdateDecorators(
         currentParent,
         update,
-        this.decoratorsRef.current
+        this.decoratorsRef.current,
+        accessToken
       )
 
       if (this.#sequence.get(uuid) !== seq) {

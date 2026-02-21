@@ -1,6 +1,5 @@
 import type { Decorator, DecoratorDataBase } from '../types'
 import type { DocumentStateWithIncludes } from '@/shared/RepositorySocket'
-import { getSession } from 'next-auth/react'
 import type { Repository } from '@/shared/Repository'
 import type { DocumentUpdate } from '@ttab/elephant-api/repositorysocket'
 import { isInclusionUpdate } from '../lib/handlers'
@@ -52,7 +51,7 @@ export function createMetricsDecorator(options: {
      * Performs batch API call for all included documents at once.
      * Returns flat Map of UUID -> MetricsData.
      */
-    async onInitialData(documents: DocumentStateWithIncludes[]) {
+    async onInitialData(documents: DocumentStateWithIncludes[], accessToken: string) {
       // Extract UUIDs from included documents only
       const uuids = documents
         .flatMap((d) => d.includedDocuments)
@@ -63,7 +62,7 @@ export function createMetricsDecorator(options: {
         return new Map()
       }
 
-      return await fetchMetricsForUuids(uuids, repository, kinds)
+      return await fetchMetricsForUuids(uuids, repository, kinds, accessToken)
     },
 
     /**
@@ -72,7 +71,7 @@ export function createMetricsDecorator(options: {
      * When an included document updates, re-fetch metrics for it.
      * Returns Map with single entry for the updated document.
      */
-    async onUpdate(update: DocumentUpdate) {
+    async onUpdate(update: DocumentUpdate, accessToken: string) {
       if (!isInclusionUpdate(update)) {
         return undefined
       }
@@ -82,7 +81,7 @@ export function createMetricsDecorator(options: {
         return new Map()
       }
 
-      return await fetchMetricsForUuids([uuid], repository, kinds)
+      return await fetchMetricsForUuids([uuid], repository, kinds, accessToken)
     }
   }
 }
@@ -93,19 +92,14 @@ export function createMetricsDecorator(options: {
 async function fetchMetricsForUuids(
   uuids: string[],
   repository: Repository,
-  kinds: string[]
+  kinds: string[],
+  accessToken: string
 ): Promise<Map<string, MetricsData>> {
-  const session = await getSession()
-  if (!session?.accessToken) {
-    console.warn('📊 Metrics decorator: No access token available')
-    return new Map()
-  }
-
   try {
     const response = await repository.getMetrics(
       uuids,
       kinds,
-      session.accessToken
+      accessToken
     )
 
     const metricsMap = new Map<string, MetricsData>()
