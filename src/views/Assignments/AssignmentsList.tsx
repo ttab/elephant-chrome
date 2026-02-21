@@ -2,7 +2,7 @@ import { useQuery, useRegistry, useRepositorySocket } from '@/hooks'
 import { Table } from '@/components/Table'
 import type { ColumnDef } from '@tanstack/react-table'
 import { Error as ErrorView } from '../Error'
-import { useCallback, useMemo, type JSX } from 'react'
+import { useMemo, type JSX } from 'react'
 import { TableSkeleton } from '@/components/Table/Skeleton'
 import { getUTCDateRange } from '@/shared/datetime'
 import { createStatusesDecorator, type StatusDecorator } from '@/hooks/useRepositorySocket/decorators/statuses'
@@ -48,9 +48,6 @@ export const AssignmentsList = ({ columns }: {
     preprocessor
   })
 
-  const onRowSelected = useCallback((row?: PreprocessedAssignmentData) => {
-    return row
-  }, [])
 
   if (error) {
     console.error('Error fetching assignments:', error)
@@ -64,7 +61,6 @@ export const AssignmentsList = ({ columns }: {
   return (
     <Table<PreprocessedAssignmentData, unknown>
       columns={columns}
-      onRowSelected={onRowSelected}
       rowAlign='start'
       resolveNavigation={(row) => ({
         id: row.id,

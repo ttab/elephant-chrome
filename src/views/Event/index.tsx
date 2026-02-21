@@ -24,7 +24,6 @@ import { EventTimeMenu } from './components/EventTime'
 import { useMemo, useState, useEffect, type JSX } from 'react'
 import { cn } from '@ttab/elephant-ui/utils'
 import { EventHeader } from './EventHeader'
-import { EventSkeleton } from './components/EventSkeleton'
 import { DuplicatesTable } from '../../components/DuplicatesTable'
 import { Cancel } from './components/Cancel'
 import { CopyGroup } from '../../components/CopyGroup'
@@ -255,7 +254,7 @@ const EventViewContent = (props: ViewProps & {
                 synced ? 'opacity-0' : 'opacity-100'
               )}
             >
-              <EventSkeleton />
+              <Form.Skeleton />
             </div>
           )}
         </div>

@@ -34,7 +34,6 @@ import type { Wire as WireType } from '@/shared/schemas/wire'
 import { Wire as WireComponent } from '@/views/Wire'
 import { GroupedRows } from './GroupedRows'
 import { getWireStatus } from '../../lib/getWireStatus'
-import { type View } from '@/types/index'
 import type { TableRowData, NavigationParams } from './types'
 
 interface TableProps<TData extends TableRowData, TValue> {
@@ -57,7 +56,7 @@ export const Table = <TData extends TableRowData, TValue>({
   resolveNavigation,
   rowAlign,
   children
-}: TableProps<TData, TValue> & { searchType?: View } & PropsWithChildren): JSX.Element => {
+}: TableProps<TData, TValue> & PropsWithChildren): JSX.Element => {
   const { state, dispatch } = useNavigation()
   const history = useHistory()
   const { viewId: origin } = useView()

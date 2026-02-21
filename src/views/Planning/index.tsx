@@ -21,7 +21,6 @@ import { SluglineEditable } from '@/components/DataItem/SluglineEditable'
 import { Button } from '@ttab/elephant-ui'
 import { useSession } from 'next-auth/react'
 import { PlanningHeader } from './components/PlanningHeader'
-import { PlanningSkeleton } from './components/PlanningSkeleton'
 import React, { type SetStateAction, useMemo, useState, useEffect, type JSX } from 'react'
 import { cn } from '@ttab/elephant-ui/utils'
 import type { NewItem } from '../Event/components/PlanningTable'
@@ -302,7 +301,7 @@ const PlanningViewContent = (props: ViewProps & {
                 synced ? 'opacity-0' : 'opacity-100'
               )}
             >
-              <PlanningSkeleton />
+              <Form.Skeleton />
             </div>
           )}
         </div>

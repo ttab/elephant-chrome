@@ -1,4 +1,4 @@
-import { useCallback, useMemo, type JSX } from 'react'
+import { useMemo, type JSX } from 'react'
 import { Table } from '@/components/Table'
 import { useRegistry } from '@/hooks/useRegistry'
 import { useSections } from '@/hooks/useSections'
@@ -16,6 +16,13 @@ import search from '@/hooks/index/useDocuments/queries/views/search'
 import { useQuery } from '@/hooks/useQuery'
 import type { ColumnDef } from '@tanstack/react-table'
 import { toast } from 'sonner'
+import type { View } from '@/types/index'
+
+const searchTypeToView: Record<SearchKeys, View> = {
+  plannings: 'Planning',
+  events: 'Event',
+  articles: 'Editor'
+}
 
 export const SearchResult = ({ searchType, page }: {
   searchType: SearchKeys
@@ -27,16 +34,6 @@ export const SearchResult = ({ searchType, page }: {
   const [filter] = useQuery()
 
   const { locale, timeZone } = useRegistry()
-  const getType = (searchType: SearchKeys) => searchType === 'events' ? 'Event' : searchType === 'articles' ? 'Editor' : 'Planning'
-
-  const onRowSelected = useCallback((row?: Planning | Event) => {
-    if (row) {
-      console.info(`Selected planning item ${row.id}`)
-    } else {
-      console.info('Deselected row')
-    }
-    return row
-  }, [])
 
   const searchParams = search[searchType].params(filter)
 
@@ -72,9 +69,11 @@ export const SearchResult = ({ searchType, page }: {
           )
         : (
             <Table
-              searchType={getType(searchType)}
               columns={columns as ColumnDef<Planning | Event>[]}
-              onRowSelected={onRowSelected}
+              resolveNavigation={(row) => ({
+                id: row.id,
+                opensWith: searchTypeToView[searchType]
+              })}
             >
 
               <Toolbar type={searchType} />

@@ -5,6 +5,7 @@ import { Group } from './Group'
 import { Footer } from './Footer'
 import { Submit } from './Submit'
 import { Table } from './Table'
+import { FormSkeleton as Skeleton } from './Skeleton'
 
 export const Form = {
   Root,
@@ -13,5 +14,6 @@ export const Form = {
   Group,
   Footer,
   Submit,
-  Table
+  Table,
+  Skeleton
 }

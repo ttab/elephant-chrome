@@ -1,8 +1,7 @@
-import { useCallback, useMemo, type JSX } from 'react'
+import { useMemo, type JSX } from 'react'
 import { Table } from '@/components/Table'
 import { useQuery, useRegistry, useRepositorySocket } from '@/hooks'
 import { getUTCDateRange } from '@/shared/datetime'
-import type { DocumentState } from '@ttab/elephant-api/repositorysocket'
 import type { ColumnDef } from '@tanstack/react-table'
 import { TableSkeleton } from '@/components/Table/Skeleton'
 import type { PreprocessedPlanningData } from './preprocessor'
@@ -29,10 +28,6 @@ export const PlanningList = ({ columns }: {
     preprocessor: preprocessPlanningData
   })
 
-  const onRowSelected = useCallback((row?: DocumentState) => {
-    return row
-  }, [])
-
   if (error) {
     console.error('Error fetching planning items:', error)
     return <ErrorView message='Kunde inte hämta planeringar' error={error} />
@@ -45,7 +40,6 @@ export const PlanningList = ({ columns }: {
   return (
     <Table<PreprocessedPlanningData, unknown>
       columns={columns}
-      onRowSelected={onRowSelected}
       resolveNavigation={(row) => ({
         id: row.id,
         opensWith: 'Planning'

@@ -1,8 +1,7 @@
-import { useCallback, useMemo, type JSX } from 'react'
+import { useMemo, type JSX } from 'react'
 import { Table } from '@/components/Table'
 import { useQuery, useRegistry, useRepositorySocket } from '@/hooks'
 import { getUTCDateRange } from '@/shared/datetime'
-import type { DocumentState } from '@ttab/elephant-api/repositorysocket'
 import type { ColumnDef } from '@tanstack/react-table'
 import { TableSkeleton } from '@/components/Table/Skeleton'
 import type { PreprocessedEventData } from './preprocessor'
@@ -30,10 +29,6 @@ export const EventsList = ({ columns }: {
   })
 
 
-  const onRowSelected = useCallback((row?: DocumentState) => {
-    return row
-  }, [])
-
   if (error) {
     console.error('Error fetching events:', error)
     return <ErrorView message='Kunde inte hämta händelser' error={error} />
@@ -46,10 +41,9 @@ export const EventsList = ({ columns }: {
   return (
     <Table<PreprocessedEventData, unknown>
       columns={columns}
-      onRowSelected={onRowSelected}
       resolveNavigation={(row) => ({
         id: row.id,
-        opensWith: 'Planning'
+        opensWith: 'Event'
       })}
     >
       <Toolbar />

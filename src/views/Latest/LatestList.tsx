@@ -2,7 +2,7 @@ import { useRegistry, useRepositorySocket } from '@/hooks'
 import { Table } from '@/components/Table'
 import type { ColumnDef } from '@tanstack/react-table'
 import { Error as ErrorView } from '../Error'
-import { useCallback, useMemo, type JSX } from 'react'
+import { useMemo, type JSX } from 'react'
 import { TableSkeleton } from '@/components/Table/Skeleton'
 import type { PreprocessedLatestData, LatestDecorator } from './preprocessor'
 import { latestPreprocessor } from './preprocessor'
@@ -30,10 +30,6 @@ export const LatestList = ({ columns }: {
     preprocessor: latestPreprocessor
   })
 
-  const onRowSelected = useCallback((row?: PreprocessedLatestData) => {
-    return row
-  }, [])
-
   if (error) {
     console.error('Error fetching latest:', error)
     return <ErrorView message='Kunde inte hämta senast utgivet' error={error} />
@@ -46,7 +42,6 @@ export const LatestList = ({ columns }: {
   return (
     <Table<PreprocessedLatestData, unknown>
       columns={columns}
-      onRowSelected={onRowSelected}
       resolveNavigation={(row) => ({
         id: row.id,
         version: row._preprocessed.deliverableVersion,
