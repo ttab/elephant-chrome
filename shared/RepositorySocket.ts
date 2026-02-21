@@ -41,7 +41,7 @@ export class RepositorySocket {
   #messageHandlers = new Map<string, MessageHandler>()
   #rejectHandlers = new Map<string, (error: Error) => void>()
   #updateHandlers = new Set<MessageHandler>()
-  #errorHandler?: ErrorHandler
+  #errorHandlers = new Set<ErrorHandler>()
   #reconnectTimer?: number
   #shouldReconnect = true
   #accessToken?: string
@@ -61,6 +61,8 @@ export class RepositorySocket {
     if (this.#connectingPromise) {
       return this.#connectingPromise
     }
+
+    this.#shouldReconnect = true
 
     this.#connectingPromise = this.#initiateConnect(accessToken)
       .finally(() => { this.#connectingPromise = null })
@@ -109,7 +111,9 @@ export class RepositorySocket {
         this.#ws.onerror = (event) => {
           console.error('WebSocket error:', event)
           const error = new Error('WebSocket connection error')
-          this.#errorHandler?.(error)
+          for (const handler of this.#errorHandlers) {
+            handler(error)
+          }
 
           if (!settled) {
             settled = true
@@ -213,10 +217,11 @@ export class RepositorySocket {
       clearTimeout(this.#reconnectTimer)
       this.#reconnectTimer = undefined
     }
+    this.#rejectPendingHandlers('WebSocket disconnected')
     this.#connectingPromise = null
     this.#authenticatingPromise = null
-    this.#rejectPendingHandlers('WebSocket disconnected')
     this.#updateHandlers.clear()
+    this.#errorHandlers.clear()
     this.#reconnectListeners.clear()
     this.#ws?.close()
     this.#ws = null
@@ -435,8 +440,11 @@ export class RepositorySocket {
     })
   }
 
-  onError(handler: ErrorHandler): void {
-    this.#errorHandler = handler
+  onError(handler: ErrorHandler): () => void {
+    this.#errorHandlers.add(handler)
+    return () => {
+      this.#errorHandlers.delete(handler)
+    }
   }
 
   #send(call: Call): void {
