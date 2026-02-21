@@ -2,18 +2,21 @@ import { DotMenu, type DotDropdownMenuActionItem } from '@/components/ui/DotMenu
 import { Link } from '@/components'
 import { useMemo } from 'react'
 import type { JSX } from 'react'
+import { useDocumentActivities } from '@/lib/documentActivity'
 
-export const Actions = ({ deliverableUuids, planningId }: { deliverableUuids: string[], planningId: string }): JSX.Element => {
+export const Actions = ({ deliverableUuids, planningId, docType }: {
+  deliverableUuids: string[]
+  planningId: string
+  docType: string
+}): JSX.Element => {
+  const activities = useDocumentActivities(docType, planningId)
+
   return useMemo(() => {
     const items: DotDropdownMenuActionItem[] = [
-      {
-        label: 'Open',
-        item: (
-          <Link to='Planning' props={{ id: planningId }}>
-            Open
-          </Link>
-        )
-      },
+      ...activities.map((activity) => ({
+        label: activity.title,
+        item: () => void activity.execute()
+      })),
       {
         label: 'Assignments',
         emptyLabel: 'No deliverables',
@@ -29,5 +32,5 @@ export const Actions = ({ deliverableUuids, planningId }: { deliverableUuids: st
     ]
 
     return <DotMenu items={items} />
-  }, [deliverableUuids, planningId])
+  }, [deliverableUuids, activities])
 }

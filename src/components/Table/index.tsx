@@ -38,6 +38,7 @@ interface TableProps<TData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
   type: 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Factbox' | 'Print' | 'PrintEditor'
   onRowSelected?: (row?: TData) => void
+  onOpen?: (event: MouseEvent<HTMLTableRowElement> | KeyboardEvent, id: string) => void
 }
 
 function getNextTableIndex(
@@ -75,6 +76,7 @@ export const Table = <TData, TValue>({
   columns,
   type,
   onRowSelected,
+  onOpen,
   searchType
 }: TableProps<TData, TValue> & { searchType?: View }): JSX.Element => {
   const { state, dispatch } = useNavigation()
@@ -93,6 +95,11 @@ export const Table = <TData, TValue>({
 
       const originalRow = row.original as { _id: string | undefined, id: string, fields?: Record<string, string[]> }
       const id = originalRow._id ?? originalRow.id
+
+      if (onOpen) {
+        onOpen(event, id)
+        return
+      }
 
       const articleClick = type === 'Search' && searchType === 'Editor'
 
@@ -118,7 +125,7 @@ export const Table = <TData, TValue>({
         })
       })
     }
-  }, [dispatch, state.viewRegistry, onRowSelected, origin, type, history, searchType])
+  }, [dispatch, state.viewRegistry, onRowSelected, onOpen, origin, type, history, searchType])
 
   useNavigationKeys({
     keys: ['ArrowUp', 'ArrowDown', 'Enter', 'Escape', ' '],
