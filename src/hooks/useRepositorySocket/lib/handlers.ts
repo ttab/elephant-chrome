@@ -225,16 +225,29 @@ export class ScheduleDecoratorUpdate<TDecoratorData extends object = object> {
 
     const timer = setTimeout(() => {
       this.#pending.delete(uuid)
-      void this.#run(uuid, update, parent, seq)
+      void this.#run(uuid, update, seq)
     }, this.debounceMs)
 
     this.#pending.set(uuid, timer)
   }
 
-  async #run(uuid: string, update: DocumentUpdate, parent: DocumentStateWithDecorators<TDecoratorData>, seq: number) {
+  async #run(uuid: string, update: DocumentUpdate, seq: number) {
     try {
+      const currentParent = await new Promise<DocumentStateWithDecorators<TDecoratorData> | null>(
+        (resolve) => {
+          this.setData((prev) => {
+            resolve(prev.find((doc) => doc.document?.uuid === uuid) ?? null)
+            return prev
+          })
+        }
+      )
+
+      if (!currentParent) {
+        return
+      }
+
       const enrichedDoc = await this.runUpdateDecorators(
-        parent,
+        currentParent,
         update,
         this.decoratorsRef.current
       )
@@ -245,7 +258,7 @@ export class ScheduleDecoratorUpdate<TDecoratorData extends object = object> {
 
       this.setData((prev) => {
         return prev.map((doc) => {
-          if (doc.document?.uuid === parent.document?.uuid) {
+          if (doc.document?.uuid === uuid) {
             return enrichedDoc
           }
           return doc

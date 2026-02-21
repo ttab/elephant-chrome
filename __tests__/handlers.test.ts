@@ -761,6 +761,19 @@ describe('handlers', () => {
   })
 
   describe('ScheduleDecoratorUpdate', () => {
+    /**
+     * Creates a setData mock that invokes functional updaters with the current state,
+     * mimicking React's setState behavior. Uses a lazy getter so the state can reference
+     * variables defined after setData (e.g. parent).
+     */
+    const createStatefulSetData = (getState: () => DocumentStateWithDecorators[]) => {
+      return vi.fn((action: SetStateAction<DocumentStateWithDecorators[]>) => {
+        if (typeof action === 'function') {
+          action(getState())
+        }
+      }) as unknown as Dispatch<SetStateAction<DocumentStateWithDecorators[]>>
+    }
+
     beforeEach(() => {
       vi.useFakeTimers()
     })
@@ -823,13 +836,6 @@ describe('handlers', () => {
         decoratorData: { someKey: 'someValue' }
       }
 
-      const setData = vi.fn() as unknown as Dispatch<SetStateAction<DocumentStateWithDecorators[]>>
-
-      const decoratorsRef = { current: [] }
-      const runUpdateDecorators = vi.fn().mockResolvedValue(enrichedDoc)
-
-      const scheduler = new ScheduleDecoratorUpdate(setData, decoratorsRef, runUpdateDecorators)
-
       const parent: DocumentStateWithDecorators = {
         document: Document.create({
           uuid: 'doc-1',
@@ -837,6 +843,12 @@ describe('handlers', () => {
           uri: 'core://article/doc-1'
         })
       }
+
+      const setData = createStatefulSetData(() => [parent])
+      const decoratorsRef = { current: [] }
+      const runUpdateDecorators = vi.fn().mockResolvedValue(enrichedDoc)
+
+      const scheduler = new ScheduleDecoratorUpdate(setData, decoratorsRef, runUpdateDecorators)
 
       const update: DocumentUpdate = {
         setName: 'test-set',
@@ -852,17 +864,11 @@ describe('handlers', () => {
       await vi.advanceTimersByTimeAsync(300)
 
       expect(runUpdateDecorators).toHaveBeenCalledWith(parent, update, [])
-      expect(setData).toHaveBeenCalled()
+      // Called twice: once to read current state, once to write enriched result
+      expect(setData).toHaveBeenCalledTimes(2)
     })
 
     it('should handle decorator errors gracefully', async () => {
-      const setData = vi.fn()
-      const decoratorsRef = { current: [] }
-      const runUpdateDecorators = vi.fn().mockRejectedValue(new Error('Decorator error'))
-      const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
-
-      const scheduler = new ScheduleDecoratorUpdate(setData, decoratorsRef, runUpdateDecorators)
-
       const parent: DocumentStateWithDecorators = {
         document: Document.create({
           uuid: 'doc-1',
@@ -870,6 +876,13 @@ describe('handlers', () => {
           uri: 'core://article/doc-1'
         })
       }
+
+      const setData = createStatefulSetData(() => [parent])
+      const decoratorsRef = { current: [] }
+      const runUpdateDecorators = vi.fn().mockRejectedValue(new Error('Decorator error'))
+      const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+
+      const scheduler = new ScheduleDecoratorUpdate(setData, decoratorsRef, runUpdateDecorators)
 
       const update: DocumentUpdate = {
         setName: 'test-set',
@@ -885,14 +898,22 @@ describe('handlers', () => {
       await vi.advanceTimersByTimeAsync(300)
 
       expect(consoleWarnSpy).toHaveBeenCalledWith('Update decorator failed:', expect.any(Error))
-      expect(setData).not.toHaveBeenCalled()
+      // Only the state read call — no write since decorator threw
+      expect(setData).toHaveBeenCalledTimes(1)
 
       consoleWarnSpy.mockRestore()
     })
 
     it('should discard stale result when newer call supersedes', async () => {
-      const setData = vi.fn() as unknown as Dispatch<SetStateAction<DocumentStateWithDecorators[]>>
+      const parent: DocumentStateWithDecorators = {
+        document: Document.create({
+          uuid: 'doc-1',
+          type: 'core/article',
+          uri: 'core://article/doc-1'
+        })
+      }
 
+      const setData = createStatefulSetData(() => [parent])
       const decoratorsRef = { current: [] }
 
       const staleResult: DocumentStateWithDecorators = {
@@ -931,14 +952,6 @@ describe('handlers', () => {
       // Use 0 debounce to test the sequence counter independently
       const scheduler = new ScheduleDecoratorUpdate(setData, decoratorsRef, runUpdateDecorators, 0)
 
-      const parent: DocumentStateWithDecorators = {
-        document: Document.create({
-          uuid: 'doc-1',
-          type: 'core/article',
-          uri: 'core://article/doc-1'
-        })
-      }
-
       const update1: DocumentUpdate = {
         setName: 'test-set',
         document: Document.create({
@@ -971,18 +984,27 @@ describe('handlers', () => {
       resolveSecond!(freshResult)
       await vi.advanceTimersByTimeAsync(0)
 
-      expect(setData).toHaveBeenCalledTimes(1)
+      // 2 reads (one per #run) + 1 write (fresh result)
+      expect(setData).toHaveBeenCalledTimes(3)
 
       // Resolve first (stale) after
       resolveFirst!(staleResult)
       await vi.advanceTimersByTimeAsync(0)
 
-      // setData should still only have been called once (stale result discarded)
-      expect(setData).toHaveBeenCalledTimes(1)
+      // Still 3 — stale result discarded by sequence check, no additional write
+      expect(setData).toHaveBeenCalledTimes(3)
     })
 
     it('should discard in-flight result when execute called during async run', async () => {
-      const setData = vi.fn() as unknown as Dispatch<SetStateAction<DocumentStateWithDecorators[]>>
+      const parent: DocumentStateWithDecorators = {
+        document: Document.create({
+          uuid: 'doc-1',
+          type: 'core/article',
+          uri: 'core://article/doc-1'
+        })
+      }
+
+      const setData = createStatefulSetData(() => [parent])
       const decoratorsRef = { current: [] }
 
       const staleResult: DocumentStateWithDecorators = {
@@ -1014,14 +1036,6 @@ describe('handlers', () => {
 
       const scheduler = new ScheduleDecoratorUpdate(setData, decoratorsRef, runUpdateDecorators, 100)
 
-      const parent: DocumentStateWithDecorators = {
-        document: Document.create({
-          uuid: 'doc-1',
-          type: 'core/article',
-          uri: 'core://article/doc-1'
-        })
-      }
-
       const makeUpdate = (title: string): DocumentUpdate => ({
         setName: 'test-set',
         document: Document.create({
@@ -1044,13 +1058,15 @@ describe('handlers', () => {
       // Resolve the first (stale) run — should be discarded because sequence was bumped
       resolveFirst!(staleResult)
       await vi.advanceTimersByTimeAsync(0)
-      expect(setData).not.toHaveBeenCalled()
+      // 1 read call from first #run, but no write (stale result discarded)
+      expect(setData).toHaveBeenCalledTimes(1)
 
       // Flush second debounce so second #run fires and completes
       await vi.advanceTimersByTimeAsync(100)
 
       expect(runUpdateDecorators).toHaveBeenCalledTimes(2)
-      expect(setData).toHaveBeenCalledTimes(1)
+      // 2 reads (one per #run) + 1 write (fresh result)
+      expect(setData).toHaveBeenCalledTimes(3)
     })
 
     it('should debounce rapid calls and only run once with last update', async () => {
@@ -1063,12 +1079,6 @@ describe('handlers', () => {
         })
       }
 
-      const setData = vi.fn() as unknown as Dispatch<SetStateAction<DocumentStateWithDecorators[]>>
-      const decoratorsRef = { current: [] }
-      const runUpdateDecorators = vi.fn().mockResolvedValue(enrichedDoc)
-
-      const scheduler = new ScheduleDecoratorUpdate(setData, decoratorsRef, runUpdateDecorators)
-
       const parent: DocumentStateWithDecorators = {
         document: Document.create({
           uuid: 'doc-1',
@@ -1076,6 +1086,12 @@ describe('handlers', () => {
           uri: 'core://article/doc-1'
         })
       }
+
+      const setData = createStatefulSetData(() => [parent])
+      const decoratorsRef = { current: [] }
+      const runUpdateDecorators = vi.fn().mockResolvedValue(enrichedDoc)
+
+      const scheduler = new ScheduleDecoratorUpdate(setData, decoratorsRef, runUpdateDecorators)
 
       const makeUpdate = (title: string): DocumentUpdate => ({
         setName: 'test-set',
