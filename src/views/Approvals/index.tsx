@@ -36,12 +36,6 @@ const meta: ViewMetadata = {
 }
 
 export const Approvals = (): JSX.Element => {
-  return (
-    <ApprovalsView />
-  )
-}
-
-export const ApprovalsView = (): JSX.Element => {
   const trackedDocuments = useTrackedDocuments()
   const { timeZone, repository } = useRegistry()
   const { from, to } = useDateRange()

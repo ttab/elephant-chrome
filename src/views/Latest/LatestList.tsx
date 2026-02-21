@@ -5,7 +5,7 @@ import { Error as ErrorView } from '../Error'
 import { type JSX } from 'react'
 import { TableSkeleton } from '@/components/Table/Skeleton'
 import type { PreprocessedLatestData, LatestDecorator } from './preprocessor'
-import { latestPreprocessor } from './preprocessor'
+import { preprocessLatestData } from './preprocessor'
 import { Toolbar } from '@/components/Table/Toolbar'
 
 export const LatestList = ({ columns }: {
@@ -19,7 +19,7 @@ export const LatestList = ({ columns }: {
     to,
     include: ['.meta(type=\'core/assignment\').links(rel=\'deliverable\')@{uuid:doc}'],
     asTable: true,
-    preprocessor: latestPreprocessor
+    preprocessor: preprocessLatestData
   })
 
   if (error) {

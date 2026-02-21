@@ -1,5 +1,6 @@
 import type { DocumentStateWithDecorators, DecoratorDataBase } from '@/hooks/useRepositorySocket/types'
 import type { PreprocessedTableData } from '@/components/Table/types'
+import { getNewsvalue } from '@/lib/documentHelpers'
 
 export type PreprocessedPlanningData = PreprocessedTableData<DecoratorDataBase, {
   newsvalue?: string
@@ -16,8 +17,7 @@ export function preprocessPlanningData(data: DocumentStateWithDecorators<Decorat
     const uuid = item.document?.uuid
     if (!uuid) return []
 
-    // Precompute newsvalue
-    const newsvalue = item.document?.meta?.find((d) => d.type === 'core/newsvalue')?.value
+    const newsvalue = getNewsvalue(item.document)
 
     // Precompute slugline
     const slugline = item.document?.meta?.find((d) => d.type === 'tt/slugline')?.value

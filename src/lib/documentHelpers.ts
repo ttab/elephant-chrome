@@ -45,36 +45,36 @@ export function getDocumentStatus(meta?: DocumentMeta): string {
 }
 
 /**
- * Extract section from deliverable data
+ * Extract section UUID from a document's links
  */
-export function getSection(deliverable?: { document?: Document }): string | undefined {
-  return deliverable?.document?.links.find((link) => link.type === 'core/section')?.uuid
+export function getSection(doc?: Document): string | undefined {
+  return doc?.links.find((link) => link.type === 'core/section')?.uuid
 }
 
 /**
- * Extract newsvalue from deliverable data
+ * Extract newsvalue from a document's meta
  */
-export function getNewsvalue(deliverable?: { document?: Document }): string | undefined {
-  return deliverable?.document?.meta.find((m) => m.type === 'core/newsvalue')?.value
+export function getNewsvalue(doc?: Document): string | undefined {
+  return doc?.meta.find((m) => m.type === 'core/newsvalue')?.value
 }
 
 /**
  * Extract publish slot from assignment data
  */
 export function getPublishSlot(assignment: Block): string | undefined {
-  return assignment.data?.publish_slot as string | undefined
+  return assignment.data?.publish_slot
 }
 
 /**
  * Extract start time from assignment data
  */
 export function getStartTime(assignment: Block): string | undefined {
-  return assignment.data?.start as string | undefined
+  return assignment.data?.start
 }
 
 /**
  * Extract publish time from assignment data
  */
 export function getPublishTime(assignment: Block): string | undefined {
-  return assignment.data?.publish as string | undefined
+  return assignment.data?.publish
 }

@@ -21,7 +21,7 @@ export type PreprocessedLatestData = PreprocessedTableData<LatestDecorator, {
   _assignment?: Block
 }
 
-export function latestPreprocessor(data: DocumentStateWithDecorators<LatestDecorator>[]): PreprocessedLatestData[] {
+export function preprocessLatestData(data: DocumentStateWithDecorators<LatestDecorator>[]): PreprocessedLatestData[] {
   const flattened: PreprocessedLatestData[] = []
 
   for (const doc of data) {

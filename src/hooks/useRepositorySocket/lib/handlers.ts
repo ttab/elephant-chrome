@@ -6,6 +6,7 @@ import type {
   InclusionBatch
 } from '@ttab/elephant-api/repositorysocket'
 import type { DocumentStateWithDecorators, Decorator } from '../types'
+import { getAssignments } from '@/lib/documentHelpers'
 
 export const findDeliverableParentIndex = <TDecoratorData extends object = object>(
   documents: DocumentStateWithDecorators<TDecoratorData>[],
@@ -16,13 +17,13 @@ export const findDeliverableParentIndex = <TDecoratorData extends object = objec
   }
 
   return documents.findIndex((doc) => {
-    const metas = doc.document?.meta?.filter((m) => m.type === 'core/assignment')
-    if (!metas?.length) {
+    const assignments = getAssignments(doc.document)
+    if (!assignments.length) {
       return false
     }
 
-    for (const meta of metas) {
-      for (const link of meta.links ?? []) {
+    for (const assignment of assignments) {
+      for (const link of assignment.links ?? []) {
         if (link.rel === 'deliverable' && link.uuid === targetUuid) {
           return true
         }

@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest'
-import { latestPreprocessor } from '@/views/Latest/preprocessor'
+import { preprocessLatestData } from '@/views/Latest/preprocessor'
 import type { DocumentStateWithDecorators } from '@/hooks/useRepositorySocket/types'
 import type { LatestDecorator } from '@/views/Latest/preprocessor'
 import { Document } from '@ttab/elephant-api/newsdoc'
 import { DocumentMeta } from '@ttab/elephant-api/repository'
 
-const preprocess = latestPreprocessor
+const preprocess = preprocessLatestData
 
 const metaWithUsable = DocumentMeta.create({
   created: '2026-02-10T08:00:00Z',
@@ -47,7 +47,7 @@ const makeDoc = (overrides: Partial<Parameters<typeof Document.create>[0]> = {},
   ...(options?.includedDocuments && { includedDocuments: options.includedDocuments })
 })
 
-describe('latestPreprocessor', () => {
+describe('preprocessLatestData', () => {
   it('should return empty array for empty input', () => {
     expect(preprocess([])).toEqual([])
   })

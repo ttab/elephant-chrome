@@ -3,6 +3,7 @@ import type { StatusDecorator } from '@/hooks/useRepositorySocket/decorators/sta
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { isWithinInterval, parseISO } from 'date-fns'
 import type { PreprocessedTableData } from '@/components/Table/types'
+import { getAssignments, getNewsvalue, getSection, getDeliverableLink } from '@/lib/documentHelpers'
 
 export type PreprocessedAssignmentData = PreprocessedTableData<StatusDecorator, {
   newsvalue?: string
@@ -33,16 +34,12 @@ export function createAssignmentPreprocessor(range: { gte: string, lte: string }
       const uuid = doc.document?.uuid
       if (!uuid) continue
 
-      const assignments = doc.document?.meta?.filter(
-        (block: Block) => block.type === 'core/assignment'
-      ) || []
+      const assignments = getAssignments(doc.document)
 
       if (assignments.length === 0) continue
 
-      // Precompute document-level fields once per document
-      const newsvalue = doc.document?.meta?.find((d) => d.type === 'core/newsvalue')?.value
-      const sectionUuid = doc.document?.links
-        ?.find((d) => d.type === 'core/section')?.uuid
+      const newsvalue = getNewsvalue(doc.document)
+      const sectionUuid = getSection(doc.document)
 
       assignments.forEach((assignment: Block, index: number) => {
         if (!isWithinRange(assignment.data.start_date, range)) {
@@ -58,8 +55,7 @@ export function createAssignmentPreprocessor(range: { gte: string, lte: string }
           ?.filter((link) => link.type === 'core/author' && link.rel === 'assignee')
           .map((link) => link.uuid) || []
 
-        const deliverableUuid = assignment.links
-          ?.find((link) => link.rel === 'deliverable')?.uuid
+        const deliverableUuid = getDeliverableLink(assignment)
 
         const { value: startValue, type: startType } = getStart(
           assignmentTypes[0],

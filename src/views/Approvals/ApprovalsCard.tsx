@@ -27,8 +27,8 @@ export const ApprovalsCard = ({ trackedDocument, item, isSelected, isFocused, st
   const openType = (deliverableType: string) => deliverableType === 'core/flash' ? openFlash : openArticle
 
   const internalInfo = item._deliverable?.document?.meta.find((block) => block.type === 'core/note' && block.role === 'internal')?.data?.text
-  const newsvalue = getNewsvalue(item._deliverable)
-  const section = getSection(item._deliverable)
+  const newsvalue = getNewsvalue(item._deliverable?.document)
+  const section = getSection(item._deliverable?.document)
   const deliverableId = item._deliverable?.id
   const deliverableType = item._deliverable?.type
 
