@@ -186,7 +186,26 @@ export function useRepositorySocket<TDecoratorData extends DecoratorDataBase = D
 
               if (!isActive) return
 
-              setData(enrichedDocs)
+              // Use functional updater to merge decorator data into current state,
+              // avoiding overwriting any WebSocket updates that arrived during enrichment
+              setData((prevData) => {
+                const decoratorDataByUuid = new Map<string, TDecoratorData>()
+                for (const doc of enrichedDocs) {
+                  if (doc.decoratorData && doc.document?.uuid) {
+                    decoratorDataByUuid.set(doc.document.uuid, doc.decoratorData)
+                  }
+                }
+
+                return prevData.map((doc) => {
+                  const uuid = doc.document?.uuid
+                  if (!uuid) return doc
+
+                  const decoratorData = decoratorDataByUuid.get(uuid)
+                  if (!decoratorData) return doc
+
+                  return { ...doc, decoratorData }
+                })
+              })
             } catch (err) {
               console.error('Decorator initialization failed:', err)
             }
