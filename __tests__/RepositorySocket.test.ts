@@ -596,10 +596,11 @@ describe('RepositorySocket', () => {
     await vi.advanceTimersByTimeAsync(0)
 
     expect(consoleErrorSpy).toHaveBeenCalledWith(
-      'Reconnection or authentication failed:',
+      'Reconnection failed:',
       expect.any(Error)
     )
 
+    socket.disconnect()
     consoleErrorSpy.mockRestore()
     vi.useRealTimers()
   })
@@ -661,10 +662,10 @@ describe('RepositorySocket', () => {
     // Setup UUID mock for the reauth call during reconnect
     vi.spyOn(globalThis.crypto, 'randomUUID').mockReturnValueOnce('reauth-call')
 
-    // Simulate unclean close — triggers #reconnect() with 5s setTimeout
+    // Simulate unclean close — triggers #reconnect() with exponential backoff
     ws.serverClose({ wasClean: false, code: 1006 })
 
-    // Advance past the 5s reconnect delay (also flushes microtasks for getSocketToken)
+    // Advance past the reconnect delay (also flushes microtasks for getSocketToken)
     await vi.advanceTimersByTimeAsync(5000)
 
     // A new WebSocket instance should be created

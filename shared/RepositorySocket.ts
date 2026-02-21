@@ -46,6 +46,7 @@ export class RepositorySocket {
   #shouldReconnect = true
   #accessToken?: string
   #reconnectListeners = new Set<() => void>()
+  #reconnectAttempts = 0
   #connectingPromise: Promise<void> | null = null
   #authenticatingPromise: Promise<void> | null = null
 
@@ -166,6 +167,22 @@ export class RepositorySocket {
       return
     }
 
+    const maxAttempts = 10
+    if (this.#reconnectAttempts >= maxAttempts) {
+      console.error(
+        `Max reconnection attempts (${maxAttempts}) reached`
+      )
+      return
+    }
+
+    const baseDelay = 1000
+    const maxDelay = 30000
+    const delay = Math.min(
+      baseDelay * 2 ** this.#reconnectAttempts, maxDelay
+    ) + Math.random() * 1000
+
+    this.#reconnectAttempts++
+
     this.#reconnectTimer = window.setTimeout(() => {
       void (async () => {
         this.#reconnectTimer = undefined
@@ -177,19 +194,22 @@ export class RepositorySocket {
         try {
           await this.connect(this.#accessToken)
           await this.authenticate()
+          this.#reconnectAttempts = 0
           console.info('✅ Reconnected and authenticated')
           for (const listener of this.#reconnectListeners) {
             listener()
           }
         } catch (error) {
-          console.error('Reconnection or authentication failed:', error)
+          console.error('Reconnection failed:', error)
+          this.#reconnect()
         }
       })()
-    }, 5000)
+    }, delay)
   }
 
   disconnect(): void {
     this.#shouldReconnect = false
+    this.#reconnectAttempts = 0
     if (this.#reconnectTimer) {
       clearTimeout(this.#reconnectTimer)
       this.#reconnectTimer = undefined
