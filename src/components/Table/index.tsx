@@ -60,12 +60,12 @@ export const Table = <TData extends TableRowData, TValue>({
   const { state, dispatch } = useNavigation()
   const history = useHistory()
   const { viewId: origin } = useView()
-  const { table } = useTable()
+  const { table } = useTable<TData>()
   const openDocuments = useOpenDocuments({ idOnly: true })
   const { showModal, hideModal, currentModal } = useModal()
   const [, setDocumentStatus] = useWorkflowStatus({})
 
-  const availableRows = table.getRowModel().rows as unknown as Array<RowType<TData>>
+  const availableRows = table.getRowModel().rows
   const groupingLength = table.getState().grouping.length
 
   const { navigableRows, rowIndexMap } = useMemo(() => {
@@ -83,26 +83,24 @@ export const Table = <TData extends TableRowData, TValue>({
     })
 
     return {
-      navigableRows: rows as unknown as Array<RowType<TData>>,
+      navigableRows: rows,
       rowIndexMap: indexMap
     }
   }, [availableRows, groupingLength])
 
-  const handlePreview = useCallback((row: RowType<TData>): void => {
+  const handlePreview = useCallback((row: RowType<TData & WireType>): void => {
     row.toggleSelected(true)
-
-    const originalId = row.original.id
 
     showModal(
       <PreviewSheet
-        id={originalId}
-        wire={row.original as unknown as WireType}
+        id={row.original.id}
+        wire={row.original}
         textOnly
         handleClose={hideModal}
       />,
       'sheet',
       {
-        id: originalId
+        id: row.original.id
       },
       'right'
     )
@@ -111,7 +109,7 @@ export const Table = <TData extends TableRowData, TValue>({
 
   const handleOpen = useCallback((event: MouseEvent<HTMLTableRowElement> | KeyboardEvent, row: RowType<TData>): void => {
     if (isWire(row.original)) {
-      handlePreview(row)
+      handlePreview(row as RowType<TData & WireType>)
       return
     }
 
@@ -156,7 +154,7 @@ export const Table = <TData extends TableRowData, TValue>({
         return
       }
 
-      const selectedRow = table.getGroupedSelectedRowModel()?.flatRows?.[0] as RowType<TData> | undefined
+      const selectedRow = table.getGroupedSelectedRowModel()?.flatRows?.[0]
 
       if (event.key === 'Enter' && selectedRow) {
         hideModal()
@@ -174,67 +172,48 @@ export const Table = <TData extends TableRowData, TValue>({
         return
       }
 
-      if (event.key === 'r') {
-        if (selectedRow && isWire(selectedRow.original)) {
-          const wireRow = selectedRow as unknown as RowType<WireType>
-          const currentStatus = getWireStatus(wireRow.original)
+      if (['r', 'u', 's', 'c'].includes(event.key) && selectedRow && isWire(selectedRow.original)) {
+        const wireRow = selectedRow as unknown as RowType<WireType>
+        const wire = wireRow.original
+        const currentStatus = getWireStatus(wire)
+        const version = BigInt(wire.fields.current_version.values?.[0])
+
+        if (event.key === 'r') {
           void setDocumentStatus({
             name: currentStatus === 'read' ? 'draft' : 'read',
-            uuid: wireRow.original.id,
-            version: BigInt(wireRow.original.fields.current_version.values?.[0])
+            uuid: wire.id,
+            version
           }, undefined, true)
-        }
-        return
-      }
-
-      if (event.key === 'u') {
-        if (selectedRow && isWire(selectedRow.original)) {
-          const wireRow = selectedRow as unknown as RowType<WireType>
-          const currentStatus = getWireStatus(wireRow.original)
-
+        } else if (event.key === 'u') {
           void setDocumentStatus({
             name: currentStatus === 'used' ? 'draft' : 'used',
-            uuid: wireRow.original.id,
-            version: BigInt(wireRow.original.fields.current_version.values?.[0])
+            uuid: wire.id,
+            version
           }, undefined, true)
-        }
-        return
-      }
-
-      if (event.key === 's') {
-        if (selectedRow && isWire(selectedRow.original)) {
-          const wireRow = selectedRow as unknown as RowType<WireType>
-          const currentStatus = getWireStatus(wireRow.original)
-
+        } else if (event.key === 's') {
           void setDocumentStatus({
             name: currentStatus === 'saved' ? 'draft' : 'saved',
-            uuid: wireRow.original.id,
-            version: BigInt(wireRow.original.fields.current_version.values?.[0])
+            uuid: wire.id,
+            version
           }, undefined, true)
-        }
-        return
-      }
-
-      if (event.key === 'c') {
-        if (selectedRow && isWire(selectedRow.original)) {
-          const wireRow = selectedRow as unknown as RowType<WireType>
-
+        } else if (event.key === 'c') {
           const onDocumentCreated = () => {
             void setDocumentStatus({
               name: 'used',
-              uuid: wireRow.original.id,
-              version: BigInt(wireRow.original.fields.current_version.values?.[0])
+              uuid: wire.id,
+              version
             }, undefined, true)
           }
           showModal(
             <WireComponent
               onDialogClose={hideModal}
               asDialog
-              wire={wireRow.original}
+              wire={wire}
               onDocumentCreated={onDocumentCreated}
             />
           )
         }
+        return
       }
 
       if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
@@ -268,12 +247,11 @@ export const Table = <TData extends TableRowData, TValue>({
   useEffect(() => {
     if (onRowSelected) {
       const selectedRows = table.getSelectedRowModel()
-      // @ts-expect-error unknown type
       onRowSelected(selectedRows?.rows[0]?.original)
     }
   }, [table, onRowSelected])
 
-  const rows = table.getRowModel().rows as unknown as Array<RowType<TData>>
+  const rows = table.getRowModel().rows
   const rowSelection = table.getState().rowSelection
 
   const TableBodyElement = useMemo(() => {
