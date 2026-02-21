@@ -73,13 +73,15 @@ export class RepositorySocket {
     const urlWithToken = `${this.#url}/${token}`
 
     return new Promise((resolve, reject) => {
+      let settled = false
+
       try {
         this.#ws = new WebSocket(urlWithToken)
         this.#ws.binaryType = 'arraybuffer'
 
         this.#ws.onopen = () => {
           console.info('📡 RepositorySocket connected')
-
+          settled = true
           this.#authenticated = false
           resolve()
         }
@@ -107,7 +109,11 @@ export class RepositorySocket {
           console.error('WebSocket error:', event)
           const error = new Error('WebSocket connection error')
           this.#errorHandler?.(error)
-          reject(error)
+
+          if (!settled) {
+            settled = true
+            reject(error)
+          }
         }
 
         this.#ws.onclose = (event) => {
@@ -116,6 +122,11 @@ export class RepositorySocket {
           this.#authenticatingPromise = null
 
           this.#rejectPendingHandlers('WebSocket connection closed')
+
+          if (!settled) {
+            settled = true
+            reject(new Error(`WebSocket closed: ${event.code} ${event.reason}`))
+          }
 
           if (this.#shouldReconnect && !event.wasClean) {
             this.#reconnect()
