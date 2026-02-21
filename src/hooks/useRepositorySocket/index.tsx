@@ -111,6 +111,9 @@ export function useRepositorySocket<TDecoratorData extends DecoratorDataBase = D
   const cleanupRef = useRef<(() => void) | null>(null)
   const setNameRef = useRef<string>('')
   const callIdRef = useRef<string>('')
+  const includeRef = useRef(include)
+  const labelsRef = useRef(labels)
+  const filterRef = useRef(filter)
   const decoratorsRef = useRef(decorators)
   const accessTokenRef = useRef<string>(session?.accessToken ?? '')
   accessTokenRef.current = session?.accessToken ?? ''
@@ -174,9 +177,9 @@ export function useRepositorySocket<TDecoratorData extends DecoratorDataBase = D
           setName,
           type,
           timespan,
-          include,
-          labels,
-          filter,
+          include: includeRef.current,
+          labels: labelsRef.current,
+          filter: filterRef.current,
           resolveParentIndex: findDeliverableParentIndex
         })
 
@@ -285,7 +288,7 @@ export function useRepositorySocket<TDecoratorData extends DecoratorDataBase = D
     }
   // We dont want to re-run this effect when accessToken changes
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [repositorySocket, from, to, include, labels, filter, type, asTable, reconnectCount])
+  }, [repositorySocket, from, to, type, asTable, reconnectCount])
 
   // Update decorators ref when decorators prop changes
   useEffect(() => {

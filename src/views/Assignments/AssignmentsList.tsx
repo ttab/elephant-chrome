@@ -20,10 +20,6 @@ export const AssignmentsList = ({ columns }: {
       ? new Date(query?.from as string)
       : new Date(), timeZone), [query, timeZone])
 
-  const include = useMemo(() => {
-    return ['.meta(type=\'core/assignment\').links(rel=\'deliverable\')@{uuid:doc}']
-  }, [])
-
   const decorators = useMemo(() => {
     if (!repository) return
     return [
@@ -42,7 +38,7 @@ export const AssignmentsList = ({ columns }: {
     type: 'core/planning-item',
     from,
     to,
-    include,
+    include: ['.meta(type=\'core/assignment\').links(rel=\'deliverable\')@{uuid:doc}'],
     asTable: true,
     decorators,
     preprocessor

@@ -104,7 +104,7 @@ export function latestColumns({ locale, timeZone }: {
         const deliverableUuid = row.original._preprocessed.deliverableUuid || ''
         const planningId = row.original._preprocessed.planningId
         return (
-          <div className='shrink p-'>
+          <div className='shrink p-1'>
             <ActionMenu
               actions={[
                 {

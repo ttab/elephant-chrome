@@ -17,15 +17,11 @@ export const LatestList = ({ columns }: {
   const { from, to } = useMemo(() =>
     getUTCDateRange(new Date(), timeZone), [timeZone])
 
-  const include = useMemo(() => {
-    return ['.meta(type=\'core/assignment\').links(rel=\'deliverable\')@{uuid:doc}']
-  }, [])
-
   const { error, isLoading } = useRepositorySocket<LatestDecorator>({
     type: 'core/planning-item',
     from,
     to,
-    include,
+    include: ['.meta(type=\'core/assignment\').links(rel=\'deliverable\')@{uuid:doc}'],
     asTable: true,
     preprocessor: latestPreprocessor
   })
