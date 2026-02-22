@@ -25,7 +25,7 @@ export function latestColumns({ locale, timeZone }: {
       meta: {
         name: 'Typ',
         columnIcon: BriefcaseIcon,
-        className: 'flex-none w-6'
+        className: 'flex-none w-10'
       },
       accessorFn: (data) => data._preprocessed.deliverableType || '',
       cell: ({ row }) => {
@@ -33,12 +33,12 @@ export function latestColumns({ locale, timeZone }: {
         if (!type) return null
 
         if (type === 'core/flash') {
-          return <ZapIcon strokeWidth={1.75} size={14} className='text-red-500' />
+          return <ZapIcon strokeWidth={1.75} size={16} className='text-red-500 -mt-px' />
         }
         if (type === 'core/editorial-info') {
-          return <FileWarningIcon size={14} />
+          return <FileWarningIcon strokeWidth={1.75} size={16} className='-mt-px' />
         }
-        return <FileTextIcon size={14} />
+        return <FileTextIcon strokeWidth={1.75} size={16} className='-mt-px' />
       }
     },
     {
@@ -61,7 +61,7 @@ export function latestColumns({ locale, timeZone }: {
       meta: {
         name: 'Sektion',
         columnIcon: ShapesIcon,
-        className: 'flex-none w-[115px] hidden @4xl/view:[display:revert]'
+        className: 'flex-none w-[145px] hidden @4xl/view:[display:revert]'
       },
       accessorFn: (data) => data._preprocessed.sectionUuid || '',
       cell: ({ row }) => {
@@ -78,7 +78,7 @@ export function latestColumns({ locale, timeZone }: {
       meta: {
         name: 'Publiceringstid',
         columnIcon: Clock3Icon,
-        className: ''
+        className: 'flex-none tabular-nums w-[100px] text-right'
       },
       accessorFn: (data) => data._preprocessed.publishTime || '',
       cell: ({ row }) => {
