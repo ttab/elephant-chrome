@@ -1,5 +1,7 @@
+import type { FC } from 'react'
 import type { ViewRegistryItem } from '@/types'
 import type { DocumentType, ActivityId, ActivityDefinition } from '@/lib/documentActivity'
+import type { InjectionPointRendererProps } from '@/lib/injectionPoints'
 
 export interface PluginManifest {
   id: string
@@ -17,6 +19,9 @@ export interface PluginContext {
   }
   viewRegistry: {
     register: (name: string, item: ViewRegistryItem) => (() => void)
+  }
+  injectionPoints: {
+    register: (pointId: string, rendererId: string, renderer: FC<InjectionPointRendererProps>) => (() => void)
   }
 }
 

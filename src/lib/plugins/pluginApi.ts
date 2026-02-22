@@ -26,6 +26,16 @@ export { Form } from '@/components/Form'
 export { resolveEventOptions } from '@/lib/documentActivity'
 export type { ExecuteOptions } from '@/lib/documentActivity'
 
+// Injection points
+export { InjectionPoint } from '@/lib/injectionPoints'
+export type { InjectionPointProps, InjectionPointRendererProps } from '@/lib/injectionPoints'
+
+// Slate editor access (available inside injection points within a Textbit/Slate context)
+// Runtime: re-exported from slate-react and slate
+// Types: manually declared in sdk/preamble.d.ts (auto-generation produces unusable internal types)
+export { useSlate } from 'slate-react'
+export { Editor as SlateEditor, Range as SlateRange } from 'slate'
+
 // Types that plugins need for registration and routing
 export type { ViewProps, ViewMetadata, ViewRegistryItem } from '@/types'
 export type { ActivityDefinition, ViewRouteFunc, ResolvedRoute } from '@/lib/documentActivity'

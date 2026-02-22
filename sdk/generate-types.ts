@@ -60,7 +60,7 @@ const localTypes = new Set([
   'YDocument', 'ViewProps', 'ViewMetadata', 'ViewRegistryItem',
   'ActivityDefinition', 'ViewRouteFunc', 'ResolvedRoute',
   'PluginInstance', 'PluginContext', 'TextBox', 'ExecuteOptions',
-  'resolveEventOptions'
+  'resolveEventOptions', 'InjectionPointProps', 'InjectionPointRendererProps'
 ])
 
 /**
@@ -283,10 +283,13 @@ function emitConstDecl(name: string, symbol: ts.Symbol): string {
   return `export declare const ${name}: {\n${members}\n};`
 }
 
+// Exports handled manually in preamble.d.ts — skip auto-generation
+const preambleExports = new Set(['useSlate', 'SlateEditor', 'SlateRange'])
+
 // Process each export
 for (const sym of allExports) {
   const name = sym.name
-  if (emittedNames.has(name)) {
+  if (emittedNames.has(name) || preambleExports.has(name)) {
     continue
   }
   emittedNames.add(name)
