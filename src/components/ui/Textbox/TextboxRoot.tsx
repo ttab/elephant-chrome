@@ -6,6 +6,7 @@ import { TextboxEditable } from './TextboxEditable'
 import { useYValue, type YDocument } from '@/modules/yjs/hooks'
 import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
 import { cn } from '@ttab/elephant-ui/utils'
+import { UniqueEditorOrigin } from '@/components/UniqueEditorOrigin'
 
 export const TextboxRoot = ({
   value,
@@ -55,6 +56,7 @@ export const TextboxRoot = ({
       ]}
       className={cn('h-min-2 w-full', className)}
     >
+      <UniqueEditorOrigin />
       <TextboxEditable
         spellcheck={spellcheck}
         autoFocus={autoFocus}
