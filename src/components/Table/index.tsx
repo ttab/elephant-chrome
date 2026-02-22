@@ -36,6 +36,9 @@ import { GroupedRows } from './GroupedRows'
 import { getWireStatus } from '../../lib/getWireStatus'
 import type { TableRowData, NavigationParams } from './types'
 import { isWire } from './lib/isWire'
+import type { NavigationKey } from '@/hooks/useNavigationKeys'
+
+const NAVIGATION_KEYS: NavigationKey[] = ['ArrowUp', 'ArrowDown', 'Enter', 'Escape', ' ', 's', 'r', 'c', 'u']
 
 interface TableProps<TData extends TableRowData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
@@ -109,7 +112,7 @@ export const Table = <TData extends TableRowData, TValue>({
 
     const target = event.target as HTMLElement
     if (target && 'dataset' in target && !target.dataset.rowAction) {
-      if (!onRowSelected) {
+      if (!onRowSelected && !resolveNavigation) {
         return
       }
 
@@ -141,101 +144,103 @@ export const Table = <TData extends TableRowData, TValue>({
     }
   }, [dispatch, state.viewRegistry, onRowSelected, origin, history, handlePreview, resolveNavigation])
 
-  useNavigationKeys({
-    keys: ['ArrowUp', 'ArrowDown', 'Enter', 'Escape', ' ', 's', 'r', 'c', 'u'],
-    onNavigation: (event) => {
-      if (!navigableRows?.length) {
-        return
-      }
-
-      const selectedRow = table.getGroupedSelectedRowModel()?.flatRows?.[0]
-
-      if (event.key === 'Enter' && selectedRow) {
-        hideModal()
-        handleOpen(event, selectedRow)
-        return
-      }
-
-      if (event.key === ' ' && selectedRow) {
-        handleOpen(event, selectedRow)
-        return
-      }
-
-      if (event.key === 'Escape') {
-        selectedRow?.toggleSelected(false)
-        return
-      }
-
-      if (['r', 'u', 's', 'c'].includes(event.key) && selectedRow && isWire(selectedRow.original)) {
-        const wireRow = selectedRow as unknown as RowType<WireType>
-        const wire = wireRow.original
-        const currentStatus = getWireStatus(wire)
-        const version = BigInt(wire.fields.current_version.values?.[0])
-
-        if (event.key === 'r') {
-          void setDocumentStatus({
-            name: currentStatus === 'read' ? 'draft' : 'read',
-            uuid: wire.id,
-            version
-          }, undefined, true)
-        } else if (event.key === 'u') {
-          void setDocumentStatus({
-            name: currentStatus === 'used' ? 'draft' : 'used',
-            uuid: wire.id,
-            version
-          }, undefined, true)
-        } else if (event.key === 's') {
-          void setDocumentStatus({
-            name: currentStatus === 'saved' ? 'draft' : 'saved',
-            uuid: wire.id,
-            version
-          }, undefined, true)
-        } else if (event.key === 'c') {
-          const onDocumentCreated = () => {
-            void setDocumentStatus({
-              name: 'used',
-              uuid: wire.id,
-              version
-            }, undefined, true)
-          }
-          showModal(
-            <WireComponent
-              onDialogClose={hideModal}
-              asDialog
-              wire={wire}
-              onDocumentCreated={onDocumentCreated}
-            />
-          )
-        }
-        return
-      }
-
-      if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
-        const currentIndex = selectedRow ? (rowIndexMap.get(selectedRow.id) ?? -1) : -1
-
-        let nextIndex: number | undefined
-
-        if (currentIndex === -1) {
-          // No row selected, select first or last based on direction
-          nextIndex = event.key === 'ArrowDown' ? 0 : navigableRows.length - 1
-        } else if (event.key === 'ArrowDown' && currentIndex < navigableRows.length - 1) {
-          nextIndex = currentIndex + 1
-        } else if (event.key === 'ArrowUp' && currentIndex > 0) {
-          nextIndex = currentIndex - 1
-        }
-
-        if (nextIndex !== undefined && navigableRows[nextIndex]) {
-          navigableRows[nextIndex].toggleSelected(true)
-
-          // Open next row if PreviewSheet is open
-          if (currentModal) {
-            handleOpen(event, navigableRows[nextIndex])
-          }
-        }
-
-        return
-      }
+  const handleNavigation = useCallback((event: KeyboardEvent): void => {
+    if (!navigableRows?.length) {
+      return
     }
+
+    const selectedRow = table.getGroupedSelectedRowModel()?.flatRows?.[0]
+
+    if (event.key === 'Enter' && selectedRow) {
+      hideModal()
+      handleOpen(event, selectedRow)
+      return
+    }
+
+    if (event.key === ' ' && selectedRow) {
+      handleOpen(event, selectedRow)
+      return
+    }
+
+    if (event.key === 'Escape') {
+      selectedRow?.toggleSelected(false)
+      return
+    }
+
+    if (['r', 'u', 's', 'c'].includes(event.key) && selectedRow && isWire(selectedRow.original)) {
+      const wireRow = selectedRow as unknown as RowType<WireType>
+      const wire = wireRow.original
+      const currentStatus = getWireStatus(wire)
+      const version = BigInt(wire.fields.current_version.values?.[0])
+
+      if (event.key === 'r') {
+        void setDocumentStatus({
+          name: currentStatus === 'read' ? 'draft' : 'read',
+          uuid: wire.id,
+          version
+        }, undefined, true)
+      } else if (event.key === 'u') {
+        void setDocumentStatus({
+          name: currentStatus === 'used' ? 'draft' : 'used',
+          uuid: wire.id,
+          version
+        }, undefined, true)
+      } else if (event.key === 's') {
+        void setDocumentStatus({
+          name: currentStatus === 'saved' ? 'draft' : 'saved',
+          uuid: wire.id,
+          version
+        }, undefined, true)
+      } else if (event.key === 'c') {
+        const onDocumentCreated = () => {
+          void setDocumentStatus({
+            name: 'used',
+            uuid: wire.id,
+            version
+          }, undefined, true)
+        }
+        showModal(
+          <WireComponent
+            onDialogClose={hideModal}
+            asDialog
+            wire={wire}
+            onDocumentCreated={onDocumentCreated}
+          />
+        )
+      }
+      return
+    }
+
+    if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+      const currentIndex = selectedRow ? (rowIndexMap.get(selectedRow.id) ?? -1) : -1
+
+      let nextIndex: number | undefined
+
+      if (currentIndex === -1) {
+        // No row selected, select first or last based on direction
+        nextIndex = event.key === 'ArrowDown' ? 0 : navigableRows.length - 1
+      } else if (event.key === 'ArrowDown' && currentIndex < navigableRows.length - 1) {
+        nextIndex = currentIndex + 1
+      } else if (event.key === 'ArrowUp' && currentIndex > 0) {
+        nextIndex = currentIndex - 1
+      }
+
+      if (nextIndex !== undefined && navigableRows[nextIndex]) {
+        navigableRows[nextIndex].toggleSelected(true)
+
+        // Open next row if PreviewSheet is open
+        if (currentModal) {
+          handleOpen(event, navigableRows[nextIndex])
+        }
+      }
+
+      return
+    }
+  }, [navigableRows, rowIndexMap, table, handleOpen, hideModal, currentModal, setDocumentStatus, showModal])
+
+  useNavigationKeys({
+    keys: NAVIGATION_KEYS,
+    onNavigation: handleNavigation
   })
 
   useEffect(() => {
@@ -246,10 +251,9 @@ export const Table = <TData extends TableRowData, TValue>({
   }, [table, onRowSelected])
 
   const rows = table.getRowModel().rows
-  const rowSelection = table.getState().rowSelection
 
   const TableBodyElement = useMemo(() => {
-    const isGrouped = table.getState().grouping.length > 0
+    const isGrouped = groupingLength > 0
 
     return rows.map((row) => isGrouped
       ? (
@@ -272,8 +276,7 @@ export const Table = <TData extends TableRowData, TValue>({
           />
         )
     )
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rows, columns, handleOpen, table, rowSelection])
+  }, [rows, columns, handleOpen, groupingLength, openDocuments, rowAlign])
 
   return (
     <>
