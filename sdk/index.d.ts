@@ -19,6 +19,13 @@ export declare function registerPlugin(plugin: PluginInstance): void;
 /** The application's base URL path (e.g. '/elephant'). Available immediately on script load. */
 export declare const BASE_URL: string;
 
+/**
+ * Slate editor access — available inside injection points rendered within
+ * a Slate/Textbit editor context (e.g. the Editor view footer).
+ */
+export { useSlate } from 'slate-react';
+export { Editor as SlateEditor, Range as SlateRange } from 'slate';
+
 export declare function useYDocument<T>(id: string, options?: { data?: unknown; skipIndexedDB?: boolean | undefined; visibility?: boolean | undefined; rootMap?: string | undefined; ignoreChangeKeys?: string[] | undefined; } | undefined): YDocument<T>;
 
 export interface YDocument<T> {
@@ -75,6 +82,22 @@ export interface ExecuteOptions {
   keepFocus?: boolean | undefined;
 }
 
+export declare const InjectionPoint: ({ id, ydoc, data, className, children }: InjectionPointProps) => JSX.Element | null;
+
+export interface InjectionPointProps {
+  id: string;
+  ydoc?: YDocument<Y.Map<unknown>> | undefined;
+  data?: Record<string, unknown> | undefined;
+  className?: string | undefined;
+  children?: React.ReactNode;
+}
+
+export interface InjectionPointRendererProps {
+  ydoc?: YDocument<Y.Map<unknown>> | undefined;
+  data?: Record<string, unknown> | undefined;
+  children?: React.ReactNode;
+}
+
 export interface ViewProps {
   id?: string | null | undefined;
   planningId?: string | null | undefined;
@@ -127,4 +150,5 @@ export interface PluginInstance {
 export interface PluginContext {
   documentActivity: { register: (docType: string, activityId: string, definition: ActivityDefinition) => () => void; };
   viewRegistry: { register: (name: string, item: ViewRegistryItem) => () => void; };
+  injectionPoints: { register: (pointId: string, rendererId: string, renderer: React.FC<InjectionPointRendererProps>) => () => void; };
 }

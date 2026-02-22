@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { useNavigation } from '@/navigation/hooks/useNavigation'
 import { documentActivityRegistry } from '@/lib/documentActivity'
+import { injectionPointRegistry } from '@/lib/injectionPoints'
 import * as pluginApi from './pluginApi'
 import { pluginManager } from './PluginManager'
 import type { PluginContext } from './types'
@@ -32,6 +33,9 @@ export const PluginHostCompleter = (): null => {
       },
       viewRegistry: {
         register: viewRegistry.set
+      },
+      injectionPoints: {
+        register: injectionPointRegistry.register
       }
     }))
 
