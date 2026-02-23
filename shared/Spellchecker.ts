@@ -66,7 +66,8 @@ export class Spellchecker {
     try {
       const { response } = await this.#client.text({
         language,
-        text
+        text,
+        suggestions: true
       }, meta(session.accessToken))
 
       const resturnResult = !Array.isArray(response?.misspelled)
