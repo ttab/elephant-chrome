@@ -49,6 +49,10 @@ export const Organiser = ({ ydoc, path, asDialog, onChange }: {
             })
           )
         }}
+        translationStrings={{
+          nothingFound: t('common:misc.nothingFound'),
+          searching: t('common:misc.searching')
+        }}
       />
     </Awareness>
   )

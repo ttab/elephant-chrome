@@ -199,6 +199,10 @@ export const Move = ({ ydoc, ...props }: ViewProps & {
                   )}
                 minSearchChars={2}
                 onSelect={handleSelectPlanning}
+                translationStrings={{
+                  nothingFound: t('common:misc.nothingFound'),
+                  searching: t('common:misc.searching')
+                }}
               >
               </ComboBox>
 

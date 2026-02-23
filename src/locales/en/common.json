@@ -42,6 +42,8 @@
     "headingAndContent": "Heading and content",
     "markedAsCancelled": "Marked as cancelled",
     "error": "Error",
-    "selectTime": "Select time"
+    "selectTime": "Select time",
+    "searching": "Searching...",
+    "nothingFound": "Nothing found"
   }
 }
