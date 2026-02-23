@@ -148,7 +148,11 @@ describe('useDocumentActivities', () => {
       { wrapper }
     )
 
-    await result.current[0].execute()
+    result.current[0].execute()
+
+    await vi.waitFor(() => {
+      expect(handleLink).toHaveBeenCalled()
+    })
 
     expect(mockViewRegistry.get).toHaveBeenCalledWith('Editor')
     expect(handleLink).toHaveBeenCalledWith(
@@ -179,7 +183,11 @@ describe('useDocumentActivities', () => {
       { wrapper }
     )
 
-    await result.current[0].execute()
+    result.current[0].execute()
+
+    await vi.waitFor(() => {
+      expect(handleLink).toHaveBeenCalled()
+    })
 
     expect(handleLink).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -203,7 +211,7 @@ describe('useDocumentActivities', () => {
       { wrapper }
     )
 
-    result.current[0].execute()
+    void result.current[0].execute()
 
     await vi.waitFor(() => {
       expect(toast.error).toHaveBeenCalled()

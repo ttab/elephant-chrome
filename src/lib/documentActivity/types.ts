@@ -40,5 +40,5 @@ export interface ResolvedActivity {
   activityId: ActivityId
   title: string
   icon?: LucideIcon
-  execute: (options?: ActivityExecuteOptions) => Promise<void>
+  execute: (options?: ActivityExecuteOptions) => void
 }

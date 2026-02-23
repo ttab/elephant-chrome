@@ -23,7 +23,7 @@ export function useDocumentActivities(
       activityId: entry.activityId,
       title: entry.definition.title,
       icon: entry.definition.icon,
-      execute: async (options) => {
+      execute: (options) => {
         executeActivity(entry, docId, args, options)
       }
     }))

@@ -23,10 +23,12 @@ export const AppContent = (): JSX.Element => {
   )
 
   const { components, content } = useMemo(() => {
+    void registryVersion // re-run when plugin views register/unregister
     return getVisibleContent(state, setActiveView)
   }, [state, setActiveView, registryVersion])
 
   const views = useMemo(() => {
+    void registryVersion
     return calculateViewWidths(state.viewRegistry, content)
   }, [state, content, registryVersion])
 
