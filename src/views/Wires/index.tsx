@@ -16,7 +16,8 @@ import { toast } from 'sonner'
 import { useModal } from '@/components/Modal/useModal'
 import { Wire as WireView } from '@/views'
 import { useSettings } from '@/modules/userSettings'
-import { Document, Block } from '@ttab/elephant-api/newsdoc'
+import type { Block } from '@ttab/elephant-api/newsdoc'
+import { Document } from '@ttab/elephant-api/newsdoc'
 
 const BASE_URL = import.meta.env.BASE_URL
 
@@ -76,7 +77,7 @@ export const Wires = (): JSX.Element => {
         title: settings?.title ?? 'Default',
         type: 'core/wire-panes-setting',
         content: streams.map((stream) => {
-          return Block.create({
+          return {
             uuid: stream.uuid,
             type: 'core/wire-pane',
             title: stream.title || 'Wire stream',
@@ -85,23 +86,21 @@ export const Wires = (): JSX.Element => {
                 const { type } = filter
                 switch (type) {
                   case 'core/source':
-                    return Block.create({ type, uri: value, title: 'default', rel: 'source' })
+                    return { type, uri: value, role: 'filter' }
                   case 'core/section':
-                    return Block.create({ type, uuid: value, title: 'default', rel: 'section' })
+                    return { type, uuid: value, role: 'filter' }
                   case 'query':
                   case 'core/newsvalue':
                   default:
-                    return Block.create({ type, value, title: 'default', rel: 'value' })
+                    return { type, value, title: 'default', rel: 'value' }
                 }
               })
               return [...currentFilters, ...addedFilters]
-            }, [] as Block[])
-          })
+            }, [] as Partial<Block>[])
+          }
         })
       })
 
-      console.log(doc)
-      debugger
       await updateSettings(doc)
       setIsDirty(false)
     } catch (error) {

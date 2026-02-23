@@ -6,7 +6,7 @@ import { SettingsContext } from './SettingsContext'
 import { AbortError } from '@/shared/types/errors'
 import { meta } from '@/shared/meta'
 import type { Document as SettingsDocument } from '@ttab/elephant-api/user'
-import type { SettingsEventHandler } from './types'
+import type { SettingsDocumentPayload, SettingsEventHandler } from './types'
 import { useRegistry } from '@/hooks/useRegistry'
 
 interface Subscriber {
@@ -117,25 +117,25 @@ export const SettingsProvider = ({ application, children }: {
     }
   }, [application, setState, notifySubscribers])
 
-  const updateSettings = useCallback(async (documentType: string, settings: SettingsDocument) => {
-    debugger
+  const updateSettings = useCallback(async (documentType: string, settings: SettingsDocumentPayload) => {
     const client = clientRef.current
     const accessToken = data?.accessToken
     if (!client || !accessToken) {
       throw new Error('Settings client not available')
     }
 
+    const document = {
+      owner: '',
+      application,
+      type: documentType,
+      key: 'current',
+      schemaVersion: 'v1.0.0',
+      payload: settings
+    }
     try {
       const options = meta(accessToken)
       await client.updateDocument(
-        {
-          owner: '',
-          application,
-          type: documentType,
-          key: 'current',
-          schemaVersion: 'v1.0.0',
-          payload: settings
-        },
+        document,
         options
       )
     } catch (error) {

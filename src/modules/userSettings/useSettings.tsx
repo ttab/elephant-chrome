@@ -1,6 +1,6 @@
 import { useCallback, useContext, useEffect, useState } from 'react'
 import { SettingsContext } from './SettingsContext'
-import type { SettingsDocument } from './types'
+import type { SettingsDocument, SettingsDocumentPayload } from './types'
 
 /**
  * Subscribe to settings for a specific document type.
@@ -15,7 +15,7 @@ import type { SettingsDocument } from './types'
 export function useSettings(documentType: string): {
   settings: SettingsDocument | undefined
   isLoading: boolean
-  updateSettings: (settings: SettingsDocument) => Promise<void>
+  updateSettings: (settings: SettingsDocumentPayload) => Promise<void>
 } {
   const context = useContext(SettingsContext)
   if (!context) {
@@ -41,7 +41,7 @@ export function useSettings(documentType: string): {
     return context.subscribe(documentType, handleUpdate)
   }, [context, documentType, handleUpdate])
 
-  const updateSettings = useCallback(async (updated: SettingsDocument) => {
+  const updateSettings = useCallback(async (updated: SettingsDocumentPayload) => {
     return context.updateSettings(documentType, updated)
   }, [context, documentType])
 
