@@ -18,7 +18,7 @@ export const Assignees = ({ ydoc, path, rootMap, placeholder, asDialog, onChange
   placeholder: string
   path: string
 } & FormProps): JSX.Element | undefined => {
-  const { t } = useTranslation()
+  const { t } = useTranslation('common')
   const allAuthors = useAuthors().map((_) => {
     return {
       value: _.id,
@@ -67,8 +67,8 @@ export const Assignees = ({ ydoc, path, rootMap, placeholder, asDialog, onChange
             }
           }}
           translationStrings={{
-            nothingFound: t('common:misc.nothingFound'),
-            searching: t('common:misc.searching')
+            nothingFound: t('misc.nothingFound'),
+            searching: t('misc.searching')
           }}
         >
           <UserPlusIcon size={20} strokeWidth={1.75} />
