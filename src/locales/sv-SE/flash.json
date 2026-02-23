@@ -14,11 +14,11 @@
     "promptDescriptions": {
         "newPlanningWillBeCreated": "En ny planering med tillhörande uppdrag för denna {{type}} kommer att skapas åt dig.",
         "typeWillBeAddedToPlanning": "Denna {{type}} kommer att läggas i ett nytt uppdrag i planeringen \"{{planningName}}\".",
-        "alsoTypeCreated": "I samma planering kommer även ett textuppdrag med {{type}}innehållet att läggas till.",
+        "alsoTypeCreated": "I samma planering läggs det även till ett nytt textuppdrag med flashinnehållet",
         "alsoTypeCreatedWithApproved": "En ny, intern planering med tillhörande uppdrag för denna artikel kommer att skapas åt dig. Artikeln kommer att ha status Godkänd. Kom ihåg att uppdatera och publicera planeringen!"
     },
     "operations": {
-        "quickArticleCreated": "Snabbartikel har skapats"
+        "quickArticleCreated": "Två på två har skapats"
     },
     "placeholders": {
         "flashTitle": "Flashrubrik",

@@ -1,20 +1,22 @@
 {
   "base": {
+    "article": "artikkelen",
+    "flash": "flashen",
     "draft": {
       "title": "Utkast",
-      "description": "Du jobber med et utkast av artikkelen",
+      "description": "Du jobber med et utkast av {{label}}",
       "transitions": {
         "done": {
           "title": "Klarmarkere",
-          "description": "Marker artikkelen som ferdig"
+          "description": "Marker {{label}} som ferdig"
         },
         "approved": {
           "title": "Godkjenn",
-          "description": "Godkjenn artikkelen for publisering"
+          "description": "Godkjenn {{label}} for publisering"
         },
         "usable": {
           "title": "Publiser",
-          "description": "Publiser artikkelen"
+          "description": "Publiser {{label}}"
         },
         "withheld": {
           "title": "Planlegg publisering",
@@ -24,7 +26,7 @@
     },
     "done": {
       "title": "Klar",
-      "description": "Artikkelen er ferdig og venter på godkjenning",
+      "description": "{{label, capitalize}} er ferdig og venter på godkjenning",
       "transitions": {
         "approved": {
           "title": "Godkjenn",
@@ -50,7 +52,7 @@
     },
     "approved": {
       "title": "Godkjent",
-      "description": "Artikkelen er godkjent for publisering",
+      "description": "{{label, capitalize}} er godkjent for publisering",
       "transitions": {
         "usable": {
           "title": "Publiser",
@@ -72,7 +74,7 @@
     },
     "usable": {
       "title": "Publisert",
-      "description": "Artikkelen er publisert",
+      "description": "{{label, capitalize}} er publisert",
       "transitions": {
         "draft": {
           "title": "Ny versjon",
@@ -86,7 +88,7 @@
     },
     "withheld": {
       "title": "Planlagt",
-      "description": "Artikkelen er planlagt for automatisk publisering",
+      "description": "{{label, capitalize}} er planlagt for automatisk publisering",
       "transitions": {
         "usable": {
           "title": "Publiser direkte",
@@ -100,7 +102,7 @@
     },
     "unpublished": {
       "title": "Avpublisert",
-      "description": "Artikkelen har blitt avpublisert",
+      "description": "{{label, capitalize}} har blitt avpublisert",
       "transitions": {
         "draft": {
           "title": "Ny versjon",

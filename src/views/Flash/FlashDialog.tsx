@@ -9,7 +9,7 @@ import { CircleXIcon, TagsIcon, GanttChartSquareIcon, NewspaperIcon, ZapIcon, In
 import { useRegistry, useSections } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import type { Dispatch, SetStateAction } from 'react'
-import { type JSX, useMemo, useRef, useState } from 'react'
+import { type JSX, useEffect, useMemo, useRef, useState } from 'react'
 import { Form } from '@/components/Form'
 import { fetch } from '@/lib/index/fetch-plannings-twirp'
 import type { CreateFlashDocumentStatus } from './lib/createFlash'
@@ -52,10 +52,12 @@ export const FlashDialog = (props: {
   const [sendPrompt, setSendPrompt] = useState(false)
   const [savePrompt, setSavePrompt] = useState(false)
   const [donePrompt, setDonePrompt] = useState(false)
-  const [selectedPlanning, setSelectedPlanning] = useState<Omit<DefaultValueOption, 'payload'> & { payload: unknown, label: string } | undefined>(undefined)
+  // const [selectedPlanning, setSelectedPlanning] = useState<Omit<DefaultValueOption, 'payload'> & { payload: unknown, label: string } | undefined>(undefined)
+  const [selectedPlanning, setSelectedPlanning] = useState<Omit<DefaultValueOption, 'payload'> & { payload: { slugline: string }, label: string } | undefined>(undefined)
   const [, setTitle] = useYValue<string | undefined>(ydoc.ele, 'root.title')
   const { index, locale, timeZone, repository } = useRegistry()
   const [searchOlder, setSearchOlder] = useState(false)
+  const [shouldCreateQuickArticle, setShouldCreateQuickArticle] = useState(true)
   const [section, setSection] = useState<{
     type: string
     rel: string
@@ -69,8 +71,28 @@ export const FlashDialog = (props: {
   const { t } = useTranslation()
   const [invalidSlug, setInvalidSlug] = useState(false)
 
+  useEffect(() => {
+    if (selectedPlanning?.payload?.slugline) {
+      setInvalidSlug(selectedPlanning.payload.slugline === relatedDocsSlugline)
+    }
+
+    return () => {
+      setInvalidSlug(false)
+    }
+  }, [relatedDocsSlugline, selectedPlanning])
+
   const handleSubmit = (setCreatePrompt: Dispatch<SetStateAction<boolean>>): void => {
-    if (!relatedDocsSlugline.length) {
+    // Only validate slug length if we also create a quick-article, OR if flash is added
+    // to an already existing planning. For new plannings, empty sluglines are fine
+    // as they can be changed at a later time.
+    if (shouldCreateQuickArticle && !relatedDocsSlugline.length) {
+      setInvalidSlug(true)
+      return
+    }
+
+    // Slugs from planning and quick-article should not be the same, as they cannot
+    // be changed at a later point in time, invalidate if they are same.
+    if (selectedPlanning?.payload?.slugline === relatedDocsSlugline) {
       setInvalidSlug(true)
       return
     }
@@ -91,7 +113,9 @@ export const FlashDialog = (props: {
       return
     }
 
-    const quickArticleDocument = quickArticleDocumentTemplate(quickArticleData.deliverableId, quickArticleData.payload, quickArticleData.text)
+    const { deliverableId, payload, text } = quickArticleData
+
+    const quickArticleDocument = quickArticleDocumentTemplate(deliverableId, payload, text)
 
     void (async () => {
       await repository?.saveDocument(
@@ -170,8 +194,18 @@ export const FlashDialog = (props: {
     setSavePrompt,
     setSendPrompt,
     setDonePrompt,
-    selectedPlanning
-  }), [donePrompt, savePrompt, sendPrompt, selectedPlanning, setDonePrompt, setSavePrompt, setSendPrompt])
+    selectedPlanning,
+    shouldCreateQuickArticle
+  }), [
+    donePrompt,
+    savePrompt,
+    sendPrompt,
+    selectedPlanning,
+    setDonePrompt,
+    setSavePrompt,
+    setSendPrompt,
+    shouldCreateQuickArticle
+  ])
 
   const handleCreationErrors = (ex: Error) => {
     console.error(ex)
@@ -234,7 +268,7 @@ export const FlashDialog = (props: {
                         setSelectedPlanning({
                           value: option.value,
                           label: option.label,
-                          payload: option.payload
+                          payload: option.payload as { slugline: string }
                         })
 
                         const sectionPayload = option.payload as { section: string | undefined }
@@ -300,9 +334,24 @@ export const FlashDialog = (props: {
                 <Section ydoc={ydoc} path='links.core/section[0]' onSelect={setSection} />
               </Form.Group>
             )}
+            <Form.Group icon={NewspaperIcon}>
 
+              <div className='flex gap-2 items-center'>
+                <Checkbox
+                  id='createQuickArticle'
+                  defaultChecked={shouldCreateQuickArticle}
+                  onCheckedChange={(checked: boolean) => {
+                    setShouldCreateQuickArticle(checked)
+                    if (!checked) {
+                      setSlugline('')
+                    }
+                  }}
+                />
+                <Label htmlFor='createQuickArticle' className='text-muted-foreground'>Skapa två på två</Label>
+              </div>
+            </Form.Group>
             <Form.Group icon={TagsIcon}>
-              <div className='relative w-full'>
+              <div className='w-1/2 relative'>
                 {invalidSlug && (
                   <div className='absolute -top-1 right-0 h-2 w-2 z-10'>
                     <TriangleAlertIcon color='red' fill='#ffffff' size={15} strokeWidth={1.75} />
@@ -311,7 +360,28 @@ export const FlashDialog = (props: {
                 <input
                   autoComplete='off'
                   placeholder={t('flash:placeholders.sluggForTypes', { type1: t('core:documentType.planning'), type2: t('core:documentType.article') })}
-                  className='w-full text-sm rounded bg-background placeholder:pl-2 p-1 ring-offset-background'
+                  disabled={!shouldCreateQuickArticle}
+                  className={`
+                    h-6
+                    text-sm
+                    w-full
+                    bg-background
+                    py-0
+                    px-1
+                    ring-offset-background
+                    ring-indigo-200
+                    placeholder:pl-1
+                    text-black
+                    dark:text-white
+                    caret-black
+                    dark:caret-white
+                    placeholder:text-[#5D709F]
+                    border
+                    border-[#5D709F]
+                    rounded-md
+                    focus-visible:outline-none focus-visible:0
+                    disabled:cursor-not-allowed
+                    disabled:opacity-50`}
                   name='slugline'
                   value={relatedDocsSlugline}
                   onChange={(e) => {
@@ -368,7 +438,8 @@ export const FlashDialog = (props: {
                       startDate,
                       section: (!selectedPlanning?.value) ? section || undefined : undefined,
                       planningSection: section,
-                      relatedDocsSlugline
+                      relatedDocsSlugline,
+                      shouldCreateQuickArticle
                     })
                       .then((data) => {
                         if (props?.onDialogClose) {

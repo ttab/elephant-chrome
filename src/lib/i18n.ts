@@ -42,8 +42,11 @@ void i18n
     interpolation: {
       escapeValue: false, // React already does escaping,
       format: (value, formatStr) => {
-        if (formatStr === 'lowercase' && typeof value === 'string') {
-          return value.toLowerCase()
+        if (typeof value === 'string') {
+          if (formatStr === 'lowercase') return value.toLowerCase()
+          if (formatStr === 'capitalize' || formatStr === 'capitalized') {
+            return value.charAt(0).toUpperCase() + value.slice(1)
+          }
         }
         return value as string
       }

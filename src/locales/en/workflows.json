@@ -1,20 +1,22 @@
 {
   "base": {
+    "article": "article",
+    "flash": "flash",
     "draft": {
       "title": "Draft",
-      "description": "You are working on a draft of the article",
+      "description": "You are working on a draft of the {{label}}",
       "transitions": {
         "done": {
           "title": "Mark as done",
-          "description": "Mark the article as done"
+          "description": "Mark the {{label}} as done"
         },
         "approved": {
           "title": "Approve",
-          "description": "Approve the article for publishing"
+          "description": "Approve the {{label}} for publishing"
         },
         "usable": {
           "title": "Publish",
-          "description": "Publish the article"
+          "description": "Publish the {{label}}"
         },
         "withheld": {
           "title": "Schedule publishing",
@@ -24,7 +26,7 @@
     },
     "done": {
       "title": "Done",
-      "description": "The article is done and awaiting approval",
+      "description": "The {{label}} is done and awaiting approval",
       "transitions": {
         "approved": {
           "title": "Approve",
@@ -50,7 +52,7 @@
     },
     "approved": {
       "title": "Approved",
-      "description": "The article is approved for publishing",
+      "description": "The {{label}} is approved for publishing",
       "transitions": {
         "usable": {
           "title": "Publish",
@@ -72,7 +74,7 @@
     },
     "usable": {
       "title": "Published",
-      "description": "The article is published",
+      "description": "The {{label}} is published",
       "transitions": {
         "draft": {
           "title": "New version",
@@ -86,7 +88,7 @@
     },
     "withheld": {
       "title": "Scheduled",
-      "description": "The article is scheduled for automatic publishing",
+      "description": "The {{label}} is scheduled for automatic publishing",
       "transitions": {
         "usable": {
           "title": "Publish now",
@@ -100,7 +102,7 @@
     },
     "unpublished": {
       "title": "Unpublished",
-      "description": "The article has been unpublished",
+      "description": "The {{label}} has been unpublished",
       "transitions": {
         "draft": {
           "title": "New version",
