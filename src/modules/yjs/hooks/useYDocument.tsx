@@ -43,7 +43,7 @@ export function useYDocument<T>(
   id: string,
   options?: {
     data?: EleDocumentResponse
-    persistent?: boolean
+    skipIndexedDB?: boolean
     visibility?: boolean
     rootMap?: string
     ignoreChangeKeys?: string[]
@@ -93,7 +93,7 @@ export function useYDocument<T>(
   useEffect(() => {
     if (!id || !clientRegistry) return
 
-    void clientRegistry.get(id, { document: document.current })
+    void clientRegistry.get(id, { document: document.current, skipIndexedDB: options?.skipIndexedDB })
       .then((client) => {
         setClient(client)
         // Use the collaboration client's document, not the created
@@ -107,7 +107,7 @@ export function useYDocument<T>(
         clientRegistry.release(id)
       }
     }
-  }, [id, clientRegistry])
+  }, [id, options?.skipIndexedDB, clientRegistry])
 
   /**
    * Subscribe to client status changes
