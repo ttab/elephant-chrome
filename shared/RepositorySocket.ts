@@ -483,6 +483,10 @@ export class RepositorySocket {
     return crypto.randomUUID()
   }
 
+  updateAccessToken(accessToken: string): void {
+    this.#accessToken = accessToken
+  }
+
   get isConnected(): boolean {
     return this.#ws?.readyState === WebSocket.OPEN
   }

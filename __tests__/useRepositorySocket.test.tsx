@@ -100,6 +100,7 @@ describe('useRepositorySocket', () => {
       get isAuthenticated() { return true },
       connect: vi.fn().mockResolvedValue(undefined),
       authenticate: vi.fn().mockResolvedValue(undefined),
+      updateAccessToken: vi.fn(),
       getDocuments: vi.fn().mockRejectedValue(new Error('WebSocket failure')),
       closeDocumentSet: vi.fn().mockResolvedValue(undefined),
       onReconnect: vi.fn().mockReturnValue(() => {}),
@@ -153,6 +154,7 @@ describe('useRepositorySocket', () => {
       get isAuthenticated() { return true },
       connect: vi.fn().mockResolvedValue(undefined),
       authenticate: vi.fn().mockResolvedValue(undefined),
+      updateAccessToken: vi.fn(),
       getDocuments: vi.fn().mockResolvedValue({
         callId: 'call-1',
         documents,
@@ -222,6 +224,7 @@ describe('useRepositorySocket', () => {
       get isAuthenticated() { return socketState.isAuthenticated },
       connect: mockConnect,
       authenticate: mockAuthenticate,
+      updateAccessToken: vi.fn(),
       getDocuments: vi.fn(({ setName }: { setName: string }) => {
         expect(setName).toBe('tt/article-123')
         return Promise.resolve({
@@ -255,7 +258,7 @@ describe('useRepositorySocket', () => {
     await waitFor(() => expect(result.current.isLoading).toBe(false))
 
     expect(socket.connect).not.toHaveBeenCalled()
-    expect(socket.authenticate).toHaveBeenCalledTimes(1)
+    expect(socket.authenticate).not.toHaveBeenCalled()
     /* eslint-enable @typescript-eslint/unbound-method */
 
     expect(result.current.error).toBeNull()

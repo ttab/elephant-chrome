@@ -127,9 +127,13 @@ export function useRepositorySocket<TDecoratorData extends DecoratorDataBase = D
     schedulerRef.current = new ScheduleDecoratorUpdate<TDecoratorData>(setData, dataRef, decoratorsRef, accessTokenRef, runUpdateDecorators)
   }
 
-  // When session is updated, make sure to authenticate the socket if it's connected
+  // Keep the socket's stored token fresh so reconnects use valid credentials
   useEffect(() => {
-    if (repositorySocket?.isConnected) {
+    if (!repositorySocket || !session?.accessToken) return
+
+    repositorySocket.updateAccessToken(session.accessToken)
+
+    if (repositorySocket.isConnected && !repositorySocket.isAuthenticated) {
       repositorySocket.authenticate().catch((err) => {
         console.error('Failed to authenticate repository socket:', err)
       })
