@@ -4,16 +4,17 @@ import { resolveEventOptions } from '@/lib/documentActivity/useActivity'
 
 describe('resolveEventOptions', () => {
   it('returns null on ctrlKey', () => {
+    const preventDefault = vi.fn()
     const event = {
       ctrlKey: true,
       metaKey: false,
       shiftKey: false,
-      preventDefault: vi.fn(),
+      preventDefault,
       stopPropagation: vi.fn()
     } as unknown as ReactMouseEvent<Element>
 
     expect(resolveEventOptions(event)).toBeNull()
-    expect(event.preventDefault).not.toHaveBeenCalled()
+    expect(preventDefault).not.toHaveBeenCalled()
   })
 
   it('returns null on metaKey', () => {
@@ -64,8 +65,8 @@ describe('resolveEventOptions', () => {
 
   it('returns keepFocus true when Space key is pressed', () => {
     const event = new KeyboardEvent('keydown', { key: ' ' })
-    vi.spyOn(event, 'preventDefault')
-    vi.spyOn(event, 'stopPropagation')
+    const preventDefaultSpy = vi.spyOn(event, 'preventDefault')
+    const stopPropagationSpy = vi.spyOn(event, 'stopPropagation')
 
     const result = resolveEventOptions(event)
 
@@ -73,8 +74,8 @@ describe('resolveEventOptions', () => {
       keepFocus: true,
       target: undefined
     })
-    expect(event.preventDefault).toHaveBeenCalled()
-    expect(event.stopPropagation).toHaveBeenCalled()
+    expect(preventDefaultSpy).toHaveBeenCalled()
+    expect(stopPropagationSpy).toHaveBeenCalled()
   })
 
   it('returns defaults for plain click', () => {
