@@ -18,6 +18,8 @@ import { Wire as WireView } from '@/views'
 import { useSettings } from '@/modules/userSettings'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { Document } from '@ttab/elephant-api/newsdoc'
+import { RpcError } from '@protobuf-ts/runtime-rpc'
+import { Prompt } from '@/components'
 
 const BASE_URL = import.meta.env.BASE_URL
 
@@ -104,10 +106,32 @@ export const Wires = (): JSX.Element => {
       await updateSettings(doc)
       setIsDirty(false)
     } catch (error) {
-      // TODO: Display error message to user
-      console.error(error)
+      if (error instanceof RpcError) {
+        const details = Object.entries(error.meta)
+          .map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(', ') : v}`)
+          .join('\n')
+        console.error('Failed to save wire settings:', error.message, error.meta)
+        showModal(
+          <Prompt
+            title='Kunde inte spara inställningar'
+            description={details || error.message}
+            primaryLabel='Stäng'
+            onPrimary={hideModal}
+          />
+        )
+      } else {
+        console.error('Failed to save wire settings:', error)
+        showModal(
+          <Prompt
+            title='Kunde inte spara inställningar'
+            description={error instanceof Error ? error.message : 'Ett okänt fel inträffade'}
+            primaryLabel='Stäng'
+            onPrimary={hideModal}
+          />
+        )
+      }
     }
-  }, [streams, settings?.title, updateSettings])
+  }, [streams, settings?.title, updateSettings, hideModal, showModal])
 
   useStreamNavigation({
     isActive,
