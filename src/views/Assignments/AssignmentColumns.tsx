@@ -140,7 +140,7 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
       meta: {
         name: 'Titel',
         columnIcon: BriefcaseIcon,
-        className: 'flex-1'
+        className: 'flex-1 min-w-0'
       },
       accessorFn: (data) => data._preprocessed.assignmentTitle,
       cell: ({ row }) => {
@@ -151,12 +151,14 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
         })
 
         return (
-          <>
-            <AssignmentTitles planningTitle={planningTitle} assignmentTitle={assignmentTitle} />
-            <div className='display:revert @5xl/view:[display:none] pt-2'>
+          <div className='flex items-center gap-2 min-w-0'>
+            <div className='min-w-0 flex-1'>
+              <AssignmentTitles planningTitle={planningTitle} assignmentTitle={assignmentTitle} />
+            </div>
+            <div className='flex-none display:revert @5xl/view:[display:none]'>
               <Assignees assignees={assignees} />
             </div>
-          </>
+          </div>
         )
       },
       enableGrouping: false
