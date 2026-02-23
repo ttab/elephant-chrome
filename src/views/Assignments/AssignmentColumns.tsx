@@ -65,21 +65,13 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
           return assignmentStatus || 'todo'
         }
 
-        const { deliverableUuid } = data._preprocessed
-        const statuses = data.decoratorData?.statuses
-        const currentStatus = deliverableUuid && statuses ? statuses[deliverableUuid]?.workflowState : '?'
-
-        return currentStatus
+        return data._preprocessed.deliverableStatus || '?'
       },
       cell: ({ row }) => {
         const status = row.getValue<string>('deliverableStatus')
         const type = row.original._preprocessed.assignmentTypes[0]
 
-        // Loading if we have a deliverable but no decorator data yet
-        const hasDeliverable = !!row.original._preprocessed.deliverableUuid
-        const loading = hasDeliverable && !row.original.decoratorData?.statuses
-
-        return <DocumentStatus type={type} status={status} loading={loading} />
+        return <DocumentStatus type={type} status={status} />
       },
       filterFn: (row, id, value: string[]) =>
         value.includes(row.getValue(id)),

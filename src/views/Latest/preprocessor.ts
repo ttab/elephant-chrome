@@ -1,10 +1,9 @@
 import type { DocumentStateWithDecorators } from '@/hooks/useRepositorySocket/types'
-import type { StatusDecorator } from '@/hooks/useRepositorySocket/decorators/statuses'
 import type { MetricsDecorator } from '@/hooks/useRepositorySocket/decorators/metrics'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import type { PreprocessedTableData } from '@/components/Table/types'
 
-export type LatestDecorator = StatusDecorator & MetricsDecorator
+export type LatestDecorator = MetricsDecorator
 
 export type PreprocessedLatestData = PreprocessedTableData<LatestDecorator, {
   planningId: string

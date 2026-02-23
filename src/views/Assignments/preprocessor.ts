@@ -1,17 +1,17 @@
-import type { DocumentStateWithDecorators } from '@/hooks/useRepositorySocket/types'
-import type { StatusDecorator } from '@/hooks/useRepositorySocket/decorators/statuses'
+import type { DecoratorDataBase, DocumentStateWithDecorators } from '@/hooks/useRepositorySocket/types'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { isWithinInterval, parseISO } from 'date-fns'
 import type { PreprocessedTableData } from '@/components/Table/types'
-import { getAssignments, getNewsvalue, getSection, getDeliverableLink } from '@/lib/documentHelpers'
+import { findIncludedDocument, getAssignments, getNewsvalue, getSection, getDeliverableLink } from '@/lib/documentHelpers'
 
-export type PreprocessedAssignmentData = PreprocessedTableData<StatusDecorator, {
+export type PreprocessedAssignmentData = PreprocessedTableData<DecoratorDataBase, {
   newsvalue?: string
   sectionUuid?: string
   assignmentTitle?: string
   assignmentTypes: string[]
   assigneeUuids: string[]
   deliverableUuid?: string
+  deliverableStatus?: string
   startValue?: string
   startType?: string
 }> & {
@@ -27,7 +27,7 @@ export type PreprocessedAssignmentData = PreprocessedTableData<StatusDecorator, 
  * creates N separate rows with precomputed data for table rendering.
  */
 export function createAssignmentPreprocessor(range: { gte: string, lte: string }) {
-  return (data: DocumentStateWithDecorators<StatusDecorator>[]): PreprocessedAssignmentData[] => {
+  return (data: DocumentStateWithDecorators<DecoratorDataBase>[]): PreprocessedAssignmentData[] => {
     const flattened: PreprocessedAssignmentData[] = []
 
     for (const doc of data) {
@@ -56,6 +56,8 @@ export function createAssignmentPreprocessor(range: { gte: string, lte: string }
           .map((link) => link.uuid) || []
 
         const deliverableUuid = getDeliverableLink(assignment)
+        const deliverableState = findIncludedDocument(doc.includedDocuments, deliverableUuid)
+        const deliverableStatus = deliverableState?.meta?.workflowState
 
         const { value: startValue, type: startType } = getStart(
           assignmentTypes[0],
@@ -74,6 +76,7 @@ export function createAssignmentPreprocessor(range: { gte: string, lte: string }
             assignmentTypes,
             assigneeUuids,
             deliverableUuid,
+            deliverableStatus,
             startValue,
             startType
           }

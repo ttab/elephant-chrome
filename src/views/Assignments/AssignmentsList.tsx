@@ -1,10 +1,9 @@
-import { useDateRange, useRegistry, useRepositorySocket } from '@/hooks'
+import { useDateRange, useRepositorySocket } from '@/hooks'
 import { Table } from '@/components/Table'
 import type { ColumnDef } from '@tanstack/react-table'
 import { Error as ErrorView } from '../Error'
 import { useMemo, type JSX } from 'react'
 import { TableSkeleton } from '@/components/Table/Skeleton'
-import { createStatusesDecorator, type StatusDecorator } from '@/hooks/useRepositorySocket/decorators/statuses'
 import type { PreprocessedAssignmentData } from './preprocessor'
 import { createAssignmentPreprocessor } from './preprocessor'
 import { Toolbar } from '@/components/Table/Toolbar'
@@ -13,30 +12,19 @@ import { SocketStatus } from '@/hooks/useRepositorySocket/lib/components/SocketS
 export const AssignmentsList = ({ columns }: {
   columns: ColumnDef<PreprocessedAssignmentData>[]
 }): JSX.Element => {
-  const { repository } = useRegistry()
   const { from, to } = useDateRange()
-
-  const decorators = useMemo(() => {
-    if (!repository) return
-    return [
-      createStatusesDecorator({
-        repository
-      })
-    ]
-  }, [repository])
 
   const preprocessor = useMemo(
     () => createAssignmentPreprocessor({ gte: from, lte: to }),
     [from, to]
   )
 
-  const { error, isLoading, status } = useRepositorySocket<StatusDecorator>({
+  const { error, isLoading, status } = useRepositorySocket({
     type: 'core/planning-item',
     from,
     to,
     include: ['.meta(type=\'core/assignment\').links(rel=\'deliverable\')@{uuid:doc}'],
     asTable: true,
-    decorators,
     preprocessor
   })
 
@@ -55,7 +43,7 @@ export const AssignmentsList = ({ columns }: {
       columns={columns}
       rowAlign='start'
       resolveNavigation={(row) => ({
-        id: row.id,
+        id: row.document?.uuid || '',
         opensWith: 'Planning'
       })}
     >

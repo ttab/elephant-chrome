@@ -1,12 +1,11 @@
 import { createAssignmentPreprocessor } from '@/views/Assignments/preprocessor'
-import type { DocumentStateWithDecorators } from '@/hooks/useRepositorySocket/types'
-import type { StatusDecorator } from '@/hooks/useRepositorySocket/decorators/statuses'
+import type { DecoratorDataBase, DocumentStateWithDecorators } from '@/hooks/useRepositorySocket/types'
 import { Document } from '@ttab/elephant-api/newsdoc'
 
 const range = { gte: '2026-02-01T00:00:00Z', lte: '2026-02-28T23:59:59Z' }
 const preprocess = createAssignmentPreprocessor(range)
 
-const makeDoc = (overrides: Partial<Parameters<typeof Document.create>[0]> = {}): DocumentStateWithDecorators<StatusDecorator> => ({
+const makeDoc = (overrides: Partial<Parameters<typeof Document.create>[0]> = {}): DocumentStateWithDecorators<DecoratorDataBase> => ({
   document: Document.create({
     uuid: 'planning-1',
     type: 'core/planning-item',
