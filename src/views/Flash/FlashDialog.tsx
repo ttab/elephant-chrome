@@ -251,7 +251,7 @@ export const FlashDialog = (props: {
                         planningAwareness.current(isOpen)
                       }
                     }}
-                    fetch={(query) => fetch(query, session, index, locale, timeZone, { searchOlder })}
+                    fetch={(query) => fetch(query, session, index, locale, timeZone, { searchOlder, sluglines: true })}
                     minSearchChars={2}
                     modal={props.asDialog}
                     onSelect={(option) => {
