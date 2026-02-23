@@ -12,7 +12,6 @@ export interface FilterProps {
   search: string | undefined
   setSearch: Dispatch<SetStateAction<string | undefined>>
   setGlobalTextFilter?: (updater: Updater<unknown>) => void
-  freeTextFilter?: boolean
 }
 
 export const Filter = ({ page, pages, setPages, setSearch, children, setGlobalTextFilter }:
