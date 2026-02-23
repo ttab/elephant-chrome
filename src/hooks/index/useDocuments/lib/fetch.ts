@@ -1,8 +1,6 @@
 import type { Index } from '@/shared/Index'
 import type { Session } from 'next-auth'
 import type { HitV1, QueryV1, SortingV1, SubscriptionReference } from '@ttab/elephant-api/index'
-import { withStatus } from './withStatus'
-import { withPlannings } from './withPlannings'
 import type { useDocumentsFetchOptions } from '../'
 import type { Dispatch, SetStateAction } from 'react'
 
@@ -52,18 +50,5 @@ export async function fetch<T extends HitV1, F>({
     setSubscriptions?.(subscriptions)
   }
 
-  let result = hits
-
-  // Append and format statuses
-  if (options?.withStatus) {
-    result = withStatus<T>(result)
-  }
-
-  // Append _relatedPlannings
-  if (options?.withPlannings) {
-    result = await withPlannings<T>({ hits: result, session, index })
-  }
-
-
-  return result
+  return hits
 }

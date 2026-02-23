@@ -6,7 +6,8 @@ import {
   getAssignments,
   getDeliverableLink,
   findIncludedDocument,
-  getDocumentStatus
+  getDocumentStatus,
+  getSection
 } from '@/lib/documentHelpers'
 
 export type PreprocessedApprovalData = DocumentStateWithDecorators<MetricsDecorator> & {
@@ -64,8 +65,7 @@ export function preprocessApprovalData(
           }
         : undefined
 
-      const sectionUuid = deliverable?.document?.links
-        ?.find((link) => link.type === 'core/section')?.uuid
+      const sectionUuid = getSection(deliverable?.document)
 
       return {
         ...docState,

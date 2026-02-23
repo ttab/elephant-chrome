@@ -6,6 +6,7 @@ import type {
   InclusionBatch
 } from '@ttab/elephant-api/repositorysocket'
 import type { DocumentStateWithDecorators, Decorator } from '../types'
+import { getAssignments } from '@/lib/documentHelpers'
 
 export const findDeliverableParentIndex = <TDecoratorData extends object = object>(
   documents: DocumentStateWithDecorators<TDecoratorData>[],
@@ -16,13 +17,13 @@ export const findDeliverableParentIndex = <TDecoratorData extends object = objec
   }
 
   return documents.findIndex((doc) => {
-    const metas = doc.document?.meta?.filter((m) => m.type === 'core/assignment')
-    if (!metas?.length) {
+    const assignments = getAssignments(doc.document)
+    if (!assignments.length) {
       return false
     }
 
-    for (const meta of metas) {
-      for (const link of meta.links ?? []) {
+    for (const assignment of assignments) {
+      for (const link of assignment.links ?? []) {
         if (link.rel === 'deliverable' && link.uuid === targetUuid) {
           return true
         }
@@ -33,33 +34,29 @@ export const findDeliverableParentIndex = <TDecoratorData extends object = objec
   })
 }
 
-export const upsertIncludedDocument = <TDecoratorData extends object = object>(
-  parent: DocumentStateWithDecorators<TDecoratorData>,
+export const upsertIncludedDocument = (
+  existingDocuments: NonNullable<DocumentStateWithDecorators['includedDocuments']>,
   includedDoc: { uuid: string, state?: DocumentState | DocumentUpdate }
-) => {
-  if (!parent.includedDocuments) {
-    parent.includedDocuments = []
-  }
-
+): NonNullable<DocumentStateWithDecorators['includedDocuments']> => {
   const includedUuid = includedDoc.state?.document?.uuid ?? includedDoc.uuid
   const entry = {
     uuid: includedUuid,
     state: includedDoc.state,
     __updater: {
       sub: includedDoc.state?.meta?.updaterUri || '??',
-      time: includedDoc.state?.meta?.modified || Date.now().toString()
+      time: includedDoc.state?.meta?.modified || new Date().toISOString()
     }
   }
 
-  const existingIndex = parent.includedDocuments.findIndex(
+  const existingIndex = existingDocuments.findIndex(
     (doc) => doc.state?.document?.uuid === includedUuid || doc.uuid === includedUuid
   )
 
   if (existingIndex >= 0) {
-    parent.includedDocuments[existingIndex] = entry
-  } else {
-    parent.includedDocuments.push(entry)
+    return existingDocuments.map((doc, i) => i === existingIndex ? entry : doc)
   }
+
+  return [...existingDocuments, entry]
 }
 
 export const isDocumentRemoved = (
@@ -110,12 +107,13 @@ export const handleInclusionBatchUpdate = <TDecoratorData extends object = objec
     const parentIndex = findDeliverableParentIndex(newData, targetUuid)
 
     if (parentIndex >= 0) {
-      const parent = { ...newData[parentIndex], includedDocuments: [...(newData[parentIndex].includedDocuments ?? [])] }
-      newData[parentIndex] = parent
-      upsertIncludedDocument(parent, {
-        uuid: includedDocument.uuid,
-        state: includedDocument.state
-      })
+      newData[parentIndex] = {
+        ...newData[parentIndex],
+        includedDocuments: upsertIncludedDocument(
+          newData[parentIndex].includedDocuments ?? [],
+          { uuid: includedDocument.uuid, state: includedDocument.state }
+        )
+      }
 
       changed = true
     }
@@ -137,14 +135,16 @@ export const handleDocumentUpdate = <TDecoratorData extends object = object>(
   if (isInclusionUpdate(update) && update.document) {
     const parentIndex = findDeliverableParentIndex(prevData, update.document.uuid)
 
-
     if (parentIndex >= 0) {
       const newData = [...prevData]
-      const parent = { ...newData[parentIndex], includedDocuments: [...(newData[parentIndex].includedDocuments ?? [])] }
+      const parent = {
+        ...newData[parentIndex],
+        includedDocuments: upsertIncludedDocument(
+          newData[parentIndex].includedDocuments ?? [],
+          { uuid: update.document.uuid, state: update }
+        )
+      }
       newData[parentIndex] = parent
-
-      // Update corresponding included document in parent
-      upsertIncludedDocument(parent, { uuid: update.document.uuid, state: update })
 
       // Schedule decorator update for this included document
       void scheduleDecoratorUpdate?.execute(update, parent)
@@ -155,37 +155,36 @@ export const handleDocumentUpdate = <TDecoratorData extends object = object>(
     return prevData
   }
 
-  // Handle main document update
+  // Handle main document update — extract only DocumentState fields
   if (update.document) {
     const existingIndex = prevData.findIndex((p) => p.document?.uuid === update.document?.uuid)
 
     if (existingIndex >= 0) {
       const newData = [...prevData]
       newData[existingIndex] = {
-        ...update,
+        document: update.document,
+        meta: update.meta,
         includedDocuments: newData[existingIndex].includedDocuments,
         decoratorData: newData[existingIndex].decoratorData,
         __updater: {
           sub: update.meta?.updaterUri || '??',
-          time: update.meta?.modified || Date.now().toString()
+          time: update.meta?.modified || new Date().toISOString()
         }
       }
       void scheduleDecoratorUpdate?.execute(update, newData[existingIndex])
       return newData
     } else if (update.meta) {
-      const newData = [
-        {
-          ...update,
-          includedDocuments: undefined,
-          __updater: {
-            sub: update.meta.updaterUri || '??',
-            time: update.meta.modified || Date.now().toString()
-          }
-        },
-        ...prevData
-      ]
+      const newDoc: DocumentStateWithDecorators<TDecoratorData> = {
+        document: update.document,
+        meta: update.meta,
+        __updater: {
+          sub: update.meta.updaterUri || '??',
+          time: update.meta.modified || new Date().toISOString()
+        }
+      }
+      const newData = [newDoc, ...prevData]
 
-      void scheduleDecoratorUpdate?.execute(update, update)
+      void scheduleDecoratorUpdate?.execute(update, newDoc)
       return newData
     }
   }
@@ -199,11 +198,14 @@ export class ScheduleDecoratorUpdate<TDecoratorData extends object = object> {
 
   constructor(
     private setData: Dispatch<SetStateAction<DocumentStateWithDecorators<TDecoratorData>[]>>,
+    private dataRef: { readonly current: DocumentStateWithDecorators<TDecoratorData>[] },
     private decoratorsRef: React.RefObject<Decorator<Partial<TDecoratorData>>[]>,
+    private accessTokenRef: React.RefObject<string>,
     private runUpdateDecorators: (
       parent: DocumentStateWithDecorators<TDecoratorData>,
       update: DocumentUpdate,
-      decorators: Decorator<Partial<TDecoratorData>>[]
+      decorators: Decorator<Partial<TDecoratorData>>[],
+      accessToken: string
     ) => Promise<DocumentStateWithDecorators<TDecoratorData>>,
     private debounceMs = 300
   ) {}
@@ -225,18 +227,30 @@ export class ScheduleDecoratorUpdate<TDecoratorData extends object = object> {
 
     const timer = setTimeout(() => {
       this.#pending.delete(uuid)
-      void this.#run(uuid, update, parent, seq)
+      void this.#run(uuid, update, seq)
     }, this.debounceMs)
 
     this.#pending.set(uuid, timer)
   }
 
-  async #run(uuid: string, update: DocumentUpdate, parent: DocumentStateWithDecorators<TDecoratorData>, seq: number) {
+  async #run(uuid: string, update: DocumentUpdate, seq: number) {
     try {
+      const currentParent = this.dataRef.current.find(
+        (doc) => doc.document?.uuid === uuid
+      ) ?? null
+
+      if (!currentParent) {
+        return
+      }
+
+      const accessToken = this.accessTokenRef.current
+      if (!accessToken) return
+
       const enrichedDoc = await this.runUpdateDecorators(
-        parent,
+        currentParent,
         update,
-        this.decoratorsRef.current
+        this.decoratorsRef.current,
+        accessToken
       )
 
       if (this.#sequence.get(uuid) !== seq) {
@@ -245,7 +259,7 @@ export class ScheduleDecoratorUpdate<TDecoratorData extends object = object> {
 
       this.setData((prev) => {
         return prev.map((doc) => {
-          if (doc.document?.uuid === parent.document?.uuid) {
+          if (doc.document?.uuid === uuid) {
             return enrichedDoc
           }
           return doc

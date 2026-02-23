@@ -12,16 +12,11 @@ export function minimumSpaceRequired(
   content: ContentState[],
   viewRegistry: ViewRegistry
 ): number {
-  // Default to biggest screen, then find biggest screen size allowed
-  let screen = screenDefinitions.slice(-1)[0]
-  const filteredScreens = screenDefinitions.filter((s) => {
-    return s.value > window.innerWidth
-  }).reverse()
-
-  // Find the smallest defined screen size that can handle current screen width
-  if (filteredScreens.length) {
-    screen = filteredScreens.slice(-1)[0]
-  }
+  // Find the largest defined breakpoint that does not exceed the current viewport
+  const filteredScreens = screenDefinitions.filter((s) => s.value <= window.innerWidth)
+  const screen = filteredScreens.length
+    ? filteredScreens[filteredScreens.length - 1]
+    : screenDefinitions[0]
 
   const views = content
     .filter((item) => !!item.name)

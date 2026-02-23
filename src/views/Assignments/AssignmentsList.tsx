@@ -1,56 +1,33 @@
-import { useQuery, useRegistry, useRepositorySocket } from '@/hooks'
+import { useDateRange, useRepositorySocket } from '@/hooks'
 import { Table } from '@/components/Table'
 import type { ColumnDef } from '@tanstack/react-table'
 import { Error as ErrorView } from '../Error'
-import { useCallback, useMemo, type JSX } from 'react'
+import { useMemo, type JSX } from 'react'
 import { TableSkeleton } from '@/components/Table/Skeleton'
-import { getUTCDateRange } from '@/shared/datetime'
-import { createStatusesDecorator, type StatusDecorator } from '@/hooks/useRepositorySocket/decorators/statuses'
 import type { PreprocessedAssignmentData } from './preprocessor'
 import { createAssignmentPreprocessor } from './preprocessor'
+import { Toolbar } from '@/components/Table/Toolbar'
 import { SocketStatus } from '@/hooks/useRepositorySocket/lib/components/SocketStatus'
 
 export const AssignmentsList = ({ columns }: {
   columns: ColumnDef<PreprocessedAssignmentData>[]
 }): JSX.Element => {
-  const [query] = useQuery()
-  const { timeZone, repository } = useRegistry()
-  const { from, to } = useMemo(() =>
-    getUTCDateRange(query?.from
-      ? new Date(query?.from as string)
-      : new Date(), timeZone), [query, timeZone])
-
-  const include = useMemo(() => {
-    return ['.meta(type=\'core/assignment\').links(rel=\'deliverable\')@{uuid:doc}']
-  }, [])
-
-  const decorators = useMemo(() => {
-    if (!repository) return
-    return [
-      createStatusesDecorator({
-        repository
-      })
-    ]
-  }, [repository])
+  const { from, to } = useDateRange()
 
   const preprocessor = useMemo(
     () => createAssignmentPreprocessor({ gte: from, lte: to }),
     [from, to]
   )
 
-  const { error, isLoading, status } = useRepositorySocket<StatusDecorator>({
+  const { error, isLoading, status } = useRepositorySocket({
     type: 'core/planning-item',
     from,
     to,
-    include,
+    include: ['.meta(type=\'core/assignment\').links(rel=\'deliverable\')@{uuid:doc}'],
     asTable: true,
-    decorators,
     preprocessor
   })
 
-  const onRowSelected = useCallback((row?: PreprocessedAssignmentData) => {
-    return row
-  }, [])
 
   if (error) {
     console.error('Error fetching assignments:', error)
@@ -62,12 +39,16 @@ export const AssignmentsList = ({ columns }: {
   }
 
   return (
-    <Table
-      type='Planning'
+    <Table<PreprocessedAssignmentData, unknown>
       columns={columns}
-      onRowSelected={onRowSelected}
+      rowAlign='start'
+      resolveNavigation={(row) => ({
+        id: row.document?.uuid || '',
+        opensWith: 'Planning'
+      })}
     >
       <SocketStatus status={status} />
+      <Toolbar />
     </Table>
   )
 }

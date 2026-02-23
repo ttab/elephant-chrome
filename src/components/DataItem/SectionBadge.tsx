@@ -11,7 +11,7 @@ export const SectionBadge = ({ title, color }: {
   return (
     <Badge
       variant='outline'
-      className='rounded-md bg-background h-7'
+      className='rounded-md bg-background h-7 overflow-hidden'
       data-row-action
     >
       <div

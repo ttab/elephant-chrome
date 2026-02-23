@@ -1,6 +1,6 @@
+import type { Mock } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
 import { useNavigation, useQuery, useView } from '@/hooks'
-import { vi, type Mock } from 'vitest'
 import type { NavigationAction, ViewProviderState } from '@/types/index'
 import { initializeNavigationState } from '@/navigation/lib'
 import type { Dispatch } from 'react'

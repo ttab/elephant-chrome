@@ -16,15 +16,11 @@ import type { Session } from 'next-auth'
  * Options for augmenting or performing the fetch in the `useDocuments` hook.
  *
  * @property {boolean} aggregatePages - Aggregates pages into a single result.
- * @property {boolean} withStatus - Append current status to `document.meta.status` field.
- * @property {boolean} withPlannings - Append `_relatedPlannings` to the result.
  * @property {boolean} setTableData - Set the data in the table context.
  * @property {boolean} subscribe - Subscribe to document changes.
  */
 export interface useDocumentsFetchOptions {
   aggregatePages?: boolean
-  withStatus?: boolean
-  withPlannings?: boolean
   asAssignments?: boolean
   setTableData?: boolean
   subscribe?: boolean

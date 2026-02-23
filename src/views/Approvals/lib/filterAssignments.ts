@@ -1,4 +1,4 @@
-import type { PreprocessedApprovalData } from '@/views/Approvals/preprocessor'
+import type { PreprocessedApprovalData } from '../preprocessor'
 
 export interface Facets {
   [key: string]: Map<string, number>

@@ -1,9 +1,9 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { waitFor } from '@testing-library/react'
 import { RepositorySocket } from '@/shared/RepositorySocket'
 import { Response as ResponseType, type DocumentState } from '@ttab/elephant-api/repositorysocket'
 import { Document } from '@ttab/elephant-api/newsdoc'
 import type { Repository } from '@/shared/Repository'
+import { findDeliverableParentIndex } from '@/hooks/useRepositorySocket/lib/handlers'
 
 type CloseEventLike = { wasClean: boolean, code?: number, reason?: string }
 
@@ -351,7 +351,8 @@ describe('RepositorySocket', () => {
     const docsPromise = socket.getDocuments({
       setName: 'set-a',
       type: 'core/planning-item',
-      include: ['.meta(type=\'core/assignment\').links(rel=\'deliverable\')@{uuid:doc}']
+      include: ['.meta(type=\'core/assignment\').links(rel=\'deliverable\')@{uuid:doc}'],
+      resolveParentIndex: findDeliverableParentIndex
     })
     await waitFor(() => expect(ws.send).toHaveBeenCalledTimes(2))
 
@@ -459,7 +460,11 @@ describe('RepositorySocket', () => {
     ws.message(toArrayBuffer(ResponseType.create({ callId: 'auth-call', handled: true })))
     await authPromise
 
-    const docsPromise = socket.getDocuments({ setName: 'set-a', type: 'core/planning-item' })
+    const docsPromise = socket.getDocuments({
+      setName: 'set-a',
+      type: 'core/planning-item',
+      resolveParentIndex: findDeliverableParentIndex
+    })
     await waitFor(() => expect(ws.send).toHaveBeenCalledTimes(2))
 
     // Parent with no assignment meta
@@ -667,10 +672,10 @@ describe('RepositorySocket', () => {
     // Setup UUID mock for the reauth call during reconnect
     vi.spyOn(globalThis.crypto, 'randomUUID').mockReturnValueOnce('reauth-call')
 
-    // Simulate unclean close — triggers #reconnect() with 5s setTimeout
+    // Simulate unclean close — triggers #reconnect() with exponential backoff
     ws.serverClose({ wasClean: false, code: 1006 })
 
-    // Advance past the 5s reconnect delay (also flushes microtasks for getSocketToken)
+    // Advance past the reconnect delay (also flushes microtasks for getSocketToken)
     await vi.advanceTimersByTimeAsync(5000)
 
     // A new WebSocket instance should be created

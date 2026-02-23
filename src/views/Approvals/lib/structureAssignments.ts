@@ -1,6 +1,6 @@
 import { toZonedTime } from 'date-fns-tz'
 import { parseISO, getHours } from 'date-fns'
-import type { PreprocessedApprovalData } from '@/views/Approvals/preprocessor'
+import type { PreprocessedApprovalData } from '../preprocessor'
 import { getTimeValue } from './getTimeValue'
 import { getPublishSlot, getStartTime, getPublishTime } from '@/lib/documentHelpers'
 

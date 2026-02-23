@@ -9,9 +9,9 @@ import type {
 } from '@ttab/elephant-api/repositorysocket'
 
 import { Timespan } from '@ttab/elephant-api/repository'
+import type { DocumentFilter } from '@ttab/elephant-api/repository'
 import { Call as CallType, Response as ResponseType } from '@ttab/elephant-api/repositorysocket'
 import type { Repository } from './Repository'
-import { getSession } from 'next-auth/react'
 
 interface InclusionDocumentWithUpdater extends InclusionDocument {
   __updater?: {
@@ -45,12 +45,16 @@ export class RepositorySocket {
   #ws: WebSocket | null = null
   #authenticated = false
   #messageHandlers = new Map<string, MessageHandler>()
+  #rejectHandlers = new Map<string, (error: Error) => void>()
   #updateHandlers = new Set<MessageHandler>()
-  #errorHandler?: ErrorHandler
+  #errorHandlers = new Set<ErrorHandler>()
   #reconnectTimer?: number
   #shouldReconnect = true
   #accessToken?: string
   #reconnectListeners = new Set<() => void>()
+  #reconnectAttempts = 0
+  #connectingPromise: Promise<void> | null = null
+  #authenticatingPromise: Promise<void> | null = null
   #statusListeners = new Set<(status: SocketStatus | null) => void>()
 
   constructor(url: string, repository: Repository) {
@@ -59,17 +63,35 @@ export class RepositorySocket {
   }
 
   async connect(accessToken: string): Promise<void> {
+    if (this.isConnected) return
+
+    if (this.#connectingPromise) {
+      return this.#connectingPromise
+    }
+
+    this.#shouldReconnect = true
+
+    this.#connectingPromise = this.#initiateConnect(accessToken)
+      .finally(() => { this.#connectingPromise = null })
+
+    return this.#connectingPromise
+  }
+
+  async #initiateConnect(accessToken: string): Promise<void> {
     this.#accessToken = accessToken
-    const token = await this.#getSocketToken()
+    const token = await this.#getSocketToken(accessToken)
     const urlWithToken = `${this.#url}/${token}`
 
     return new Promise((resolve, reject) => {
+      let settled = false
+
       try {
         this.#ws = new WebSocket(urlWithToken)
         this.#ws.binaryType = 'arraybuffer'
 
         this.#ws.onopen = () => {
           this.#emitStatus(null)
+          settled = true
           this.#authenticated = false
           resolve()
         }
@@ -100,8 +122,14 @@ export class RepositorySocket {
         this.#ws.onerror = () => {
           const error = new Error('Ett fel inträffade i anslutningen.')
           this.#emitStatus({ level: 'error', message: error.message, error })
-          this.#errorHandler?.(error)
-          reject(error)
+          for (const handler of this.#errorHandlers) {
+            handler(error)
+          }
+
+          if (!settled) {
+            settled = true
+            reject(error)
+          }
         }
 
         this.#ws.onclose = (event) => {
@@ -111,10 +139,14 @@ export class RepositorySocket {
           }
 
           this.#authenticated = false
+          this.#authenticatingPromise = null
 
-          // Clear orphaned message handlers from previous connection
-          this.#messageHandlers.clear()
-          this.#updateHandlers.clear()
+          this.#rejectPendingHandlers('WebSocket connection closed')
+
+          if (!settled) {
+            settled = true
+            reject(new Error(`WebSocket closed: ${event.code} ${event.reason}`))
+          }
 
           if (this.#shouldReconnect && !event.wasClean) {
             this.#reconnect()
@@ -130,8 +162,17 @@ export class RepositorySocket {
     })
   }
 
-  async #getSocketToken(): Promise<string> {
-    return await this.#repository.getSocketToken()
+  async #getSocketToken(accessToken: string): Promise<string> {
+    return await this.#repository.getSocketToken(accessToken)
+  }
+
+  #rejectPendingHandlers(reason: string): void {
+    const error = new Error(reason)
+    for (const reject of this.#rejectHandlers.values()) {
+      reject(error)
+    }
+    this.#rejectHandlers.clear()
+    this.#messageHandlers.clear()
   }
 
   #reconnect(): void {
@@ -147,11 +188,26 @@ export class RepositorySocket {
       return
     }
 
+    const maxAttempts = 10
+    if (this.#reconnectAttempts >= maxAttempts) {
+      this.#emitStatus({ level: 'error', message: `Max antal återanslutningsförsök (${maxAttempts}) nåddes.` })
+      return
+    }
+
+    const baseDelay = 1000
+    const maxDelay = 30000
+    const delay = Math.min(
+      baseDelay * 2 ** this.#reconnectAttempts, maxDelay
+    ) + Math.random() * 1000
+
+    this.#reconnectAttempts++
+
     this.#setReconnectTimer(window.setTimeout(() => {
       void (async () => {
         try {
           await this.connect(accessToken)
           await this.authenticate()
+          this.#reconnectAttempts = 0
           this.#setReconnectTimer(undefined)
           for (const listener of this.#reconnectListeners) {
             listener()
@@ -159,9 +215,10 @@ export class RepositorySocket {
         } catch (error) {
           this.#emitStatus({ level: 'error', message: 'Kunde inte återansluta.', error: error instanceof Error ? error : new Error(String(error)) })
           this.#setReconnectTimer(undefined)
+          this.#reconnect()
         }
       })()
-    }, 5000))
+    }, delay))
   }
 
   #setReconnectTimer(timer: number | undefined): void {
@@ -180,9 +237,13 @@ export class RepositorySocket {
 
   disconnect(): void {
     this.#shouldReconnect = false
+    this.#reconnectAttempts = 0
     this.#setReconnectTimer(undefined)
-    this.#messageHandlers.clear()
+    this.#rejectPendingHandlers('WebSocket disconnected')
+    this.#connectingPromise = null
+    this.#authenticatingPromise = null
     this.#updateHandlers.clear()
+    this.#errorHandlers.clear()
     this.#reconnectListeners.clear()
     this.#statusListeners.clear()
     this.#ws?.close()
@@ -210,8 +271,20 @@ export class RepositorySocket {
   }
 
   async authenticate(): Promise<void> {
-    const session = await getSession()
-    const token = session?.accessToken
+    if (this.#authenticated) return
+
+    if (this.#authenticatingPromise) {
+      return this.#authenticatingPromise
+    }
+
+    this.#authenticatingPromise = this.#initiateAuthenticate()
+      .finally(() => { this.#authenticatingPromise = null })
+
+    return this.#authenticatingPromise
+  }
+
+  async #initiateAuthenticate(): Promise<void> {
+    const token = this.#accessToken
 
     if (!token) {
       throw new Error('Authentication failed: no access token available')
@@ -224,10 +297,12 @@ export class RepositorySocket {
       authenticate: { token }
     })
 
-
     return new Promise((resolve, reject) => {
+      this.#rejectHandlers.set(callId, reject)
+
       this.#messageHandlers.set(callId, (response) => {
         this.#messageHandlers.delete(callId)
+        this.#rejectHandlers.delete(callId)
 
         if (response.error?.errorMessage) {
           reject(new Error(response.error.errorMessage))
@@ -249,13 +324,17 @@ export class RepositorySocket {
     type,
     timespan,
     include = [],
-    labels = []
+    labels = [],
+    filter,
+    resolveParentIndex
   }: {
     setName: string
     type: string
     timespan?: { from: string, to: string }
     include?: string[]
     labels?: string[]
+    filter?: DocumentFilter
+    resolveParentIndex?: (documents: DocumentStateWithIncludes[], targetUuid: string) => number
   }): Promise<{
     callId: string
     documents: DocumentStateWithIncludes[]
@@ -275,19 +354,24 @@ export class RepositorySocket {
         type,
         labels,
         timespan: timespan ? Timespan.create(timespan) : undefined,
+        filter,
         include,
         includeAcls: true
       }
     })
 
     return new Promise((resolve, reject) => {
+      this.#rejectHandlers.set(callId, reject)
+
       this.#messageHandlers.set(callId, (response) => {
         if (response.error?.errorMessage) {
           this.#messageHandlers.delete(callId)
+          this.#rejectHandlers.delete(callId)
           reject(new Error(response.error.errorMessage))
           return
         } else if (response.error) {
           this.#messageHandlers.delete(callId)
+          this.#rejectHandlers.delete(callId)
           reject(new Error('Failed to get documents'))
           return
         }
@@ -296,30 +380,13 @@ export class RepositorySocket {
           documents.push(...response.documentBatch.documents)
         }
 
-        if (response.inclusionBatch) {
-          // build map of deliverable uuid -> index
-          const uuidToIndex = new Map<string, number>()
-          documents.forEach((doc, i) => {
-            const metas = doc.document?.meta?.filter((a) => a.type === 'core/assignment')
-            if (!metas?.length) {
-              return
-            }
-
-            for (const meta of metas) {
-              for (const link of meta.links ?? []) {
-                if (link.rel !== 'deliverable' || !link.uuid) {
-                  continue
-                }
-
-                uuidToIndex.set(link.uuid, i)
-              }
-            }
-          })
-
+        if (response.inclusionBatch && resolveParentIndex) {
           for (const includedDoc of response.inclusionBatch.documents) {
             const targetUuid = includedDoc.state?.document?.uuid
-            const index = targetUuid ? uuidToIndex.get(targetUuid) : undefined
-            if (index !== undefined) {
+            if (!targetUuid) continue
+
+            const index = resolveParentIndex(documents, targetUuid)
+            if (index >= 0) {
               if (!documents[index].includedDocuments) {
                 documents[index].includedDocuments = []
               }
@@ -331,6 +398,7 @@ export class RepositorySocket {
 
         if (response.handled) {
           this.#messageHandlers.delete(callId)
+          this.#rejectHandlers.delete(callId)
 
           const onUpdate = (handler: (update: DocumentUpdate | DocumentRemoved | InclusionBatch) => void) => {
             const updateHandler: MessageHandler = (response) => {
@@ -376,8 +444,11 @@ export class RepositorySocket {
     })
 
     return new Promise((resolve, reject) => {
+      this.#rejectHandlers.set(callId, reject)
+
       this.#messageHandlers.set(callId, (response) => {
         this.#messageHandlers.delete(callId)
+        this.#rejectHandlers.delete(callId)
 
         if (response.error?.errorMessage) {
           reject(new Error(response.error.errorMessage))
@@ -392,8 +463,11 @@ export class RepositorySocket {
     })
   }
 
-  onError(handler: ErrorHandler): void {
-    this.#errorHandler = handler
+  onError(handler: ErrorHandler): () => void {
+    this.#errorHandlers.add(handler)
+    return () => {
+      this.#errorHandlers.delete(handler)
+    }
   }
 
   #send(call: Call): void {
@@ -407,6 +481,10 @@ export class RepositorySocket {
 
   #generateCallId(): string {
     return crypto.randomUUID()
+  }
+
+  updateAccessToken(accessToken: string): void {
+    this.#accessToken = accessToken
   }
 
   get isConnected(): boolean {

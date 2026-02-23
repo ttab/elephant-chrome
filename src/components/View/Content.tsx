@@ -30,7 +30,7 @@ export const Content = ({ children, variant = 'default', columns = 0, className 
     case 'default':
     default:
       return (
-        <ScrollArea className={cn('flex-1 w-full mx-auto overflow-hidden h-full', className)}>
+        <ScrollArea className={cn('flex-1 w-full mx-auto overflow-hidden h-full [&>div[data-orientation=vertical]]:z-[15] [&>div[data-orientation=vertical]]:!top-10 [&>div[data-orientation=vertical]]:!h-auto', className)}>
           {children}
         </ScrollArea>
       )

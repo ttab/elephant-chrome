@@ -15,6 +15,7 @@ export function getScreenDefinitions(): ScreenDefinition[] {
     lg: '1024px',
     xl: '1280px',
     '2xl': '1536px',
+    hd: '1600px',
     fhd: '1920px',
     qhd: '2560px',
     uhd: '3840px'

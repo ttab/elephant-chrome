@@ -9,15 +9,15 @@ export const Title = ({ slugline, title, className, cancelled }: {
   cancelled?: boolean
 }): JSX.Element => {
   return useMemo(() => (
-    <div className='truncate space-x-2 justify-start items-center'>
+    <div className='flex gap-2 items-center min-w-0'>
       <span
         title={cancelled ? 'Markerad som inställd' : ''}
-        className={cn('font-medium text-sm', className, cancelled ? 'text-muted-foreground line-through' : 'no-underline')}
+        className={cn('font-medium text-sm truncate', className, cancelled ? 'text-muted-foreground line-through' : 'no-underline')}
       >
         {title}
       </span>
 
-      <span className=''>
+      <span className='flex-none'>
         <SluglineButton value={slugline} />
       </span>
     </div>

@@ -6,11 +6,13 @@ import type {
   DocumentRemoved,
   InclusionBatch
 } from '@ttab/elephant-api/repositorysocket'
+import type { DocumentFilter } from '@ttab/elephant-api/repository'
 import { toast } from 'sonner'
 import type { SocketStatus } from '@/shared/RepositorySocket'
 import { useTable } from '@/hooks/useTable'
 import type { DocumentStateWithDecorators, DecoratorDataBase } from './types'
 import {
+  findDeliverableParentIndex,
   handleDocumentUpdate,
   handleInclusionBatchUpdate,
   handleRemoved,
@@ -78,6 +80,8 @@ export function useRepositorySocket<TDecoratorData extends DecoratorDataBase = D
   from,
   to,
   include,
+  labels,
+  filter,
   type,
   asTable = false,
   decorators = [],
@@ -87,6 +91,8 @@ export function useRepositorySocket<TDecoratorData extends DecoratorDataBase = D
   to?: string
   type: string
   include?: string[]
+  labels?: string[]
+  filter?: DocumentFilter
   asTable?: boolean
   decorators?: Array<Decorator<object>>
   preprocessor?: (data: DocumentStateWithDecorators<TDecoratorData>[]) => DocumentStateWithDecorators<TDecoratorData>[]
@@ -108,15 +114,26 @@ export function useRepositorySocket<TDecoratorData extends DecoratorDataBase = D
   const cleanupRef = useRef<(() => void) | null>(null)
   const setNameRef = useRef<string>('')
   const callIdRef = useRef<string>('')
+  const includeRef = useRef(include)
+  const labelsRef = useRef(labels)
+  const filterRef = useRef(filter)
   const decoratorsRef = useRef(decorators)
+  const accessTokenRef = useRef<string>(session?.accessToken ?? '')
+  accessTokenRef.current = session?.accessToken ?? ''
+  const dataRef = useRef<DocumentStateWithDecorators<TDecoratorData>[]>([])
+  dataRef.current = data
   const schedulerRef = useRef<ScheduleDecoratorUpdate<TDecoratorData>>(null!)
   if (!schedulerRef.current) {
-    schedulerRef.current = new ScheduleDecoratorUpdate<TDecoratorData>(setData, decoratorsRef, runUpdateDecorators)
+    schedulerRef.current = new ScheduleDecoratorUpdate<TDecoratorData>(setData, dataRef, decoratorsRef, accessTokenRef, runUpdateDecorators)
   }
 
-  // When session is updated, make sure to authenticate the socket if it's connected
+  // Keep the socket's stored token fresh so reconnects use valid credentials
   useEffect(() => {
-    if (repositorySocket?.isConnected) {
+    if (!repositorySocket || !session?.accessToken) return
+
+    repositorySocket.updateAccessToken(session.accessToken)
+
+    if (repositorySocket.isConnected && !repositorySocket.isAuthenticated) {
       repositorySocket.authenticate().catch((err) => {
         console.error('Failed to authenticate repository socket:', err)
       })
@@ -172,7 +189,10 @@ export function useRepositorySocket<TDecoratorData extends DecoratorDataBase = D
           setName,
           type,
           timespan,
-          include
+          include: includeRef.current,
+          labels: labelsRef.current,
+          filter: filterRef.current,
+          resolveParentIndex: findDeliverableParentIndex
         })
 
         const { callId, documents, onUpdate } = response
@@ -189,12 +209,32 @@ export function useRepositorySocket<TDecoratorData extends DecoratorDataBase = D
             try {
               const enrichedDocs = await runInitialDecorators<TDecoratorData>(
                 documents,
-                decoratorsRef.current
+                decoratorsRef.current,
+                session.accessToken
               )
 
               if (!isActive) return
 
-              setData(enrichedDocs)
+              // Use functional updater to merge decorator data into current state,
+              // avoiding overwriting any WebSocket updates that arrived during enrichment
+              setData((prevData) => {
+                const decoratorDataByUuid = new Map<string, TDecoratorData>()
+                for (const doc of enrichedDocs) {
+                  if (doc.decoratorData && doc.document?.uuid) {
+                    decoratorDataByUuid.set(doc.document.uuid, doc.decoratorData)
+                  }
+                }
+
+                return prevData.map((doc) => {
+                  const uuid = doc.document?.uuid
+                  if (!uuid) return doc
+
+                  const decoratorData = decoratorDataByUuid.get(uuid)
+                  if (!decoratorData) return doc
+
+                  return { ...doc, decoratorData }
+                })
+              })
             } catch (err) {
               console.error('Decorator initialization failed:', err)
             }
@@ -260,7 +300,7 @@ export function useRepositorySocket<TDecoratorData extends DecoratorDataBase = D
     }
   // We dont want to re-run this effect when accessToken changes
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [repositorySocket, from, to, include, type, asTable, reconnectCount])
+  }, [repositorySocket, from, to, type, asTable, reconnectCount])
 
   // Update decorators ref when decorators prop changes
   useEffect(() => {

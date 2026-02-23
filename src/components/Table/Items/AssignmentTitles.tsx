@@ -11,16 +11,14 @@ export const AssignmentTitles = ({ planningTitle, assignmentTitle }: TitleProps)
 
   return useMemo(() => (
     <>
-      <div className='w-fit'>
+      {showPlanningTitle && (
         <Tooltip content={planningTitle}>
-          {showPlanningTitle && (
-            <div className='@2xl/view:max-w-[200px] @4xl/view:max-w-[400px] space-x-2 items-center text-muted-foreground'>
-              {planningTitle}
-            </div>
-          )}
+          <div className='truncate @2xl/view:max-w-[200px] @4xl/view:max-w-[400px] text-muted-foreground'>
+            {planningTitle}
+          </div>
         </Tooltip>
-      </div>
-      <div>{assignmentTitle}</div>
+      )}
+      <div className='truncate'>{assignmentTitle}</div>
     </>
   ), [planningTitle, assignmentTitle, showPlanningTitle])
 }

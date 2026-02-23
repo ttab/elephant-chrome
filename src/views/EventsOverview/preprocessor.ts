@@ -1,21 +1,23 @@
 import type { DocumentStateWithDecorators, DecoratorDataBase } from '@/hooks/useRepositorySocket/types'
+import type { PreprocessedTableData } from '@/components/Table/types'
+import { getNewsvalue } from '@/lib/documentHelpers'
 
-export type PreprocessedEventData = DocumentStateWithDecorators<DecoratorDataBase> & {
-  _preprocessed: {
-    newsvalue?: string
-    sectionUuid?: string
-    sectionTitle?: string
-    organiserTitle?: string
-    eventStart?: string
-    eventEnd?: string
-    cancelled?: boolean
-  }
-}
+export type PreprocessedEventData = PreprocessedTableData<DecoratorDataBase, {
+  newsvalue?: string
+  sectionUuid?: string
+  sectionTitle?: string
+  organiserTitle?: string
+  eventStart?: string
+  eventEnd?: string
+  cancelled?: boolean
+}>
 
 export function preprocessEventData(data: DocumentStateWithDecorators<DecoratorDataBase>[]): PreprocessedEventData[] {
-  return data.map((item) => {
-    // Precompute newsvalue
-    const newsvalue = item.document?.meta?.find((d) => d.type === 'core/newsvalue')?.value
+  return data.flatMap((item) => {
+    const uuid = item.document?.uuid
+    if (!uuid) return []
+
+    const newsvalue = getNewsvalue(item.document)
 
     // Precompute section
     const sectionLink = item.document?.links?.find((d) => d.type === 'core/section')
@@ -33,6 +35,7 @@ export function preprocessEventData(data: DocumentStateWithDecorators<DecoratorD
 
     return {
       ...item,
+      id: uuid,
       _preprocessed: {
         newsvalue,
         sectionUuid,
@@ -42,6 +45,6 @@ export function preprocessEventData(data: DocumentStateWithDecorators<DecoratorD
         eventEnd,
         cancelled
       }
-    } as PreprocessedEventData
+    }
   })
 }

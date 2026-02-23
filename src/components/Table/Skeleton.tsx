@@ -11,8 +11,7 @@ import {
 } from '@ttab/elephant-ui'
 
 export const TableSkeleton = <TData,>({ columns, delay = 300 }: { columns: ColumnDef<TData>[], delay?: number }): JSX.Element | null => {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const [rowCount, setRowCount] = useState(8)
+  const [rowCount] = useState(() => Math.ceil(window.innerHeight / 40))
   const [visible, setVisible] = useState(false)
   const timerRef = useRef<ReturnType<typeof setTimeout>>(null)
 
@@ -26,20 +25,12 @@ export const TableSkeleton = <TData,>({ columns, delay = 300 }: { columns: Colum
     }
   }, [delay])
 
-  useEffect(() => {
-    if (containerRef.current) {
-      const containerHeight = containerRef.current.offsetHeight
-      const rowHeight = 40
-      setRowCount(Math.ceil(containerHeight / rowHeight))
-    }
-  }, [])
-
   if (!visible) {
     return null
   }
 
   return (
-    <div ref={containerRef} className='h-screen'>
+    <div className='h-screen'>
       <_Table>
         <TableHeader>
           <TableRow>

@@ -8,7 +8,6 @@ import {
   SheetTitle
 } from '@ttab/elephant-ui'
 import { XIcon } from '@ttab/elephant-ui/icons'
-import { Latest as LatestComponent } from '@/views/Latest'
 import type { JSX } from 'react'
 
 interface SheetComponentProps {
@@ -24,9 +23,7 @@ export const MenuItemSubSheet = ({
   isOpen: boolean
   onClose: () => void
 }): JSX.Element => {
-  const sheetComponents: Record<string, React.ComponentType<SheetComponentProps>> = {
-    Latest: LatestComponent
-  }
+  const sheetComponents: Record<string, React.ComponentType<SheetComponentProps>> = {}
 
   const SheetItemComponent = sheetComponents[menuItem.name]
 

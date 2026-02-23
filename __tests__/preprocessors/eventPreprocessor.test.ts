@@ -1,4 +1,3 @@
-import { describe, it, expect } from 'vitest'
 import { preprocessEventData } from '@/views/EventsOverview/preprocessor'
 import type { DocumentStateWithDecorators, DecoratorDataBase } from '@/hooks/useRepositorySocket/types'
 import { Document } from '@ttab/elephant-api/newsdoc'

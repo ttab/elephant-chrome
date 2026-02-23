@@ -79,13 +79,13 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
   const [isInitialized, setIsInitialized] = useState<boolean>(false)
 
   useEffect(() => {
-    const initialize = async () => {
+    const initialize = async (): Promise<RepositorySocket | undefined> => {
       try {
         const server = await getServerUrls()
         const locale = defaultLocale
 
         const repositorySocketUrl = new URL(server.repositoryUrl)
-        repositorySocketUrl.protocol = 'wss:'
+        repositorySocketUrl.protocol = repositorySocketUrl.protocol === 'https:' ? 'wss:' : 'ws:'
         repositorySocketUrl.pathname = '/websocket'
 
         const repository = new Repository(server.repositoryUrl.href)
@@ -110,6 +110,8 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
           repositorySocket
         })
         setIsInitialized(true)
+
+        return repositorySocket
       } catch (ex) {
         if (ex instanceof Error) {
           console.error(`Failed initializing RegistryProvider, ${ex.message}`, ex)
@@ -119,7 +121,15 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
       }
     }
 
-    void initialize()
+    let repositorySocket: RepositorySocket | undefined
+
+    void initialize().then((socket) => {
+      repositorySocket = socket
+    })
+
+    return () => {
+      repositorySocket?.disconnect()
+    }
   }, [])
 
   return (

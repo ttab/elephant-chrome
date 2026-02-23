@@ -1,7 +1,7 @@
 import { CommandList } from '@ttab/elephant-ui'
 import { OptionsFilter } from '@/components/Filter/common/OptionsFilter'
 import { ClearFilter } from '@/components/Filter/ClearFilter'
-import type { Facets } from '@/hooks/index/lib/assignments/filterAssignments'
+import type { Facets } from './lib/filterAssignments'
 import type { QueryParams } from '@/hooks/useQuery'
 import { useQuery } from '@/hooks/useQuery'
 import type { FilterProps } from '@/components/Filter'

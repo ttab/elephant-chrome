@@ -1,14 +1,14 @@
 import type { PreprocessedApprovalData } from './preprocessor'
-import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
 import { CAUSE_KEYS } from '@/defaults/causekeys'
+import { getStatusFromMeta } from '@/lib/getStatusFromMeta'
 
 export const SubtitleCard = ({ item }: { item: PreprocessedApprovalData }) => {
-  const [documentStatus] = useWorkflowStatus({ documentId: item._deliverable?.id })
+  const statusFromMeta = item.meta ? getStatusFromMeta(item.meta, true) : undefined
 
   const slugline = item._assignment.meta.find((m) => m.type === 'tt/slugline')?.value
   const versionLabel = getVersionLabel(item)
-  const cause = documentStatus?.cause
-    ? CAUSE_KEYS[documentStatus.cause as keyof typeof CAUSE_KEYS].short
+  const cause = statusFromMeta?.cause
+    ? CAUSE_KEYS[statusFromMeta.cause as keyof typeof CAUSE_KEYS].short
     : ''
 
   if (!slugline && !versionLabel && !cause) return null

@@ -103,7 +103,7 @@ export function planningListColumns({ sections = [], authors = [], user }: {
       meta: {
         name: 'Titel',
         columnIcon: PenIcon,
-        className: 'flex-1 w-[200px]'
+        className: 'flex-1 min-w-0'
       },
       accessorFn: (data) =>
         data.document?.title,

@@ -1,22 +1,22 @@
-import type { DocumentStateWithDecorators } from '@/hooks/useRepositorySocket/types'
-import type { StatusDecorator } from '@/hooks/useRepositorySocket/decorators/statuses'
+import type { DecoratorDataBase, DocumentStateWithDecorators } from '@/hooks/useRepositorySocket/types'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { isWithinInterval, parseISO } from 'date-fns'
+import type { PreprocessedTableData } from '@/components/Table/types'
+import { findIncludedDocument, getAssignments, getNewsvalue, getSection, getDeliverableLink } from '@/lib/documentHelpers'
 
-export type PreprocessedAssignmentData = DocumentStateWithDecorators<StatusDecorator> & {
+export type PreprocessedAssignmentData = PreprocessedTableData<DecoratorDataBase, {
+  newsvalue?: string
+  sectionUuid?: string
+  assignmentTitle?: string
+  assignmentTypes: string[]
+  assigneeUuids: string[]
+  deliverableUuid?: string
+  deliverableStatus?: string
+  startValue?: string
+  startType?: string
+}> & {
   _assignment?: Block
   _assignmentIndex?: number
-  id?: string
-  _preprocessed: {
-    newsvalue?: string
-    sectionUuid?: string
-    assignmentTitle?: string
-    assignmentTypes: string[]
-    assigneeUuids: string[]
-    deliverableUuid?: string
-    startValue?: string
-    startType?: string
-  }
 }
 
 /**
@@ -27,20 +27,19 @@ export type PreprocessedAssignmentData = DocumentStateWithDecorators<StatusDecor
  * creates N separate rows with precomputed data for table rendering.
  */
 export function createAssignmentPreprocessor(range: { gte: string, lte: string }) {
-  return (data: DocumentStateWithDecorators<StatusDecorator>[]): PreprocessedAssignmentData[] => {
+  return (data: DocumentStateWithDecorators<DecoratorDataBase>[]): PreprocessedAssignmentData[] => {
     const flattened: PreprocessedAssignmentData[] = []
 
     for (const doc of data) {
-      const assignments = doc.document?.meta?.filter(
-        (block: Block) => block.type === 'core/assignment'
-      ) || []
+      const uuid = doc.document?.uuid
+      if (!uuid) continue
+
+      const assignments = getAssignments(doc.document)
 
       if (assignments.length === 0) continue
 
-      // Precompute document-level fields once per document
-      const newsvalue = doc.document?.meta?.find((d) => d.type === 'core/newsvalue')?.value
-      const sectionUuid = doc.document?.links
-        ?.find((d) => d.type === 'core/section')?.uuid
+      const newsvalue = getNewsvalue(doc.document)
+      const sectionUuid = getSection(doc.document)
 
       assignments.forEach((assignment: Block, index: number) => {
         if (!isWithinRange(assignment.data.start_date, range)) {
@@ -56,8 +55,9 @@ export function createAssignmentPreprocessor(range: { gte: string, lte: string }
           ?.filter((link) => link.type === 'core/author' && link.rel === 'assignee')
           .map((link) => link.uuid) || []
 
-        const deliverableUuid = assignment.links
-          ?.find((link) => link.rel === 'deliverable')?.uuid
+        const deliverableUuid = getDeliverableLink(assignment)
+        const deliverableState = findIncludedDocument(doc.includedDocuments, deliverableUuid)
+        const deliverableStatus = deliverableState?.meta?.workflowState
 
         const { value: startValue, type: startType } = getStart(
           assignmentTypes[0],
@@ -68,7 +68,7 @@ export function createAssignmentPreprocessor(range: { gte: string, lte: string }
           ...doc,
           _assignment: assignment,
           _assignmentIndex: index,
-          id: `${doc.document?.uuid}-assignment-${index}`,
+          id: `${uuid}-assignment-${index}`,
           _preprocessed: {
             newsvalue,
             sectionUuid,
@@ -76,6 +76,7 @@ export function createAssignmentPreprocessor(range: { gte: string, lte: string }
             assignmentTypes,
             assigneeUuids,
             deliverableUuid,
+            deliverableStatus,
             startValue,
             startType
           }

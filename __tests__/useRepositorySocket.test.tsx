@@ -1,7 +1,6 @@
 import type { Dispatch, SetStateAction } from 'react'
 import { type PropsWithChildren } from 'react'
 import { renderHook, act, waitFor } from '@testing-library/react'
-import { describe, it, expect, vi, beforeEach } from 'vitest'
 import type { DocumentRemoved, DocumentUpdate } from '@ttab/elephant-api/repositorysocket'
 
 import { TableContext } from '@/contexts'
@@ -101,6 +100,7 @@ describe('useRepositorySocket', () => {
       get isAuthenticated() { return true },
       connect: vi.fn().mockResolvedValue(undefined),
       authenticate: vi.fn().mockResolvedValue(undefined),
+      updateAccessToken: vi.fn(),
       getDocuments: vi.fn().mockRejectedValue(new Error('WebSocket failure')),
       closeDocumentSet: vi.fn().mockResolvedValue(undefined),
       onReconnect: vi.fn().mockReturnValue(() => {}),
@@ -154,6 +154,7 @@ describe('useRepositorySocket', () => {
       get isAuthenticated() { return true },
       connect: vi.fn().mockResolvedValue(undefined),
       authenticate: vi.fn().mockResolvedValue(undefined),
+      updateAccessToken: vi.fn(),
       getDocuments: vi.fn().mockResolvedValue({
         callId: 'call-1',
         documents,
@@ -190,7 +191,7 @@ describe('useRepositorySocket', () => {
       return expect(doc.decoratorData).toBeDefined()
     })
 
-    expect(mockDecorator.onInitialData).toHaveBeenCalledWith(documents)
+    expect(mockDecorator.onInitialData).toHaveBeenCalledWith(documents, 'abc123')
 
     const decoratorData = result.current.data[0].decoratorData as Record<string, Record<string, object>>
     expect(decoratorData.testNs['included-1']).toEqual({ score: 42 })
@@ -223,6 +224,7 @@ describe('useRepositorySocket', () => {
       get isAuthenticated() { return socketState.isAuthenticated },
       connect: mockConnect,
       authenticate: mockAuthenticate,
+      updateAccessToken: vi.fn(),
       getDocuments: vi.fn(({ setName }: { setName: string }) => {
         expect(setName).toBe('tt/article-123')
         return Promise.resolve({
@@ -256,7 +258,7 @@ describe('useRepositorySocket', () => {
     await waitFor(() => expect(result.current.isLoading).toBe(false))
 
     expect(socket.connect).not.toHaveBeenCalled()
-    expect(socket.authenticate).toHaveBeenCalledTimes(1)
+    expect(socket.authenticate).not.toHaveBeenCalled()
     /* eslint-enable @typescript-eslint/unbound-method */
 
     expect(result.current.error).toBeNull()
@@ -269,8 +271,8 @@ describe('useRepositorySocket', () => {
     })
 
     await waitFor(() => {
-      const first = result.current.data[0] as DocumentUpdate
-      expect(first.setName).toBe('tt/article-123')
+      const first = result.current.data[0]
+      expect(first.__updater?.sub).toBe('??')
     })
 
     act(() => {
