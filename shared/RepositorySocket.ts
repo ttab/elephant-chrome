@@ -9,7 +9,6 @@ import type {
 } from '@ttab/elephant-api/repositorysocket'
 
 import { Timespan } from '@ttab/elephant-api/repository'
-import type { DocumentFilter } from '@ttab/elephant-api/repository'
 import { Call as CallType, Response as ResponseType } from '@ttab/elephant-api/repositorysocket'
 import type { Repository } from './Repository'
 
@@ -324,16 +323,12 @@ export class RepositorySocket {
     type,
     timespan,
     include = [],
-    labels = [],
-    filter,
     resolveParentIndex
   }: {
     setName: string
     type: string
     timespan?: { from: string, to: string }
     include?: string[]
-    labels?: string[]
-    filter?: DocumentFilter
     resolveParentIndex?: (documents: DocumentStateWithIncludes[], targetUuid: string) => number
   }): Promise<{
     callId: string
@@ -352,9 +347,7 @@ export class RepositorySocket {
       getDocuments: {
         setName,
         type,
-        labels,
         timespan: timespan ? Timespan.create(timespan) : undefined,
-        filter,
         include,
         includeAcls: true
       }

@@ -6,7 +6,6 @@ import type {
   DocumentRemoved,
   InclusionBatch
 } from '@ttab/elephant-api/repositorysocket'
-import type { DocumentFilter } from '@ttab/elephant-api/repository'
 import { toast } from 'sonner'
 import type { SocketStatus } from '@/shared/RepositorySocket'
 import { useTable } from '@/hooks/useTable'
@@ -80,8 +79,6 @@ export function useRepositorySocket<TDecoratorData extends DecoratorDataBase = D
   from,
   to,
   include,
-  labels,
-  filter,
   type,
   asTable = false,
   decorators = [],
@@ -91,8 +88,6 @@ export function useRepositorySocket<TDecoratorData extends DecoratorDataBase = D
   to?: string
   type: string
   include?: string[]
-  labels?: string[]
-  filter?: DocumentFilter
   asTable?: boolean
   decorators?: Array<Decorator<object>>
   preprocessor?: (data: DocumentStateWithDecorators<TDecoratorData>[]) => DocumentStateWithDecorators<TDecoratorData>[]
@@ -115,8 +110,6 @@ export function useRepositorySocket<TDecoratorData extends DecoratorDataBase = D
   const setNameRef = useRef<string>('')
   const callIdRef = useRef<string>('')
   const includeRef = useRef(include)
-  const labelsRef = useRef(labels)
-  const filterRef = useRef(filter)
   const decoratorsRef = useRef(decorators)
   const accessTokenRef = useRef<string>(session?.accessToken ?? '')
   accessTokenRef.current = session?.accessToken ?? ''
@@ -190,8 +183,6 @@ export function useRepositorySocket<TDecoratorData extends DecoratorDataBase = D
           type,
           timespan,
           include: includeRef.current,
-          labels: labelsRef.current,
-          filter: filterRef.current,
           resolveParentIndex: findDeliverableParentIndex
         })
 
