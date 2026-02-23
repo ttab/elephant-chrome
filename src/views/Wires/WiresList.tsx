@@ -9,6 +9,7 @@ import { Toolbar } from './Toolbar'
 import { useDocuments } from '@/hooks/index/useDocuments'
 import { constructQuery } from '@/hooks/index/useDocuments/queries/views/wires'
 import { SortingV1 } from '@ttab/elephant-api/index'
+import { TableSkeleton } from '@/components/Table/Skeleton'
 
 export const WireList = ({ columns }: {
   columns: ColumnDef<Wire, unknown>[]
@@ -16,7 +17,7 @@ export const WireList = ({ columns }: {
   const [{ page }] = useQuery()
   const [filter] = useQuery(['section', 'source', 'query', 'newsvalue'])
 
-  useDocuments<Wire, WireFields>({
+  const { isLoading } = useDocuments<Wire, WireFields>({
     documentType: 'tt/wire',
     size: 40,
     query: constructQuery(filter),
@@ -41,6 +42,10 @@ export const WireList = ({ columns }: {
     }
     return row
   }, [])
+
+  if (isLoading) {
+    return <TableSkeleton columns={columns} />
+  }
 
   return (
     <Table

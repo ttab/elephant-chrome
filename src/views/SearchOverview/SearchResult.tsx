@@ -2,7 +2,6 @@ import { useMemo, type JSX } from 'react'
 import { Table } from '@/components/Table'
 import { useRegistry } from '@/hooks/useRegistry'
 import { useSections } from '@/hooks/useSections'
-import { LoadingText } from '@/components/LoadingText'
 import { Toolbar } from './Toolbar'
 import { useOrganisers } from '@/hooks/useOrganisers'
 import { useAuthors } from '@/hooks/useAuthors'
@@ -17,6 +16,7 @@ import { useQuery } from '@/hooks/useQuery'
 import type { ColumnDef } from '@tanstack/react-table'
 import { toast } from 'sonner'
 import type { View } from '@/types/index'
+import { TableSkeleton } from '@/components/Table/Skeleton'
 
 const searchTypeToView: Record<SearchKeys, View> = {
   plannings: 'Planning',
@@ -61,24 +61,21 @@ export const SearchResult = ({ searchType, page }: {
     toast.error('Kunde inte hämta sökresultat')
   }
 
+  if (isLoading) {
+    return <TableSkeleton columns={columns as ColumnDef<Planning | Event>[]} />
+  }
+
   return (
     <>
-      {isLoading
-        ? (
-            <LoadingText>Laddar...</LoadingText>
-          )
-        : (
-            <Table
-              columns={columns as ColumnDef<Planning | Event>[]}
-              resolveNavigation={(row) => ({
-                id: row.id,
-                opensWith: searchTypeToView[searchType]
-              })}
-            >
-
-              <Toolbar type={searchType} />
-            </Table>
-          )}
+      <Table
+        columns={columns as ColumnDef<Planning | Event>[]}
+        resolveNavigation={(row) => ({
+          id: row.id,
+          opensWith: searchTypeToView[searchType]
+        })}
+      >
+        <Toolbar type={searchType} />
+      </Table>
     </>
   )
 }

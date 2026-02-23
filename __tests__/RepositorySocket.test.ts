@@ -76,6 +76,7 @@ describe('RepositorySocket', () => {
   })
 
   afterEach(() => {
+    vi.useRealTimers()
     globalThis.WebSocket = OriginalWebSocket
     vi.restoreAllMocks()
   })
@@ -550,16 +551,19 @@ describe('RepositorySocket', () => {
 
     ws.onerror?.(new Event('error'))
 
-    await expect(connectPromise).rejects.toThrow('WebSocket connection error')
+    await expect(connectPromise).rejects.toThrow('Ett fel inträffade i anslutningen.')
     expect(errorHandler).toHaveBeenCalledWith(expect.any(Error))
-    expect((errorHandler.mock.calls[0][0] as Error).message).toBe('WebSocket connection error')
+    expect((errorHandler.mock.calls[0][0] as Error).message).toBe('Ett fel inträffade i anslutningen.')
   })
 
   it('reconnect handles failed re-authentication gracefully', async () => {
     vi.useFakeTimers()
-    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
     const { socket } = newSocket()
+
+    // Register status listener to verify error reporting
+    const statusSpy = vi.fn()
+    socket.onStatusChange(statusSpy)
 
     // Connect and authenticate
     const connectPromise = socket.connect('access-token')
@@ -588,8 +592,9 @@ describe('RepositorySocket', () => {
     const ws2 = MockWebSocket.instances[1]
     ws2.open()
 
-    // Flush so connect resolves, authenticate starts
+    // Flush so connect resolves, authenticate starts and sends
     await vi.advanceTimersByTimeAsync(0)
+    expect(ws2.send).toHaveBeenCalledTimes(1)
 
     // Send auth error
     ws2.message(toArrayBuffer(ResponseType.create({
@@ -597,17 +602,17 @@ describe('RepositorySocket', () => {
       error: { errorCode: 'unauthenticated', errorMessage: 'expired' }
     })))
 
-    // Flush so error is caught
+    // Flush so rejection propagates through async chain to catch block
     await vi.advanceTimersByTimeAsync(0)
 
-    expect(consoleErrorSpy).toHaveBeenCalledWith(
-      'Reconnection failed:',
-      expect.any(Error)
+    expect(statusSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        level: 'error',
+        message: 'Kunde inte återansluta.',
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        error: expect.any(Error)
+      })
     )
-
-    socket.disconnect()
-    consoleErrorSpy.mockRestore()
-    vi.useRealTimers()
   })
 
   it('closeDocumentSet is a no-op when not authenticated', async () => {

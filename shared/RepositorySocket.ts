@@ -33,6 +33,12 @@ export interface DocumentStateWithIncludes extends DocumentState {
 type MessageHandler = (response: Response) => void
 type ErrorHandler = (error: Error) => void
 
+export interface SocketStatus {
+  level: 'info' | 'warning' | 'error'
+  message: string
+  error?: Error
+}
+
 export class RepositorySocket {
   readonly #url: string
   readonly #repository: Repository
@@ -49,6 +55,7 @@ export class RepositorySocket {
   #reconnectAttempts = 0
   #connectingPromise: Promise<void> | null = null
   #authenticatingPromise: Promise<void> | null = null
+  #statusListeners = new Set<(status: SocketStatus | null) => void>()
 
   constructor(url: string, repository: Repository) {
     this.#url = url
@@ -83,7 +90,7 @@ export class RepositorySocket {
         this.#ws.binaryType = 'arraybuffer'
 
         this.#ws.onopen = () => {
-          console.info('📡 RepositorySocket connected')
+          this.#emitStatus(null)
           settled = true
           this.#authenticated = false
           resolve()
@@ -104,13 +111,17 @@ export class RepositorySocket {
               }
             }
           } catch (error) {
-            console.error('Failed to parse WebSocket message:', error)
+            this.#emitStatus({
+              level: 'error',
+              message: 'Kunde inte läsa meddelande från servern.',
+              error: error instanceof Error ? error : new Error(String(error))
+            })
           }
         }
 
-        this.#ws.onerror = (event) => {
-          console.error('WebSocket error:', event)
-          const error = new Error('WebSocket connection error')
+        this.#ws.onerror = () => {
+          const error = new Error('Ett fel inträffade i anslutningen.')
+          this.#emitStatus({ level: 'error', message: error.message, error })
           for (const handler of this.#errorHandlers) {
             handler(error)
           }
@@ -122,7 +133,11 @@ export class RepositorySocket {
         }
 
         this.#ws.onclose = (event) => {
-          console.info('WebSocket closed:', event.code, event.reason)
+          // Ignore Going away
+          if (event.code !== 1001) {
+            this.#emitStatus({ level: 'warning', message: `Anslutningen stängdes : ${event.code}` })
+          }
+
           this.#authenticated = false
           this.#authenticatingPromise = null
 
@@ -161,20 +176,21 @@ export class RepositorySocket {
   }
 
   #reconnect(): void {
-    if (this.#reconnectTimer) {
+    const accessToken = this.#accessToken
+
+    if (!accessToken) {
+      this.#emitStatus({ level: 'error', message: 'Accesstoken saknas, kan inte ansluta.' })
+      this.#setReconnectTimer(undefined)
       return
     }
 
-    if (!this.#accessToken) {
-      console.error('Cannot reconnect: no access token available')
+    if (this.#reconnectTimer) {
       return
     }
 
     const maxAttempts = 10
     if (this.#reconnectAttempts >= maxAttempts) {
-      console.error(
-        `Max reconnection attempts (${maxAttempts}) reached`
-      )
+      this.#emitStatus({ level: 'error', message: `Max antal återanslutningsförsök (${maxAttempts}) nåddes.` })
       return
     }
 
@@ -186,43 +202,50 @@ export class RepositorySocket {
 
     this.#reconnectAttempts++
 
-    this.#reconnectTimer = window.setTimeout(() => {
+    this.#setReconnectTimer(window.setTimeout(() => {
       void (async () => {
-        this.#reconnectTimer = undefined
-        if (!this.#accessToken) {
-          console.error('Cannot reconnect: no access token available')
-          return
-        }
-
         try {
-          await this.connect(this.#accessToken)
+          await this.connect(accessToken)
           await this.authenticate()
           this.#reconnectAttempts = 0
-          console.info('✅ Reconnected and authenticated')
+          this.#setReconnectTimer(undefined)
           for (const listener of this.#reconnectListeners) {
             listener()
           }
         } catch (error) {
-          console.error('Reconnection failed:', error)
+          this.#emitStatus({ level: 'error', message: 'Kunde inte återansluta.', error: error instanceof Error ? error : new Error(String(error)) })
+          this.#setReconnectTimer(undefined)
           this.#reconnect()
         }
       })()
-    }, delay)
+    }, delay))
+  }
+
+  #setReconnectTimer(timer: number | undefined): void {
+    const was = !!this.#reconnectTimer
+    if (this.#reconnectTimer && timer === undefined) {
+      clearTimeout(this.#reconnectTimer)
+    }
+    this.#reconnectTimer = timer
+    if (was !== !!timer) {
+      this.#emitStatus(timer
+        ? { level: 'info', message: 'Återansluter... ' }
+        : null
+      )
+    }
   }
 
   disconnect(): void {
     this.#shouldReconnect = false
     this.#reconnectAttempts = 0
-    if (this.#reconnectTimer) {
-      clearTimeout(this.#reconnectTimer)
-      this.#reconnectTimer = undefined
-    }
+    this.#setReconnectTimer(undefined)
     this.#rejectPendingHandlers('WebSocket disconnected')
     this.#connectingPromise = null
     this.#authenticatingPromise = null
     this.#updateHandlers.clear()
     this.#errorHandlers.clear()
     this.#reconnectListeners.clear()
+    this.#statusListeners.clear()
     this.#ws?.close()
     this.#ws = null
   }
@@ -231,6 +254,19 @@ export class RepositorySocket {
     this.#reconnectListeners.add(listener)
     return () => {
       this.#reconnectListeners.delete(listener)
+    }
+  }
+
+  onStatusChange(listener: (status: SocketStatus | null) => void): () => void {
+    this.#statusListeners.add(listener)
+    return () => {
+      this.#statusListeners.delete(listener)
+    }
+  }
+
+  #emitStatus(status: SocketStatus | null): void {
+    for (const listener of this.#statusListeners) {
+      listener(status)
     }
   }
 

@@ -8,6 +8,7 @@ import { createStatusesDecorator, type StatusDecorator } from '@/hooks/useReposi
 import type { PreprocessedAssignmentData } from './preprocessor'
 import { createAssignmentPreprocessor } from './preprocessor'
 import { Toolbar } from '@/components/Table/Toolbar'
+import { SocketStatus } from '@/hooks/useRepositorySocket/lib/components/SocketStatus'
 
 export const AssignmentsList = ({ columns }: {
   columns: ColumnDef<PreprocessedAssignmentData>[]
@@ -29,7 +30,7 @@ export const AssignmentsList = ({ columns }: {
     [from, to]
   )
 
-  const { error, isLoading } = useRepositorySocket<StatusDecorator>({
+  const { error, isLoading, status } = useRepositorySocket<StatusDecorator>({
     type: 'core/planning-item',
     from,
     to,
@@ -58,6 +59,7 @@ export const AssignmentsList = ({ columns }: {
         opensWith: 'Planning'
       })}
     >
+      <SocketStatus status={status} />
       <Toolbar />
     </Table>
   )

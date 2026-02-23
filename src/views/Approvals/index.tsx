@@ -18,6 +18,7 @@ import { preprocessApprovalData } from './preprocessor'
 import { timesSlots as Slots } from '@/defaults/assignmentTimeslots'
 import type { Planning } from '@/shared/schemas/planning'
 import { createMetricsDecorator, type MetricsDecorator } from '@/hooks/useRepositorySocket/decorators/metrics'
+import { SocketStatus } from '@/hooks/useRepositorySocket/lib/components/SocketStatus'
 
 const meta: ViewMetadata = {
   name: 'Approvals',
@@ -51,7 +52,7 @@ export const Approvals = (): JSX.Element => {
     ]
   }, [repository])
 
-  const { data, error, isLoading } = useRepositorySocket<MetricsDecorator>({
+  const { data, error, isLoading, status } = useRepositorySocket<MetricsDecorator>({
     type: 'core/planning-item',
     from,
     to,
@@ -201,6 +202,7 @@ export const Approvals = (): JSX.Element => {
       </ViewHeader.Root>
 
       <Toolbar facets={facets} />
+      <SocketStatus status={status} />
       <View.Content variant='grid' columns={slots.length}>
         {slots.map((slot, colN) => (
           <View.Column key={slot.key}>

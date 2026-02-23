@@ -10,6 +10,9 @@ import { toast } from 'sonner'
 import type { DocumentStateWithIncludes, RepositorySocket } from '@/shared/RepositorySocket'
 import { defaultLocale } from '@/defaults/locale'
 import { Document } from '@ttab/elephant-api/newsdoc'
+import { useRegistry } from '@/hooks/useRegistry'
+import type { TableProviderState } from '@/contexts/TableProvider'
+import type { DocumentMeta } from '@ttab/elephant-api/repository'
 
 vi.mock('sonner', () => ({
   toast: {
@@ -24,13 +27,6 @@ vi.mock('next-auth/react', () => ({
 vi.mock('@/hooks/useRegistry', () => ({
   useRegistry: vi.fn()
 }))
-
-vi.mocked(useRegistry).mockReturnValue(initialState)
-
-import { useRegistry } from '@/hooks/useRegistry'
-import type { TableProviderState } from '@/contexts/TableProvider'
-import type { DocumentMeta } from '@ttab/elephant-api/repository'
-import { initialState } from '@/contexts/RegistryProvider'
 
 const baseRegistryValue = {
   locale: defaultLocale,
@@ -106,7 +102,8 @@ describe('useRepositorySocket', () => {
       authenticate: vi.fn().mockResolvedValue(undefined),
       getDocuments: vi.fn().mockRejectedValue(new Error('WebSocket failure')),
       closeDocumentSet: vi.fn().mockResolvedValue(undefined),
-      onReconnect: vi.fn().mockReturnValue(() => {})
+      onReconnect: vi.fn().mockReturnValue(() => {}),
+      onStatusChange: vi.fn().mockReturnValue(() => {})
     } as unknown as RepositorySocket
 
     vi.mocked(useRegistry).mockReturnValue({
@@ -162,7 +159,8 @@ describe('useRepositorySocket', () => {
         onUpdate: vi.fn().mockReturnValue(() => {})
       }),
       closeDocumentSet: vi.fn().mockResolvedValue(undefined),
-      onReconnect: vi.fn().mockReturnValue(() => {})
+      onReconnect: vi.fn().mockReturnValue(() => {}),
+      onStatusChange: vi.fn().mockReturnValue(() => {})
     } as unknown as RepositorySocket
 
     vi.mocked(useRegistry).mockReturnValue({
@@ -236,7 +234,8 @@ describe('useRepositorySocket', () => {
         })
       }),
       closeDocumentSet: vi.fn().mockResolvedValue(undefined),
-      onReconnect: vi.fn().mockReturnValue(() => {})
+      onReconnect: vi.fn().mockReturnValue(() => {}),
+      onStatusChange: vi.fn().mockReturnValue(() => {})
     } as unknown as RepositorySocket
 
     vi.mocked(useRegistry).mockReturnValue({
