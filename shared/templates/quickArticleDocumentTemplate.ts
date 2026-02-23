@@ -18,20 +18,6 @@ export function quickArticleDocumentTemplate(id: string, payload?: TemplatePaylo
       Block.create({
         type: 'core/text',
         data: {
-          text: ''
-        },
-        role: 'vignette'
-      }),
-      Block.create({
-        type: 'core/text',
-        data: {
-          text: ''
-        },
-        role: 'preamble'
-      }),
-      Block.create({
-        type: 'core/text',
-        data: {
           text: text || ''
         }
       })
