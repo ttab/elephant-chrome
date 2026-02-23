@@ -155,16 +155,24 @@ export function useYDocument<T>(
     })
   }, [])
 
+  // The effective Y.Doc: use the client's shared document when available,
+  // fall back to the initial local document. For the first view opening a
+  // document the client's doc IS the local doc (same reference), so effects
+  // that depend on this won't re-run unnecessarily. For a second view of
+  // the same document the client returns a different (shared) doc, causing
+  // effects to re-subscribe to the correct Y.Doc.
+  const effectDoc = client?.getDocument() ?? document.current
+
   /**
    * Observe changes to the ele root map (the actual document) and set the isChange flag
    * to true if the calculated hash is different from the existing one.
    * Ignore paths that are specified in options.ignoreChangeKeys
    */
   useEffect(() => {
-    if (!document.current) return
+    if (!effectDoc) return
 
-    const yCtx = document.current.getMap('ctx')
-    const yEle = document.current.getMap(rootMap)
+    const yCtx = effectDoc.getMap('ctx')
+    const yEle = effectDoc.getMap(rootMap)
 
     const onChange = (events: Y.YEvent<Y.Map<unknown>>[]) => {
       if (isChanged) return
@@ -228,14 +236,14 @@ export function useYDocument<T>(
     return () => {
       yEle.unobserveDeep(onChange)
     }
-  }, [isChanged, setIsChanged, rootMap, options?.ignoreChangeKeys, internalDescriptionIndex])
+  }, [effectDoc, isChanged, setIsChanged, rootMap, options?.ignoreChangeKeys, internalDescriptionIndex])
 
   /**
    * Observe changes to the ctx root map and set the local state accordingly.
    */
   useEffect(() => {
-    if (!document.current) return
-    const yCtx = document.current.getMap('ctx')
+    if (!effectDoc) return
+    const yCtx = effectDoc.getMap('ctx')
 
     const onChange = () => {
       const newValue = yCtx.get('isChanged') as boolean ?? false
@@ -249,7 +257,7 @@ export function useYDocument<T>(
     return () => {
       yCtx.unobserveDeep(onChange)
     }
-  }, [])
+  }, [effectDoc])
 
   /**
    * Utility function to send stateless messages

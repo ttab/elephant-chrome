@@ -10,6 +10,7 @@ import { Gutter } from './Gutter'
 import { cn } from '@ttab/elephant-ui/utils'
 import { useView } from '@/hooks/useView'
 import { useEffect, useRef } from 'react'
+import { UniqueEditorOrigin } from '@/components/UniqueEditorOrigin'
 
 
 const EditorRoot = (props: {
@@ -40,6 +41,7 @@ const EditorRoot = (props: {
       lang={props.lang}
       onChange={props.onChange}
     >
+      <UniqueEditorOrigin />
       {props.children}
     </Textbit.Root>
   )

@@ -12,7 +12,8 @@ export enum NavigationActionType {
   ON_DOC_CREATED = 'onDocumentCreated'
 }
 
-export type View = keyof typeof views
+export type BuiltinView = keyof typeof views
+export type View = BuiltinView | (string & {})
 
 export interface NavigationAction {
   type: NavigationActionType
@@ -50,7 +51,9 @@ export interface ViewRegistryItem {
 
 export interface ViewRegistry {
   get: (key: View) => ViewRegistryItem
-  set: () => void
+  set: (name: string, item: ViewRegistryItem) => (() => void)
+  subscribe: (listener: () => void) => (() => void)
+  getVersion: () => number
 }
 
 export interface NavigationState {

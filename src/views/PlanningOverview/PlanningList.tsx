@@ -11,6 +11,7 @@ import { useQuery } from '@/hooks/useQuery'
 import { getUTCDateRange } from '../../../shared/datetime.js'
 import { toast } from 'sonner'
 import { useRegistry } from '@/hooks/useRegistry'
+import { useActivity } from '@/lib/documentActivity'
 
 export const PlanningList = ({ columns }: {
   columns: ColumnDef<Planning>[]
@@ -36,6 +37,8 @@ export const PlanningList = ({ columns }: {
     }
   })
 
+  const open = useActivity('open', 'core/planning-item')
+
   const onRowSelected = useCallback((row?: Planning) => {
     if (row) {
       console.info(`Selected planning item ${row.id}`)
@@ -57,6 +60,7 @@ export const PlanningList = ({ columns }: {
       type='Planning'
       columns={columns}
       onRowSelected={onRowSelected}
+      onOpen={(event, id) => open?.executeEvent(id, event)}
     />
   )
 }

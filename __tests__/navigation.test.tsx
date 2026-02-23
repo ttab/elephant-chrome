@@ -12,8 +12,13 @@ import indexeddb from 'fake-indexeddb'
 import { ModalProvider } from '@/components/Modal/ModalProvider'
 import { UserTrackerContext } from '@/contexts/UserTrackerProvider'
 import { initialState } from '@/contexts/RegistryProvider'
+import { DocumentActivityProvider } from '@/lib/documentActivity'
 
 globalThis.indexedDB = indexeddb
+
+vi.mock('@grafana/faro-react', () => ({
+  FaroErrorBoundary: ({ children }: { children: React.ReactNode }) => <>{children}</>
+}))
 
 vi.mock('@/navigation/hooks/useNavigation', () => ({
   useNavigation: vi.fn()
@@ -57,11 +62,13 @@ describe('Use NavigationProvider', () => {
     render(
       <ModalProvider>
         <IndexedDBProvider>
-          <NavigationProvider>
-            <UserTrackerContext.Provider value={{ provider, synced: provider.synced, connected: true }}>
-              <AppContent />
-            </UserTrackerContext.Provider>
-          </NavigationProvider>
+          <DocumentActivityProvider>
+            <NavigationProvider>
+              <UserTrackerContext.Provider value={{ provider, synced: provider.synced, connected: true }}>
+                <AppContent />
+              </UserTrackerContext.Provider>
+            </NavigationProvider>
+          </DocumentActivityProvider>
         </IndexedDBProvider>
       </ModalProvider>
     )

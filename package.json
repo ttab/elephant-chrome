@@ -30,6 +30,7 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "preview": "vite preview",
+    "sdk:types": "tsx sdk/generate-types.ts",
     "link:elephant-ui": "./tooling/link.sh ../elephant-ui",
     "unlink:elephant-ui": "./tooling/unlink.sh ../elephant-ui"
   },

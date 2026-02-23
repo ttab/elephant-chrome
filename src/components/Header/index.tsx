@@ -1,6 +1,6 @@
 import { DateChanger } from '@/components/Header/Datechanger'
 import { TabsGrid } from '@/components/Header/LayoutSwitch'
-import { type View } from '@/types/index'
+import { type View, type BuiltinView } from '@/types/index'
 import { PersonalAssignmentsFilter } from './PersonalAssignmentsFilter'
 import { useMemo, type JSX } from 'react'
 import { AddButtonGroup } from './AddButtonGroup'
@@ -13,8 +13,8 @@ export const Header = ({ assigneeId, type, docType }: {
 }): JSX.Element => {
   const [query] = useQuery()
   const showButton = useMemo(() => {
-    const viewTypes: View[] = ['Planning', 'Event', 'Factbox', 'Approvals', 'Assignments']
-    if (viewTypes.includes(type)) {
+    const viewTypes: BuiltinView[] = ['Planning', 'Event', 'Factbox', 'Approvals', 'Assignments']
+    if ((viewTypes as View[]).includes(type)) {
       return true
     }
     return false
@@ -23,7 +23,7 @@ export const Header = ({ assigneeId, type, docType }: {
   return (
     <>
       {showButton && (
-        <AddButtonGroup type={type} docType={docType} query={query} />
+        <AddButtonGroup type={type as BuiltinView} docType={docType} query={query} />
       )}
 
       <div className='hidden sm:block'>

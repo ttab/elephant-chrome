@@ -1,6 +1,9 @@
 import elephant from '@ttab/eslint-config-elephant'
 
 export default [
+  {
+    ignores: ['sdk/**']
+  },
   ...elephant,
   {
     rules: {
