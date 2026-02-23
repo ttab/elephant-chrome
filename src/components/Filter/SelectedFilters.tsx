@@ -193,7 +193,15 @@ const SelectedButton = ({ type, value }: { value: string | string[] | undefined,
 export const SelectedFilters = (): JSX.Element[] | undefined => {
   const [filters] = useQuery(['section', 'source', 'newsvalue', 'query', 'status', 'organiser', 'category', 'from', 'author', 'aType'])
 
-  return Object.keys(filters).map((key, index) => (
-    <SelectedButton key={index} type={key} value={filters[key]} />
-  ))
+  return Object.keys(filters)
+    .filter((key) => {
+      const value = filters[key]
+      if (Array.isArray(value)) {
+        return value.length > 0 && value.some((v) => v !== '')
+      }
+      return value !== ''
+    })
+    .map((key, index) => (
+      <SelectedButton key={index} type={key} value={filters[key]} />
+    ))
 }
