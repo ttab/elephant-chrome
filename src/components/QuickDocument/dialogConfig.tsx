@@ -24,7 +24,8 @@ export const promptConfig = ({
   setDonePrompt,
   savePrompt,
   donePrompt,
-  sendPrompt
+  sendPrompt,
+  shouldCreateQuickArticle
 }: {
   type: 'article' | 'flash'
   selectedPlanning: Omit<DefaultValueOption, 'payload'> & { payload: unknown } | undefined
@@ -34,9 +35,13 @@ export const promptConfig = ({
   savePrompt: boolean
   donePrompt: boolean
   sendPrompt: boolean
+  shouldCreateQuickArticle?: boolean
 }): PromptConfig[] => {
   const documentType = type === 'article' ? i18next.t('core:documentType.article') : i18next.t('core:documentType.flash')
   const isFlash = type === 'flash'
+
+  const flashUsableDescription = shouldCreateQuickArticle ? i18next.t('flash:promptDescriptions.alsoTypeCreated') : ''
+  const articleUsableDescription = i18next.t('flash:promptDescriptions.alsoTypeCreatedWithApproved')
 
   return [
     {
@@ -49,8 +54,8 @@ export const promptConfig = ({
         ? i18next.t(`flash:promptDescriptions.newPlanningWillBeCreated`, { type: documentType })
         : i18next.t(`flash:promptDescriptions.typeWillBeAddedToPlanning`, { type: documentType, planningName: selectedPlanning.label }),
       secondaryDescription: isFlash
-        ? i18next.t(`flash:promptDescriptions.alsoTypeCreated`, { type: documentType })
-        : i18next.t('flash:promptDescriptions.alsoTypeCreatedWithApproved'),
+        ? flashUsableDescription
+        : articleUsableDescription,
       secondaryLabel: i18next.t('common:actions.abort'),
       primaryLabel: isFlash ? i18next.t('common:actions.publish') : i18next.t('common:actions.approve'),
       documentStatus: (isFlash ? 'usable' : 'approved') as CreateArticleDocumentStatus,

@@ -11,7 +11,7 @@
     "print": "Print",
     "search": "Sök",
     "wires": "Telegram",
-    "quickarticle": "Ny snabbartikel",
+    "quickarticle": "Ny två på två",
     "title": "Huvudmeny",
     "actions": {
       "toggleTheme": "Växla tema"

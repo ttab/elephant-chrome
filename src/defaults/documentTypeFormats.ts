@@ -30,7 +30,7 @@ export const documentTypeValueFormat: Record<string, { icon: LucideIcon, key: st
   },
   'core/article': {
     icon: NewspaperIcon,
-    label: i18n.t('shared:assignmentTypes.text'),
+    label: i18n.t('quickArticle:title'),
     key: 'Article',
     color: '#50BEBF'
   },

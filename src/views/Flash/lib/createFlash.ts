@@ -22,7 +22,8 @@ export async function createFlash({
   section,
   startDate,
   planningSection,
-  relatedDocsSlugline
+  relatedDocsSlugline,
+  shouldCreateQuickArticle
 }: {
   ydoc: YDocument<Y.Map<unknown>>
   status: string
@@ -44,6 +45,7 @@ export async function createFlash({
   } | undefined
   startDate?: string
   relatedDocsSlugline: string
+  shouldCreateQuickArticle: boolean
 }): Promise<{
   documentStatus: CreateFlashDocumentStatus
   updatedPlanningId: string
@@ -97,7 +99,7 @@ export async function createFlash({
     type: 'flash',
     deliverableId: ydoc.id,
     title: flashTitle || 'Ny flash',
-    slugline: relatedDocsSlugline,
+    ...(relatedDocsSlugline && { slugline: relatedDocsSlugline }),
     priority: 5,
     publicVisibility: false,
     localDate,
@@ -113,8 +115,9 @@ export async function createFlash({
   }
 
   // A complementary text assignment is co-created for a quick first version.
+  // Only create if user has selected so (shouldCreateQuickArticle) in dialog.
   // Only create if the flash is immediately published, for now.
-  const quickArticleData = documentStatus === 'usable'
+  const quickArticleData = shouldCreateQuickArticle && documentStatus === 'usable'
     ? {
         deliverableId: crypto.randomUUID(),
         text: flashBodyText,
