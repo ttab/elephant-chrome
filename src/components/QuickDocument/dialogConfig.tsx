@@ -39,7 +39,7 @@ export const promptConfig = ({
   const documentType = type === 'article' ? 'artikel' : 'flash'
   const isFlash = type === 'flash'
 
-  const flashUsableDescription = shouldCreateQuickArticle ? `I samma planering läggs det även till ett nytt textuppdrag med flashinnehållet.` : ''
+  const flashUsableDescription = shouldCreateQuickArticle ? `I samma planering läggs det även till ett nytt textuppdrag med flashinnehållet, med status Klar.` : ''
   const articleUsableDescription = 'Artikeln kommer att ha status Godkänd. Kom ihåg att uppdatera och publicera planeringen!'
 
   return [
