@@ -1,6 +1,6 @@
 import { useCallback, useContext, useEffect, useState } from 'react'
 import { SettingsContext } from './SettingsContext'
-import type { SettingsDocument, SettingsDocumentPayload } from './types'
+import type { SettingsDocumentPayload } from './types'
 
 /**
  * Subscribe to settings for a specific document type.
@@ -13,23 +13,23 @@ import type { SettingsDocument, SettingsDocumentPayload } from './types'
  * const { settings, isLoading } = useSettings('core://article')
  */
 export function useSettings(documentType: string): {
-  settings: SettingsDocument | undefined
+  settings: SettingsDocumentPayload
   isLoading: boolean
-  updateSettings: (settings: SettingsDocumentPayload) => Promise<void>
+  updateSettings: (payload: SettingsDocumentPayload) => Promise<void>
 } {
   const context = useContext(SettingsContext)
   if (!context) {
     throw new Error('useSettings must be used within a SettingsProvider')
   }
 
-  const [settings, setSettings] = useState<SettingsDocument | undefined>(
+  const [settings, setSettings] = useState<SettingsDocumentPayload>(
     () => context.getSettings(documentType)
   )
   const [isLoading, setIsLoading] = useState(
     () => !context.getSettings(documentType)
   )
 
-  const handleUpdate = useCallback((updated: SettingsDocument | undefined) => {
+  const handleUpdate = useCallback((updated: SettingsDocumentPayload) => {
     setSettings(updated)
     setIsLoading(false)
   }, [])

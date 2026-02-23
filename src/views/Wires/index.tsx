@@ -130,12 +130,12 @@ export const Wires = (): JSX.Element => {
   useEffect(() => {
     if (isLoading) return
 
-    if (!settings?.payload) {
+    if (!settings) {
       // If no settings was received add a default wire stream w/o filtering
       return addStream()
     }
 
-    settings.payload.content.forEach(({ uuid, type, meta }) => {
+    settings.content.forEach(({ uuid, type, meta }) => {
       if (type !== 'core/wire-pane') return
 
       const sections = meta.filter((meta) => meta.type === 'core/section').map((meta) => meta.uuid)

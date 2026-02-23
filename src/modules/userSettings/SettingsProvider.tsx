@@ -5,7 +5,6 @@ import { SettingsClient } from '@ttab/elephant-api/user'
 import { SettingsContext } from './SettingsContext'
 import { AbortError } from '@/shared/types/errors'
 import { meta } from '@/shared/meta'
-import type { Document as SettingsDocument } from '@ttab/elephant-api/user'
 import type { SettingsDocumentPayload, SettingsEventHandler } from './types'
 import { useRegistry } from '@/hooks/useRegistry'
 
@@ -15,7 +14,7 @@ interface Subscriber {
 }
 
 interface DocumentTypeState {
-  settings: SettingsDocument | undefined
+  payload: SettingsDocumentPayload
   loading: boolean
 }
 
@@ -45,19 +44,19 @@ export const SettingsProvider = ({ application, children }: {
   }
 
   const getState = useCallback((documentType: string): DocumentTypeState => {
-    return stateRef.current.get(documentType) ?? { settings: undefined, loading: false }
+    return stateRef.current.get(documentType) ?? { payload: undefined, loading: false }
   }, [])
 
   const setState = useCallback((documentType: string, update: Partial<DocumentTypeState>) => {
-    const current = stateRef.current.get(documentType) ?? { settings: undefined, loading: false }
+    const current = stateRef.current.get(documentType) ?? { payload: undefined, loading: false }
     stateRef.current.set(documentType, { ...current, ...update })
   }, [])
 
-  const notifySubscribers = useCallback((documentType: string, settings: SettingsDocument | undefined) => {
+  const notifySubscribers = useCallback((documentType: string, payload: SettingsDocumentPayload) => {
     subscribersRef.current.forEach((subscriber) => {
       if (subscriber.documentType !== documentType) return
       try {
-        subscriber.handler(settings)
+        subscriber.handler(payload)
       } catch (err) {
         console.error('Error in settings subscriber', err)
       }
@@ -94,20 +93,18 @@ export const SettingsProvider = ({ application, children }: {
 
       if (!signal.aborted) {
         setState(documentType, {
-          settings: response.document,
+          payload: response.document?.payload,
           loading: false
         })
 
-        if (response.document) {
-          notifySubscribers(documentType, response.document)
-        }
+        notifySubscribers(documentType, response.document?.payload)
       }
     } catch (err) {
       if (signal.aborted) return
 
       // 404 is expected when no settings exist
       if (err instanceof Error && 'code' in err && err.code === 'not_found') {
-        setState(documentType, { settings: undefined, loading: false })
+        setState(documentType, { payload: undefined, loading: false })
       } else {
         console.error(`Failed to fetch settings for ${documentType}`, err)
         setState(documentType, { loading: false })
@@ -117,7 +114,7 @@ export const SettingsProvider = ({ application, children }: {
     }
   }, [application, setState, notifySubscribers])
 
-  const updateSettings = useCallback(async (documentType: string, settings: SettingsDocumentPayload) => {
+  const updateSettings = useCallback(async (documentType: string, payload: SettingsDocumentPayload) => {
     const client = clientRef.current
     const accessToken = data?.accessToken
     if (!client || !accessToken) {
@@ -130,7 +127,7 @@ export const SettingsProvider = ({ application, children }: {
       type: documentType,
       key: 'current',
       schemaVersion: 'v1.0.0',
-      payload: settings
+      payload
     }
     try {
       const options = meta(accessToken)
@@ -144,8 +141,8 @@ export const SettingsProvider = ({ application, children }: {
     }
 
     // Optimistically update local state and notify subscribers
-    setState(documentType, { settings })
-    notifySubscribers(documentType, settings)
+    setState(documentType, { payload })
+    notifySubscribers(documentType, payload)
   }, [application, data?.accessToken, setState, notifySubscribers])
 
   const subscribe = useCallback((documentType: string, handler: SettingsEventHandler) => {
@@ -175,9 +172,9 @@ export const SettingsProvider = ({ application, children }: {
 
     // If we already have settings, notify immediately
     const current = getState(documentType)
-    if (current.settings) {
+    if (current.payload) {
       try {
-        handler(current.settings)
+        handler(current.payload)
       } catch (err) {
         console.error('Error in settings subscriber', err)
       }
@@ -188,8 +185,8 @@ export const SettingsProvider = ({ application, children }: {
     }
   }, [data?.accessToken, fetchSettings, getState])
 
-  const getSettings = useCallback((documentType: string): SettingsDocument | undefined => {
-    return getState(documentType).settings
+  const getSettings = useCallback((documentType: string): SettingsDocumentPayload => {
+    return getState(documentType).payload
   }, [getState])
 
   // Store fetchSettings in a ref to avoid stale closures in the polling loop
