@@ -30,11 +30,11 @@
       "transitions": {
         "approved": {
           "title": "Godkjenn",
-          "description": "Godkjenn artikkelen for publisering"
+          "description": "Godkjenn {{label}} for publisering"
         },
         "usable": {
           "title": "Publiser",
-          "description": "Publiser artikkelen direkte"
+          "description": "Publiser {{label}} direkte"
         },
         "withheld": {
           "title": "Planlegg publisering",
@@ -42,11 +42,11 @@
         },
         "draft": {
           "title": "Til utkast",
-          "description": "Gjør om artikkelen til et utkast igjen"
+          "description": "Gjør om {{label}} til et utkast igjen"
         },
         "unpublished": {
           "title": "Avpubliser",
-          "description": "Avbryt og arkiver artikkelen"
+          "description": "Avbryt og arkiver {{label}}"
         }
       }
     },
@@ -56,7 +56,7 @@
       "transitions": {
         "usable": {
           "title": "Publiser",
-          "description": "Publiser artikkelen"
+          "description": "Publiser {{label}}"
         },
         "withheld": {
           "title": "Planlegg publisering",
@@ -64,11 +64,11 @@
         },
         "draft": {
           "title": "Til utkast",
-          "description": "Gjør om artikkelen til et utkast igjen"
+          "description": "Gjør om {{label}} til et utkast igjen"
         },
         "unpublished": {
           "title": "Avpubliser",
-          "description": "Avbryt og arkiver artikkelen"
+          "description": "Avbryt og arkiver {{label}}"
         }
       }
     },
@@ -78,11 +78,11 @@
       "transitions": {
         "draft": {
           "title": "Ny versjon",
-          "description": "Fortsett å jobbe på en ny versjon av artikkelen"
+          "description": "Fortsett å jobbe på en ny versjon av {{label}}"
         },
         "unpublished": {
           "title": "Avpubliser",
-          "description": "Avbryt publiseringen og arkiver artikkelen"
+          "description": "Avbryt publiseringen og arkiver {{label}}"
         }
       }
     },
@@ -92,7 +92,7 @@
       "transitions": {
         "usable": {
           "title": "Publiser direkte",
-          "description": "Publiser artikkelen direkte"
+          "description": "Publiser {{label}} direkte"
         },
         "draft": {
           "title": "Til utkast",
@@ -106,7 +106,7 @@
       "transitions": {
         "draft": {
           "title": "Ny versjon",
-          "description": "Fortsett å jobbe på en ny versjon av artikkelen"
+          "description": "Fortsett å jobbe på en ny versjon av {{label}}"
         }
       }
     }

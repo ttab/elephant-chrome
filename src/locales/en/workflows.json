@@ -30,11 +30,11 @@
       "transitions": {
         "approved": {
           "title": "Approve",
-          "description": "Approve the article for publishing"
+          "description": "Approve the {{label}} for publishing"
         },
         "usable": {
           "title": "Publish",
-          "description": "Publish the article directly"
+          "description": "Publish the {{label}} directly"
         },
         "withheld": {
           "title": "Schedule publishing",
@@ -42,11 +42,11 @@
         },
         "draft": {
           "title": "To draft",
-          "description": "Revert the article to a draft"
+          "description": "Revert the {{label}} to a draft"
         },
         "unpublished": {
           "title": "Unpublish",
-          "description": "Cancel and archive the article"
+          "description": "Cancel and archive the {{label}}"
         }
       }
     },
@@ -56,7 +56,7 @@
       "transitions": {
         "usable": {
           "title": "Publish",
-          "description": "Publish the article"
+          "description": "Publish the {{label}}"
         },
         "withheld": {
           "title": "Schedule publishing",
@@ -64,11 +64,11 @@
         },
         "draft": {
           "title": "To draft",
-          "description": "Revert the article to a draft"
+          "description": "Revert the {{label}} to a draft"
         },
         "unpublished": {
           "title": "Unpublish",
-          "description": "Cancel and archive the article"
+          "description": "Cancel and archive the {{label}}"
         }
       }
     },
@@ -78,11 +78,11 @@
       "transitions": {
         "draft": {
           "title": "New version",
-          "description": "Continue working on a new version of the article"
+          "description": "Continue working on a new version of the {{label}}"
         },
         "unpublished": {
           "title": "Unpublish",
-          "description": "Cancel the publication and archive the article"
+          "description": "Cancel the publication and archive the {{label}}"
         }
       }
     },
@@ -92,7 +92,7 @@
       "transitions": {
         "usable": {
           "title": "Publish now",
-          "description": "Publish the article immediately"
+          "description": "Publish the {{label}} immediately"
         },
         "draft": {
           "title": "To draft",
@@ -106,7 +106,7 @@
       "transitions": {
         "draft": {
           "title": "New version",
-          "description": "Continue working on a new version of the article"
+          "description": "Continue working on a new version of the {{label}}"
         }
       }
     }

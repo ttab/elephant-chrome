@@ -37,7 +37,7 @@ export interface StatusSpecification {
 }
 
 const baseDeliverable = (type: 'article' | 'flash'): WorkflowSpecification => {
-  const typeLabel = type === 'flash' ? i18n.t('workflows:base.flash') : i18n.t('workflows:base.article')
+  const typeLabel = i18n.t(`workflows:base.${type}`)
 
   return {
     draft: {
