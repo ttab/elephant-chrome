@@ -22,6 +22,7 @@ export const FreeTextFilter = (): JSX.Element => {
       }
     }
   }
+
   return (
     <CommandItem
       value='freetext'
@@ -35,7 +36,7 @@ export const FreeTextFilter = (): JSX.Element => {
       }}
     >
       <DebouncedCommandInput
-        value={filter.query ? filter?.query?.[0] : ''}
+        value={filter?.query?.[0] ?? ''}
         onChange={(value) => handleInputChange(value)}
         placeholder='Fritext'
         className='h-9'
