@@ -3,7 +3,7 @@ import type { TBElement } from '@ttab/textbit'
 import { toString } from '../../lib/toString.js'
 
 export const transformTvListing = (element: Block): TBElement => {
-  const { id, data } = element
+  const { id, data, links } = element
   return {
     id: id || crypto.randomUUID(),
     class: 'block',
@@ -13,7 +13,8 @@ export const transformTvListing = (element: Block): TBElement => {
       day: data.day,
       end_time: data.end_time,
       time: data.time,
-      title: data.title
+      title: data.title,
+      uri: links?.find((l) => l.rel === 'channel')?.uri ?? ''
     },
     children: [
       {
