@@ -345,7 +345,7 @@ export const FlashDialog = (props: {
                     setShouldCreateQuickArticle(checked)
                     if (!checked) {
                       setSlugline('')
-                      if (selectedPlanning?.payload.slugline !== relatedDocsSlugline) {
+                      if (selectedPlanning?.payload?.slugline !== relatedDocsSlugline) {
                         setInvalidSlug(false)
                       }
                     }
