@@ -82,17 +82,19 @@ export const FlashDialog = (props: {
     // Only validate slug length if we also create a quick-article, OR if flash is added
     // to an already existing planning. For new plannings, empty sluglines are fine
     // as they can be changed at a later time.
-    if (shouldCreateQuickArticle && !relatedDocsSlugline.length) {
-      setInvalidSlug(true)
-      return
+    if (shouldCreateQuickArticle) {
+      if (!relatedDocsSlugline.length) {
+        setInvalidSlug(true)
+        return
+      }
+      // Slugs from planning and quick-article should not be the same, as they cannot
+      // be changed at a later point in time, invalidate if they are same.
+      if (selectedPlanning?.payload?.slugline === relatedDocsSlugline) {
+        setInvalidSlug(true)
+        return
+      }
     }
 
-    // Slugs from planning and quick-article should not be the same, as they cannot
-    // be changed at a later point in time, invalidate if they are same.
-    if (selectedPlanning?.payload?.slugline === relatedDocsSlugline) {
-      setInvalidSlug(true)
-      return
-    }
 
     setInvalidSlug(false)
     setCreatePrompt(true)
@@ -118,7 +120,9 @@ export const FlashDialog = (props: {
       await repository?.saveDocument(
         quickArticleDocument,
         session?.accessToken || '',
-        'draft'
+        // A two-on-two article following a directly published Flash has already been cleared, and should find its way
+        // high up in the Approvals view, ready to be published again by editors - hence the 'done' status.
+        'done'
       ).catch((error) => console.error('could not save quick-article document', error))
 
       createQuickArticleAfterFlash({
@@ -251,7 +255,7 @@ export const FlashDialog = (props: {
                         planningAwareness.current(isOpen)
                       }
                     }}
-                    fetch={(query) => fetch(query, session, index, locale, timeZone, { searchOlder })}
+                    fetch={(query) => fetch(query, session, index, locale, timeZone, { searchOlder, sluglines: true })}
                     minSearchChars={2}
                     modal={props.asDialog}
                     onSelect={(option) => {
@@ -341,53 +345,58 @@ export const FlashDialog = (props: {
                     setShouldCreateQuickArticle(checked)
                     if (!checked) {
                       setSlugline('')
+                      if (selectedPlanning?.payload?.slugline !== relatedDocsSlugline) {
+                        setInvalidSlug(false)
+                      }
                     }
                   }}
                 />
                 <Label htmlFor='createQuickArticle' className='text-muted-foreground'>Skapa två på två</Label>
               </div>
             </Form.Group>
-            <Form.Group icon={TagsIcon}>
-              <div className='w-1/2 relative'>
-                {invalidSlug && (
-                  <div className='absolute -top-1 right-0 h-2 w-2 z-10'>
-                    <TriangleAlertIcon color='red' fill='#ffffff' size={15} strokeWidth={1.75} />
-                  </div>
-                )}
-                <input
-                  autoComplete='off'
-                  disabled={!shouldCreateQuickArticle}
-                  placeholder='Slugg för planering och artikel'
-                  className={`
-                    h-6
-                    text-sm
-                    w-full
-                    bg-background
-                    py-0
-                    px-1
-                    ring-offset-background
-                    ring-indigo-200
-                    placeholder:pl-1
-                    text-black
-                    dark:text-white
-                    caret-black
-                    dark:caret-white
-                    placeholder:text-[#5D709F]
-                    border
-                    border-[#5D709F]
-                    rounded-md
-                    focus-visible:outline-none focus-visible:0
-                    disabled:cursor-not-allowed
-                    disabled:opacity-50`}
-                  name='slugline'
-                  value={relatedDocsSlugline}
-                  onChange={(e) => {
-                    const value = e.target.value.trim()
-                    setSlugline(value)
-                  }}
-                />
-              </div>
-            </Form.Group>
+            {shouldCreateQuickArticle && (
+              <Form.Group icon={TagsIcon}>
+                <div className='w-1/2 relative'>
+                  {invalidSlug && (
+                    <div className='absolute -top-1 right-0 h-2 w-2 z-10'>
+                      <TriangleAlertIcon color='red' fill='#ffffff' size={15} strokeWidth={1.75} />
+                    </div>
+                  )}
+                  <input
+                    autoComplete='off'
+                    placeholder='Slugg för planering och artikel'
+                    className={`
+                      h-6
+                      text-sm
+                      w-full
+                      bg-background
+                      py-0
+                      px-1
+                      ring-offset-background
+                      ring-indigo-200
+                      placeholder:pl-1
+                      text-black
+                      dark:text-white
+                      caret-black
+                      dark:caret-white
+                      placeholder:text-[#5D709F]
+                      border
+                      border-[#5D709F]
+                      rounded-md
+                      focus-visible:outline-none focus-visible:0
+                      disabled:cursor-not-allowed
+                      disabled:opacity-50`}
+                    name='slugline'
+                    value={relatedDocsSlugline}
+                    onChange={(e) => {
+                      const value = e.target.value.trim()
+                      setSlugline(value)
+                    }}
+                  />
+                </div>
+              </Form.Group>
+            )}
+
 
             <>
               <Alert className='bg-red-300/35'>
