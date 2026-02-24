@@ -145,14 +145,17 @@ const Menu = ({ articleId }: { articleId: string }): JSX.Element => {
           },
           {
             label: 'Öppna planering',
-            item: (
-              <Link to='Planning' target='last' props={{ id: planningId }} className='flex flex-row gap-5'>
-                <div className='pt-1'>
-                  <CalendarDaysIcon size={14} strokeWidth={1.5} className='shrink' />
-                </div>
-                <div className='grow'>Öppna planering</div>
-              </Link>
-            )
+            disabled: !planningId,
+            item: planningId
+              ? (
+                  <Link to='Planning' target='last' props={{ id: planningId }} className='flex flex-row gap-5'>
+                    <div className='pt-1'>
+                      <CalendarDaysIcon size={14} strokeWidth={1.5} className='shrink' />
+                    </div>
+                    <div className='grow'>Öppna planering</div>
+                  </Link>
+                )
+              : () => {}
           },
           {
             label: 'Skapa printartikel',

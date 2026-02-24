@@ -22,6 +22,7 @@ export interface DotDropdownMenuActionItem {
   icon?: LucideIcon
   item: DotDropdownMenuActionItem[] | ((event: MouseEvent<HTMLDivElement>) => void) | React.ReactNode
   disabled?: boolean
+  emptyLabel?: string
 }
 
 /**
@@ -67,7 +68,7 @@ export const DotMenu = ({ trigger = 'horizontal', items }: {
     }}
     >
       <DropdownMenuTrigger asChild>
-        <Button ref={triggerRef} variant='ghost' className='flex h-8 w-8 p-0 data-[state=open]:bg-muted hover:bg-gray-200 dark:hover:bg-table-focused'>
+        <Button ref={triggerRef} variant='ghost' className='flex h-8 w-8 p-0 data-[state=open]:bg-muted hover:bg-gray-200 dark:hover:bg-table-focused' onClickCapture={(e) => e.stopPropagation()}>
           {trigger === 'horizontal'
             ? <MoreHorizontalIcon size={18} strokeWidth={1.75} />
             : <MoreVerticalIcon size={18} strokeWidth={1.75} />}
@@ -101,7 +102,7 @@ export const DotMenu = ({ trigger = 'horizontal', items }: {
                           : subItem.label}
                       </DropdownMenuItem>
                     ))
-                    : <DropdownMenuItem disabled>{item.label}</DropdownMenuItem>}
+                    : <DropdownMenuItem disabled>{item.emptyLabel ?? item.label}</DropdownMenuItem>}
                 </DropdownMenuSubContent>
               </DropdownMenuSub>
             )

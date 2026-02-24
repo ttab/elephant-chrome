@@ -16,6 +16,7 @@ export const Actions = ({ deliverableUuids, planningId }: { deliverableUuids: st
       },
       {
         label: 'Assignments',
+        emptyLabel: 'No deliverables',
         item: deliverableUuids.map((uuid) => ({
           label: uuid,
           item: (
