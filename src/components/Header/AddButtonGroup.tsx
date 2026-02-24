@@ -76,7 +76,7 @@ const AddButton = ({
   )
 }
 
-export const AddButtonGroup = ({ docType = 'core/article', query }: { type: View, query: QueryParams, docType?: string }) => {
+export const AddButtonGroup = ({ docType = 'core/planning-item', query }: { type: View, query: QueryParams, docType?: string }) => {
   const { showModal, hideModal } = useModal()
   const { t } = useTranslation()
 

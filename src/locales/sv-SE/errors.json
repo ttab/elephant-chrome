@@ -19,7 +19,7 @@
         "couldNotCreateNewFactbox": "Kunde inte skapa ny faktaruta!",
         "statusChangeforDocumentTypeFailed": "Kunde inte ändra status på {{documentType, lowercase}}! Det gick inte att hitta en kopplad planering.",
         "scheduleArticleFailed": "Kunde inte schemalägga artikel! Tid eller datum är felaktigt angivet.",
-        "createQuickArticleFailed": "Fel när snabbartikel skapades.",
+        "createQuickArticleFailed": "Fel när två på två skapades.",
         "flashCreationFailed": "Flashen kunde inte skapas.",
         "createAssignmentError": "Flashen har skapats. Tyvärr misslyckades det att koppla den till en planering.",
         "failedToLoadHistory": "Det uppstod ett fel när dokumenthistoriken skulle hämtas.",

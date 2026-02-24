@@ -1,20 +1,22 @@
 {
   "base": {
+    "article": "artikeln",
+    "flash": "flashen",
     "draft": {
       "title": "Utkast",
-      "description": "Du jobbar på ett utkast av artikeln",
+      "description": "Du jobbar på ett utkast av {{label}}",
       "transitions": {
         "done": {
           "title": "Klarmarkera",
-          "description": "Markera artikeln som klar"
+          "description": "Markera {{label}} som klar"
         },
         "approved": {
           "title": "Godkänn",
-          "description": "Godkänn artikeln för publicering"
+          "description": "Godkänn {{label}} för publicering"
         },
         "usable": {
           "title": "Publicera",
-          "description": "Publicera artikeln"
+          "description": "Publicera {{label}}"
         },
         "withheld": {
           "title": "Schemalägg publicering",
@@ -24,15 +26,15 @@
     },
     "done": {
       "title": "Klar",
-      "description": "Artikeln är klar och väntar på godkännande",
+      "description": "{{label, capitalize}} är klar och väntar på godkännande",
       "transitions": {
         "approved": {
           "title": "Godkänn",
-          "description": "Godkänn artikeln för publicering"
+          "description": "Godkänn {{label}} för publicering"
         },
         "usable": {
           "title": "Publicera",
-          "description": "Publicera artikeln direkt"
+          "description": "Publicera {{label}} direkt"
         },
         "withheld": {
           "title": "Schemalägg publicering",
@@ -40,21 +42,21 @@
         },
         "draft": {
           "title": "Till utkast",
-          "description": "Gör om artikeln till ett utkast igen"
+          "description": "Gör om {{label}} till ett utkast igen"
         },
         "unpublished": {
           "title": "Avpublicera",
-          "description": "Avbryt och arkivera artikeln"
+          "description": "Avbryt och arkivera {{label}}"
         }
       }
     },
     "approved": {
       "title": "Godkänd",
-      "description": "Artikeln är godkänd att publicera",
+      "description": "{{label, capitalize}} är godkänd att publicera",
       "transitions": {
         "usable": {
           "title": "Publicera",
-          "description": "Publicera artikeln"
+          "description": "Publicera {{label}}"
         },
         "withheld": {
           "title": "Schemalägg publicering",
@@ -62,35 +64,35 @@
         },
         "draft": {
           "title": "Till utkast",
-          "description": "Gör om artikeln till ett utkast igen"
+          "description": "Gör om {{label}} till ett utkast igen"
         },
         "unpublished": {
           "title": "Avpublicera",
-          "description": "Avbryt och arkivera artikeln"
+          "description": "Avbryt och arkivera {{label}}"
         }
       }
     },
     "usable": {
       "title": "Publicerad",
-      "description": "Artikeln är publicerad",
+      "description": "{{label, capitalize}} är publicerad",
       "transitions": {
         "draft": {
           "title": "Ny version",
-          "description": "Fortsätt jobba på en ny version av artikeln"
+          "description": "Fortsätt jobba på en ny version av {{label}}"
         },
         "unpublished": {
           "title": "Avpublicera",
-          "description": "Avbryt publiceringen och arkivera artikeln"
+          "description": "Avbryt publiceringen och arkivera {{label}}"
         }
       }
     },
     "withheld": {
       "title": "Schemalagd",
-      "description": "Artikeln är schemalagd för automatisk publicering",
+      "description": "{{label, capitalize}} är schemalagd för automatisk publicering",
       "transitions": {
         "usable": {
           "title": "Publicera direkt",
-          "description": "Publicera artikeln direkt"
+          "description": "Publicera {{label}} direkt"
         },
         "draft": {
           "title": "Till utkast",
@@ -100,11 +102,11 @@
     },
     "unpublished": {
       "title": "Avpublicerad",
-      "description": "Artikeln har avpublicerats",
+      "description": "{{label, capitalize}} har avpublicerats",
       "transitions": {
         "draft": {
           "title": "Ny version",
-          "description": "Fortsätt jobba på en ny version av artikeln"
+          "description": "Fortsätt jobba på en ny version av {{label}}"
         }
       }
     }
