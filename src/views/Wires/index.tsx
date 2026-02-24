@@ -94,7 +94,7 @@ export const Wires = (): JSX.Element => {
                   case 'query':
                   case 'core/newsvalue':
                   default:
-                    return { type, value, title: 'default', rel: 'value' }
+                    return { type, value, role: 'filter' }
                 }
               })
               return [...currentFilters, ...addedFilters]
