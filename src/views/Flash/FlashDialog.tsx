@@ -106,7 +106,7 @@ export const FlashDialog = (props: {
     updatedPlanningId: string
     quickArticleData: QuickArticleData | undefined
   }, startDate: string | undefined) => {
-    const { quickArticleData, documentStatus } = data
+    const { quickArticleData } = data
 
     if (!quickArticleData) {
       return
@@ -122,7 +122,7 @@ export const FlashDialog = (props: {
         session?.accessToken || '',
         // A two-on-two article following a directly published Flash has already been cleared, and should find its way
         // high up in the Approvals view, ready to be published again by editors - hence the 'done' status.
-        documentStatus === 'usable' ? 'done' : 'draft'
+        'done'
       ).catch((error) => console.error('could not save quick-article document', error))
 
       createQuickArticleAfterFlash({
