@@ -47,44 +47,44 @@ export const applicationMenu: ApplicationMenu = {
       items: [
         {
           name: 'Plannings',
-          label: 'Planeringar',
+          label: 'plannings',
           icon: CalendarDaysIcon,
           color: '#FF971E'
         },
         {
           name: 'Approvals',
-          label: 'Dagen',
+          label: 'approvals',
           icon: EarthIcon,
           color: '#5E9F5D'
         },
         {
           name: 'Events',
-          label: 'Händelser',
+          label: 'events',
           icon: CalendarPlus2Icon,
           color: '#D802FD'
         },
         {
           name: 'Assignments',
-          label: 'Uppdrag',
+          label: 'assignments',
           icon: BriefcaseBusinessIcon,
           color: '#006bb3'
         },
         {
           name: 'Wires',
-          label: 'Telegram',
+          label: 'wires',
           icon: CableIcon,
           color: '#FF6347'
         },
         {
           name: 'Latest',
-          label: 'Senast utgivet',
+          label: 'last published',
           icon: UtilityPoleIcon,
           color: '#996633',
           target: 'sheet'
         },
         {
           name: 'Factboxes',
-          label: 'Faktarutor',
+          label: 'factboxes',
           icon: BoxesIcon,
           color: '#99c5c4'
         }
@@ -95,20 +95,20 @@ export const applicationMenu: ApplicationMenu = {
       items: [
         {
           name: 'Flash',
-          label: 'Skapa flash',
+          label: 'flash',
           icon: ZapIcon,
           color: '#FF5150',
           target: 'dialog'
         },
         {
           name: 'Search',
-          label: 'Sök',
+          label: 'search',
           icon: SearchIcon,
           color: '#F06F21'
         },
         {
           name: 'QuickArticle',
-          label: 'Skapa två på två',
+          label: 'quickarticle',
           icon: NewspaperIcon,
           color: '#aabbcc',
           target: 'dialog'
@@ -120,7 +120,7 @@ export const applicationMenu: ApplicationMenu = {
       items: [
         {
           name: 'Print',
-          label: 'Print',
+          label: 'print',
           icon: LibraryIcon,
           color: '#006bb3'
         }

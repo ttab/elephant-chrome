@@ -1,0 +1,31 @@
+{
+  "title": "Metadata",
+  "labels": {
+    "properties": "Properties",
+    "tags": "Tags",
+    "byline": "Byline",
+    "actions": "Actions",
+    "otherSources": "External sources",
+    "source": "Source",
+    "extraInformation": "Extra information",
+    "versions": "Versions",
+    "version": "Version",
+    "editorialInfoType": "Editorial info, type",
+    "slugline": "Slug"
+  },
+  "actions": {
+    "addNote": "Add note"
+  },
+  "placeholders": {
+    "addByline": "Add byline",
+    "addSource": "Add source"
+  },
+  "dropDownMenuItems": {
+    "internalNote": "Internal note",
+    "infoToCustomer": "Info to customer"
+  },
+  "misc": {
+    "lastUpdated": "Last updated: {{date}}",
+    "noType": "No type"
+  }
+}

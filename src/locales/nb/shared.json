@@ -1,0 +1,67 @@
+{
+  "authors": {
+    "from": "av {{author}}",
+    "byline": "Byline {{author}}",
+    "lastDoneMarked": "Sist klarmarkert {{created}} av {{author}}",
+    "doneBy": "Klarmarkert av {{author}}",
+    "createdBy": "Opprettet av {{author}}",
+    "approvedBy": "Godkjent av {{author}}",
+    "createdTimeBy": "Opprettet {{created}} av {{author}}"
+  },
+  "assignmentTypes": {
+    "text": "Artikkel",
+    "flash": "HAST",
+    "editorial-info": "Til red",
+    "graphic": "Grafikk",
+    "picture": "Foto",
+    "video": "Video",
+    "picture/video": "Foto/Video"
+  },
+  "toolbar": {
+    "clearFilters": "Tøm",
+    "savePersonalFilter": "Lagre personlig filter",
+    "personalFilter": "Personlig filter",
+    "toggleUserFilter": "Vexle brukerfilter",
+    "toggleLabel": "Vexle {{label}}",
+    "navigateToday": "Gå til idag",
+    "freeText": "Fritekst",
+    "freeTextSearch": "Fritekstsøkning",
+    "altSearch": "Søkealternativer"
+  },
+  "status_menu": {
+    "cause": "Grunn",
+    "pickCause": "Velg en grunn...",
+    "planningDate": "Dato i planen",
+    "setTime": "Skriv inn tid",
+    "asSavePlaceholder": "Publiser ny informasjon",
+    "causes": {
+      "development_short": "UV",
+      "development_long": "Utvikling",
+      "fix_short": "KORR",
+      "fix_long": "Korreksjon",
+      "correction_short": "RET",
+      "correction_long": "Rettelse",
+      "retransmission_short": "OMS",
+      "retransmission_long": "Gjenutgivelse"
+    }
+  },
+  "copy": {
+    "copiedTo": "Kopiert til",
+    "copiedFrom": "Kopiert fra",
+    "copyType": "Kopiere {{type}}",
+    "copyPrompt": "Vil du kopiere \"{{title}}\" til {{start}}?",
+    "copySuccess": "\"{{title}}\" har blitt kopiert til {{start}}",
+    "copyEventPrompt": "Vil du kopiere hendelsen til {{datesFormatted}}?",
+    "copyEventSuccess": "Hendelsen \"{{title}}\" har blitt kopiert til {{datesFormatted}}"
+  },
+  "operations": {
+    "authorCreateSuccess": "Forfatterdokument er opprettet",
+    "authorUpdateSuccess": "Forfatterdokumentet er oppdatert",
+    "authorSaveSuccess": "Forfatterdokumentet er lagret",
+    "savedFilter": "Filteret ditt er lagret"
+  },
+  "prompts": {
+    "publishBeforeClose": "Vil du publisere endringer innen du stenger?",
+    "savedButNotPublished": "Ändringarna er sparede men ikke publisert."
+  }
+}

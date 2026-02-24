@@ -1,0 +1,55 @@
+{
+  "planningDocument": "Planeringsdokument",
+  "assignment": {
+    "title": "Uppdragstitel",
+    "startEndTime": "Start- och sluttid",
+    "startTime": "Starttid",
+    "publishWindow": "Publiceringsfönster",
+    "publishTime": "Publiceringstid",
+    "createPrintArticle": "Skapa printartikel",
+    "removeAssignment": "Vill du ta bort uppdraget",
+    "chooseTime": "Välj tid",
+    "timeFromTo": "Tid från-till",
+    "actions": {
+      "addAssignment": "Lägg till uppdrag",
+      "addAssignee": "Lägg till uppdragstagare"
+    },
+    "collaboration": {
+      "inProgress": "Nytt uppdrag skapas av",
+      "overtake": "Ta över"
+    }
+  },
+  "description": {
+    "internal": "Internt meddelande",
+    "public": "Publik beskrivning"
+  },
+  "actions": {
+    "openPlanning": "Öppna planering"
+  },
+  "prompts": {
+    "slugMissing": "Slugg saknas",
+    "slugMissingDescription": "Vänligen lägg till en slugg på uppdraget. Därefter kan du skapa en text.",
+    "createPrompt": "Vill du skapa en {{documentLabel}} för uppdraget{{title}}?"
+  },
+  "move": {
+    "pickPlanning": "Välj planering",
+    "label": "Flytta",
+    "dateSwitch": "Byt datum på planering",
+    "dateSwitchDescription": "Planeringen och alla dess textuppdrag byter datum till",
+    "dateSwitchAssignments": "Välj nedan om även bild- och videouppdrag ska byta datum",
+    "assignmentCreateInfo": "Väljer du ingen planering kommer en ny planering med detta uppdrag att skapas åt dig på valt datum.",
+    "assignmentAddInfo": "Detta uppdrag kommer läggas i den valda planeringen",
+    "assignmentMoveSuccess": "Uppdraget har flyttats",
+    "moveAssignment": "Flytta uppdrag",
+    "moveAssignmentConfirm": "Är du säker på att du vill flytta uppdraget?",
+    "showOlder": "Visa äldre"
+  },
+  "related": {
+    "relatedEvents": "Länkade händelser"
+  },
+  "slugline": "Lägg till slugg",
+  "story": "Lägg till story",
+  "title": "Planeringstitel",
+  "yourNewType": "Dina nya skapade {{type, lowercase}}",
+  "preview": "Förhandsvisning"
+}

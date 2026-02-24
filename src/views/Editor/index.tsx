@@ -22,6 +22,7 @@ import { contentMenuLabels } from '@/defaults/contentMenuLabels'
 import type { YDocument } from '@/modules/yjs/hooks'
 import { useYDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
+import { useTranslation } from 'react-i18next'
 
 // Metadata definition
 const meta: ViewMetadata = {
@@ -43,6 +44,7 @@ const meta: ViewMetadata = {
 // Main Editor Component - Handles document initialization
 const Editor = (props: ViewProps): JSX.Element => {
   const [query] = useQuery()
+  const { t } = useTranslation('common')
   const documentId = props.id || query.id as string
   const preview = query.preview === 'true'
 
@@ -52,8 +54,8 @@ const Editor = (props: ViewProps): JSX.Element => {
   if (!documentId || typeof documentId !== 'string') {
     return (
       <Error
-        title='Artikeldokument saknas'
-        message='Inget artikeldokument är angivet. Navigera tillbaka till översikten och försök igen.'
+        title={t('errors:messages.articleMissingTitle')}
+        message={t('errors:messages.articleMissingDescription')}
       />
     )
   }
@@ -101,6 +103,9 @@ function EditorWrapper(props: ViewProps & {
   const openFactboxEditor = useLink('Factbox')
   const openImageSearch = useLink('ImageSearch')
   const openFactboxes = useLink('Factboxes')
+  const { t, i18n } = useTranslation()
+
+  const activeLocale = i18n.resolvedLanguage
 
   // Plugin configuration
   const configuredPlugins = useMemo(() => {
@@ -113,6 +118,8 @@ function EditorWrapper(props: ViewProps & {
       Table(),
       LocalizedQuotationMarks(),
       TTVisual({
+        captionLabel: t('editor:image.captionLabel'),
+        bylineLabel: t('editor:image.bylineLabel'),
         enableCrop: false
       }),
       Text({
@@ -120,13 +127,17 @@ function EditorWrapper(props: ViewProps & {
         ...contentMenuLabels
       }),
       Factbox({
+        headerTitle: t('editor:factbox.headerTitle'),
+        modifiedLabel: t('editor:factbox.modifiedLabel'),
+        footerTitle: t('editor:factbox.footerTitle'),
         onEditOriginal: (id: string) => {
           openFactboxEditor(undefined, { id })
         },
-        removable: true
+        removable: true,
+        locale: activeLocale
       })
     ]
-  }, [openFactboxEditor, openFactboxes, openImageSearch])
+  }, [openFactboxEditor, openFactboxes, openImageSearch, t])
 
   if (!content) {
     return <View.Root />

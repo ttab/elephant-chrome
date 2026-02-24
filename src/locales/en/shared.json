@@ -1,0 +1,67 @@
+{
+  "authors": {
+    "from": "by {{author}}",
+    "byline": "Byline {{author}}",
+    "lastDoneMarked": "Last marked as done {{created}} by {{author}}",
+    "doneBy": "Done by {{author}}",
+    "createdBy": "Created by {{author}}",
+    "approvedBy": "Approved by {{author}}",
+    "createdTimeBy": "Created {{created}} by {{author}}"
+  },
+  "assignmentTypes": {
+    "text": "Article",
+    "flash": "Flash",
+    "editorial-info": "Editorial info",
+    "graphic": "Graphic",
+    "picture": "Picture",
+    "video": "Video",
+    "picture/video": "Picture/Video"
+  },
+  "toolbar": {
+    "clearFilters": "Clear",
+    "savePersonalFilter": "Save personal filter",
+    "personalFilter": "Personal filter",
+    "toggleUserFilter": "Toggle user filter",
+    "toggleLabel": "Toggle {{label}}",
+    "navigateToday": "Go to today",
+    "freeText": "Free text",
+    "freeTextSearch": "Free text search",
+    "altSearch": "Search alternatives"
+  },
+  "status_menu": {
+    "cause": "Cause",
+    "pickCause": "Choose cause...",
+    "planningDate": "Date in planning",
+    "setTime": "Set time",
+    "asSavePlaceholder": "Publish new information",
+    "causes": {
+      "development_short": "DEV",
+      "development_long": "Development",
+      "fix_short": "FIX",
+      "fix_long": "Fix",
+      "correction_short": "CORR",
+      "correction_long": "Correction",
+      "retransmission_short": "RET",
+      "retransmission_long": "Retransmission"
+    }
+  },
+  "copy": {
+    "copiedTo": "Copied to",
+    "copiedFrom": "Copied from",
+    "copyType": "Copy {{type}}",
+    "copyPrompt": "Do you want to copy \"{{title}}\" to {{start}}?",
+    "copySuccess": "\"{{title}}\" has been copied to {{start}}",
+    "copyEventPrompt": "Do you want to copy the event to {{datesFormatted}}?",
+    "copyEventSuccess": "The event \"{{title}}\" has been copied to {{datesFormatted}}"
+  },
+  "operations": {
+    "authorCreateSuccess": "Author document has been created",
+    "authorUpdateSuccess": "Author document has been updated",
+    "authorSaveSuccess": "Author document has been saved",
+    "savedFilter": "Your filter has been saved"
+  },
+  "prompts": {
+    "publishBeforeClose": "Do you want to publish the changes before closing?",
+    "savedButNotPublished": "The changes have been saved but not published."
+  }
+}

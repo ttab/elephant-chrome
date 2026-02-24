@@ -16,6 +16,7 @@ import { TimeInput } from '../TimeInput'
 import { FromDateTimeLabel, FromToDateTimeLabel } from './ExecutionTimeLabel'
 import type * as Y from 'yjs'
 import { useYValue } from '@/modules/yjs/hooks'
+import { useTranslation } from 'react-i18next'
 
 interface ExecutionTimeItemsProps extends React.PropsWithChildren {
   handleOnSelect: ({ executionStart, executionEnd }: { executionStart: string | undefined, executionEnd: string | undefined }) => void
@@ -46,6 +47,7 @@ export const ExecutionTimeMenu = ({ handleOnSelect, assignment, startDate }: Exe
   const [mounted, setMounted] = useState(false)
   const [startTimeValid, setStartTimeValid] = useState(false)
   const [endTimeValid, setEndTimeValid] = useState(false)
+  const { t } = useTranslation()
 
   useEffect(() => {
     if (!mounted && data) {
@@ -199,7 +201,7 @@ export const ExecutionTimeMenu = ({ handleOnSelect, assignment, startDate }: Exe
           <div>
             <div className='flex pt-2 pb-2'>
               <Switch onCheckedChange={handleHasEndTime} checked={hasEndTime} className='self-center'></Switch>
-              <label className='text-sm self-center p-2'>Tid från-till</label>
+              <label className='text-sm self-center p-2'>{t('planning:assignment.timeFromTo')}</label>
             </div>
             <div className='flex justify-between border-2 rounded-md border-slate-100'>
               <div className='px-3 py-2 text-sm'>
@@ -225,7 +227,7 @@ export const ExecutionTimeMenu = ({ handleOnSelect, assignment, startDate }: Exe
                 setOpen(false)
               }}
             >
-              Avbryt
+              {t('common:actions.abort')}
             </Button>
             <Button
               variant='outline'
@@ -241,7 +243,7 @@ export const ExecutionTimeMenu = ({ handleOnSelect, assignment, startDate }: Exe
                 setOpen(false)
               }}
             >
-              Klar
+              {t('common:actions.confirm')}
             </Button>
           </div>
         </div>

@@ -2,6 +2,7 @@ import type { WorkflowTransition } from '@/defaults/workflowSpecification'
 import { Prompt } from '../Prompt'
 import { useCallback, useEffect, useState } from 'react'
 import { PromptCauseField } from './PromptCauseField'
+import { useTranslation } from 'react-i18next'
 
 export const PromptDefault = ({
   prompt,
@@ -24,6 +25,7 @@ export const PromptDefault = ({
 }) => {
   const [cause, setCause] = useState<string | undefined>(currentCause)
   const isUnpublishPrompt = prompt.status === 'unpublished'
+  const { t } = useTranslation('common')
 
   const showCauseField = isUnpublishPrompt
     ? false
@@ -65,7 +67,7 @@ export const PromptDefault = ({
       title={prompt.title}
       description={prompt.description}
       primaryLabel={prompt.title}
-      secondaryLabel='Avbryt'
+      secondaryLabel={t('actions.abort')}
       onPrimary={handleSubmit}
       onSecondary={() => {
         showPrompt(undefined)

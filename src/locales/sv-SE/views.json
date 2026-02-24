@@ -1,0 +1,90 @@
+{
+  "approvals": {
+    "title": "Dagen",
+    "charactersShort": "tkn",
+    "tooltips": {
+      "openPreview": "Öppna förhandsgranskning",
+      "openPlanning": "Öppna planering",
+      "lastChanged": "Senast ändrad",
+      "scheduledAt": "Schemalagd kl"
+    }
+  },
+  "plannings": {
+    "label": {
+      "plural": "Planeringar",
+      "singular": "Planering"
+    },
+    "toasts": {
+      "create": {
+        "success": "Planering skapad"
+      },
+      "openItem": "Öppna planering"
+    }
+  },
+  "events": {
+    "label": {
+      "plural": "Händelser",
+      "singular": "Händelse"
+    },
+    "columnLabels": {
+      "startTime": "Starttid",
+      "status": "Status",
+      "organiser": "Organisatör",
+      "section": "Sektion",
+      "planningStatus": "Planeringsstatus",
+      "action": "Action"
+    },
+    "tooltips": {
+      "organiser": "Organisatör"
+    }
+  },
+  "assignments": {
+    "title": "Uppdrag",
+    "columnLabels": {
+      "assignmentTime": "Uppdragstid",
+      "type": "Typ"
+    },
+    "tooltips": {
+      "assignmentStartTime": "Uppdragets starttid"
+    },
+    "actionMenu": {
+      "openArticle": "Öppna artikel",
+      "openPlanning": "Öppna planering"
+    },
+    "myAssignments": "Mina uppdrag"
+  },
+  "factboxes": {
+    "title": "Faktarutor",
+    "columnLabels": {
+      "description": "Beskrivning",
+      "lastChanged": "Senast ändrad"
+    }
+  },
+  "search": {
+    "title": "Sök",
+    "placeholders": {
+      "search": "Sök"
+    },
+    "labels": {
+      "plannings": "Planeringar",
+      "events": "Händelser",
+      "articles": "Artiklar"
+    },
+    "columnLabels": {
+      "date": "Datum"
+    }
+  },
+  "login": {
+    "loginWith": "Logga in med",
+    "rememberMe": "Kom ihåg mig nästa gång",
+    "loggingIn": "Loggar in..."
+  },
+  "imageSearch": {
+    "title": "Bilder",
+    "labels": {
+      "mediaType": "Medietyp",
+      "image": "Bild",
+      "graphic": "Grafik"
+    }
+  }
+}

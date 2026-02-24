@@ -1,0 +1,29 @@
+{
+    "title": "Flash",
+    "flashDocument": "Flashdokument",
+    "createFlashAlertTitle": "Du skapar en ny flash",
+    "alertDescription1": "Väljer du ingen planering kommer en ny planering med tillhörande uppdrag skapas åt dig.",
+    "alertDescription2": "Denna {{documentType}} kommer läggas i ett nytt uppdrag i den valda planeringen.",
+    "createQuickarticle": "Skapa två på två",
+    "titles": {
+        "newFlashTitle": "Skapa ny flash",
+        "createAndSendType": "Skapa och skicka {{type}}",
+        "createAndMarkTypeAsDone": "Skapa och klarmarkera {{type}}",
+        "approveType": "Godkänn {{type}}",
+        "shortFirstText": "Kort första text"
+    },
+    "promptDescriptions": {
+        "newPlanningWillBeCreated": "En ny planering med tillhörande uppdrag för denna {{type}} skapas åt dig.",
+        "typeWillBeAddedToPlanning": "Denna {{type}} kommer att läggas i ett nytt uppdrag i planeringen \"{{planningName}}\".",
+        "alsoTypeCreated": "I samma planering läggs det även till ett nytt textuppdrag med flashinnehållet",
+        "alsoTypeCreatedWithApproved": "En ny, intern planering med tillhörande uppdrag för denna artikel skapas åt dig. Artikeln kommer att ha status Godkänd. Kom ihåg att uppdatera och publicera planeringen!"
+    },
+    "operations": {
+        "quickArticleCreated": "Två på två har skapats"
+    },
+    "placeholders": {
+        "flashTitle": "Flashrubrik",
+        "sluggForTypes": "Slugg för {{type1}} och {{type2}}"
+    }
+
+}

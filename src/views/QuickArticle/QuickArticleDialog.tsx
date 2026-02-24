@@ -28,6 +28,7 @@ import { DialogEditor } from '@/components/QuickDocument/DialogEditor'
 import { toSlateYXmlText } from '@/shared/yUtils'
 import { getLabel, type PromptConfig, promptConfig } from '@/components/QuickDocument/dialogConfig'
 import { ValidateNow } from '@/components/ValidateNow'
+import { useTranslation } from 'react-i18next'
 
 export const QuickArticleDialog = (props: {
   documentId: string
@@ -40,10 +41,11 @@ export const QuickArticleDialog = (props: {
   const [sendPrompt, setSendPrompt] = useState(false)
   const [savePrompt, setSavePrompt] = useState(false)
   const [donePrompt, setDonePrompt] = useState(false)
-  const [selectedPlanning, setSelectedPlanning] = useState<Omit<DefaultValueOption, 'payload'> & { payload: { slugline?: string, sluglines?: string[] } } | undefined>(undefined)
+  const [selectedPlanning, setSelectedPlanning] = useState<Omit<DefaultValueOption, 'payload'> & { payload: { slugline?: string, sluglines?: string[] }, label: string } | undefined>(undefined)
   const [, setTitle] = useYValue<string | undefined>(ydoc.ele, 'root.title')
   const { index, locale, timeZone } = useRegistry()
   const [searchOlder, setSearchOlder] = useState(false)
+  const { t } = useTranslation('common')
 
   const [section, setSection] = useState<{
     type: string
@@ -102,13 +104,13 @@ export const QuickArticleDialog = (props: {
                     size='xs'
                     className='min-w-0 w-full truncate justify-start max-w-48'
                     selectedOptions={selectedPlanning ? [selectedPlanning] : []}
-                    placeholder='Välj planering'
+                    placeholder={t('planning:move.pickPlanning')}
                     onOpenChange={(isOpen: boolean) => {
                       if (planningAwareness?.current) {
                         planningAwareness.current(isOpen)
                       }
                     }}
-                    fetch={(query) => fetch(query, session, index, locale, timeZone, { searchOlder, sluglines: true })}
+                    fetch={(query) => fetch(query, session, t, index, locale, timeZone, { searchOlder, sluglines: true })}
                     minSearchChars={2}
                     modal={props.asDialog}
                     onSelect={(option) => {
@@ -139,11 +141,15 @@ export const QuickArticleDialog = (props: {
                             uuid: sectionPayload
                           }))
                         } else {
-                          toast.error('Kunde inte hitta sektionen för planeringen')
+                          toast.error(t('errors:toasts.couldNotFindPlanningSection'))
                         }
                       } else {
                         setSelectedPlanning(undefined)
                       }
+                    }}
+                    translationStrings={{
+                      nothingFound: t('common:misc.nothingFound'),
+                      searching: t('common:misc.searching')
                     }}
                   >
                   </ComboBox>
@@ -169,7 +175,7 @@ export const QuickArticleDialog = (props: {
                     defaultChecked={searchOlder}
                     onCheckedChange={(checked: boolean) => { setSearchOlder(checked) }}
                   />
-                  <Label htmlFor='SearchOlder' className='text-muted-foreground'>Visa äldre</Label>
+                  <Label htmlFor='SearchOlder' className='text-muted-foreground'>{t('core:labels.showOlder')}</Label>
                 </>
               </Form.Group>
             )}
@@ -207,8 +213,8 @@ export const QuickArticleDialog = (props: {
 
             <UserMessage asDialog={!!props?.asDialog}>
               {!selectedPlanning
-                ? (<>Väljer du ingen planering kommer en ny planering med tillhörande uppdrag skapas åt dig.</>)
-                : (<>Denna artikel kommer läggas i ett nytt uppdrag i den valda planeringen</>)}
+                ? (<>{t('flash:alertDescription1')}</>)
+                : (<>{t('flash:alertDescription2', { documentType: t('core:documentType.article') })}</>)}
             </UserMessage>
 
             <DialogEditor ydoc={ydoc} setTitle={setTitle} type='article' />
@@ -255,7 +261,7 @@ export const QuickArticleDialog = (props: {
                               withView='Editor'
                               target='last'
                               Icon={NewspaperIcon}
-                              label='Öppna artikel'
+                              label={t('actions.openType', { type: t('core:documentType.article') })}
                             />
                           )
                         })
@@ -263,7 +269,7 @@ export const QuickArticleDialog = (props: {
                         handleClose(config)
                       })
                       .catch(() => {
-                        toast.error('Fel när två på två skapades')
+                        toast.error(t('errors:messages.createQuickArticleFailed'))
                       })
                   }}
                   onSecondary={() => {
@@ -284,10 +290,10 @@ export const QuickArticleDialog = (props: {
                 >
                   <div className='flex justify-between'>
                     <div className='flex gap-2'>
-                      <Button variant='secondary' type='button' role='secondary'>Utkast</Button>
-                      <Button variant='secondary' type='button' role='tertiary'>Klarmarkera</Button>
+                      <Button variant='secondary' type='button' role='secondary'>{t('core:status.draft')}</Button>
+                      <Button variant='secondary' type='button' role='tertiary'>{t('actions.markAsDone')}</Button>
                     </div>
-                    <Button type='submit' role='primary'>Godkänn</Button>
+                    <Button type='submit' role='primary'>{t('actions.approve')}</Button>
                   </div>
                 </Form.Submit>
               </Form.Footer>

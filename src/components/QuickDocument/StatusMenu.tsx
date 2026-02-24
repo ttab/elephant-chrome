@@ -12,6 +12,7 @@ import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import type { DocumentView } from './types'
 import { ViewMap } from './types' // Import the configuration map
+import { useTranslation } from 'react-i18next'
 
 interface StatusMenuHeaderProps {
   ydoc: YDocument<Y.Map<unknown>>
@@ -27,6 +28,7 @@ export const StatusMenuLogic = ({ ydoc, propPlanningId, view }: StatusMenuHeader
   const { state, dispatch } = useNavigation()
   const history = useHistory()
   const [workflowStatus] = useWorkflowStatus({ ydoc })
+  const { t } = useTranslation()
 
   const onBeforeStatusChange = useCallback(async (newStatus: string, data?: Record<string, unknown>) => {
     if (!planningId) {
@@ -74,7 +76,7 @@ export const StatusMenuLogic = ({ ydoc, propPlanningId, view }: StatusMenuHeader
 
     // We require a valid publish time if scheduling
     if (!(data?.time instanceof Date)) {
-      toast.error('Kunde inte schemalägga artikel! Tid eller datum är felaktigt angivet.')
+      toast.error(t('errors:messages.scheduleArticleFailed'))
       return false
     }
 
@@ -83,11 +85,11 @@ export const StatusMenuLogic = ({ ydoc, propPlanningId, view }: StatusMenuHeader
       : new Date()
 
     if (ydoc.id) {
-      await updateAssignmentTime(ydoc.id, planningId, newStatus, newPublishTime)
+      await updateAssignmentTime(ydoc.id, planningId, newStatus, newPublishTime, t)
     }
 
     return true
-  }, [planningId, ydoc.id, dispatch, history, state.viewRegistry, viewId, workflowStatus, viewConfig.statusErrorText, viewConfig.linkTarget])
+  }, [planningId, ydoc.id, dispatch, history, state.viewRegistry, viewId, workflowStatus, viewConfig.statusErrorText, viewConfig.linkTarget, t])
 
   return (
     <>

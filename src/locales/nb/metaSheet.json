@@ -1,0 +1,31 @@
+{
+  "title": "Metadata",
+  "labels": {
+    "properties": "Eiendommer",
+    "tags": "Etiketter",
+    "byline": "Byline",
+    "actions": "Handlinger",
+    "otherSources": "Eksterne kilder",
+    "source": "Kilde",
+    "extraInformation": "Tilleggsinformasjon",
+    "versions": "Versjoner",
+    "version": "Versjon",
+    "editorialInfoType": "Redaksjonell informasjon, type",
+    "slugline": "Stikkord"
+  },
+  "actions": {
+    "addNote": "Legg til beskjed"
+  },
+  "placeholders": {
+    "addByline": "Legg til byline",
+    "addSource": "Legg til kilde"
+  },
+  "dropDownMenuItems": {
+    "internalNote": "Intern beskjed",
+    "infoToCustomer": "Info til kunde"
+  },
+  "misc": {
+    "lastUpdated": "Sist oppdatert: {{date}}",
+    "noType": "Ingen type"
+  }
+}

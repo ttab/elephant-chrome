@@ -26,23 +26,25 @@ import { type IDBOrganiser, type IDBSection } from 'src/datastore/types'
 import { FacetedFilter } from '@/components/Commands/FacetedFilter'
 import { Tooltip } from '@ttab/elephant-ui'
 import type { LocaleData } from '@/types/index'
+import type { TFunction } from 'i18next'
+import i18next from 'i18next'
 
-export function eventTableColumns({ sections = [], organisers = [], locale }: {
+export function eventTableColumns({ sections = [], organisers = [], locale}: {
   sections?: IDBSection[]
   organisers?: IDBOrganiser[]
   locale: LocaleData
-}): Array<ColumnDef<Event>> {
+}, t: TFunction<string>): Array<ColumnDef<Event>> {
   return [
     {
       id: 'startTime',
       meta: {
-        name: 'Starttid',
+        name: t('views:events.columnLabels.startTime'),
         columnIcon: SignalHighIcon,
         className: 'hidden',
         display: (value: string) => {
           const [hour, day] = value.split(' ')
           if (hour === 'undefined') {
-            return <span>Heldag</span>
+            return <span>{t('core:timeSlots.fullday')}</span>
           }
 
           return (
@@ -68,7 +70,7 @@ export function eventTableColumns({ sections = [], organisers = [], locale }: {
         const isFullDay = (end.getTime() - start.getTime()) / (1000 * 60 * 60) > 12
 
         if (isFullDay) {
-          return 'Heldag'
+          return t('core:timeSlots.fullday')
         }
 
         return `${start.getHours()} ${start.toLocaleString(locale.code.full, { weekday: 'long', hourCycle: 'h23' })}`
@@ -81,7 +83,7 @@ export function eventTableColumns({ sections = [], organisers = [], locale }: {
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
         options: PlanningEventStatuses,
-        name: 'Status',
+        name: t('views:events.columnLabels.status'),
         columnIcon: CircleCheckIcon,
         className: 'flex-none',
         display: (value: string) => (
@@ -117,7 +119,7 @@ export function eventTableColumns({ sections = [], organisers = [], locale }: {
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
         options: Newsvalues,
-        name: 'Nyhetsvärde',
+        name: t('core:labels.newsvalue'),
         columnIcon: SignalHighIcon,
         className: 'flex-none hidden @3xl/view:[display:revert]'
       },
@@ -132,7 +134,7 @@ export function eventTableColumns({ sections = [], organisers = [], locale }: {
     {
       id: 'title',
       meta: {
-        name: 'Titel',
+        name: t('core:labels.title'),
         columnIcon: PenIcon,
         className: 'flex-1 w-[200px]',
         display: (value: string) => (
@@ -158,13 +160,13 @@ export function eventTableColumns({ sections = [], organisers = [], locale }: {
     {
       id: 'organiser',
       meta: {
-        name: 'Organisatör',
+        name: t('views:events.columnLabels.organiser'),
         columnIcon: BookUserIcon,
         className: 'flex-none hidden @4xl/view:[display:revert]',
         options: organisers.map((o) => ({ label: o.title, value: o.title })),
         display: (value: string) => (
           <span>
-            {value === 'undefined' ? 'saknas' : value}
+            {value === 'undefined' ? t('common:misc.missing') : value}
           </span>
         ),
         Filter: ({ column, setSearch }) => (
@@ -177,7 +179,7 @@ export function eventTableColumns({ sections = [], organisers = [], locale }: {
 
         if (value) {
           return (
-            <Tooltip content={`Organisatör: ${value}`}>
+            <Tooltip content={`${t ? t('views:events.tooltips.organiser') : ''}: ${value}`}>
               <div className='border-slate-200 rounded-md mr-2 p-1 truncate'>{value}</div>
             </Tooltip>
           )
@@ -197,7 +199,7 @@ export function eventTableColumns({ sections = [], organisers = [], locale }: {
             label: _.title
           }
         }),
-        name: 'Sektion',
+        name: t('views:events.columnLabels.section'),
         columnIcon: ShapesIcon,
         className: 'flex-none w-[115px] hidden @4xl/view:[display:revert]',
         display: (value: string) => (
@@ -229,13 +231,13 @@ export function eventTableColumns({ sections = [], organisers = [], locale }: {
         Filter: ({ column, setSearch }) => (
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
-        options: [{ label: 'Planerad', value: 'planned' }, { label: 'Ej planerad', value: 'unplanned' }],
-        name: 'Planeringsstatus',
+        options: [{ label: t('event:status.planned'), value: 'planned' }, { label: t('event:status.notPlanned'), value: 'unplanned' }],
+        name: t('views:events.columnLabels.planningStatus'),
         columnIcon: NotebookPenIcon,
         className: 'flex-none w-[112px] hidden @5xl/view:[display:revert]',
         display: (value: string) => (
           <span>
-            {value === 'planned' ? 'Planerad' : 'Ej planerad'}
+            {value === 'planned' ? t('event:status.planned') : t('event:status.notPlanned')}
           </span>
         )
 
@@ -254,7 +256,7 @@ export function eventTableColumns({ sections = [], organisers = [], locale }: {
     {
       id: 'event_time',
       meta: {
-        name: 'Tid',
+        name: t('core:labels.time'),
         columnIcon: Clock3Icon,
         className: 'flex-none w-[112px] hidden @5xl/view:[display:revert]',
         Filter: ({ column, setSearch }) => (
@@ -280,7 +282,7 @@ export function eventTableColumns({ sections = [], organisers = [], locale }: {
     {
       id: 'action',
       meta: {
-        name: 'Action',
+        name: t('views:events.columnLabels.action'),
         columnIcon: NavigationIcon,
         className: 'flex-none'
       },
@@ -294,7 +296,7 @@ export function eventTableColumns({ sections = [], organisers = [], locale }: {
 
 const menuItems: DotDropdownMenuActionItem[] = [
   {
-    label: 'Redigera',
+    label: i18next.t('common:actions.edit'),
     icon: EditIcon,
     item: (event: MouseEvent<HTMLDivElement>) => {
       event.preventDefault()
@@ -302,12 +304,12 @@ const menuItems: DotDropdownMenuActionItem[] = [
     }
   },
   {
-    label: 'Ta bort',
+    label: i18next.t('common:actions.remove'),
     icon: DeleteIcon,
     item: (event: MouseEvent<HTMLDivElement>) => {
       event.preventDefault()
       event.stopPropagation()
-      confirm('Ta bort')
+      confirm(i18next.t('common:actions.remove'))
     }
   }
 ]

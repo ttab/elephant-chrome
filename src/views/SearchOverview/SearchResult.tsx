@@ -16,6 +16,7 @@ import search from '@/hooks/index/useDocuments/queries/views/search'
 import { useQuery } from '@/hooks/useQuery'
 import type { ColumnDef } from '@tanstack/react-table'
 import { toast } from 'sonner'
+import { useTranslation } from 'react-i18next'
 
 export const SearchResult = ({ searchType, page }: {
   searchType: SearchKeys
@@ -25,8 +26,9 @@ export const SearchResult = ({ searchType, page }: {
   const organisers = useOrganisers()
   const authors = useAuthors()
   const [filter] = useQuery()
-
+  const { t } = useTranslation()
   const { locale, timeZone } = useRegistry()
+
   const getType = (searchType: SearchKeys) => searchType === 'events' ? 'Event' : searchType === 'articles' ? 'Editor' : 'Planning'
 
   const onRowSelected = useCallback((row?: Planning | Event) => {
@@ -47,7 +49,6 @@ export const SearchResult = ({ searchType, page }: {
       setTableData: true
     }
   })
-
   const columns = useMemo(() => {
     return createSearchColumns({
       searchType,
@@ -56,19 +57,19 @@ export const SearchResult = ({ searchType, page }: {
       locale,
       timeZone,
       organisers
-    })
-  }, [locale, timeZone, authors, sections, searchType, organisers])
+    }, t)
+  }, [locale, timeZone, authors, sections, searchType, organisers, t])
 
   if (error) {
     console.error('Error fetching search result items:', error)
-    toast.error('Kunde inte hämta sökresultat')
+    toast.error(t('errors:toasts.getSearchResultsFailed'))
   }
 
   return (
     <>
       {isLoading
         ? (
-            <LoadingText>Laddar...</LoadingText>
+            <LoadingText>{t('common:misc.loading')}</LoadingText>
           )
         : (
             <>

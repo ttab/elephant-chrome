@@ -17,10 +17,13 @@ import { useUserTracker } from '@/hooks/useUserTracker'
 import { useCallback, useRef, useState, type JSX } from 'react'
 import { UserInfo } from './UserInfo'
 import { MenuItemSubSheet } from './MenuItemSubSheet'
+import { LanguageSelector } from '../Header/LanguageSelector'
+import { useTranslation } from 'react-i18next'
 
 
 export const Menu = (): JSX.Element => {
   const { data } = useSession()
+  const { t } = useTranslation('app')
   const triggerRef = useRef<HTMLButtonElement>(null)
   const [user] = useUserTracker<object>('')
   const [mainOpen, setMainMenuOpen] = useState<boolean>(false)
@@ -61,21 +64,23 @@ export const Menu = (): JSX.Element => {
         >
           <div>
             <SheetHeader className='h-14'>
-              <SheetTitle className='sr-only'>Huvudmeny</SheetTitle>
+              <SheetTitle className='sr-only'>{t('mainMenu.title')}</SheetTitle>
               <SheetDescription className='sr-only' />
 
               <div className='flex flex-row gap-4 justify-between justify-items-center items-center h-14 px-4'>
-                <SheetClose className='rounded-md hover:bg-table-focused dark:hover:bg-table-focused w-9 h-9 flex items-center justify-center'>
+                <SheetClose className='rounded-md hover:bg-table-focused dark:hover:bg-table-focused w-7 h-7 md:w-9 md:h-9 flex items-center justify-center'>
                   <XIcon strokeWidth={2.25} />
                 </SheetClose>
 
                 <SheetClose asChild>
-                  <Link to='Plannings' className='leading-9 px-3 rounded-md'>
+                  <Link to='Plannings' className='leading-9 md:px-3 rounded-md'>
                     <Logo className='w-full h-6' />
                   </Link>
                 </SheetClose>
-
-                <ThemeSwitcher />
+                <div className='flex gap-1 md:gap-1.5'>
+                  <LanguageSelector />
+                  <ThemeSwitcher />
+                </div>
               </div>
             </SheetHeader>
 
@@ -93,7 +98,7 @@ export const Menu = (): JSX.Element => {
                           >
                             <div className='flex items-center gap-3'>
                               <item.icon strokeWidth={2.25} size={18} color={item.color} />
-                              <div className='pl-2'>{item.label}</div>
+                              <div className='pl-2'>{t(`mainMenu.${item.name.toLowerCase()}`)}</div>
                             </div>
                           </button>
                         )

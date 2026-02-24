@@ -11,6 +11,7 @@ import { toast } from 'sonner'
 import type { Index } from '@/shared/Index'
 import { getInterval } from '@/shared/getInterval'
 import type { Session } from 'next-auth'
+import { useTranslation } from 'react-i18next'
 
 /**
  * Options for augmenting or performing the fetch in the `useDocuments` hook.
@@ -66,7 +67,7 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
   const mutateRef = useRef<KeyedMutator<T[]> | null>(null)
   const dataRef = useRef<T[] | undefined>(undefined)
   const optionsRef = useRef(options)
-
+  const { t } = useTranslation('common')
   const key = useMemo(() => query
     ? `${documentType}/${JSON.stringify(query, (_, v: unknown) => typeof v === 'bigint' ? v.toString() : v)}${page ? `/${page}` : ''}`
     : documentType, [query, page, documentType])
@@ -99,7 +100,7 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
 
   if (error) {
     console.error('Document fetch failed:', error)
-    toast.error('Misslyckades hämta dokument.')
+    toast.error(t('errors:messages.failedFetchingDocument'))
   }
 
   // Set table data after fetch
@@ -134,7 +135,7 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
         const interval = getInterval(20, 30)
 
         console.error('Polling error:', error)
-        toast.error(`Misslyckades att automatiskt uppdatera listan. Försöker igen om ${interval / 1000} sekunder.`)
+        toast.error(t('errors:messages.failedUpdatingListRetrying', { seconds: interval / 1000 }))
         // Wait before next retry if failed
         await new Promise((resolve) => setTimeout(resolve, interval))
       }

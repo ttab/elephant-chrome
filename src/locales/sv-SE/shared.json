@@ -1,0 +1,67 @@
+{
+  "authors": {
+    "from": "av {{author}}",
+    "byline": "Byline {{author}}",
+    "lastDoneMarked": "Senast klarmarkerad {{created}} av {{author}}",
+    "doneBy": "Klar av {{author}}",
+    "createdBy": "Skapad av {{author}}",
+    "approvedBy": "Godkänd av {{author}}",
+    "createdTimeBy": "Skapad {{created}} av {{author}}"
+  },
+  "assignmentTypes": {
+    "text": "Artikel",
+    "flash": "Flash",
+    "editorial-info": "Till red",
+    "graphic": "Grafik",
+    "picture": "Bild",
+    "video": "Video",
+    "picture/video": "Bild/Video"
+  },
+  "toolbar": {
+    "clearFilters": "Rensa",
+    "savePersonalFilter": "Spara personligt filter",
+    "personalFilter": "Personligt filter",
+    "toggleUserFilter": "Växla användarfilter",
+    "toggleLabel": "Växla {{label}}",
+    "navigateToday": "Gå till idag",
+    "freeText": "Fritext",
+    "freeTextSearch": "Fritextsökning",
+    "altSearch": "Sök alternativ"
+  },
+  "status_menu": {
+    "cause": "Anledning",
+    "pickCause": "Välj anledning...",
+    "planningDate": "Datum i planeringen",
+    "setTime": "Ange tid",
+    "asSavePlaceholder": "Publicera ny information",
+    "causes": {
+      "development_short": "UV",
+      "development_long": "Utveckling",
+      "fix_short": "KORR",
+      "fix_long": "Korrigering",
+      "correction_short": "RÄ",
+      "correction_long": "Rättelse",
+      "retransmission_short": "OMS",
+      "retransmission_long": "Omsändning"
+    }
+  },
+  "copy": {
+    "copiedTo": "Kopierad till",
+    "copiedFrom": "Kopierad från",
+    "copyType": "Kopiera {{type}}",
+    "copyPrompt": "Vill du kopiera \"{{title}}\" till {{start}}?",
+    "copySuccess": "\"{{title}}\" har kopierats till {{start}}",
+    "copyEventPrompt": "Vill du kopiera händelsen till {{datesFormatted}}?",
+    "copyEventSuccess": "Händelsen \"{{title}}\" har kopierats till {{datesFormatted}}"
+  },
+  "operations": {
+    "authorCreateSuccess": "Författardokument är skapat",
+    "authorUpdateSuccess": "Författardokument har uppdaterats",
+    "authorSaveSuccess": "Författardokument har sparats",
+    "savedFilter": "Ditt filter har sparats"
+  },
+  "prompts": {
+    "publishBeforeClose": "Vill du publicera ändringarna innan du stänger?",
+    "savedButNotPublished": "Ändringarna är sparade men inte publicerade."
+  }
+}

@@ -13,6 +13,7 @@ import {
 import { TimeSlotItems } from './TimeSlotItems'
 import { TimeSelectItem } from './TimeSelectItem'
 import type * as Y from 'yjs'
+import { useTranslation } from 'react-i18next'
 
 interface TimeMenuProps extends React.PropsWithChildren {
   handleOnSelect: ({ value, selectValue }: { value: string, selectValue: string }) => void
@@ -32,6 +33,7 @@ export const TimeDeliveryMenu = ({
   assignmentType
 }: TimeMenuProps): JSX.Element => {
   const [open, setOpen] = useState(false)
+  const { t } = useTranslation()
 
   const handleOpenChange = (isOpen: boolean): void => {
     setOpen(isOpen)
@@ -62,10 +64,10 @@ export const TimeDeliveryMenu = ({
         <Command>
           <CommandInput placeholder='' />
           <CommandList>
-            <CommandEmpty>Ingenting hittades</CommandEmpty>
+            <CommandEmpty>{t('errors:messages.nothingFound')}</CommandEmpty>
             <div className='flex flex-col divide-y'>
               <CommandGroup>
-                <TimeSlotItems handleOnSelect={handleOnSelect} handleParentOpenChange={handleOpenChange} assignmentType={assignmentType} />
+                <TimeSlotItems handleOnSelect={handleOnSelect} handleParentOpenChange={handleOpenChange} assignmentType={assignmentType} t={t} />
               </CommandGroup>
               {assignmentType !== 'text' && (
                 <CommandGroup>

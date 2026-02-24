@@ -1,0 +1,37 @@
+{
+    "title": "Händelse",
+    "eventDocument": "Händelsedokument",
+    "subheadings": {
+        "plannings": "Planeringar",
+        "events": "Händelser"
+    },
+    "createEvent": "Skapa händelse",
+    "buttons": {
+        "addPlanning": "Lägg till planering"
+    },
+    "labels": {
+        "markAsCancelled": "Markera som inställd",
+        "markedAsCancelled": "Evenemanget är markerat som inställt!"
+    },
+    "toasts": {
+        "created": {
+            "success": "Händelse skapad"
+        }
+    },
+    "placeholders": {
+        "eventTitle": "Händelsetitel",
+        "publicDescription": "Publik beskrivning",
+        "accreditation": "Ackreditering",
+        "addOrganiser": "Lägg till organisatör",
+        "addCategory": "Lägg till ämne",
+        "addSection": "Lägg till sektion"
+    },
+    "status": {
+        "planned": "Planerad",
+        "notPlanned": "Ej planerad"
+    },
+    "tooltips": {
+        "createPlanning": "Skapa planering",
+        "planningCreated": "Har planerats"
+    }
+}

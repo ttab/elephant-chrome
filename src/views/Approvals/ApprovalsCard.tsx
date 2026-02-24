@@ -12,6 +12,7 @@ import { AuthorNames } from './AuthorNames'
 import { CAUSE_KEYS } from '@/defaults/causekeys'
 import { TimeCard } from './TimeCard'
 import type { TrackedDocument } from '@/hooks/useTrackedDocuments'
+import { useTranslation } from 'react-i18next'
 
 export const ApprovalsCard = ({ trackedDocument, assignment, isSelected, isFocused, status, openEditors }: {
   assignment: AssignmentInterface
@@ -24,6 +25,7 @@ export const ApprovalsCard = ({ trackedDocument, assignment, isSelected, isFocus
   const sections = useSections()
   const openArticle = useLink('Editor')
   const openFlash = useLink('Flash')
+  const { t } = useTranslation()
 
   const openType = (assignmentType: string) => assignmentType === 'core/flash' ? openFlash : openArticle
 
@@ -133,7 +135,7 @@ export const ApprovalsCard = ({ trackedDocument, assignment, isSelected, isFocus
                   </span>
                   {assignment._metricsData?.charCount}
                   {' '}
-                  tkn
+                  {t('views:approvals.charactersShort')}
                 </span>
               )}
             </div>
@@ -146,7 +148,7 @@ export const ApprovalsCard = ({ trackedDocument, assignment, isSelected, isFocus
                 keepFocus
                 onClick={(e) => e.stopPropagation()}
               >
-                <Tooltip content='Öppna förhandsgranskning'>
+                <Tooltip content={t('views:approvals.tooltips.openPreview')}>
                   <EyeIcon size={16} strokeWidth={1.75} />
                 </Tooltip>
               </Link>
@@ -156,7 +158,7 @@ export const ApprovalsCard = ({ trackedDocument, assignment, isSelected, isFocus
                 className='block p-1 -m-1 rounded transition-all opacity-70 md:opacity-0 md:group-hover:opacity-70 md:group-focus:opacity-70 md:group-focus-within:opacity-70 hover:bg-gray-300 dark:hover:bg-table-focused'
                 onClick={(e) => e.stopPropagation()}
               >
-                <Tooltip content='Öppna planering'>
+                <Tooltip content={t('views:approvals.tooltips.openPlanning')}>
                   <CalendarDaysIcon size={16} strokeWidth={1.75} />
                 </Tooltip>
               </Link>

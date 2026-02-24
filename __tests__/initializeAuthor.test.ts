@@ -5,6 +5,8 @@ import { Index } from '@/shared/Index'
 import type { Repository } from '@/shared/Repository'
 import { toast } from 'sonner'
 import type { Session } from 'next-auth'
+import i18n from '@/lib/i18n'
+import i18next from 'i18next'
 
 vi.mock('@/shared/Index')
 vi.mock('@/shared/Repository')
@@ -57,7 +59,8 @@ describe('initializeAuthor', () => {
     const result = await initializeAuthor({
       url: mockUrl,
       session: mockSession,
-      repository: mockRepository
+      repository: mockRepository,
+      t: i18n.t
     })
 
     expect(result).toBe(true)
@@ -71,13 +74,14 @@ describe('initializeAuthor', () => {
     const result = await initializeAuthor({
       url: mockUrl,
       session: mockSession,
-      repository: mockRepository
+      repository: mockRepository,
+      t: i18n.t
     })
 
     expect(result).toBe(true)
     // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(mockRepository.saveDocument).toHaveBeenCalled()
-    expect(toast.success).toHaveBeenCalledWith('Författardokument är skapat')
+    expect(toast.success).toHaveBeenCalledWith(i18n.t('shared:operations.authorSaveSuccess'))
   })
 
   it('should update an existing author document when isValid === false', async () => {
@@ -87,7 +91,8 @@ describe('initializeAuthor', () => {
     const result = await initializeAuthor({
       url: mockUrl,
       session: mockSession,
-      repository: mockRepository
+      repository: mockRepository,
+      t: i18n.t
     })
 
     expect(result).toBe(true)
@@ -102,7 +107,7 @@ describe('initializeAuthor', () => {
       mockSession.accessToken,
       expect.any(String)
     )
-    expect(toast.success).toHaveBeenCalledWith('Författardokument är uppdaterat')
+    expect(toast.success).toHaveBeenCalledWith(i18n.t('shared:operations.authorUpdateSuccess'))
   })
 
   it('should throw an error if saving the document fails', async () => {
@@ -112,11 +117,12 @@ describe('initializeAuthor', () => {
       initializeAuthor({
         url: mockUrl,
         session: mockSession,
-        repository: mockRepository
+        repository: mockRepository,
+        t: i18n.t
       })
     ).rejects.toThrow('Failed to initialize author: Failed to create author doc')
 
-    expect(toast.error).toHaveBeenCalledWith('Kunde inte skapa författardokument: Failed to create author doc')
+    expect(toast.error).toHaveBeenCalledWith(i18next.t('errors:toasts.authorSaveFailure', { errorMessage: 'Failed to create author doc' }))
   })
 
   it('should throw an error if multiple author documents are found', async () => {
@@ -126,11 +132,12 @@ describe('initializeAuthor', () => {
       initializeAuthor({
         url: mockUrl,
         session: mockSession,
-        repository: mockRepository
+        repository: mockRepository,
+        t: i18n.t
       })
     ).rejects.toThrow('More than one author document found')
 
-    expect(toast.error).toHaveBeenCalledWith('Flera författardokument hittades, kontakta support')
+    expect(toast.error).toHaveBeenCalledWith(i18n.t('errors:toasts.multipleAuthors'))
   })
 
 
@@ -141,10 +148,11 @@ describe('initializeAuthor', () => {
       initializeAuthor({
         url: mockUrl,
         session: mockSession,
-        repository: mockRepository
+        repository: mockRepository,
+        t: i18n.t
       })
     ).rejects.toThrow('Failed to initialize author: Failed to fetch author document: undefined')
 
-    expect(toast.error).toHaveBeenCalledWith('Kunde inte skapa författardokument: Failed to fetch author document: undefined')
+    expect(toast.error).toHaveBeenCalledWith(i18n.t('errors:toasts.authorSaveFailure', { errorMessage: 'Failed to fetch author document: undefined' }))
   })
 })

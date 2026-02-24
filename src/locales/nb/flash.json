@@ -1,0 +1,28 @@
+{
+  "title": "HAST",
+  "flashDocument": "HAST-dokument",
+  "createFlashAlertTitle": "Du oppretter en ny HAST",
+  "alertDescription1": "Hvis du ikke velger en plan, vil det bli opprettet en ny plan med tilhørende oppgaver for deg.",
+  "alertDescription2": "Denne {{documentType}} vil bli lagt til i en ny oppgave i den valgte planleggingen.",
+  "createQuickarticle": "Lag ny hurtigartikkel",
+  "titles": {
+    "newFlashTitle": "Lag ny HAST",
+    "createAndSendType": "Opprett og send {{type}}",
+    "createAndMarkTypeAsDone": "Opprett og ferdigmerk {{type}}",
+    "approveType": "Godkjenn {{type}}",
+    "shortFirstText": "Kort første tekst"
+  },
+  "promptDescriptions": {
+    "newPlanningWillBeCreated": "En ny planlegging med tilhørende oppgaver for denne {{type}} vil bli opprettet for deg.",
+    "typeWillBeAddedToPlanning": "Denne {{type}} vil bli lagt til i en ny oppgave i planleggingen \"{{planningName}}\"",
+    "alsoTypeCreated": "I samme planlegging vil det også bli lagt til en tekstoppdrag med HAST-innhold.",
+    "alsoTypeCreatedWithApproved": "En ny, intern planlegging med tilhørende oppgaver for denne artikkelen vil bli opprettet for deg. Artikkelen vil ha statusen Godkjent. Husk å oppdatere og publisere planleggingen!"
+  },
+  "operations": {
+    "quickArticleCreated": "Hurtigartikkel opprettet"
+  },
+  "placeholders": {
+    "flashTitle": "HAST-tittel",
+    "sluggForTypes": "Stikkord for {{type1}} og {{type2}}"
+  }
+}

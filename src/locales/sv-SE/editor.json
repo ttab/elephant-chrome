@@ -1,0 +1,41 @@
+{
+  "contentMenu": {
+    "title": "Rubrik",
+    "subTitle": "Mellanrubrik",
+    "bodyText": "Brödtext",
+    "vignette": "Vinjett",
+    "preamble": "Ingress",
+    "tvListing": "Tablåinfo",
+    "unorderedList": "Lista",
+    "orderedList": "Punktlista",
+    "searchImages": "Sök bilder",
+    "factboxes": "Faktarutor"
+  },
+  "numberOfChars": "Antal tecken",
+  "spelling": {
+    "noSuggestions": "Inga förslag"
+  },
+  "factbox": {
+    "headerTitle": "Redigera faktarutans original",
+    "modifiedLabel": "Originalet är från",
+    "footerTitle": "Ändringar i faktarutans text sker endast för denna artikel"
+  },
+  "image": {
+    "captionLabel": "Text",
+    "bylineLabel": "Foto"
+  },
+  "footer": {
+    "words": "Ord",
+    "numberOfWords": "Antal ord: artikel (totalt)",
+    "chars": "Tecken",
+    "numberOfChars": "Antal tecken: artikel (totalt)"
+  },
+  "goToLatestVersion": "Gå till senaste versionen",
+  "addRoleInfo": {
+    "editorial": "Lägg till redaktionell info",
+    "internal": "Lägg till intern info"
+  },
+  "removeInfoConfirm": "Är du säker på att du vill ta bort info?",
+  "changeType": "Ändra typ",
+  "changeTypeConfirm": "Är du säker på att du vill ändra typ av info?"
+}

@@ -100,6 +100,7 @@
     "__tests__/**/*",
     "__mocks__",
     "types/**/*",
-    "src-srv/utils/transformations/groupedNewsDoc.ts"
+    "src-srv/utils/transformations/groupedNewsDoc.ts",
+    "i18next.config.ts"
   ]
 }

@@ -1,4 +1,5 @@
 import { ZapIcon, ZapOffIcon, NewspaperIcon } from '@ttab/elephant-ui/icons'
+import i18next from 'i18next'
 
 export type DocumentView = 'Flash' | 'QuickArticle'
 
@@ -16,18 +17,18 @@ export const ViewMap: Record<DocumentView, ViewConfig> = {
   Flash: {
     icon: ZapIcon,
     readOnlyIcon: ZapOffIcon,
-    baseTitle: 'Flash',
-    newDialogTitle: 'Skapa ny flash',
+    baseTitle: i18next.t('flash:title'),
+    newDialogTitle: i18next.t('flash:titles.newFlashTitle'),
     iconColor: '#FF5150',
     linkTarget: 'Flash',
-    statusErrorText: 'Kunde inte ändra status på flash! Det gick inte att hitta en kopplad planering.'
+    statusErrorText: i18next.t('errors:messages.statusChangeforDocumentTypeFailed', { documentType: i18next.t('flash:title') })
   },
   QuickArticle: {
     icon: NewspaperIcon,
-    baseTitle: 'Två på två',
-    newDialogTitle: 'Skapa ny två på två',
+    baseTitle: i18next.t('quickArticle:title'),
+    newDialogTitle: i18next.t('quickArticle:newQuickArticleTitle'),
     iconColor: '#aabbcc',
     linkTarget: 'Planning',
-    statusErrorText: 'Kunde inte ändra status på artikel! Det gick inte att hitta en kopplad planering.'
+    statusErrorText: i18next.t('errors:messages.statusChangeforDocumentTypeFailed', { documentType: i18next.t('quickArticle:title') })
   }
 }

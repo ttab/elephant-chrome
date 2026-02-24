@@ -11,10 +11,11 @@ import { DocumentStatuses } from '@/defaults/documentStatuses'
 import { CircleCheckIcon, PenIcon, ShapesIcon, SignalHighIcon } from '@ttab/elephant-ui/icons'
 import type { Dispatch, SetStateAction } from 'react'
 import type { IDBSection } from 'src/datastore/types'
+import type { TFunction } from 'i18next'
 
 export function articleColumns({ sections = [] }: {
   sections?: IDBSection[]
-}): Array<ColumnDef<Article>> {
+}, t: TFunction): Array<ColumnDef<Article>> {
   return [
     {
       id: 'documentStatus',
@@ -23,15 +24,14 @@ export function articleColumns({ sections = [] }: {
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
         options: DocumentStatuses,
-        name: 'Status',
+        name: t('core:labels.status'),
         columnIcon: CircleCheckIcon,
         className: 'flex-none',
-        display: (value: string) => (
-          <span>
-            {DocumentStatuses
-              .find((status) => status.value === value)?.label}
-          </span>
-        )
+        display: (value: string) => {
+          const statusLabel = t(`core:status.${value}`)
+
+          return <span>{statusLabel}</span>
+        }
       },
       accessorFn: (data) => data?.fields['document.meta.status']?.values[0],
       cell: ({ row }) => {
@@ -51,7 +51,7 @@ export function articleColumns({ sections = [] }: {
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
         options: Newsvalues,
-        name: 'Nyhetsvärde',
+        name: t('core:labels.newsvalue'),
         columnIcon: SignalHighIcon,
         className: 'flex-none hidden @3xl/view:[display:revert]'
       },
@@ -71,7 +71,7 @@ export function articleColumns({ sections = [] }: {
     {
       id: 'title',
       meta: {
-        name: 'Titel',
+        name: t('core:labels.title'),
         columnIcon: PenIcon,
         className: 'flex-1 w-[200px]'
       },
@@ -96,7 +96,7 @@ export function articleColumns({ sections = [] }: {
         Filter: ({ column, setSearch }: { column: Column<Article>, setSearch: Dispatch<SetStateAction<string | undefined>> }) => (
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
-        name: 'Sektion',
+        name: t('core:labels.section'),
         columnIcon: ShapesIcon,
         className: 'flex-none w-[135px] hidden @4xl/view:[display:revert]'
       },

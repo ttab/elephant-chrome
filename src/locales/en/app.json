@@ -1,0 +1,24 @@
+{
+  "mainMenu": {
+    "approvals": "Today",
+    "assignments": "Assignments",
+    "events": "Events",
+    "factboxes": "Factboxes",
+    "flash": "Create flash",
+    "latest": "Latest",
+    "logout": "Log out",
+    "plannings": "Plannings",
+    "print": "Print",
+    "search": "Search",
+    "wires": "Wires",
+    "quickarticle": "Create quick-article",
+    "title": "Main menu",
+    "actions": {
+      "toggleTheme": "Toggle theme"
+    }
+  },
+  "systemMessages": {
+    "reloadWindowTitle": "You need to reload the window",
+    "reloadWindowDescription": "The system has been updated with new or changed features. Reload the window to continue working in the new version."
+  }
+}

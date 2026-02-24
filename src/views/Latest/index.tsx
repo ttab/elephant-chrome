@@ -12,6 +12,7 @@ import { useDeliverablePlanningId } from '@/hooks/index/useDeliverablePlanningId
 import { useLatest } from './hooks/useLatest'
 import { SluglineButton } from '@/components/DataItem/Slugline'
 import { SectionBadge } from '@/components/DataItem/SectionBadge'
+import { useTranslation } from 'react-i18next'
 
 const meta: ViewMetadata = {
   name: 'Latest',
@@ -32,9 +33,10 @@ const meta: ViewMetadata = {
 export const Latest = ({ setOpen }: { setOpen?: (open: boolean) => void }) => {
   const { locale } = useRegistry()
   const data = useLatest()
+  const { t } = useTranslation('common')
 
   if (!data?.length) {
-    return <div className='min-h-screen text-center py-2'>Laddar...</div>
+    return <div className='min-h-screen text-center py-2'>{t('misc.loading')}</div>
   }
 
   return (
@@ -123,6 +125,7 @@ const Content = ({ documents, locale }: {
 
 const Menu = ({ articleId }: { articleId: string }): JSX.Element => {
   const planningId = useDeliverablePlanningId(articleId)
+  const { t } = useTranslation('common')
   return (
     <div className='shrink p-'>
       <ActionMenu
@@ -130,13 +133,13 @@ const Menu = ({ articleId }: { articleId: string }): JSX.Element => {
           {
             to: 'Editor',
             id: articleId,
-            title: 'Öppna artikel'
+            title: t('actions.openType', { type: t('core:documentType.article') })
           },
 
           {
             to: 'Planning',
             id: planningId,
-            title: 'Öppna planering'
+            title: t('actions.openType', { type: t('core:documentType.planning') })
           }
         ]}
       />

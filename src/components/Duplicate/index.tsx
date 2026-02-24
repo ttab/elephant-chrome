@@ -13,6 +13,8 @@ import { type SetStateAction, type Dispatch } from 'react'
 import { useRegistry } from '@/hooks/useRegistry'
 import { isEvent, isPlanning } from './isType'
 import type { Document } from '@ttab/elephant-api/newsdoc'
+import { useTranslation } from 'react-i18next'
+import type { TFunction } from 'i18next'
 
 const SingleOrRangedCalendar = ({
   granularity,
@@ -84,6 +86,7 @@ export const Duplicate = ({ provider, title, session, status, type, dataInfo }: 
   const [duplicateDate, setDuplicateDate] = useState<{ from: Date, to?: Date | undefined }>({ from: new Date(), to: new Date() })
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
   const { locale, repository } = useRegistry()
+  const { t } = useTranslation()
 
   useEffect(() => {
     if (isEvent(dataInfo)) {
@@ -107,11 +110,11 @@ export const Duplicate = ({ provider, title, session, status, type, dataInfo }: 
     return <></>
   }
 
-  const createTexts = (granularity: 'date' | 'datetime' | undefined): { description: string, success: string } => {
+  const createTexts = (granularity: 'date' | 'datetime' | undefined, t: TFunction): { description: string, success: string } => {
     const start = format(duplicateDate.from, 'EEEE yyyy-MM-dd', { locale: locale.module })
     const defaultTexts = {
-      description: `Vill du kopiera "${title}" till ${start}?`,
-      success: `"${title}" har kopierats till ${start}`
+      description: `${t('shared:copy.copyPrompt', { title, start })}`,
+      success: `${t('shared:copy.copySuccess', { title, start })}`
     }
 
     if (isEvent(dataInfo)) {
@@ -124,8 +127,8 @@ export const Duplicate = ({ provider, title, session, status, type, dataInfo }: 
         const datesFormatted = `${start === end ? `${start}` : `${start} - ${end}`}`
 
         return {
-          description: `Vill du kopiera händelsen till ${datesFormatted}?`,
-          success: `Händelsen "${title}" har kopierats till ${datesFormatted}`
+          description: `${t('shared:copy.copyEventPrompt', { datesFormatted })}`,
+          success: `${t('shared:copy.copyEventSuccess', { title, datesFormatted })}`
         }
       }
 
@@ -140,7 +143,7 @@ export const Duplicate = ({ provider, title, session, status, type, dataInfo }: 
   return (
     <div className='flex-row gap-2 justify-start items-center'>
       <Popover>
-        <PopoverTrigger title='Kopiera'>
+        <PopoverTrigger title={t('common:actions.copy')}>
           <div
             className='flex items-center justify-center w-9 h-9 px-0 hover:bg-gray-200 dark:hover:bg-table-focused'
           >
@@ -156,7 +159,7 @@ export const Duplicate = ({ provider, title, session, status, type, dataInfo }: 
           />
           <div className='flex w-full justify-end'>
             <Button onClick={() => setShowConfirm(!showConfirm)}>
-              Kopiera
+              {t('common:actions.copy')}
             </Button>
           </div>
         </PopoverContent>
@@ -166,9 +169,9 @@ export const Duplicate = ({ provider, title, session, status, type, dataInfo }: 
           duplicateDate={duplicateDate}
           provider={provider}
           type={type}
-          description={createTexts(granularity).description}
-          secondaryLabel='Avbryt'
-          primaryLabel='Kopiera'
+          description={createTexts(granularity, t).description}
+          secondaryLabel={t('common:actions.abort')}
+          primaryLabel={t('common:actions.copy')}
           onPrimary={(duplicateId: string | undefined, duplicatedDocument: Document) => {
             if (provider && status === 'authenticated' && duplicateId && session && repository) {
               try {
@@ -176,11 +179,11 @@ export const Duplicate = ({ provider, title, session, status, type, dataInfo }: 
                   await repository.saveDocument(duplicatedDocument, session.accessToken).catch((err) => console.error(err))
                 })()
 
-                toast.success(createTexts(granularity).success, {
+                toast.success(createTexts(granularity, t).success, {
                   action: <ToastAction documentId={duplicateId || undefined} withView={type} />
                 })
               } catch (error) {
-                toast.error(`Något gick fel: ${JSON.stringify(error)}`)
+                toast.error(`${t('errors:messages.someError') as unknown as string}: ${JSON.stringify(error)}`)
                 console.error(error)
               }
             }

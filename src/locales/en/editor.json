@@ -1,0 +1,41 @@
+{
+  "contentMenu": {
+    "title": "Heading",
+    "subTitle": "Subheading",
+    "bodyText": "Body text",
+    "vignette": "Vignette",
+    "preamble": "Preamble",
+    "tvListing": "TV listing info",
+    "unorderedList": "List",
+    "orderedList": "Numbered list",
+    "searchImages": "Search images",
+    "factboxes": "Factboxes"
+  },
+  "numberOfChars": "Number of characters",
+  "spelling": {
+    "noSuggestions": "No suggestions"
+  },
+  "factbox": {
+    "headerTitle": "Edit factbox original",
+    "modifiedLabel": "The original is from",
+    "footerTitle": "Changes to the factbox text only apply to this article"
+  },
+  "image": {
+    "captionLabel": "Text",
+    "bylineLabel": "Photo"
+  },
+  "footer": {
+    "words": "Words",
+    "numberOfWords": "Number of words: article (total)",
+    "chars": "Characters",
+    "numberOfChars": "Number of characters: article (total)"
+  },
+  "goToLatestVersion": "Go to latest version",
+  "addRoleInfo": {
+    "editorial": "Add editorial info",
+    "internal": "Add internal info"
+  },
+  "removeInfoConfirm": "Are you sure you want to remove the info?",
+  "changeType": "Change type",
+  "changeTypeConfirm": "Are you sure you want to change the type of info?"
+}

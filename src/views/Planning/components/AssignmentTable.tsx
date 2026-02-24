@@ -22,6 +22,7 @@ import {
   getValueFromPath,
   toYStructure
 } from '@/shared/yUtils'
+import { useTranslation } from 'react-i18next'
 
 export const AssignmentTable = ({ ydoc, asDialog = false, documentId }: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -37,6 +38,7 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId }: {
   const [focusedRowIndex, setFocusedRowIndex] = useState<number | undefined>()
   const author = useActiveAuthor({ full: false })
   const authors = useAuthors()
+  const { t } = useTranslation()
 
   const selectedAssignment = useMemo(() => {
     if (!selectedId) return undefined
@@ -105,7 +107,7 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId }: {
       snapshotDocument(documentId, { force: true }, ydoc.provider.document)
         .catch((ex) => {
           console.error('Error closing assignment:', ex)
-          toast.error('Kunde inte spara uppdraget.')
+          toast.error(t('errors:messages.saveAssignmentError'))
         })
     }
   }
@@ -147,7 +149,7 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId }: {
                   className='text-white dark:text-black absolute inset-0 m-auto'
                 />
               </div>
-              Lägg till uppdrag
+              {t('planning:assignment.actions.addAssignment')}
             </div>
           </Button>
         </div>
@@ -167,9 +169,9 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId }: {
                   <div className='text-sm ps-6 py-2 flex flex-row gap-2 text-muted-foreground items-center'>
                     <InfoIcon size={18} strokeWidth={1.75} />
                     <div>
-                      <span className='hidden sm:inline'>Nytt uppdrag skapas av</span>
+                      <span className='hidden sm:inline'>{t('planning:assignment.collaboration.inProgress')}</span>
                       {' '}
-                      {user?.name || `okänd: ${sub ?? 'användare'}`}
+                      {user?.name || `${t('common:misc.unknown') as unknown as string}: ${sub ?? t('common:misc.user')}`}
                       {', '}
                       <a
                         className='text-primary hover:underline'
@@ -183,7 +185,7 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId }: {
                           )
                         }}
                       >
-                        Ta över
+                        {t('planning:assignment.collaboration.overtake')}
                       </a>
                     </div>
                   </div>

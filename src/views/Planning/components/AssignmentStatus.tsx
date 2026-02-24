@@ -7,6 +7,7 @@ import { CircleDotIcon, CircleCheckIcon, CircleArrowUpIcon } from '@ttab/elephan
 import type { DefaultValueOption } from '@/types/index'
 import { snapshotDocument } from '@/lib/snapshotDocument'
 import { toast } from 'sonner'
+import { useTranslation } from 'react-i18next'
 
 export const AssignmentStatus = (props: {
   ydoc?: YDocument<Y.Map<unknown>>
@@ -29,11 +30,12 @@ const TextAssignment = ({ workflowState }: {
     return DocumentStatuses.find((status) => status.value === workflowState)
   }, [workflowState])
 
+  const { t } = useTranslation('shared')
 
   const IconComponent = StatusIcon?.icon
 
   return (
-    <div className='flex h-8 w-12 items-center justify-start' title={StatusIcon?.label}>
+    <div className='flex h-8 w-12 items-center justify-start' title={StatusIcon?.value ? t(`core:status.${StatusIcon?.value}`) : StatusIcon?.value}>
       {IconComponent ? <IconComponent {...StatusIcon.iconProps} /> : null}
     </div>
   )
@@ -45,15 +47,15 @@ const VisualAssignment = ({ ydoc, path }: {
   path: string
 }) => {
   const [visualAssignmentStatus, setVisualAssignmentStatus] = useYValue<string>(ydoc.ele, path)
-
+  const { t } = useTranslation()
   const onValueChange = useCallback((value: string) => {
     setVisualAssignmentStatus(value)
     snapshotDocument(ydoc.id, undefined, ydoc.provider?.document)
       .catch((ex) => {
         console.error('Failed to snapshot document after changing visual assignment status', ex)
-        toast.error('Kunde inte spara ändringen')
+        toast.error(t('errors:toasts.saveChangeError'))
       })
-  }, [setVisualAssignmentStatus, ydoc])
+  }, [setVisualAssignmentStatus, ydoc, t])
 
 
   const currentStatus = selectableStatuses
@@ -61,7 +63,7 @@ const VisualAssignment = ({ ydoc, path }: {
     ?? selectableStatuses[0]
 
   return (
-    <div className='w-12' title={currentStatus.label}>
+    <div className='w-12' title={t(`core:status.${currentStatus.value}`)}>
       <Select
         name='AssignmentStatus'
         onValueChange={onValueChange}
@@ -77,18 +79,18 @@ const VisualAssignment = ({ ydoc, path }: {
           )}
         </SelectTrigger>
         <SelectContent>
-          {selectableStatuses.map(({ value, icon: IconComponent, iconProps, label }) => (
+          {selectableStatuses.map(({ value, icon: IconComponent, iconProps }) => (
             <SelectItem
               key={value}
               value={value}
               className='flex justify-start'
-              aria-label={label}
+              aria-label={t(`core:status.${value}`)}
               onPointerDownCapture={stopRowClick}
               onClick={stopRowClick}
             >
               <span className='flex flex-row items-center justify-start gap-2'>
                 {IconComponent && <IconComponent {...iconProps} />}
-                <span>{label}</span>
+                <span>{t(`core:status.${value}`)}</span>
               </span>
             </SelectItem>
           ))}
@@ -105,7 +107,7 @@ function stopRowClick(event: React.PointerEvent | React.MouseEvent) {
 export const selectableStatuses: DefaultValueOption[] = [
   {
     value: 'todo',
-    label: 'Att göra',
+    label: '',
     icon: CircleDotIcon,
     iconProps: {
       className: 'text-muted-foreground',
@@ -115,7 +117,7 @@ export const selectableStatuses: DefaultValueOption[] = [
   },
   {
     value: 'started',
-    label: 'Påbörjad',
+    label: '',
     icon: CircleArrowUpIcon,
     iconProps: {
       className: 'bg-done text-white dark:text-black rounded-full',
@@ -125,7 +127,7 @@ export const selectableStatuses: DefaultValueOption[] = [
   },
   {
     value: 'done',
-    label: 'Klar',
+    label: '',
     icon: CircleCheckIcon,
     iconProps: {
       className: 'bg-usable text-white dark:text-black fill-usable rounded-full',

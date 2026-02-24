@@ -8,11 +8,13 @@ import { useRef, type JSX } from 'react'
 import { Validation } from './Validation'
 import type { FormProps } from './Form/Root'
 import type * as Y from 'yjs'
+import { useTranslation } from 'react-i18next'
 
 export const Byline = ({ ydoc, path, onValidation, validateStateRef }: {
   ydoc: YDocument<Y.Map<unknown>>
   path: string
 } & FormProps): JSX.Element => {
+  const { t } = useTranslation('metaSheet')
   const allAuthors = useAuthors().map((_) => {
     return {
       value: _.id,
@@ -29,7 +31,7 @@ export const Byline = ({ ydoc, path, onValidation, validateStateRef }: {
     <Awareness ref={setFocused} ydoc={ydoc} path={path} className='flex flex-col gap-2'>
       <Validation
         ydoc={ydoc}
-        label='Byline'
+        label={t('labels.byline')}
         path={path}
         block='core/author'
         onValidation={onValidation}
@@ -40,7 +42,7 @@ export const Byline = ({ ydoc, path, onValidation, validateStateRef }: {
           sortOrder='label'
           options={allAuthors}
           selectedOptions={selectedOptions}
-          placeholder='Lägg till byline'
+          placeholder={t('placeholders.addByline')}
           onOpenChange={(isOpen: boolean) => {
             setFocused.current(true, (isOpen) ? path : '')
           }}
@@ -57,6 +59,10 @@ export const Byline = ({ ydoc, path, onValidation, validateStateRef }: {
                 title: option.label
               })])
             }
+          }}
+          translationStrings={{
+            nothingFound: t('common:misc.nothingFound'),
+            searching: t('common:misc.searching')
           }}
         />
       </Validation>

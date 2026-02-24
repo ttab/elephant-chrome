@@ -7,6 +7,7 @@ import { PreVersion } from './Version/PreVersion'
 import type { Status as DocumentStatuses } from '@ttab/elephant-api/repository'
 import { PreVersionInfo } from './Version/PreVersionInfo'
 import type { JSX } from 'react'
+import { useTranslation } from 'react-i18next'
 
 const BASE_URL = import.meta.env.BASE_URL || ''
 
@@ -30,6 +31,10 @@ export const Editor = ({ id, version, textOnly = false, direct, versionStatusHis
   versionStatusHistory?: DocumentStatuses[]
   direct?: boolean
 }): JSX.Element => {
+  const { t, i18n } = useTranslation('editor')
+
+  const activeLocale = i18n.resolvedLanguage
+
   const searchParams = new URLSearchParams()
   if (typeof version !== 'undefined') {
     searchParams.set('version', version.toString())
@@ -47,10 +52,16 @@ export const Editor = ({ id, version, textOnly = false, direct, versionStatusHis
       ...basePlugins.map((initPlugin) => initPlugin()),
       Text(),
       TTVisual({
+        captionLabel: t('image.captionLabel'),
+        bylineLabel: t('image.bylineLabel'),
         removable: false
       }),
       Factbox({
-        removable: false
+        headerTitle: t('factbox.headerTitle'),
+        modifiedLabel: t('factbox.modifiedLabel'),
+        footerTitle: t('factbox.footerTitle'),
+        removable: false,
+        locale: activeLocale
       })
     ]
   }
@@ -62,13 +73,13 @@ export const Editor = ({ id, version, textOnly = false, direct, versionStatusHis
   )
 
   if (error) {
-    return <div>Failed to load</div>
+    return <div>{t('errors:messages.loadFailed')}</div>
   }
 
   if (!content) {
     return (
       <LoadingText>
-        Laddar...
+        {t('common:misc.loading')}
       </LoadingText>
     )
   }

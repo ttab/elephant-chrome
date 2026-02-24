@@ -34,6 +34,7 @@ import { useYValue } from '@/modules/yjs/hooks/useYValue'
 import { TextInput } from '@/components/ui/TextInput'
 import type { EleDocumentResponse } from '@/shared/types'
 import { ValidateNow } from '@/components/ValidateNow'
+import { useTranslation } from 'react-i18next'
 
 export const WireViewContent = (props: ViewProps & {
   documentId: string
@@ -57,7 +58,7 @@ export const WireViewContent = (props: ViewProps & {
     title: string
   } | undefined>(undefined)
   const [slugline, setSlugline] = useYValue<Y.XmlText>(ydoc.ele, 'meta.tt/slugline[0].value', true)
-
+  const { t } = useTranslation()
   const handleSubmit = (): void => {
     setShowVerifyDialog(true)
   }
@@ -106,7 +107,7 @@ export const WireViewContent = (props: ViewProps & {
                       documentAwareness.current(isOpen)
                     }
                   }}
-                  fetch={(query) => fetch(query, session, index, locale, timeZone, {
+                  fetch={(query) => fetch(query, session, t, index, locale, timeZone, {
                     searchOlder,
                     sluglines: true
                   })}
