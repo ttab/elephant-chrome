@@ -35,9 +35,12 @@ export const fetch = async (
     'document.meta.core_planning_item.data.start_date'
   ]
 
+  const multiMatchFields = ['document.title', 'document.rel.section.title']
+
   // Append to query so we'll have all sluglines available in result
   if (options?.sluglines) {
     fields.push('document.meta.core_assignment.meta.tt_slugline.value')
+    multiMatchFields.push('document.meta.tt_slugline.value')
   }
 
   const { ok, hits, errorMessage } = await index.query({
@@ -59,7 +62,7 @@ export const fetch = async (
               conditions: {
                 oneofKind: 'multiMatch',
                 multiMatch: MultiMatchQueryV1.create({
-                  fields: ['document.title', 'document.rel.section.title'],
+                  fields: multiMatchFields,
                   query,
                   type: 'phrase_prefix'
                 })
