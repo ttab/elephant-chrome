@@ -8,29 +8,28 @@ import type { Status as DocumentStatuses } from '@ttab/elephant-api/repository'
 import { PreVersionInfo } from './Version/PreVersionInfo'
 import type { JSX } from 'react'
 import { cn } from '@ttab/elephant-ui/utils'
+import { Alert, AlertDescription } from '@ttab/elephant-ui'
+import { MessageCircleMoreIcon } from '@ttab/elephant-ui/icons'
 
 const BASE_URL = import.meta.env.BASE_URL || ''
 
-const fetcher = async (url: string): Promise<Element[] | EleDocument | undefined> => {
+const fetcher = async (url: string): Promise<EleDocument | undefined> => {
   const response = await fetch(url)
   if (!response.ok) {
     throw new Error('Network response was not ok')
   }
   const result = await response.json() as EleDocumentResponse
-
-  if (result.document?.content.length === 0 && result?.document?.meta && result?.document?.links) {
-    return result?.document
-  }
-  return result.document?.content
+  return result.document
 }
 
-export const Editor = ({ id, version, textOnly = false, direct, versionStatusHistory, disableScroll = false }: {
+export const Editor = ({ id, version, textOnly = false, direct, versionStatusHistory, disableScroll = false, showNotes = false }: {
   id: string
   textOnly?: boolean
   version?: bigint | undefined
   versionStatusHistory?: DocumentStatuses[]
   direct?: boolean
   disableScroll?: boolean
+  showNotes?: boolean
 }): JSX.Element => {
   const searchParams = new URLSearchParams()
   if (typeof version !== 'undefined') {
@@ -57,7 +56,7 @@ export const Editor = ({ id, version, textOnly = false, direct, versionStatusHis
     ]
   }
 
-  const { data: content, error } = useSWR<Element[] | EleDocument | undefined, Error>(
+  const { data: document, error } = useSWR<EleDocument | undefined, Error>(
     documentUrl,
     fetcher,
     { revalidateOnFocus: false, revalidateOnReconnect: false }
@@ -67,7 +66,7 @@ export const Editor = ({ id, version, textOnly = false, direct, versionStatusHis
     return <div>Failed to load</div>
   }
 
-  if (!content) {
+  if (!document) {
     return (
       <LoadingText>
         Laddar...
@@ -75,16 +74,20 @@ export const Editor = ({ id, version, textOnly = false, direct, versionStatusHis
     )
   }
 
-  if ('title' in content) {
+  const content = document.content
+
+  if (!content.length && document.meta && document.links) {
     // Preversion-preview: render non-article types of documents, such as Planning or Event
     return (
       <PreVersion
-        content={content}
+        content={document}
         version={version}
         versionStatusHistory={versionStatusHistory}
       />
     )
   }
+
+  const notes = showNotes ? (document.meta['core/note'] ?? []) : []
 
   return (
     <div className={cn(
@@ -95,6 +98,20 @@ export const Editor = ({ id, version, textOnly = false, direct, versionStatusHis
       {versionStatusHistory && version && (
         <PreVersionInfo version={version} versionStatusHistory={versionStatusHistory} />
       )}
+
+      {!!notes.length && (
+        <div className='pe-12 ps-12 mt-6'>
+          {notes.map((note, index) => (
+            <div key={index} className='flex flex-row gap-2 w-full justify-between items-center'>
+              <Alert className='flex py-3 px-4  bg-blue-50 dark:bg-blue-800 items-center'>
+                <MessageCircleMoreIcon size={18} strokeWidth={1.75} className='shrink-0 -mt-1.5' />
+                <AlertDescription>{note.data?.text}</AlertDescription>
+              </Alert>
+            </div>
+          ))}
+        </div>
+      )}
+
       <Textbit.Root
         key={id}
         value={filterText(content, textOnly)}

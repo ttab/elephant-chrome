@@ -103,6 +103,7 @@ export const Preview = ({ wire, onClose }: {
           textOnly={true}
           direct
           disableScroll={true}
+          showNotes={true}
         />
       </div>
     </>
