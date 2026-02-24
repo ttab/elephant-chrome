@@ -1,4 +1,3 @@
-import { vi } from 'vitest'
 import type { TBElement } from '@ttab/textbit'
 import { revertFactbox, transformFactbox } from '@/shared/transformations/newsdoc/core/factbox'
 import { Block } from '@ttab/elephant-api/newsdoc'

@@ -1,5 +1,4 @@
 import type { Mock } from 'vitest'
-import { vi } from 'vitest'
 import { initializeAuthor } from '../src/components/Init/lib/actions/author'
 import { Index } from '@/shared/Index'
 import type { Repository } from '@/shared/Repository'

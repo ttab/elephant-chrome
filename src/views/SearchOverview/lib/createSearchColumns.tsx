@@ -1,7 +1,7 @@
 import { parseDate, dateToReadableShort } from '@/shared/datetime'
 import type { LocaleData } from '@/types/index'
-import { eventTableColumns } from '@/views/EventsOverview/EventsListColumns'
-import { planningListColumns } from '@/views/PlanningOverview/PlanningListColumns'
+import { eventTableColumns } from '@/views/SearchOverview/SearchEventsColumns'
+import { planningListColumns } from '@/views/SearchOverview/SearchPlanningColumns'
 import type { IDBAuthor, IDBOrganiser, IDBSection } from 'src/datastore/types'
 
 import search from '@/hooks/index/useDocuments/queries/views/search'

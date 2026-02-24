@@ -1,12 +1,11 @@
 import type { EleDocument, EleDocumentResponse } from '@/shared/types'
 import { Textbit, type Element } from '@ttab/textbit'
 import useSWR from 'swr'
-import { LoadingText } from './LoadingText'
 import { Bold, Italic, Link, Text, OrderedList, UnorderedList, TTVisual, Factbox, Table } from '@ttab/textbit-plugins'
 import { PreVersion } from './Version/PreVersion'
 import type { Status as DocumentStatuses } from '@ttab/elephant-api/repository'
 import { PreVersionInfo } from './Version/PreVersionInfo'
-import type { JSX } from 'react'
+import { useEffect, type JSX } from 'react'
 
 const BASE_URL = import.meta.env.BASE_URL || ''
 
@@ -23,12 +22,13 @@ const fetcher = async (url: string): Promise<Element[] | EleDocument | undefined
   return result.document?.content
 }
 
-export const Editor = ({ id, version, textOnly = false, direct, versionStatusHistory }: {
+export const Editor = ({ id, version, textOnly = false, direct, versionStatusHistory, onLoad }: {
   id: string
   textOnly?: boolean
   version?: bigint | undefined
   versionStatusHistory?: DocumentStatuses[]
   direct?: boolean
+  onLoad?: () => void
 }): JSX.Element => {
   const searchParams = new URLSearchParams()
   if (typeof version !== 'undefined') {
@@ -61,16 +61,18 @@ export const Editor = ({ id, version, textOnly = false, direct, versionStatusHis
     { revalidateOnFocus: false, revalidateOnReconnect: false }
   )
 
+  useEffect(() => {
+    if (content !== undefined || error) {
+      onLoad?.()
+    }
+  }, [content, error, onLoad])
+
   if (error) {
     return <div>Failed to load</div>
   }
 
   if (!content) {
-    return (
-      <LoadingText>
-        Laddar...
-      </LoadingText>
-    )
+    return <></>
   }
 
   if ('title' in content) {

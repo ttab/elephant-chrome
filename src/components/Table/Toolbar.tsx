@@ -25,7 +25,7 @@ export const Toolbar = <TData,>(): JSX.Element => {
   }, [table])
 
   return (
-    <div className='bg-background flex flex-wrap grow items-center space-x-2 border-b px-4 py-1 pr-2.5 sticky top-0 z-10'>
+    <div className='bg-background flex flex-wrap grow items-center space-x-2 border-b px-4 py-1 pr-2.5 sticky top-0 z-20'>
       <Filter
         page={command.page}
         pages={command.pages}

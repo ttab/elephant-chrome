@@ -159,18 +159,3 @@ export interface StatusMeta {
   metaDocVersion: bigint
   version: bigint
 }
-
-export interface StatusData {
-  heads: {
-    usable?: StatusMeta
-    done?: StatusMeta
-    approved?: StatusMeta
-    withheld?: StatusMeta
-    cancelled?: StatusMeta
-  }
-  modified: string
-  uuid: string
-  version: string
-  workflowState: string
-  workflowCheckpoint: string
-}

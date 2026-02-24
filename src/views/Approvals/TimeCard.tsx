@@ -5,14 +5,15 @@ import { toZonedTime } from 'date-fns-tz'
 import { dateInTimestampOrShortMonthDayTimestamp, newLocalDate, parseDate } from '@/shared/datetime'
 import { DEFAULT_TIMEZONE } from '@/defaults/defaultTimezone'
 import { useQuery } from '@/hooks/useQuery'
-import type { AssignmentInterface } from '@/hooks/index/useAssignments'
-import type { StatusData } from '@/types'
+import type { PreprocessedApprovalData } from './preprocessor'
 import { useRegistry } from '@/hooks/useRegistry'
 import { useMemo } from 'react'
 import { timesSlots } from '@/defaults/assignmentTimeslots'
 import type { LocaleData } from '@/types/index'
+import { getPublishSlot, getPublishTime, getStartTime } from '@/lib/documentHelpers'
+import type { DocumentMeta } from '@ttab/elephant-api/repository'
 
-export const TimeCard = ({ assignment }: { assignment: AssignmentInterface }) => {
+export const TimeCard = ({ item }: { item: PreprocessedApprovalData }) => {
   const [query] = useQuery()
   const { timeZone, locale } = useRegistry()
 
@@ -22,20 +23,16 @@ export const TimeCard = ({ assignment }: { assignment: AssignmentInterface }) =>
       : newLocalDate(DEFAULT_TIMEZONE)
   ), [query?.from])
 
-  const statusData: StatusData | null = useMemo(() => (
-    assignment?._statusData
-      ? JSON.parse(assignment._statusData) as StatusData
-      : null
-  ), [assignment?._statusData])
+  const deliverableMeta = item._deliverable?.meta || null
 
   const time = useMemo(() =>
-    getAssignmentTime({ assignment, timeZone, locale, statusData, compareDate }),
-  [assignment, timeZone, locale, statusData, compareDate]
+    getAssignmentTime({ item, timeZone, locale, deliverableMeta, compareDate }),
+  [item, timeZone, locale, deliverableMeta, compareDate]
   )
 
   const timeTooltip = useMemo(() =>
-    getTimeTooltip({ assignment, statusData, timeZone, locale, compareDate }),
-  [assignment, statusData, timeZone, locale, compareDate]
+    getTimeTooltip({ item, deliverableMeta, timeZone, locale, compareDate }),
+  [item, deliverableMeta, timeZone, locale, compareDate]
   )
 
   return (
@@ -55,33 +52,38 @@ export const TimeCard = ({ assignment }: { assignment: AssignmentInterface }) =>
   )
 }
 
-function getAssignmentTime({ assignment, timeZone, locale, statusData, compareDate }: {
-  assignment: AssignmentInterface
+function getAssignmentTime({ item, timeZone, locale, deliverableMeta, compareDate }: {
+  item: PreprocessedApprovalData
   timeZone: string
   locale: LocaleData
-  statusData: StatusData | null
+  deliverableMeta: DocumentMeta | null
   compareDate?: Date
 }): string | undefined {
+  const deliverableStatus = item._deliverable?.status
+  const publishSlot = getPublishSlot(item._assignment)
+  const publish = getPublishTime(item._assignment)
+  const start = getStartTime(item._assignment)
+
   if (
-    assignment._deliverableStatus === 'draft'
-    && !statusData?.workflowCheckpoint
-    && assignment.data.publish_slot
+    deliverableStatus === 'draft'
+    && !deliverableMeta?.workflowCheckpoint
+    && publishSlot
   ) {
-    return getTimeslotLabel(parseInt(assignment.data.publish_slot))
+    return getTimeslotLabel(parseInt(publishSlot))
   }
 
-  if (assignment.data.publish && assignment._deliverableStatus === 'withheld') {
-    return format(toZonedTime(parseISO(assignment.data.publish), timeZone), 'HH:mm')
+  if (publish && deliverableStatus === 'withheld') {
+    return format(toZonedTime(parseISO(publish), timeZone), 'HH:mm')
   }
 
-  if (statusData?.modified) {
+  if (deliverableMeta?.modified) {
     return compareDate
-      ? dateInTimestampOrShortMonthDayTimestamp(statusData.modified, locale.code.full, timeZone, compareDate)
-      : format(toZonedTime(parseISO(statusData.modified), timeZone), 'HH:mm')
+      ? dateInTimestampOrShortMonthDayTimestamp(deliverableMeta.modified, locale.code.full, timeZone, compareDate)
+      : format(toZonedTime(parseISO(deliverableMeta.modified), timeZone), 'HH:mm')
   }
 
-  if (assignment.data.start) {
-    return format(toZonedTime(parseISO(assignment.data.start), timeZone), 'HH:mm')
+  if (start) {
+    return format(toZonedTime(parseISO(start), timeZone), 'HH:mm')
   }
 
   return undefined
@@ -96,21 +98,24 @@ export function getTimeslotLabel(hour: number): string | undefined {
   return undefined
 }
 
-function getTimeTooltip({ assignment, statusData, timeZone, locale, compareDate }: {
-  assignment: AssignmentInterface
-  statusData: StatusData | null
+function getTimeTooltip({ item, deliverableMeta, timeZone, locale, compareDate }: {
+  item: PreprocessedApprovalData
+  deliverableMeta: DocumentMeta | null
   timeZone: string
   locale: LocaleData
   compareDate?: Date
 }): string {
-  if (assignment._deliverableStatus === 'withheld' && assignment.data.publish) {
-    return `Schemalagd kl ${format(toZonedTime(parseISO(assignment.data.publish), timeZone), 'HH:mm')}`
+  const deliverableStatus = item._deliverable?.status
+  const publish = getPublishTime(item._assignment)
+
+  if (deliverableStatus === 'withheld' && publish) {
+    return `Schemalagd kl ${format(toZonedTime(parseISO(publish), timeZone), 'HH:mm')}`
   }
-  if (statusData?.modified) {
+  if (deliverableMeta?.modified) {
     if (compareDate) {
-      return `Senast ändrad ${dateInTimestampOrShortMonthDayTimestamp(statusData.modified, locale.code.full, timeZone, compareDate)}`
+      return `Senast ändrad ${dateInTimestampOrShortMonthDayTimestamp(deliverableMeta.modified, locale.code.full, timeZone, compareDate)}`
     }
-    return `Senast ändrad ${format(toZonedTime(parseISO(statusData.modified), timeZone), 'HH:mm')}`
+    return `Senast ändrad ${format(toZonedTime(parseISO(deliverableMeta.modified), timeZone), 'HH:mm')}`
   }
   return 'Senast ändrad'
 }

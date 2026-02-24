@@ -1,52 +1,54 @@
-import { useRegistry } from '@/hooks'
+import { useDateRange, useRepositorySocket } from '@/hooks'
 import { Table } from '@/components/Table'
 import type { ColumnDef } from '@tanstack/react-table'
 import { Error as ErrorView } from '../Error'
-import { useDocuments } from '@/hooks/index/useDocuments'
-import { constructQuery } from '@/hooks/index/useDocuments/queries/views/assignments'
-import { fields } from '@/shared/schemas/assignments'
-import type { Assignment, AssignmentFields } from '@/shared/schemas/assignments'
-import { getUTCDateRange } from '@/shared/datetime'
-import { SortingV1 } from '@ttab/elephant-api/index'
-import type { JSX } from 'react'
+import { useMemo, type JSX } from 'react'
+import { TableSkeleton } from '@/components/Table/Skeleton'
+import type { PreprocessedAssignmentData } from './preprocessor'
+import { createAssignmentPreprocessor } from './preprocessor'
+import { Toolbar } from '@/components/Table/Toolbar'
+import { SocketStatus } from '@/hooks/useRepositorySocket/lib/components/SocketStatus'
 
-export const AssignmentsList = ({ columns, date }: {
-  columns: Array<ColumnDef<Assignment>>
-  date: Date
+export const AssignmentsList = ({ columns }: {
+  columns: ColumnDef<PreprocessedAssignmentData>[]
 }): JSX.Element => {
-  const { timeZone } = useRegistry()
+  const { from, to } = useDateRange()
 
-  const { from, to } = getUTCDateRange(date, timeZone)
-  const { error } = useDocuments<Assignment, AssignmentFields>({
-    documentType: 'core/planning-item',
-    query: constructQuery({ from, to }),
-    fields,
-    sort: [
-      SortingV1.create({ field: 'document.meta.core_newsvalue.value', desc: true })
-    ],
-    options: {
-      aggregatePages: true,
-      asAssignments: true,
-      setTableData: true,
-      subscribe: true
-    }
+  const preprocessor = useMemo(
+    () => createAssignmentPreprocessor({ gte: from, lte: to }),
+    [from, to]
+  )
+
+  const { error, isLoading, status } = useRepositorySocket({
+    type: 'core/planning-item',
+    from,
+    to,
+    include: ['.meta(type=\'core/assignment\').links(rel=\'deliverable\')@{uuid:doc}'],
+    asTable: true,
+    preprocessor
   })
 
+
   if (error) {
-    <ErrorView message={error.message} />
+    console.error('Error fetching assignments:', error)
+    return <ErrorView message='Kunde inte hämta uppdrag' error={error} />
+  }
+
+  if (isLoading) {
+    return <TableSkeleton columns={columns} />
   }
 
   return (
-    <Table
-      type='Planning'
+    <Table<PreprocessedAssignmentData, unknown>
       columns={columns}
-      onRowSelected={(row): void => {
-        if (row) {
-          console.info(`Selected assignment item ${row.id}`)
-        } else {
-          console.info('Deselected row')
-        }
-      }}
-    />
+      rowAlign='start'
+      resolveNavigation={(row) => ({
+        id: row.document?.uuid || '',
+        opensWith: 'Planning'
+      })}
+    >
+      <SocketStatus status={status} />
+      <Toolbar />
+    </Table>
   )
 }

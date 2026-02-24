@@ -1,3 +1,6 @@
+import type {
+  PropsWithChildren
+} from 'react'
 import {
   type MouseEvent,
   useEffect,
@@ -12,11 +15,8 @@ import {
 
 import {
   Table as _Table,
-  TableBody,
-  TableCell,
-  TableRow
+  TableBody
 } from '@ttab/elephant-ui'
-import { Toolbar } from './Toolbar'
 import {
   useNavigation,
   useView,
@@ -27,321 +27,265 @@ import {
   useWorkflowStatus
 } from '@/hooks'
 import { handleLink } from '@/components/Link/lib/handleLink'
-import { NewItems } from './NewItems'
-import { LoadingText } from '../LoadingText'
 import { Row } from './Row'
 import { useModal } from '../Modal/useModal'
 import { PreviewSheet } from '@/views/Wires/components'
 import type { Wire as WireType } from '@/shared/schemas/wire'
-import { Wire } from '@/views/Wire'
+import { Wire as WireComponent } from '@/views/Wire'
 import { GroupedRows } from './GroupedRows'
 import { getWireStatus } from '../../lib/getWireStatus'
-import { type View } from '@/types/index'
-const BASE_URL = import.meta.env.BASE_URL
+import type { TableRowData, NavigationParams } from './types'
+import { isWire } from './lib/isWire'
+import type { NavigationKey } from '@/hooks/useNavigationKeys'
 
-interface TableProps<TData, TValue> {
+const NAVIGATION_KEYS: NavigationKey[] = ['ArrowUp', 'ArrowDown', 'Enter', 'Escape', ' ', 's', 'r', 'c', 'u']
+
+interface TableProps<TData extends TableRowData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
-  type: 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires' | 'Factbox' | 'Print' | 'PrintEditor'
   onRowSelected?: (row?: TData) => void
+  resolveNavigation?: (row: TData) => NavigationParams
+  rowAlign?: 'start' | 'center'
 }
 
-function isRowTypeWire<TData, TValue>(type: TableProps<TData, TValue>['type']): type is 'Wires' {
-  return type === 'Wires'
-}
-
-function getNextTableIndex(
-  rows: Record<string, RowType<unknown>>,
-  selectedRowIndex: number | undefined,
-  direction: 'ArrowUp' | 'ArrowDown'): number | undefined {
-  const keys = Object.keys(rows)
-    .map(Number)
-    .filter((numKey) => !isNaN(numKey))
-
-  if (keys.length === 0) {
-    return undefined
-  }
-
-  let currentIndex = selectedRowIndex !== undefined ? keys.indexOf(selectedRowIndex) : -1
-
-  if (direction === 'ArrowDown') {
-    if (currentIndex < keys.length - 1) {
-      currentIndex += 1
-    } else {
-      return undefined
-    }
-  } else if (direction === 'ArrowUp') {
-    if (currentIndex > 0) {
-      currentIndex -= 1
-    } else {
-      return undefined
-    }
-  }
-
-  return keys[currentIndex]
-}
-
-export const Table = <TData, TValue>({
+export const Table = <TData extends TableRowData, TValue>({
   columns,
-  type,
   onRowSelected,
-  searchType
-}: TableProps<TData, TValue> & { searchType?: View }): JSX.Element => {
+  resolveNavigation,
+  rowAlign,
+  children
+}: TableProps<TData, TValue> & PropsWithChildren): JSX.Element => {
   const { state, dispatch } = useNavigation()
   const history = useHistory()
   const { viewId: origin } = useView()
-  const { table, loading } = useTable()
+  const { table } = useTable<TData>()
   const openDocuments = useOpenDocuments({ idOnly: true })
   const { showModal, hideModal, currentModal } = useModal()
   const [, setDocumentStatus] = useWorkflowStatus({})
 
-  const handlePreview = useCallback((row: RowType<unknown>): void => {
-    row.toggleSelected(true)
+  const availableRows = table.getRowModel().rows
+  const groupingLength = table.getState().grouping.length
 
-    const originalId = (row.original as { id: string }).id
+  const { navigableRows, rowIndexMap } = useMemo(() => {
+    const hasGrouping = groupingLength > 0
+    const rows = hasGrouping
+      ? availableRows.flatMap((row) =>
+        row.subRows && row.subRows.length > 0 ? row.subRows : []
+      )
+      : availableRows
+
+    // Create O(1) lookup map: row.id -> index
+    const indexMap = new Map<string, number>()
+    rows.forEach((row, index) => {
+      indexMap.set(row.id, index)
+    })
+
+    return {
+      navigableRows: rows,
+      rowIndexMap: indexMap
+    }
+  }, [availableRows, groupingLength])
+
+  const handlePreview = useCallback((row: RowType<TData & WireType>): void => {
+    row.toggleSelected(true)
 
     showModal(
       <PreviewSheet
-        id={originalId}
-        wire={row.original as WireType}
+        id={row.original.id}
+        wire={row.original}
         textOnly
         handleClose={hideModal}
       />,
       'sheet',
       {
-        id: originalId
+        id: row.original.id
       },
       'right'
     )
   }, [hideModal, showModal])
 
 
-  const handleOpen = useCallback((event: MouseEvent<HTMLTableRowElement> | KeyboardEvent, row: RowType<unknown>): void => {
-    if (type === 'Wires') {
-      handlePreview(row)
+  const handleOpen = useCallback((event: MouseEvent<HTMLTableRowElement> | KeyboardEvent, row: RowType<TData>): void => {
+    if (isWire(row.original)) {
+      handlePreview(row as RowType<TData & WireType>)
       return
     }
 
     const target = event.target as HTMLElement
     if (target && 'dataset' in target && !target.dataset.rowAction) {
-      if (!onRowSelected) {
+      if (!onRowSelected && !resolveNavigation) {
         return
       }
 
-      const originalRow = row.original as { _id: string | undefined, id: string, fields?: Record<string, string[]> }
-      const id = originalRow._id ?? originalRow.id
-
-      const articleClick = type === 'Search' && searchType === 'Editor'
-
-      let usableVersion
-
-      if (articleClick) {
-        usableVersion = !articleClick ? undefined : originalRow?.fields?.['heads.usable.version']?.[0] as bigint | undefined
+      if ('__updater' in row.original) {
+        delete (row.original as Record<string, unknown>).__updater
       }
+
+      const navParams = resolveNavigation
+        ? resolveNavigation(row.original)
+        : { id: row.original.id }
 
       handleLink({
         event,
         dispatch,
-        viewItem: state.viewRegistry.get(!searchType ? type : searchType),
-        props: { id },
+        // TODO: Fix this, how do we identify searchtype
+        // viewItem: state.viewRegistry.get(!searchType ? type : searchType),
+        viewItem: state.viewRegistry.get(navParams.opensWith || 'Error'),
+        props: { id: navParams.id, version: navParams.version },
         viewId: crypto.randomUUID(),
         origin,
         history,
         keepFocus: (event as KeyboardEvent)?.key === ' ',
-        ...((articleClick && usableVersion) && {
+        ...(navParams.version && {
           readOnly: {
-            version: BigInt(usableVersion)
+            version: BigInt(navParams.version)
           }
         })
       })
     }
-  }, [dispatch, state.viewRegistry, onRowSelected, origin, type, history, handlePreview, searchType])
+  }, [dispatch, state.viewRegistry, onRowSelected, origin, history, handlePreview, resolveNavigation])
 
-  useNavigationKeys({
-    keys: ['ArrowUp', 'ArrowDown', 'Enter', 'Escape', ' ', 's', 'r', 'c', 'u'],
-    onNavigation: (event) => {
-      const rows = table.getRowModel().rowsById
-      if (!Object.values(rows)?.length) {
-        return
-      }
+  const handleNavigation = useCallback((event: KeyboardEvent): void => {
+    if (!navigableRows?.length) {
+      return
+    }
 
-      const selectedRow = table.getGroupedSelectedRowModel()?.flatRows?.[0]
+    const selectedRow = table.getGroupedSelectedRowModel()?.flatRows?.[0]
 
-      if (event.key === 'Enter' && selectedRow) {
-        hideModal()
-        handleOpen(event, selectedRow)
-        return
-      }
+    if (event.key === 'Enter' && selectedRow) {
+      hideModal()
+      handleOpen(event, selectedRow)
+      return
+    }
 
-      if (event.key === ' ' && selectedRow) {
-        handleOpen(event, selectedRow)
-        return
-      }
+    if (event.key === ' ' && selectedRow) {
+      handleOpen(event, selectedRow)
+      return
+    }
 
-      if (event.key === 'Escape') {
-        selectedRow?.toggleSelected(false)
-        return
-      }
+    if (event.key === 'Escape') {
+      selectedRow?.toggleSelected(false)
+      return
+    }
+
+    if (['r', 'u', 's', 'c'].includes(event.key) && selectedRow && isWire(selectedRow.original)) {
+      const wireRow = selectedRow as unknown as RowType<WireType>
+      const wire = wireRow.original
+      const currentStatus = getWireStatus(wire)
+      const version = BigInt(wire.fields.current_version.values?.[0])
 
       if (event.key === 'r') {
-        if (selectedRow && isRowTypeWire<TData, TValue>(type)) {
-          const wireRow = selectedRow as RowType<WireType>
-          const currentStatus = getWireStatus(wireRow.original)
+        void setDocumentStatus({
+          name: currentStatus === 'read' ? 'draft' : 'read',
+          uuid: wire.id,
+          version
+        }, undefined, true)
+      } else if (event.key === 'u') {
+        void setDocumentStatus({
+          name: currentStatus === 'used' ? 'draft' : 'used',
+          uuid: wire.id,
+          version
+        }, undefined, true)
+      } else if (event.key === 's') {
+        void setDocumentStatus({
+          name: currentStatus === 'saved' ? 'draft' : 'saved',
+          uuid: wire.id,
+          version
+        }, undefined, true)
+      } else if (event.key === 'c') {
+        const onDocumentCreated = () => {
           void setDocumentStatus({
-            name: currentStatus === 'read' ? 'draft' : 'read',
-            uuid: wireRow.original.id,
-            version: BigInt(wireRow.original.fields.current_version.values?.[0])
+            name: 'used',
+            uuid: wire.id,
+            version
           }, undefined, true)
         }
-        return
+        showModal(
+          <WireComponent
+            onDialogClose={hideModal}
+            asDialog
+            wire={wire}
+            onDocumentCreated={onDocumentCreated}
+          />
+        )
+      }
+      return
+    }
+
+    if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+      const currentIndex = selectedRow ? (rowIndexMap.get(selectedRow.id) ?? -1) : -1
+
+      let nextIndex: number | undefined
+
+      if (currentIndex === -1) {
+        // No row selected, select first or last based on direction
+        nextIndex = event.key === 'ArrowDown' ? 0 : navigableRows.length - 1
+      } else if (event.key === 'ArrowDown' && currentIndex < navigableRows.length - 1) {
+        nextIndex = currentIndex + 1
+      } else if (event.key === 'ArrowUp' && currentIndex > 0) {
+        nextIndex = currentIndex - 1
       }
 
-      if (event.key === 'u') {
-        if (selectedRow && isRowTypeWire<TData, TValue>(type)) {
-          const wireRow = selectedRow as RowType<WireType>
-          const currentStatus = getWireStatus(wireRow.original)
-
-          void setDocumentStatus({
-            name: currentStatus === 'used' ? 'draft' : 'used',
-            uuid: wireRow.original.id,
-            version: BigInt(wireRow.original.fields.current_version.values?.[0])
-          }, undefined, true)
-        }
-        return
-      }
-
-      if (event.key === 's') {
-        if (selectedRow && isRowTypeWire<TData, TValue>(type)) {
-          const wireRow = selectedRow as RowType<WireType>
-          const currentStatus = getWireStatus(wireRow.original)
-
-          void setDocumentStatus({
-            name: currentStatus === 'saved' ? 'draft' : 'saved',
-            uuid: wireRow.original.id,
-            version: BigInt(wireRow.original.fields.current_version.values?.[0])
-          }, undefined, true)
-        }
-        return
-      }
-
-      if (event.key === 'c') {
-        if (selectedRow && isRowTypeWire<TData, TValue>(type)) {
-          const wireRow = selectedRow as RowType<WireType>
-
-          const onDocumentCreated = () => {
-            void setDocumentStatus({
-              name: 'used',
-              uuid: wireRow.original.id,
-              version: BigInt(wireRow.original.fields.current_version.values?.[0])
-            }, undefined, true)
-          }
-          showModal(
-            <Wire
-              onDialogClose={hideModal}
-              asDialog
-              wire={wireRow.original}
-              onDocumentCreated={onDocumentCreated}
-            />
-          )
-        }
-      }
-
-      if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
-        const nextKey = getNextTableIndex(rows, selectedRow?.index, event.key)
-        if (nextKey !== undefined) {
-          rows[nextKey].toggleSelected(true)
-        }
+      if (nextIndex !== undefined && navigableRows[nextIndex]) {
+        navigableRows[nextIndex].toggleSelected(true)
 
         // Open next row if PreviewSheet is open
-        if (currentModal && nextKey) {
-          handleOpen(event, rows[nextKey])
+        if (currentModal) {
+          handleOpen(event, navigableRows[nextIndex])
         }
-
-        return
       }
+
+      return
     }
+  }, [navigableRows, rowIndexMap, table, handleOpen, hideModal, currentModal, setDocumentStatus, showModal])
+
+  useNavigationKeys({
+    keys: NAVIGATION_KEYS,
+    onNavigation: handleNavigation
   })
 
   useEffect(() => {
     if (onRowSelected) {
       const selectedRows = table.getSelectedRowModel()
-      // @ts-expect-error unknown type
       onRowSelected(selectedRows?.rows[0]?.original)
     }
   }, [table, onRowSelected])
 
   const rows = table.getRowModel().rows
-  const rowSelection = table.getState().rowSelection
 
   const TableBodyElement = useMemo(() => {
-    if (loading || !rows?.length) {
-      const isSearchTable = window.location.pathname.includes(`${BASE_URL}/search`)
-      return (
-        <TableRow>
-          <TableCell
-            colSpan={columns.length}
-            className='h-24 text-center'
-          >
-            <LoadingText>
-              {loading
-                ? isSearchTable
-                  ? ''
-                  : 'Laddar...'
-                : 'Inga resultat hittades'}
-            </LoadingText>
-          </TableCell>
-        </TableRow>
-      )
-    }
-    const isAssignmentsTable = window.location.pathname.includes(`${BASE_URL}/assignments`)
+    const isGrouped = groupingLength > 0
 
-    return rows.map((row, index) => (
-      table.getState().grouping.length)
+    return rows.map((row) => isGrouped
       ? (
           <GroupedRows<TData, TValue>
-            key={index}
-            type={isAssignmentsTable ? 'Assignments' : type}
+            key={row.id}
             row={row}
             columns={columns}
             handleOpen={handleOpen}
             openDocuments={openDocuments}
+            align={rowAlign}
           />
         )
       : (
           <Row
-            key={index}
-            type={isAssignmentsTable ? 'Assignments' : type}
+            key={row.id}
             row={row}
             handleOpen={handleOpen}
             openDocuments={openDocuments}
+            align={rowAlign}
           />
         )
     )
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rows, columns, loading, handleOpen, table, rowSelection])
+  }, [rows, columns, handleOpen, groupingLength, openDocuments, rowAlign])
 
   return (
     <>
-      {!['Wires', 'Factbox', 'Search'].includes(type) && (
-        <Toolbar />
-      )}
-      {(type === 'Planning' || type === 'Event') && (
-        <NewItems.Root>
-          <NewItems.Table
-            header={`Dina nya skapade ${type === 'Planning'
-              ? 'planeringar'
-              : 'händelser'}`}
-            type={type}
-          />
-        </NewItems.Root>
-      )}
-
-      {(type !== 'Search' || !loading) && (
-        <_Table className='table-auto relative'>
-          <TableBody>
-            {TableBodyElement}
-          </TableBody>
-        </_Table>
-      )}
+      {children}
+      <_Table className='table-fixed relative'>
+        <TableBody>
+          {TableBodyElement}
+        </TableBody>
+      </_Table>
     </>
   )
 }
