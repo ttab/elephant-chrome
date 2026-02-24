@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useRef, useState } from 'react'
 import type { MouseEvent, JSX } from 'react'
 import {
   type LucideIcon,
@@ -11,14 +11,24 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger
 } from '@ttab/elephant-ui'
+
+export interface DotMenuSubItem {
+  label: string
+  disabled?: boolean
+  item: ((event: MouseEvent<HTMLDivElement>) => void) | React.ReactElement
+}
 
 export interface DotDropdownMenuActionItem {
   label: string
   icon?: LucideIcon
-  item: DotDropdownMenuActionItem[] | ((event: MouseEvent<HTMLDivElement>) => void) | React.ReactNode
+  item: DotMenuSubItem[] | ((event: MouseEvent<HTMLDivElement>) => void) | React.ReactNode
   disabled?: boolean
+  emptyLabel?: string
 }
 
 /**
@@ -28,7 +38,7 @@ export interface DotDropdownMenuActionItem {
  * <DotMenu trigger="vertical" items={[
  *   {
  *     disabled: true,
- *     label: '"Close all",
+ *     label: 'Close all',
  *     item: () => { ... }
  *   },
  *   {
@@ -36,24 +46,35 @@ export interface DotDropdownMenuActionItem {
  *     item: [
  *       {
  *          label: 'Document 1',
- *          <Link .../>
+ *          item: <Link .../>
  *       },
  *       {
  *          label: 'Document 2',
- *          <Link .../>
+ *          item: <Link .../>
  *       }
  *     ]
  *   }
  * ]} />
  */
-export const DotDropdownMenu = ({ trigger = 'horizontal', items }: {
+const MENU_WIDTH = 224 // w-56 = 14rem = 224px
+
+export const DotMenu = ({ trigger = 'horizontal', items }: {
   trigger?: 'horizontal' | 'vertical'
   items: DotDropdownMenuActionItem[]
 }): JSX.Element => {
+  const triggerRef = useRef<HTMLButtonElement>(null)
+  const [align, setAlign] = useState<'start' | 'end'>('start')
+
   return (
-    <DropdownMenu>
+    <DropdownMenu onOpenChange={(open) => {
+      if (open && triggerRef.current) {
+        const spaceRight = window.innerWidth - triggerRef.current.getBoundingClientRect().left
+        setAlign(spaceRight >= MENU_WIDTH ? 'start' : 'end')
+      }
+    }}
+    >
       <DropdownMenuTrigger asChild>
-        <Button variant='ghost' className='flex h-8 w-8 p-0 data-[state=open]:bg-muted hover:bg-gray-200 dark:hover:bg-table-focused'>
+        <Button ref={triggerRef} variant='ghost' className='flex h-8 w-8 p-0 data-[state=open]:bg-muted hover:bg-gray-200 dark:hover:bg-table-focused' onClickCapture={(e) => e.stopPropagation()}>
           {trigger === 'horizontal'
             ? <MoreHorizontalIcon size={18} strokeWidth={1.75} />
             : <MoreVerticalIcon size={18} strokeWidth={1.75} />}
@@ -61,15 +82,45 @@ export const DotDropdownMenu = ({ trigger = 'horizontal', items }: {
       </DropdownMenuTrigger>
 
 
-      <DropdownMenuContent className='w-56'>
+      <DropdownMenuContent align={align} className='w-56'>
         {items.map((item) => {
+          if (Array.isArray(item.item)) {
+            return (
+              <DropdownMenuSub key={item.label}>
+                <DropdownMenuSubTrigger disabled={item.disabled}>
+                  {item.label}
+                </DropdownMenuSubTrigger>
+                <DropdownMenuSubContent>
+                  {item.item.length
+                    ? item.item.map((subItem) => (
+                      <DropdownMenuItem
+                        key={subItem.label}
+                        disabled={subItem.disabled}
+                        onClick={(event) => {
+                          event.stopPropagation()
+                          if (!subItem.disabled && typeof subItem.item === 'function') {
+                            subItem.item(event)
+                          }
+                        }}
+                      >
+                        {React.isValidElement(subItem.item)
+                          ? subItem.item
+                          : subItem.label}
+                      </DropdownMenuItem>
+                    ))
+                    : <DropdownMenuItem disabled>{item.emptyLabel ?? item.label}</DropdownMenuItem>}
+                </DropdownMenuSubContent>
+              </DropdownMenuSub>
+            )
+          }
+
           return (
             <DropdownMenuItem
               disabled={item.disabled}
               key={item.label}
               onClick={(event) => {
                 event.stopPropagation()
-                if (typeof item.item === 'function') {
+                if (!item.disabled && typeof item.item === 'function') {
                   item.item(event)
                 }
               }}

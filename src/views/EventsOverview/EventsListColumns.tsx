@@ -15,7 +15,7 @@ import {
   BookUserIcon
 } from '@ttab/elephant-ui/icons'
 import type { DotDropdownMenuActionItem } from '@/components/ui/DotMenu'
-import { DotDropdownMenu } from '@/components/ui/DotMenu'
+import { DotMenu } from '@/components/ui/DotMenu'
 import { Newsvalues, NewsvalueMap, PlanningEventStatuses } from '@/defaults'
 import { Time } from '@/components/Table/Items/Time'
 import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
@@ -286,7 +286,7 @@ export function eventTableColumns({ sections = [], organisers = [], locale }: {
       },
       accessorFn: (data) => data,
       cell: () => {
-        return <DotDropdownMenu items={menuItems} />
+        return <DotMenu items={menuItems} />
       }
     }
   ]

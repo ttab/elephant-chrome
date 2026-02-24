@@ -2,7 +2,7 @@ import { SaveIcon, UserCogIcon, XIcon } from '@ttab/elephant-ui/icons'
 import { Button, ToggleGroup, ToggleGroupItem } from '@ttab/elephant-ui'
 import { SelectedFilters } from '@/components/Filter/SelectedFilters'
 import { useSections } from '@/hooks/useSections'
-import { DotDropdownMenu } from '@/components/ui/DotMenu'
+import { DotMenu } from '@/components/ui/DotMenu'
 import { useUserTracker } from '@/hooks/useUserTracker'
 import { toast } from 'sonner'
 import { useQuery, type QueryParams } from '@/hooks/useQuery'
@@ -126,7 +126,7 @@ export const Toolbar = ({ facets }: { facets: Facets }): JSX.Element => {
           </ToggleGroup>
         </div>
         <div className='hidden @2xl/view:flex justify-end'>
-          <DotDropdownMenu
+          <DotMenu
             trigger='vertical'
             items={[
               {
@@ -138,7 +138,7 @@ export const Toolbar = ({ facets }: { facets: Facets }): JSX.Element => {
           />
         </div>
         <div className='flex justify-end @2xl/view:hidden'>
-          <DotDropdownMenu
+          <DotMenu
             trigger='vertical'
             items={[
               ...allSections.map((section) => ({
