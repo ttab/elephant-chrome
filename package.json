@@ -95,7 +95,7 @@
     "@types/cors": "^2.8.19",
     "@types/escape-html": "^1.0.4",
     "@types/express": "^4.17.21",
-    "@types/express-serve-static-core": "^4.19.3",
+    "@types/express-serve-static-core": "^5.1.1",
     "@types/express-ws": "^3.0.6",
     "@types/jsdom": "^21.1.7",
     "@types/node": "^24.10.0",
