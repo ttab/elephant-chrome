@@ -351,7 +351,7 @@ export const FlashDialog = (props: {
                     }
                   }}
                 />
-                <Label htmlFor='createQuickArticle' className='text-muted-foreground'>Skapa två på två</Label>
+                <Label htmlFor='createQuickArticle' className='text-muted-foreground'>{t('flash:createQuickarticle')}</Label>
               </div>
             </Form.Group>
             <Form.Group icon={TagsIcon}>

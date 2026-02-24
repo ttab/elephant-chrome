@@ -108,7 +108,7 @@ export const applicationMenu: ApplicationMenu = {
         },
         {
           name: 'QuickArticle',
-          label: 'Skapa två på två',
+          label: 'quickarticle',
           icon: NewspaperIcon,
           color: '#aabbcc',
           target: 'dialog'

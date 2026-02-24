@@ -4,6 +4,7 @@
     "createFlashAlertTitle": "Du skapar en ny flash",
     "alertDescription1": "Väljer du ingen planering kommer en ny planering med tillhörande uppdrag skapas åt dig.",
     "alertDescription2": "Denna {{documentType}} kommer läggas i ett nytt uppdrag i den valda planeringen.",
+    "createQuickarticle": "Skapa två på två",
     "titles": {
         "newFlashTitle": "Skapa ny flash",
         "createAndSendType": "Skapa och skicka {{type}}",

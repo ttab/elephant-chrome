@@ -4,6 +4,7 @@
   "createFlashAlertTitle": "You are creating a new flash",
   "alertDescription1": "If you do not choose a planning, a new planning with an associated assignment will be created for you.",
   "alertDescription2": "This {{documentType}} will be added to a new assignment in the selected planning.",
+  "createQuickarticle": "Create quick-article",
   "titles": {
     "newFlashTitle": "Create new flash",
     "createAndSendType": "Create and send {{type}}",
