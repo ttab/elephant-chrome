@@ -1,6 +1,6 @@
 import { useCallback, useMemo, type JSX } from 'react'
 import { ToggleGroup, ToggleGroupItem } from '@ttab/elephant-ui'
-import { DotMenu } from '../ui/DotMenu'
+import { DotMenu } from '@/components/ui/DotMenu'
 import type { QueryParams } from '@/hooks/useQuery'
 import { toast } from 'sonner'
 import { useUserTracker } from '@/hooks/useUserTracker'

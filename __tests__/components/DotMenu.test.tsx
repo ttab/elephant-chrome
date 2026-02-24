@@ -1,5 +1,5 @@
 import type { MouseEvent } from 'react'
-import { render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { DotMenu, type DotDropdownMenuActionItem } from '@/components/ui/DotMenu'
 import { PenIcon } from '@ttab/elephant-ui/icons'
@@ -35,7 +35,7 @@ global.ResizeObserver = ResizeObserverMock
 
 Element.prototype.scrollIntoView = vi.fn()
 
-describe('DotDropdownMenu', () => {
+describe('DotMenu', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
@@ -154,6 +154,20 @@ describe('DotDropdownMenu', () => {
       const menuItem = screen.getByRole('menuitem')
       expect(menuItem).toHaveAttribute('data-disabled')
     })
+
+    it('does not call callback when a disabled item is clicked', async () => {
+      const user = userEvent.setup()
+      const callback = mockCallback()
+      const items: DotDropdownMenuActionItem[] = [
+        { label: 'Disabled action', item: callback, disabled: true }
+      ]
+
+      render(<DotMenu items={items} />)
+      await user.click(screen.getByRole('button'))
+      await user.click(screen.getByRole('menuitem'))
+
+      expect(callback).not.toHaveBeenCalled()
+    })
   })
 
   describe('submenu items', () => {
@@ -211,6 +225,33 @@ describe('DotDropdownMenu', () => {
       expect(screen.getByText('Documents')).toBeInTheDocument()
     })
 
+    it('calls callback when a submenu item is clicked', async () => {
+      const user = userEvent.setup({ pointerEventsCheck: 0 })
+      const callback = mockCallback()
+      const items: DotDropdownMenuActionItem[] = [
+        {
+          label: 'Actions',
+          item: [
+            { label: 'Run action', item: callback }
+          ]
+        }
+      ]
+
+      render(<DotMenu items={items} />)
+      await user.click(screen.getByRole('button'))
+
+      // Open the submenu — Radix requires pointer events to reveal sub-content
+      const subTrigger = screen.getByText('Actions')
+      fireEvent.pointerMove(subTrigger, { pointerType: 'mouse' })
+      fireEvent.pointerEnter(subTrigger, { pointerType: 'mouse' })
+
+      // Click the sub-item
+      const subItem = await screen.findByText('Run action')
+      await user.click(subItem)
+
+      expect(callback).toHaveBeenCalledTimes(1)
+    })
+
     it('renders a disabled submenu trigger when disabled is true', async () => {
       const user = userEvent.setup()
       const items: DotDropdownMenuActionItem[] = [
@@ -251,6 +292,54 @@ describe('DotDropdownMenu', () => {
       expect(screen.getByText('Callback')).toBeInTheDocument()
       expect(screen.getByText('Custom')).toBeInTheDocument()
       expect(screen.getByText('Submenu')).toBeInTheDocument()
+    })
+  })
+
+  describe('menu alignment', () => {
+    it('aligns menu to start when there is enough space on the right', async () => {
+      const user = userEvent.setup()
+
+      Object.defineProperty(window, 'innerWidth', { value: 1024, writable: true })
+
+      const items: DotDropdownMenuActionItem[] = [
+        { label: 'Action', item: mockCallback() }
+      ]
+
+      render(<DotMenu items={items} />)
+      const button = screen.getByRole('button')
+
+      vi.spyOn(button, 'getBoundingClientRect').mockReturnValue({
+        left: 100, right: 132, top: 0, bottom: 32,
+        width: 32, height: 32, x: 100, y: 0, toJSON: () => ({})
+      })
+
+      await user.click(button)
+
+      const content = screen.getByRole('menu')
+      expect(content).toHaveAttribute('data-align', 'start')
+    })
+
+    it('aligns menu to end when near the right edge', async () => {
+      const user = userEvent.setup()
+
+      Object.defineProperty(window, 'innerWidth', { value: 1024, writable: true })
+
+      const items: DotDropdownMenuActionItem[] = [
+        { label: 'Action', item: mockCallback() }
+      ]
+
+      render(<DotMenu items={items} />)
+      const button = screen.getByRole('button')
+
+      vi.spyOn(button, 'getBoundingClientRect').mockReturnValue({
+        left: 900, right: 932, top: 0, bottom: 32,
+        width: 32, height: 32, x: 900, y: 0, toJSON: () => ({})
+      })
+
+      await user.click(button)
+
+      const content = screen.getByRole('menu')
+      expect(content).toHaveAttribute('data-align', 'end')
     })
   })
 })

@@ -17,10 +17,16 @@ import {
   DropdownMenuTrigger
 } from '@ttab/elephant-ui'
 
+export interface DotMenuSubItem {
+  label: string
+  disabled?: boolean
+  item: ((event: MouseEvent<HTMLDivElement>) => void) | React.ReactElement
+}
+
 export interface DotDropdownMenuActionItem {
   label: string
   icon?: LucideIcon
-  item: DotDropdownMenuActionItem[] | ((event: MouseEvent<HTMLDivElement>) => void) | React.ReactNode
+  item: DotMenuSubItem[] | ((event: MouseEvent<HTMLDivElement>) => void) | React.ReactNode
   disabled?: boolean
   emptyLabel?: string
 }
@@ -32,7 +38,7 @@ export interface DotDropdownMenuActionItem {
  * <DotMenu trigger="vertical" items={[
  *   {
  *     disabled: true,
- *     label: '"Close all",
+ *     label: 'Close all',
  *     item: () => { ... }
  *   },
  *   {
@@ -40,11 +46,11 @@ export interface DotDropdownMenuActionItem {
  *     item: [
  *       {
  *          label: 'Document 1',
- *          <Link .../>
+ *          item: <Link .../>
  *       },
  *       {
  *          label: 'Document 2',
- *          <Link .../>
+ *          item: <Link .../>
  *       }
  *     ]
  *   }
@@ -92,7 +98,7 @@ export const DotMenu = ({ trigger = 'horizontal', items }: {
                         disabled={subItem.disabled}
                         onClick={(event) => {
                           event.stopPropagation()
-                          if (typeof subItem.item === 'function') {
+                          if (!subItem.disabled && typeof subItem.item === 'function') {
                             subItem.item(event)
                           }
                         }}
@@ -114,7 +120,7 @@ export const DotMenu = ({ trigger = 'horizontal', items }: {
               key={item.label}
               onClick={(event) => {
                 event.stopPropagation()
-                if (typeof item.item === 'function') {
+                if (!item.disabled && typeof item.item === 'function') {
                   item.item(event)
                 }
               }}
