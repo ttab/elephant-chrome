@@ -47,6 +47,7 @@ export function createDocument<T>({
       version: 0n,
       isMetaDocument: false,
       mainDocument: '',
+      subset: [],
       document: template(docId, payload)
     }),
     yDoc

@@ -323,12 +323,14 @@ export class RepositorySocket {
     type,
     timespan,
     include = [],
+    subset,
     resolveParentIndex
   }: {
     setName: string
     type: string
     timespan?: { from: string, to: string }
     include?: string[]
+    subset?: string[]
     resolveParentIndex?: (documents: DocumentStateWithIncludes[], targetUuid: string) => number
   }): Promise<{
     callId: string
@@ -349,7 +351,8 @@ export class RepositorySocket {
         type,
         timespan: timespan ? Timespan.create(timespan) : undefined,
         include,
-        includeAcls: true
+        includeAcls: true,
+        ...(subset?.length ? { subset } : {})
       }
     })
 
@@ -375,7 +378,7 @@ export class RepositorySocket {
 
         if (response.inclusionBatch && resolveParentIndex) {
           for (const includedDoc of response.inclusionBatch.documents) {
-            const targetUuid = includedDoc.state?.document?.uuid
+            const targetUuid = includedDoc.uuid || includedDoc.state?.document?.uuid
             if (!targetUuid) continue
 
             const index = resolveParentIndex(documents, targetUuid)
@@ -420,6 +423,7 @@ export class RepositorySocket {
         }
       })
 
+      console.log('sending:', call)
       this.#send(call)
     })
   }

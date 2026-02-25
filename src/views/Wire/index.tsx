@@ -50,6 +50,7 @@ export const Wire = (props: ViewProps & {
       version: 0n,
       isMetaDocument: false,
       mainDocument: '',
+      subset: [],
       document: Templates.article(documentId, payload)
     })]
   }, [props.wire])

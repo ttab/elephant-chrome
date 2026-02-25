@@ -4,7 +4,7 @@ import { useDateRange, useRepositorySocket } from '@/hooks'
 import type { ColumnDef } from '@tanstack/react-table'
 import { TableSkeleton } from '@/components/Table/Skeleton'
 import type { PreprocessedEventData } from './preprocessor'
-import { preprocessEventData } from './preprocessor'
+import { preprocessEventData, EVENTS_SUBSET } from './preprocessor'
 import { Error as ErrorView } from '../Error'
 import { NewItems } from '@/components/Table/NewItems'
 import { Toolbar } from '@/components/Table/Toolbar'
@@ -19,6 +19,7 @@ export const EventsList = ({ columns }: {
     type: 'core/event',
     from,
     to,
+    subset: [...EVENTS_SUBSET],
     asTable: true,
     preprocessor: preprocessEventData
   })

@@ -141,6 +141,7 @@ describe('useRepositorySocket', () => {
 
     const documents: DocumentStateWithIncludes[] = [
       {
+        subset: [],
         document: Document.create({
           uuid: 'parent-1',
           type: 'core/planning-item'
@@ -267,7 +268,7 @@ describe('useRepositorySocket', () => {
     expect(vi.mocked(toast.error)).not.toHaveBeenCalled()
 
     act(() => {
-      updateCb?.({ setName: 'tt/article-123', included: false, document: Document.create({ uuid: 'a' }) })
+      updateCb?.({ setName: 'tt/article-123', subset: [], included: false, document: Document.create({ uuid: 'a' }) })
     })
 
     await waitFor(() => {
@@ -278,6 +279,7 @@ describe('useRepositorySocket', () => {
     act(() => {
       updateCb?.({
         setName: 'tt/article-123',
+        subset: [],
         included: false,
         meta: { created: '2024-01-01T00:00:00Z', modified: '2024-01-01T00:00:00Z' } as unknown as DocumentMeta,
         document: Document.create({ uuid: 'b' })

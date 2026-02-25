@@ -92,6 +92,7 @@ export function fromYjsNewsDoc(yDoc: Y.Doc): EleDocumentResponse {
     version,
     isMetaDocument: false,
     mainDocument: '',
+    subset: [],
     document: {
       uuid,
       type,

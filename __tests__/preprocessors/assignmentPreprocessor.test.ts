@@ -6,6 +6,7 @@ const range = { gte: '2026-02-01T00:00:00Z', lte: '2026-02-28T23:59:59Z' }
 const preprocess = createAssignmentPreprocessor(range)
 
 const makeDoc = (overrides: Partial<Parameters<typeof Document.create>[0]> = {}): DocumentStateWithDecorators<DecoratorDataBase> => ({
+  subset: [],
   document: Document.create({
     uuid: 'planning-1',
     type: 'core/planning-item',

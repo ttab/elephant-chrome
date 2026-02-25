@@ -37,6 +37,7 @@ describe('createMetricsDecorator', () => {
             uri: 'core://planning/parent-uuid',
             title: 'Test Planning'
           }),
+          subset: [],
           includedDocuments: [
             { uuid: testUuid1 },
             { uuid: testUuid2 }
@@ -98,6 +99,7 @@ describe('createMetricsDecorator', () => {
             uri: 'core://planning/parent-uuid',
             title: 'Test Planning'
           }),
+          subset: [],
           includedDocuments: []
         }
       ]
@@ -122,6 +124,7 @@ describe('createMetricsDecorator', () => {
             uri: 'core://planning/parent-uuid',
             title: 'Test Planning'
           }),
+          subset: [],
           includedDocuments: [
             { uuid: 'uuid-1' }
           ]
@@ -166,6 +169,7 @@ describe('createMetricsDecorator', () => {
             uri: `core://planning/${parentUuid}`,
             title: 'Test Planning'
           }),
+          subset: [],
           included: false
         }
 
@@ -189,6 +193,7 @@ describe('createMetricsDecorator', () => {
             modified: new Date().toISOString()
           } as unknown as DocumentMeta,
           document: undefined,
+          subset: [],
           included: true
         }
 
@@ -221,6 +226,7 @@ describe('createMetricsDecorator', () => {
             uri: `core://article/${testUuid}`,
             title: 'Test Article'
           }),
+          subset: [],
           included: true
         }
 
@@ -272,6 +278,7 @@ describe('createMetricsDecorator', () => {
             uri: 'core://article/',
             title: 'Test Article'
           }),
+          subset: [],
           included: true
         }
 
@@ -295,6 +302,7 @@ describe('createMetricsDecorator', () => {
             modified: new Date().toISOString()
           } as unknown as DocumentMeta,
           document: undefined,
+          subset: [],
           included: true
         }
 

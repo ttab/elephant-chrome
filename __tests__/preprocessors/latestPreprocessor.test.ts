@@ -37,6 +37,7 @@ const makeDoc = (overrides: Partial<Parameters<typeof Document.create>[0]> = {},
     includedDocuments?: DocumentStateWithDecorators<LatestDecorator>['includedDocuments']
   }
 ): DocumentStateWithDecorators<LatestDecorator> => ({
+  subset: [],
   document: Document.create({
     uuid: 'planning-1',
     type: 'core/planning-item',
@@ -81,6 +82,7 @@ describe('preprocessLatestData', () => {
       includedDocuments: [{
         uuid: 'del-1',
         state: {
+          subset: [],
           document: Document.create({
             uuid: 'del-1',
             type: 'core/article',
@@ -110,6 +112,7 @@ describe('preprocessLatestData', () => {
       includedDocuments: [{
         uuid: 'del-1',
         state: {
+          subset: [],
           document: Document.create({
             uuid: 'del-1',
             type: 'core/article',
@@ -151,6 +154,7 @@ describe('preprocessLatestData', () => {
         {
           uuid: 'del-1',
           state: {
+            subset: [],
             document: Document.create({
               uuid: 'del-1',
               type: 'core/article',
@@ -163,6 +167,7 @@ describe('preprocessLatestData', () => {
         {
           uuid: 'del-2',
           state: {
+            subset: [],
             document: Document.create({
               uuid: 'del-2',
               type: 'core/article',
@@ -193,6 +198,7 @@ describe('preprocessLatestData', () => {
       includedDocuments: [{
         uuid: 'del-1',
         state: {
+          subset: [],
           document: Document.create({
             uuid: 'del-1',
             type: 'core/flash',
@@ -219,6 +225,7 @@ describe('preprocessLatestData', () => {
         uuid: 'del-1',
         __updater: { sub: 'core://user/001', time: '2026-02-10T12:00:00Z' },
         state: {
+          subset: [],
           document: Document.create({
             uuid: 'del-1',
             type: 'core/article',
@@ -244,6 +251,7 @@ describe('preprocessLatestData', () => {
       includedDocuments: [{
         uuid: 'del-1',
         state: {
+          subset: [],
           document: Document.create({
             uuid: 'del-1',
             type: 'core/article',

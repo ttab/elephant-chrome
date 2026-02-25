@@ -5,7 +5,7 @@ import { Error as ErrorView } from '../Error'
 import { useMemo, type JSX } from 'react'
 import { TableSkeleton } from '@/components/Table/Skeleton'
 import type { PreprocessedAssignmentData } from './preprocessor'
-import { createAssignmentPreprocessor } from './preprocessor'
+import { createAssignmentPreprocessor, ASSIGNMENTS_SUBSET } from './preprocessor'
 import { Toolbar } from '@/components/Table/Toolbar'
 import { SocketStatus } from '@/hooks/useRepositorySocket/lib/components/SocketStatus'
 
@@ -24,6 +24,7 @@ export const AssignmentsList = ({ columns }: {
     from,
     to,
     include: ['.meta(type=\'core/assignment\').links(rel=\'deliverable\')@{uuid:doc}'],
+    subset: [...ASSIGNMENTS_SUBSET],
     asTable: true,
     preprocessor
   })
@@ -43,7 +44,7 @@ export const AssignmentsList = ({ columns }: {
       columns={columns}
       rowAlign='start'
       resolveNavigation={(row) => ({
-        id: row.document?.uuid || '',
+        id: row.id?.split('-assignment-')[0] || '',
         opensWith: 'Planning'
       })}
     >

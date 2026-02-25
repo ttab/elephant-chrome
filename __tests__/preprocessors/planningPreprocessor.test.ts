@@ -3,6 +3,7 @@ import type { DocumentStateWithDecorators, DecoratorDataBase } from '@/hooks/use
 import { Document } from '@ttab/elephant-api/newsdoc'
 
 const makeDoc = (overrides: Partial<Parameters<typeof Document.create>[0]> = {}): DocumentStateWithDecorators<DecoratorDataBase> => ({
+  subset: [],
   document: Document.create({
     uuid: 'planning-1',
     type: 'core/planning-item',

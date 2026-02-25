@@ -79,6 +79,7 @@ export function useRepositorySocket<TDecoratorData extends DecoratorDataBase = D
   from,
   to,
   include,
+  subset,
   type,
   asTable = false,
   decorators = [],
@@ -88,6 +89,7 @@ export function useRepositorySocket<TDecoratorData extends DecoratorDataBase = D
   to?: string
   type: string
   include?: string[]
+  subset?: string[]
   asTable?: boolean
   decorators?: Array<Decorator<object>>
   preprocessor?: (data: DocumentStateWithDecorators<TDecoratorData>[]) => DocumentStateWithDecorators<TDecoratorData>[]
@@ -110,6 +112,7 @@ export function useRepositorySocket<TDecoratorData extends DecoratorDataBase = D
   const setNameRef = useRef<string>('')
   const callIdRef = useRef<string>('')
   const includeRef = useRef(include)
+  const subsetRef = useRef(subset)
   const decoratorsRef = useRef(decorators)
   const accessTokenRef = useRef<string>(session?.accessToken ?? '')
   accessTokenRef.current = session?.accessToken ?? ''
@@ -183,6 +186,7 @@ export function useRepositorySocket<TDecoratorData extends DecoratorDataBase = D
           type,
           timespan,
           include: includeRef.current,
+          subset: subsetRef.current,
           resolveParentIndex: findDeliverableParentIndex
         })
 

@@ -1,6 +1,7 @@
 import { type GetDocumentResponse } from '@ttab/elephant-api/repository'
 
 export const article: GetDocumentResponse = {
+  subset: [],
   version: 14n,
   isMetaDocument: false,
   mainDocument: '',

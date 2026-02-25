@@ -181,8 +181,8 @@ describe('RepositorySocket', () => {
     const docsPromise = socket.getDocuments({ setName: 'set-a', type: 'tt/article' })
     await waitFor(() => expect(ws.send).toHaveBeenCalledTimes(2))
 
-    const doc1 = { meta: undefined, document: undefined }
-    const doc2 = { meta: undefined, document: undefined }
+    const doc1 = { meta: undefined, document: undefined, subset: [] }
+    const doc2 = { meta: undefined, document: undefined, subset: [] }
 
     ws.message(
       toArrayBuffer(
@@ -358,6 +358,7 @@ describe('RepositorySocket', () => {
 
     // Parent planning doc with assignment linking to deliverable
     const parentDoc: DocumentState = {
+      subset: [],
       document: Document.create({
         uuid: 'planning-1',
         type: 'core/planning-item',
@@ -375,6 +376,7 @@ describe('RepositorySocket', () => {
 
     // Another parent with no assignment links
     const parentDocNoLinks: DocumentState = {
+      subset: [],
       document: Document.create({
         uuid: 'planning-2',
         type: 'core/planning-item',
@@ -469,6 +471,7 @@ describe('RepositorySocket', () => {
 
     // Parent with no assignment meta
     const parentDoc: DocumentState = {
+      subset: [],
       document: Document.create({
         uuid: 'planning-1',
         type: 'core/planning-item',

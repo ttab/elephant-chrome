@@ -35,11 +35,13 @@ describe('decoratorRunner', () => {
             uuid: 'included-1',
             type: 'core/article'
           }),
-          meta: mockMeta
+          meta: mockMeta,
+          subset: []
         }
       }
     ],
-    meta: mockMeta
+    meta: mockMeta,
+    subset: []
   }
 
   const mockUpdate: DocumentUpdate = {
@@ -50,7 +52,8 @@ describe('decoratorRunner', () => {
       type: 'core/article',
       title: 'Updated Title'
     }),
-    meta: mockMeta
+    meta: mockMeta,
+    subset: []
   }
 
   describe('runInitialDecorators', () => {
@@ -211,7 +214,8 @@ describe('decoratorRunner', () => {
           title: 'Planning-2'
         }),
         includedDocuments: [],
-        meta: mockMeta
+        meta: mockMeta,
+        subset: []
       }
 
       const mockDecorator: Decorator<{ type: string }> = {
@@ -280,6 +284,7 @@ describe('decoratorRunner', () => {
       document: Document.create({ uuid: 'doc-1', title: 'Test' }),
       includedDocuments: [],
       meta: mockMeta,
+      subset: [],
       decoratorData: {
         test: {
           'doc-1': { oldData: 'old-value' },
@@ -298,7 +303,8 @@ describe('decoratorRunner', () => {
         setName: 'test',
         included: false,
         document: Document.create({ type: 'core/article' }),
-        meta: mockMeta
+        meta: mockMeta,
+        subset: []
       }
 
       const mockDecorator: Decorator<object> = {
@@ -527,7 +533,8 @@ describe('decoratorRunner', () => {
       const parentNoDecorators: DocumentStateWithDecorators = {
         document: Document.create({ uuid: 'doc-1' }),
         includedDocuments: [],
-        meta: mockMeta
+        meta: mockMeta,
+        subset: []
       }
 
       const mockDecorator: Decorator<{ data: string }> = {
@@ -555,6 +562,7 @@ describe('decoratorRunner', () => {
         document: Document.create({ uuid: 'doc-1' }),
         includedDocuments: [],
         meta: mockMeta,
+        subset: [],
         decoratorData: { test: { 'doc-1': { existing: 'data' } } }
       }
 
@@ -588,6 +596,7 @@ describe('decoratorRunner', () => {
         document: Document.create({ uuid: 'doc-1' }),
         includedDocuments: [],
         meta: mockMeta,
+        subset: [],
         decoratorData: { test: { 'doc-1': { metric: 'original' } } }
       }
 
