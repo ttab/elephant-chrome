@@ -21,6 +21,10 @@ import type { VariantProps } from 'class-variance-authority'
 import type { QueryParams } from '@/hooks/useQuery'
 import { applicationMenu } from '@/defaults/applicationMenuItems'
 import type { LucideIcon } from 'lucide-react'
+import { useLink } from '@/hooks/useLink'
+import { useRegistry } from '@/hooks/index'
+import { useSession } from 'next-auth/react'
+import { toast } from 'sonner'
 
 type Variant = VariantProps<typeof buttonVariants>['variant']
 type ButtonView = { name: View, type: string, icon?: { icon?: LucideIcon, color?: string } }
@@ -44,6 +48,29 @@ const AddButton = ({
 }) => {
   const ViewDialog = Views[view.name]
   const typeLabel = (t?: string) => t ? documentTypeValueFormat[t].label : ''
+  const { repository } = useRegistry()
+  const openFactboxEditor = useLink('Factbox')
+  const { data: session } = useSession()
+
+  const createNewFactbox = () => {
+    if (!session || !session.accessToken || !repository) {
+      console.error('CreateFactbox: Missing required dependencies', {
+        hasAccessToken: !!session?.accessToken,
+        hasRepository: !!repository
+      })
+      toast.error('Kan inte skapa faktaruta')
+      return <></>
+    }
+    const id = crypto.randomUUID()
+    const factboxTemplate = getTemplateFromView('Factbox')(id, { title: 'Fakta:' })
+    repository.saveDocument(factboxTemplate, session.accessToken)
+      .then(() => {
+        openFactboxEditor(undefined, { id }, undefined)
+      })
+      .catch((error) => {
+        console.error('Error creating Factbox document:', error)
+      })
+  }
 
   return (
     <Button
@@ -55,6 +82,10 @@ const AddButton = ({
         const initialDocument = getTemplateFromView(view.name)(id, { query })
 
         if (showModal) {
+          if (view.name === 'Factbox') {
+            createNewFactbox()
+            return
+          }
           showModal(
             <ViewDialog
               onDialogClose={hideModal}
