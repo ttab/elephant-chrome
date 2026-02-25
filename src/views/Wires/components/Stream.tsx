@@ -21,6 +21,7 @@ import type { WireStatus } from '../lib/setWireStatus'
 import { StreamGroupHeader } from './StreamGroupHeader'
 
 const PAGE_SIZE = 80
+const FILTER_DEBOUNCE_MS = 400
 
 export const Stream = ({
   wireStream,
@@ -48,7 +49,14 @@ export const Stream = ({
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const loadingRef = useRef(false)
 
-  const query = useMemo(() => constructQuery(wireStream.filters), [wireStream.filters])
+  // Debounce filters to avoid tearing down the SSE subscription on every rapid filter toggle
+  const [debouncedFilters, setDebouncedFilters] = useState(wireStream.filters)
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedFilters(wireStream.filters), FILTER_DEBOUNCE_MS)
+    return () => clearTimeout(timer)
+  }, [wireStream.filters])
+
+  const query = useMemo(() => constructQuery(debouncedFilters), [debouncedFilters])
   const sort = useMemo(() => [SortingV1.create({ field: 'modified', desc: true })], [])
   const options = useMemo(() => ({ setTableData: true, subscribe: true }), [])
 
@@ -64,13 +72,16 @@ export const Stream = ({
 
   // Merge new data with existing data and reconcile updates from SWR
   useEffect(() => {
-    if (!data || isLoading) return
+    if (!data) return
 
     setAllData((prev) => {
       // First page replaces everything
       if (page === 1) {
         return data
       }
+
+      // Don't append paginated data while still loading
+      if (isLoading) return prev
 
       // Reconcile existing wires and merge in updates
       const byId = new Map(prev.map((w) => [w.id, w]))
@@ -87,14 +98,17 @@ export const Stream = ({
       return Array.from(byId.values())
     })
 
-    loadingRef.current = false
+    if (!isLoading) {
+      loadingRef.current = false
+    }
   }, [data, isLoading, page])
 
-  // Reset to page 1 when filters change
+  // Reset to page 1 when debounced filters change.
+  // Don't clear allData here — the data effect replaces it on page 1 once the fetch completes,
+  // avoiding a blank state during the loading period.
   useEffect(() => {
     setPage(1)
-    setAllData([])
-  }, [wireStream.filters])
+  }, [debouncedFilters])
 
   // Infinite scroll handler
   useEffect(() => {

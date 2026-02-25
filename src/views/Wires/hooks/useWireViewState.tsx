@@ -157,13 +157,20 @@ export function useWireViewState(
   ) => {
     const uuid = inUuid ?? crypto.randomUUID()
     setWireStreams((prev) => {
+      // Build initial filters inline so the stream is never in a partially-filtered state
+      const initialFilters: WireFilter[] = filters
+        ? Object.entries(filters)
+          .filter(([, values]) => values.length > 0)
+          .map(([type, values]) => ({ type, values }))
+        : []
+
       const newStreams = {
         ...prev,
         streams: [
           ...prev.streams,
           {
             uuid,
-            filters: []
+            filters: initialFilters
           }
         ]
       }
@@ -171,16 +178,7 @@ export function useWireViewState(
       onStateChangeRef.current?.(newStreams.streams)
       return newStreams
     })
-
-    // Add initial filters
-    if (filters) {
-      Object.keys(filters).forEach((type) => {
-        if (filters[type].length) {
-          setFilter(uuid, type, filters[type])
-        }
-      })
-    }
-  }, [setFilter])
+  }, [])
 
   // Get the full wire state in storage format
   const getWireState = useCallback((): UserViewState => {

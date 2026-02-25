@@ -71,6 +71,16 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
     ? `${documentType}/${JSON.stringify(query, (_, v: unknown) => typeof v === 'bigint' ? v.toString() : v)}${page ? `/${page}` : ''}`
     : documentType, [query, page, documentType])
 
+  // When the key changes, the old server-side subscription is no longer valid.
+  // Clear subscriptions so the polling effect doesn't restart with stale references.
+  const prevKeyRef = useRef(key)
+  useEffect(() => {
+    if (prevKeyRef.current !== key) {
+      prevKeyRef.current = key
+      setSubscriptions(undefined)
+    }
+  }, [key])
+
   // Memoize fetcher
   const fetcher = useMemo(() => (): Promise<T[]> =>
     fetch<T, F>({

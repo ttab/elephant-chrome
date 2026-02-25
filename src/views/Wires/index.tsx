@@ -56,6 +56,7 @@ export const Wires = (): JSX.Element => {
   const [focusedWire, setFocusedWire] = useState<Wire | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const [isDirty, setIsDirty] = useState<null | boolean>(null)
+  const settingsAppliedRef = useRef(false)
 
   const { isLoading, settings, updateSettings } = useSettings('core/wire-panes-setting')
   const {
@@ -150,13 +151,16 @@ export const Wires = (): JSX.Element => {
     })
   }, [])
 
-  // Apply loaded settings
+  // Apply loaded settings — runs only once after initial load completes
   useEffect(() => {
     if (isLoading) return
+    if (settingsAppliedRef.current) return
+    settingsAppliedRef.current = true
 
     if (!settings) {
       // If no settings was received add a default wire stream w/o filtering
-      return addStream()
+      addStream()
+      return
     }
 
     settings.content.forEach(({ uuid, type, meta }) => {
@@ -178,7 +182,7 @@ export const Wires = (): JSX.Element => {
     requestAnimationFrame(() => {
       setIsDirty(false)
     })
-  }, [isLoading, settings, addStream, setFilter])
+  }, [isLoading, settings, addStream])
 
   // Track focus loss
   useEffect(() => {
