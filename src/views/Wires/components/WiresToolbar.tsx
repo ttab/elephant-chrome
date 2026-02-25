@@ -1,12 +1,13 @@
 import { Button, ButtonGroup, Tooltip } from '@ttab/elephant-ui'
 import { CheckIcon, EyeIcon, FolderIcon, Grid2X2PlusIcon, PlusIcon, SaveIcon } from '@ttab/elephant-ui/icons'
 
-export const WiresToolbar = ({ disabled = false, onAddStream, onSaveStreams, onAction, isDirty }: {
+export const WiresToolbar = ({ disabled = false, onAddStream, onSaveStreams, onAction, isDirty, hasMissingFilters = false }: {
   disabled?: boolean
   onAddStream: () => void
   onSaveStreams: () => Promise<void>
   onAction: (action: 'read' | 'saved' | 'used') => void
   isDirty: boolean
+  hasMissingFilters?: boolean
 }) => {
   const handleAddStream = () => {
     void onAddStream()
@@ -19,8 +20,8 @@ export const WiresToolbar = ({ disabled = false, onAddStream, onSaveStreams, onA
   return (
     <div className='flex gap-2 ms-2'>
       <ButtonGroup className='p-0 rounded-md gap-1 border border-muted'>
-        <Tooltip content='Spara inställningar för vyn'>
-          <Button variant='ghost' disabled={!isDirty} className='w-9 h-9 px-0' onClick={handleSaveStreams}>
+        <Tooltip content={hasMissingFilters ? 'Alla kolumner måste ha minst ett filter' : 'Spara inställningar för vyn'}>
+          <Button variant='ghost' disabled={!isDirty || hasMissingFilters} className='w-9 h-9 px-0' onClick={handleSaveStreams}>
             <SaveIcon strokeWidth={1.75} size={18} />
           </Button>
         </Tooltip>

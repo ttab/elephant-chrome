@@ -19,6 +19,7 @@ import { FilterMenu } from './Filter/FilterMenu'
 import { type WireStream } from '../hooks/useWireViewState'
 import type { WireStatus } from '../lib/setWireStatus'
 import { StreamGroupHeader } from './StreamGroupHeader'
+import { REQUIRE_FILTERS } from '../lib/featureFlags'
 
 const PAGE_SIZE = 80
 const FILTER_DEBOUNCE_MS = 400
@@ -49,12 +50,23 @@ export const Stream = ({
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const loadingRef = useRef(false)
 
+  const hasFilters = wireStream.filters.length > 0
+  const skipFetch = REQUIRE_FILTERS && !hasFilters
+
   // Debounce filters to avoid tearing down the SSE subscription on every rapid filter toggle
   const [debouncedFilters, setDebouncedFilters] = useState(wireStream.filters)
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedFilters(wireStream.filters), FILTER_DEBOUNCE_MS)
     return () => clearTimeout(timer)
   }, [wireStream.filters])
+
+  // Clear accumulated data when all filters are removed (returning to empty state)
+  useEffect(() => {
+    if (skipFetch) {
+      setAllData([])
+      setPage(1)
+    }
+  }, [skipFetch])
 
   const query = useMemo(() => constructQuery(debouncedFilters), [debouncedFilters])
   const sort = useMemo(() => [SortingV1.create({ field: 'modified', desc: true })], [])
@@ -67,7 +79,8 @@ export const Stream = ({
     page,
     fields,
     sort,
-    options
+    options,
+    disabled: skipFetch
   })
 
   // Merge new data with existing data and reconcile updates from SWR
@@ -287,30 +300,39 @@ export const Stream = ({
         </Button>
       </div>
 
-      <div ref={scrollContainerRef} className='flex-1 basis-0 overflow-y-auto bg-muted'>
-        <div className='flex flex-col'>
-          {groups.map((group) => (
-            <div key={group.key} className='relative'>
-              {group.header}
-
-              {group.rows.map((row) => (
-                <div key={row.id} className='border-b last:border-b-0'>
-                  {flexRender(
-                    row.getVisibleCells()[0].column.columnDef.cell,
-                    row.getVisibleCells()[0].getContext()
-                  )}
-                </div>
-              ))}
+      {skipFetch
+        ? (
+            <div className='flex-1 basis-0 flex items-center justify-center bg-muted'>
+              <p className='text-sm text-muted-foreground'>Lägg till filter för att visa telegram</p>
             </div>
-          ))}
+          )
+        : (
+            <div ref={scrollContainerRef} className='flex-1 basis-0 overflow-y-auto bg-muted'>
+              <div className='flex flex-col'>
+                {groups.map((group) => (
+                  <div key={group.key} className='relative'>
+                    {group.header}
 
-          {isLoading && page > 1 && (
-            <div className='py-4 text-center text-sm text-muted-foreground'>
-              Laddar fler...
+                    {group.rows.map((row) => (
+                      <div key={row.id} className='border-b last:border-b-0'>
+                        {flexRender(
+                          row.getVisibleCells()[0].column.columnDef.cell,
+                          row.getVisibleCells()[0].getContext()
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ))}
+
+                {isLoading && page > 1 && (
+                  <div className='py-4 text-center text-sm text-muted-foreground'>
+                    Laddar fler...
+                  </div>
+                )}
+              </div>
             </div>
           )}
-        </div>
-      </div>
+
     </div>
   )
 }

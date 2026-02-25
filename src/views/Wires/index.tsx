@@ -20,6 +20,7 @@ import type { Block } from '@ttab/elephant-api/newsdoc'
 import { Document } from '@ttab/elephant-api/newsdoc'
 import { RpcError } from '@protobuf-ts/runtime-rpc'
 import { Prompt } from '@/components'
+import { REQUIRE_FILTERS } from './lib/featureFlags'
 
 const BASE_URL = import.meta.env.BASE_URL
 
@@ -325,6 +326,7 @@ export const Wires = (): JSX.Element => {
           <WiresToolbar
             isDirty={!!isDirty}
             disabled={(selectedWires.length === 0 && !focusedWire) || isDirty === null}
+            hasMissingFilters={REQUIRE_FILTERS && streams.some((s) => s.filters.length === 0)}
             onAddStream={addStream}
             onSaveStreams={onSaveStreams}
             onAction={onAction}
