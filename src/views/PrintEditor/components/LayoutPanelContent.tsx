@@ -1,11 +1,9 @@
-import { forwardRef, useCallback, type HTMLAttributes } from 'react'
+import { forwardRef, type HTMLAttributes } from 'react'
 import { cn } from '@ttab/elephant-ui/utils'
 import { Button, Checkbox, Input } from '@ttab/elephant-ui'
 import { EyeIcon, Trash2Icon } from '@ttab/elephant-ui/icons'
 import type * as Y from 'yjs'
 import type { YDocument } from '@/modules/yjs/hooks'
-import { useYValue } from '@/modules/yjs/hooks/useYValue'
-import { Block } from '@ttab/elephant-api/newsdoc'
 import { LayoutsSelect } from './LayoutsSelect'
 import { Position } from './Position'
 import { Additionals } from './Additionals'
@@ -37,23 +35,6 @@ export const LayoutPanelContent = forwardRef<HTMLDivElement, LayoutPanelContentP
   ...props
 }, ref) => {
   const { data: layout } = useLayouts(layoutUuid)
-
-  const [, setArticleAdditionals] = useYValue<Block[]>(
-    ydoc.ele,
-    `${basePath}.meta.tt/print-features[0].content.tt/print-feature`
-  )
-
-  const handleLayoutSlotChange = useCallback((newSlotName: string) => {
-    const slotFeatures = layout?.content
-      .find((item) => item.name === newSlotName)?.meta
-      .find((m) => m.type === 'tt/print-features')?.content ?? []
-
-    const defaults = slotFeatures.map((feature) =>
-      Block.create({ type: 'tt/print-feature', name: feature.name, value: feature.value ?? 'false' })
-    )
-
-    setArticleAdditionals(defaults)
-  }, [layout, setArticleAdditionals])
 
   return (
     <div
@@ -105,7 +86,6 @@ export const LayoutPanelContent = forwardRef<HTMLDivElement, LayoutPanelContentP
           ydoc={ydoc}
           layout={layout}
           basePath={basePath}
-          onLayoutSlotChange={handleLayoutSlotChange}
           className='w-full min-w-0'
         />
         <Position
