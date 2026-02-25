@@ -372,15 +372,15 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
       transitions: {
         usable: {
           verify: true,
-          title: 'Publicera',
-          description: 'Publicera faktarutan för användning'
+          title: 'Spara',
+          description: 'Spara faktarutan för användning'
         }
       }
     },
     usable: {
       title: 'Användbar',
       asSaveCTA: 'Ändrad',
-      asSaveTitle: 'Publicera ny information',
+      asSaveTitle: 'Spara ny information',
       description: 'Faktarutan är användbar',
       isWorkflow: false,
       asSave: true,
