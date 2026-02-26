@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Extension Sample — Eventlog</title>
+  <style>
+    :root {
+      --background: 0 0% 100%;
+      --foreground: 240 10% 3.9%;
+      --card: 0 0% 100%;
+      --card-foreground: 240 10% 3.9%;
+      --muted: 240 4.8% 95.9%;
+      --muted-foreground: 240 3.8% 46.1%;
+      --border: 240 5.9% 90%;
+      --input: 240 5.9% 90%;
+      --primary: 240 5.9% 10%;
+      --primary-foreground: 0 0% 98%;
+      --destructive: 0 84.2% 60.2%;
+      --accent: 240 4.8% 95.9%;
+      --ring: 240 5.9% 10%;
+      --radius: 0.5rem;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      color: hsl(var(--foreground));
+      background: hsl(var(--background));
+      font-size: 0.875rem;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      padding: 1.5rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* Badge / status pill */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      padding: 0.125rem 0.625rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      line-height: 1.25rem;
+      border: 1px solid hsl(var(--border));
+      background: hsl(var(--background));
+      color: hsl(var(--muted-foreground));
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+    .badge .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+    .badge.connected {
+      background: hsl(142 76% 96%);
+      color: hsl(142 72% 29%);
+      border-color: hsl(142 72% 29% / 0.2);
+    }
+    .badge.error {
+      background: hsl(0 84% 96%);
+      color: hsl(var(--destructive));
+      border-color: hsl(var(--destructive) / 0.2);
+    }
+
+    /* Card wrapper for the table */
+    .card {
+      border: 1px solid hsl(var(--border));
+      border-radius: var(--radius);
+      background: hsl(var(--card));
+      overflow: hidden;
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid hsl(var(--border));
+    }
+    .card-header p {
+      font-size: 0.8125rem;
+      color: hsl(var(--muted-foreground));
+    }
+
+    /* Table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8125rem;
+    }
+    thead {
+      background: hsl(var(--muted));
+    }
+    th {
+      text-align: left;
+      padding: 0.5rem 1rem;
+      font-weight: 500;
+      font-size: 0.75rem;
+      color: hsl(var(--muted-foreground));
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    td {
+      padding: 0.5rem 1rem;
+      border-top: 1px solid hsl(var(--border));
+      color: hsl(var(--foreground));
+    }
+    tbody tr {
+      transition: background 0.1s;
+    }
+    tbody tr:hover {
+      background: hsl(var(--muted));
+    }
+
+    .mono {
+      font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+      font-size: 0.75rem;
+    }
+    .truncate {
+      max-width: 12rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .muted {
+      color: hsl(var(--muted-foreground));
+    }
+
+    /* Link style */
+    .link {
+      color: hsl(var(--primary));
+      cursor: pointer;
+      text-decoration: underline;
+      text-underline-offset: 4px;
+      text-decoration-color: hsl(var(--primary) / 0.3);
+      transition: text-decoration-color 0.15s;
+    }
+    .link:hover {
+      text-decoration-color: hsl(var(--primary));
+    }
+
+    /* Error alert */
+    .alert-error {
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius);
+      border: 1px solid hsl(var(--destructive) / 0.2);
+      background: hsl(0 84% 96%);
+      color: hsl(var(--destructive));
+      font-size: 0.8125rem;
+    }
+
+    /* Empty state */
+    .empty {
+      padding: 2rem;
+      text-align: center;
+      color: hsl(var(--muted-foreground));
+      font-size: 0.8125rem;
+    }
+
+    /* Collab UUID input — matches the badge pill */
+    .collab-input {
+      padding: 0.125rem 0.625rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+      font-weight: 500;
+      line-height: 1.25rem;
+      border: 1px solid hsl(var(--border));
+      background: hsl(var(--background));
+      color: hsl(var(--muted-foreground));
+      outline: none;
+      width: 22rem;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .collab-input:focus {
+      border-color: hsl(var(--ring));
+      color: hsl(var(--foreground));
+    }
+    .collab-input::placeholder {
+      color: hsl(var(--muted-foreground) / 0.6);
+    }
+
+    /* Collab views container */
+    .collab-views { display: none; margin-top: 1rem; }
+    .collab-views.active { display: flex; flex-direction: column; gap: 0.75rem; }
+
+    /* Individual collab card */
+    .collab-card {
+      border: 1px solid hsl(var(--border));
+      border-radius: var(--radius);
+      background: hsl(var(--card));
+      overflow: hidden;
+    }
+    .collab-card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      border-bottom: 1px solid hsl(var(--border));
+    }
+    .collab-card.collapsed .collab-card-header {
+      border-bottom: none;
+    }
+    .collab-card.collapsed .collab-json {
+      display: none;
+    }
+    .collab-card-header .doc-title {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: hsl(var(--foreground));
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .collab-card-header .uuid {
+      font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+      font-size: 0.6875rem;
+      color: hsl(var(--muted-foreground));
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 10rem;
+    }
+    .collab-avatars {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      margin-left: auto;
+    }
+    .collab-avatar {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.5rem;
+      height: 1.5rem;
+      border-radius: 50%;
+      color: #fff;
+      font-size: 0.625rem;
+      font-weight: 600;
+    }
+    .collab-card-header button {
+      padding: 0.125rem 0.5rem;
+      border: 1px solid hsl(var(--border));
+      border-radius: var(--radius);
+      background: hsl(var(--background));
+      color: hsl(var(--foreground));
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: background 0.15s;
+      line-height: 1.25;
+      flex-shrink: 0;
+    }
+    .collab-card-header button:hover { background: hsl(var(--muted)); }
+    .collab-json {
+      background: hsl(var(--muted));
+      padding: 1rem;
+      font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+      font-size: 0.75rem;
+      line-height: 1.6;
+      overflow: auto;
+      max-height: 50vh;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div style="display:flex;align-items:center;gap:0.5rem;">
+      <div id="status" class="badge"><span class="dot"></span><span id="status-text">Connecting...</span></div>
+      <input id="collab-input" type="text" class="collab-input" placeholder="Paste UUID to connect..." spellcheck="false">
+    </div>
+    <div id="content" style="margin-top: 1rem;"></div>
+    <div id="collab-views" class="collab-views"></div>
+  </div>
+
+  <script type="module">
+    import { ElephantExt } from '../../lib/elephant-ext.mjs'
+
+    ;(function () {
+      let autoRefreshTimer = null
+      let autoRefreshActive = false
+
+      const editorByType = {
+        'core/article': 'Editor',
+        'core/planning-item': 'Planning'
+      }
+
+      // SVG icon data URIs
+      const ICON_REFRESH = 'data:image/svg+xml,' + encodeURIComponent(
+        '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
+        + '<path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>'
+        + '<path d="M3 3v5h5"/>'
+        + '<path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/>'
+        + '<path d="M16 16h5v5"/>'
+        + '</svg>'
+      )
+
+      const ICON_AUTO_REFRESH = 'data:image/svg+xml,' + encodeURIComponent(
+        '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
+        + '<path d="M12 2a10 10 0 0 1 7.38 16.75"/>'
+        + '<path d="M12 22a10 10 0 0 1-7.38-16.75"/>'
+        + '<path d="M16 16h5v5"/>'
+        + '<path d="M8 8H3V3"/>'
+        + '<circle cx="12" cy="12" r="2"/>'
+        + '</svg>'
+      )
+
+      const ICON_CLEAR = 'data:image/svg+xml,' + encodeURIComponent(
+        '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
+        + '<path d="M18 6 6 18"/>'
+        + '<path d="m6 6 12 12"/>'
+        + '</svg>'
+      )
+
+      const ICON_ELEPHANT = 'data:image/svg+xml,' + encodeURIComponent(
+        '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">'
+        + '<path d="M17 4c2.5 0 4 1.5 4 4v4c0 3-2 6-5 7.5"/>'
+        + '<path d="M7 4c-2.5 0-4 1.5-4 4v4c0 3 2 6 5 7.5"/>'
+        + '<path d="M12 4c-3 0-5 2-5 5v3c0 2 1 3.5 2.5 4.5"/>'
+        + '<path d="M12 4c3 0 5 2 5 5v3c0 2-1 3.5-2.5 4.5"/>'
+        + '<path d="M8 19.5V22"/>'
+        + '<path d="M16 19.5V22"/>'
+        + '<path d="M10 16c0 1 .5 2 2 2s2-1 2-2"/>'
+        + '<circle cx="9.5" cy="10" r="1"/>'
+        + '<circle cx="14.5" cy="10" r="1"/>'
+        + '</svg>'
+      )
+
+      function makeButtons() {
+        const buttons = [
+          { kind: 'button', name: 'refresh', title: 'Refresh', iconUrl: ICON_REFRESH },
+          { kind: 'button', name: 'auto_refresh', title: 'Auto refresh (5s)', iconUrl: ICON_AUTO_REFRESH, active: autoRefreshActive },
+          { kind: 'separator' },
+          { kind: 'button', name: 'clear', title: 'Clear', iconUrl: ICON_CLEAR, disabled: true }
+        ]
+
+        for (let g = 1; g <= 5; g++) {
+          buttons.push({ kind: 'separator' })
+          for (let b = 1; b <= 3; b++) {
+            buttons.push({
+              kind: 'button',
+              name: 'sample_' + g + '_' + b,
+              title: 'Sample ' + g + '.' + b,
+              iconUrl: ICON_ELEPHANT
+            })
+          }
+        }
+
+        return buttons
+      }
+
+      // Per-session UI state: uuid -> { cardEl, titleCleanup }
+      const collabUI = new Map()
+
+      const statusEl = document.getElementById('status')
+      const statusText = document.getElementById('status-text')
+      const contentEl = document.getElementById('content')
+      const collabViewsEl = document.getElementById('collab-views')
+      const collabInput = document.getElementById('collab-input')
+
+      // Initialize the extension
+      const ext = new ElephantExt({ title: 'Eventlog', buttons: makeButtons() })
+      setStatus('', 'Waiting for parent...')
+
+      function setStatus(state, text) {
+        statusEl.className = 'badge ' + state
+        statusText.textContent = text
+      }
+
+      async function fetchEventlog() {
+        if (!ext.accessToken || !ext.services) return
+
+        setStatus('connected', 'Fetching eventlog...')
+
+        try {
+          const res = await fetch(ext.services.repositoryUrl + '/twirp/elephant.repository.Documents/Eventlog', {
+            method: 'POST',
+            headers: {
+              'authorization': 'Bearer ' + ext.accessToken,
+              'content-type': 'application/json'
+            },
+            body: JSON.stringify({ after: -10 })
+          })
+
+          if (!res.ok) {
+            throw new Error('HTTP ' + res.status + ': ' + res.statusText)
+          }
+
+          const data = await res.json()
+          renderTable(data.items || data)
+          setStatus('connected', 'Connected')
+        } catch (err) {
+          setStatus('error', 'Fetch failed')
+          contentEl.innerHTML = '<div class="alert-error">Error: ' + escapeHtml(err.message) + '</div>'
+        }
+      }
+
+      function escapeHtml(str) {
+        const el = document.createElement('span')
+        el.textContent = str
+        return el.innerHTML
+      }
+
+      function renderTable(items) {
+        if (!items || items.length === 0) {
+          contentEl.innerHTML = '<div class="card"><div class="empty">No events found.</div></div>'
+          return
+        }
+
+        let html = '<div class="card">'
+          + '<div class="card-header"><p>Showing ' + items.length + ' most recent events</p></div>'
+          + '<table><thead><tr>'
+          + '<th>ID</th><th>Event</th><th>UUID</th>'
+          + '<th>Timestamp</th><th>Type</th><th>Updater</th><th>Collab</th>'
+          + '</tr></thead><tbody>'
+
+        for (const item of items) {
+          const uuid = String(item.uuid ?? '')
+          const docType = String(item.type ?? '')
+          const viewName = editorByType[docType]
+
+          const uuidCell = viewName
+            ? '<span class="link" data-open-view="' + escapeHtml(viewName) + '" data-open-id="' + escapeHtml(uuid) + '">'
+              + escapeHtml(uuid) + '</span>'
+            : escapeHtml(uuid)
+
+          const collabCell = uuid
+            ? '<span class="link" data-collab-connect="' + escapeHtml(uuid) + '">Collab</span>'
+            : ''
+
+          html += '<tr>'
+            + '<td class="mono muted">' + escapeHtml(String(item.id ?? '')) + '</td>'
+            + '<td>' + escapeHtml(String(item.event ?? '')) + '</td>'
+            + '<td class="mono truncate" title="' + escapeHtml(uuid) + '">' + uuidCell + '</td>'
+            + '<td class="muted">' + escapeHtml(String(item.timestamp ?? '')) + '</td>'
+            + '<td>' + escapeHtml(docType) + '</td>'
+            + '<td class="muted">' + escapeHtml(String(item.updater_uri ?? '')) + '</td>'
+            + '<td>' + collabCell + '</td>'
+            + '</tr>'
+        }
+
+        html += '</tbody></table></div>'
+        contentEl.innerHTML = html
+
+        if (collabUI.size === 0) {
+          ext.setTitle('Eventlog: ' + items.length + ' items')
+        }
+      }
+
+      // Token and services events — fetch eventlog when either arrives
+      ext.addEventListener('token', function () {
+        fetchEventlog()
+      })
+
+      ext.addEventListener('services', function () {
+        fetchEventlog()
+      })
+
+      // Button click handling
+      ext.addEventListener('button', function (e) {
+        const name = e.detail.name
+
+        if (name === 'refresh') {
+          const loading = makeButtons()
+          loading[0].disabled = true
+          e.detail.ack(loading)
+
+          fetchEventlog().then(function () {
+            ext.setButtons(makeButtons())
+          })
+        } else if (name === 'auto_refresh') {
+          autoRefreshActive = !autoRefreshActive
+          e.detail.ack(makeButtons())
+
+          if (autoRefreshActive) {
+            fetchEventlog()
+            autoRefreshTimer = setInterval(function () {
+              fetchEventlog()
+            }, 5000)
+          } else {
+            clearInterval(autoRefreshTimer)
+            autoRefreshTimer = null
+          }
+        } else {
+          e.detail.ack(makeButtons())
+        }
+      })
+
+      // --- Collab: multi-document support ---
+
+      function getDocTitle(session, uuid) {
+        const ele = session.doc.getMap('ele')
+        const root = ele && ele.get('root')
+        const raw = root && root.get('title')
+        if (!raw) return 'Collab: ' + uuid.slice(0, 8) + '...'
+        const title = String(raw)
+        return title.length > 40 ? title.slice(0, 40) + '...' : title
+      }
+
+      function updateViewTitle() {
+        const count = collabUI.size
+        if (count === 0) {
+          ext.setTitle('Eventlog')
+        } else if (count === 1) {
+          const uuid = collabUI.keys().next().value
+          const session = ext.getCollab(uuid)
+          ext.setTitle(session ? getDocTitle(session, uuid) : 'Collab')
+        } else {
+          ext.setTitle('Multiple docs')
+        }
+      }
+
+      function createCollabCard(uuid, session) {
+        const card = document.createElement('div')
+        card.className = 'collab-card'
+        card.dataset.collabUuid = uuid
+
+        const header = document.createElement('div')
+        header.className = 'collab-card-header'
+
+        const closeBtn = document.createElement('button')
+        closeBtn.textContent = 'Close'
+        closeBtn.title = 'Disconnect'
+        closeBtn.dataset.collabClose = uuid
+
+        const titleSpan = document.createElement('span')
+        titleSpan.className = 'doc-title'
+        titleSpan.textContent = getDocTitle(session, uuid)
+
+        const uuidSpan = document.createElement('span')
+        uuidSpan.className = 'uuid'
+        uuidSpan.textContent = uuid
+        uuidSpan.title = uuid
+
+        const avatarsDiv = document.createElement('div')
+        avatarsDiv.className = 'collab-avatars'
+
+        const toggleBtn = document.createElement('button')
+        toggleBtn.textContent = '\u25BE'
+        toggleBtn.title = 'Collapse'
+        toggleBtn.dataset.collabToggle = uuid
+
+        header.append(closeBtn, titleSpan, uuidSpan, avatarsDiv, toggleBtn)
+
+        const jsonPre = document.createElement('pre')
+        jsonPre.className = 'collab-json'
+
+        card.append(header, jsonPre)
+        return card
+      }
+
+      function showCollabViews() {
+        contentEl.style.display = 'none'
+        collabViewsEl.classList.add('active')
+        ext.setButtons([])
+      }
+
+      function hideCollabViews() {
+        collabViewsEl.classList.remove('active')
+        contentEl.style.display = ''
+        ext.setButtons(makeButtons())
+      }
+
+      // Strip empty strings and empty objects from a value (recursive, display only)
+      function stripEmpty(val) {
+        if (Array.isArray(val)) {
+          return val.map(stripEmpty)
+        }
+        if (val && typeof val === 'object') {
+          const out = {}
+          for (const k in val) {
+            const v = val[k]
+            if (v === '') continue
+            const cleaned = stripEmpty(v)
+            if (cleaned && typeof cleaned === 'object' && !Array.isArray(cleaned) && Object.keys(cleaned).length === 0) continue
+            out[k] = cleaned
+          }
+          return out
+        }
+        return val
+      }
+
+      function renderCollabJson(uuid) {
+        const ui = collabUI.get(uuid)
+        if (!ui) return
+
+        const session = ext.getCollab(uuid)
+        if (!session) return
+
+        const jsonEl = ui.cardEl.querySelector('.collab-json')
+        const ele = session.doc.getMap('ele')
+        const ctx = session.doc.getMap('ctx')
+        const data = stripEmpty({ ele: ele.toJSON(), ctx: ctx.toJSON() })
+        jsonEl.textContent = JSON.stringify(data, null, 2)
+      }
+
+      function renderCollabAvatars(uuid) {
+        const ui = collabUI.get(uuid)
+        if (!ui) return
+
+        const session = ext.getCollab(uuid)
+        const states = session ? (session.awarenessStates || []) : []
+        const avatarsEl = ui.cardEl.querySelector('.collab-avatars')
+        avatarsEl.innerHTML = states.map(function (s) {
+          const name = s.data.name || '?'
+          const color = s.data.color || '#888'
+          const initials = s.data.initials || name.charAt(0).toUpperCase()
+          return '<span class="collab-avatar" style="background:' + escapeHtml(color)
+            + '" title="' + escapeHtml(name) + '">' + escapeHtml(initials) + '</span>'
+        }).join('')
+      }
+
+      function updateCardTitle(uuid) {
+        const ui = collabUI.get(uuid)
+        if (!ui) return
+        const session = ext.getCollab(uuid)
+        if (!session) return
+        const titleEl = ui.cardEl.querySelector('.doc-title')
+        titleEl.textContent = getDocTitle(session, uuid)
+      }
+
+      function connectCollab(uuid) {
+        if (ext.getCollab(uuid)) return
+
+        const session = ext.openCollab(uuid)
+        setStatus('connected', 'Connecting to document...')
+
+        session.addEventListener('synced', function () {
+          const card = createCollabCard(uuid, session)
+          collabViewsEl.appendChild(card)
+
+          // Watch for title changes in the Y.Doc
+          let lastTitle = getDocTitle(session, uuid)
+          const onDocUpdate = () => {
+            const current = getDocTitle(session, uuid)
+            if (current !== lastTitle) {
+              lastTitle = current
+              updateCardTitle(uuid)
+              updateViewTitle()
+            }
+          }
+          session.doc.on('update', onDocUpdate)
+
+          collabUI.set(uuid, {
+            cardEl: card,
+            titleCleanup: () => session.doc.off('update', onDocUpdate)
+          })
+
+          showCollabViews()
+          setStatus('connected', collabUI.size + ' doc' + (collabUI.size > 1 ? 's' : '') + ' synced')
+          renderCollabJson(uuid)
+          renderCollabAvatars(uuid)
+          updateViewTitle()
+        })
+
+        session.addEventListener('update', function () {
+          renderCollabJson(uuid)
+        })
+
+        session.addEventListener('awareness', function () {
+          renderCollabAvatars(uuid)
+        })
+
+        session.addEventListener('error', function (e) {
+          console.error('Collab error for', uuid, ':', e.detail.error)
+          removeCollabCard(uuid)
+        })
+      }
+
+      function removeCollabCard(uuid) {
+        const ui = collabUI.get(uuid)
+        if (ui) {
+          if (ui.titleCleanup) ui.titleCleanup()
+          ui.cardEl.remove()
+          collabUI.delete(uuid)
+        }
+
+        if (collabUI.size === 0) {
+          hideCollabViews()
+          setStatus('connected', 'Connected')
+        } else {
+          setStatus('connected', collabUI.size + ' doc' + (collabUI.size > 1 ? 's' : '') + ' synced')
+        }
+        updateViewTitle()
+      }
+
+      function disconnectCollab(uuid) {
+        ext.closeCollab(uuid)
+        removeCollabCard(uuid)
+      }
+
+      // Event delegation for close and toggle buttons inside collab cards
+      collabViewsEl.addEventListener('click', function (e) {
+        const closeBtn = e.target.closest('[data-collab-close]')
+        if (closeBtn) {
+          disconnectCollab(closeBtn.dataset.collabClose)
+          return
+        }
+
+        const toggleBtn = e.target.closest('[data-collab-toggle]')
+        if (toggleBtn) {
+          const uuid = toggleBtn.dataset.collabToggle
+          const ui = collabUI.get(uuid)
+          if (!ui) return
+
+          const card = ui.cardEl
+          const collapsed = card.classList.toggle('collapsed')
+          toggleBtn.textContent = collapsed ? '\u25B8' : '\u25BE'
+          toggleBtn.title = collapsed ? 'Expand' : 'Collapse'
+        }
+      })
+
+      // UUID input — connect on Enter
+      collabInput.addEventListener('keydown', function (e) {
+        if (e.key !== 'Enter') return
+        const uuid = collabInput.value.trim()
+        if (!uuid) return
+
+        connectCollab(uuid)
+        collabInput.value = ''
+      })
+
+      // Handle clicks on collab connect and open-view elements
+      document.addEventListener('click', function (e) {
+        const connectEl = e.target.closest('[data-collab-connect]')
+        if (connectEl) {
+          const uuid = connectEl.dataset.collabConnect
+          if (uuid) connectCollab(uuid)
+          return
+        }
+
+        const el = e.target.closest('[data-open-view]')
+        if (el) {
+          ext.openView(
+            el.dataset.openView,
+            { id: el.dataset.openId },
+            e.shiftKey ? 'last' : undefined
+          )
+        }
+      })
+    })()
+  </script>
+</body>
+</html>

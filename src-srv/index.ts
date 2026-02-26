@@ -141,6 +141,12 @@ export async function runServer(): Promise<string> {
     collaborationServer
   })
 
+  // Serve extension static files before the SPA catch-all
+  const extensionsDir = NODE_ENV === 'production'
+    ? path.join(distDir, 'extensions')
+    : path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'public', 'extensions')
+  app.use(`${BASE_URL}/extensions`, express.static(extensionsDir))
+
 
   process.on('unhandledException', (ex: Error) => {
     logger.fatal({ err: ex }, 'Unhandled exception')
