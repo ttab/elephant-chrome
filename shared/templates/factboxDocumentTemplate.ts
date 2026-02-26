@@ -19,13 +19,6 @@ export function factboxDocumentTemplate(id: string, payload?: TemplatePayload): 
         type: 'core/text',
         data: {
           text: ''
-        },
-        role: 'heading-1'
-      }),
-      Block.create({
-        type: 'core/text',
-        data: {
-          text: ''
         }
       })
     ]
