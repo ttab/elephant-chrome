@@ -1,4 +1,4 @@
-import { type ForwardedRef, forwardRef, useRef, useState, type InputHTMLAttributes, type JSX } from 'react'
+import { type ForwardedRef, forwardRef, useRef, useState, type InputHTMLAttributes, type JSX, useEffect } from 'react'
 import { CommandInput } from '@ttab/elephant-ui'
 
 const DebouncedCommandInput = forwardRef(({
@@ -13,6 +13,10 @@ const DebouncedCommandInput = forwardRef(({
 } & Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange'>, ref: ForwardedRef<HTMLInputElement>): JSX.Element => {
   const [value, setValue] = useState<string | undefined>(initialValue)
   const debounceTimeout = useRef<NodeJS.Timeout | null>(null)
+
+  useEffect(() => {
+    setValue(initialValue)
+  }, [initialValue])
 
   const handleInputChange = (value: string | undefined): void => {
     setValue(value)

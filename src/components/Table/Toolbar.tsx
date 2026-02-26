@@ -8,9 +8,11 @@ import { Commands } from '@/components/Commands'
 import { Sort } from '../Sort'
 import { useMemo, useCallback, type JSX } from 'react'
 import { QuickFilter } from './QuickFilter'
+import { useQuery } from '@/hooks/useQuery'
 
 export const Toolbar = <TData,>(): JSX.Element => {
   const { table, command } = useTable<TData>()
+  const [, setFilter] = useQuery(['query'])
 
   const { columnFilters, globalFilter } = table.getState() as {
     columnFilters: ColumnFiltersState
@@ -22,7 +24,8 @@ export const Toolbar = <TData,>(): JSX.Element => {
   const handleResetFilters = useCallback(() => {
     table.resetColumnFilters()
     table.resetGlobalFilter()
-  }, [table])
+    setFilter({ query: [] })
+  }, [table, setFilter])
 
   return (
     <div className='bg-background flex flex-wrap grow items-center space-x-2 border-b px-4 py-1 pr-2.5 sticky top-0 z-10'>

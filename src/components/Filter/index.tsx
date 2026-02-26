@@ -2,7 +2,6 @@ import { Popover, PopoverTrigger, Button, PopoverContent, Command } from '@ttab/
 import { ListFilterIcon } from '@ttab/elephant-ui/icons'
 import type { Dispatch, PropsWithChildren, SetStateAction, JSX } from 'react'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { DebouncedCommandInput } from '@/components/Commands/Menu/DebouncedCommandInput'
 import { useQuery } from '@/hooks/useQuery'
 import type { Updater } from '@tanstack/react-table'
 
@@ -15,17 +14,16 @@ export interface FilterProps {
   setGlobalTextFilter?: (updater: Updater<unknown>) => void
 }
 
-export const Filter = ({ page, pages, setPages, search, setSearch, children, setGlobalTextFilter }:
+export const Filter = ({ page, pages, setPages, setSearch, children, setGlobalTextFilter }:
   PropsWithChildren & FilterProps): JSX.Element => {
   const [open, setOpen] = useState(false)
-  const [filter, setFilter] = useQuery(['query'])
+  const [,setFilter] = useQuery(['query'])
 
   const onOpenChange = useMemo(
     () => handleOpenChange({ setOpen, setSearch, setPages }),
     [setOpen, setSearch, setPages])
 
   const inputRef = useRef<HTMLInputElement>(null)
-
   const handleInputChange = (value: string | undefined) => {
     if (value) {
       if (setGlobalTextFilter) {
@@ -41,7 +39,6 @@ export const Filter = ({ page, pages, setPages, search, setSearch, children, set
       inputRef.current.focus()
     }
   }, [page])
-
   return (
     <Popover open={open} onOpenChange={onOpenChange} modal>
       <PopoverTrigger asChild>
@@ -60,6 +57,7 @@ export const Filter = ({ page, pages, setPages, search, setSearch, children, set
       </PopoverTrigger>
       <PopoverContent className='w-[200px] p-0' align='start'>
         <Command
+          shouldFilter={false}
           onKeyDown={(e) => {
             if (e.key === 'Enter' && page === 'query') {
               handleInputChange(inputRef.current?.value)
@@ -78,14 +76,6 @@ export const Filter = ({ page, pages, setPages, search, setSearch, children, set
             }
           }}
         >
-
-          <DebouncedCommandInput
-            ref={inputRef}
-            value={page === 'query' ? filter?.query?.[0] : search}
-            onChange={(value) => page === 'query' && handleInputChange(value)}
-            placeholder={page === 'query' ? 'Fritext' : 'Sök alternativ'}
-            className='h-9'
-          />
           {children}
         </Command>
       </PopoverContent>
