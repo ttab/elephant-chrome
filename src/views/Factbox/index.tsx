@@ -4,7 +4,7 @@ import type * as Y from 'yjs'
 import { Bold, Italic, Text, OrderedList, UnorderedList, LocalizedQuotationMarks } from '@ttab/textbit-plugins'
 import { useSession } from 'next-auth/react'
 import { getValueByYPath } from '@/shared/yUtils'
-import { UserMessage, View } from '@/components'
+import { Form, UserMessage, View } from '@/components'
 import { FactboxHeader } from './FactboxHeader'
 import { Error } from '@/views/Error'
 import { useMemo, useState, type JSX } from 'react'
@@ -15,6 +15,8 @@ import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
 import type { EleDocumentResponse } from '@/shared/types'
 import type { Document } from '@ttab/elephant-api/newsdoc'
 import { BaseEditor } from '@/components/Editor/BaseEditor'
+import { TextInput } from '@/components/ui/TextInput'
+import { cn } from '@ttab/elephant-ui/utils'
 
 const meta: ViewMetadata = {
   name: 'Factbox',
@@ -74,7 +76,7 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
   const { status } = useSession()
   const [errorMessage] = useState<string | null>(null)
   const environmentIsSane = ydoc.provider && status === 'authenticated'
-  console.log(content?.toJSON())
+
   const configuredPlugins = useMemo(() => {
     return [
       UnorderedList(),
@@ -106,10 +108,28 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
 
         <View.Content className='flex flex-col max-w-[1000px]' variant='grid'>
 
+          <Form.Root asDialog={props?.asDialog}>
+            <Form.Content>
+              <Form.Title>
+                <TextInput
+                  ydoc={ydoc}
+                  value={title}
+                  autoFocus={!!props.asDialog}
+                  className={cn(
+                    !props.asDialog ? 'ms-[13px]' : 'ms-6 me-5'
+                  )}
+                  label='Rubrik'
+                  placeholder='Rubrik'
+                />
+              </Form.Title>
+            </Form.Content>
+          </Form.Root>
+
           <div className='flex flex-col gap-4 mb-4 grow'>
             <BaseEditor.Text
               ydoc={ydoc}
               autoFocus={true}
+              editorType='factbox'
             />
 
             <div className='mx-12'>
