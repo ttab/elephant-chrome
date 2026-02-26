@@ -8,7 +8,7 @@ export interface YAwarenessUser extends Record<string, unknown> {
   initials?: string
 }
 
-interface YAwarenessFocus {
+export interface YAwarenessFocus {
   key: string
   path?: string
 }
