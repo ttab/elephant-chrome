@@ -1,6 +1,7 @@
 import { DebouncedCommandInput } from '@/components/Commands/Menu/DebouncedCommandInput'
 import { useQuery, useTable } from '@/hooks/index'
 import { CommandItem } from '@ttab/elephant-ui'
+import { cn } from '@ttab/elephant-ui/utils'
 import { useState, type JSX } from 'react'
 
 export const FreeTextFilter = (): JSX.Element => {
@@ -34,6 +35,8 @@ export const FreeTextFilter = (): JSX.Element => {
           setSelected(false)
         }
       }}
+      className={cn('pb-0 mb-1.5 border border-white',
+        'data-[selected=true]:border-zinc-400 data-[selected=true]:bg-white!')}
     >
       <DebouncedCommandInput
         value={filter?.query?.[0] ?? ''}
