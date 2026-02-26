@@ -8,7 +8,7 @@ import type { Status as DocumentStatuses } from '@ttab/elephant-api/repository'
 import { PreVersionInfo } from './Version/PreVersionInfo'
 import type { JSX } from 'react'
 import { cn } from '@ttab/elephant-ui/utils'
-import { Alert, AlertDescription } from '@ttab/elephant-ui'
+import { AlertDescription } from '@ttab/elephant-ui'
 import { MessageCircleMoreIcon } from '@ttab/elephant-ui/icons'
 
 const BASE_URL = import.meta.env.BASE_URL || ''
