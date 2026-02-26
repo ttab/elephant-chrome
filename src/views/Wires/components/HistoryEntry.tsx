@@ -40,7 +40,7 @@ export const HistoryEntry = ({ version, isCurrent = false, status, isLast, title
         )}
         onMouseDownCapture={(e) => {
           e.preventDefault()
-          if (version) {
+          if (version && !selected) {
             onSelect(version)
           }
         }}

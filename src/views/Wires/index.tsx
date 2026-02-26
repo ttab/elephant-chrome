@@ -1,7 +1,10 @@
 import { View, ViewHeader } from '@/components/View'
 import { type ViewMetadata } from '@/types/index'
-import { useCallback, useRef, useState, type JSX, useEffect } from 'react'
-import { useRegistry, useView, useNavigationKeysView } from '@/hooks'
+import { useCallback, useRef, useState, useMemo, type JSX, useEffect } from 'react'
+import { useRegistry, useView, useNavigationKeysView, useQuery } from '@/hooks'
+import { useDocuments } from '@/hooks/index/useDocuments'
+import { QueryV1, BoolQueryV1, TermsQueryV1 } from '@ttab/elephant-api/index'
+import { fields as wireFields, type WireFields } from '@/shared/schemas/wire'
 import { cn } from '@ttab/elephant-ui/utils'
 import { Stream } from './components/Stream'
 import { useStreamNavigation } from './hooks/useStreamNavigation'
@@ -52,8 +55,17 @@ export const Wires = (): JSX.Element => {
   const { repository } = useRegistry()
   const { data: session } = useSession()
   const { showModal, hideModal } = useModal()
-  const [previewKey, setPreviewKey] = useState(0)
+  const [, setQueryString] = useQuery()
+
+  // Read id directly from the URL once on mount — useQuery wraps single values into arrays
+  // and may not be ready before historyState loads.
+  const [initialId] = useState<string | undefined>(
+    () => new URLSearchParams(window.location.search).get('id') ?? undefined
+  )
+
+  const previewRestoredRef = useRef(false)
   const [previewWire, setPreviewWire] = useState<Wire | null>(null)
+  const [previewReloadCount, setPreviewReloadCount] = useState(0)
   const [focusedWire, setFocusedWire] = useState<Wire | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const [isDirty, setIsDirty] = useState<null | boolean>(null)
@@ -74,6 +86,38 @@ export const Wires = (): JSX.Element => {
 
   const [selectedWires, setSelectedWires] = useState<Wire[]>([])
   const [statusMutations, setStatusMutations] = useState<WireStatus[]>([])
+
+  // Fetch wire by ID from URL params to restore preview on load
+  const initialWireQuery = useMemo(() => initialId
+    ? QueryV1.create({
+      conditions: {
+        oneofKind: 'bool',
+        bool: BoolQueryV1.create({
+          must: [{
+            conditions: {
+              oneofKind: 'terms',
+              terms: TermsQueryV1.create({ field: '_id', values: [initialId] })
+            }
+          }]
+        })
+      }
+    })
+    : undefined, [initialId])
+
+  const { data: initialWireData } = useDocuments<Wire, WireFields>({
+    documentType: 'tt/wire',
+    query: initialWireQuery,
+    fields: wireFields,
+    size: 1,
+    disabled: !initialId
+  })
+
+  // Once the wire is fetched, restore the preview state (runs only once)
+  useEffect(() => {
+    if (previewRestoredRef.current || !initialWireData?.length) return
+    previewRestoredRef.current = true
+    setPreviewWire(initialWireData[0])
+  }, [initialWireData])
 
   const onSaveStreams = useCallback(async () => {
     try {
@@ -147,10 +191,18 @@ export const Wires = (): JSX.Element => {
 
   const handleOnFocus = useCallback((wire: Wire) => {
     setFocusedWire(wire)
-    setPreviewWire((curr) => {
-      return curr ? wire : null
-    })
+    setPreviewWire((curr) => curr ? wire : null)
   }, [])
+
+  // Sync preview wire id to URL query params
+  useEffect(() => {
+    if (previewWire) {
+      setQueryString({ id: previewWire.id })
+    } else {
+      setQueryString({ id: undefined })
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [previewWire])
 
   // Apply loaded settings — runs only once after initial load completes
   useEffect(() => {
@@ -239,7 +291,7 @@ export const Wires = (): JSX.Element => {
 
         // Force preview to reload if it's showing one of the updated wires
         if (previewWire && nextStatuses.find((s) => s.uuid === previewWire.id)) {
-          setPreviewKey((prev) => prev + 1)
+          setPreviewReloadCount((n) => n + 1)
         }
 
         // Restore focus if we had a focused item
@@ -377,7 +429,7 @@ export const Wires = (): JSX.Element => {
               >
                 <Preview
                   wire={previewWire}
-                  key={previewKey}
+                  key={`${previewWire.id}-${previewReloadCount}`}
                   onClose={() => setPreviewWire(null)}
                 />
               </div>
