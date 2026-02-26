@@ -35,8 +35,8 @@ export const FreeTextFilter = (): JSX.Element => {
           setSelected(false)
         }
       }}
-      className={cn('pb-0 mb-1.5 border border-white',
-        'data-[selected=true]:border-zinc-400 data-[selected=true]:bg-white!')}
+      className={cn('pb-0 mb-1.5',
+        ' data-[selected=true]:bg-white! data-[selected=true]:shadow-[inset_0_0px_3px_rgba(0,0,0,0.5)]')}
     >
       <DebouncedCommandInput
         value={filter?.query?.[0] ?? ''}
