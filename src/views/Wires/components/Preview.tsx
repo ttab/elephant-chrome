@@ -4,6 +4,7 @@ import { decodeString } from '@/lib/decodeString'
 import type { Wire } from '@/shared/schemas/wire'
 import { Editor } from '@/components/PlainEditor'
 import { getWireStatus } from '@/lib/getWireStatus'
+import { getWireState } from '@/lib/getWireState'
 import { DocumentHistory } from './DocumentHistory'
 import { useState } from 'react'
 
@@ -19,7 +20,8 @@ export const Preview = ({ wire, onClose }: {
     role: wire?.fields['document.meta.tt_wire.role'].values[0],
     newsvalue: wire?.fields['document.meta.core_newsvalue.value']?.values[0],
     status: getWireStatus(wire),
-    version: BigInt(wire?.fields['current_version'].values[0]) ?? 1n
+    version: BigInt(wire?.fields['current_version'].values[0]) ?? 1n,
+    wireState: getWireState(wire)
   }
 
   const [wireVersion, setWireVersion] = useState<bigint | undefined>(undefined)
@@ -92,7 +94,7 @@ export const Preview = ({ wire, onClose }: {
           <DocumentHistory
             uuid={wire.id}
             currentVersion={data?.version}
-            stickyStatus={false}
+            wireState={data.wireState}
             onSelectVersion={setWireVersion}
             selectedVersion={wireVersion}
           />

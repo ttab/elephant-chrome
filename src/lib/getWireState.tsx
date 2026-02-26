@@ -2,7 +2,7 @@ import type { Wire } from '@/shared/schemas/wire'
 
 type WireStatusKey = undefined | 'read' | 'saved' | 'used'
 
-type WireState = {
+export type WireState = {
   status: WireStatusKey
   isFlash: boolean
   wasFlash?: number

@@ -43,7 +43,7 @@ export const HistoryIcon = ({ status, isCurrent, isLast }: {
             className='absolute left-0 top-0.5 bottom-0.5 w-0.5'
             style={{
               backgroundColor: color,
-              transform: 'translate(calc((var(--spacing) * 2) - 1px), calc(-50% + 1px))'
+              transform: 'translate(calc((var(--spacing) * 2) - 1px), calc(50% - 1px))'
             }}
           />
         )}
