@@ -5,10 +5,10 @@ type WireStatusKey = undefined | 'read' | 'saved' | 'used'
 type WireState = {
   status: WireStatusKey
   isFlash: boolean
-  wasFlash: boolean
-  wasSaved: boolean
-  wasUsed: boolean
-  wasRead: boolean
+  wasFlash?: number
+  wasSaved?: number
+  wasUsed?: number
+  wasRead?: number
 }
 
 /**
@@ -36,9 +36,9 @@ export function getWireState(wire: Wire): WireState {
   return {
     status,
     isFlash: version === flashVersion,
-    wasFlash: !isNaN(flashVersion) && version > flashVersion,
-    wasSaved: !isNaN(savedVersion) && version > savedVersion,
-    wasUsed: !isNaN(usedVersion) && version > usedVersion,
-    wasRead: !isNaN(readVersion) && version > readVersion
+    wasFlash: !isNaN(flashVersion) && version > flashVersion ? flashVersion : undefined,
+    wasSaved: !isNaN(savedVersion) && version > savedVersion ? savedVersion : undefined,
+    wasUsed: !isNaN(usedVersion) && version > usedVersion ? usedVersion : undefined,
+    wasRead: !isNaN(readVersion) && version > readVersion ? readVersion : undefined
   }
 }
