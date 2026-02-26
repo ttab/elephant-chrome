@@ -4,10 +4,9 @@ import { cn } from '@ttab/elephant-ui/utils'
 import { cva } from 'class-variance-authority'
 import { Button } from '@ttab/elephant-ui'
 import { RefreshCwIcon, SquareCheckIcon, SquareIcon, ZapIcon } from '@ttab/elephant-ui/icons'
-import { getWireStatus } from '@/lib/getWireStatus'
+import { getWireState } from '@/lib/getWireState'
 import type { WireStatus } from '../lib/setWireStatus'
 import { StreamEntryCell } from './StreamEntryCell'
-import { getWireStatuses } from '@/lib/getWireStatuses'
 
 export const StreamEntry = ({
   streamId,
@@ -26,8 +25,7 @@ export const StreamEntry = ({
   onFocus?: (item: Wire, event: React.FocusEvent<HTMLElement>) => void
   onPress?: (item: Wire, event: React.MouseEvent<HTMLElement> | React.KeyboardEvent<HTMLElement>) => void
 }): JSX.Element => {
-  const status = getWireStatus(entry)
-  const statuses = getWireStatuses(entry)
+  const wireState = getWireState(entry)
 
   const handleClick = useCallback((e: React.MouseEvent<HTMLElement>) => {
     onPress?.(entry, e)
@@ -38,12 +36,12 @@ export const StreamEntry = ({
       e.preventDefault()
       onPress?.(entry, e)
     } else if (e.key === 'm') {
-      if (status !== 'used') {
+      if (wireState.status !== 'used') {
         e.preventDefault()
         onToggleSelected(e)
       }
     }
-  }, [entry, onPress, onToggleSelected, status])
+  }, [entry, onPress, onToggleSelected, wireState.status])
 
   const handleFocus = useCallback((e: React.FocusEvent<HTMLElement>) => {
     onFocus?.(entry, e)
@@ -72,53 +70,54 @@ export const StreamEntry = ({
     `,
     {
       variants: {
-        flashLevel: {
-          // Current version is a flash
-          1: '!border-s-red-500 text-red-500',
-          // Historic version was a flash
-          2: ''
+        isFlash: {
+          true: '!border-s-red-500 text-red-500'
         },
         status: {
-          draft: '',
           read: 'border-s-approved bg-approved-background hover:bg-approved/20',
           saved: 'border-s-done bg-done-background hover:bg-done/30',
           used: 'border-s-usable bg-usable-background hover:bg-usable/30'
         },
         isUpdated: {
           true: 'bg-background'
+        },
+        wasSaved: {
+          true: 'border-s-done'
+        },
+        wasUsed: {
+          true: 'border-s-usable'
+        },
+        wasRead: {
+          true: 'border-s-approved'
         }
       }
     }
   )
 
   const modified = new Date(entry.fields.modified.values[0])
-  const newsvalue = entry.fields['document.meta.core_newsvalue.value']?.values[0] === '6' ? 6 : undefined
-  let flashLevel: null | 1 | 2 = null
-  if (newsvalue === 6) {
-    flashLevel = 1
-  } else if (statuses.find((s) => s.key === 'flash')) {
-    flashLevel = 2
-  }
-
   const compositeId = `${streamId}:${entry.id}`
+  const { status, isFlash, wasFlash, wasSaved, wasUsed, wasRead } = wireState
+
   return (
     <div className='group relative'>
       <div
         data-item-id={compositeId}
         data-entry-id={entry.id}
         tabIndex={0}
-        className={cn(variants({ status, flashLevel }))}
+        className={cn(variants({ status, isFlash, wasSaved, wasUsed, wasRead }))}
         onKeyDown={handleKeyDown}
         onFocus={handleFocus}
         onClick={handleClick}
       >
+
         <StreamEntryCell>
           {`${modified.getHours()}.${modified.getMinutes().toString().padStart(2, '0')}`}
         </StreamEntryCell>
 
         <StreamEntryCell className='flex items-center justify-center'>
           <span>
-            {!!flashLevel && <ZapIcon size={12} strokeWidth={1.95} className='text-red-500' fill='oklch(62.8% 0.257 29.23)' />}
+            {wasFlash && <ZapIcon size={12} strokeWidth={1.95} className='text-red-500/80 fill-red-500/5' />}
+            {isFlash && <ZapIcon size={12} strokeWidth={1.95} className='text-red-500 fill-red-500' />}
           </span>
         </StreamEntryCell>
 
