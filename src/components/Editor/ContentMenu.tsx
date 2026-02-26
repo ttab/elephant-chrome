@@ -3,11 +3,17 @@ import { Menu, usePluginRegistry } from '@ttab/textbit'
 import { ContentMenuGroup } from './ContentMenuGroup'
 import { ContentMenuItem } from './ContentMenuItem'
 
-export const ContentMenu = (): JSX.Element => {
+export const ContentMenu = ({ editorType}: { editorType?: string }): JSX.Element => {
   const { actions } = usePluginRegistry()
+
+  const factBoxActions = ['core/text/set-body',
+    'core/ordered-list/add-ordered-list',
+    'core/unordered-list/add-unordered-list'
+  ]
 
   const textActions = actions.filter((action) => action.plugin.class === 'text')
   const blockActions = actions.filter((action) => action.plugin.class === 'block')
+  const factBoxTextActions = actions.filter((action) => factBoxActions.includes(action.name))
 
   return (
     <Menu.Root className='group mt-2'>
@@ -22,7 +28,9 @@ export const ContentMenu = (): JSX.Element => {
         {textActions.length > 0
           && (
             <ContentMenuGroup>
-              {textActions.map((action) => <ContentMenuItem action={action} key={action.name} />)}
+              {(editorType === 'factbox'
+                ? factBoxTextActions
+                : textActions).map((action) => <ContentMenuItem action={action} key={action.name} />)}
             </ContentMenuGroup>
           )}
       </Menu.Content>
