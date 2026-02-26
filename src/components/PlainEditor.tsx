@@ -103,10 +103,10 @@ export const Editor = ({ id, version, textOnly = false, direct, versionStatusHis
         <div className='pe-12 ps-12 mt-6'>
           {notes.map((note, index) => (
             <div key={index} className='flex flex-row gap-2 w-full justify-between items-center'>
-              <Alert className='flex py-3 px-4  bg-blue-50 dark:bg-blue-800 items-center'>
-                <MessageCircleMoreIcon size={18} strokeWidth={1.75} className='shrink-0 -mt-1.5' />
+              <div className='flex gap-3 py-3 px-4  bg-blue-50 dark:bg-blue-800 items-center w-full border rounded border-blue-500/30 dark:border-blue-300/50'>
+                <MessageCircleMoreIcon size={18} strokeWidth={1.75} className='shrink-0 stroke-blue-800/50 dark:stroke-blue-300 fill-[#ffffff] dark:fill-gray-800' />
                 <AlertDescription>{note.data?.text}</AlertDescription>
-              </Alert>
+              </div>
             </div>
           ))}
         </div>
