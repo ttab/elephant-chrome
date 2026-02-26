@@ -6,18 +6,16 @@ import { MetaSheet } from '@/components/MetaSheet/MetaSheet'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 
-export const FactboxHeader = ({ ydoc, asDialog, onDialogClose }: {
+export const FactboxHeader = ({ ydoc, onDialogClose }: {
   ydoc: YDocument<Y.Map<unknown>>
-  asDialog: boolean
   onDialogClose?: () => void
 }): JSX.Element => {
   return (
-    <ViewHeader.Root asDialog={asDialog}>
+    <ViewHeader.Root>
       <ViewHeader.Title
         name='Factbox'
         title='Faktaruta'
         icon={BookTextIcon}
-        asDialog={asDialog}
       />
       <ViewHeader.Content className='justify-start'>
         <div className='max-w-[780px] mx-auto flex flex-row gap-1 justify-between items-center w-full'>
@@ -25,19 +23,17 @@ export const FactboxHeader = ({ ydoc, asDialog, onDialogClose }: {
           </div>
 
           <div className='flex flex-row gap-2 justify-end items-center'>
-            {!asDialog && (
-              <>
-                <StatusMenu
-                  ydoc={ydoc}
-                />
-                <MetaSheet ydoc={ydoc} />
-              </>
-            )}
+            <>
+              <StatusMenu
+                ydoc={ydoc}
+              />
+              <MetaSheet container={containerRef.current} ydoc={ydoc} />
+            </>
             {!!ydoc && <ViewHeader.RemoteUsers ydoc={ydoc} />}
           </div>
         </div>
       </ViewHeader.Content>
-      <ViewHeader.Action ydoc={ydoc} onDialogClose={onDialogClose} asDialog={asDialog} />
+      <ViewHeader.Action ydoc={ydoc} onDialogClose={onDialogClose} />
 
     </ViewHeader.Root>
   )
