@@ -276,7 +276,7 @@ export const Stream = ({
   return (
     <div
       data-stream-id={wireStream.uuid}
-      className='flex flex-col h-full snap-start snap-always min-w-80 max-w-120 border rounded-md overflow-hidden'
+      className='flex flex-col h-full snap-start snap-always w-110 shrink-0 border rounded-md overflow-hidden'
     >
       <div className='flex-none bg-background flex items-center justify-between py-1 px-4 border-b'>
         <div className='flex gap-2'>
