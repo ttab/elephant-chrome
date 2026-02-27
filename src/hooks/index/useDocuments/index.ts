@@ -49,7 +49,7 @@ class AbortError extends Error { }
  *
  * @returns {SWRResponse<T[], Error>} An object containing the fetched data, error, and SWR utilities.
  */
-export const useDocuments = <T extends HitV1, F>({ documentType, query, size, page, fields, sort, options }: {
+export const useDocuments = <T extends HitV1, F>({ documentType, query, size, page, fields, sort, options, disabled }: {
   documentType: string
   query?: QueryV1
   fields?: F
@@ -57,6 +57,7 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
   page?: number
   sort?: SortingV1[]
   options?: useDocumentsFetchOptions
+  disabled?: boolean
 }): SWRResponse<T[], Error> => {
   const { data: session } = useSession()
   const { index, repository } = useRegistry()
@@ -67,9 +68,22 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
   const dataRef = useRef<T[] | undefined>(undefined)
   const optionsRef = useRef(options)
 
-  const key = useMemo(() => query
-    ? `${documentType}/${JSON.stringify(query, (_, v: unknown) => typeof v === 'bigint' ? v.toString() : v)}${page ? `/${page}` : ''}`
-    : documentType, [query, page, documentType])
+  const key = useMemo(() => {
+    if (disabled) return null
+    return query
+      ? `${documentType}/${JSON.stringify(query, (_, v: unknown) => typeof v === 'bigint' ? v.toString() : v)}${page ? `/${page}` : ''}`
+      : documentType
+  }, [disabled, query, page, documentType])
+
+  // When the key changes, the old server-side subscription is no longer valid.
+  // Clear subscriptions so the polling effect doesn't restart with stale references.
+  const prevKeyRef = useRef(key)
+  useEffect(() => {
+    if (prevKeyRef.current !== key) {
+      prevKeyRef.current = key
+      setSubscriptions(undefined)
+    }
+  }, [key])
 
   // Memoize fetcher
   const fetcher = useMemo(() => (): Promise<T[]> =>

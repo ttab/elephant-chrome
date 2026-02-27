@@ -46,7 +46,7 @@ export const Menu = (): JSX.Element => {
       <Sheet open={mainOpen} onOpenChange={setMainMenuOpen}>
         <SheetTrigger
           ref={triggerRef}
-          className='rounded-md hover:bg-table-focused dark:bg-table-focused hover:border w-9 h-9 flex items-center justify-center'
+          className='z-90 rounded-md hover:bg-table-focused dark:bg-table-focused hover:border w-9 h-9 flex items-center justify-center'
         >
           <MenuIcon strokeWidth={2.25} size={18} />
         </SheetTrigger>
@@ -57,7 +57,7 @@ export const Menu = (): JSX.Element => {
             event.preventDefault()
           }}
           side='left'
-          className='p-0 flex flex-col justify-between'
+          className='z-100 p-0 flex flex-col justify-between'
         >
           <div>
             <SheetHeader className='h-14'>

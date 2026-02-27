@@ -44,7 +44,7 @@ describe('assignmentPlanningTemplate', () => {
       planningDate: '2024-06-01',
       slugLine: 'slug',
       title: 'Assignment Title',
-      wire: mockWire as unknown as Wire,
+      wires: [mockWire] as unknown as Wire[],
       assignmentData: undefined,
       assignee: mockAssignee as unknown as IDBAuthor
     })
@@ -95,7 +95,7 @@ describe('assignmentPlanningTemplate', () => {
       planningDate: '2024-06-01',
       slugLine: 'slug',
       title: 'Assignment Title',
-      wire: mockWire as unknown as Wire,
+      wires: [mockWire] as unknown as Wire[],
       assignmentData: undefined,
       assignee: mockAssignee as unknown as IDBAuthor
     })

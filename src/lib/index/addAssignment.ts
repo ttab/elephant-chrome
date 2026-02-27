@@ -25,8 +25,8 @@ export async function addAssignmentWithDeliverable(payload: {
     uuid: string
     title: string
   }
+  wires?: Wire[]
   quickArticleData?: QuickArticleData
-  wire?: Wire
 }): Promise<string | undefined> {
   try {
     const response = await fetch(`${BASE_URL}/api/documents/${payload.planningId || 'create'}/addassignment/`, {

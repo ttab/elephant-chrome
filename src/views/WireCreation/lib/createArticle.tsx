@@ -3,16 +3,16 @@ import { getValueByYPath } from '@/shared/yUtils'
 import type { Wire } from '@/shared/schemas/wire'
 import { toast } from 'sonner'
 import { ToastAction } from '@/components/ToastAction'
+import { CalendarDaysIcon, FileInputIcon } from '@ttab/elephant-ui/icons'
 import { addAssignmentWithDeliverable } from '@/lib/index/addAssignment'
 import { convertToISOStringInTimeZone } from '@/shared/datetime'
-import { CalendarDaysIcon, FileInputIcon } from '@ttab/elephant-ui/icons'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 
 export async function createArticle({
   ydoc,
   status,
-  wire,
+  wires,
   planningId,
   planningTitle,
   section,
@@ -21,7 +21,7 @@ export async function createArticle({
   ydoc: YDocument<Y.Map<unknown>>
   status: string
   session: Session
-  wire?: Wire
+  wires?: Wire[]
   planningId?: string
   planningTitle?: string
   section?: {
@@ -58,7 +58,7 @@ export async function createArticle({
     localDate,
     isoDateTime,
     section,
-    wire
+    wires
   })
 
   // Create article in repo
@@ -72,21 +72,18 @@ export async function createArticle({
     },
     action: [
       <ToastAction
-        key='open-planning'
+        key='planning'
         documentId={updatedPlanningId}
         withView='Planning'
-        label='Öppna planering'
         Icon={CalendarDaysIcon}
-        target='last'
+        label='Öppna planering'
       />,
-
       <ToastAction
-        key='open-article'
+        key='article'
         documentId={documentId}
         withView='Editor'
-        label='Öppna artikel'
         Icon={FileInputIcon}
-        target='last'
+        label='Öppna artikel'
       />
     ]
   })

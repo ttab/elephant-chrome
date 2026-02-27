@@ -1,42 +1,59 @@
 import type { Dispatch, PropsWithChildren, SetStateAction, JSX } from 'react'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, forwardRef } from 'react'
 import { Tabs } from '@ttab/elephant-ui'
 import { cn } from '@ttab/elephant-ui/utils'
 import { cva } from 'class-variance-authority'
 
-export const Root = ({ children, className, tab, onTabChange, asDialog = false }: {
+type ViewRootProps = {
   className?: string
   asDialog?: boolean
   tab?: string
   onTabChange?: Dispatch<SetStateAction<string>>
-} & PropsWithChildren): JSX.Element => {
-  const divRef = useRef<HTMLDivElement>(null)
+} & PropsWithChildren
 
-  useEffect(() => {
-    if (!asDialog && !tab && !onTabChange && divRef.current) {
-      divRef.current.focus()
-      divRef.current.blur()
-    }
-  }, [asDialog, tab, onTabChange])
+export const Root = forwardRef<HTMLDivElement, ViewRootProps>(
+  ({ children, className, tab, onTabChange, asDialog = false }, forwardedRef): JSX.Element => {
+    const localRef = useRef<HTMLDivElement>(null)
 
-  const variants = cva('flex flex-col', {
-    variants: {
-      asDialog: {
-        true: '',
-        false: 'h-screen'
+    // Use forwarded ref if provided, otherwise fallback to local
+    const ref = (forwardedRef as React.RefObject<HTMLDivElement>) ?? localRef
+
+    useEffect(() => {
+      if (!asDialog && !tab && !onTabChange && ref.current) {
+        ref.current.focus()
+        ref.current.blur()
       }
-    }
-  })
+    }, [asDialog, tab, onTabChange, ref])
 
-  return tab && onTabChange
-    ? (
-        <Tabs defaultValue={tab} onValueChange={onTabChange} className={cn(variants({ asDialog }), className)}>
-          {children}
-        </Tabs>
-      )
-    : (
-        <div ref={divRef} className={cn(variants({ asDialog }), className)} tabIndex={0}>
-          {children}
-        </div>
-      )
-}
+    const variants = cva('flex flex-col', {
+      variants: {
+        asDialog: {
+          true: '',
+          false: 'h-screen'
+        }
+      }
+    })
+
+    return tab && onTabChange
+      ? (
+          <Tabs
+            defaultValue={tab}
+            onValueChange={onTabChange}
+            className={cn(variants({ asDialog }), className)}
+          >
+            {children}
+          </Tabs>
+        )
+      : (
+          <div
+            ref={ref}
+            className={cn(variants({ asDialog }), className)}
+            tabIndex={0}
+          >
+            {children}
+          </div>
+        )
+  }
+)
+
+Root.displayName = 'View.Root'

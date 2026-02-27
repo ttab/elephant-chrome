@@ -1,6 +1,6 @@
 import { useHistory, useLink, useNavigation, useView, useWorkflowStatus } from '@/hooks'
 import { Newsvalue } from '@/components/Newsvalue'
-import { useCallback, useEffect, useRef, useState, type JSX } from 'react'
+import { useCallback, useState, type JSX } from 'react'
 import { MetaSheet } from '@/components/MetaSheet/MetaSheet'
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { AddNote } from '@/components/Notes/AddNote'
@@ -25,16 +25,11 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
   const { state, dispatch } = useNavigation()
   const history = useHistory()
   const planningId = useDeliverablePlanningId(ydoc.id)
-  const containerRef = useRef<HTMLElement | null>(null)
   const [publishTime] = useState<string | null>(null)
   const [workflowStatus] = useWorkflowStatus({ ydoc, documentId: ydoc.id })
   const [documentType] = useYValue<string>(ydoc.ele, 'root.type')
 
   const openLatestVersion = useLink('Editor')
-
-  useEffect(() => {
-    containerRef.current = (document.getElementById(viewId))
-  }, [viewId])
 
   // FIXME: We must have a way to retrieve the publish time defined in the planning.
   // FIXME: When yjs opening of related planning have been fixed this should be readded/remade.
@@ -143,7 +138,7 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
       </ViewHeader.Content>
 
       <ViewHeader.Action>
-        <MetaSheet container={containerRef.current} ydoc={ydoc} readOnly={readOnly} readOnlyVersion={readOnlyVersion} />
+        <MetaSheet ydoc={ydoc} readOnly={readOnly} readOnlyVersion={readOnlyVersion} />
       </ViewHeader.Action>
     </ViewHeader.Root>
   )

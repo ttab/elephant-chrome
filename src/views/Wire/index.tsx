@@ -1,75 +1,72 @@
 import type { ViewMetadata, ViewProps } from '@/types/index'
-import { WireViewContent } from './WireViewContent'
-import * as Templates from '@/shared/templates'
+import { View, ViewHeader } from '@/components/View'
 import { useMemo, type JSX } from 'react'
-import { Block } from '@ttab/elephant-api/newsdoc'
-import type { Wire as WireType } from '@/shared/schemas/wire'
-import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
+import { QueryV1, BoolQueryV1, TermsQueryV1 } from '@ttab/elephant-api/index'
+import { fields as wireFields, type Wire as WireDoc, type WireFields } from '@/shared/schemas/wire'
+import { useDocuments } from '@/hooks/index/useDocuments'
+import { WirePreview } from '@/components/WirePreview/WirePreview'
+import { CableIcon } from '@ttab/elephant-ui/icons'
 
 const meta: ViewMetadata = {
   name: 'Wire',
   path: `${import.meta.env.BASE_URL || ''}/wire`,
   widths: {
     sm: 12,
-    md: 12,
+    md: 6,
     lg: 6,
     xl: 6,
-    '2xl': 6,
-    hd: 6,
-    fhd: 4,
-    qhd: 3,
+    '2xl': 5,
+    hd: 4,
+    fhd: 3,
+    qhd: 2,
     uhd: 2
   }
 }
 
-export const Wire = (props: ViewProps & {
-  wire?: WireType
-}): JSX.Element => {
-  // The article we're creating
-  const [documentId, data] = useMemo(() => {
-    const documentId = crypto.randomUUID()
-    const payload = {
-      meta: {
-        'tt/slugline': [Block.create({ type: 'tt/slugline' })],
-        'core/newsvalue': [Block.create({ type: 'core/newsvalue' })]
-      },
-      links: {
-        'tt/wire': [Block.create({
-          type: 'tt/wire',
-          uuid: props.wire?.id,
-          title: props.wire?.fields['document.title'].values[0],
-          rel: 'source-document',
-          data: {
-            version: props.wire?.fields['current_version'].values[0]
-          }
-        })]
+export const Wire = ({ id }: ViewProps): JSX.Element => {
+  const query = useMemo(() => id
+    ? QueryV1.create({
+      conditions: {
+        oneofKind: 'bool',
+        bool: BoolQueryV1.create({
+          must: [{
+            conditions: {
+              oneofKind: 'terms',
+              terms: TermsQueryV1.create({ field: '_id', values: [id] })
+            }
+          }]
+        })
       }
-    }
+    })
+    : undefined, [id])
 
-    return [documentId, toGroupedNewsDoc({
-      version: 0n,
-      isMetaDocument: false,
-      mainDocument: '',
-      document: Templates.article(documentId, payload)
-    })]
-  }, [props.wire])
+  const { data } = useDocuments<WireDoc, WireFields>({
+    documentType: 'tt/wire',
+    query,
+    fields: wireFields,
+    size: 1,
+    disabled: !id
+  })
+
+  const wire = data?.[0]
 
   return (
-    <>
-      {typeof documentId === 'string' && props.wire
-        ? (
-            <WireViewContent {...
-              {
-                ...props,
-                wire: props.wire,
-                documentId,
-                data
-              }
-            }
-            />
-          )
-        : <></>}
-    </>
+    <View.Root>
+      <ViewHeader.Root>
+        <ViewHeader.Title
+          name='Wire'
+          title='Telegram'
+          icon={CableIcon}
+          iconColor='#FF6347'
+        />
+        <ViewHeader.Content />
+        <ViewHeader.Action />
+      </ViewHeader.Root>
+
+      <View.Content className='pt-6'>
+        {wire && <WirePreview wire={wire} />}
+      </View.Content>
+    </View.Root>
   )
 }
 

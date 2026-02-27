@@ -14,7 +14,7 @@ export function assignmentPlanningTemplate({
   planningDate,
   slugLine,
   title,
-  wire,
+  wires,
   assignmentData,
   assignee
 }: {
@@ -22,7 +22,7 @@ export function assignmentPlanningTemplate({
   planningDate: string
   slugLine?: string
   title?: string
-  wire?: Wire
+  wires?: Wire[]
   assignmentData?: Block['data']
   assignee: IDBAuthor | null | undefined
 }): Block {
@@ -40,9 +40,10 @@ export function assignmentPlanningTemplate({
     }
   }
 
-  const wireContentSourceDocument: Block[] = [
-    wire
-      ? Block.create({
+  const wireContentSourceDocument: Block[] = (!wires?.length)
+    ? []
+    : wires.map((wire) =>
+      Block.create({
         type: 'tt/wire',
         uuid: wire.id,
         title: wire.fields['document.title'].values[0],
@@ -51,8 +52,7 @@ export function assignmentPlanningTemplate({
           version: wire.fields['current_version'].values[0]
         }
       })
-      : undefined
-  ].filter((x): x is Block => x !== undefined)
+    )
 
   const author: Block[] = [
     assignee
