@@ -18,7 +18,8 @@ export const TextboxRoot = ({
   spellcheck = true,
   onBlur,
   onFocus,
-  className
+  className,
+  'aria-label': ariaLabel
 }: {
   value: Y.XmlText
   ydoc: YDocument<Y.Map<unknown>>
@@ -31,6 +32,7 @@ export const TextboxRoot = ({
   onBlur: React.FocusEventHandler<HTMLDivElement>
   onFocus: React.FocusEventHandler<HTMLDivElement>
   className?: string
+  'aria-label'?: string
 }): JSX.Element => {
   const [documentLanguage] = useYValue<string>(ydoc.ele, 'root.language')
   const onSpellcheck = useOnSpellcheck(documentLanguage)
@@ -56,6 +58,7 @@ export const TextboxRoot = ({
       className={cn('h-min-2 w-full', className)}
     >
       <TextboxEditable
+        aria-label={ariaLabel}
         spellcheck={spellcheck}
         autoFocus={autoFocus}
         onFocus={onFocus}

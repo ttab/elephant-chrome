@@ -3,15 +3,17 @@ import { Textbit } from '@ttab/textbit'
 import { cn } from '@ttab/elephant-ui/utils'
 import { ContextMenu } from '../../Editor/ContextMenu'
 
-export const TextboxEditable = ({ singleLine, autoFocus, onFocus, onBlur }: {
+export const TextboxEditable = ({ singleLine, autoFocus, onFocus, onBlur, 'aria-label': ariaLabel }: {
   singleLine: boolean
   spellcheck?: boolean
   autoFocus?: boolean
   onBlur: React.FocusEventHandler<HTMLDivElement>
   onFocus: React.FocusEventHandler<HTMLDivElement>
+  'aria-label'?: string
 }): JSX.Element | undefined => {
   return (
     <Textbit.Editable
+      aria-label={ariaLabel}
       autoFocus={autoFocus}
       onBlur={onBlur}
       onFocus={onFocus}

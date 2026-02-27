@@ -150,6 +150,7 @@ function EditorWrapper(props: ViewProps & {
             <BaseEditor.Text
               ydoc={ydoc}
               autoFocus={true}
+              aria-label='Artikelredigerare'
             />
           </div>
         </View.Content>

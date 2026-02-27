@@ -73,6 +73,7 @@ export const FlashView = (props: ViewProps & {
                     ydoc={ydoc}
                     autoFocus={true}
                     allowStyling={false}
+                    aria-label='Flashredigerare'
                     className='border-b'
                   />
                 )}

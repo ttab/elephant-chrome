@@ -20,6 +20,7 @@ export const TextBox = ({ icon: Icon, value, onChange, ...props }: {
   onBlur?: React.FocusEventHandler<HTMLDivElement>
   onFocus?: React.FocusEventHandler<HTMLDivElement>
   onChange?: (arg: Descendant[]) => void
+  'aria-label'?: string
 }): JSX.Element => {
   const path = useYPath(value, true)
   const setFocused = useRef<(value: boolean, key: string) => void>(() => { })

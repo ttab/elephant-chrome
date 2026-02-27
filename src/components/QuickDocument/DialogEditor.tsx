@@ -64,6 +64,7 @@ export const DialogEditor = ({ ydoc, setTitle, onValidation, validateStateRef, t
               ydoc={ydoc}
               allowStyling={false}
               autoFocus={true}
+              aria-label={type === 'flash' ? 'Flashredigerare' : 'Artikelredigerare'}
               className='ps-4 pe-4'
             />
           )}
