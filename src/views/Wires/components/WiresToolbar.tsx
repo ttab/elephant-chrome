@@ -1,11 +1,12 @@
 import { Button, ButtonGroup, Tooltip } from '@ttab/elephant-ui'
 import { CheckIcon, EyeIcon, FolderIcon, Grid2X2PlusIcon, PlusIcon, SaveIcon } from '@ttab/elephant-ui/icons'
 
-export const WiresToolbar = ({ disabled = false, onAddStream, onSaveStreams, onAction, isDirty, hasMissingFilters = false }: {
+export const WiresToolbar = ({ disabled = false, onAddStream, onSaveStreams, onAction, onCreate, isDirty, hasMissingFilters = false }: {
   disabled?: boolean
   onAddStream: () => void
   onSaveStreams: () => Promise<void>
   onAction: (action: 'read' | 'saved' | 'used') => void
+  onCreate: () => void
   isDirty: boolean
   hasMissingFilters?: boolean
 }) => {
@@ -87,9 +88,8 @@ export const WiresToolbar = ({ disabled = false, onAddStream, onSaveStreams, onA
             size='sm'
             onMouseDown={(e) => {
               e.preventDefault()
-              onAction('used')
+              onCreate()
             }}
-            value='used'
             aria-label='Skapa artikel från telegram'
             variant='ghost'
             className='w-9 h-9 px-0 hover:bg-usable-background rounded-sm'

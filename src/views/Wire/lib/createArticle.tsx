@@ -5,7 +5,6 @@ import { toast } from 'sonner'
 import { ToastAction } from '../ToastAction'
 import { addAssignmentWithDeliverable } from '@/lib/index/addAssignment'
 import { convertToISOStringInTimeZone } from '@/shared/datetime'
-import { CalendarDaysIcon, FileInputIcon } from '@ttab/elephant-ui/icons'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 
@@ -70,24 +69,11 @@ export async function createArticle({
     classNames: {
       title: 'whitespace-nowrap'
     },
-    action: [
+    action: (
       <ToastAction
-        key='open-planning'
-        documentId={updatedPlanningId}
-        withView='Planning'
-        label='Öppna planering'
-        Icon={CalendarDaysIcon}
-        target='last'
-      />,
-
-      <ToastAction
-        key='open-article'
-        documentId={documentId}
-        withView='Editor'
-        label='Öppna artikel'
-        Icon={FileInputIcon}
-        target='last'
+        planningId={updatedPlanningId}
+        articleId={documentId}
       />
-    ]
+    )
   })
 }

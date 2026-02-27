@@ -1,36 +1,38 @@
 import type { JSX } from 'react'
-import type { Target } from '@/components/Link/lib/handleLink'
 import { useLink } from '@/hooks/useLink'
-import type { View } from '@/types/index'
 import { Button, Tooltip } from '@ttab/elephant-ui'
-import type { LucideIcon } from '@ttab/elephant-ui/icons'
+import { CalendarDaysIcon, FileInputIcon } from '@ttab/elephant-ui/icons'
 
-export const ToastAction = ({ documentId, withView, Icon, label, target }: {
-  documentId: string | undefined
-  withView: View
-  label?: string
-  Icon?: LucideIcon
-  target?: Target
-}): JSX.Element | null => {
-  const open = useLink(withView)
-
-  if (!documentId) {
-    return null
-  }
+export const ToastAction = ({ planningId, articleId }: {
+  planningId: string | undefined
+  articleId: string | undefined
+}): JSX.Element => {
+  const openPlanning = useLink('Planning')
+  const openArticle = useLink('Editor')
 
   return (
     <div className='flex flex-row w-full gap-2 justify-end'>
-      <Tooltip
-        content={label}
-      >
-        <Button
-          variant='icon'
-          onClick={(event) =>
-            open(event, { id: documentId }, target)}
-        >
-          {Icon && <Icon size={16} strokeWidth={1.75} />}
-        </Button>
-      </Tooltip>
+      {planningId && (
+        <Tooltip content='Öppna planering'>
+          <Button
+            variant='icon'
+            className='text-muted-foreground'
+            onClick={(event) => openPlanning(event, { id: planningId }, 'last')}
+          >
+            <CalendarDaysIcon size={16} strokeWidth={1.75} />
+          </Button>
+        </Tooltip>
+      )}
+      {articleId && (
+        <Tooltip content='Öppna artikel'>
+          <Button
+            variant='icon'
+            onClick={(event) => openArticle(event, { id: articleId }, 'last')}
+          >
+            <FileInputIcon size={16} strokeWidth={1.75} />
+          </Button>
+        </Tooltip>
+      )}
     </div>
   )
 }

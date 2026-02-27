@@ -382,6 +382,7 @@ export const Wires = (): JSX.Element => {
             onAddStream={addStream}
             onSaveStreams={onSaveStreams}
             onAction={onAction}
+            onCreate={onCreate}
           />
         </ViewHeader.Content>
         <ViewHeader.Action />
