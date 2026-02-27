@@ -21,7 +21,7 @@ export const StreamEntry = ({
   entry: Wire
   isSelected: boolean
   statusMutation: WireStatus | undefined
-  onToggleSelected: (event: unknown) => void
+  onToggleSelected: (wire: Wire, shiftKey: boolean) => void
   onFocus?: (item: Wire, event: React.FocusEvent<HTMLElement>) => void
   onPress?: (item: Wire, event: React.MouseEvent<HTMLElement> | React.KeyboardEvent<HTMLElement>) => void
 }): JSX.Element => {
@@ -38,7 +38,7 @@ export const StreamEntry = ({
     } else if (e.key === 'm') {
       if (wireState.status !== 'used') {
         e.preventDefault()
-        onToggleSelected(e)
+        onToggleSelected(entry, e.shiftKey)
       }
     }
   }, [entry, onPress, onToggleSelected, wireState.status])
@@ -49,8 +49,8 @@ export const StreamEntry = ({
 
   const handleToggleClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()
-    onToggleSelected(e)
-  }, [onToggleSelected])
+    onToggleSelected(entry, e.shiftKey)
+  }, [entry, onToggleSelected])
 
   const variants = cva(
     `

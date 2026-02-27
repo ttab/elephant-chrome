@@ -11,8 +11,7 @@ import {
   getCoreRowModel,
   flexRender,
   type ColumnDef,
-  type RowSelectionState,
-  type OnChangeFn
+  type RowSelectionState
 } from '@tanstack/react-table'
 import { FilterValue } from './Filter/FilterValue'
 import { FilterMenu } from './Filter/FilterMenu'
@@ -47,8 +46,10 @@ export const Stream = ({
 }): JSX.Element => {
   const [page, setPage] = useState(1)
   const [allData, setAllData] = useState<Wire[]>([])
+  const allDataRef = useRef<Wire[]>([])
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const loadingRef = useRef(false)
+  const lastToggledWireIdRef = useRef<string | null>(null)
 
   const hasFilters = wireStream.filters.length > 0
   const skipFetch = REQUIRE_FILTERS && !hasFilters
@@ -63,6 +64,7 @@ export const Stream = ({
   // Clear accumulated data when all filters are removed (returning to empty state)
   useEffect(() => {
     if (skipFetch) {
+      allDataRef.current = []
       setAllData([])
       setPage(1)
     }
@@ -88,27 +90,28 @@ export const Stream = ({
     if (!data) return
 
     setAllData((prev) => {
+      let next: Wire[]
+
       // First page replaces everything
       if (page === 1) {
-        return data
+        next = data
+      } else if (isLoading) {
+        // Don't append paginated data while still loading
+        next = prev
+      } else {
+        // Reconcile existing wires and merge in updates
+        const byId = new Map(prev.map((w) => [w.id, w]))
+
+        data.forEach((wire) => {
+          const existing = byId.get(wire.id)
+          byId.set(wire.id, existing ? { ...existing, fields: wire.fields } : wire)
+        })
+
+        next = Array.from(byId.values())
       }
 
-      // Don't append paginated data while still loading
-      if (isLoading) return prev
-
-      // Reconcile existing wires and merge in updates
-      const byId = new Map(prev.map((w) => [w.id, w]))
-
-      data.forEach((wire) => {
-        const existing = byId.get(wire.id)
-
-        byId.set(
-          wire.id,
-          (existing) ? { ...existing, fields: wire.fields } : wire
-        )
-      })
-
-      return Array.from(byId.values())
+      allDataRef.current = next
+      return next
     })
 
     if (!isLoading) {
@@ -154,27 +157,34 @@ export const Stream = ({
     return selection
   }, [selectedWires])
 
-  const handleRowSelectionChange = useCallback<OnChangeFn<RowSelectionState>>((updaterOrValue) => {
-    const newSelection = typeof updaterOrValue === 'function'
-      ? updaterOrValue(rowSelection)
-      : updaterOrValue
+  const selectedWireIdsRef = useRef<Set<string>>(new Set())
+  selectedWireIdsRef.current = useMemo(() => new Set(selectedWires.map((w) => w.id)), [selectedWires])
 
-    // Check each row in the new selection
-    Object.keys(newSelection).forEach((wireId) => {
-      if (newSelection[wireId] && !rowSelection[wireId]) {
-        const wire = allData.find((w) => w.id === wireId)
-        if (wire) onToggleWire(wire, true)
-      }
-    })
+  const handleToggleSelected = useCallback((wire: Wire, shiftKey: boolean) => {
+    const data = allDataRef.current
+    const selectedIds = selectedWireIdsRef.current
+    const currentIndex = data.findIndex((w) => w.id === wire.id)
+    if (currentIndex === -1) return
 
-    // Check for deselections
-    Object.keys(rowSelection).forEach((wireId) => {
-      if (!newSelection[wireId]) {
-        const wire = allData.find((w) => w.id === wireId)
-        if (wire) onToggleWire(wire, false)
-      }
-    })
-  }, [rowSelection, allData, onToggleWire])
+    const lastIndex = lastToggledWireIdRef.current
+      ? data.findIndex((w) => w.id === lastToggledWireIdRef.current)
+      : -1
+
+    if (shiftKey && lastIndex !== -1) {
+      const start = Math.min(lastIndex, currentIndex)
+      const end = Math.max(lastIndex, currentIndex)
+      const targetSelected = !selectedIds.has(wire.id)
+      data.slice(start, end + 1).forEach((w) => {
+        if (selectedIds.has(w.id) !== targetSelected) {
+          onToggleWire(w, targetSelected)
+        }
+      })
+    } else {
+      onToggleWire(wire, !selectedIds.has(wire.id))
+    }
+
+    lastToggledWireIdRef.current = wire.id
+  }, [onToggleWire])
 
   const removeThisWire = useCallback(() => {
     onRemove?.(wireStream.uuid)
@@ -199,14 +209,14 @@ export const Stream = ({
             entry={row.original}
             isSelected={row.getIsSelected()}
             statusMutation={statusMutations.find((m) => m.uuid === row.original.id)}
-            onToggleSelected={row.getToggleSelectedHandler()}
+            onToggleSelected={handleToggleSelected}
             onPress={onPress}
             onFocus={onFocus}
           />
         )
       }
     ],
-    [wireStream.uuid, onPress, onFocus, statusMutations]
+    [wireStream.uuid, onPress, onFocus, statusMutations, handleToggleSelected]
   )
 
   const table = useReactTable({
@@ -214,7 +224,6 @@ export const Stream = ({
     columns,
     state: { rowSelection },
     enableRowSelection: true,
-    onRowSelectionChange: handleRowSelectionChange,
     getCoreRowModel: getCoreRowModel(),
     getRowId: (row) => row.id
   })
