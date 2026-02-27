@@ -86,6 +86,69 @@ All hooks and support functions in _hooks/_ and _lib/_ should all use _camelCase
 
 Use `@/lib/...`, `@/components/`, `@/hooks/` and `@/views/` etc to import components and functions.
 
+## Testing
+
+Three layers, one question: **"Does it need a browser?"**
+
+| Layer | Suffix | Runner | What it tests |
+|---|---|---|---|
+| Node | `.test.ts(x)` | Vitest | Pure logic, transforms, schemas, services, Yjs ops |
+| Browser | `.browser.test.tsx` | Vitest + Chromium | React components with real providers, mocked at fetch boundary |
+| E2E | `.spec.ts` | Playwright | Critical user journeys against stage backend |
+
+```bash
+npm run test              # Node + Browser tests (single command)
+npm run test:e2e          # E2E against stage
+```
+
+### Node tests
+
+Pure functions and logic that need no DOM. Mocked fetch for service tests.
+
+```
+__tests__/transformations/    # NewsDoc/Yjs data transforms
+__tests__/templates/          # Document template factories
+__tests__/services/           # API client methods (mocked fetch)
+__tests__/*.test.ts(x)        # Hooks (pure state), utils
+```
+
+### Browser tests
+
+React components mounted in real Chromium via `@vitest/browser-playwright` + `vitest-browser-react`. Providers run for real; mocking happens at the fetch/protobuf boundary.
+
+```
+__tests__/components/         # UI components with provider wrappers
+__tests__/views/              # Full view rendering
+__tests__/hooks/              # Hooks that need DOM/refs
+__tests__/utils/
+  providers.tsx               # Composable test providers
+  mockApi.ts                  # Fetch/protobuf mock layer
+```
+
+**Visual regression**: Browser tests use `toMatchScreenshot()` for pixel-by-pixel comparison (via pixelmatch). Screenshot baselines live in `__screenshots__/` directories next to the test files and **must be committed** — they are the reference images that future runs compare against. To update baselines after intentional UI changes, delete the old PNGs and re-run the tests.
+
+Baselines are **platform-specific** — filenames include the platform (e.g. `*-chromium-linux.png`, `*-chromium-darwin.png`). Running on a new platform creates new baselines rather than failing against another platform's images. This is intentional: font rendering differs between Linux and macOS, causing legitimate pixel mismatches. If CI runs on Linux, only Linux baselines need to be committed.
+
+### E2E tests
+
+Playwright against stage backend. Narrowed to paths that need a real backend: auth, CRUD lifecycle, collaboration, search, cross-feature flows. See [e2e/README.md](e2e/README.md) for setup and conventions.
+
+### Accessibility locators
+
+Editor regions carry `aria-label` attributes so both E2E tests and browser tests can use accessible selectors instead of positional DOM queries:
+
+| aria-label | Component | Used in |
+|---|---|---|
+| `Artikelredigerare` | `Editor`, `DialogEditor` (article) | `editor.page.ts`, `quick-article.page.ts`, `collaboration.spec.ts` |
+| `Printartikelredigerare` | `PrintEditor` | `print-editor.page.ts` |
+| `Faktarutaredigerare` | `Factbox` | `factbox.page.ts` |
+| `Faktarutatitel` | `Factbox` (title input) | `factbox.page.ts`, `factboxes-overview.spec.ts` |
+| `Flashredigerare` | `FlashView`, `DialogEditor` (flash) | `flash.page.ts` |
+| `Händelsestitel` | `Event` (title input) | `events-overview.spec.ts` |
+| `Planeringstitel` | `Planning` (title input) | `planning-overview.spec.ts` |
+
+Labels flow through `BaseEditor.Text` → `Textbit.Editable` → slate-react `Editable` (which renders `role="textbox"`). E2E page objects use `getByRole('textbox', { name: '...' })`.
+
 ## Other resources
 
 `elephant-chrome` depends on other packages:

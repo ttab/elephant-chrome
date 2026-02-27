@@ -1,4 +1,5 @@
 import { render } from 'vitest-browser-react'
+
 import { expect, test, vi, beforeEach } from 'vitest'
 import * as Y from 'yjs'
 import { Block, type Document } from '@ttab/elephant-api/newsdoc'
@@ -76,6 +77,7 @@ test('renders checkboxes from layout features', async () => {
 
   await expect.element(screen.getByRole('checkbox', { name: 'Feature 1' })).toBeVisible()
   await expect.element(screen.getByRole('checkbox', { name: 'Feature 2' })).toBeVisible()
+  await expect(document.body).toMatchScreenshot()
 })
 
 test('toggles checkbox on click', async () => {
@@ -103,6 +105,7 @@ test('toggles checkbox on click', async () => {
     expect.objectContaining({ name: 'Feature 1', value: 'true' }),
     expect.objectContaining({ name: 'Feature 2', value: 'false' })
   ])
+  await expect(document.body).toMatchScreenshot()
 })
 
 test('shows loader when layout is not provided', async () => {
@@ -120,4 +123,5 @@ test('shows loader when layout is not provided', async () => {
 
   // Loader renders an SVG with animate-spin class — no checkbox should be present
   expect(screen.container.querySelector('.animate-spin')).toBeTruthy()
+  await expect(document.body).toMatchScreenshot()
 })

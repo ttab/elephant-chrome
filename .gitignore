@@ -41,10 +41,14 @@ tsconfig.tsbuildinfo
 .eslintcache
 bundle-analysis.html
 
+# Vitest browser mode
+.vitest-attachments/
+
 # E2E / Playwright
 e2e/.auth/
 e2e/.env.e2e
 .playwright-browsers/
 e2e/playwright-report/*
+test-results/
 e2e/test-results/
 e2e/debug-*.png

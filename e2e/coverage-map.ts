@@ -43,8 +43,20 @@ export const coverageMap: Record<string, CoverageEntry> = {
     tests: ['planning/assignments.spec.ts'],
     status: 'covered'
   },
+  'planning/validation': {
+    tests: ['planning/planning-validation.spec.ts'],
+    status: 'covered'
+  },
   'flash/create': {
     tests: ['flash/create-flash.spec.ts'],
+    status: 'covered'
+  },
+  'flash/validation': {
+    tests: ['flash/flash-validation.spec.ts'],
+    status: 'covered'
+  },
+  'flash/submit-paths': {
+    tests: ['flash/flash-submit-paths.spec.ts'],
     status: 'covered'
   },
 
@@ -55,6 +67,10 @@ export const coverageMap: Record<string, CoverageEntry> = {
   },
   'event/edit': {
     tests: ['event/edit-event.spec.ts'],
+    status: 'covered'
+  },
+  'event/validation': {
+    tests: ['event/event-validation.spec.ts'],
     status: 'covered'
   },
   'overviews/planning': {
@@ -87,8 +103,20 @@ export const coverageMap: Record<string, CoverageEntry> = {
     tests: ['quick-article/create-quick-article.spec.ts'],
     status: 'covered'
   },
+  'quick-article/validation': {
+    tests: ['quick-article/quick-article-validation.spec.ts'],
+    status: 'covered'
+  },
+  'quick-article/submit-paths': {
+    tests: ['quick-article/quick-article-submit-paths.spec.ts'],
+    status: 'covered'
+  },
   'factbox/create': {
     tests: ['factbox/create-factbox.spec.ts'],
+    status: 'covered'
+  },
+  'factbox/validation': {
+    tests: ['factbox/factbox-validation.spec.ts'],
     status: 'covered'
   },
   'wires/list': {

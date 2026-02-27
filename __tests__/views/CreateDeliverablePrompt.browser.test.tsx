@@ -1,4 +1,5 @@
 import { render } from 'vitest-browser-react'
+
 import { CreateDeliverablePrompt } from '@/views/Planning/components/CreateDeliverablePrompt'
 import { useRegistry } from '@/hooks/useRegistry'
 import { useSession } from 'next-auth/react'
@@ -117,6 +118,7 @@ describe('CreateDeliverablePrompt', () => {
         await expect.element(
           screen.getByRole('button', { name: 'Avbryt' })
         ).toBeVisible()
+        await expect(document.body).toMatchScreenshot()
       })
 
     it('renders with flash deliverable type', async () => {
@@ -229,6 +231,7 @@ describe('CreateDeliverablePrompt', () => {
         await vi.waitFor(() => {
           expect(mockOnClose).toHaveBeenCalledWith(mockId)
         })
+        await expect(document.body).toMatchScreenshot()
       })
 
     it('calls onClose without id when cancel is clicked', async () => {
@@ -269,6 +272,7 @@ describe('CreateDeliverablePrompt', () => {
 
       expect(mockSaveDocument).not.toHaveBeenCalled()
       expect(mockOnClose).not.toHaveBeenCalled()
+      await expect(document.body).toMatchScreenshot()
     })
 
     it('shows error when section is missing', async () => {
@@ -296,6 +300,7 @@ describe('CreateDeliverablePrompt', () => {
 
       expect(mockSaveDocument).not.toHaveBeenCalled()
       expect(mockOnClose).not.toHaveBeenCalled()
+      await expect(document.body).toMatchScreenshot()
     })
   })
 
@@ -317,6 +322,7 @@ describe('CreateDeliverablePrompt', () => {
       })
 
       expect(mockOnClose).not.toHaveBeenCalled()
+      await expect(document.body).toMatchScreenshot()
     })
 
     it('handles non-Error exceptions', async () => {
@@ -333,6 +339,7 @@ describe('CreateDeliverablePrompt', () => {
           'Misslyckades att skapa text: Okänt fel'
         )
       })
+      await expect(document.body).toMatchScreenshot()
     })
 
     it('logs errors to console', async () => {
@@ -356,6 +363,7 @@ describe('CreateDeliverablePrompt', () => {
       })
 
       consoleErrorSpy.mockRestore()
+      await expect(document.body).toMatchScreenshot()
     })
   })
 
@@ -378,6 +386,7 @@ describe('CreateDeliverablePrompt', () => {
       await vi.waitFor(() => {
         expect(mockSaveDocument).toHaveBeenCalledTimes(1)
       })
+      await expect(document.body).toMatchScreenshot()
     })
 
     it('allows retry after failed creation', async () => {
@@ -401,6 +410,7 @@ describe('CreateDeliverablePrompt', () => {
       await vi.waitFor(() => {
         expect(mockSaveDocument).toHaveBeenCalledTimes(2)
       })
+      await expect(document.body).toMatchScreenshot()
     })
   })
 
@@ -418,6 +428,7 @@ describe('CreateDeliverablePrompt', () => {
           'abc123'
         )
       })
+      await expect(document.body).toMatchScreenshot()
     })
 
     it('generates unique UUID for each document', async () => {
@@ -455,6 +466,7 @@ describe('CreateDeliverablePrompt', () => {
       })
 
       uuidSpy.mockRestore()
+      await expect(document.body).toMatchScreenshot()
     })
   })
 })

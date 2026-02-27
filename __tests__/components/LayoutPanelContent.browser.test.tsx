@@ -1,4 +1,5 @@
 import { render } from 'vitest-browser-react'
+
 import type { YDocument } from '@/modules/yjs/hooks'
 import * as Y from 'yjs'
 import { useLayouts } from '@/hooks/baboon/useLayouts'
@@ -99,6 +100,7 @@ describe('LayoutPanelContent', () => {
     await expect.element(input).toBeInTheDocument()
     await expect.element(input).toHaveValue('Test Article')
     await expect.element(input).toHaveAttribute('readonly')
+    await expect(document.body).toMatchScreenshot()
   })
 
   it('calls onPreview when preview button is clicked', async () => {
@@ -131,6 +133,7 @@ describe('LayoutPanelContent', () => {
     await vi.waitFor(() => {
       expect(mockProps.onRequestDelete).toHaveBeenCalledTimes(1)
     })
+    await expect(document.body).toMatchScreenshot()
   })
 
   it('calls onToggleSelection when checkbox is clicked', async () => {
@@ -143,6 +146,7 @@ describe('LayoutPanelContent', () => {
     await vi.waitFor(() => {
       expect(mockProps.onToggleSelection).toHaveBeenCalledTimes(1)
     })
+    await expect(document.body).toMatchScreenshot()
   })
 
   it('reflects isSelected state in checkbox', async () => {
@@ -218,6 +222,7 @@ describe('LayoutPanelContent', () => {
     await expect.element(
       screen.getByRole('textbox')
     ).toHaveValue('')
+    await expect(document.body).toMatchScreenshot()
   })
 
   it('has proper grid layout structure', async () => {

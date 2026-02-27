@@ -8,6 +8,10 @@ export class LatestPage {
     return this.page.locator('div.cursor-pointer[class*="hover:bg-table"]')
   }
 
+  get nonFlashArticles() {
+    return this.articles.filter({ hasNot: this.page.getByText('TT-FLASH') })
+  }
+
   // Actions
   async goto() {
     await this.page.goto('latest')

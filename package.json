@@ -37,6 +37,7 @@
     "test:e2e:debug": "playwright test --config e2e/playwright.config.ts --debug",
     "test:e2e:coverage": "E2E_COVERAGE=true playwright test --config e2e/playwright.config.ts",
     "test:e2e:codegen": "playwright codegen --load-storage=e2e/.auth/user.json",
+    "test:e2e:check-gaps": "tsx e2e/scripts/check-coverage-gaps.ts",
     "preview": "vite preview",
     "link:elephant-ui": "./tooling/link.sh ../elephant-ui",
     "unlink:elephant-ui": "./tooling/unlink.sh ../elephant-ui"

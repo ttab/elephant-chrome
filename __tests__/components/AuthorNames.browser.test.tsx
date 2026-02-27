@@ -1,4 +1,5 @@
 import { render } from 'vitest-browser-react'
+
 import { AuthorNames } from '@/views/Approvals/AuthorNames'
 import type { AssignmentInterface } from '@/hooks/index/useAssignments'
 import { Block } from '@ttab/elephant-api/newsdoc'
@@ -201,6 +202,7 @@ describe('AuthorNames', () => {
       <AuthorNames assignment={assignment(byline)} />
     )
     await expect.element(getByText('John Doe')).toBeVisible()
+    await expect(document.body).toMatchScreenshot()
   })
 
   it('renders from doneStatus if no byline', async () => {
@@ -210,6 +212,7 @@ describe('AuthorNames', () => {
       />
     )
     await expect.element(getByText(/AJ/)).toBeVisible()
+    await expect(document.body).toMatchScreenshot()
   })
 
   it('renders byline and lastStatusUpdateAuthor', async () => {
@@ -220,6 +223,7 @@ describe('AuthorNames', () => {
     )
     await expect.element(getByText(/John Doe/)).toBeVisible()
     await expect.element(getByText(/BL/)).toBeVisible()
+    await expect(document.body).toMatchScreenshot()
   })
 
   it('renders from doneStatus if no byline '
@@ -231,6 +235,7 @@ describe('AuthorNames', () => {
     )
     await expect.element(getByText(/BL/)).toBeVisible()
     await expect.element(getByText(/AJ/)).toBeVisible()
+    await expect(document.body).toMatchScreenshot()
   })
 
   it('renders initials for assignees with afterDraftAuthor '
@@ -242,6 +247,7 @@ describe('AuthorNames', () => {
     )
     await expect.element(getByText(/AJ/)).toBeVisible()
     await expect.element(getByText(/BL/)).toBeVisible()
+    await expect(document.body).toMatchScreenshot()
   })
 })
 
@@ -255,6 +261,7 @@ describe('AuthorNames with various statusData assert tooltip', () => {
     await expect.element(
       getByTitle('Klar av Alice Johnson')
     ).toBeInTheDocument()
+    await expect(document.body).toMatchScreenshot()
   })
 
   it('renders correctly with statusDataCreator', async () => {
@@ -266,6 +273,7 @@ describe('AuthorNames with various statusData assert tooltip', () => {
     await expect.element(
       getByTitle('Skapad av Bob Lee')
     ).toBeInTheDocument()
+    await expect(document.body).toMatchScreenshot()
   })
 
   it('renders correctly with statusDataStatusAfterDraft', async () => {
@@ -279,6 +287,7 @@ describe('AuthorNames with various statusData assert tooltip', () => {
     await expect.element(
       getByTitle('Av Bob Lee, Godkänd av Bob Lee')
     ).toBeInTheDocument()
+    await expect(document.body).toMatchScreenshot()
   })
 
   it('renders correctly with statusDataCreatorApproved', async () => {
@@ -292,6 +301,7 @@ describe('AuthorNames with various statusData assert tooltip', () => {
     await expect.element(
       getByTitle('Klar av Alice Johnson, Godkänd av Bob Lee')
     ).toBeInTheDocument()
+    await expect(document.body).toMatchScreenshot()
   })
 
   describe('handles byline', () => {
@@ -306,6 +316,7 @@ describe('AuthorNames with various statusData assert tooltip', () => {
       await expect.element(
         getByTitle('Byline John Doe')
       ).toBeInTheDocument()
+      await expect(document.body).toMatchScreenshot()
     })
 
     it('renders correctly with statusDataBylineApproved', async () => {
@@ -319,6 +330,7 @@ describe('AuthorNames with various statusData assert tooltip', () => {
       await expect.element(
         getByTitle('Byline John Doe, Godkänd av Alice Johnson')
       ).toBeInTheDocument()
+      await expect(document.body).toMatchScreenshot()
     })
 
     it('renders correctly with statusDataBylineDone', async () => {
@@ -332,6 +344,7 @@ describe('AuthorNames with various statusData assert tooltip', () => {
       await expect.element(
         getByTitle('Byline John Doe')
       ).toBeInTheDocument()
+      await expect(document.body).toMatchScreenshot()
     })
 
     it('renders byline text with statusDataBylineCreator', async () => {
@@ -346,6 +359,7 @@ describe('AuthorNames with various statusData assert tooltip', () => {
         getByTitle('Byline John Doe')
       ).toBeInTheDocument()
       await expect.element(getByText('John Doe')).toBeVisible()
+      await expect(document.body).toMatchScreenshot()
     })
   })
 })

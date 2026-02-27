@@ -94,17 +94,29 @@ If a component is hard to select accessibly, improve its ARIA attributes.
 
 ## Conventions
 
-- **Test tags**: Add `@critical`, `@important`, or `@secondary` in `test.describe` names
+- **Test tags**: Add a tag in `test.describe` names to categorise tests:
+
+  | Tag | Meaning | Runs by default |
+  |---|---|---|
+  | `@critical` | Core functionality that must always work | Yes |
+  | `@important` | Key workflows users rely on regularly | Yes |
+  | `@secondary` | Non-critical features or edge cases | Yes |
+  | `@experimental` | Work-in-progress, known-unstable tests | **No** — skipped via `grepInvert` in config |
+
+  Run experimental tests explicitly: `npx playwright test --config e2e/playwright.config.ts --grep @experimental`
+
 - **Test data**: Use `testTitle()` / `testSlugline()` from `helpers/test-data.ts` — prefixes content with `[E2E-TEST]` for identification and cleanup
 - **Env-gated tests**: Tests requiring specific document IDs use `test.skip(!id, '...')` with env vars like `E2E_TEST_ARTICLE_ID`
 
 ## Coverage Map
 
-The coverage map (`e2e/coverage-map.ts`) tracks which features have E2E tests. Check for gaps:
+The coverage map (`e2e/coverage-map.ts`) tracks which features have E2E tests (32 features). Every `.spec.ts` file must be mapped. Check for gaps:
 
 ```bash
 npm run test:e2e:check-gaps
 ```
+
+This reports unmapped test files and uncovered features. It exits with code 1 if any features are marked `uncovered`. When adding a new test, always add a corresponding entry to `coverage-map.ts`.
 
 ## Project Structure
 
@@ -112,7 +124,7 @@ npm run test:e2e:check-gaps
 e2e/
   playwright.config.ts      # Playwright configuration
   global-setup.ts           # Auth setup (Keycloak login, saves session)
-  global-teardown.ts        # Cleanup after all tests
+  global-teardown.ts        # Restores test article to known version after suite
   .env.e2e                  # Credentials (gitignored)
   .env.e2e.example          # Template (committed)
   coverage-map.ts           # Feature-to-test mapping
@@ -123,9 +135,10 @@ e2e/
   pages/                    # Page Object Models
   helpers/
     api.ts                  # Direct API helpers for setup/teardown
+    document.ts             # Document capture and verification helpers
     test-data.ts            # Test data factories ([E2E-TEST] prefix)
-    cleanup.ts              # Document cleanup utilities
-    wait.ts                 # Custom wait helpers
+    cleanup.ts              # Tracks created documents for manual cleanup (no auto-delete)
+    wait.ts                 # Custom wait helpers (waitForAppReady, waitForNetworkIdle)
   reporters/
     coverage-reporter.ts    # Custom Playwright reporter for coverage
   scripts/

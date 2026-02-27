@@ -5,7 +5,7 @@ test.describe('Editor — Formatting @critical', () => {
   const articleId = process.env.E2E_TEST_ARTICLE_ID
   const restoreVersion = process.env.E2E_TEST_ARTICLE_RESTORE_VERSION
 
-  test.beforeEach(async (_fixtures, testInfo) => {
+  test.beforeEach(async ({}, testInfo) => {
     test.skip(!articleId, 'E2E_TEST_ARTICLE_ID not set')
 
     const baseURL = testInfo.project.use.baseURL
