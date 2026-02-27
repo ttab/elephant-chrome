@@ -24,7 +24,7 @@ import type { LucideIcon } from 'lucide-react'
 import { useLink } from '@/hooks/useLink'
 import { useRegistry } from '@/hooks/index'
 import { useSession } from 'next-auth/react'
-import { toast } from 'sonner'
+import { createNewFactbox } from './lib/createNewFactbox'
 
 type Variant = VariantProps<typeof buttonVariants>['variant']
 type ButtonView = { name: View, type: string, icon?: { icon?: LucideIcon, color?: string } }
@@ -52,26 +52,6 @@ const AddButton = ({
   const openFactboxEditor = useLink('Factbox')
   const { data: session } = useSession()
 
-  const createNewFactbox = () => {
-    if (!session || !session.accessToken || !repository) {
-      console.error('CreateFactbox: Missing required dependencies', {
-        hasAccessToken: !!session?.accessToken,
-        hasRepository: !!repository
-      })
-      toast.error('Kan inte skapa faktaruta')
-      return <></>
-    }
-    const id = crypto.randomUUID()
-    const factboxTemplate = getTemplateFromView('Factbox')(id, { title: 'Fakta:' })
-    repository.saveDocument(factboxTemplate, session.accessToken)
-      .then(() => {
-        openFactboxEditor(undefined, { id }, undefined)
-      })
-      .catch((error) => {
-        console.error('Error creating Factbox document:', error)
-      })
-  }
-
   return (
     <Button
       size='sm'
@@ -83,17 +63,20 @@ const AddButton = ({
 
         if (showModal) {
           if (view.name === 'Factbox') {
-            createNewFactbox()
-            return
+            createNewFactbox(repository, session)
+              .then((id) => openFactboxEditor(undefined, { id }, undefined)).catch((error) => {
+                console.error('Error creating Factbox document:', error)
+              })
+          } else {
+            showModal(
+              <ViewDialog
+                onDialogClose={hideModal}
+                asDialog
+                id={id}
+                document={initialDocument}
+              />
+            )
           }
-          showModal(
-            <ViewDialog
-              onDialogClose={hideModal}
-              asDialog
-              id={id}
-              document={initialDocument}
-            />
-          )
         }
       }}
     >
