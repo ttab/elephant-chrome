@@ -192,6 +192,7 @@ export const WireViewContent = (props: ViewProps & {
                 value={title}
                 label='Titel'
                 placeholder='Uppdragstitel'
+                aria-label='Uppdragstitel'
               />
             </Form.Group>
 

@@ -14,7 +14,8 @@ export const TextInput = ({
   className,
   onValidation,
   rootMap,
-  validateStateRef
+  validateStateRef,
+  'aria-label': ariaLabel
 }: {
   ydoc: YDocument<Y.Map<unknown>>
   value: Y.XmlText | undefined
@@ -23,6 +24,7 @@ export const TextInput = ({
   autoFocus?: boolean
   placeholder: string
   className?: string
+  'aria-label'?: string
 } & FormProps): JSX.Element => {
   const path = useYPath(value, true)
 
@@ -43,6 +45,7 @@ export const TextInput = ({
         className={className}
         autoFocus={autoFocus}
         singleLine={true}
+        aria-label={ariaLabel}
       />
     </Validation>
   )

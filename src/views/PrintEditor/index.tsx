@@ -162,7 +162,13 @@ function EditorContainer({ ydoc }: {
             <ScrollArea className='h-full @4xl/view:h-[calc(100vh-7rem)]'>
               <div className='flex-grow overflow-auto pr-12 max-w-screen-2xl'>
                 {!!ydoc.provider && ydoc.provider.isSynced
-                  ? <BaseEditor.Text ydoc={ydoc} autoFocus={true} />
+                  ? (
+                      <BaseEditor.Text
+                        ydoc={ydoc}
+                        autoFocus={true}
+                        aria-label='Printartikelredigerare'
+                      />
+                    )
                   : null}
               </div>
             </ScrollArea>

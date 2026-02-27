@@ -204,6 +204,7 @@ const PlanningViewContent = (props: ViewProps & {
                 value={title}
                 label='Titel'
                 placeholder='Planeringstitel'
+                aria-label='Planeringstitel'
                 autoFocus={props.asDialog === true}
               />
             </Form.Title>
@@ -212,6 +213,7 @@ const PlanningViewContent = (props: ViewProps & {
               ydoc={ydoc}
               value={publicDescription}
               icon={<TextIcon size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />}
+              aria-label='Publik beskrivning'
               placeholder='Publik beskrivning'
             />
 
@@ -219,6 +221,7 @@ const PlanningViewContent = (props: ViewProps & {
               ydoc={ydoc}
               value={internalDescription}
               icon={<MessageCircleMoreIcon size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />}
+              aria-label='Internt meddelande'
               placeholder='Internt meddelande'
             />
 

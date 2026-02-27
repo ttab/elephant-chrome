@@ -125,6 +125,7 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
                   )}
                   label='Titel'
                   placeholder='Titel'
+                  aria-label='Faktarutatitel'
                 />
               </Form.Title>
             </Form.Content>
@@ -134,6 +135,7 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
             <BaseEditor.Text
               ydoc={ydoc}
               autoFocus={!props.asDialog}
+              aria-label='Faktarutaredigerare'
               className={cn(
                 props.asDialog ? 'rounded-md border me-[43px] min-h-48' : ''
               )}

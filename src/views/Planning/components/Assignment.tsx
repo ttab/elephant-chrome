@@ -67,6 +67,7 @@ export const Assignment = ({ ydoc, assignment, onAbort, onClose }: {
               value={title}
               label='Titel'
               placeholder='Uppdragstitel'
+              aria-label='Uppdragstitel'
               autoFocus={true}
             />
           </Form.Title>

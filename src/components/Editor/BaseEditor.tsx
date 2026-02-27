@@ -51,6 +51,7 @@ const EditorText = (props: {
   autoFocus?: boolean
   className?: string
   allowStyling?: boolean
+  'aria-label'?: string
 }) => {
   const { isActive } = useView()
   const ref = useRef<HTMLDivElement>(null)
@@ -70,6 +71,7 @@ const EditorText = (props: {
 
   return (
     <Textbit.Editable
+      aria-label={props['aria-label']}
       autoFocus={props.autoFocus === true && isActive}
       className={cn(`outline-none
           pt-4

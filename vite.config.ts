@@ -1,4 +1,3 @@
-/// <reference types="vitest" />
 import path from 'path'
 import tailwindcss from '@tailwindcss/vite'
 import { defineConfig, loadEnv } from 'vite'
@@ -68,25 +67,6 @@ export default defineConfig(({ mode }) => {
     },
     optimizeDeps: {
       include: ['date-fns']
-    },
-    test: {
-      env,
-      include: ['__tests__/**/*.test.ts(x)?'],
-      deps: {
-        optimizer: {
-          web: {
-            include: ['date-fns']
-          }
-        }
-      },
-      globals: true,
-      setupFiles: ['./setupTests.ts'],
-      environment: 'jsdom',
-      server: {
-        deps: {
-          inline: ['@ttab/elephant-ui']
-        }
-      }
     },
     build: {
       chunkSizeWarningLimit: 1500,

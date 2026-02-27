@@ -167,6 +167,7 @@ const EventViewContent = (props: ViewProps & {
                 label='Titel'
                 autoFocus={!!props.asDialog}
                 placeholder='Händelsestitel'
+                aria-label='Händelsestitel'
               />
             </Form.Title>
             <TextBox
