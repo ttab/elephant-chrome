@@ -8,6 +8,48 @@ import { getWireState } from '@/lib/getWireState'
 import type { WireStatus } from '../lib/setWireStatus'
 import { StreamEntryCell } from './StreamEntryCell'
 
+const variants = cva(
+  `
+    relative
+    grid
+    grid-cols-[3rem_0.75rem_1fr]
+    gap-0.5 border-s-[7px]
+    bg-background
+    text-[0.785rem]
+    subpixel-antialiased
+    cursor-default
+    ring-inset
+    focus:outline-none
+    focus:ring-2
+    focus:ring-table-selected
+    hover:bg-muted
+  `,
+  {
+    variants: {
+      isFlash: {
+        true: '!border-s-red-500 text-red-500'
+      },
+      status: {
+        read: 'border-s-approved bg-approved-background hover:bg-approved/20',
+        saved: 'border-s-done bg-done-background hover:bg-done/30',
+        used: 'border-s-usable bg-usable-background hover:bg-usable/30'
+      },
+      isUpdated: {
+        true: 'bg-background'
+      },
+      wasSaved: {
+        true: 'border-s-done'
+      },
+      wasUsed: {
+        true: 'border-s-usable'
+      },
+      wasRead: {
+        true: 'border-s-approved'
+      }
+    }
+  }
+)
+
 export const StreamEntry = ({
   streamId,
   entry,
@@ -51,48 +93,6 @@ export const StreamEntry = ({
     e.stopPropagation()
     onToggleSelected(entry, e.shiftKey)
   }, [entry, onToggleSelected])
-
-  const variants = cva(
-    `
-      relative
-      grid
-      grid-cols-[3rem_0.75rem_1fr]
-      gap-0.5 border-s-[7px]
-      bg-background
-      text-[0.785rem]
-      subpixel-antialiased
-      cursor-default
-      ring-inset
-      focus:outline-none
-      focus:ring-2
-      focus:ring-table-selected
-      hover:bg-muted
-    `,
-    {
-      variants: {
-        isFlash: {
-          true: '!border-s-red-500 text-red-500'
-        },
-        status: {
-          read: 'border-s-approved bg-approved-background hover:bg-approved/20',
-          saved: 'border-s-done bg-done-background hover:bg-done/30',
-          used: 'border-s-usable bg-usable-background hover:bg-usable/30'
-        },
-        isUpdated: {
-          true: 'bg-background'
-        },
-        wasSaved: {
-          true: 'border-s-done'
-        },
-        wasUsed: {
-          true: 'border-s-usable'
-        },
-        wasRead: {
-          true: 'border-s-approved'
-        }
-      }
-    }
-  )
 
   const modified = new Date(entry.fields.modified.values[0])
   const compositeId = `${streamId}:${entry.id}`
