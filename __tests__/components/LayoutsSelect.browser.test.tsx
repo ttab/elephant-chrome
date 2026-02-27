@@ -1,5 +1,6 @@
 import { render } from 'vitest-browser-react'
 
+import { matchScreenshot } from '../utils/matchScreenshot'
 import type { YDocument } from '@/modules/yjs/hooks'
 import * as Y from 'yjs'
 import { Block, type Document } from '@ttab/elephant-api/newsdoc'
@@ -177,7 +178,7 @@ describe('LayoutsSelect', () => {
       expect(mockOnLayoutSlotChange).toHaveBeenCalledWith('Slot B')
       expect(mockOnChange).toHaveBeenCalledWith(true)
       expect(mockSetLayoutName).toHaveBeenCalledWith('Slot B')
-      await expect(document.body).toMatchScreenshot()
+      await matchScreenshot(document.body)
     })
 
   it('does not call callbacks when re-selecting the same slot',
@@ -216,6 +217,6 @@ describe('LayoutsSelect', () => {
       expect(mockOnLayoutSlotChange).not.toHaveBeenCalled()
       expect(mockOnChange).not.toHaveBeenCalled()
       expect(mockSetLayoutName).not.toHaveBeenCalled()
-      await expect(document.body).toMatchScreenshot()
+      await matchScreenshot(document.body)
     })
 })

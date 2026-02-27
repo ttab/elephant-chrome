@@ -25,3 +25,35 @@ jobs:
         run: npx playwright install chromium
       - name: Test
         run: npm run test
+        env:
+          SKIP_SCREENSHOTS: '1'
+
+  visual-regression:
+    name: Visual regression
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: '.nvmrc'
+          cache: npm
+          registry-url: "https://npm.pkg.github.com"
+      - name: Install
+        run: npm ci
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: Install Playwright browsers
+        run: npx playwright install chromium
+      - name: Run visual regression
+        run: npx vitest --project browser
+      - name: Upload screenshot diffs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshot-diffs
+          path: .vitest-attachments/
+          retention-days: 7

@@ -1,6 +1,7 @@
 import { render } from 'vitest-browser-react'
 
 import { expect, test } from 'vitest'
+import { matchScreenshot } from './matchScreenshot'
 import {
   TestSessionProvider,
   TestRegistryProvider,
@@ -49,7 +50,7 @@ test('TestRegistryProvider provides default values', async () => {
   await expect.element(getByText(/Index: https:\/\/test\.local\/index/)).toBeVisible()
   await expect.element(getByText(/Locale: sv/)).toBeVisible()
   await expect.element(getByText(/TZ: Europe\/Stockholm/)).toBeVisible()
-  await expect(document.body).toMatchScreenshot()
+  await matchScreenshot(document.body)
 })
 
 test('TestRegistryProvider accepts server URL overrides', async () => {
@@ -62,7 +63,7 @@ test('TestRegistryProvider accepts server URL overrides', async () => {
     </TestRegistryProvider>
   )
   await expect.element(getByText(/Index: https:\/\/custom\.test\/index/)).toBeVisible()
-  await expect(document.body).toMatchScreenshot()
+  await matchScreenshot(document.body)
 })
 
 // ============================================================
@@ -91,7 +92,7 @@ test('TestCollaborationProvider provides connected state', async () => {
   await expect.element(getByText('Synced: true')).toBeVisible()
   await expect.element(getByText('DocId: test-doc')).toBeVisible()
   await expect.element(getByText('User: Test User')).toBeVisible()
-  await expect(document.body).toMatchScreenshot()
+  await matchScreenshot(document.body)
 })
 
 test('TestCollaborationProvider accepts custom props', async () => {
@@ -107,7 +108,7 @@ test('TestCollaborationProvider accepts custom props', async () => {
   await expect.element(getByText('Connected: false')).toBeVisible()
   await expect.element(getByText('DocId: custom-doc')).toBeVisible()
   await expect.element(getByText('User: Custom')).toBeVisible()
-  await expect(document.body).toMatchScreenshot()
+  await matchScreenshot(document.body)
 })
 
 // ============================================================
@@ -153,7 +154,7 @@ test('TestTableProvider renders with data', async () => {
   await expect.element(getByText('Rows: 2')).toBeVisible()
   await expect.element(getByText('Row: First')).toBeVisible()
   await expect.element(getByText('Row: Second')).toBeVisible()
-  await expect(document.body).toMatchScreenshot()
+  await matchScreenshot(document.body)
 })
 
 test('TestTableProvider works with empty data', async () => {
@@ -163,5 +164,5 @@ test('TestTableProvider works with empty data', async () => {
     </TestTableProvider>
   )
   await expect.element(getByText('Rows: 0')).toBeVisible()
-  await expect(document.body).toMatchScreenshot()
+  await matchScreenshot(document.body)
 })
