@@ -95,38 +95,32 @@ async function fetchMetricsForUuids(
   kinds: string[],
   accessToken: string
 ): Promise<Map<string, MetricsData>> {
-  try {
-    const response = await repository.getMetrics(
-      uuids,
-      kinds,
-      accessToken
-    )
+  const response = await repository.getMetrics(
+    uuids,
+    kinds,
+    accessToken
+  )
 
-    const metricsMap = new Map<string, MetricsData>()
+  const metricsMap = new Map<string, MetricsData>()
 
-    for (const [uuid, documentMetrics] of Object.entries(response.documents)) {
-      const metrics: MetricsData = {}
+  for (const [uuid, documentMetrics] of Object.entries(response.documents)) {
+    const metrics: MetricsData = {}
 
-      for (const metric of documentMetrics.metrics) {
-        // Map API metric kinds to camelCase field names
-        switch (metric.kind) {
-          case 'char_count':
-          case 'charcount':
-            metrics.charCount = Number(metric.value)
-            break
-          case 'word_count':
-          case 'wordcount':
-            metrics.wordCount = Number(metric.value)
-            break
-        }
+    for (const metric of documentMetrics.metrics) {
+      switch (metric.kind) {
+        case 'char_count':
+        case 'charcount':
+          metrics.charCount = Number(metric.value)
+          break
+        case 'word_count':
+        case 'wordcount':
+          metrics.wordCount = Number(metric.value)
+          break
       }
-
-      metricsMap.set(uuid, metrics)
     }
 
-    return metricsMap
-  } catch (error) {
-    console.warn('📊 Metrics decorator: failed to fetch batch metrics:', error)
-    return new Map()
+    metricsMap.set(uuid, metrics)
   }
+
+  return metricsMap
 }

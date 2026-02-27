@@ -12,21 +12,21 @@ import { Timespan } from '@ttab/elephant-api/repository'
 import { Call as CallType, Response as ResponseType } from '@ttab/elephant-api/repositorysocket'
 import type { Repository } from './Repository'
 
-interface InclusionDocumentWithUpdater extends InclusionDocument {
-  __updater?: {
-    sub: string
-    time: string
-  }
+interface UpdaterMeta {
+  sub: string
+  time: string
 }
+
+interface InclusionDocumentWithUpdater extends InclusionDocument {
+  __updater?: UpdaterMeta
+}
+
 /**
  * Document state with included documents from WebSocket API.
  * Base type for documents that may have related documents included.
  */
 export interface DocumentStateWithIncludes extends DocumentState {
-  __updater?: {
-    sub: string
-    time: string
-  }
+  __updater?: UpdaterMeta
   includedDocuments?: InclusionDocumentWithUpdater[]
 }
 type MessageHandler = (response: Response) => void
@@ -96,25 +96,45 @@ export class RepositorySocket {
         }
 
         this.#ws.onmessage = (event: MessageEvent) => {
+          let response: Response
           try {
             const data = new Uint8Array(event.data as ArrayBuffer)
-            const response = ResponseType.fromBinary(data)
-
-            const handler = this.#messageHandlers.get(response.callId)
-            if (handler) {
-              handler(response)
-            } else {
-              // Broadcast to all update handlers
-              for (const updateHandler of this.#updateHandlers) {
-                updateHandler(response)
-              }
-            }
+            response = ResponseType.fromBinary(data)
           } catch (error) {
             this.#emitStatus({
               level: 'error',
               message: 'Kunde inte läsa meddelande från servern.',
-              error: error instanceof Error ? error : new Error(String(error))
+              error: error instanceof Error
+                ? error
+                : new Error(String(error))
             })
+            return
+          }
+
+          const handler = this.#messageHandlers.get(response.callId)
+          if (handler) {
+            try {
+              handler(response)
+            } catch (error) {
+              this.#messageHandlers.delete(response.callId)
+              const reject = this.#rejectHandlers.get(response.callId)
+              this.#rejectHandlers.delete(response.callId)
+              if (reject) {
+                reject(
+                  error instanceof Error
+                    ? error
+                    : new Error(String(error))
+                )
+              }
+            }
+          } else {
+            for (const updateHandler of this.#updateHandlers) {
+              try {
+                updateHandler(response)
+              } catch (error) {
+                console.error('Update handler error:', error)
+              }
+            }
           }
         }
 
@@ -423,7 +443,6 @@ export class RepositorySocket {
         }
       })
 
-      console.log('sending:', call)
       this.#send(call)
     })
   }

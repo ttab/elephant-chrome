@@ -3,7 +3,7 @@ import type { DocumentUpdate } from '@ttab/elephant-api/repositorysocket'
 
 export type DecoratorDataBase = Record<string, Record<string, object>>
 
-export interface Decorator<TEnrichment = unknown> {
+export interface Decorator<TEnrichment = object> {
   namespace: string
   onInitialData?: (
     documents: DocumentStateWithIncludes[],

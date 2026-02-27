@@ -79,7 +79,7 @@ type DecoratorDataBase = Record<string, Record<string, object>>
 ### Decorator Interface
 
 ```typescript
-interface Decorator<TEnrichment> {
+interface Decorator<TEnrichment = object> {
   /**
    * Namespace for this decorator's data.
    * Data will be nested under decoratorData[namespace][uuid]
@@ -91,7 +91,8 @@ interface Decorator<TEnrichment> {
    * Should return a Map of UUID -> enrichment data.
    */
   onInitialData?: (
-    documents: DocumentStateWithIncludes[]
+    documents: DocumentStateWithIncludes[],
+    accessToken: string
   ) => Promise<Map<string, TEnrichment>>
 
   /**
@@ -99,7 +100,8 @@ interface Decorator<TEnrichment> {
    * Can return either a single enrichment or Map for batch updates.
    */
   onUpdate?: (
-    update: DocumentUpdate
+    update: DocumentUpdate,
+    accessToken: string
   ) => Promise<TEnrichment | Map<string, TEnrichment> | undefined>
 }
 ```
@@ -134,7 +136,7 @@ export function createMetricsDecorator(options: {
   return {
     namespace: 'metrics',
 
-    async onInitialData(documents: DocumentStateWithIncludes[]) {
+    async onInitialData(documents: DocumentStateWithIncludes[], accessToken: string) {
       // Extract UUIDs from included documents
       const uuids = documents
         .flatMap((d) => d.includedDocuments)
@@ -146,10 +148,10 @@ export function createMetricsDecorator(options: {
       }
 
       // Fetch data from API
-      return await fetchMetricsForUuids(uuids, repository, kinds)
+      return await fetchMetricsForUuids(uuids, repository, kinds, accessToken)
     },
 
-    async onUpdate(update: DocumentUpdate) {
+    async onUpdate(update: DocumentUpdate, accessToken: string) {
       // Only process inclusion updates
       if (!isInclusionUpdate(update)) {
         return undefined
@@ -161,7 +163,7 @@ export function createMetricsDecorator(options: {
       }
 
       // Fetch data for updated document
-      return await fetchMetricsForUuids([uuid], repository, kinds)
+      return await fetchMetricsForUuids([uuid], repository, kinds, accessToken)
     }
   }
 }
@@ -302,17 +304,18 @@ function MyComponent() {
 ### Multiple Decorators
 
 ```typescript
+// Each decorator writes to its own namespace under decoratorData
 const { data } = useRepositorySocket<MyDecoratorData>({
   type: 'core/planning-item',
   decorators: [
     createMetricsDecorator({ repository }),
-    createStatusesDecorator({ repository })
+    createAnotherDecorator({ repository }) // hypothetical second decorator
   ]
 })
 
 // Access different namespaces
 const metrics = docState.decoratorData?.metrics?.[uuid]
-const status = docState.decoratorData?.statuses?.[uuid]
+const other = docState.decoratorData?.other?.[uuid]
 ```
 
 ### Type-Safe Access Helper

@@ -7,6 +7,7 @@ import type {
 } from '@ttab/elephant-api/repositorysocket'
 import type { DocumentStateWithDecorators, Decorator } from '../types'
 import { getAssignments } from '@/lib/documentHelpers'
+import { toast } from 'sonner'
 
 export const findDeliverableParentIndex = <TDecoratorData extends object = object>(
   documents: DocumentStateWithDecorators<TDecoratorData>[],
@@ -18,16 +19,19 @@ export const findDeliverableParentIndex = <TDecoratorData extends object = objec
 
   return documents.findIndex((doc) => {
     const assignments = getAssignments(doc.document)
-    if (!assignments.length) {
-      return false
-    }
-
     for (const assignment of assignments) {
       for (const link of assignment.links ?? []) {
         if (link.rel === 'deliverable' && link.uuid === targetUuid) {
           return true
         }
       }
+    }
+
+    // When document is unavailable (subset mode), check subset values
+    if (!doc.document && doc.subset?.length) {
+      return doc.subset.some((entry) =>
+        Object.values(entry.values).some((v) => v.value === targetUuid)
+      )
     }
 
     return false
@@ -165,6 +169,7 @@ export const handleDocumentUpdate = <TDecoratorData extends object = object>(
         document: update.document,
         meta: update.meta,
         includedDocuments: newData[existingIndex].includedDocuments,
+        subset: update.subset ?? newData[existingIndex].subset,
         decoratorData: newData[existingIndex].decoratorData,
         __updater: {
           sub: update.meta?.updaterUri || '??',
@@ -177,6 +182,7 @@ export const handleDocumentUpdate = <TDecoratorData extends object = object>(
       const newDoc: DocumentStateWithDecorators<TDecoratorData> = {
         document: update.document,
         meta: update.meta,
+        subset: update.subset,
         __updater: {
           sub: update.meta.updaterUri || '??',
           time: update.meta.modified || new Date().toISOString()
@@ -195,6 +201,8 @@ export const handleDocumentUpdate = <TDecoratorData extends object = object>(
 export class ScheduleDecoratorUpdate<TDecoratorData extends object = object> {
   #pending = new Map<string, ReturnType<typeof setTimeout>>()
   #sequence = new Map<string, number>()
+  #consecutiveFailures = 0
+  #failureWarningShown = false
 
   constructor(
     private setData: Dispatch<SetStateAction<DocumentStateWithDecorators<TDecoratorData>[]>>,
@@ -235,8 +243,13 @@ export class ScheduleDecoratorUpdate<TDecoratorData extends object = object> {
 
   async #run(uuid: string, update: DocumentUpdate, seq: number) {
     try {
+      // Find parent: direct UUID match (main update) or by includedDocuments (inclusion update)
       const currentParent = this.dataRef.current.find(
         (doc) => doc.document?.uuid === uuid
+      ) ?? this.dataRef.current.find((doc) =>
+        doc.includedDocuments?.some(
+          (inc) => inc.uuid === uuid || inc.state?.document?.uuid === uuid
+        )
       ) ?? null
 
       if (!currentParent) {
@@ -257,16 +270,32 @@ export class ScheduleDecoratorUpdate<TDecoratorData extends object = object> {
         return
       }
 
+      const parentUuid = currentParent.document?.uuid
+
       this.setData((prev) => {
         return prev.map((doc) => {
-          if (doc.document?.uuid === uuid) {
+          if (parentUuid && doc.document?.uuid === parentUuid) {
+            return enrichedDoc
+          }
+          if (!parentUuid && doc.includedDocuments?.some(
+            (inc) => inc.uuid === uuid || inc.state?.document?.uuid === uuid
+          )) {
             return enrichedDoc
           }
           return doc
         })
       })
+
+      this.#consecutiveFailures = 0
+      this.#failureWarningShown = false
     } catch (err) {
+      this.#consecutiveFailures++
       console.warn('Update decorator failed:', err)
+
+      if (this.#consecutiveFailures >= 3 && !this.#failureWarningShown) {
+        this.#failureWarningShown = true
+        toast.error('Utökad data kunde inte uppdateras')
+      }
     }
   }
 

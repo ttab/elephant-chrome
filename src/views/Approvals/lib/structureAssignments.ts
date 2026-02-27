@@ -2,7 +2,6 @@ import { toZonedTime } from 'date-fns-tz'
 import { parseISO, getHours } from 'date-fns'
 import type { PreprocessedApprovalData } from '../preprocessor'
 import { getTimeValue } from './getTimeValue'
-import { getPublishSlot, getStartTime, getPublishTime } from '@/lib/documentHelpers'
 
 export interface AssignmentResponseInterface {
   key?: string
@@ -41,9 +40,9 @@ export function structureAssignments(
     const meta = item._deliverable?.meta
     const hasUsable = meta?.heads.usable?.id
 
-    const publish = getPublishTime(item._assignment)
-    const start = getStartTime(item._assignment)
-    const publishSlot = getPublishSlot(item._assignment)
+    const publish = item._preprocessed.publishTime
+    const start = item._preprocessed.startTime
+    const publishSlot = item._preprocessed.publishSlot
     let hour: number | undefined
 
     if (status === 'withheld' && publish) {
@@ -61,7 +60,7 @@ export function structureAssignments(
 
     let assigned = false
     for (const slot of response) {
-      if (Number.isInteger(hour) && slot.hours.includes(hour as number)) {
+      if (typeof hour === 'number' && slot.hours.includes(hour)) {
         slot.items.push(item)
         assigned = true
         break
@@ -77,8 +76,8 @@ export function structureAssignments(
     slot.items.sort((a, b) => {
       const aMeta = a._deliverable?.meta
       const bMeta = b._deliverable?.meta
-      const aPublish = getPublishTime(a._assignment)
-      const bPublish = getPublishTime(b._assignment)
+      const aPublish = a._preprocessed.publishTime
+      const bPublish = b._preprocessed.publishTime
 
       if (aMeta && bMeta) {
         const aWithheld = a._deliverable?.status === 'withheld' && aPublish
@@ -94,8 +93,8 @@ export function structureAssignments(
         return getTimeValue(aMeta?.modified) > getTimeValue(bMeta.modified) ? -1 : 1
       }
 
-      const aHasSlot = !!getPublishSlot(a._assignment)
-      const bHasSlot = !!getPublishSlot(b._assignment)
+      const aHasSlot = !!a._preprocessed.publishSlot
+      const bHasSlot = !!b._preprocessed.publishSlot
       if (aHasSlot && !bHasSlot) return -1
       if (!aHasSlot && bHasSlot) return 1
 
@@ -107,8 +106,8 @@ export function structureAssignments(
       if (aWithheld) return -1
       if (bWithheld) return 1
 
-      const aStart = getStartTime(a._assignment)
-      const bStart = getStartTime(b._assignment)
+      const aStart = a._preprocessed.startTime
+      const bStart = b._preprocessed.startTime
       if (aStart && bStart) {
         return aStart.localeCompare(bStart)
       }

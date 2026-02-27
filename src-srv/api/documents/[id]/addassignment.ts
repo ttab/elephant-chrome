@@ -88,6 +88,7 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
           version: 0n,
           isMetaDocument: false,
           mainDocument: '',
+          subset: [],
           document: planningDocumentTemplate(documentId, {
             title: planningTitle || title,
             links: {

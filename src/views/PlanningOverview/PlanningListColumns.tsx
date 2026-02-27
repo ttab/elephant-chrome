@@ -106,12 +106,12 @@ export function planningListColumns({ sections = [], authors = [], user }: {
         className: 'flex-1 min-w-0'
       },
       accessorFn: (data) =>
-        data.document?.title,
+        data._preprocessed?.title ?? data.document?.title,
       cell: ({ row }) => {
         const slugline = (row.original)._preprocessed?.slugline
-        const title = row.getValue('title')
+        const title = row.getValue<string>('title')
 
-        return <Title title={title as string} slugline={slugline} />
+        return <Title title={title} slugline={slugline} />
       },
       enableGrouping: false
     },
@@ -222,7 +222,7 @@ export function planningListColumns({ sections = [], authors = [], user }: {
       },
       cell: ({ row }) => {
         const deliverableUuids = row.original._preprocessed?.deliverableUuids || []
-        const planningId = row.original.document?.uuid || ''
+        const planningId = row.original.id
 
         return <Actions deliverableUuids={deliverableUuids} planningId={planningId} />
       },

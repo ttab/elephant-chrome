@@ -145,7 +145,7 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
       accessorFn: (data) => data._preprocessed.assignmentTitle,
       cell: ({ row }) => {
         const assignmentTitle = row.getValue<string>('title')
-        const planningTitle = row.original.document?.title
+        const planningTitle = row.original._preprocessed?.title ?? row.original.document?.title
         const assignees = (row.getValue<string[]>('assignees') || []).map((assigneeId) => {
           return authors.find((author) => author.id === assigneeId)?.name || ''
         })
@@ -337,7 +337,7 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
       },
       cell: ({ row }) => {
         const deliverableUuid = row.original._preprocessed.deliverableUuid || ''
-        const planningId = row.original.document?.uuid
+        const planningId = row.original.document?.uuid ?? row.original.id?.split('-assignment-')[0]
         return (
           <div className='shrink p-'>
             <ActionMenu

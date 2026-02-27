@@ -145,7 +145,7 @@ export function eventTableColumns({ sections = [], organisers = [], locale }: {
           </span>
         )
       },
-      accessorFn: (data) => data.document?.title,
+      accessorFn: (data) => data._preprocessed?.title ?? data.document?.title,
       cell: ({ row }) => {
         const title = row.getValue('title')
         const cancelled = row.original._preprocessed?.cancelled

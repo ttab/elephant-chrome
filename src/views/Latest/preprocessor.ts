@@ -2,6 +2,25 @@ import type { DocumentStateWithDecorators } from '@/hooks/useRepositorySocket/ty
 import type { MetricsDecorator } from '@/hooks/useRepositorySocket/decorators/metrics'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import type { PreprocessedTableData } from '@/components/Table/types'
+import { fromSubset } from '@/lib/subsetHelpers'
+
+export const LATEST_SUBSET = [
+  '.meta(type=\'tt/slugline\')@{value}',
+  '.links(type=\'core/section\')@{uuid}',
+  '.links(type=\'core/section\')@{title}',
+  '.meta(type=\'core/assignment\').links(rel=\'deliverable\')@{uuid}',
+  '@{title}',
+  '@{uuid}'
+] as const
+
+const enum E {
+  Slugline,
+  SectionUuid,
+  SectionTitle,
+  DeliverableUuids,
+  Title,
+  Uuid
+}
 
 export type LatestDecorator = MetricsDecorator
 
@@ -26,11 +45,14 @@ export function preprocessLatestData(data: DocumentStateWithDecorators<LatestDec
   for (const doc of data) {
     if (!doc.includedDocuments?.length) continue
 
-    const planningId = doc.document?.uuid || ''
-    const slugline = doc.document?.meta?.find((m) => m.type === 'tt/slugline')?.value
-    const sectionLink = doc.document?.links?.find((l) => l.type === 'core/section')
-    const sectionUuid = sectionLink?.uuid
-    const sectionTitle = sectionLink?.title
+    const { subset } = doc
+    const planningId = fromSubset(subset, E.Uuid) ?? doc.document?.uuid ?? ''
+
+    const slugline = fromSubset(subset, E.Slugline) ?? doc.document?.meta?.find((m) => m.type === 'tt/slugline')?.value
+
+    const sectionLink = !subset?.length ? doc.document?.links?.find((l) => l.type === 'core/section') : undefined
+    const sectionUuid = fromSubset(subset, E.SectionUuid) ?? sectionLink?.uuid
+    const sectionTitle = fromSubset(subset, E.SectionTitle) ?? sectionLink?.title
 
     for (const included of doc.includedDocuments) {
       const hasUsable = included.state?.meta?.heads?.usable?.version

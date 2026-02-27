@@ -7,15 +7,15 @@ import type {
 import type { DocumentStateWithIncludes } from '@/shared/RepositorySocket'
 
 /**
- * Runs all decorators sequentially on initial document batch.
+ * Runs all decorators in parallel on initial document batch.
  * Each decorator can enrich documents with additional data under its namespace.
- * Errors are caught and logged silently to prevent blocking.
+ * Individual decorator failures are caught and logged to prevent blocking.
  *
  * Merges enrichment data from all decorators into a namespaced structure,
  * containing only data for documents present in the document state.
  *
  * @param documents - Initial batch of documents from WebSocket
- * @param decorators - Array of decorators to run sequentially
+ * @param decorators - Array of decorators to run in parallel
  * @returns Documents with decorator data merged in
  *
  * @example
@@ -102,15 +102,15 @@ export async function runInitialDecorators<TDecoratorData extends DecoratorDataB
 }
 
 /**
- * Runs all decorators sequentially on a single updated document.
+ * Runs all decorators in parallel on a single updated document.
  * Each decorator can enrich the document with additional data under its namespace.
- * Errors are caught and logged silently to prevent blocking.
+ * Individual decorator failures are caught and logged to prevent blocking.
  *
  * Updates the namespaced structure with enrichment for the updated document.
  *
  * @param parent - Parent document state with existing decorator data
  * @param document - Updated document from WebSocket
- * @param decorators - Array of decorators to run sequentially
+ * @param decorators - Array of decorators to run in parallel
  * @returns Document with decorator data merged in
  *
  * @example

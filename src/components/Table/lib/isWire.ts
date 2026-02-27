@@ -8,6 +8,8 @@ import type { TableRowData } from '../types'
  * Can be removed once Wire refinement is done.
  */
 export function isWire<TData extends TableRowData>(original: TData): original is TData & Wire {
-  const fields = (original as Record<string, unknown>).fields
-  return typeof fields === 'object' && fields !== null && 'document.meta.tt_wire.role' in fields
+  return 'fields' in original
+    && typeof original.fields === 'object'
+    && original.fields !== null
+    && 'document.meta.tt_wire.role' in original.fields
 }

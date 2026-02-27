@@ -10,7 +10,6 @@ import { useRegistry } from '@/hooks/useRegistry'
 import { useMemo } from 'react'
 import { timesSlots } from '@/defaults/assignmentTimeslots'
 import type { LocaleData } from '@/types/index'
-import { getPublishSlot, getPublishTime, getStartTime } from '@/lib/documentHelpers'
 import type { DocumentMeta } from '@ttab/elephant-api/repository'
 
 export const TimeCard = ({ item }: { item: PreprocessedApprovalData }) => {
@@ -60,9 +59,9 @@ function getAssignmentTime({ item, timeZone, locale, deliverableMeta, compareDat
   compareDate?: Date
 }): string | undefined {
   const deliverableStatus = item._deliverable?.status
-  const publishSlot = getPublishSlot(item._assignment)
-  const publish = getPublishTime(item._assignment)
-  const start = getStartTime(item._assignment)
+  const publishSlot = item._preprocessed.publishSlot
+  const publish = item._preprocessed.publishTime
+  const start = item._preprocessed.startTime
 
   if (
     deliverableStatus === 'draft'
@@ -106,7 +105,7 @@ function getTimeTooltip({ item, deliverableMeta, timeZone, locale, compareDate }
   compareDate?: Date
 }): string {
   const deliverableStatus = item._deliverable?.status
-  const publish = getPublishTime(item._assignment)
+  const publish = item._preprocessed.publishTime
 
   if (deliverableStatus === 'withheld' && publish) {
     return `Schemalagd kl ${format(toZonedTime(parseISO(publish), timeZone), 'HH:mm')}`

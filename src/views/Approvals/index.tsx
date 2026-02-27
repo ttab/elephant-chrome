@@ -14,7 +14,7 @@ import { useInitFilters } from '@/hooks/useInitFilters'
 import { columnFilterToQuery } from '@/lib/loadFilters'
 import { filterAssignments, getFacets } from './lib/filterAssignments'
 import { structureAssignments } from './lib/structureAssignments'
-import { preprocessApprovalData } from './preprocessor'
+import { preprocessApprovalData, APPROVALS_SUBSET } from './preprocessor'
 import { timesSlots as Slots } from '@/defaults/assignmentTimeslots'
 import type { Planning } from '@/shared/schemas/planning'
 import { createMetricsDecorator, type MetricsDecorator } from '@/hooks/useRepositorySocket/decorators/metrics'
@@ -57,6 +57,7 @@ export const Approvals = (): JSX.Element => {
     from,
     to,
     include: ['.meta(type=\'core/assignment\').links(rel=\'deliverable\')@{uuid:doc}'],
+    subset: [...APPROVALS_SUBSET],
     decorators
   })
 
@@ -215,7 +216,7 @@ export const Approvals = (): JSX.Element => {
 
                 return (
                   <ApprovalsCard
-                    key={item._assignment.id}
+                    key={item.id}
                     item={item}
                     status={StatusSpecifications[item._deliverable?.status || 'draft']}
                     isFocused={colN === focusedColumn && cardN === focusedCard}

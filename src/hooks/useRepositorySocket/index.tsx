@@ -36,20 +36,23 @@ import { runInitialDecorators, runUpdateDecorators } from './lib/decoratorRunner
  * - Optional decorator system for data enrichment
  * - Table integration support
  *
- * @template TEnrichment - Type of enrichment data for each document
+ * @template TDecoratorData - Namespaced decorator data shape (e.g., MetricsDecorator)
  *
  * @param options - Configuration options
  * @param options.type - Document type to fetch (e.g., 'core/planning-item')
  * @param options.from - Start date for timespan filter (ISO 8601)
  * @param options.to - End date for timespan filter (ISO 8601)
  * @param options.include - Array of include patterns for related documents
+ * @param options.subset - Array of subset extraction patterns
+ * @param options.preprocessor - Transform function for table data
  * @param options.asTable - Whether to integrate with table context
  * @param options.decorators - Array of decorator functions to enrich documents
  *
  * @returns Object containing:
- * - data: Array of documents with decorator data (Record<uuid, TEnrichment>)
+ * - data: Array of DocumentStateWithDecorators, each with optional decoratorData
  * - error: Error object if fetch failed, null otherwise
  * - isLoading: Boolean indicating if initial fetch is in progress
+ * - status: Current socket connection status
  *
  * @example
  * Basic usage:
@@ -64,12 +67,12 @@ import { runInitialDecorators, runUpdateDecorators } from './lib/decoratorRunner
  * @example
  * With decorators:
  * ```typescript
- * import { createMetricsDecorator, type MetricsData } from '@/hooks/useRepositorySocket/decorators/metrics'
+ * import { createMetricsDecorator, type MetricsDecorator } from '@/hooks/useRepositorySocket/decorators/metrics'
  *
- * const { data } = useRepositorySocket<MetricsData>({
+ * const { data } = useRepositorySocket<MetricsDecorator>({
  *   type: 'core/article',
  *   decorators: [
- *     createMetricsDecorator({ kinds: ['char_count', 'word_count'] })
+ *     createMetricsDecorator({ repository, kinds: ['char_count', 'word_count'] })
  *   ]
  * })
  *
@@ -114,14 +117,16 @@ export function useRepositorySocket<TDecoratorData extends DecoratorDataBase = D
   const includeRef = useRef(include)
   const subsetRef = useRef(subset)
   const decoratorsRef = useRef(decorators)
+  decoratorsRef.current = decorators
   const accessTokenRef = useRef<string>(session?.accessToken ?? '')
   accessTokenRef.current = session?.accessToken ?? ''
   const dataRef = useRef<DocumentStateWithDecorators<TDecoratorData>[]>([])
   dataRef.current = data
-  const schedulerRef = useRef<ScheduleDecoratorUpdate<TDecoratorData>>(null!)
-  if (!schedulerRef.current) {
-    schedulerRef.current = new ScheduleDecoratorUpdate<TDecoratorData>(setData, dataRef, decoratorsRef, accessTokenRef, runUpdateDecorators)
-  }
+  const schedulerRef = useRef(
+    new ScheduleDecoratorUpdate<TDecoratorData>(
+      setData, dataRef, decoratorsRef, accessTokenRef, runUpdateDecorators
+    )
+  )
 
   // Keep the socket's stored token fresh so reconnects use valid credentials
   useEffect(() => {
@@ -131,7 +136,9 @@ export function useRepositorySocket<TDecoratorData extends DecoratorDataBase = D
 
     if (repositorySocket.isConnected && !repositorySocket.isAuthenticated) {
       repositorySocket.authenticate().catch((err) => {
-        console.error('Failed to authenticate repository socket:', err)
+        const error = err instanceof Error ? err : new Error('Authentication failed')
+        setError(error)
+        toast.error('Kunde inte autentisera anslutningen')
       })
     }
   }, [session?.accessToken, repositorySocket])
@@ -195,46 +202,28 @@ export function useRepositorySocket<TDecoratorData extends DecoratorDataBase = D
 
         if (!isActive) return
 
-        setData(documents)
-        setIsLoading(false)
+        let initialData: DocumentStateWithDecorators<TDecoratorData>[]
 
-        // Run decorators in background after initial render
         if (decoratorsRef.current.length > 0) {
-          void (async () => {
-            try {
-              const enrichedDocs = await runInitialDecorators<TDecoratorData>(
-                documents,
-                decoratorsRef.current,
-                session.accessToken
-              )
-
-              if (!isActive) return
-
-              // Use functional updater to merge decorator data into current state,
-              // avoiding overwriting any WebSocket updates that arrived during enrichment
-              setData((prevData) => {
-                const decoratorDataByUuid = new Map<string, TDecoratorData>()
-                for (const doc of enrichedDocs) {
-                  if (doc.decoratorData && doc.document?.uuid) {
-                    decoratorDataByUuid.set(doc.document.uuid, doc.decoratorData)
-                  }
-                }
-
-                return prevData.map((doc) => {
-                  const uuid = doc.document?.uuid
-                  if (!uuid) return doc
-
-                  const decoratorData = decoratorDataByUuid.get(uuid)
-                  if (!decoratorData) return doc
-
-                  return { ...doc, decoratorData }
-                })
-              })
-            } catch (err) {
-              console.error('Decorator initialization failed:', err)
-            }
-          })()
+          try {
+            initialData = await runInitialDecorators<TDecoratorData>(
+              documents,
+              decoratorsRef.current,
+              session.accessToken
+            )
+          } catch (err) {
+            console.error('Decorator initialization failed:', err)
+            toast.error('Kunde inte ladda utökad data')
+            initialData = documents as DocumentStateWithDecorators<TDecoratorData>[]
+          }
+        } else {
+          initialData = documents as DocumentStateWithDecorators<TDecoratorData>[]
         }
+
+        if (!isActive) return
+
+        setData(initialData)
+        setIsLoading(false)
 
         const unsubscribe = onUpdate((update) => {
           // Verify both setName and that we're still the active call
@@ -296,11 +285,6 @@ export function useRepositorySocket<TDecoratorData extends DecoratorDataBase = D
   // We dont want to re-run this effect when accessToken changes
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [repositorySocket, from, to, type, asTable, reconnectCount])
-
-  // Update decorators ref when decorators prop changes
-  useEffect(() => {
-    decoratorsRef.current = decorators
-  }, [decorators])
 
   return { data, error, isLoading, status }
 }

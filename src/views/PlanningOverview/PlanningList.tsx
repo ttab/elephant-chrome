@@ -4,7 +4,7 @@ import { useDateRange, useRepositorySocket } from '@/hooks'
 import type { ColumnDef } from '@tanstack/react-table'
 import { TableSkeleton } from '@/components/Table/Skeleton'
 import type { PreprocessedPlanningData } from './preprocessor'
-import { preprocessPlanningData } from './preprocessor'
+import { preprocessPlanningData, PLANNING_SUBSET } from './preprocessor'
 import { Error as ErrorView } from '../Error'
 import { NewItems } from '@/components/Table/NewItems'
 import { Toolbar } from '@/components/Table/Toolbar'
@@ -19,6 +19,7 @@ export const PlanningList = ({ columns }: {
     type: 'core/planning-item',
     from,
     to,
+    subset: [...PLANNING_SUBSET],
     asTable: true,
     preprocessor: preprocessPlanningData
   })

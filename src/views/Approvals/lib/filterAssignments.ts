@@ -37,7 +37,7 @@ export function filterAssignments(
 export function getFacets(items: PreprocessedApprovalData[] | undefined): Facets {
   if (!items) return {}
 
-  return items.reduce((acc, item) => {
+  return items.reduce<Facets>((acc, item) => {
     const status = item._deliverable?.status
     const section = item._preprocessed.sectionUuid
 
@@ -45,22 +45,16 @@ export function getFacets(items: PreprocessedApprovalData[] | undefined): Facets
       if (!acc.status) {
         acc.status = new Map<string, number>()
       }
-      if (!acc.status.has(status)) {
-        acc.status.set(status, 0)
-      }
-      acc.status.set(status, acc.status.get(status)! + 1)
+      acc.status.set(status, (acc.status.get(status) ?? 0) + 1)
     }
 
     if (section) {
       if (!acc.section) {
         acc.section = new Map<string, number>()
       }
-      if (!acc.section.has(section)) {
-        acc.section.set(section, 0)
-      }
-      acc.section.set(section, acc.section.get(section)! + 1)
+      acc.section.set(section, (acc.section.get(section) ?? 0) + 1)
     }
 
     return acc
-  }, {} as Facets)
+  }, {})
 }

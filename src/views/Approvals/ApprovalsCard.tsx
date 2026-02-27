@@ -11,7 +11,7 @@ import { AuthorNames } from './AuthorNames'
 import { SubtitleCard } from './SubtitleCard'
 import { TimeCard } from './TimeCard'
 import type { TrackedDocument } from '@/hooks/useTrackedDocuments'
-import { getNewsvalue, getSection } from '@/lib/documentHelpers'
+import { getNewsvalue } from '@/lib/documentHelpers'
 
 export const ApprovalsCard = ({ trackedDocument, item, isSelected, isFocused, status, openEditors }: {
   item: PreprocessedApprovalData
@@ -28,7 +28,6 @@ export const ApprovalsCard = ({ trackedDocument, item, isSelected, isFocused, st
 
   const internalInfo = item._deliverable?.document?.meta.find((block) => block.type === 'core/note' && block.role === 'internal')?.data?.text
   const newsvalue = getNewsvalue(item._deliverable?.document)
-  const section = getSection(item._deliverable?.document)
   const deliverableId = item._deliverable?.id
   const deliverableType = item._deliverable?.type
 
@@ -45,7 +44,11 @@ export const ApprovalsCard = ({ trackedDocument, item, isSelected, isFocused, st
         } else if (deliverableId) {
           if (item._deliverable?.status === 'usable') {
             const lastUsableVersion = item._deliverable?.meta?.heads.usable?.version
-            openDocument(event, { id: deliverableId, preview: false }, 'last', undefined, undefined, { version: lastUsableVersion as bigint })
+            if (lastUsableVersion !== undefined) {
+              openDocument(event, { id: deliverableId, preview: false }, 'last', undefined, undefined, { version: lastUsableVersion })
+            } else {
+              openDocument(event, { id: deliverableId })
+            }
           } else {
             openDocument(event, { id: deliverableId })
           }
@@ -107,7 +110,7 @@ export const ApprovalsCard = ({ trackedDocument, item, isSelected, isFocused, st
           <div className='flex grow justify-between align-middle'>
             <div className='flex flex-row content-center opacity-60 gap-1'>
               {sections
-                .find((s) => s.id === section)
+                .find((s) => s.id === item._preprocessed.sectionUuid)
                 ?.title}
 
               {item._preprocessed.metrics?.charCount !== undefined && (
