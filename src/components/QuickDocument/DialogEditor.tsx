@@ -9,9 +9,10 @@ import type * as Y from 'yjs'
 import { BaseEditor } from '@/components/Editor/BaseEditor'
 import { contentMenuLabels } from '@/defaults/contentMenuLabels'
 
-export const FlashEditor = ({ ydoc, setTitle, onValidation, validateStateRef }: {
+export const DialogEditor = ({ ydoc, setTitle, onValidation, validateStateRef, type }: {
   ydoc: YDocument<Y.Map<unknown>>
   setTitle: (value: string | undefined) => void
+  type: 'article' | 'flash'
 } & FormProps): JSX.Element => {
   const plugins = [UnorderedList, OrderedList, Bold, Italic, LocalizedQuotationMarks]
   const [content] = getValueByYPath<Y.XmlText>(ydoc.ele, 'content', true)
@@ -48,9 +49,10 @@ export const FlashEditor = ({ ydoc, setTitle, onValidation, validateStateRef }: 
         plugins={[
           ...plugins.map((initPlugin) => initPlugin()),
           Text({
-            countCharacters: ['heading-1', 'body'],
+            countCharacters: ['heading-1'],
             preventHotkeys: ['heading-1', 'heading-2', 'preamble'],
-            ...contentMenuLabels
+            ...contentMenuLabels,
+            titleLabel: type === 'flash' ? 'Flashrubrik' : 'Rubrik'
           })
         ]}
         className='h-auto min-h-auto rounded-md border'

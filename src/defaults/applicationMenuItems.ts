@@ -9,7 +9,8 @@ import {
   UtilityPoleIcon,
   BoxesIcon,
   LibraryIcon,
-  type LucideIcon
+  type LucideIcon,
+  NewspaperIcon
 } from '@ttab/elephant-ui/icons'
 import type { ViewProps, View } from '../types'
 
@@ -104,6 +105,13 @@ export const applicationMenu: ApplicationMenu = {
           label: 'Sök',
           icon: SearchIcon,
           color: '#F06F21'
+        },
+        {
+          name: 'QuickArticle',
+          label: 'Skapa två på två',
+          icon: NewspaperIcon,
+          color: '#aabbcc',
+          target: 'dialog'
         }
       ]
     },

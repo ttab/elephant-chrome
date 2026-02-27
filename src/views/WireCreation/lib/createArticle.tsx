@@ -2,7 +2,8 @@ import type { Session } from 'next-auth'
 import { getValueByYPath } from '@/shared/yUtils'
 import type { Wire } from '@/shared/schemas/wire'
 import { toast } from 'sonner'
-import { ToastAction } from '@/views/Wires/components/ToastAction'
+import { ToastAction } from '@/components/ToastAction'
+import { CalendarDaysIcon, FileInputIcon } from '@ttab/elephant-ui/icons'
 import { addAssignmentWithDeliverable } from '@/lib/index/addAssignment'
 import { convertToISOStringInTimeZone } from '@/shared/datetime'
 import type { YDocument } from '@/modules/yjs/hooks'
@@ -69,11 +70,21 @@ export async function createArticle({
     classNames: {
       title: 'whitespace-nowrap'
     },
-    action: (
+    action: [
       <ToastAction
-        planningId={updatedPlanningId}
-        articleId={documentId}
+        key='planning'
+        documentId={updatedPlanningId}
+        withView='Planning'
+        Icon={CalendarDaysIcon}
+        label='Öppna planering'
+      />,
+      <ToastAction
+        key='article'
+        documentId={documentId}
+        withView='Editor'
+        Icon={FileInputIcon}
+        label='Öppna artikel'
       />
-    )
+    ]
   })
 }

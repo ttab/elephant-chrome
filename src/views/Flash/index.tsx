@@ -7,12 +7,13 @@ import { useQuery } from '@/hooks/useQuery'
 import { Error } from '../Error'
 import { FlashView } from './FlashView'
 import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
-import { FlashHeader } from './FlashHeader'
 import { Editor as PlainEditor } from '@/components/PlainEditor'
 import { getTemplateFromView } from '@/shared/templates/lib/getTemplateFromView'
 import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type { Document } from '@ttab/elephant-api/newsdoc'
+import { DocumentHeader } from '@/components/QuickDocument/DocumentHeader'
+import { useDeliverablePlanningId } from '@/hooks/index/useDeliverablePlanningId'
 
 const meta: ViewMetadata = {
   name: 'Flash',
@@ -43,6 +44,7 @@ export const Flash = (props: ViewProps & {
 
   // We must not read query.id if we are in a dialog or we pick up other documents ids
   const documentId = props.id || (!props.asDialog && query.id) || persistentDocumentId.current
+  const planningId = useDeliverablePlanningId(documentId as string || '')
 
   const data = useMemo(() => {
     if (!documentId || typeof documentId !== 'string') {
@@ -75,7 +77,9 @@ export const Flash = (props: ViewProps & {
 
     return (
       <View.Root>
-        <FlashHeader
+        <DocumentHeader
+          view='Flash'
+          planningId={planningId}
           ydoc={{ id: documentId } as YDocument<Y.Map<unknown>>}
           readOnly
         />

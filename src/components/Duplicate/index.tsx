@@ -6,7 +6,7 @@ import { toast } from 'sonner'
 import type { HocuspocusProvider } from '@hocuspocus/provider'
 import type { Session } from 'next-auth'
 import { CopyPlusIcon } from '@ttab/elephant-ui/icons'
-import { ToastAction } from '@/views/Flash/ToastAction'
+import { ToastAction } from '@/components/ToastAction'
 import type { EventData } from '@/views/Event/components/EventTime'
 import type { PlanningData } from '@/types/index'
 import { type SetStateAction, type Dispatch } from 'react'
@@ -177,7 +177,7 @@ export const Duplicate = ({ provider, title, session, status, type, dataInfo }: 
                 })()
 
                 toast.success(createTexts(granularity).success, {
-                  action: <ToastAction planningId={type === 'Planning' ? duplicateId : undefined} eventId={type === 'Event' ? duplicateId : undefined} />
+                  action: <ToastAction documentId={duplicateId || undefined} withView={type} />
                 })
               } catch (error) {
                 toast.error(`Något gick fel: ${JSON.stringify(error)}`)
