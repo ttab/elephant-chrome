@@ -60,6 +60,7 @@ export const RelatedWires = ({ wires = [], inline = false, onNavigate }: {
         onMouseEnter={() => setOpen(true)}
         onMouseLeave={() => setOpen(false)}
         onOpenAutoFocus={(e) => e.preventDefault()}
+        onCloseAutoFocus={(e) => e.preventDefault()}
       >
         <WireList wires={wires} />
       </PopoverContent>

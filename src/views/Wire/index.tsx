@@ -12,13 +12,13 @@ const meta: ViewMetadata = {
   path: `${import.meta.env.BASE_URL || ''}/wire`,
   widths: {
     sm: 12,
-    md: 12,
+    md: 6,
     lg: 6,
-    xl: 5,
-    '2xl': 4,
+    xl: 6,
+    '2xl': 5,
     hd: 4,
     fhd: 3,
-    qhd: 3,
+    qhd: 2,
     uhd: 2
   }
 }
@@ -59,6 +59,7 @@ export const Wire = ({ id }: ViewProps): JSX.Element => {
           icon={CableIcon}
           iconColor='#FF6347'
         />
+        <ViewHeader.Content />
         <ViewHeader.Action />
       </ViewHeader.Root>
 

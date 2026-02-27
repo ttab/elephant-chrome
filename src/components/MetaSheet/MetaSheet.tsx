@@ -22,8 +22,7 @@ import { RelatedWires } from '@/views/Planning/components/RelatedWires'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import type * as Y from 'yjs'
 
-export function MetaSheet({ container, ydoc, readOnly, readOnlyVersion }: {
-  container: HTMLElement | null
+export function MetaSheet({ ydoc, readOnly, readOnlyVersion }: {
   ydoc: YDocument<Y.Map<unknown>>
   readOnly?: boolean
   readOnlyVersion?: bigint
@@ -44,9 +43,9 @@ export function MetaSheet({ container, ydoc, readOnly, readOnlyVersion }: {
       <SheetDescription />
 
       <SheetContent
-        container={container}
         className='w-100vw h-100vh z-50 p-0 flex flex-col justify-between'
         defaultClose={false}
+        onCloseAutoFocus={(e) => e.preventDefault()}
       >
         <div>
           <SheetHeader>

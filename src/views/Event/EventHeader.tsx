@@ -1,7 +1,6 @@
-import { useView } from '@/hooks'
 import { useYValue } from '@/modules/yjs/hooks'
 
-import { useEffect, useRef, type JSX } from 'react'
+import { type JSX } from 'react'
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { ViewHeader } from '@/components/View'
 import { Duplicate } from '@/components/Duplicate'
@@ -29,13 +28,7 @@ export const EventHeader = ({
   provider: HocuspocusProvider | null
   status: 'authenticated' | 'loading' | 'unauthenticated'
 }): JSX.Element => {
-  const { viewId } = useView()
-  const containerRef = useRef<HTMLElement | null>(null)
   const [eventData] = useYValue<EventData | undefined>(ydoc.ele, 'meta.core/event[0].data')
-
-  useEffect(() => {
-    containerRef.current = (document.getElementById(viewId))
-  }, [viewId])
 
   return (
     <ViewHeader.Root asDialog={asDialog}>
@@ -81,7 +74,7 @@ export const EventHeader = ({
 
       <ViewHeader.Action ydoc={ydoc} onDialogClose={onDialogClose} asDialog={asDialog}>
         {!asDialog && ydoc && (
-          <MetaSheet container={containerRef.current} ydoc={ydoc} />
+          <MetaSheet ydoc={ydoc} />
         )}
       </ViewHeader.Action>
     </ViewHeader.Root>
