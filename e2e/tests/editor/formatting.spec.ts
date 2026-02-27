@@ -5,6 +5,7 @@ test.describe('Editor — Formatting @critical', () => {
   const articleId = process.env.E2E_TEST_ARTICLE_ID
   const restoreVersion = process.env.E2E_TEST_ARTICLE_RESTORE_VERSION
 
+  // eslint-disable-next-line no-empty-pattern
   test.beforeEach(async ({}, testInfo) => {
     test.skip(!articleId, 'E2E_TEST_ARTICLE_ID not set')
 
