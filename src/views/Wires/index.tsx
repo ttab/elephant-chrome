@@ -17,7 +17,7 @@ import { calculateWireStatuses, executeWiresStatuses } from './lib/setWireStatus
 import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
 import { useModal } from '@/components/Modal/useModal'
-import { Wire as WireView } from '@/views'
+import { WireCreation } from '@/views'
 import { useSettings } from '@/modules/userSettings'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { Document } from '@ttab/elephant-api/newsdoc'
@@ -319,7 +319,7 @@ export const Wires = (): JSX.Element => {
 
     // FIXME: This will make focus lost
     showModal(
-      <WireView
+      <WireCreation
         onDialogClose={hideModal}
         asDialog
         wires={wires}

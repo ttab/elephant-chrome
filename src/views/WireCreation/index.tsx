@@ -7,8 +7,8 @@ import type { Wire as WireType } from '@/shared/schemas/wire'
 import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
 
 const meta: ViewMetadata = {
-  name: 'Wire',
-  path: `${import.meta.env.BASE_URL || ''}/wire`,
+  name: 'WireCreation',
+  path: `${import.meta.env.BASE_URL || ''}/wire-creation`,
   widths: {
     sm: 12,
     md: 12,
@@ -22,7 +22,7 @@ const meta: ViewMetadata = {
   }
 }
 
-export const Wire = (props: ViewProps & {
+export const WireCreation = (props: ViewProps & {
   wires?: WireType[]
 }): JSX.Element => {
   // The article we're creating
@@ -75,4 +75,4 @@ export const Wire = (props: ViewProps & {
   )
 }
 
-Wire.meta = meta
+WireCreation.meta = meta

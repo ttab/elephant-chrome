@@ -1,13 +1,12 @@
 import React, { type MouseEvent, type JSX } from 'react'
 import { type ColumnDef, type Row as RowType } from '@tanstack/react-table'
 import { GroupedRowsHeader } from './GroupedRowsHeader'
-import { Row as RegularRow } from './Row'
-import { WireRow } from './WireRow'
+import { Row } from './Row'
 
 export const GroupedRows = <TData, TValue>({ row, columns, handleOpen, openDocuments, type }: {
   activeId?: string
   row: RowType<unknown>
-  type: 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires' | 'Factbox' | 'Print' | 'PrintEditor'
+  type: 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Factbox' | 'Print' | 'PrintEditor'
   columns: Array<ColumnDef<TData, TValue>>
   handleOpen: (event: MouseEvent<HTMLTableRowElement> | KeyboardEvent, subRow: RowType<unknown>) => void
   openDocuments: string[]
@@ -16,7 +15,6 @@ export const GroupedRows = <TData, TValue>({ row, columns, handleOpen, openDocum
     return <></>
   }
 
-  const Row = type === 'Wires' ? WireRow : RegularRow
   return (
     <React.Fragment key={row.id}>
       <GroupedRowsHeader row={row} columns={columns} />
