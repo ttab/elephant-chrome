@@ -91,6 +91,7 @@
     "srv-src",
     "./shared/**/*",
     "vite.config.ts",
+    "vitest.config.ts",
     "tailwind.config.ts",
     "./eslint.config.mjs",
     "postcss.config.js",
