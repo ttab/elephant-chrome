@@ -25,12 +25,12 @@ export function getWireState(wire: Wire): WireState {
   const usedVersion = Number.parseInt(wire.fields['heads.used.version']?.values[0])
 
   let status: WireStatusKey
-  if (version === readVersion) {
-    status = 'read'
+  if (version === usedVersion) {
+    status = 'used'
   } else if (version === savedVersion) {
     status = 'saved'
-  } else if (version === usedVersion) {
-    status = 'used'
+  } else if (version === readVersion) {
+    status = 'read'
   }
 
   return {
