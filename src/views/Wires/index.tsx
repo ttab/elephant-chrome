@@ -201,7 +201,9 @@ export const Wires = (): JSX.Element => {
     } else {
       setQueryString({ id: undefined })
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // Avoid circular dependency (recursive rerender) when changing location.
+    // We specificially want to ignore setQueryString as dependency.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [previewWire])
 
   // Apply loaded settings — runs only once after initial load completes
