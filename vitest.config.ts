@@ -39,6 +39,7 @@ export default defineConfig(({ mode }) => {
             name: { label: 'browser', color: 'blue' },
             include: ['__tests__/**/*.browser.test.tsx'],
             globals: true,
+            setupFiles: ['./setupTests.browser.ts'],
             browser: {
               enabled: true,
               provider: playwright(),
