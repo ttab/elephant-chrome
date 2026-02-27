@@ -1,5 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { render } from 'vitest-browser-react'
 import { CreateDeliverablePrompt } from '@/views/Planning/components/CreateDeliverablePrompt'
 import { useRegistry } from '@/hooks/useRegistry'
 import { useSession } from 'next-auth/react'
@@ -9,8 +8,10 @@ import type * as Y from 'yjs'
 import type { TemplatePayload } from '@/shared/templates'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import type { HocuspocusProvider } from '@hocuspocus/provider'
-import { initialState, type RegistryProviderState } from '@/contexts/RegistryProvider'
-
+import {
+  initialState,
+  type RegistryProviderState
+} from '@/contexts/RegistryProvider'
 
 vi.mock('@/hooks/useRegistry', () => ({
   useRegistry: vi.fn()
@@ -30,6 +31,15 @@ vi.mock('sonner', () => ({
   },
   Toaster: vi.fn(() => null)
 }))
+
+vi.mock('next-auth/react', async () => {
+  const originalModule = await vi.importActual('next-auth/react')
+  return {
+    __esModule: true,
+    ...originalModule,
+    useSession: vi.fn()
+  }
+})
 
 vi.mocked(useRegistry).mockReturnValue(initialState)
 
@@ -72,7 +82,6 @@ describe('CreateDeliverablePrompt', () => {
     vi.clearAllMocks()
     mockSaveDocument.mockResolvedValue(undefined)
 
-    // Reset useRegistry mock to return repository
     vi.mocked(useRegistry).mockReturnValue({
       repository: {
         saveDocument: mockSaveDocument,
@@ -81,7 +90,6 @@ describe('CreateDeliverablePrompt', () => {
       }
     } as unknown as RegistryProviderState)
 
-    // Reset useSession mock to return valid session
     vi.mocked(useSession).mockReturnValue({
       data: mockSession,
       status: 'authenticated'
@@ -89,17 +97,30 @@ describe('CreateDeliverablePrompt', () => {
   })
 
   describe('Rendering', () => {
-    it('renders the prompt dialog when all dependencies are available', () => {
-      render(<CreateDeliverablePrompt {...defaultProps} />)
+    it('renders the prompt dialog when all dependencies are available',
+      async () => {
+        const screen = await render(
+          <CreateDeliverablePrompt {...defaultProps} />
+        )
 
-      expect(screen.getByText('Skapa artikel?')).toBeInTheDocument()
-      expect(screen.getByText(/Vill du skapa en artikel för uppdraget Test Title/)).toBeInTheDocument()
-      expect(screen.getByText('Skapa')).toBeInTheDocument()
-      expect(screen.getByText('Avbryt')).toBeInTheDocument()
-    })
+        await expect.element(
+          screen.getByText('Skapa artikel?')
+        ).toBeVisible()
+        await expect.element(
+          screen.getByText(
+            /Vill du skapa en artikel för uppdraget Test Title/
+          )
+        ).toBeVisible()
+        await expect.element(
+          screen.getByRole('button', { name: 'Skapa' })
+        ).toBeVisible()
+        await expect.element(
+          screen.getByRole('button', { name: 'Avbryt' })
+        ).toBeVisible()
+      })
 
-    it('renders with flash deliverable type', () => {
-      render(
+    it('renders with flash deliverable type', async () => {
+      const screen = await render(
         <CreateDeliverablePrompt
           {...defaultProps}
           deliverableType='flash'
@@ -107,12 +128,18 @@ describe('CreateDeliverablePrompt', () => {
         />
       )
 
-      expect(screen.getByText('Skapa flash?')).toBeInTheDocument()
-      expect(screen.getByText(/Vill du skapa en flash för uppdraget Test Title/)).toBeInTheDocument()
+      await expect.element(
+        screen.getByText('Skapa flash?')
+      ).toBeVisible()
+      await expect.element(
+        screen.getByText(
+          /Vill du skapa en flash för uppdraget Test Title/
+        )
+      ).toBeVisible()
     })
 
-    it('renders with editorial-info deliverable type', () => {
-      render(
+    it('renders with editorial-info deliverable type', async () => {
+      const screen = await render(
         <CreateDeliverablePrompt
           {...defaultProps}
           deliverableType='editorial-info'
@@ -120,77 +147,96 @@ describe('CreateDeliverablePrompt', () => {
         />
       )
 
-      expect(screen.getByText('Skapa redaktionell info?')).toBeInTheDocument()
+      await expect.element(
+        screen.getByText('Skapa redaktionell info?')
+      ).toBeVisible()
     })
 
-    it('renders without title in description', () => {
-      render(<CreateDeliverablePrompt {...defaultProps} title='' />)
-
-      expect(screen.getByText(/Vill du skapa en artikel för uppdraget\?$/)).toBeInTheDocument()
-    })
-
-    it('does not render when repository is missing', () => {
-      vi.mocked(useRegistry).mockReturnValueOnce({ repository: undefined } as unknown as RegistryProviderState)
-
-      const { container } = render(<CreateDeliverablePrompt {...defaultProps} />)
-
-      expect(container).toBeEmptyDOMElement()
-    })
-
-    it('does not render when session is missing', () => {
-      vi.mocked(useSession).mockReturnValueOnce({ data: null, status: 'unauthenticated' } as unknown as ReturnType<typeof useSession>)
-
-      const { container } = render(<CreateDeliverablePrompt {...defaultProps} />)
-
-      expect(container).toBeEmptyDOMElement()
-    })
-
-    it('does not render when ydoc.provider.document is missing', () => {
-      const ydocWithoutProvider: YDocument<Y.Map<unknown>> = {
-        ...mockYdoc,
-        provider: undefined as unknown as HocuspocusProvider
-      }
-
-      const { container } = render(
-        <CreateDeliverablePrompt {...defaultProps} ydoc={ydocWithoutProvider} />
+    it('renders without title in description', async () => {
+      const screen = await render(
+        <CreateDeliverablePrompt {...defaultProps} title='' />
       )
 
-      expect(container).toBeEmptyDOMElement()
+      await expect.element(
+        screen.getByText(
+          /Vill du skapa en artikel för uppdraget\?$/
+        )
+      ).toBeVisible()
     })
+
+    it('does not render when repository is missing', async () => {
+      vi.mocked(useRegistry).mockReturnValueOnce(
+        { repository: undefined } as unknown as RegistryProviderState
+      )
+
+      const screen = await render(
+        <CreateDeliverablePrompt {...defaultProps} />
+      )
+
+      expect(screen.container.childElementCount).toBe(0)
+    })
+
+    it('does not render when session is missing', async () => {
+      vi.mocked(useSession).mockReturnValueOnce({
+        data: null,
+        status: 'unauthenticated'
+      } as unknown as ReturnType<typeof useSession>)
+
+      const screen = await render(
+        <CreateDeliverablePrompt {...defaultProps} />
+      )
+
+      expect(screen.container.childElementCount).toBe(0)
+    })
+
+    it('does not render when ydoc.provider.document is missing',
+      async () => {
+        const ydocWithoutProvider: YDocument<Y.Map<unknown>> = {
+          ...mockYdoc,
+          provider: undefined as unknown as HocuspocusProvider
+        }
+
+        const screen = await render(
+          <CreateDeliverablePrompt
+            {...defaultProps}
+            ydoc={ydocWithoutProvider}
+          />
+        )
+
+        expect(screen.container.childElementCount).toBe(0)
+      })
   })
 
   describe('User Interactions', () => {
-    it('calls onClose with document id when primary button is clicked', async () => {
-      const user = userEvent.setup()
-      const mockId = 'test-uuid-123'
-      vi.spyOn(crypto, 'randomUUID').mockReturnValue(mockId)
+    it('calls onClose with document id when primary button is clicked',
+      async () => {
+        const mockId = 'test-uuid-123'
+        vi.spyOn(crypto, 'randomUUID').mockReturnValue(mockId)
 
-      render(<CreateDeliverablePrompt {...defaultProps} />)
-
-      const createButton = screen.getByText('Skapa')
-      await user.click(createButton)
-
-      await waitFor(() => {
-        expect(mockSaveDocument).toHaveBeenCalledWith(
-          expect.objectContaining({
-            uuid: mockId
-          }),
-          'abc123'
+        const screen = await render(
+          <CreateDeliverablePrompt {...defaultProps} />
         )
+
+        await screen.getByRole('button', { name: 'Skapa' }).click()
+
+        await vi.waitFor(() => {
+          expect(mockSaveDocument).toHaveBeenCalledWith(
+            expect.objectContaining({ uuid: mockId }),
+            'abc123'
+          )
+        })
+
+        await vi.waitFor(() => {
+          expect(mockOnClose).toHaveBeenCalledWith(mockId)
+        })
       })
 
-      await waitFor(() => {
-        expect(mockOnClose).toHaveBeenCalledWith(mockId)
-      })
-    })
+    it('calls onClose without id when cancel is clicked', async () => {
+      const screen = await render(
+        <CreateDeliverablePrompt {...defaultProps} />
+      )
 
-    it('calls onClose without id when secondary button is clicked', async () => {
-      const user = userEvent.setup()
-
-      render(<CreateDeliverablePrompt {...defaultProps} />)
-
-      const cancelButton = screen.getByText('Avbryt')
-      await user.click(cancelButton)
+      await screen.getByRole('button', { name: 'Avbryt' }).click()
 
       expect(mockOnClose).toHaveBeenCalledWith()
       expect(mockSaveDocument).not.toHaveBeenCalled()
@@ -199,7 +245,6 @@ describe('CreateDeliverablePrompt', () => {
 
   describe('Payload Validation', () => {
     it('shows error when newsvalue is missing', async () => {
-      const user = userEvent.setup()
       const payloadWithoutNewsvalue = {
         meta: {},
         links: {
@@ -207,17 +252,16 @@ describe('CreateDeliverablePrompt', () => {
         }
       }
 
-      render(
+      const screen = await render(
         <CreateDeliverablePrompt
           {...defaultProps}
           payload={payloadWithoutNewsvalue}
         />
       )
 
-      const createButton = screen.getByText('Skapa')
-      await user.click(createButton)
+      await screen.getByRole('button', { name: 'Skapa' }).click()
 
-      await waitFor(() => {
+      await vi.waitFor(() => {
         expect(toast.error).toHaveBeenCalledWith(
           'Misslyckades att skapa text: Saknar nyhetsvärde eller sektion'
         )
@@ -228,7 +272,6 @@ describe('CreateDeliverablePrompt', () => {
     })
 
     it('shows error when section is missing', async () => {
-      const user = userEvent.setup()
       const payloadWithoutSection = {
         meta: {
           'core/newsvalue': [Block.create({ value: '3' })]
@@ -236,17 +279,16 @@ describe('CreateDeliverablePrompt', () => {
         links: {}
       }
 
-      render(
+      const screen = await render(
         <CreateDeliverablePrompt
           {...defaultProps}
           payload={payloadWithoutSection}
         />
       )
 
-      const createButton = screen.getByText('Skapa')
-      await user.click(createButton)
+      await screen.getByRole('button', { name: 'Skapa' }).click()
 
-      await waitFor(() => {
+      await vi.waitFor(() => {
         expect(toast.error).toHaveBeenCalledWith(
           'Misslyckades att skapa text: Saknar nyhetsvärde eller sektion'
         )
@@ -259,16 +301,16 @@ describe('CreateDeliverablePrompt', () => {
 
   describe('Error Handling', () => {
     it('handles saveDocument failure', async () => {
-      const user = userEvent.setup()
       const errorMessage = 'Network error'
       mockSaveDocument.mockRejectedValue(new Error(errorMessage))
 
-      render(<CreateDeliverablePrompt {...defaultProps} />)
+      const screen = await render(
+        <CreateDeliverablePrompt {...defaultProps} />
+      )
 
-      const createButton = screen.getByText('Skapa')
-      await user.click(createButton)
+      await screen.getByRole('button', { name: 'Skapa' }).click()
 
-      await waitFor(() => {
+      await vi.waitFor(() => {
         expect(toast.error).toHaveBeenCalledWith(
           `Misslyckades att skapa text: ${errorMessage}`
         )
@@ -278,15 +320,15 @@ describe('CreateDeliverablePrompt', () => {
     })
 
     it('handles non-Error exceptions', async () => {
-      const user = userEvent.setup()
       mockSaveDocument.mockRejectedValue('String error')
 
-      render(<CreateDeliverablePrompt {...defaultProps} />)
+      const screen = await render(
+        <CreateDeliverablePrompt {...defaultProps} />
+      )
 
-      const createButton = screen.getByText('Skapa')
-      await user.click(createButton)
+      await screen.getByRole('button', { name: 'Skapa' }).click()
 
-      await waitFor(() => {
+      await vi.waitFor(() => {
         expect(toast.error).toHaveBeenCalledWith(
           'Misslyckades att skapa text: Okänt fel'
         )
@@ -294,17 +336,18 @@ describe('CreateDeliverablePrompt', () => {
     })
 
     it('logs errors to console', async () => {
-      const user = userEvent.setup()
-      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      const consoleErrorSpy = vi.spyOn(console, 'error')
+        .mockImplementation(() => {})
       const error = new Error('Test error')
       mockSaveDocument.mockRejectedValue(error)
 
-      render(<CreateDeliverablePrompt {...defaultProps} />)
+      const screen = await render(
+        <CreateDeliverablePrompt {...defaultProps} />
+      )
 
-      const createButton = screen.getByText('Skapa')
-      await user.click(createButton)
+      await screen.getByRole('button', { name: 'Skapa' }).click()
 
-      await waitFor(() => {
+      await vi.waitFor(() => {
         expect(consoleErrorSpy).toHaveBeenCalledWith(
           'Failed to create deliverable:',
           'Test error',
@@ -318,42 +361,44 @@ describe('CreateDeliverablePrompt', () => {
 
   describe('Click Prevention', () => {
     it('prevents multiple simultaneous creation attempts', async () => {
-      const user = userEvent.setup()
       mockSaveDocument.mockImplementation(() =>
         new Promise((resolve) => setTimeout(resolve, 100))
       )
 
-      render(<CreateDeliverablePrompt {...defaultProps} />)
+      const screen = await render(
+        <CreateDeliverablePrompt {...defaultProps} />
+      )
 
-      const createButton = screen.getByText('Skapa')
+      const createButton = screen.getByRole('button', { name: 'Skapa' })
 
-      await user.click(createButton)
-      await user.click(createButton)
-      await user.click(createButton)
+      await createButton.click()
+      await createButton.click()
+      await createButton.click()
 
-      await waitFor(() => {
+      await vi.waitFor(() => {
         expect(mockSaveDocument).toHaveBeenCalledTimes(1)
-      }, { timeout: 200 })
+      })
     })
 
     it('allows retry after failed creation', async () => {
-      const user = userEvent.setup()
       mockSaveDocument.mockRejectedValueOnce(new Error('First failure'))
       mockSaveDocument.mockResolvedValueOnce(undefined)
 
-      render(<CreateDeliverablePrompt {...defaultProps} />)
+      const screen = await render(
+        <CreateDeliverablePrompt {...defaultProps} />
+      )
 
-      const createButton = screen.getByText('Skapa')
+      const createButton = screen.getByRole('button', { name: 'Skapa' })
 
-      await user.click(createButton)
-      await waitFor(() => {
+      await createButton.click()
+      await vi.waitFor(() => {
         expect(toast.error).toHaveBeenCalledWith(
           'Misslyckades att skapa text: First failure'
         )
       })
 
-      await user.click(createButton)
-      await waitFor(() => {
+      await createButton.click()
+      await vi.waitFor(() => {
         expect(mockSaveDocument).toHaveBeenCalledTimes(2)
       })
     })
@@ -361,14 +406,13 @@ describe('CreateDeliverablePrompt', () => {
 
   describe('Repository Integration', () => {
     it('calls saveDocument with session access token', async () => {
-      const user = userEvent.setup()
+      const screen = await render(
+        <CreateDeliverablePrompt {...defaultProps} />
+      )
 
-      render(<CreateDeliverablePrompt {...defaultProps} />)
+      await screen.getByRole('button', { name: 'Skapa' }).click()
 
-      const createButton = screen.getByText('Skapa')
-      await user.click(createButton)
-
-      await waitFor(() => {
+      await vi.waitFor(() => {
         expect(mockSaveDocument).toHaveBeenCalledWith(
           expect.any(Object),
           'abc123'
@@ -377,32 +421,33 @@ describe('CreateDeliverablePrompt', () => {
     })
 
     it('generates unique UUID for each document', async () => {
-      const user = userEvent.setup()
       const mockId1 = 'uuid-1'
       const mockId2 = 'uuid-2'
       const uuidSpy = vi.spyOn(crypto, 'randomUUID')
       uuidSpy.mockReturnValueOnce(mockId1).mockReturnValueOnce(mockId2)
 
-      // First creation
-      const { unmount } = render(<CreateDeliverablePrompt {...defaultProps} />)
-      await user.click(screen.getByText('Skapa'))
+      const screen1 = await render(
+        <CreateDeliverablePrompt {...defaultProps} />
+      )
+      await screen1.getByRole('button', { name: 'Skapa' }).click()
 
-      await waitFor(() => {
+      await vi.waitFor(() => {
         expect(mockSaveDocument).toHaveBeenCalledWith(
           expect.objectContaining({ uuid: mockId1 }),
           'abc123'
         )
       })
 
-      // Reset for second creation with fresh component
-      unmount()
+      await screen1.unmount()
       mockSaveDocument.mockClear()
       mockOnClose.mockClear()
 
-      render(<CreateDeliverablePrompt {...defaultProps} />)
-      await user.click(screen.getByText('Skapa'))
+      const screen2 = await render(
+        <CreateDeliverablePrompt {...defaultProps} />
+      )
+      await screen2.getByRole('button', { name: 'Skapa' }).click()
 
-      await waitFor(() => {
+      await vi.waitFor(() => {
         expect(mockSaveDocument).toHaveBeenCalledWith(
           expect.objectContaining({ uuid: mockId2 }),
           'abc123'

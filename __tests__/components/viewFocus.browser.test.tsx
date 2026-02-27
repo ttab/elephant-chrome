@@ -1,38 +1,39 @@
 import { type Dispatch } from 'react'
 import { NavigationProvider } from '@/navigation/NavigationProvider'
-import userEvent from '@testing-library/user-event'
+import { render } from 'vitest-browser-react'
 import { useNavigation } from '@/hooks'
-import { render, screen } from '../setupTests'
 import { ViewFocus } from '@/components/View/ViewHeader/ViewFocus'
-import { type NavigationActionType } from '@/types'
+import { type NavigationAction } from '@/types'
 import { initializeNavigationState } from '@/navigation/lib'
-import { type Mock, vi } from 'vitest'
-
+import { userEvent } from 'vitest/browser'
 
 vi.mock('@/navigation/hooks/useNavigation', () => ({
   useNavigation: vi.fn()
 }))
+
 const mockState = initializeNavigationState()
 
-const mockDispatch = vi.fn() as Dispatch<NavigationActionType>
+const mockDispatch = vi.fn() as Dispatch<NavigationAction>
 
-(useNavigation as Mock).mockReturnValue({
+vi.mocked(useNavigation).mockReturnValue({
   state: mockState,
   dispatch: mockDispatch
 })
 
 describe('ViewFocus', () => {
   it('should render ViewFocus component', async () => {
-    render(
+    const screen = await render(
       <NavigationProvider>
         <ViewFocus viewId='abc123' />
       </NavigationProvider>
     )
 
     // Open with button, close with escape
-    await userEvent.click(screen.getByRole('button'))
+    await screen.getByRole('button').click()
     mockState.focus = 'abc123'
     await userEvent.keyboard('{Escape}')
-    expect(mockDispatch).toHaveBeenCalledWith({ viewId: 'abc123', type: 'focus' })
+    expect(mockDispatch).toHaveBeenCalledWith(
+      { viewId: 'abc123', type: 'focus' }
+    )
   })
 })
