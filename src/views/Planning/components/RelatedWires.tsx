@@ -4,14 +4,15 @@ import type { Block } from '@ttab/elephant-api/newsdoc'
 import { Popover, PopoverContent, PopoverTrigger } from '@ttab/elephant-ui'
 import { CableIcon } from '@ttab/elephant-ui/icons'
 
-const WireList = ({ wires }: { wires: Block[] }) => (
+const WireList = ({ wires, onNavigate }: { wires: Block[], onNavigate?: () => void }) => (
   <div className='flex flex-col gap-0.5'>
     {wires.map((wire) => (
       <Link
-        to='Wires'
+        to='Wire'
         props={{ id: wire.uuid }}
         target='last'
         key={wire.uuid}
+        onClick={onNavigate}
         className='text-xs flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-table-focused px-1.5 py-1 rounded-sm'
       >
         {wire.title}
@@ -20,9 +21,10 @@ const WireList = ({ wires }: { wires: Block[] }) => (
   </div>
 )
 
-export const RelatedWires = ({ wires = [], inline = false }: {
+export const RelatedWires = ({ wires = [], inline = false, onNavigate }: {
   wires: Block[] | undefined
   inline?: boolean
+  onNavigate?: () => void
 }) => {
   const [open, setOpen] = useState(false)
 
@@ -33,7 +35,7 @@ export const RelatedWires = ({ wires = [], inline = false }: {
   if (inline) {
     return (
       <div className='flex flex-col gap-0.5'>
-        <WireList wires={wires} />
+        <WireList wires={wires} onNavigate={onNavigate} />
       </div>
     )
   }

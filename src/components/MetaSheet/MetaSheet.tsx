@@ -34,7 +34,7 @@ export function MetaSheet({ container, ydoc, readOnly, readOnlyVersion }: {
   const [isOpen, setIsOpen] = useState(false)
 
   return (
-    <Sheet onOpenChange={setIsOpen}>
+    <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger className='rounded-md  w-9 h-9 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-table-focused'>
         {!isOpen
           ? <PanelRightOpenIcon size={18} strokeWidth={1.75} />
@@ -97,7 +97,7 @@ export function MetaSheet({ container, ydoc, readOnly, readOnlyVersion }: {
                         <>
                           <Label htmlFor='source-wires' className='text-xs text-muted-foreground -mb-3'>Källtelegram</Label>
                           <div id='source-wires'>
-                            <RelatedWires wires={wires} inline />
+                            <RelatedWires wires={wires} inline onNavigate={() => setIsOpen(false)} />
                           </div>
                         </>
                       )}
