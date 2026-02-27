@@ -1,5 +1,5 @@
 import { Button } from '@ttab/elephant-ui'
-import { XIcon } from 'lucide-react'
+import { XIcon } from '@ttab/elephant-ui/icons'
 import { SectionFilterValue } from './Value/SectionFilterValue'
 import { WireSourceFilterValue } from './Value/WireSourceFilterValue'
 import { NewsvalueFilterValue } from './Value/NewsvalueFilterValue'
