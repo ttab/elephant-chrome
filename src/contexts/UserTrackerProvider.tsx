@@ -4,6 +4,7 @@ import {
   useState,
   useMemo,
   useEffect,
+  useRef,
   type JSX
 } from 'react'
 import { HocuspocusProvider } from '@hocuspocus/provider'
@@ -38,6 +39,9 @@ export const UserTrackerProvider = ({ children }: PropsWithChildren): JSX.Elemen
     throw new Error('UserTracker is not allowed without a valid access_token')
   }
 
+  const accessTokenRef = useRef(data.accessToken)
+  accessTokenRef.current = data.accessToken
+
   const provider = useMemo(() => {
     if (!webSocketProvider) {
       return
@@ -46,7 +50,7 @@ export const UserTrackerProvider = ({ children }: PropsWithChildren): JSX.Elemen
     return new HocuspocusProvider({
       websocketProvider: webSocketProvider,
       name: data.user.sub.replace('core://user/', ''),
-      token: data.accessToken,
+      token: () => accessTokenRef.current,
       onConnect: () => {
         setConnected(true)
       },
