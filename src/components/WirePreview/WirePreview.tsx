@@ -31,7 +31,7 @@ export const WirePreview = ({ wire, onClose }: {
   }, [wire.id])
 
   return (
-    <div className='grid-rows-[auto_1fr] max-w-full w-full overflow-y-auto mx-auto'>
+    <div className='grid grid-rows-[auto_auto_1fr] max-w-full w-full h-full overflow-y-auto mx-auto'>
       <div className='flex items-center justify-between py-2 px-12'>
         <div className='text-sm flex flex-row gap-2'>
           {data?.source && (

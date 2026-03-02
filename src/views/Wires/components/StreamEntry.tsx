@@ -1,4 +1,4 @@
-import { useCallback, type JSX } from 'react'
+import { useCallback, memo, type JSX } from 'react'
 import type { Wire } from '@/shared/schemas/wire'
 import { cn } from '@ttab/elephant-ui/utils'
 import { cva } from 'class-variance-authority'
@@ -50,7 +50,7 @@ const variants = cva(
   }
 )
 
-export const StreamEntry = ({
+export const StreamEntry = memo(({
   streamId,
   entry,
   isSelected,
@@ -158,4 +158,6 @@ export const StreamEntry = ({
       )}
     </div>
   )
-}
+})
+
+StreamEntry.displayName = 'StreamEntry'

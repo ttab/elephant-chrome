@@ -1,4 +1,4 @@
-import { type JSX, useMemo, useCallback, useState, useRef, useEffect } from 'react'
+import { type JSX, useMemo, useCallback, useState, useRef, useEffect, memo } from 'react'
 import { fields, type Wire, type WireFields } from '@/shared/schemas/wire'
 import { useDocuments } from '@/hooks/index/useDocuments'
 import { constructQuery } from '../lib/constructQuery'
@@ -23,7 +23,7 @@ import { REQUIRE_FILTERS } from '../lib/featureFlags'
 const PAGE_SIZE = 80
 const FILTER_DEBOUNCE_MS = 400
 
-export const Stream = ({
+export const Stream = memo(({
   wireStream,
   onFocus,
   onPress,
@@ -346,4 +346,6 @@ export const Stream = ({
 
     </div>
   )
-}
+})
+
+Stream.displayName = 'Stream'

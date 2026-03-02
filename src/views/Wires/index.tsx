@@ -65,6 +65,7 @@ export const Wires = (): JSX.Element => {
 
   const previewRestoredRef = useRef(false)
   const [previewWire, setPreviewWire] = useState<Wire | null>(null)
+  const previewDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [previewReloadCount, setPreviewReloadCount] = useState(0)
   const [focusedWire, setFocusedWire] = useState<Wire | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -191,7 +192,10 @@ export const Wires = (): JSX.Element => {
 
   const handleOnFocus = useCallback((wire: Wire) => {
     setFocusedWire(wire)
-    setPreviewWire((curr) => curr ? wire : null)
+    if (previewDebounceRef.current) clearTimeout(previewDebounceRef.current)
+    previewDebounceRef.current = setTimeout(() => {
+      setPreviewWire((curr) => curr ? wire : null)
+    }, 150)
   }, [])
 
   // Sync preview wire id to URL query params
@@ -429,13 +433,13 @@ export const Wires = (): JSX.Element => {
               <div
                 className={cn(
                   'rounded-lg grid shadow-xl border border-default-foreground/20 mx-1 justify-center',
-                  'grid-rows-[auto_1fr]',
+                  'grid-rows-[auto_1fr] h-full overflow-hidden',
                   '@7xl/view:ml-0 @7xl/view:w-xl @7xl/view:my-2 @7xl/view:mx-0'
                 )}
               >
                 <Preview
                   wire={previewWire}
-                  key={previewReloadCount}
+                  key={`${previewWire.id}-${previewReloadCount}`}
                   onClose={() => setPreviewWire(null)}
                 />
               </div>
