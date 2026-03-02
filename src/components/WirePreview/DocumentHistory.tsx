@@ -112,7 +112,7 @@ export const DocumentHistory = ({ uuid, currentVersion, wireState, onSelectVersi
 
   return (
     <div className='flex flex-col gap-0 text-sm text-muted-foreground'>
-      <div className='grid grid-cols-[auto_auto_1fr] gap-0'>
+      <div className='flex flex-col'>
         {visibleHistory?.length
           && visibleHistory.map((item, index) => {
             const title = documents?.find((doc) => doc.version === item.version)?.document?.title
@@ -120,17 +120,18 @@ export const DocumentHistory = ({ uuid, currentVersion, wireState, onSelectVersi
             const status = getStatusForVersion(item.version, currentVersion, wireState)
 
             return (
-              <HistoryEntry
-                key={`${item.version}`}
-                version={item.version}
-                status={status}
-                title={title}
-                isLast={index === visibleHistory.length - 1}
-                isCurrent={isCurrent}
-                time={dateToReadableDateTime(new Date(item.created), locale.code.short, timeZone)}
-                onSelect={onSelectVersion}
-                selected={selectedVersion === item.version || (!selectedVersion && isCurrent)}
-              />
+              <div key={`${item.version}`} className='grid grid-cols-[1.5rem_auto_1fr] group rounded'>
+                <HistoryEntry
+                  version={item.version}
+                  status={status}
+                  title={title}
+                  isLast={index === visibleHistory.length - 1}
+                  isCurrent={isCurrent}
+                  time={dateToReadableDateTime(new Date(item.created), locale.code.short, timeZone)}
+                  onSelect={onSelectVersion}
+                  selected={selectedVersion === item.version || (!selectedVersion && isCurrent)}
+                />
+              </div>
             )
           })}
       </div>

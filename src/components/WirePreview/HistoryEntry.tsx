@@ -12,9 +12,24 @@ export const HistoryEntry = ({ version, isCurrent = false, status, isLast, title
   onSelect: (version: bigint) => void
   selected?: boolean
 }) => {
+  const isSelectable = !!version && !selected
+
+  const handleSelect = (e: React.MouseEvent) => {
+    e.preventDefault()
+    if (isSelectable) {
+      onSelect(version)
+    }
+  }
+
   return (
     <>
-      <div className='relative flex items-center justify-center pe-2 h-full'>
+      <div
+        className={cn(
+          'relative flex items-center justify-center pe-2 h-full',
+          isSelectable && 'cursor-pointer group-hover:bg-muted/60'
+        )}
+        onMouseDownCapture={handleSelect}
+      >
         <HistoryIcon
           status={status || 'draft'}
           isCurrent={isCurrent}
@@ -22,28 +37,25 @@ export const HistoryEntry = ({ version, isCurrent = false, status, isLast, title
         />
       </div>
 
-      <div className={cn(
-        'py-1 ps-2 cursor-default',
-        !title && 'text-muted-foreground',
-        selected && 'font-semibold'
-      )}
+      <div
+        className={cn(
+          'py-1 ps-2',
+          isSelectable ? 'cursor-pointer group-hover:bg-muted/60' : 'cursor-default',
+          !title && 'text-muted-foreground',
+          selected && 'font-semibold'
+        )}
+        onMouseDownCapture={handleSelect}
       >
         {time}
       </div>
 
-
       <a
         className={cn(
-          'py-0.5 ps-3 items-center truncate cursor-default',
-          version && !selected && 'hover:cursor-pointer hover:underline',
+          'py-0.5 ps-3 items-center truncate',
+          isSelectable ? 'cursor-pointer group-hover:bg-muted/60' : 'cursor-default',
           selected && 'font-semibold'
         )}
-        onMouseDownCapture={(e) => {
-          e.preventDefault()
-          if (version && !selected) {
-            onSelect(version)
-          }
-        }}
+        onMouseDownCapture={handleSelect}
       >
         {(title && version)
           ? (
