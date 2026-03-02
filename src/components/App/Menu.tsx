@@ -98,7 +98,7 @@ export const Menu = (): JSX.Element => {
                           >
                             <div className='flex items-center gap-3'>
                               <item.icon strokeWidth={2.25} size={18} color={item.color} />
-                              <div className='pl-2'>{t(`mainMenu.${item.name.toLowerCase()}`)}</div>
+                              <div className='pl-2'>{item.label}</div>
                             </div>
                           </button>
                         )

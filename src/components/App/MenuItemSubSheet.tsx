@@ -10,7 +10,6 @@ import {
 import { XIcon } from '@ttab/elephant-ui/icons'
 import { Latest as LatestComponent } from '@/views/Latest'
 import type { JSX } from 'react'
-import { useTranslation } from 'react-i18next'
 
 interface SheetComponentProps {
   setOpen: (open: boolean) => void
@@ -25,7 +24,6 @@ export const MenuItemSubSheet = ({
   isOpen: boolean
   onClose: () => void
 }): JSX.Element => {
-  const { t } = useTranslation('app')
   const sheetComponents: Record<string, React.ComponentType<SheetComponentProps>> = {
     Latest: LatestComponent
   }
@@ -48,7 +46,7 @@ export const MenuItemSubSheet = ({
             </SheetClose>
 
             <div className='flex items-center gap-2'>
-              <div>{t(`mainMenu.${menuItem.name.toLowerCase()}`)}</div>
+              <div>{menuItem.label}</div>
               <menuItem.icon strokeWidth={2.25} size={18} color={menuItem.color} />
             </div>
 
