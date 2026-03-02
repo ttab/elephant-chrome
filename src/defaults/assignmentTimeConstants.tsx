@@ -9,7 +9,7 @@ import {
   Clock1Icon
 } from '@ttab/elephant-ui/icons'
 import { type AssignmentValueOption } from '../components/AssignmentTime/types'
-import i18n from '@/lib/i18n'
+import i18n from 'i18next'
 
 const iconProps = {
   size: 18,

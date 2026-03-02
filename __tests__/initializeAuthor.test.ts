@@ -5,7 +5,7 @@ import { Index } from '@/shared/Index'
 import type { Repository } from '@/shared/Repository'
 import { toast } from 'sonner'
 import type { Session } from 'next-auth'
-import i18n from '@/lib/i18n'
+import i18n from 'i18next'
 import i18next from 'i18next'
 
 vi.mock('@/shared/Index')

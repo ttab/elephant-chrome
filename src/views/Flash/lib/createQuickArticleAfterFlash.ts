@@ -1,7 +1,7 @@
 import { addAssignmentWithDeliverable } from '@/lib/index/addAssignment'
 import { convertToISOStringInTimeZone } from '@/shared/datetime'
 import type { QuickArticleData } from '@/shared/types'
-import i18n from '@/lib/i18n'
+import i18n from 'i18next'
 
 /**
  * After creating a flash document, an article (text assignment) with the contents of the

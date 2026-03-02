@@ -2,7 +2,7 @@ import type { Wire } from '@/shared/schemas/wire'
 import type { QuickArticleData } from '@/shared/types'
 
 import { toast } from 'sonner'
-import i18n from '@/lib/i18n'
+import i18n from 'i18next'
 
 const BASE_URL = import.meta.env.BASE_URL || ''
 

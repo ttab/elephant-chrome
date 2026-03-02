@@ -1,4 +1,4 @@
-import i18n from '@/lib/i18n'
+import i18n from 'i18next'
 
 export const contentMenuLabels = {
   titleLabel: i18n.t('editor:contentMenu.title'),
