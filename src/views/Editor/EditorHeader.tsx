@@ -5,7 +5,8 @@ import { MetaSheet } from '@/components/MetaSheet/MetaSheet'
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { AddNote } from '@/components/Notes/AddNote'
 import { ViewHeader } from '@/components/View'
-import { PenBoxIcon, PenOffIcon } from '@ttab/elephant-ui/icons'
+import { CableIcon, PenBoxIcon, PenOffIcon } from '@ttab/elephant-ui/icons'
+import type { Block } from '@ttab/elephant-api/newsdoc'
 import { toast } from 'sonner'
 import { handleLink } from '@/components/Link/lib/handleLink'
 import { useDeliverablePlanningId } from '@/hooks/index/useDeliverablePlanningId'
@@ -30,6 +31,8 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
   const [documentType] = useYValue<string>(ydoc.ele, 'root.type')
 
   const openLatestVersion = useLink('Editor')
+  const openSources = useLink('Sources')
+  const [wireBlocks] = useYValue<Block[]>(ydoc.ele, 'links.tt/wire')
 
   // FIXME: We must have a way to retrieve the publish time defined in the planning.
   // FIXME: When yjs opening of related planning have been fixed this should be readded/remade.
@@ -101,6 +104,17 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
             <div className='hidden flex-row gap-2 justify-start items-center @lg/view:flex'>
               {!readOnly && <AddNote ydoc={ydoc} />}
               {!readOnly && documentType !== 'core/editorial-info' && <Newsvalue ydoc={ydoc} path='meta.core/newsvalue[0].value' />}
+              {!!wireBlocks?.length && (
+                <Button
+                  variant='ghost'
+                  size='sm'
+                  className='gap-1.5 text-muted-foreground'
+                  onClick={(event) => openSources(event, { id: ydoc.id }, 'last')}
+                >
+                  <CableIcon size={15} strokeWidth={1.75} />
+                  Källor
+                </Button>
+              )}
             </div>
           </div>
 

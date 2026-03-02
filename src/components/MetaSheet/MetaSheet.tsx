@@ -18,8 +18,6 @@ import { Version } from '@/components/Version'
 import { ReadOnly } from './ReadOnly'
 import { EditorialInfoTypes } from '@/components/EditorialInfoTypes'
 import { ContentSource } from '@/components/ContentSource'
-import { RelatedWires } from '@/views/Planning/components/RelatedWires'
-import type { Block } from '@ttab/elephant-api/newsdoc'
 import type * as Y from 'yjs'
 
 export function MetaSheet({ ydoc, readOnly, readOnlyVersion }: {
@@ -29,7 +27,6 @@ export function MetaSheet({ ydoc, readOnly, readOnlyVersion }: {
 }): JSX.Element {
   const [documentType] = useYValue<string | undefined>(ydoc.ele, 'root.type')
   const [slugline] = useYValue<string | undefined>(ydoc.ele, 'meta.tt/slugline[0].value')
-  const [wires] = useYValue<Block[]>(ydoc.ele, 'links.tt/wire')
   const [isOpen, setIsOpen] = useState(false)
 
   return (
@@ -92,14 +89,6 @@ export function MetaSheet({ ydoc, readOnly, readOnlyVersion }: {
                         <ContentSource ydoc={ydoc} path='links.core/content-source' />
                       </div>
 
-                      {!!wires?.length && (
-                        <>
-                          <Label htmlFor='source-wires' className='text-xs text-muted-foreground -mb-3'>Källtelegram</Label>
-                          <div id='source-wires'>
-                            <RelatedWires wires={wires} inline onNavigate={() => setIsOpen(false)} />
-                          </div>
-                        </>
-                      )}
                     </>
                   )}
 
