@@ -46,5 +46,3 @@ export const SearchInput = ({ className, type = 'text', ...props }: SearchInputP
     </div>
   )
 }
-
-SearchInput.displayName = 'SearchInput'
