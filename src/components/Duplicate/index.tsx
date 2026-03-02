@@ -183,7 +183,7 @@ export const Duplicate = ({ provider, title, session, status, type, dataInfo }: 
                   action: <ToastAction documentId={duplicateId || undefined} withView={type} />
                 })
               } catch (error) {
-                toast.error(`${t('errors:messages.someError') as unknown as string}: ${JSON.stringify(error)}`)
+                toast.error(`${t('errors:messages.someError')}: ${JSON.stringify(error)}`)
                 console.error(error)
               }
             }

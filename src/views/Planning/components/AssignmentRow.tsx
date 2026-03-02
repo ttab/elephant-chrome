@@ -408,8 +408,8 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
 
       {showVerifyDialog && (
         <Prompt
-          title={`${t('common:actions.remove') as unknown as string}?`}
-          description={`${t('planning:assignment.removeAssignment') as unknown as string}${title ? ' ' + title : ''}?`}
+          title={`${t('common:actions.remove')}?`}
+          description={`${t('planning:assignment.removeAssignment')}${title ? ' ' + title : ''}?`}
           secondaryLabel={t('common:actions.abort')}
           primaryLabel={t('common:actions.remove')}
           onPrimary={(event) => {
@@ -459,7 +459,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
 
             if (!document) {
               console.error('AssignmentRow: Document reference lost after deliverable creation', { id })
-              toast.error(t('errors:toasts.createDeliverableLinkError'))
+              toast.error(t('errors:toasts.createDeliverableLinkError') as string)
               setShowCreateDialogPayload(false)
               return
             }
@@ -476,8 +476,8 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
                 type: getDeliverableType(assignmentType)
               })
             } catch (ex: unknown) {
-              const errorMessage = ex instanceof Error ? ex.message : t('errors:messages.unknown') as unknown as string
-              const linkError = t('errors:toasts.createDeliverableLinkError') as unknown as string
+              const errorMessage = ex instanceof Error ? ex.message : t('errors:messages.unknown')
+              const linkError = t('errors:toasts.createDeliverableLinkError')
 
               console.error('AssignmentRow: Failed to link deliverable to assignment', {
                 id,
@@ -497,7 +497,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
                 openDocument(undefined, { id, planningId }, 'blank')
                 setIsLinking(false)
               }).catch((ex: unknown) => {
-                const errorMessage = ex instanceof Error ? ex.message : t('errors:toasts.saveError')
+                const errorMessage = ex instanceof Error ? ex.message : t('errors:toasts.saveError') as string
                 console.error('AssignmentRow: Failed to snapshot planning document', {
                   planningId,
                   deliverableId: id,
