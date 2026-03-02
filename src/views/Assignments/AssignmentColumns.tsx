@@ -26,7 +26,9 @@ import { Time } from './Time'
 import { SectionBadge } from '@/components/DataItem/SectionBadge'
 import type { Assignment } from '@/shared/schemas/assignments'
 import { parseISO } from 'date-fns'
-import { ActionMenu } from '@/components/ActionMenu'
+import { DotMenu } from '@/components/ui/DotMenu'
+import { Link } from '@/components'
+import { PenIcon, CalendarDaysIcon } from '@ttab/elephant-ui/icons'
 import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
 import { DocumentStatuses } from '@/defaults/documentStatuses'
 import { selectableStatuses } from '../Planning/components/AssignmentStatus'
@@ -329,18 +331,38 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
         const planningId = row.original.id
         return (
           <div className='shrink p-'>
-            <ActionMenu
-              actions={[
+            <DotMenu
+              items={[
                 {
-                  to: 'Editor',
-                  id: deliverableUuid,
-                  title: t('views:assignments.actionMenu.openArticle')
+                  // to: 'Editor',
+                  // id: deliverableUuid,
+                  // title: t('views:assignments.actionMenu.openArticle')
+                  label: t('views:assignments.actionMenu.openArticle'),
+                  item: (
+                    <Link to='Editor' target='last' props={{ id: deliverableUuid }} className='flex flex-row gap-5'>
+                      <div className='pt-1'>
+                        <PenIcon size={14} strokeWidth={1.5} className='shrink' />
+                      </div>
+                      <div className='grow'>{t('views:assignments.actionMenu.openArticle')}</div>
+                    </Link>
+                  )
                 },
-
                 {
-                  to: 'Planning',
-                  id: planningId,
-                  title: t('views:assignments.actionMenu.openPlanning')
+                  // to: 'Planning',
+                  // id: planningId,
+                  // title: t('views:assignments.actionMenu.openPlanning')
+                  label: t('views:assignments.actionMenu.openPlanning'),
+                  disabled: !planningId,
+                  item: planningId
+                    ? (
+                        <Link to='Planning' target='last' props={{ id: planningId }} className='flex flex-row gap-5'>
+                          <div className='pt-1'>
+                            <CalendarDaysIcon size={14} strokeWidth={1.5} className='shrink' />
+                          </div>
+                          <div className='grow'>{t('views:assignments.actionMenu.openPlanning')}</div>
+                        </Link>
+                      )
+                    : () => {}
                 }
               ]}
             />

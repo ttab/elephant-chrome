@@ -39,6 +39,7 @@ export const Byline = ({ ydoc, path, onValidation, validateStateRef }: {
       >
         <ComboBox
           size='xs'
+          modal={true}
           sortOrder='label'
           options={allAuthors}
           selectedOptions={selectedOptions}

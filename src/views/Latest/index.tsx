@@ -6,13 +6,17 @@ import { useRegistry } from '@/hooks/useRegistry'
 import { handleLink } from '@/components/Link/lib/handleLink'
 import { useHistory, useNavigation, useView } from '@/hooks/index'
 import { cn } from '@ttab/elephant-ui/utils'
-import { ActionMenu } from '@/components/ActionMenu'
+import { DotMenu } from '@/components/ui/DotMenu'
+import { Link } from '@/components'
+import { PenIcon, CalendarDaysIcon, LibraryIcon } from '@ttab/elephant-ui/icons'
 import type { HitV1 } from '@ttab/elephant-api/index'
 import { useDeliverablePlanningId } from '@/hooks/index/useDeliverablePlanningId'
 import { useLatest } from './hooks/useLatest'
 import { SluglineButton } from '@/components/DataItem/Slugline'
 import { SectionBadge } from '@/components/DataItem/SectionBadge'
 import { useTranslation } from 'react-i18next'
+import { CreatePrintArticle } from '@/components/CreatePrintArticle'
+import { useModal } from '@/components/Modal/useModal'
 
 const meta: ViewMetadata = {
   name: 'Latest',
@@ -126,20 +130,48 @@ const Content = ({ documents, locale }: {
 const Menu = ({ articleId }: { articleId: string }): JSX.Element => {
   const planningId = useDeliverablePlanningId(articleId)
   const { t } = useTranslation('common')
+  const { showModal, hideModal } = useModal()
   return (
     <div className='shrink p-'>
-      <ActionMenu
-        actions={[
+      <DotMenu
+        items={[
           {
-            to: 'Editor',
-            id: articleId,
-            title: t('actions.openType', { type: t('core:documentType.article') })
+            label: t('actions.openType', { type: t('core:documentType.article') }),
+            item: (
+              <Link to='Editor' target='last' props={{ id: articleId }} className='flex flex-row gap-5'>
+                <div className='pt-1'>
+                  <PenIcon size={14} strokeWidth={1.5} className='shrink' />
+                </div>
+                <div className='grow'>{t('actions.openType', { type: t('core:documentType.article') })}</div>
+              </Link>
+            )
           },
-
           {
-            to: 'Planning',
-            id: planningId,
-            title: t('actions.openType', { type: t('core:documentType.planning') })
+            label: t('actions.openType', { type: t('core:documentType.planning') }),
+            disabled: !planningId,
+            item: planningId
+              ? (
+                  <Link to='Planning' target='last' props={{ id: planningId }} className='flex flex-row gap-5'>
+                    <div className='pt-1'>
+                      <CalendarDaysIcon size={14} strokeWidth={1.5} className='shrink' />
+                    </div>
+                    <div className='grow'>{t('actions.openType', { type: t('core:documentType.planning') })}</div>
+                  </Link>
+                )
+              : () => {}
+          },
+          {
+            label: t('planning:assignment.createPrintArticle'),
+            icon: LibraryIcon,
+            item: () => {
+              showModal(
+                <CreatePrintArticle
+                  id={articleId}
+                  asDialog
+                  onDialogClose={hideModal}
+                />
+              )
+            }
           }
         ]}
       />

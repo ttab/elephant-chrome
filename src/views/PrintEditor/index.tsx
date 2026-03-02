@@ -80,7 +80,10 @@ function EditorWrapper(props: ViewProps & {
   autoFocus?: boolean
 }): JSX.Element {
   const ydoc = useYDocument<Y.Map<unknown>>(props.documentId, {
-    ignoreChangeKeys: ['meta.tt/print-article[0].meta.tt/article-layout[*].data.status']
+    ignoreChangeKeys: [
+      'meta.tt/print-article[0].meta.tt/article-layout[*].data.status',
+      'root.title'
+    ]
   })
   const [documentLanguage] = getValueByYPath<string>(ydoc.ele, 'root.language')
   const [content] = getValueByYPath<Y.XmlText>(ydoc.ele, 'content', true)
