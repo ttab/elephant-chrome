@@ -26,11 +26,14 @@ import { slotLabels, timesSlots } from '@/defaults/assignmentTimeslots'
 import { Time } from './Time'
 import { SectionBadge } from '@/components/DataItem/SectionBadge'
 import { parseISO } from 'date-fns'
-import { ActionMenu } from '@/components/ActionMenu'
+import { DotMenu } from '@/components/ui/DotMenu'
+import { Link } from '@/components'
+import { PenIcon, CalendarDaysIcon } from '@ttab/elephant-ui/icons'
 import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
 import { DocumentStatuses } from '@/defaults/documentStatuses'
 import { selectableStatuses } from '../Planning/components/AssignmentStatus'
 import type { PreprocessedAssignmentData } from './preprocessor'
+import { resolveDeliverableNavigation } from '@/lib/resolveDeliverableNavigation'
 
 export function assignmentColumns({ authors = [], locale, timeZone, sections = [], currentDate }: {
   authors?: IDBAuthor[]
@@ -336,22 +339,39 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
         className: 'flex-none p-0'
       },
       cell: ({ row }) => {
-        const deliverableUuid = row.original._preprocessed.deliverableUuid || ''
-        const planningId = row.original.document?.uuid ?? row.original.id?.split('-assignment-')[0]
-        return (
-          <div className='shrink p-'>
-            <ActionMenu
-              actions={[
-                {
-                  to: 'Editor',
-                  id: deliverableUuid,
-                  title: 'Öppna artikel'
-                },
+        const { deliverableUuid, deliverableType } = row.original._preprocessed
+        const planningId = row.original.document?.uuid
+          ?? row.original.id?.split('-assignment-')[0]
+        const { view, label } = resolveDeliverableNavigation(deliverableType)
 
+        return (
+          <div className='shrink p-1'>
+            <DotMenu
+              items={[
                 {
-                  to: 'Planning',
-                  id: planningId || '',
-                  title: 'Öppna planering'
+                  label,
+                  item: (
+                    <Link to={view} target='last' props={{ id: deliverableUuid || '' }} className='flex flex-row gap-5'>
+                      <div className='pt-1'>
+                        <PenIcon size={14} strokeWidth={1.5} className='shrink' />
+                      </div>
+                      <div className='grow'>{label}</div>
+                    </Link>
+                  )
+                },
+                {
+                  label: 'Öppna planering',
+                  disabled: !planningId,
+                  item: planningId
+                    ? (
+                        <Link to='Planning' target='last' props={{ id: planningId }} className='flex flex-row gap-5'>
+                          <div className='pt-1'>
+                            <CalendarDaysIcon size={14} strokeWidth={1.5} className='shrink' />
+                          </div>
+                          <div className='grow'>Öppna planering</div>
+                        </Link>
+                      )
+                    : () => {}
                 }
               ]}
             />

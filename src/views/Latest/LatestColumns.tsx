@@ -6,14 +6,21 @@ import {
   BriefcaseIcon,
   ZapIcon,
   FileWarningIcon,
-  FileTextIcon
+  FileTextIcon,
+  CalendarDaysIcon,
+  LibraryIcon,
+  PenIcon
 } from '@ttab/elephant-ui/icons'
 import { SectionBadge } from '@/components/DataItem/SectionBadge'
-import { ActionMenu } from '@/components/ActionMenu'
 import { dateInTimestampOrShortMonthDayTimestamp } from '@/shared/datetime'
 import type { LocaleData } from '@/types/index'
 import type { PreprocessedLatestData } from './preprocessor'
 import { Title } from '@/components/Table/Items/Title'
+import { DotMenu } from '@/components/ui/DotMenu'
+import { Link } from '@/components'
+import { CreatePrintArticle } from '@/components/CreatePrintArticle'
+import { useModal } from '@/components/Modal/useModal'
+import { resolveDeliverableNavigation } from '@/lib/resolveDeliverableNavigation'
 
 export function latestColumns({ locale, timeZone }: {
   locale: LocaleData
@@ -100,28 +107,62 @@ export function latestColumns({ locale, timeZone }: {
         columnIcon: NavigationIcon,
         className: 'flex-none p-0'
       },
-      cell: ({ row }) => {
-        const deliverableUuid = row.original._preprocessed.deliverableUuid || ''
-        const planningId = row.original._preprocessed.planningId
-        return (
-          <div className='shrink p-1'>
-            <ActionMenu
-              actions={[
-                {
-                  to: 'Editor',
-                  id: deliverableUuid,
-                  title: 'Öppna artikel'
-                },
-                {
-                  to: 'Planning',
-                  id: planningId || '',
-                  title: 'Öppna planering'
-                }
-              ]}
-            />
-          </div>
-        )
-      }
+      cell: ({ row }) => <LatestActionMenu data={row.original._preprocessed} />
     }
   ]
+}
+
+function LatestActionMenu({ data }: {
+  data: PreprocessedLatestData['_preprocessed']
+}) {
+  const { showModal, hideModal } = useModal()
+  const { deliverableUuid, deliverableType, planningId } = data
+  const { view, label } = resolveDeliverableNavigation(deliverableType)
+
+  return (
+    <div className='shrink p-1'>
+      <DotMenu
+        items={[
+          {
+            label,
+            item: (
+              <Link to={view} target='last' props={{ id: deliverableUuid || '' }} className='flex flex-row gap-5'>
+                <div className='pt-1'>
+                  <PenIcon size={14} strokeWidth={1.5} className='shrink' />
+                </div>
+                <div className='grow'>{label}</div>
+              </Link>
+            )
+          },
+          {
+            label: 'Öppna planering',
+            disabled: !planningId,
+            item: planningId
+              ? (
+                  <Link to='Planning' target='last' props={{ id: planningId }} className='flex flex-row gap-5'>
+                    <div className='pt-1'>
+                      <CalendarDaysIcon size={14} strokeWidth={1.5} className='shrink' />
+                    </div>
+                    <div className='grow'>Öppna planering</div>
+                  </Link>
+                )
+              : () => {}
+          },
+          {
+            label: 'Skapa printartikel',
+            icon: LibraryIcon,
+            item: () => {
+              showModal(
+                <CreatePrintArticle
+                  id={deliverableUuid || ''}
+                  asDialog
+                  onDialogClose={hideModal}
+                />
+              )
+            }
+          }
+        ]}
+      />
+    </div>
+  )
 }

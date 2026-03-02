@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import type { YDocument } from '@/modules/yjs/hooks'
 import * as Y from 'yjs'
 import { Block, type Document } from '@ttab/elephant-api/newsdoc'
@@ -31,6 +32,23 @@ global.ResizeObserver = ResizeObserverMock
 
 // Mock scrollIntoView
 Element.prototype.scrollIntoView = vi.fn()
+
+// Polyfill pointer capture (not implemented in jsdom, required by vaul drawer)
+Element.prototype.setPointerCapture = vi.fn()
+Element.prototype.releasePointerCapture = vi.fn()
+
+// jsdom getComputedStyle returns undefined for CSS transform — vaul expects a string
+const origGetComputedStyle = window.getComputedStyle
+window.getComputedStyle = (elt: Element, pseudoElt?: string | null) =>
+  new Proxy(origGetComputedStyle(elt, pseudoElt), {
+    get(target, prop) {
+      const value = Reflect.get(target, prop)
+      if (typeof value === 'function') return value.bind(target)
+      if (value !== undefined) return value
+      if (typeof prop === 'string') return ''
+      return value
+    }
+  })
 
 vi.mock('@/modules/yjs/hooks/useYValue', () => ({
   useYValue: vi.fn()
@@ -171,5 +189,64 @@ describe('LayoutsSelect', () => {
 
     const button = screen.getByRole('button')
     expect(button).toBeInTheDocument()
+  })
+
+  it('calls onLayoutSlotChange when a different slot is selected', async () => {
+    const user = userEvent.setup()
+    const mockSetLayoutName = vi.fn()
+    const mockOnChange = vi.fn()
+    const mockOnLayoutSlotChange = vi.fn()
+
+    vi.mocked(useYValue).mockReturnValue(['Slot A', mockSetLayoutName])
+
+    render(
+      <LayoutsSelect
+        ydoc={mockYdoc}
+        layout={mockLayout}
+        basePath='root.links[0].data.articles[0]'
+        onChange={mockOnChange}
+        onLayoutSlotChange={mockOnLayoutSlotChange}
+      />
+    )
+
+    const trigger = screen.getByRole('button')
+    await user.click(trigger)
+
+    const option = screen.getByText('Slot B')
+    await user.click(option)
+
+    expect(mockOnLayoutSlotChange).toHaveBeenCalledWith('Slot B')
+    expect(mockOnChange).toHaveBeenCalledWith(true)
+    expect(mockSetLayoutName).toHaveBeenCalledWith('Slot B')
+  })
+
+  it('does not call callbacks when re-selecting the same slot', async () => {
+    const user = userEvent.setup()
+    const mockSetLayoutName = vi.fn()
+    const mockOnChange = vi.fn()
+    const mockOnLayoutSlotChange = vi.fn()
+
+    vi.mocked(useYValue).mockReturnValue(['Slot A', mockSetLayoutName])
+
+    render(
+      <LayoutsSelect
+        ydoc={mockYdoc}
+        layout={mockLayout}
+        basePath='root.links[0].data.articles[0]'
+        onChange={mockOnChange}
+        onLayoutSlotChange={mockOnLayoutSlotChange}
+      />
+    )
+
+    const trigger = screen.getByRole('button')
+    await user.click(trigger)
+
+    const options = screen.getAllByText('Slot A')
+    // First is the trigger button text, second is the dropdown option
+    await user.click(options[options.length - 1])
+
+    expect(mockOnLayoutSlotChange).not.toHaveBeenCalled()
+    expect(mockOnChange).not.toHaveBeenCalled()
+    expect(mockSetLayoutName).not.toHaveBeenCalled()
   })
 })

@@ -2,7 +2,7 @@ import { AssignmentTimeDisplay } from '@/components/DataItem/AssignmentTimeDispl
 import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { AssigneeAvatars } from '@/components/DataItem/AssigneeAvatars'
 import type { DotDropdownMenuActionItem } from '@/components/ui/DotMenu'
-import { DotDropdownMenu } from '@/components/ui/DotMenu'
+import { DotMenu } from '@/components/ui/DotMenu'
 import {
   AlarmClockCheckIcon,
   Clock1Icon,
@@ -364,7 +364,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
             <PenIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />
           </Button>
 
-          {!inProgress && <DotDropdownMenu items={menuItems} />}
+          {!inProgress && <DotMenu items={menuItems} />}
         </div>
       </div>
 

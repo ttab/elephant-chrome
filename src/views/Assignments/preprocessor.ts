@@ -41,6 +41,7 @@ export type PreprocessedAssignmentData = PreprocessedTableData<DecoratorDataBase
   assignmentTypes: string[]
   assigneeUuids: string[]
   deliverableUuid?: string
+  deliverableType?: string
   deliverableStatus?: string
   startValue?: string
   startType?: string
@@ -137,6 +138,7 @@ function flattenFromSubset(
         assignmentTypes: assignmentTypes[i] ? [assignmentTypes[i]] : [],
         assigneeUuids: assigneeUuids[i] ? [assigneeUuids[i]] : [],
         deliverableUuid,
+        deliverableType: deliverableState?.document?.type,
         deliverableStatus: getDocumentStatus(deliverableState?.meta),
         startValue,
         startType
@@ -190,6 +192,7 @@ function flattenFromDocument(
         assignmentTypes,
         assigneeUuids,
         deliverableUuid,
+        deliverableType: deliverableState?.document?.type,
         deliverableStatus: getDocumentStatus(deliverableState?.meta),
         startValue,
         startType
