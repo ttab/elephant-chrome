@@ -2,7 +2,6 @@ import type { Wire } from '@/shared/schemas/wire'
 import { assignmentPlanningTemplate } from '@/shared/templates/assignmentPlanningTemplate'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import type { IDBAuthor } from 'src/datastore/types'
-import { vi } from 'vitest'
 
 Object.defineProperty(global, 'crypto', {
   value: {

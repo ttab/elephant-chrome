@@ -1,5 +1,6 @@
 import type { JSX } from 'react'
-import { useMemo } from 'react'
+import { useMemo, useState, useEffect } from 'react'
+import { cn } from '@ttab/elephant-ui/utils'
 import { View } from '@/components'
 import { Notes } from '@/components/Notes'
 import { Bold, Italic, Link, Text, TTVisual, Factbox, Table, LocalizedQuotationMarks } from '@ttab/textbit-plugins'
@@ -15,6 +16,7 @@ import {
 } from '@/hooks'
 import type { ViewMetadata, ViewProps } from '@/types'
 import { EditorHeader } from './EditorHeader'
+import { EditorSkeleton } from './EditorSkeleton'
 import { Error } from '../Error'
 
 import { getValueByYPath } from '@/shared/yUtils'
@@ -65,16 +67,11 @@ const Editor = (props: ViewProps): JSX.Element => {
       : BigInt(props.version ?? 0)
 
     return (
-      <View.Root>
-        <EditorHeader
-          ydoc={{ id: documentId } as YDocument<Y.Map<unknown>>}
-          readOnly
-          readOnlyVersion={bigIntVersion}
-        />
-        <View.Content className='flex flex-col max-w-[1000px] px-4 h-full' variant='grid'>
-          <PlainEditor key={props.version} id={documentId} version={bigIntVersion} />
-        </View.Content>
-      </View.Root>
+      <PlainEditorWrapper
+        {...props}
+        documentId={documentId}
+        bigIntVersion={bigIntVersion}
+      />
     )
   }
 
@@ -102,6 +99,16 @@ function EditorWrapper(props: ViewProps & {
   const openImageSearch = useLink('ImageSearch')
   const openFactboxes = useLink('Factboxes')
 
+  const isReady = !!(content && ydoc.synced)
+  const [showSkeleton, setShowSkeleton] = useState(!isReady)
+
+  useEffect(() => {
+    if (isReady) {
+      const timer = setTimeout(() => setShowSkeleton(false), 250)
+      return () => clearTimeout(timer)
+    }
+  }, [isReady])
+
   // Plugin configuration
   const configuredPlugins = useMemo(() => {
     return [
@@ -128,37 +135,94 @@ function EditorWrapper(props: ViewProps & {
     ]
   }, [openFactboxEditor, openFactboxes, openImageSearch])
 
-  if (!content) {
-    return <View.Root />
-  }
+  return (
+    <>
+      {isReady && (
+        <View.Root>
+          <BaseEditor.Root
+            ydoc={ydoc}
+            content={content}
+            readOnly={props.preview}
+            plugins={configuredPlugins}
+            lang={documentLanguage}
+          >
+            <EditorHeader ydoc={ydoc} planningId={props.planningId} readOnly={props.preview} />
+
+            <Notes ydoc={ydoc} />
+
+            <View.Content className='flex flex-col max-w-[1000px]' variant='grid'>
+              <div className='grow overflow-auto pr-12 max-w-(--breakpoint-xl)'>
+                <BaseEditor.Text
+                  ydoc={ydoc}
+                  autoFocus={true}
+                />
+              </div>
+            </View.Content>
+
+            <View.Footer>
+              <BaseEditor.Footer />
+            </View.Footer>
+          </BaseEditor.Root>
+        </View.Root>
+      )}
+
+      {showSkeleton && (
+        <div
+          className={cn(
+            'bg-background pointer-events-none transition-opacity duration-200',
+            isReady ? 'absolute inset-0 opacity-0' : 'opacity-100'
+          )}
+        >
+          <EditorSkeleton />
+        </div>
+      )}
+    </>
+  )
+}
+
+function PlainEditorWrapper(props: ViewProps & {
+  documentId: string
+  bigIntVersion: bigint
+}): JSX.Element {
+  const [isLoaded, setIsLoaded] = useState(false)
+  const [showSkeleton, setShowSkeleton] = useState(true)
+
+  useEffect(() => {
+    if (isLoaded) {
+      const timer = setTimeout(() => setShowSkeleton(false), 250)
+      return () => clearTimeout(timer)
+    }
+  }, [isLoaded])
 
   return (
-    <View.Root>
-      <BaseEditor.Root
-        ydoc={ydoc}
-        content={content}
-        readOnly={props.preview}
-        plugins={configuredPlugins}
-        lang={documentLanguage}
-      >
-        <EditorHeader ydoc={ydoc} planningId={props.planningId} readOnly={props.preview} />
-
-        <Notes ydoc={ydoc} />
-
-        <View.Content className='flex flex-col max-w-[1000px]'variant='grid'>
-          <div className='grow overflow-auto pr-12 max-w-(--breakpoint-xl)'>
-            <BaseEditor.Text
-              ydoc={ydoc}
-              autoFocus={true}
-            />
-          </div>
+    <>
+      <View.Root>
+        <EditorHeader
+          ydoc={{ id: props.documentId } as YDocument<Y.Map<unknown>>}
+          readOnly
+          readOnlyVersion={props.bigIntVersion}
+        />
+        <View.Content className='flex flex-col max-w-[1000px] px-4 h-full' variant='grid'>
+          <PlainEditor
+            key={props.version}
+            id={props.documentId}
+            version={props.bigIntVersion}
+            onLoad={() => setIsLoaded(true)}
+          />
         </View.Content>
+      </View.Root>
 
-        <View.Footer>
-          <BaseEditor.Footer />
-        </View.Footer>
-      </BaseEditor.Root>
-    </View.Root>
+      {showSkeleton && (
+        <div
+          className={cn(
+            'bg-background pointer-events-none transition-opacity duration-200',
+            isLoaded ? 'absolute inset-0 opacity-0' : 'opacity-100'
+          )}
+        >
+          <EditorSkeleton />
+        </div>
+      )}
+    </>
   )
 }
 

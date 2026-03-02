@@ -79,8 +79,7 @@ export const applicationMenu: ApplicationMenu = {
           name: 'Latest',
           label: 'Senast utgivet',
           icon: UtilityPoleIcon,
-          color: '#996633',
-          target: 'sheet'
+          color: '#996633'
         },
         {
           name: 'Factboxes',

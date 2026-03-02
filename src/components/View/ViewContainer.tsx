@@ -76,6 +76,7 @@ export const ViewContainer = ({ children, colSpan: wantedColSpan }: {
         id={viewId}
         ref={sectionRef}
         className={cn(
+          'transition-opacity duration-150 ease-out starting:opacity-0',
           section({
             isActive,
             isFocused,

@@ -7,16 +7,13 @@ import type { Wire } from '@/shared/schemas/wire'
 import { cva } from 'class-variance-authority'
 import { getWireStatus } from '../../lib/getWireStatus'
 
-type DocumentType = 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires' | 'Factbox' | 'Print' | 'PrintEditor'
-
-export const WireRow = ({ row, handleOpen, openDocuments, type }: {
-  type: DocumentType
-  row: RowType<unknown>
-  handleOpen: (event: MouseEvent<HTMLTableRowElement>, row: RowType<unknown>) => void
+export const WireRow = <TData, >({ row, handleOpen, openDocuments }: {
+  row: RowType<TData>
+  handleOpen: (event: MouseEvent<HTMLTableRowElement>, row: RowType<TData>) => void
   openDocuments: string[]
 }): JSX.Element => {
   const wire = row.original as Wire
-  const wireRow = row as RowType<Wire>
+  const wireRow = row as unknown as RowType<Wire>
 
   const isFlash = !!wire.fields?.['heads.flash.version']?.values?.[0]
     || wire.fields['document.meta.core_newsvalue.value']?.values[0] === '6'
@@ -41,7 +38,7 @@ export const WireRow = ({ row, handleOpen, openDocuments, type }: {
         'flex cursor-default scroll-mt-[70px] ring-inset focus:outline-none focus-visible:ring-2 focus-visible:ring-table-selected data-[state=selected]:bg-table-selected',
         variants({ status: getWireStatus(wire) })
       )}
-      data-state={getDataState(openDocuments, wire, type, wireRow)}
+      data-state={getDataState(openDocuments, wire, wireRow)}
       onClick={(event: MouseEvent<HTMLTableRowElement>) => handleOpen(event, row)}
       ref={(el) => handleRef(el, wireRow)}
     >
@@ -80,11 +77,11 @@ function isUpdated(wire: Wire): boolean {
   })
 }
 
-function getDataState(openDocuments: string[], wire: Wire, type: DocumentType, row: RowType<Wire>): 'focused' | 'selected' | undefined {
-  return ((openDocuments.includes(wire.id) && 'selected') || (type === 'Wires' && row.getIsSelected() && 'focused')) || undefined
+function getDataState(openDocuments: string[], wire: Wire, row: RowType<Wire>): 'focused' | 'selected' | undefined {
+  return ((openDocuments.includes(wire.id) && 'selected') || (row.getIsSelected() && 'focused')) || undefined
 }
 
-function handleRef(el: HTMLTableRowElement | null, row: RowType<Wire>): void {
+function handleRef<T extends Wire>(el: HTMLTableRowElement | null, row: RowType<T>): void {
   if (el && row.getIsSelected()) {
     el.focus()
   }

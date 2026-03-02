@@ -1,3 +1,4 @@
+
 import { NewsvalueMap } from '@/defaults/newsvalueMap'
 import { Newsvalue } from '@/components/Table/Items/Newsvalue'
 import {
@@ -24,7 +25,6 @@ import type { IDBSection, IDBAuthor } from 'src/datastore/types'
 import { slotLabels, timesSlots } from '@/defaults/assignmentTimeslots'
 import { Time } from './Time'
 import { SectionBadge } from '@/components/DataItem/SectionBadge'
-import type { Assignment } from '@/shared/schemas/assignments'
 import { parseISO } from 'date-fns'
 import { DotMenu } from '@/components/ui/DotMenu'
 import { Link } from '@/components'
@@ -32,6 +32,8 @@ import { PenIcon, CalendarDaysIcon } from '@ttab/elephant-ui/icons'
 import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
 import { DocumentStatuses } from '@/defaults/documentStatuses'
 import { selectableStatuses } from '../Planning/components/AssignmentStatus'
+import type { PreprocessedAssignmentData } from './preprocessor'
+import { resolveDeliverableNavigation } from '@/lib/resolveDeliverableNavigation'
 
 export function assignmentColumns({ authors = [], locale, timeZone, sections = [], currentDate }: {
   authors?: IDBAuthor[]
@@ -39,7 +41,7 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
   locale: LocaleData
   timeZone: string
   currentDate: Date
-}): Array<ColumnDef<Assignment>> {
+}): ColumnDef<PreprocessedAssignmentData>[] {
   return [
     {
       id: 'deliverableStatus',
@@ -58,20 +60,20 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
         )
       },
       accessorFn: (data) => {
-        const type = data.fields['document.meta.core_assignment.meta.core_assignment_type.value']?.values[0]
+        const type = data._preprocessed.assignmentTypes[0]
 
         // If visual assignment, return assignment status
         if (isVisualAssignmentType(type)) {
-          const assignmentStatus = data.fields['document.meta.core_assignment.data.status']?.values[0]
+          const assignmentStatus = data._assignment?.data.status
           return assignmentStatus || 'todo'
         }
 
-        const currentStatus = data?.fields['document.meta.status']?.values[0]
-        return currentStatus
+        return data._preprocessed.deliverableStatus || '?'
       },
       cell: ({ row }) => {
         const status = row.getValue<string>('deliverableStatus')
-        const type = row.original.fields['document.meta.core_assignment.meta.core_assignment_type.value']?.values[0] || 'core/article'
+        const type = row.original._preprocessed.assignmentTypes[0]
+
         return <DocumentStatus type={type} status={status} />
       },
       filterFn: (row, id, value: string[]) =>
@@ -102,50 +104,64 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
         }
       },
       accessorFn: (data) => {
-        const startTime = data.fields['document.start_time.value'].values[0]
-        const startTimeType = data.fields['document.start_time.type'].values[0]
-
-        if (startTimeType === 'publish_slot') {
-          return startTime
+        const { startValue, startType } = data._preprocessed
+        if (startType === 'publish_slot') {
+          return startValue
         }
 
-        if (startTimeType === 'full_day') {
+        if (startType === 'full_day') {
           return 'Heldag'
         }
 
-        const startDate = parseISO(startTime)
+        const startDate = parseISO(startValue || '')
         if (startDate.toDateString() === currentDate.toDateString()) {
           return startDate.getHours()
         } else {
           return `${startDate.getHours()} ${startDate.toLocaleString(locale.code.full, { weekday: 'long', hourCycle: 'h23' })}`
         }
       },
-      sortingFn: 'basic',
+      sortingFn: (rowA, rowB) => {
+        const a = rowA.getValue<number | string>('startTime')
+        const b = rowB.getValue<number | string>('startTime')
+
+        // Heldag comes first
+        if (a === 'Heldag' && b !== 'Heldag') return -1
+        if (a !== 'Heldag' && b === 'Heldag') return 1
+        if (a === 'Heldag' && b === 'Heldag') return 0
+
+        // Numbers in ascending order
+        const numA = typeof a === 'number' ? a : Number(String(a).split(' ')[0])
+        const numB = typeof b === 'number' ? b : Number(String(b).split(' ')[0])
+
+        return numA - numB
+      },
       enableGrouping: true,
-      enableSorting: false
+      enableSorting: true
     },
     {
       id: 'title',
       meta: {
         name: 'Titel',
         columnIcon: BriefcaseIcon,
-        className: 'flex-1'
+        className: 'flex-1 min-w-0'
       },
-      accessorFn: (data) => data.fields['document.meta.core_assignment.title']?.values,
+      accessorFn: (data) => data._preprocessed.assignmentTitle,
       cell: ({ row }) => {
-        const assignmentTitle = row.getValue<string[]>('title')?.join(' ') || ''
-        const planningTitle = row.original.fields['document.title'].values[0] || ''
+        const assignmentTitle = row.getValue<string>('title')
+        const planningTitle = row.original._preprocessed?.title ?? row.original.document?.title
         const assignees = (row.getValue<string[]>('assignees') || []).map((assigneeId) => {
           return authors.find((author) => author.id === assigneeId)?.name || ''
         })
 
         return (
-          <>
-            <AssignmentTitles planningTitle={planningTitle} assignmentTitle={assignmentTitle} />
-            <div className='display:revert @5xl/view:[display:none] pt-2'>
+          <div className='flex items-center gap-2 min-w-0'>
+            <div className='min-w-0 flex-1'>
+              <AssignmentTitles planningTitle={planningTitle} assignmentTitle={assignmentTitle} />
+            </div>
+            <div className='flex-none display:revert @5xl/view:[display:none]'>
               <Assignees assignees={assignees} />
             </div>
-          </>
+          </div>
         )
       },
       enableGrouping: false
@@ -172,7 +188,7 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
           </span>
         )
       },
-      accessorFn: (data) => data.fields['document.rel.section.uuid']?.values[0],
+      accessorFn: (data) => data._preprocessed.sectionUuid || '',
       cell: ({ row }) => {
         const sectionTitle = sections
           .find((section) => section.id === row.getValue('section'))?.title
@@ -196,7 +212,7 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
         columnIcon: SignalHighIcon,
         className: 'box-content w-4 sm:w-8 pr-1 sm:pr-4 hidden sm:[display:revert]'
       },
-      accessorFn: (data) => data.fields['document.meta.core_newsvalue.value']?.values[0],
+      accessorFn: (data) => data._preprocessed.newsvalue || '',
       cell: ({ row }) => {
         const value: string = row.getValue('newsvalue') || ''
         const newsvalue = NewsvalueMap[value]
@@ -219,7 +235,7 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
         columnIcon: UsersIcon,
         className: 'flex-none w-[112px] hidden @5xl/view:[display:revert]'
       },
-      accessorFn: (data) => data.fields['document.meta.core_assignment.rel.assignee.uuid']?.values,
+      accessorFn: (data) => data._preprocessed.assigneeUuids,
       cell: ({ row }) => {
         const assignees = (row.getValue<string[]>('assignees') || []).map((assigneeId) => {
           return authors.find((author) => author.id === assigneeId)?.name || ''
@@ -244,20 +260,20 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
         columnIcon: Clock3Icon,
         className: 'flex-none @5xl/view:w-[112px] w-[50px]'
       },
-      accessorFn: (data) => data.fields['document.start_time.value'].values[0],
+      accessorFn: (data) => data._assignment?.data.start || '',
       cell: ({ row }) => {
-        const startTime = row.getValue<string>('assignment_time')
-        const startTimeType = row.original.fields['document.start_time.type'].values[0]
+        const { startValue, startType } = row.original._preprocessed
 
-        if (!startTime || startTime === 'Heldag' || startTime === '??') {
-          return <Time time={startTime} type={startTimeType} tooltip='Uppdragets starttid' />
+        if (!startValue || startValue === 'Heldag' || startValue === '??') {
+          return <Time time={startValue || ''} type={startType || ''} tooltip='Uppdragets starttid' />
         }
         const formattedStart = dateInTimestampOrShortMonthDayTimestamp(
-          startTime, locale.code.full, timeZone, currentDate
+          startValue, locale.code.full, timeZone, currentDate
         )
 
-        if (startTimeType === 'publish_slot') {
-          const slotFormatted = Object.entries(timesSlots).find((slot) => slot[1].slots.includes(parseInt(startTime, 10)))?.[1]?.label
+        if (startType === 'publish_slot') {
+          const slotFormatted = Object.entries(timesSlots)
+            .find((slot) => slot[1].slots.includes(parseInt(startValue, 10)))?.[1]?.label
           return <div className='items-center'>{slotFormatted}</div>
         }
         return <Time time={formattedStart} type='start' tooltip='Uppdragets starttid' />
@@ -271,7 +287,11 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
       id: 'assignmentType',
       meta: {
         Filter: ({ column, setSearch }) => (
-          <FacetedFilter column={column} setSearch={setSearch} facetFn={() => getNestedFacetedUniqueValues(column)} />
+          <FacetedFilter
+            column={column}
+            setSearch={setSearch}
+            facetFn={() => getNestedFacetedUniqueValues(column)}
+          />
         ),
         options: AssignmentTypes,
         name: 'Typ',
@@ -290,7 +310,7 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
           )
         }
       },
-      accessorFn: (data) => data.fields['document.meta.core_assignment.meta.core_assignment_type.value']?.values,
+      accessorFn: (data) => data._preprocessed.assignmentTypes,
       cell: ({ row }) => {
         const data = AssignmentTypes.filter(
           (assignmentType) => (row.getValue<string[]>('assignmentType') || [])
@@ -303,9 +323,7 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
         return (
           <Type
             data={data}
-            deliverableId={row.original
-              .fields['document.meta.core_assignment.rel.deliverable.uuid']
-              .values[0]}
+            deliverableId={row.original._preprocessed.deliverableUuid}
             className='items-start hidden @5xl/view:[display:revert]'
           />
         )
@@ -321,20 +339,23 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
         className: 'flex-none p-0'
       },
       cell: ({ row }) => {
-        const deliverableUuid = row.original?.fields['document.meta.core_assignment.rel.deliverable.uuid']?.values[0] || ''
-        const planningId = row.original.id
+        const { deliverableUuid, deliverableType } = row.original._preprocessed
+        const planningId = row.original.document?.uuid
+          ?? row.original.id?.split('-assignment-')[0]
+        const { view, label } = resolveDeliverableNavigation(deliverableType)
+
         return (
-          <div className='shrink p-'>
+          <div className='shrink p-1'>
             <DotMenu
               items={[
                 {
-                  label: 'Öppna artikel',
+                  label,
                   item: (
-                    <Link to='Editor' target='last' props={{ id: deliverableUuid }} className='flex flex-row gap-5'>
+                    <Link to={view} target='last' props={{ id: deliverableUuid || '' }} className='flex flex-row gap-5'>
                       <div className='pt-1'>
                         <PenIcon size={14} strokeWidth={1.5} className='shrink' />
                       </div>
-                      <div className='grow'>Öppna artikel</div>
+                      <div className='grow'>{label}</div>
                     </Link>
                   )
                 },

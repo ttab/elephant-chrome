@@ -8,6 +8,7 @@ import { Toolbar } from './Toolbar'
 import { useDocuments } from '@/hooks/index/useDocuments'
 import { constructQuery } from '@/hooks/index/useDocuments/queries/views/factboxes'
 import { fields } from '@/shared/schemas/factbox'
+import { TableSkeleton } from '@/components/Table/Skeleton'
 
 
 export const FactboxList = ({ columns }: {
@@ -16,7 +17,7 @@ export const FactboxList = ({ columns }: {
   const [{ page }] = useQuery()
   const [filter] = useQuery(['query'])
 
-  useDocuments<Factbox, FactboxFields>({
+  const { isLoading } = useDocuments<Factbox, FactboxFields>({
     documentType: 'core/factbox',
     fields,
     query: constructQuery(filter),
@@ -39,14 +40,21 @@ export const FactboxList = ({ columns }: {
     return row
   }, [])
 
+
+  if (isLoading) {
+    return <TableSkeleton columns={columns} />
+  }
+
   return (
-    <>
+    <Table
+      columns={columns}
+      onRowSelected={onRowSelected}
+      resolveNavigation={(row) => ({
+        id: row.id,
+        opensWith: 'Factbox'
+      })}
+    >
       <Toolbar />
-      <Table
-        type='Factbox'
-        columns={columns}
-        onRowSelected={onRowSelected}
-      />
-    </>
+    </Table>
   )
 }

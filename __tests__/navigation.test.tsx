@@ -42,6 +42,10 @@ vi.mocked(useNavigation).mockReturnValue({
 })
 
 
+vi.mock('@/views/PlanningOverview/PlanningList', () => ({
+  PlanningList: () => <p>mocked PlanningList</p>
+}))
+
 vi.mock('@/hooks/useRegistry', () => ({
   useRegistry: vi.fn()
 }))

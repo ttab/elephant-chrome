@@ -1,5 +1,4 @@
-import { describe, it, expect } from 'vitest'
-import { getWireStatus } from '../src/lib/getWireStatus'
+import { getWireStatus } from '@/lib/getWireStatus'
 import type { Wire } from '@/shared/schemas/wire'
 
 describe('getWireStatus', () => {
@@ -55,5 +54,91 @@ describe('getWireStatus', () => {
 
     // read is invalid date, saved is valid and should be chosen
     expect(getWireStatus(wire)).toBe('saved')
+  })
+
+  it('returns "draft" when version is "0" — version check is >= 1', () => {
+    const wire = {
+      id: '6',
+      fields: {
+        'heads.read.created': { values: ['2025-01-01T00:00:00Z'] },
+        'heads.read.version': { values: ['0'] }
+      }
+    } as unknown as Wire
+
+    // version 0 is not >= 1, so should return draft
+    expect(getWireStatus(wire)).toBe('draft')
+  })
+
+  it('returns "read" when only read head is valid', () => {
+    const wire = {
+      id: '7',
+      fields: {
+        'heads.read.created': { values: ['2025-01-01T12:00:00Z'] },
+        'heads.read.version': { values: ['2'] },
+        'heads.saved.created': { values: [''] },
+        'heads.saved.version': { values: ['0'] },
+        'heads.used.created': { values: [''] },
+        'heads.used.version': { values: ['0'] }
+      }
+    } as unknown as Wire
+
+    expect(getWireStatus(wire)).toBe('read')
+  })
+
+  it('returns "saved" when saved is the only valid status', () => {
+    const wire = {
+      id: '8',
+      fields: {
+        'heads.saved.created': { values: ['2025-06-01T08:00:00Z'] },
+        'heads.saved.version': { values: ['3'] }
+      }
+    } as unknown as Wire
+
+    expect(getWireStatus(wire)).toBe('saved')
+  })
+
+  it('returns "used" when used is the only valid status', () => {
+    const wire = {
+      id: '9',
+      fields: {
+        'heads.used.created': { values: ['2025-06-01T09:00:00Z'] },
+        'heads.used.version': { values: ['1'] }
+      }
+    } as unknown as Wire
+
+    expect(getWireStatus(wire)).toBe('used')
+  })
+
+  it('ignores flash head — returns draft when only flash version is set', () => {
+    const wire = {
+      id: '10',
+      fields: {
+        'heads.flash.version': { values: ['1'] },
+        'heads.read.version': { values: ['0'] },
+        'heads.read.created': { values: [''] }
+      }
+    } as unknown as Wire
+
+    expect(getWireStatus(wire)).toBe('draft')
+  })
+
+  it('returns valid status even when flash head is present', () => {
+    const wire = {
+      id: '11',
+      fields: {
+        'heads.flash.version': { values: ['1'] },
+        'heads.used.created': { values: ['2025-06-01T09:00:00Z'] },
+        'heads.used.version': { values: ['2'] }
+      }
+    } as unknown as Wire
+
+    expect(getWireStatus(wire)).toBe('used')
+  })
+
+  it('handles wire with completely missing fields object without crashing', () => {
+    const wire = { id: '10' } as unknown as Wire
+    // fields is undefined — should not throw, should return draft
+    expect(() => getWireStatus(wire)).not.toThrow()
+    expect(getWireStatus(wire)).toBe('draft')
   })
 })

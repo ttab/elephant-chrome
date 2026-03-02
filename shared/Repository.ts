@@ -111,7 +111,8 @@ export class Repository {
       const { response } = await this.#client.bulkGet({
         documents: documents.filter((doc) => doc?.version !== -1n).map((document) => {
           return ({ uuid: document.uuid, version: document.version || 0n })
-        })
+        }),
+        subset: []
       }, meta(accessToken))
 
       return response
@@ -138,7 +139,8 @@ export class Repository {
         status: '',
         lock: false,
         metaDocument: 1,
-        metaDocumentVersion: 0n
+        metaDocumentVersion: 0n,
+        subset: []
       }, meta(accessToken))
 
       return response
@@ -431,5 +433,17 @@ export class Repository {
     }
 
     return attachments[0]
+  }
+
+  /**
+   * Get a token for WebSocket authentication.
+   */
+  async getSocketToken(accessToken: string): Promise<string> {
+    try {
+      const { response } = await this.#client.getSocketToken({}, meta(accessToken))
+      return response.token
+    } catch (err: unknown) {
+      throw new Error(`Unable to get socket token: ${(err as Error)?.message || 'Unknown error'}`)
+    }
   }
 }

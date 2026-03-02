@@ -2,25 +2,23 @@ import { Tooltip } from '@ttab/elephant-ui'
 import { useMemo, type JSX } from 'react'
 
 interface TitleProps {
-  planningTitle: string
+  planningTitle?: string
   assignmentTitle: string
 }
 
 export const AssignmentTitles = ({ planningTitle, assignmentTitle }: TitleProps): JSX.Element => {
-  const usePlanningTitle = planningTitle.trim() !== assignmentTitle.trim()
+  const showPlanningTitle = planningTitle ? planningTitle.trim() !== assignmentTitle.trim() : false
 
   return useMemo(() => (
     <>
-      <div className='w-fit'>
+      {showPlanningTitle && (
         <Tooltip content={planningTitle}>
-          {usePlanningTitle && (
-            <div className='@2xl/view:max-w-[200px] @4xl/view:max-w-[400px] space-x-2 items-center text-muted-foreground'>
-              {planningTitle}
-            </div>
-          )}
+          <div className='truncate @2xl/view:max-w-[200px] @4xl/view:max-w-[400px] text-muted-foreground'>
+            {planningTitle}
+          </div>
         </Tooltip>
-      </div>
-      <div>{assignmentTitle}</div>
+      )}
+      <div className='truncate'>{assignmentTitle}</div>
     </>
-  ), [planningTitle, assignmentTitle, usePlanningTitle])
+  ), [planningTitle, assignmentTitle, showPlanningTitle])
 }

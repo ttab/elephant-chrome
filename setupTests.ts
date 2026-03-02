@@ -7,7 +7,7 @@ export * from '@testing-library/react'
  *
  * This file is automatically loaded before all test files run.
  * N.B! Use this with caution:
- * j
+ *
  * Mocks defined here with vi.mock() are hoisted and applied before
  * any component imports in test files, causing mock import issues.
  */

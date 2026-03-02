@@ -7,7 +7,7 @@ import { useUserTracker } from '@/hooks/useUserTracker'
 import { toast } from 'sonner'
 import { useQuery, type QueryParams } from '@/hooks/useQuery'
 import { Filter } from '@/components/Filter'
-import type { Facets } from '@/hooks/index/lib/assignments/filterAssignments'
+import type { Facets } from './lib/filterAssignments'
 import { Commands } from './Commands'
 import { useCallback, useState, type JSX } from 'react'
 

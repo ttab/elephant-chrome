@@ -15,7 +15,7 @@ import { newsDocToSlate, slateToNewsDoc } from './newsdoc/index.js'
  */
 export const toGroupedNewsDoc = (payload: GetDocumentResponse): EleDocumentResponse => {
   // Create clone of document so not to change original document/cause sideffects
-  const { document, version, isMetaDocument, mainDocument } = structuredClone(payload)
+  const { document, version, isMetaDocument, mainDocument, subset } = structuredClone(payload)
 
   if (!document) {
     throw new Error('GetDocumentResponse contains no document')
@@ -36,7 +36,8 @@ export const toGroupedNewsDoc = (payload: GetDocumentResponse): EleDocumentRespo
     version: version.toString(),
     isMetaDocument,
     mainDocument,
-    document: yDocument
+    document: yDocument,
+    subset
   }
 }
 
@@ -45,7 +46,7 @@ export const toGroupedNewsDoc = (payload: GetDocumentResponse): EleDocumentRespo
  *  Convert grouped YDocument format to the repository format NewsDoc
  */
 export const fromGroupedNewsDoc = (payload: EleDocumentResponse): { document: Document } & Omit<GetDocumentResponse, 'document'> => {
-  const { document, version, isMetaDocument, mainDocument } = payload
+  const { document, version, isMetaDocument, mainDocument, subset } = payload
 
   if (!document) {
     throw new Error('YDocumentResponse contains no document')
@@ -66,7 +67,8 @@ export const fromGroupedNewsDoc = (payload: EleDocumentResponse): { document: Do
     version: BigInt(version),
     document: newsDocument,
     isMetaDocument,
-    mainDocument
+    mainDocument,
+    subset
   }
 }
 
