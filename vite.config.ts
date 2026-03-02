@@ -1,4 +1,5 @@
 /// <reference types="vitest" />
+import fs from 'fs'
 import path from 'path'
 import tailwindcss from '@tailwindcss/vite'
 import { defineConfig, loadEnv } from 'vite'
@@ -61,6 +62,12 @@ export default defineConfig(({ mode }) => {
       },
       watch: {
         awaitWriteFinish: true
+      },
+      fs: {
+        allow: [
+          '.',
+          fs.realpathSync('./node_modules/@ttab/elephant-ui')
+        ]
       }
     },
     preview: {
