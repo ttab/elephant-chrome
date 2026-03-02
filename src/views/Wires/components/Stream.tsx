@@ -258,12 +258,14 @@ export const Stream = ({
         ? `date-${currentDate.toDateString()}`
         : `time-${currentDate.toDateString()}-${currentDate.getHours()}`
 
+      const isToday = currentDate.toDateString() === new Date().toDateString()
+
       groups.push({
         key,
         header: (
           <StreamGroupHeader
             date={
-              showDateHeader
+              !isToday
                 ? currentDate.toLocaleDateString('sv-SE', {
                   weekday: 'short',
                   year: 'numeric',
@@ -319,7 +321,7 @@ export const Stream = ({
             <div ref={scrollContainerRef} className='flex-1 basis-0 overflow-y-auto bg-muted'>
               <div className='flex flex-col'>
                 {groups.map((group) => (
-                  <div key={group.key} className='relative'>
+                  <div key={group.key}>
                     {group.header}
 
                     {group.rows.map((row) => (
