@@ -23,9 +23,9 @@ export const HistoryEntry = ({ version, isCurrent = false, status, isLast, title
       </div>
 
       <div className={cn(
-        'py-1 ps-3 cursor-default',
+        'py-1 ps-2 cursor-default',
         !title && 'text-muted-foreground',
-        selected && 'font-bold'
+        selected && 'font-semibold'
       )}
       >
         {time}
@@ -34,9 +34,9 @@ export const HistoryEntry = ({ version, isCurrent = false, status, isLast, title
 
       <a
         className={cn(
-          'py-1 ps-5 items-center truncate cursor-default',
+          'py-0.5 ps-3 items-center truncate cursor-default',
           version && !selected && 'hover:cursor-pointer hover:underline',
-          selected && 'font-bold'
+          selected && 'font-semibold'
         )}
         onMouseDownCapture={(e) => {
           e.preventDefault()

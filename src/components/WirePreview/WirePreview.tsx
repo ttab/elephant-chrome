@@ -76,7 +76,7 @@ export const WirePreview = ({ wire }: {
         </div>
       </div>
 
-      <div className='mx-12 bg-muted rounded-md py-2 px-4 mt-2 border'>
+      <div className='mx-12 border mt-2 py-1.5 px-3 rounded'>
         <DocumentHistory
           uuid={wire.id}
           currentVersion={data?.version}
