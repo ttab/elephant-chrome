@@ -11,6 +11,7 @@ import { Init } from './components/Init/index.tsx'
 import { UserMessagesReceiver } from './components/UserMessagesReceiver.tsx'
 import { Toaster } from '@ttab/elephant-ui'
 import './index.css'
+import { i18nInit } from './lib/i18n'
 
 banner()
 
@@ -20,26 +21,33 @@ if (!root) {
   throw new Error('Can not getElementById("root")')
 }
 
-ReactDOM.createRoot(root).render(
-  <>
-    <IndexedDBProvider>
-      <RegistryProvider>
-        <SessionProvider>
-          <RepositoryEventsProvider>
-            <SupportedLanguagesProvider>
-              <ThemeProvider defaultTheme='light' storageKey='ele-ui-theme'>
-                <Init>
-                  <UserMessagesReceiver>
-                    <App />
-                  </UserMessagesReceiver>
-                </Init>
-              </ThemeProvider>
-            </SupportedLanguagesProvider>
-          </RepositoryEventsProvider>
-        </SessionProvider>
-      </RegistryProvider>
-    </IndexedDBProvider>
-
-    <Toaster />
-  </>
-)
+i18nInit.then(() => {
+  ReactDOM.createRoot(root).render(
+    <>
+      <IndexedDBProvider>
+        <RegistryProvider>
+          <SessionProvider>
+            <RepositoryEventsProvider>
+              <SupportedLanguagesProvider>
+                <ThemeProvider defaultTheme='light' storageKey='ele-ui-theme'>
+                  <Init>
+                    <UserMessagesReceiver>
+                      <App />
+                    </UserMessagesReceiver>
+                  </Init>
+                </ThemeProvider>
+              </SupportedLanguagesProvider>
+            </RepositoryEventsProvider>
+          </SessionProvider>
+        </RegistryProvider>
+      </IndexedDBProvider>
+      <Toaster />
+    </>
+  )
+})
+  .catch((error) => {
+    console.error(error)
+    ReactDOM.createRoot(root).render(
+      <>No translation resources</>
+    )
+  })

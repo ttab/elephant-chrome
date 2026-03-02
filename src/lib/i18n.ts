@@ -14,7 +14,7 @@ const resources = {
 const envLang = process.env.SYSTEM_LANGUAGE ? process.env.SYSTEM_LANGUAGE.split('-')[0] : 'en'
 const supported = Object.keys(resources)
 
-void i18n
+export const i18nInit = i18n
   .use(initReactI18next)
   .use(LanguageDetector)
   .init({
