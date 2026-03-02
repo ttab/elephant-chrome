@@ -40,7 +40,7 @@
   "dependencies": {
     "@auth/express": "^0.9.0",
     "@date-fns/utc": "^2.1.1",
-    "@grafana/faro-react": "^2.2.2",
+    "@grafana/faro-react": "^2.2.4",
     "@hocuspocus/extension-logger": "^3.4.4",
     "@hocuspocus/extension-redis": "^3.4.4",
     "@hocuspocus/provider": "^3.4.4",
