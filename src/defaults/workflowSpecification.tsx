@@ -7,7 +7,6 @@ import {
   CircleXIcon,
   type LucideIcon
 } from '@ttab/elephant-ui/icons'
-import type { TFunction } from 'i18next'
 
 interface WorkflowItem {
   title: string
@@ -587,8 +586,4 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
       }
     }
   }
-}
-
-export const getWorkflowSpecifications = (path: string, t: TFunction) => {
-  return t(WorkflowSpecifications[path] as unknown as string)
 }
