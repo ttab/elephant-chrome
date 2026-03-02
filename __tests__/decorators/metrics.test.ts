@@ -117,7 +117,7 @@ describe('createMetricsDecorator', () => {
       expect(result.size).toBe(0)
     })
 
-    it('should handle API errors gracefully', async () => {
+    it('should propagate API errors to the caller', async () => {
       const documents: DocumentStateWithIncludes[] = [
         {
           uuid: 'parent-uuid',
@@ -134,23 +134,14 @@ describe('createMetricsDecorator', () => {
         }
       ]
 
-      const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
       mockGetMetrics.mockRejectedValue(new Error('API Error'))
 
       const decorator = createMetricsDecorator({
         repository: mockRepository
       })
 
-      const result = await decorator.onInitialData!(documents, 'test-token')
-
-      expect(result).toBeInstanceOf(Map)
-      expect(result.size).toBe(0)
-      expect(consoleWarnSpy).toHaveBeenCalledWith(
-        '📊 Metrics decorator: failed to fetch batch metrics:',
-        expect.any(Error)
-      )
-
-      consoleWarnSpy.mockRestore()
+      await expect(decorator.onInitialData!(documents, 'test-token'))
+        .rejects.toThrow('API Error')
     })
   })
 
