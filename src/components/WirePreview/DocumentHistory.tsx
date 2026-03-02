@@ -92,6 +92,7 @@ export const DocumentHistory = ({ uuid, currentVersion, wireState, onSelectVersi
       } catch (error) {
         pending.history = false
         pending.documents = false
+        if (c1.signal.aborted || c2.signal.aborted) return
         console.error(error)
       }
     }
