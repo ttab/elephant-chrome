@@ -1,6 +1,6 @@
 import { SaveIcon } from '@ttab/elephant-ui/icons'
 import { SelectedFilters } from '@/components/Filter/SelectedFilters'
-import { DotDropdownMenu } from '@/components/ui/DotMenu'
+import { DotMenu } from '@/components/ui/DotMenu'
 import type { FilterProps } from '@/components/Filter'
 import { Filter } from '@/components/Filter'
 import { Commands } from './Commands'
@@ -28,7 +28,7 @@ export const Toolbar = (): JSX.Element => {
         </Filter>
         <SelectedFilters />
       </div>
-      <DotDropdownMenu
+      <DotMenu
         trigger='vertical'
         items={[
           {
