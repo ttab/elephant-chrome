@@ -34,6 +34,7 @@ import { useYValue } from '@/modules/yjs/hooks/useYValue'
 import { TextInput } from '@/components/ui/TextInput'
 import type { EleDocumentResponse } from '@/shared/types'
 import { ValidateNow } from '@/components/ValidateNow'
+import { toast } from 'sonner'
 
 export const WireViewContent = (props: ViewProps & {
   documentId: string
@@ -277,6 +278,7 @@ export const WireViewContent = (props: ViewProps & {
                     })
                     .catch((ex: unknown) => {
                       console.log(ex)
+                      toast.error('Det gick inte att skapa en artikel!')
                     })
                 }}
                 onSecondary={() => {
