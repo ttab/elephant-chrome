@@ -459,7 +459,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
 
             if (!document) {
               console.error('AssignmentRow: Document reference lost after deliverable creation', { id })
-              toast.error(t('errors:toasts.createDeliverableLinkError') as string)
+              toast.error(t('errors:toasts.createDeliverableLinkError'))
               setShowCreateDialogPayload(false)
               return
             }
@@ -497,7 +497,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
                 openDocument(undefined, { id, planningId }, 'blank')
                 setIsLinking(false)
               }).catch((ex: unknown) => {
-                const errorMessage = ex instanceof Error ? ex.message : t('errors:toasts.saveError') as string
+                const errorMessage = ex instanceof Error ? ex.message : t('errors:toasts.saveError')
                 console.error('AssignmentRow: Failed to snapshot planning document', {
                   planningId,
                   deliverableId: id,
