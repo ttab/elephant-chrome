@@ -215,6 +215,9 @@ export const Wires = (): JSX.Element => {
     if (!settings) {
       // If no settings was received add a default wire stream w/o filtering
       addStream()
+      requestAnimationFrame(() => {
+        setIsDirty(false)
+      })
       return
     }
 
