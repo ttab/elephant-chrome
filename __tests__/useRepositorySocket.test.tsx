@@ -141,6 +141,7 @@ describe('useRepositorySocket', () => {
 
     const documents: DocumentStateWithIncludes[] = [
       {
+        uuid: 'parent-1',
         subset: [],
         document: Document.create({
           uuid: 'parent-1',

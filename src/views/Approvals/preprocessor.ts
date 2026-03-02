@@ -19,7 +19,6 @@ export const APPROVALS_SUBSET = [
   '.meta(type=\'core/assignment\')@{title}',
   '.meta(type=\'core/assignment\').links(rel=\'deliverable\')@{uuid}',
   '@{title}',
-  '@{uuid}',
   '.meta(type=\'core/assignment\').data{start}',
   '.meta(type=\'core/assignment\').data{publish_slot}',
   '.meta(type=\'core/assignment\').data{publish}',

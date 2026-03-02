@@ -12,8 +12,7 @@ export const PLANNING_SUBSET = [
   '.meta(type=\'core/assignment\').links(type=\'core/author\' rel=\'assignee\')@{uuid}',
   '.meta(type=\'core/assignment\').meta(type=\'core/assignment-type\')@{value}',
   '.meta(type=\'core/assignment\').links(rel=\'deliverable\')@{uuid}',
-  '@{title}',
-  '@{uuid}'
+  '@{title}'
 ] as const
 
 const enum E {
@@ -24,8 +23,7 @@ const enum E {
   Assignees,
   Types,
   DeliverableUuids,
-  Title,
-  Uuid
+  Title
 }
 
 export type PreprocessedPlanningData = PreprocessedTableData<DecoratorDataBase, {
@@ -41,8 +39,7 @@ export type PreprocessedPlanningData = PreprocessedTableData<DecoratorDataBase, 
 
 export function preprocessPlanningData(data: DocumentStateWithDecorators<DecoratorDataBase>[]): PreprocessedPlanningData[] {
   return data.flatMap((item) => {
-    const { subset } = item
-    const uuid = fromSubset(subset, E.Uuid) ?? item.document?.uuid
+    const { uuid, subset } = item
     if (!uuid) return []
 
     const title = fromSubset(subset, E.Title) ?? item.document?.title

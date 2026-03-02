@@ -43,9 +43,17 @@ export const upsertIncludedDocument = (
   includedDoc: { uuid: string, state?: DocumentState | DocumentUpdate }
 ): NonNullable<DocumentStateWithDecorators['includedDocuments']> => {
   const includedUuid = includedDoc.state?.document?.uuid ?? includedDoc.uuid
+  const state: DocumentState | undefined = includedDoc.state
+    ? {
+        uuid: includedDoc.state.document?.uuid ?? includedDoc.uuid,
+        document: includedDoc.state.document,
+        meta: includedDoc.state.meta,
+        subset: includedDoc.state.subset
+      }
+    : undefined
   const entry = {
     uuid: includedUuid,
-    state: includedDoc.state,
+    state,
     __updater: {
       sub: includedDoc.state?.meta?.updaterUri || '??',
       time: includedDoc.state?.meta?.modified || new Date().toISOString()
@@ -166,6 +174,7 @@ export const handleDocumentUpdate = <TDecoratorData extends object = object>(
     if (existingIndex >= 0) {
       const newData = [...prevData]
       newData[existingIndex] = {
+        uuid: update.document.uuid,
         document: update.document,
         meta: update.meta,
         includedDocuments: newData[existingIndex].includedDocuments,
@@ -180,6 +189,7 @@ export const handleDocumentUpdate = <TDecoratorData extends object = object>(
       return newData
     } else if (update.meta) {
       const newDoc: DocumentStateWithDecorators<TDecoratorData> = {
+        uuid: update.document.uuid,
         document: update.document,
         meta: update.meta,
         subset: update.subset,

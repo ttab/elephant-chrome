@@ -22,6 +22,7 @@ describe('decoratorRunner', () => {
   })
 
   const mockDocument: DocumentStateWithIncludes = {
+    uuid: 'doc-1',
     document: Document.create({
       uuid: 'doc-1',
       type: 'core/planning-item',
@@ -31,6 +32,7 @@ describe('decoratorRunner', () => {
       {
         uuid: 'included-1',
         state: {
+          uuid: 'included-1',
           document: Document.create({
             uuid: 'included-1',
             type: 'core/article'
@@ -208,6 +210,7 @@ describe('decoratorRunner', () => {
 
     it('should handle multiple documents', async () => {
       const doc2: DocumentStateWithIncludes = {
+        uuid: 'doc-2',
         document: Document.create({
           uuid: 'doc-2',
           type: 'core/planning-item',
@@ -281,6 +284,7 @@ describe('decoratorRunner', () => {
 
   describe('runUpdateDecorators', () => {
     const mockParent: DocumentStateWithDecorators<{ test: Record<string, object> }> = {
+      uuid: 'doc-1',
       document: Document.create({ uuid: 'doc-1', title: 'Test' }),
       includedDocuments: [],
       meta: mockMeta,
@@ -531,6 +535,7 @@ describe('decoratorRunner', () => {
 
     it('should initialize decoratorData if not present on parent', async () => {
       const parentNoDecorators: DocumentStateWithDecorators = {
+        uuid: 'doc-1',
         document: Document.create({ uuid: 'doc-1' }),
         includedDocuments: [],
         meta: mockMeta,
@@ -559,6 +564,7 @@ describe('decoratorRunner', () => {
 
     it('should handle multiple sequential decorator updates accumulating data', async () => {
       const parent: DocumentStateWithDecorators<{ test: Record<string, object> }> = {
+        uuid: 'doc-1',
         document: Document.create({ uuid: 'doc-1' }),
         includedDocuments: [],
         meta: mockMeta,
@@ -593,6 +599,7 @@ describe('decoratorRunner', () => {
 
     it('should overwrite decorator data for same UUID across decorators', async () => {
       const parent: DocumentStateWithDecorators<{ test: Record<string, object> }> = {
+        uuid: 'doc-1',
         document: Document.create({ uuid: 'doc-1' }),
         includedDocuments: [],
         meta: mockMeta,

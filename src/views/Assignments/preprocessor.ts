@@ -16,8 +16,7 @@ export const ASSIGNMENTS_SUBSET = [
   '.meta(type=\'core/assignment\').data{start}',
   '.meta(type=\'core/assignment\').data{publish_slot}',
   '.meta(type=\'core/assignment\').data{full_day}',
-  '@{title}',
-  '@{uuid}'
+  '@{title}'
 ] as const
 
 const enum E {
@@ -31,8 +30,7 @@ const enum E {
   Start,
   PublishSlot,
   FullDay,
-  Title,
-  Uuid
+  Title
 }
 
 export type PreprocessedAssignmentData = PreprocessedTableData<DecoratorDataBase, {
@@ -68,8 +66,7 @@ export function createAssignmentPreprocessor(range: { gte: string, lte: string }
     const flattened: PreprocessedAssignmentData[] = []
 
     for (const doc of data) {
-      const { subset } = doc
-      const uuid = fromSubset(subset, E.Uuid) ?? doc.document?.uuid
+      const { uuid, subset } = doc
       if (!uuid) continue
 
       const title = fromSubset(subset, E.Title) ?? doc.document?.title

@@ -20,6 +20,7 @@ describe('handlers', () => {
     it('should return -1 when targetUuid is undefined', () => {
       const documents: DocumentStateWithDecorators[] = [
         {
+          uuid: 'parent-1',
           subset: [],
           document: Document.create({
             uuid: 'parent-1',
@@ -38,6 +39,7 @@ describe('handlers', () => {
       const deliverableUuid = 'deliverable-1'
       const documents: DocumentStateWithDecorators[] = [
         {
+          uuid: 'parent-1',
           subset: [],
           document: Document.create({
             uuid: 'parent-1',
@@ -66,6 +68,7 @@ describe('handlers', () => {
     it('should return -1 when deliverable not found', () => {
       const documents: DocumentStateWithDecorators[] = [
         {
+          uuid: 'parent-1',
           subset: [],
           document: Document.create({
             uuid: 'parent-1',
@@ -94,6 +97,7 @@ describe('handlers', () => {
     it('should skip documents without core/assignment meta', () => {
       const documents: DocumentStateWithDecorators[] = [
         {
+          uuid: 'parent-1',
           subset: [],
           document: Document.create({
             uuid: 'parent-1',
@@ -125,6 +129,7 @@ describe('handlers', () => {
 
     it('should update existing included document', () => {
       const existingState = {
+        uuid: 'included-1',
         subset: [],
         document: Document.create({
           uuid: 'included-1',
@@ -142,6 +147,7 @@ describe('handlers', () => {
       ]
 
       const updatedState = {
+        uuid: 'included-1',
         subset: [],
         document: Document.create({
           uuid: 'included-1',
@@ -364,6 +370,7 @@ describe('handlers', () => {
     it('should remove document matching uuid', () => {
       const prevData: DocumentStateWithDecorators[] = [
         {
+          uuid: 'doc-1',
           subset: [],
           document: Document.create({
             uuid: 'doc-1',
@@ -372,6 +379,7 @@ describe('handlers', () => {
           })
         },
         {
+          uuid: 'doc-2',
           subset: [],
           document: Document.create({
             uuid: 'doc-2',
@@ -395,6 +403,7 @@ describe('handlers', () => {
     it('should return same array if no match', () => {
       const prevData: DocumentStateWithDecorators[] = [
         {
+          uuid: 'doc-1',
           subset: [],
           document: Document.create({
             uuid: 'doc-1',
@@ -420,6 +429,7 @@ describe('handlers', () => {
     it('should update included documents for matching parent', () => {
       const prevData: DocumentStateWithDecorators[] = [
         {
+          uuid: 'parent-1',
           subset: [],
           document: Document.create({
             uuid: 'parent-1',
@@ -446,6 +456,7 @@ describe('handlers', () => {
           {
             uuid: 'included-1',
             state: {
+              uuid: 'included-1',
               subset: [],
               document: Document.create({
                 uuid: 'included-1',
@@ -466,6 +477,7 @@ describe('handlers', () => {
     it('should return same data if no parent found', () => {
       const prevData: DocumentStateWithDecorators[] = [
         {
+          uuid: 'parent-1',
           subset: [],
           document: Document.create({
             uuid: 'parent-1',
@@ -481,6 +493,7 @@ describe('handlers', () => {
           {
             uuid: 'orphan-1',
             state: {
+              uuid: 'orphan-1',
               subset: [],
               document: Document.create({
                 uuid: 'orphan-1',
@@ -500,6 +513,7 @@ describe('handlers', () => {
     it('should handle empty batch', () => {
       const prevData: DocumentStateWithDecorators[] = [
         {
+          uuid: 'parent-1',
           subset: [],
           document: Document.create({
             uuid: 'parent-1',
@@ -537,6 +551,7 @@ describe('handlers', () => {
     it('should update existing document', () => {
       const prevData: DocumentStateWithDecorators[] = [
         {
+          uuid: 'doc-1',
           subset: [],
           document: Document.create({
             uuid: 'doc-1',
@@ -586,6 +601,7 @@ describe('handlers', () => {
     it('should add new document with metadata', () => {
       const prevData: DocumentStateWithDecorators[] = [
         {
+          uuid: 'doc-1',
           subset: [],
           document: Document.create({
             uuid: 'doc-1',
@@ -620,6 +636,7 @@ describe('handlers', () => {
     it('should not add new document without metadata', () => {
       const prevData: DocumentStateWithDecorators[] = [
         {
+          uuid: 'doc-1',
           subset: [],
           document: Document.create({
             uuid: 'doc-1',
@@ -648,6 +665,7 @@ describe('handlers', () => {
     it('should update included document in parent', () => {
       const prevData: DocumentStateWithDecorators[] = [
         {
+          uuid: 'parent-1',
           subset: [],
           document: Document.create({
             uuid: 'parent-1',
@@ -689,6 +707,7 @@ describe('handlers', () => {
     it('should not update if included document has no parent', () => {
       const prevData: DocumentStateWithDecorators[] = [
         {
+          uuid: 'parent-1',
           subset: [],
           document: Document.create({
             uuid: 'parent-1',
@@ -717,6 +736,7 @@ describe('handlers', () => {
     it('should preserve existing included documents on main update', () => {
       const prevData: DocumentStateWithDecorators[] = [
         {
+          uuid: 'doc-1',
           subset: [],
           document: Document.create({
             uuid: 'doc-1',
@@ -727,6 +747,7 @@ describe('handlers', () => {
             {
               uuid: 'included-1',
               state: {
+                uuid: 'included-1',
                 subset: [],
                 document: Document.create({
                   uuid: 'included-1',
@@ -820,6 +841,7 @@ describe('handlers', () => {
 
     it('should call runUpdateDecorators and update state after debounce', async () => {
       const enrichedDoc: DocumentStateWithDecorators = {
+        uuid: 'doc-1',
         subset: [],
         document: Document.create({
           uuid: 'doc-1',
@@ -831,6 +853,7 @@ describe('handlers', () => {
       }
 
       const parent: DocumentStateWithDecorators = {
+        uuid: 'doc-1',
         subset: [],
         document: Document.create({
           uuid: 'doc-1',
@@ -867,6 +890,7 @@ describe('handlers', () => {
 
     it('should handle decorator errors gracefully', async () => {
       const parent: DocumentStateWithDecorators = {
+        uuid: 'doc-1',
         subset: [],
         document: Document.create({
           uuid: 'doc-1',
@@ -906,6 +930,7 @@ describe('handlers', () => {
 
     it('should discard stale result when newer call supersedes', async () => {
       const parent: DocumentStateWithDecorators = {
+        uuid: 'doc-1',
         subset: [],
         document: Document.create({
           uuid: 'doc-1',
@@ -919,6 +944,7 @@ describe('handlers', () => {
       const decoratorsRef = { current: [] }
 
       const staleResult: DocumentStateWithDecorators = {
+        uuid: 'doc-1',
         subset: [],
         document: Document.create({
           uuid: 'doc-1',
@@ -929,6 +955,7 @@ describe('handlers', () => {
       }
 
       const freshResult: DocumentStateWithDecorators = {
+        uuid: 'doc-1',
         subset: [],
         document: Document.create({
           uuid: 'doc-1',
@@ -1003,6 +1030,7 @@ describe('handlers', () => {
 
     it('should discard in-flight result when execute called during async run', async () => {
       const parent: DocumentStateWithDecorators = {
+        uuid: 'doc-1',
         subset: [],
         document: Document.create({
           uuid: 'doc-1',
@@ -1016,6 +1044,7 @@ describe('handlers', () => {
       const decoratorsRef = { current: [] }
 
       const staleResult: DocumentStateWithDecorators = {
+        uuid: 'doc-1',
         subset: [],
         document: Document.create({
           uuid: 'doc-1',
@@ -1026,6 +1055,7 @@ describe('handlers', () => {
       }
 
       const freshResult: DocumentStateWithDecorators = {
+        uuid: 'doc-1',
         subset: [],
         document: Document.create({
           uuid: 'doc-1',
@@ -1082,6 +1112,7 @@ describe('handlers', () => {
 
     it('should debounce rapid calls and only run once with last update', async () => {
       const enrichedDoc: DocumentStateWithDecorators = {
+        uuid: 'doc-1',
         subset: [],
         document: Document.create({
           uuid: 'doc-1',
@@ -1092,6 +1123,7 @@ describe('handlers', () => {
       }
 
       const parent: DocumentStateWithDecorators = {
+        uuid: 'doc-1',
         subset: [],
         document: Document.create({
           uuid: 'doc-1',
@@ -1142,6 +1174,7 @@ describe('handlers', () => {
       const scheduler = new ScheduleDecoratorUpdate(setData, dataRef, decoratorsRef, { current: 'test-token' }, runUpdateDecorators)
 
       const parent: DocumentStateWithDecorators = {
+        uuid: 'doc-1',
         subset: [],
         document: Document.create({
           uuid: 'doc-1',

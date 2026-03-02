@@ -11,8 +11,7 @@ export const EVENTS_SUBSET = [
   '.meta(type=\'core/event\')@{data.start}',
   '.meta(type=\'core/event\')@{data.end}',
   '.meta(type=\'core/event\')@{data.cancelled}',
-  '@{title}',
-  '@{uuid}'
+  '@{title}'
 ] as const
 
 const enum E {
@@ -23,8 +22,7 @@ const enum E {
   EventStart,
   EventEnd,
   Cancelled,
-  Title,
-  Uuid
+  Title
 }
 
 export type PreprocessedEventData = PreprocessedTableData<DecoratorDataBase, {
@@ -40,8 +38,7 @@ export type PreprocessedEventData = PreprocessedTableData<DecoratorDataBase, {
 
 export function preprocessEventData(data: DocumentStateWithDecorators<DecoratorDataBase>[]): PreprocessedEventData[] {
   return data.flatMap((item) => {
-    const { subset } = item
-    const uuid = fromSubset(subset, E.Uuid) ?? item.document?.uuid
+    const { uuid, subset } = item
     if (!uuid) return []
 
     const title = fromSubset(subset, E.Title) ?? item.document?.title

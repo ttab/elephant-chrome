@@ -31,6 +31,7 @@ describe('createMetricsDecorator', () => {
 
       const documents: DocumentStateWithIncludes[] = [
         {
+          uuid: 'parent-uuid',
           document: Document.create({
             uuid: 'parent-uuid',
             type: 'core/planning-item',
@@ -93,6 +94,7 @@ describe('createMetricsDecorator', () => {
     it('should return empty Map when no included documents', async () => {
       const documents: DocumentStateWithIncludes[] = [
         {
+          uuid: 'parent-uuid',
           document: Document.create({
             uuid: 'parent-uuid',
             type: 'core/planning-item',
@@ -118,6 +120,7 @@ describe('createMetricsDecorator', () => {
     it('should handle API errors gracefully', async () => {
       const documents: DocumentStateWithIncludes[] = [
         {
+          uuid: 'parent-uuid',
           document: Document.create({
             uuid: 'parent-uuid',
             type: 'core/planning-item',

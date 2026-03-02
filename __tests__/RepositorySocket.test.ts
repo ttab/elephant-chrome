@@ -181,8 +181,8 @@ describe('RepositorySocket', () => {
     const docsPromise = socket.getDocuments({ setName: 'set-a', type: 'tt/article' })
     await waitFor(() => expect(ws.send).toHaveBeenCalledTimes(2))
 
-    const doc1 = { meta: undefined, document: undefined, subset: [] }
-    const doc2 = { meta: undefined, document: undefined, subset: [] }
+    const doc1 = { uuid: '', meta: undefined, document: undefined, subset: [] }
+    const doc2 = { uuid: '', meta: undefined, document: undefined, subset: [] }
 
     ws.message(
       toArrayBuffer(
@@ -358,6 +358,7 @@ describe('RepositorySocket', () => {
 
     // Parent planning doc with assignment linking to deliverable
     const parentDoc: DocumentState = {
+      uuid: 'planning-1',
       subset: [],
       document: Document.create({
         uuid: 'planning-1',
@@ -376,6 +377,7 @@ describe('RepositorySocket', () => {
 
     // Another parent with no assignment links
     const parentDocNoLinks: DocumentState = {
+      uuid: 'planning-2',
       subset: [],
       document: Document.create({
         uuid: 'planning-2',
@@ -407,6 +409,7 @@ describe('RepositorySocket', () => {
               {
                 uuid: 'article-1',
                 state: {
+                  uuid: 'article-1',
                   document: Document.create({
                     uuid: 'article-1',
                     type: 'core/article',
@@ -418,6 +421,7 @@ describe('RepositorySocket', () => {
               {
                 uuid: 'orphan-1',
                 state: {
+                  uuid: 'orphan-1',
                   document: Document.create({
                     uuid: 'orphan-1',
                     type: 'core/article',
@@ -471,6 +475,7 @@ describe('RepositorySocket', () => {
 
     // Parent with no assignment meta
     const parentDoc: DocumentState = {
+      uuid: 'planning-1',
       subset: [],
       document: Document.create({
         uuid: 'planning-1',
@@ -501,6 +506,7 @@ describe('RepositorySocket', () => {
               {
                 uuid: 'orphan-1',
                 state: {
+                  uuid: 'orphan-1',
                   document: Document.create({
                     uuid: 'orphan-1',
                     type: 'core/article',

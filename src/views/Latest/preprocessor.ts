@@ -10,8 +10,7 @@ export const LATEST_SUBSET = [
   '.links(type=\'core/section\')@{uuid}',
   '.links(type=\'core/section\')@{title}',
   '.meta(type=\'core/assignment\').links(rel=\'deliverable\')@{uuid}',
-  '@{title}',
-  '@{uuid}'
+  '@{title}'
 ] as const
 
 const enum E {
@@ -19,8 +18,7 @@ const enum E {
   SectionUuid,
   SectionTitle,
   DeliverableUuids,
-  Title,
-  Uuid
+  Title
 }
 
 export type LatestDecorator = MetricsDecorator
@@ -47,8 +45,6 @@ export function preprocessLatestData(data: DocumentStateWithDecorators<LatestDec
     if (!doc.includedDocuments?.length) continue
 
     const { subset } = doc
-    const planningId = fromSubset(subset, E.Uuid) ?? doc.document?.uuid ?? ''
-
     const slugline = fromSubset(subset, E.Slugline) ?? doc.document?.meta?.find((m) => m.type === 'tt/slugline')?.value
 
     const fallback = !subset?.length ? getSectionLink(doc.document) : undefined
@@ -71,7 +67,7 @@ export function preprocessLatestData(data: DocumentStateWithDecorators<LatestDec
         _assignment: assignmentByDeliverable.get(included.uuid),
         id: included.uuid,
         _preprocessed: {
-          planningId,
+          planningId: doc.uuid,
           deliverableUuid: included.uuid,
           deliverableVersion: hasUsable.toString(),
           title: included.state?.document?.title,
