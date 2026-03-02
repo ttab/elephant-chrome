@@ -1,6 +1,7 @@
 import type { DocumentStateWithDecorators, DecoratorDataBase } from '@/hooks/useRepositorySocket/types'
+import type { Block } from '@ttab/elephant-api/newsdoc'
 import type { PreprocessedTableData } from '@/components/Table/types'
-import { getNewsvalue } from '@/lib/documentHelpers'
+import { getNewsvalue, getSectionLink } from '@/lib/documentHelpers'
 import { fromSubset, allFromSubset } from '@/lib/subsetHelpers'
 
 export const PLANNING_SUBSET = [
@@ -48,47 +49,24 @@ export function preprocessPlanningData(data: DocumentStateWithDecorators<Decorat
     const newsvalue = fromSubset(subset, E.Newsvalue) ?? getNewsvalue(item.document)
     const slugline = fromSubset(subset, E.Slugline) ?? item.document?.meta?.find((d) => d.type === 'tt/slugline')?.value
 
-    const sectionLink = !subset?.length ? item.document?.links?.find((d) => d.type === 'core/section') : undefined
-    const sectionUuid = fromSubset(subset, E.SectionUuid) ?? sectionLink?.uuid
-    const sectionTitle = fromSubset(subset, E.SectionTitle) ?? sectionLink?.title
+    const fallback = !subset?.length ? getSectionLink(item.document) : undefined
+    const sectionUuid = fromSubset(subset, E.SectionUuid) ?? fallback?.uuid
+    const sectionTitle = fromSubset(subset, E.SectionTitle) ?? fallback?.title
 
     const subsetAssignees = allFromSubset(subset, E.Assignees)
-    const assignees = subsetAssignees.length > 0
-      ? subsetAssignees
-      : item.document?.meta?.reduce<string[]>((uuids, d) => {
-        if (d.type === 'core/assignment' && Array.isArray(d.links)) {
-          d.links.forEach((link) => {
-            if (link.type === 'core/author' && link.rel === 'assignee') {
-              uuids.push(link.uuid)
-            }
-          })
-        }
-        return uuids
-      }, []) || []
-
     const subsetTypes = allFromSubset(subset, E.Types)
-    const types = subsetTypes.length > 0
-      ? subsetTypes
-      : item.document?.meta?.reduce<string[]>((values, d) => {
-        if (d.type === 'core/assignment' && Array.isArray(d.meta)) {
-          d.meta.forEach((meta) => {
-            if (meta.type === 'core/assignment-type') values.push(meta.value)
-          })
-        }
-        return values
-      }, []) || []
-
     const subsetDeliverables = allFromSubset(subset, E.DeliverableUuids)
-    const deliverableUuids = subsetDeliverables.length > 0
-      ? subsetDeliverables
-      : item.document?.meta?.reduce<string[]>((uuids, meta) => {
-        if (meta.type === 'core/assignment' && Array.isArray(meta.links)) {
-          meta.links.forEach((link) => {
-            if (link.rel === 'deliverable') uuids.push(link.uuid)
-          })
-        }
-        return uuids
-      }, []) || []
+
+    let assignees = subsetAssignees
+    let types = subsetTypes
+    let deliverableUuids = subsetDeliverables
+
+    if (!assignees.length || !types.length || !deliverableUuids.length) {
+      const extracted = extractFromAssignments(item.document?.meta)
+      if (!assignees.length) assignees = extracted.assignees
+      if (!types.length) types = extracted.types
+      if (!deliverableUuids.length) deliverableUuids = extracted.deliverableUuids
+    }
 
     return {
       ...item,
@@ -105,4 +83,31 @@ export function preprocessPlanningData(data: DocumentStateWithDecorators<Decorat
       }
     }
   })
+}
+
+function extractFromAssignments(meta: Block[] | undefined) {
+  const assignees: string[] = []
+  const types: string[] = []
+  const deliverableUuids: string[] = []
+
+  for (const block of meta ?? []) {
+    if (block.type !== 'core/assignment') continue
+
+    for (const link of block.links ?? []) {
+      if (link.type === 'core/author' && link.rel === 'assignee') {
+        assignees.push(link.uuid)
+      }
+      if (link.rel === 'deliverable') {
+        deliverableUuids.push(link.uuid)
+      }
+    }
+
+    for (const m of block.meta ?? []) {
+      if (m.type === 'core/assignment-type') {
+        types.push(m.value)
+      }
+    }
+  }
+
+  return { assignees, types, deliverableUuids }
 }

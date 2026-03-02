@@ -1,6 +1,6 @@
 import type { DocumentStateWithDecorators, DecoratorDataBase } from '@/hooks/useRepositorySocket/types'
 import type { PreprocessedTableData } from '@/components/Table/types'
-import { getNewsvalue } from '@/lib/documentHelpers'
+import { getNewsvalue, getSectionLink } from '@/lib/documentHelpers'
 import { fromSubset } from '@/lib/subsetHelpers'
 
 export const EVENTS_SUBSET = [
@@ -47,9 +47,9 @@ export function preprocessEventData(data: DocumentStateWithDecorators<DecoratorD
     const title = fromSubset(subset, E.Title) ?? item.document?.title
     const newsvalue = fromSubset(subset, E.Newsvalue) ?? getNewsvalue(item.document)
 
-    const sectionLink = !subset?.length ? item.document?.links?.find((d) => d.type === 'core/section') : undefined
-    const sectionUuid = fromSubset(subset, E.SectionUuid) ?? sectionLink?.uuid
-    const sectionTitle = fromSubset(subset, E.SectionTitle) ?? sectionLink?.title
+    const fallback = !subset?.length ? getSectionLink(item.document) : undefined
+    const sectionUuid = fromSubset(subset, E.SectionUuid) ?? fallback?.uuid
+    const sectionTitle = fromSubset(subset, E.SectionTitle) ?? fallback?.title
 
     const organiserTitle = fromSubset(subset, E.OrganiserTitle) ?? item.document?.links?.find((d) => d.rel === 'organiser')?.title
 

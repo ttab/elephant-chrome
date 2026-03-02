@@ -2,7 +2,7 @@ import type { DecoratorDataBase, DocumentStateWithDecorators } from '@/hooks/use
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { isWithinInterval, parseISO } from 'date-fns'
 import type { PreprocessedTableData } from '@/components/Table/types'
-import { findIncludedDocument, getAssignments, getNewsvalue, getSection, getDeliverableLink } from '@/lib/documentHelpers'
+import { findIncludedDocument, getAssignments, getDocumentStatus, getNewsvalue, getSection, getDeliverableLink } from '@/lib/documentHelpers'
 import { fromSubset, allFromSubset } from '@/lib/subsetHelpers'
 
 export const ASSIGNMENTS_SUBSET = [
@@ -59,6 +59,11 @@ export type PreprocessedAssignmentData = PreprocessedTableData<DecoratorDataBase
  * creates N separate rows with precomputed data for table rendering.
  */
 export function createAssignmentPreprocessor(range: { gte: string, lte: string }) {
+  const parsedRange = {
+    start: parseISO(range.gte),
+    end: parseISO(range.lte)
+  }
+
   return (data: DocumentStateWithDecorators<DecoratorDataBase>[]): PreprocessedAssignmentData[] => {
     const flattened: PreprocessedAssignmentData[] = []
 
@@ -73,11 +78,11 @@ export function createAssignmentPreprocessor(range: { gte: string, lte: string }
 
       if (subset?.length) {
         flattenFromSubset(
-          flattened, doc, subset, uuid, title, newsvalue, sectionUuid, range
+          flattened, doc, subset, uuid, title, newsvalue, sectionUuid, parsedRange
         )
       } else {
         flattenFromDocument(
-          flattened, doc, uuid, title, newsvalue, sectionUuid, range
+          flattened, doc, uuid, title, newsvalue, sectionUuid, parsedRange
         )
       }
     }
@@ -94,7 +99,7 @@ function flattenFromSubset(
   title: string | undefined,
   newsvalue: string | undefined,
   sectionUuid: string | undefined,
-  range: { gte: string, lte: string }
+  parsedRange: { start: Date, end: Date }
 ): void {
   const startDates = allFromSubset(subset, E.StartDate)
   const assignmentTitles = allFromSubset(subset, E.AssignmentTitle)
@@ -106,7 +111,7 @@ function flattenFromSubset(
   const fullDays = allFromSubset(subset, E.FullDay)
 
   for (let i = 0; i < startDates.length; i++) {
-    if (!isWithinRange(startDates[i], range)) continue
+    if (!isWithinRange(startDates[i], parsedRange)) continue
 
     const deliverableUuid = deliverableUuids[i]
     const deliverableState = findIncludedDocument(
@@ -135,7 +140,7 @@ function flattenFromSubset(
         assignmentTypes: assignmentTypes[i] ? [assignmentTypes[i]] : [],
         assigneeUuids: assigneeUuids[i] ? [assigneeUuids[i]] : [],
         deliverableUuid,
-        deliverableStatus: deliverableState?.meta?.workflowState,
+        deliverableStatus: getDocumentStatus(deliverableState?.meta),
         startValue,
         startType
       }
@@ -150,13 +155,13 @@ function flattenFromDocument(
   title: string | undefined,
   newsvalue: string | undefined,
   sectionUuid: string | undefined,
-  range: { gte: string, lte: string }
+  parsedRange: { start: Date, end: Date }
 ): void {
   const assignments = getAssignments(doc.document)
   if (assignments.length === 0) return
 
   assignments.forEach((assignment: Block, index: number) => {
-    if (!isWithinRange(assignment.data.start_date, range)) return
+    if (!isWithinRange(assignment.data.start_date, parsedRange)) return
 
     const assignmentTypes = assignment.meta
       ?.filter((meta) => meta.type === 'core/assignment-type')
@@ -188,7 +193,7 @@ function flattenFromDocument(
         assignmentTypes,
         assigneeUuids,
         deliverableUuid,
-        deliverableStatus: deliverableState?.meta?.workflowState,
+        deliverableStatus: getDocumentStatus(deliverableState?.meta),
         startValue,
         startType
       }
@@ -196,15 +201,12 @@ function flattenFromDocument(
   })
 }
 
-function isWithinRange(value: string, range: { gte: string, lte: string }): boolean {
+function isWithinRange(value: string, range: { start: Date, end: Date }): boolean {
   if (!value) {
     return false
   }
 
-  return isWithinInterval(parseISO(value), {
-    start: parseISO(range.gte),
-    end: parseISO(range.lte)
-  })
+  return isWithinInterval(parseISO(value), range)
 }
 
 function getStart(type: string | undefined, data: Record<string, string>): { value: string, type: string } {

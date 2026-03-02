@@ -52,29 +52,18 @@ export function getSection(doc?: Document): string | undefined {
 }
 
 /**
+ * Extract section link (uuid + title) from a document's links
+ */
+export function getSectionLink(doc?: Document): { uuid?: string, title?: string } | undefined {
+  const link = doc?.links.find((l) => l.type === 'core/section')
+  if (!link) return undefined
+  return { uuid: link.uuid, title: link.title }
+}
+
+/**
  * Extract newsvalue from a document's meta
  */
 export function getNewsvalue(doc?: Document): string | undefined {
   return doc?.meta.find((m) => m.type === 'core/newsvalue')?.value
 }
 
-/**
- * Extract publish slot from assignment data
- */
-export function getPublishSlot(assignment: Block): string | undefined {
-  return assignment.data?.publish_slot
-}
-
-/**
- * Extract start time from assignment data
- */
-export function getStartTime(assignment: Block): string | undefined {
-  return assignment.data?.start
-}
-
-/**
- * Extract publish time from assignment data
- */
-export function getPublishTime(assignment: Block): string | undefined {
-  return assignment.data?.publish
-}

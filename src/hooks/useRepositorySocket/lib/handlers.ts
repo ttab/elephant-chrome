@@ -304,5 +304,6 @@ export class ScheduleDecoratorUpdate<TDecoratorData extends object = object> {
       clearTimeout(timer)
     }
     this.#pending.clear()
+    this.#sequence.clear()
   }
 }

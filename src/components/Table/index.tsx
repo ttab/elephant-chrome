@@ -116,6 +116,7 @@ export const Table = <TData extends TableRowData, TValue>({
         return
       }
 
+      // Strip __updater metadata before navigation. Ie mark as "read"
       if ('__updater' in row.original) {
         delete (row.original as Record<string, unknown>).__updater
       }

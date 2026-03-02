@@ -2,6 +2,7 @@ import type { DocumentStateWithDecorators } from '@/hooks/useRepositorySocket/ty
 import type { MetricsDecorator } from '@/hooks/useRepositorySocket/decorators/metrics'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import type { PreprocessedTableData } from '@/components/Table/types'
+import { getAssignments, getDeliverableLink, getSectionLink } from '@/lib/documentHelpers'
 import { fromSubset } from '@/lib/subsetHelpers'
 
 export const LATEST_SUBSET = [
@@ -50,22 +51,24 @@ export function preprocessLatestData(data: DocumentStateWithDecorators<LatestDec
 
     const slugline = fromSubset(subset, E.Slugline) ?? doc.document?.meta?.find((m) => m.type === 'tt/slugline')?.value
 
-    const sectionLink = !subset?.length ? doc.document?.links?.find((l) => l.type === 'core/section') : undefined
-    const sectionUuid = fromSubset(subset, E.SectionUuid) ?? sectionLink?.uuid
-    const sectionTitle = fromSubset(subset, E.SectionTitle) ?? sectionLink?.title
+    const fallback = !subset?.length ? getSectionLink(doc.document) : undefined
+    const sectionUuid = fromSubset(subset, E.SectionUuid) ?? fallback?.uuid
+    const sectionTitle = fromSubset(subset, E.SectionTitle) ?? fallback?.title
+
+    // Build O(1) lookup: deliverable UUID -> assignment block
+    const assignmentByDeliverable = new Map<string, Block>()
+    for (const assignment of getAssignments(doc.document)) {
+      const uuid = getDeliverableLink(assignment)
+      if (uuid) assignmentByDeliverable.set(uuid, assignment)
+    }
 
     for (const included of doc.includedDocuments) {
       const hasUsable = included.state?.meta?.heads?.usable?.version
       if (!hasUsable) continue
 
-      const assignment = doc.document?.meta?.find(
-        (block: Block) => block.type === 'core/assignment'
-          && block.links?.some((link) => link.rel === 'deliverable' && link.uuid === included.uuid)
-      )
-
       flattened.push({
         ...doc,
-        _assignment: assignment,
+        _assignment: assignmentByDeliverable.get(included.uuid),
         id: included.uuid,
         _preprocessed: {
           planningId,
