@@ -6,7 +6,7 @@ import { Editor } from '@/components/PlainEditor'
 import { getWireStatus } from '@/lib/getWireStatus'
 import { getWireState } from '@/lib/getWireState'
 import { DocumentHistory } from './DocumentHistory'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 export const WirePreview = ({ wire }: {
   wire: Wire
@@ -24,6 +24,10 @@ export const WirePreview = ({ wire }: {
   }
 
   const [wireVersion, setWireVersion] = useState<bigint | undefined>(undefined)
+
+  useEffect(() => {
+    setWireVersion(undefined)
+  }, [wire.id])
 
   return (
     <div className='grid-rows-[auto_1fr] max-w-full w-full overflow-y-auto mx-auto'>
