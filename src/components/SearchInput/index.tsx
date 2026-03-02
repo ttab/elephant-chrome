@@ -16,7 +16,7 @@ export const SearchInput = ({ className, type = 'text', ...props }: SearchInputP
     })
 
     return () => cancelAnimationFrame(frame)
-  }, [type])
+  }, [])
 
   return (
     <div className='flex gap-1'>
