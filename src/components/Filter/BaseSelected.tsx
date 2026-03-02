@@ -17,6 +17,7 @@ export const BaseSelected = ({ options, filterPage, facets }: {
   const selected = new Set(filter[filterPage])
   return options.map((option) => {
     const isSelected = selected?.has?.(option.value)
+
     const getTranslatedOptions = (filterType: string, option: { label?: string, value: string }) => {
       switch (filterType) {
         case 'aType':

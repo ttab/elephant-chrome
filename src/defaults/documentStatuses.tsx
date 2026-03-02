@@ -6,10 +6,12 @@ import {
   BadgeCheckIcon,
   CircleArrowLeftIcon
 } from '@ttab/elephant-ui/icons'
+import i18n from 'i18next'
 
 export const DocumentStatuses: DefaultValueOption[] = [
   {
     value: 'usable',
+    label: i18n.t('core:status.usable'),
     icon: CircleCheckIcon,
     iconProps: {
       className: 'bg-usable fill-usable rounded-full text-white dark:text-black',
@@ -19,6 +21,7 @@ export const DocumentStatuses: DefaultValueOption[] = [
   },
   {
     value: 'withheld',
+    label: i18n.t('core:status.withheld'),
     icon: CircleCheckIcon,
     iconProps: {
       className: 'bg-withheld fill-withheld rounded-full text-white dark:text-black',
@@ -28,6 +31,7 @@ export const DocumentStatuses: DefaultValueOption[] = [
   },
   {
     value: 'done',
+    label: i18n.t('core:status.done'),
     icon: CircleCheckIcon,
     iconProps: {
       className: 'bg-done fill-done rounded-full text-white dark:text-black',
@@ -37,6 +41,7 @@ export const DocumentStatuses: DefaultValueOption[] = [
   },
   {
     value: 'approved',
+    label: i18n.t('core:status.approved'),
     icon: BadgeCheckIcon,
     iconProps: {
       className: 'bg-approved fill-approved rounded-full text-white dark:text-black',
@@ -46,6 +51,7 @@ export const DocumentStatuses: DefaultValueOption[] = [
   },
   {
     value: 'draft',
+    label: i18n.t('core:status.draft'),
     icon: CircleDotIcon,
     iconProps: {
       className: 'text-muted-foreground',
@@ -55,6 +61,7 @@ export const DocumentStatuses: DefaultValueOption[] = [
   },
   {
     value: 'unpublished',
+    label: i18n.t('core:status.unpublished'),
     icon: CircleArrowLeftIcon,
     iconProps: {
       className: 'bg-cancelled fill-cancelled rounded-full text-white dark:text-black',
