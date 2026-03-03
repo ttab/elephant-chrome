@@ -19,7 +19,7 @@ import {
 import { useRegistry } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import type { JSX } from 'react'
-import { useRef, useState } from 'react'
+import { Fragment, useRef, useState } from 'react'
 import { UserMessage } from '@/components/UserMessage'
 import { Form } from '@/components/Form'
 import { fetch } from '@/lib/index/fetch-plannings-twirp'
@@ -94,17 +94,14 @@ export const WireViewContent = (props: ViewProps & {
             {props.wires?.length > 1 && (
               <div className='flex flex-col gap-0.5 -mt-6 ms-10.5'>
                 {props.wires?.map((wire, index) => (
-                  <>
+                  <Fragment key={wire.id}>
                     {!!index
                       && (
-                        <div
-                          key={wire.id}
-                          className='pl-0 pt-2 text-xs'
-                        >
+                        <div className='pl-0 pt-2 text-xs'>
                           {wire.fields['document.title'].values?.[0]}
                         </div>
                       )}
-                  </>
+                  </Fragment>
                 ))}
               </div>
             )}
