@@ -67,24 +67,27 @@ export async function createArticle({
   }
 
   toast.success(`Artikel skapad`, {
+    duration: 8000,
     classNames: {
       title: 'whitespace-nowrap'
     },
-    action: [
-      <ToastAction
-        key='planning'
-        documentId={updatedPlanningId}
-        withView='Planning'
-        Icon={CalendarDaysIcon}
-        label='Öppna planering'
-      />,
-      <ToastAction
-        key='article'
-        documentId={documentId}
-        withView='Editor'
-        Icon={FileInputIcon}
-        label='Öppna artikel'
-      />
-    ]
+    action: (
+      <div className='flex flex-row w-full gap-1 justify-end'>
+        <ToastAction
+          documentId={updatedPlanningId}
+          withView='Planning'
+          Icon={CalendarDaysIcon}
+          label='Öppna planering'
+          target='last'
+        />
+        <ToastAction
+          documentId={documentId}
+          withView='Editor'
+          Icon={FileInputIcon}
+          label='Öppna artikel'
+          target='last'
+        />
+      </div>
+    )
   })
 }
