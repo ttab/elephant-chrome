@@ -1,11 +1,5 @@
 import { v5 as uuidv5 } from 'uuid'
 
-/**
- * Fixed namespace UUID for deterministic author document UUID generation.
- * Generated once — do not change, as it would alter all derived UUIDs.
- */
-const AUTHOR_NAMESPACE = '1c021a3f-3e2c-4bbc-a7f2-23e246b091ab'
-
 const USER_URI_PREFIX = 'core://user/'
 
 /**
@@ -42,5 +36,5 @@ export function normalizeUserUri(uri: string): string {
  */
 export function generateAuthorUUID(userUri: string): string {
   const normalized = normalizeUserUri(userUri)
-  return uuidv5(normalized, AUTHOR_NAMESPACE)
+  return uuidv5(normalized, uuidv5.URL)
 }
