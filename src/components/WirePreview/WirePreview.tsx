@@ -1,5 +1,5 @@
-import { Badge, Button } from '@ttab/elephant-ui'
-import { CheckIcon, EyeIcon, FolderIcon, XIcon } from '@ttab/elephant-ui/icons'
+import { Badge } from '@ttab/elephant-ui'
+import { CheckIcon, EyeIcon, FolderIcon } from '@ttab/elephant-ui/icons'
 import { decodeString } from '@/lib/decodeString'
 import type { Wire } from '@/shared/schemas/wire'
 import { Editor } from '@/components/PlainEditor'
@@ -8,9 +8,8 @@ import { getWireState } from '@/lib/getWireState'
 import { DocumentHistory } from './DocumentHistory'
 import { useState, useEffect } from 'react'
 
-export const WirePreview = ({ wire, onClose }: {
+export const WirePreview = ({ wire }: {
   wire: Wire
-  onClose?: () => void
 }) => {
   const data = {
     source: wire?.fields['document.rel.source.uri']?.values[0]
@@ -32,7 +31,7 @@ export const WirePreview = ({ wire, onClose }: {
 
   return (
     <div className='grid grid-rows-[auto_auto_1fr] max-w-full w-full h-full overflow-y-auto mx-auto'>
-      <div className='flex items-center justify-between py-2 px-12'>
+      <div className='flex items-center h-10 px-12'>
         <div className='text-sm flex flex-row gap-2'>
           {data?.source && (
             <Badge className='h-6 pointer-events-none'>
@@ -79,20 +78,6 @@ export const WirePreview = ({ wire, onClose }: {
             </Badge>
           )}
         </div>
-
-        {!!onClose && (
-          <Button
-            variant='ghost'
-            className='w-9 h-9 px-0'
-            onMouseDown={(e) => { e.preventDefault() }}
-            onClick={(e) => {
-              e.preventDefault()
-              onClose()
-            }}
-          >
-            <XIcon size={16} strokeWidth={1.75} className='opacity-60' />
-          </Button>
-        )}
       </div>
 
       <div className='mx-12 border mt-2 py-1.5 px-3 rounded'>

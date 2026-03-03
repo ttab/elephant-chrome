@@ -5,6 +5,8 @@ import { useRegistry, useView, useNavigationKeysView, useQuery } from '@/hooks'
 import { useDocuments } from '@/hooks/index/useDocuments'
 import { QueryV1, BoolQueryV1, TermsQueryV1 } from '@ttab/elephant-api/index'
 import { fields as wireFields, type WireFields } from '@/shared/schemas/wire'
+import { Button } from '@ttab/elephant-ui'
+import { XIcon } from '@ttab/elephant-ui/icons'
 import { cn } from '@ttab/elephant-ui/utils'
 import { Stream } from './components/Stream'
 import { useStreamNavigation } from './hooks/useStreamNavigation'
@@ -432,15 +434,25 @@ export const Wires = (): JSX.Element => {
             && (
               <div
                 className={cn(
-                  'rounded-lg grid shadow-xl border border-default-foreground/20 mx-1 justify-center',
+                  'relative rounded-lg grid shadow-xl border border-default-foreground/20 mx-1 justify-center',
                   'grid-rows-[auto_1fr] h-full overflow-hidden',
                   '@7xl/view:ml-0 @7xl/view:w-xl @7xl/view:my-2 @7xl/view:mx-0'
                 )}
               >
+                <Button
+                  variant='ghost'
+                  className='absolute top-1 right-4 z-10 w-9 h-9 px-0'
+                  onMouseDown={(e) => { e.preventDefault() }}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    setPreviewWire(null)
+                  }}
+                >
+                  <XIcon size={18} strokeWidth={1.75} />
+                </Button>
                 <Preview
                   wire={previewWire}
-                  key={`${previewWire.id}-${previewReloadCount}`}
-                  onClose={() => setPreviewWire(null)}
+                  key={previewReloadCount}
                 />
               </div>
             )}
