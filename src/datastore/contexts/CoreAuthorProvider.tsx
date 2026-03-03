@@ -5,6 +5,7 @@ import { useIndexedDB } from '../hooks/useIndexedDB'
 import { fetchOrRefresh } from '../lib/fetchOrRefresh'
 import { type IDBAuthor } from '../types'
 import { type IndexedAuthor } from '@/lib/index'
+import { normalizeUserUri } from '@/shared/userUri'
 
 interface CoreAuthorProviderState {
   objects: IDBAuthor[]
@@ -46,8 +47,12 @@ export const CoreAuthorProvider = ({ children }: {
           lastName: _?.['document.meta.core_author.data.lastName']?.[0].trim() || '',
           initials: _?.['document.meta.core_author.data.initials']?.[0].trim() || '',
           email: _?.['document.meta.core_contact_info.data.email']?.[0].trim() || '',
-          sub: _?.['document.rel.same_as.uri']
-            ?.find((m: string) => m?.startsWith('core://user/sub'))?.trim() || ''
+          sub: (() => {
+            const uri = _?.['document.rel.same_as.uri']
+              ?.find((m: string) => m?.startsWith('core://user/'))
+              ?.trim()
+            return uri ? normalizeUserUri(uri) : ''
+          })()
         }
       }
     )

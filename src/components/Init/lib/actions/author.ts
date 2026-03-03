@@ -9,6 +9,11 @@ import { decodeJwt } from 'jose'
 import { toast } from 'sonner'
 import { fields } from '@/shared/schemas/author'
 import type { Author, AuthorFields } from '@/shared/schemas/author'
+import {
+  normalizeUserUri,
+  extractUserIdFromUri,
+  generateAuthorUUID
+} from '@/shared/userUri'
 
 /**
  * Initializes the author by verifying or creating an author document in the repository.
@@ -45,8 +50,19 @@ export async function initializeAuthor({ url, session, repository }: {
                 conditions: {
                   oneofKind: 'term',
                   term: TermQueryV1.create({
-                    field: 'document.meta.core_author.data.sub.keyword',
-                    value: session.user.sub
+                    field: 'document.rel.same_as.uri',
+                    value: normalizeUserUri(session.user.sub)
+                  })
+                }
+              },
+              {
+                conditions: {
+                  oneofKind: 'term',
+                  term: TermQueryV1.create({
+                    field: 'document.rel.same_as.uri',
+                    value: `core://user/sub/${
+                      extractUserIdFromUri(session.user.sub)
+                    }`
                   })
                 }
               },
@@ -110,8 +126,26 @@ function verifyAuthorDoc(document: IndexSearchResult<Author>, envRole: 'stage' |
   }
 
   if (document.hits?.[0]?.document) {
-    return document.hits[0].document?.links
-      .some((link) => link.type === 'tt/keycloak' && link.role === envRole)
+    const doc = document.hits[0].document
+    const hasRole = doc.links
+      .some((link) => link.type === 'tt/keycloak'
+        && link.role === envRole)
+    if (!hasRole) return false
+
+    const keycloakLink = doc.links
+      .find((link) => link.rel === 'same-as'
+        && link.type === 'tt/keycloak'
+        && link.role === envRole)
+
+    // Self-heal: trigger update if same-as link uses old format
+    if (keycloakLink?.uri.includes('/sub/')) return false
+
+    // Self-heal: trigger update if user sub changed
+    // (e.g. consultant UUID → employee digit prefix)
+    const currentUri = normalizeUserUri(session.user.sub)
+    if (keycloakLink?.uri !== currentUri) return false
+
+    return true
   }
 
   return undefined
@@ -136,13 +170,16 @@ function appendSub(document: Document, session: Session, role: 'stage' | 'prod')
     document.links = []
   }
 
-  // remove old same-as links from migrated users
-  document.links = document.links?.filter((link) => link?.type !== 'x-imid/user') || []
+  // Remove old same-as links (x-imid/user and tt/keycloak) before adding new
+  document.links = document.links?.filter(
+    (link) => link?.type !== 'x-imid/user'
+      && !(link?.rel === 'same-as' && link?.type === 'tt/keycloak')
+  ) || []
+
   document.links.push(Block.create({
     rel: 'same-as',
     type: 'tt/keycloak',
-    uri: `core://user/sub/${session.user.sub
-      .replace('core://user/', '')}`,
+    uri: normalizeUserUri(session.user.sub),
     role
   }))
 
@@ -163,7 +200,7 @@ function createAuthorDoc(session: Session, envRole: 'stage' | 'prod', language: 
     family_name: string
   }
 
-  const uuid = crypto.randomUUID()
+  const uuid = generateAuthorUUID(session.user.sub)
   const document = Document.create({
     uuid,
     uri: `core://author/${uuid}`,
