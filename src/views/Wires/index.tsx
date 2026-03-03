@@ -439,7 +439,7 @@ export const Wires = (): JSX.Element => {
               >
                 <Preview
                   wire={previewWire}
-                  key={`${previewWire.id}-${previewReloadCount}`}
+                  key={previewReloadCount}
                   onClose={() => setPreviewWire(null)}
                 />
               </div>
