@@ -52,6 +52,7 @@ export const WireCreation = (props: ViewProps & {
       version: 0n,
       isMetaDocument: false,
       mainDocument: '',
+      subset: [],
       document: Templates.article(documentId, payload)
     })]
   }, [props.wires])

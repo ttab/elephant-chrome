@@ -65,6 +65,7 @@ export const Event = (props: ViewProps & { document?: Document }): JSX.Element =
       version: 0n,
       isMetaDocument: false,
       mainDocument: '',
+      subset: [],
       document: props.document || getTemplateFromView('Event')(documentId)
     })
   }, [documentId, props.document])

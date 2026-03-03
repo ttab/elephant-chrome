@@ -55,6 +55,7 @@ export const Flash = (props: ViewProps & {
       version: 0n,
       isMetaDocument: false,
       mainDocument: '',
+      subset: [],
       document: props.document || getTemplateFromView('Flash')(documentId)
     })
   }, [documentId, props.document])
