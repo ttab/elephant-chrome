@@ -12,6 +12,7 @@ import { CircleCheckIcon, PenIcon, ShapesIcon, SignalHighIcon } from '@ttab/elep
 import type { Dispatch, SetStateAction } from 'react'
 import type { IDBSection } from 'src/datastore/types'
 import type { TFunction } from 'i18next'
+import type { TranslationKey } from '@/types/i18next.d'
 
 export function articleColumns({ sections = [] }: {
   sections?: IDBSection[]
@@ -28,7 +29,7 @@ export function articleColumns({ sections = [] }: {
         columnIcon: CircleCheckIcon,
         className: 'flex-none',
         display: (value: string) => {
-          const statusLabel = t(`core:status.${value}`)
+          const statusLabel = t(`core:status.${value}` as TranslationKey)
 
           return <span>{statusLabel}</span>
         }

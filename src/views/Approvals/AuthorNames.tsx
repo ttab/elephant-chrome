@@ -8,7 +8,8 @@ import type { Status, StatusOverviewItem } from '@ttab/elephant-api/repository'
 import { getAuthorBySub } from '@/lib/getAuthorBySub'
 import { DocumentStatuses } from '@/defaults/documentStatuses'
 import { useTranslation } from 'react-i18next'
-import type { TFunction } from 'i18next'
+import type { TFunction, Namespace } from 'i18next'
+import type { TranslationKey } from '@/types/i18next.d'
 
 export const AuthorNames = ({ assignment }: { assignment: AssignmentInterface }): JSX.Element => {
   const authors = useAuthors()
@@ -80,8 +81,8 @@ export const AuthorNames = ({ assignment }: { assignment: AssignmentInterface })
 
     if (statusValue !== 'draft' && statusValue !== 'done') {
       return full
-        ? `${full}, ${t('core:status.' + statusValue)} ${t('shared:authors.from', { author: lastStatusUpdateAuthor.name })}`
-        : `${t('core:status.' + statusValue)} ${t('shared:authors.from', { author: lastStatusUpdateAuthor.name })}`
+        ? `${full}, ${t(`core:status.${statusValue}` as TranslationKey)} ${t('shared:authors.from', { author: lastStatusUpdateAuthor.name })}`
+        : `${t(`core:status.${statusValue}` as TranslationKey)} ${t('shared:authors.from', { author: lastStatusUpdateAuthor.name })}`
     }
     return full
   }, [full, lastStatusUpdateAuthor, lastUpdated, statusData, t])
@@ -94,12 +95,12 @@ export const AuthorNames = ({ assignment }: { assignment: AssignmentInterface })
 }
 
 // Helper to get display and full tooltip text
-function getDisplayAndFull(
+function getDisplayAndFull<Ns extends Namespace>(
   assignment: AssignmentInterface,
   authors: IDBAuthor[],
   entries: [string, Status][],
   statusData: StatusOverviewItem | null,
-  t: TFunction<string>
+  t: TFunction<Ns>
 ) {
   // Prefer byline from deliverable document
   const byline = (assignment?._deliverableDocument?.links ?? [])

@@ -5,6 +5,7 @@ import { cn } from '@ttab/elephant-ui/utils'
 import { CommandItem } from '@ttab/elephant-ui'
 import type { SetStateAction, Dispatch, JSX } from 'react'
 import { useTranslation } from 'react-i18next'
+import type { TranslationKey } from '@/types/i18next.d'
 import type { DefaultValueOption } from '@/types/index'
 
 interface FacetedFilterProps<TData, TValue> {
@@ -28,12 +29,12 @@ export const FacetedFilter = <TData, TValue>({
     switch (column?.id) {
       case 'documentStatus':
       case 'deliverableStatus':
-        return t(`core:status.${option.value}`)
+        return t(`core:status.${option.value}` as TranslationKey)
       case 'type':
       case 'assignmentType':
-        return t(`shared:assignmentTypes.${option.value}`)
+        return t(`shared:assignmentTypes.${option.value}` as TranslationKey)
       case 'assignment_time':
-        return t(`core:timeSlots.${option.value}`)
+        return t(`core:timeSlots.${option.value}` as TranslationKey)
       default:
         return option.label
     }

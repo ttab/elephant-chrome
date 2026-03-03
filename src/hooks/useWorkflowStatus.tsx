@@ -12,7 +12,7 @@ import { WorkflowSpecifications } from '@/defaults/workflowSpecification'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import { useTranslation } from 'react-i18next'
-import type { TFunction } from 'i18next'
+import type { TFunction, Namespace } from 'i18next'
 
 export const useWorkflowStatus = ({ ydoc, documentId: docId }: {
   ydoc?: YDocument<Y.Map<unknown>>
@@ -133,7 +133,7 @@ export const useWorkflowStatus = ({ ydoc, documentId: docId }: {
   return [documentStatus, setDocumentStatus, mutate]
 }
 
-async function setWireStatus(newStatus: Status, repository: Repository, session: Session, t: TFunction<string>) {
+async function setWireStatus<Ns extends Namespace>(newStatus: Status, repository: Repository, session: Session, t: TFunction<Ns>) {
   try {
     if (!repository || !session.accessToken) {
       throw new Error('Repository or session access token is not available')

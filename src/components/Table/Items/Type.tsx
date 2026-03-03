@@ -5,6 +5,7 @@ import { Button, Tooltip } from '@ttab/elephant-ui'
 import { useCallback, useMemo, type JSX } from 'react'
 import { cn } from '@ttab/elephant-ui/utils'
 import { useTranslation } from 'react-i18next'
+import type { TranslationKey } from '@/types/i18next.d'
 
 export const Type = ({ data, deliverableId, className }: {
   data: DefaultValueOption[]
@@ -33,7 +34,7 @@ export const Type = ({ data, deliverableId, className }: {
             onClick={(event) => handleLink(event, item)}
             className={cn('p-0', deliverableId ? 'cursor-pointer' : 'cursor-not-allowed', className)}
           >
-            <Tooltip content={t?.(`assignmentTypes.${item.value}`)}>
+            <Tooltip content={t?.(`assignmentTypes.${item.value}` as TranslationKey)}>
               <item.icon size={18} strokeWidth={1.75} className='mr-2 text-muted-foreground' />
             </Tooltip>
           </Button>

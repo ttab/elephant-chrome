@@ -45,6 +45,7 @@ import { type YDocument, useYValue } from '@/modules/yjs/hooks'
 import { toast } from 'sonner'
 import { AssignmentStatus } from './AssignmentStatus'
 import { useTranslation } from 'react-i18next'
+import type { TranslationKey } from '@/types/i18next.d'
 
 export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDialog }: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -95,7 +96,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
   const documentId = articleId || flashId || editorialInfoId
   const isDocument = assignmentType === 'flash' || assignmentType === 'text' || assignmentType === 'editorial-info'
   const documentLabel = assignmentType
-    ? t(`shared:assignmentTypes.${assignmentType}`)
+    ? t(`shared:assignmentTypes.${assignmentType}` as TranslationKey)
     : t('common:misc.unknown')
 
   const openDocument = assignmentType === 'flash' ? openFlash : openArticle

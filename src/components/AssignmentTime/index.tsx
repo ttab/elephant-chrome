@@ -10,6 +10,7 @@ import { deriveExecutionDates, getTimeSlot, getMedianSlot, getMidnightISOString,
 import type * as Y from 'yjs'
 import type { JSX } from 'react'
 import { useTranslation } from 'react-i18next'
+import type { TranslationKey } from '@/types/i18next.d'
 
 export const AssignmentTime = ({ assignment, onChange }: {
   assignment: Y.Map<unknown>
@@ -53,7 +54,7 @@ export const AssignmentTime = ({ assignment, onChange }: {
       const ts = getTimeSlot(publishSlot, timeSlotTypes)
 
       if (ts && ts.value === option.value) {
-        selectedLabel = t(`core:timeSlots.${option.value}`)
+        selectedLabel = t(`core:timeSlots.${option.value}` as TranslationKey)
         return true
       }
     }

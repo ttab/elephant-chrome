@@ -5,6 +5,7 @@ import { CommandItem } from '@ttab/elephant-ui'
 import { CheckIcon } from '@ttab/elephant-ui/icons'
 import { cn } from '@ttab/elephant-ui/utils'
 import { useTranslation } from 'react-i18next'
+import type { TranslationKey } from '@/types/i18next.d'
 
 export const BaseSelected = ({ options, filterPage, facets }: {
   options: { label?: string, value: string }[]
@@ -21,9 +22,9 @@ export const BaseSelected = ({ options, filterPage, facets }: {
     const getTranslatedOptions = (filterType: string, option: { label?: string, value: string }) => {
       switch (filterType) {
         case 'aType':
-          return t(`assignmentTypes.${option.value}`)
+          return t(`assignmentTypes.${option.value}` as TranslationKey)
         case 'status':
-          return t(`core:status.${option.value}`)
+          return t(`core:status.${option.value}` as TranslationKey)
         default:
           return option.label
       }

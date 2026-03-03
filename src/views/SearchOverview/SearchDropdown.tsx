@@ -4,6 +4,7 @@ import { useQuery } from '@/hooks/useQuery'
 import { useTable } from '@/hooks/useTable'
 import type { SearchKeys } from '@/hooks/index/useDocuments/queries/views/search'
 import { useTranslation } from 'react-i18next'
+import type { TranslationKey } from '@/types/i18next.d'
 
 interface SearchTypeItem {
   value: SearchKeys
@@ -31,21 +32,21 @@ export const SearchDropdown = ({ searchType, setSearchType }: DropdownProps) => 
   const selectOptionsTranslated = useMemo(() => {
     return searchTypes.map((item) => ({
       value: item.value,
-      label: t(`search.labels.${item.value}`)
+      label: t(`search.labels.${item.value}` as TranslationKey)
     }))
   }, [t])
 
   const selectedOptions = useMemo(() => {
     return selected.map((item) => ({
       value: item.value,
-      label: t(`search.labels.${item.value}`)
+      label: t(`search.labels.${item.value}` as TranslationKey)
     }))
   }, [selected, t])
 
   return (
     <ComboBox
       selectedOptions={selectedOptions}
-      placeholder={t(`search.labels.${searchType}`)}
+      placeholder={t(`search.labels.${searchType}` as TranslationKey)}
       max={1}
       options={selectOptionsTranslated}
       onSelect={(e: DefaultValueOption) => {

@@ -6,7 +6,7 @@ import type { Message } from '@ttab/elephant-api/user'
 import type { User } from '@/shared/User'
 import { AbortError } from '@/shared/types/errors'
 import { useTranslation } from 'react-i18next'
-import type { TFunction } from 'i18next'
+import type { TFunction, Namespace } from 'i18next'
 
 export const UserMessagesReceiver = ({ children }: React.PropsWithChildren) => {
   const { user } = useRegistry()
@@ -68,7 +68,7 @@ export const UserMessagesReceiver = ({ children }: React.PropsWithChildren) => {
   )
 }
 
-async function execPolling(accessToken: string, user: User, lastId: number, abortController: AbortController, t: TFunction): Promise<number> {
+async function execPolling<Ns extends Namespace>(accessToken: string, user: User, lastId: number, abortController: AbortController, t: TFunction<Ns>): Promise<number> {
   try {
     const res = await user.pollMessages(lastId, accessToken, abortController.signal)
 
@@ -86,7 +86,7 @@ async function execPolling(accessToken: string, user: User, lastId: number, abor
   }
 }
 
-const displayMessageToast = (message: Message, t: TFunction) => {
+const displayMessageToast = <Ns extends Namespace>(message: Message, t: TFunction<Ns>) => {
   const msg = { ...message, id: Number(message.id) }
 
   const desc = [

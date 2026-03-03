@@ -3,6 +3,7 @@ import type { JSX } from 'react'
 import { timeSlotTypes as slotTypes } from '../../defaults/assignmentTimeConstants'
 import type { AssignmentValueOption } from './types'
 import type { TFunction } from 'i18next'
+import type { TranslationKey } from '@/types/i18next.d'
 
 export const TimeSlotItems = ({ handleOnSelect, handleParentOpenChange, assignmentType, t }: {
   handleOnSelect: ({ value, selectValue }: { value: string, selectValue: string }) => void
@@ -31,10 +32,10 @@ export const TimeSlotItems = ({ handleOnSelect, handleParentOpenChange, assignme
     }
 
     return (
-      <CommandItem key={slot.label} value={t(`core:timeSlots.${slot.value}`)} onSelect={onSelect}>
+      <CommandItem key={slot.label} value={t(`core:timeSlots.${slot.value}` as TranslationKey)} onSelect={onSelect}>
         <div className='flex flex-row space-x-2 items-center'>
           {slot?.icon && <slot.icon {...slot.iconProps} />}
-          <div>{t(`core:timeSlots.${slot.value}`)}</div>
+          <div>{t(`core:timeSlots.${slot.value}` as TranslationKey)}</div>
         </div>
       </CommandItem>
     )

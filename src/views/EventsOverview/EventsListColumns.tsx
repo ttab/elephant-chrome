@@ -26,14 +26,14 @@ import { type IDBOrganiser, type IDBSection } from 'src/datastore/types'
 import { FacetedFilter } from '@/components/Commands/FacetedFilter'
 import { Tooltip } from '@ttab/elephant-ui'
 import type { LocaleData } from '@/types/index'
-import type { TFunction } from 'i18next'
+import type { TFunction, Namespace } from 'i18next'
 import i18next from 'i18next'
 
-export function eventTableColumns({ sections = [], organisers = [], locale}: {
+export function eventTableColumns<Ns extends Namespace>({ sections = [], organisers = [], locale}: {
   sections?: IDBSection[]
   organisers?: IDBOrganiser[]
   locale: LocaleData
-}, t: TFunction<string>): Array<ColumnDef<Event>> {
+}, t: TFunction<Ns>): Array<ColumnDef<Event>> {
   return [
     {
       id: 'startTime',

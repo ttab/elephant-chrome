@@ -4,14 +4,14 @@ import type { Session } from 'next-auth'
 import { toast } from 'sonner'
 import { productCodes } from './productCodes'
 import type { MediaTypes } from '..'
-import type { TFunction } from 'i18next'
+import type { TFunction, Namespace } from 'i18next'
 
 function apiClient(token: string, host: URL): Api {
   const client = new Api({ host: host.origin, token, timeout: 6000 })
   return client
 }
 
-export const createFetcher = (url: URL, session: Session | null, mediaType: MediaTypes, t: TFunction<string>) =>
+export const createFetcher = <Ns extends Namespace>(url: URL, session: Session | null, mediaType: MediaTypes, t: TFunction<Ns>) =>
   async ([queryString, index, SIZE]: [queryString: string, index: number, SIZE: number]): Promise<{
     hits: ttninjs[]
     total: number

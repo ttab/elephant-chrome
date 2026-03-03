@@ -1,4 +1,5 @@
 import i18n from 'i18next'
+import type { TranslationKey } from '@/types/i18next.d'
 import {
   CircleCheckIcon,
   CircleDotIcon,
@@ -36,7 +37,7 @@ export interface StatusSpecification {
 }
 
 const baseDeliverable = (type: 'article' | 'flash'): WorkflowSpecification => {
-  const typeLabel = i18n.t(`workflows:base.${type}`)
+  const typeLabel = i18n.t(`workflows:base.${type}` as TranslationKey)
 
   return {
     draft: {

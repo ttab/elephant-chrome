@@ -10,6 +10,7 @@ import type { YDocument } from '@/modules/yjs/hooks'
 import { useYValue } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import { useTranslation } from 'react-i18next'
+import type { TranslationKey } from '@/types/i18next.d'
 
 const Note = ({ ydoc, noteIndex, handleRemove }: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -52,7 +53,7 @@ const Note = ({ ydoc, noteIndex, handleRemove }: {
             key={role}
             ydoc={ydoc}
             value={value}
-            placeholder={t(`editor:addRoleInfo.${role === 'public' ? 'editorial' : 'internal'}`)}
+            placeholder={t(`editor:addRoleInfo.${role === 'public' ? 'editorial' : 'internal'}` as TranslationKey)}
             className='font-thin text-sm whitespace-pre-wrap break-words'
             singleLine={true}
           />

@@ -3,6 +3,7 @@ import { StatusSpecifications } from '@/defaults/workflowSpecification'
 import type { JSX } from 'react'
 import { selectableStatuses } from '@/views/Planning/components/AssignmentStatus'
 import { useTranslation } from 'react-i18next'
+import type { TranslationKey } from '@/types/i18next.d'
 
 export const DocumentStatus = ({ type, status }: {
   type: string
@@ -12,8 +13,8 @@ export const DocumentStatus = ({ type, status }: {
   const { t } = useTranslation()
 
   const label = isVisualAssignmentType(type)
-    ? t(`core:status.${visualStatus?.value}`) || null
-    : status ? t(`core:status.${status}`) : ''
+    ? t(`core:status.${visualStatus?.value}` as TranslationKey) || null
+    : status ? t(`core:status.${status}` as TranslationKey) : ''
 
   const docStatus = isVisualAssignmentType(type)
     ? { ...visualStatus, ...visualStatus?.iconProps }

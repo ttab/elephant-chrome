@@ -6,12 +6,12 @@ import { toast } from 'sonner'
 import type { LocaleData } from '@/types/index'
 import { dateInTimestampOrShortMonthDayYear } from '../../../shared/datetime'
 import { UTCDate } from '@date-fns/utc'
-import type { TFunction } from 'i18next'
+import type { TFunction, Namespace } from 'i18next'
 
-export const fetch = async (
+export const fetch = async <Ns extends Namespace>(
   query: string,
   session: Session | null,
-  t: TFunction<string>,
+  t: TFunction<Ns>,
   index?: Index,
   locale?: LocaleData,
   timeZone?: string,

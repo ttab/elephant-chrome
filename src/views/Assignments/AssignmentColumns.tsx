@@ -32,15 +32,16 @@ import { PenIcon, CalendarDaysIcon } from '@ttab/elephant-ui/icons'
 import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
 import { DocumentStatuses } from '@/defaults/documentStatuses'
 import { selectableStatuses } from '../Planning/components/AssignmentStatus'
-import type { TFunction } from 'i18next'
+import type { TFunction, Namespace } from 'i18next'
+import type { TranslationKey } from '@/types/i18next.d'
 
-export function assignmentColumns({ authors = [], locale, timeZone, sections = [], currentDate, t }: {
+export function assignmentColumns<Ns extends Namespace>({ authors = [], locale, timeZone, sections = [], currentDate, t }: {
   authors?: IDBAuthor[]
   sections?: IDBSection[]
   locale: LocaleData
   timeZone: string
   currentDate: Date
-  t: TFunction<string>
+  t: TFunction<Ns>
 }): Array<ColumnDef<Assignment>> {
   return [
     {
@@ -262,7 +263,7 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
           const slotFormatted = Object.entries(timesSlots).find((slot) => slot[1].slots.includes(parseInt(startTime, 10)))?.[1]?.label
           return (
             <div className='items-center'>
-              {slotFormatted && t(`core:timeSlots.${slotFormatted}`)}
+              {slotFormatted && t(`core:timeSlots.${slotFormatted}` as TranslationKey)}
             </div>
           )
         }
@@ -286,7 +287,7 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
         display: (value: string | string[]) => {
           const items = AssignmentTypes
             .filter((type) => value.includes(type.value))
-            .map((item) => t(`shared:assignmentTypes.${item.value}`))
+            .map((item) => t(`shared:assignmentTypes.${item.value}` as TranslationKey))
           return (
             <div className='flex flex-row gap-2'>
               <span>

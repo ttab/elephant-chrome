@@ -4,7 +4,7 @@ import { dateToReadableDateTime } from '@/shared/datetime'
 import type { LocaleData } from '@/types/index'
 import type { ColumnDef, Row } from '@tanstack/react-table'
 import { BoxesIcon } from '@ttab/elephant-ui/icons'
-import type { TFunction } from 'i18next'
+import type { TFunction, Namespace } from 'i18next'
 
 interface FactboxData {
   title: string
@@ -14,7 +14,7 @@ interface FactboxData {
   version: string
 }
 
-export function factboxColumns({ locale, timeZone, t }: { locale: LocaleData, timeZone: string, t: TFunction }): Array<ColumnDef<Factbox>> {
+export function factboxColumns<Ns extends Namespace>({ locale, timeZone, t }: { locale: LocaleData, timeZone: string, t: TFunction<Ns> }): Array<ColumnDef<Factbox>> {
   const handleDragStart = (event: React.DragEvent<HTMLDivElement>, row: Row<Factbox>) => {
     const factboxData: FactboxData = {
       title: row.getValue<string>('title'),

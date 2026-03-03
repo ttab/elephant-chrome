@@ -21,12 +21,13 @@ import { SectionBadge } from '@/components/DataItem/SectionBadge'
 import { type IDBAuthor, type IDBSection } from 'src/datastore/types'
 import { FacetedFilter } from '@/components/Commands/FacetedFilter'
 import { getNestedFacetedUniqueValues } from '@/components/Table/lib/getNestedFacetedUniqueValues'
-import type { TFunction } from 'i18next'
+import type { TFunction, Namespace } from 'i18next'
+import type { TranslationKey } from '@/types/i18next.d'
 
-export function planningListColumns({ sections = [], authors = [] }: {
+export function planningListColumns<Ns extends Namespace>({ sections = [], authors = [] }: {
   sections?: IDBSection[]
   authors?: IDBAuthor[]
-}, t: TFunction<string>): Array<ColumnDef<Planning>> {
+}, t: TFunction<Ns>): Array<ColumnDef<Planning>> {
   return [
     {
       id: 'documentStatus',
@@ -39,7 +40,7 @@ export function planningListColumns({ sections = [], authors = [] }: {
         columnIcon: CircleCheckIcon,
         className: 'flex-none',
         display: (value: string) => {
-          const statusLabel = t?.(`core:status.${value}`)
+          const statusLabel = t?.(`core:status.${value}` as TranslationKey)
           return (
             <span>
               {statusLabel}
@@ -187,7 +188,7 @@ export function planningListColumns({ sections = [], authors = [] }: {
         display: (value: string | string[]) => {
           const items = AssignmentTypes
             .filter((type) => value.includes(type.value))
-            .map((item) => t(`shared:assignmentTypes.${item.value}`))
+            .map((item) => t(`shared:assignmentTypes.${item.value}` as TranslationKey))
           return (
             <div className='flex flex-row gap-2'>
               <span>

@@ -9,6 +9,7 @@ import { useYValue } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import type { JSX } from 'react'
 import { useTranslation } from 'react-i18next'
+import type { TranslationKey } from '@/types/i18next.d'
 
 export const AssignmentType = ({ assignment, editable = false, readOnly = false, className, onChange }: {
   assignment?: Y.Map<unknown>
@@ -46,7 +47,7 @@ export const AssignmentType = ({ assignment, editable = false, readOnly = false,
                 className={cn(defaultClassName, className, editable ? 'text-foreground' : 'text-primary')}
               />
             )
-          : t(`assignmentTypes.${selectedOptions[0]?.value}`)}
+          : t(`assignmentTypes.${selectedOptions[0]?.value}` as TranslationKey)}
       </Button>
     )
   }
@@ -95,14 +96,14 @@ export const AssignmentType = ({ assignment, editable = false, readOnly = false,
                 className={cn(defaultClassName, className, editable ? 'text-foreground' : 'text-primary')}
               />
             )
-          : t(`assignmentTypes.${selectedOptions[0]?.value}`)}
+          : t(`assignmentTypes.${selectedOptions[0]?.value}` as TranslationKey)}
       </SelectTrigger>
       <SelectContent>
         {AssignmentTypes.map((option) => (
           <SelectItem value={option.value} key={option.value}>
             <div className='flex flex-row gap-2'>
               {option.icon && <option.icon {...option.iconProps} />}
-              {t(`assignmentTypes.${option.value}`)}
+              {t(`assignmentTypes.${option.value}` as TranslationKey)}
             </div>
           </SelectItem>
         ))}

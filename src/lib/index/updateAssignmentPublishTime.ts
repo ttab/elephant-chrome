@@ -1,10 +1,10 @@
-import type { TFunction } from 'i18next'
+import type { TFunction, Namespace } from 'i18next'
 import { toast } from 'sonner'
 
 const BASE_URL = import.meta.env.BASE_URL || ''
 
-export async function updateAssignmentTime(
-  deliverableId: string, planningId: string, newStatus: string, newTime: Date, t: TFunction
+export async function updateAssignmentTime<Ns extends Namespace>(
+  deliverableId: string, planningId: string, newStatus: string, newTime: Date, t: TFunction<Ns>
 ) {
   try {
     const response = await fetch(`${BASE_URL}/api/documents/${planningId}`, {

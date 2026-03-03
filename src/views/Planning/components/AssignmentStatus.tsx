@@ -8,6 +8,7 @@ import type { DefaultValueOption } from '@/types/index'
 import { snapshotDocument } from '@/lib/snapshotDocument'
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
+import type { TranslationKey } from '@/types/i18next.d'
 
 export const AssignmentStatus = (props: {
   ydoc?: YDocument<Y.Map<unknown>>
@@ -35,7 +36,7 @@ const TextAssignment = ({ workflowState }: {
   const IconComponent = StatusIcon?.icon
 
   return (
-    <div className='flex h-8 w-12 items-center justify-start' title={StatusIcon?.value ? t(`core:status.${StatusIcon?.value}`) : StatusIcon?.value}>
+    <div className='flex h-8 w-12 items-center justify-start' title={StatusIcon?.value ? t(`core:status.${StatusIcon?.value}` as TranslationKey) : StatusIcon?.value}>
       {IconComponent ? <IconComponent {...StatusIcon.iconProps} /> : null}
     </div>
   )
@@ -63,7 +64,7 @@ const VisualAssignment = ({ ydoc, path }: {
     ?? selectableStatuses[0]
 
   return (
-    <div className='w-12' title={t(`core:status.${currentStatus.value}`)}>
+    <div className='w-12' title={t(`core:status.${currentStatus.value}` as TranslationKey)}>
       <Select
         name='AssignmentStatus'
         onValueChange={onValueChange}
@@ -84,13 +85,13 @@ const VisualAssignment = ({ ydoc, path }: {
               key={value}
               value={value}
               className='flex justify-start'
-              aria-label={t(`core:status.${value}`)}
+              aria-label={t(`core:status.${value}` as TranslationKey)}
               onPointerDownCapture={stopRowClick}
               onClick={stopRowClick}
             >
               <span className='flex flex-row items-center justify-start gap-2'>
                 {IconComponent && <IconComponent {...iconProps} />}
-                <span>{t(`core:status.${value}`)}</span>
+                <span>{t(`core:status.${value}` as TranslationKey)}</span>
               </span>
             </SelectItem>
           ))}
