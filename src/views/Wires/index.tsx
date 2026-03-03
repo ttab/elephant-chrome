@@ -1,7 +1,7 @@
 import { View, ViewHeader } from '@/components/View'
 import { type ViewMetadata } from '@/types/index'
 import { useCallback, useRef, useState, useMemo, type JSX, useEffect } from 'react'
-import { useRegistry, useView, useNavigationKeysView, useQuery } from '@/hooks'
+import { useRegistry, useView, useNavigationKeysWithRef, useQuery } from '@/hooks'
 import { useDocuments } from '@/hooks/index/useDocuments'
 import { QueryV1, BoolQueryV1, TermsQueryV1 } from '@ttab/elephant-api/index'
 import { fields as wireFields, type WireFields } from '@/shared/schemas/wire'
@@ -373,7 +373,7 @@ export const Wires = (): JSX.Element => {
     }
   }, [selectedWires, previewWire, onAction, onCreate])
 
-  const viewRef = useNavigationKeysView({
+  const viewRef = useNavigationKeysWithRef({
     keys: ['Escape', 's', 'r', 'u', 'c'],
     onNavigation: handleNavigation
   })
