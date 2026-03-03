@@ -8,6 +8,7 @@ import { fields as wireFields, type WireFields } from '@/shared/schemas/wire'
 import { cn } from '@ttab/elephant-ui/utils'
 import { Stream } from './components/Stream'
 import { useStreamNavigation } from './hooks/useStreamNavigation'
+import { useSavedFocus } from './hooks/useSavedFocus'
 import type { Wire } from '@/shared/schemas/wire'
 import { Preview } from './components/Preview'
 import { WiresToolbar } from './components/WiresToolbar'
@@ -69,6 +70,7 @@ export const Wires = (): JSX.Element => {
   const [previewReloadCount, setPreviewReloadCount] = useState(0)
   const [focusedWire, setFocusedWire] = useState<Wire | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+  const { saveFocus, restoreFocus } = useSavedFocus()
   const [isDirty, setIsDirty] = useState<null | boolean>(null)
   const settingsAppliedRef = useRef(false)
 
@@ -284,9 +286,7 @@ export const Wires = (): JSX.Element => {
       : focusedWire ? [focusedWire] : []
     const nextStatuses = calculateWireStatuses(wires, newStatus)
 
-    // Store currently focused element
-    const activeElement = document.activeElement as HTMLElement
-    const focusedItemId = activeElement?.getAttribute('data-item-id')
+    saveFocus()
 
     // Clear selected statuses and start mutations
     setStatusMutations(nextStatuses)
@@ -303,20 +303,14 @@ export const Wires = (): JSX.Element => {
           setPreviewReloadCount((n) => n + 1)
         }
 
-        // Restore focus if we had a focused item
-        if (focusedItemId) {
-          requestAnimationFrame(() => {
-            const elementToFocus = document.querySelector(`[data-item-id="${focusedItemId}"]`) as HTMLElement
-            elementToFocus?.focus()
-          })
-        }
+        restoreFocus()
       }, 100)
 
       if (result.find((r) => !r.statusSet)) {
         toast.error('Någon eller några status-ändringar misslyckades!')
       }
     })
-  }, [selectedWires, focusedWire, repository, session, previewWire])
+  }, [selectedWires, focusedWire, repository, session, previewWire, saveFocus, restoreFocus])
 
   // Create a new article based on selected wires
   const onCreate = useCallback(() => {
@@ -326,16 +320,19 @@ export const Wires = (): JSX.Element => {
       ? [...selectedWires]
       : focusedWire ? [focusedWire] : []
 
-    // FIXME: This will make focus lost
+    saveFocus()
     showModal(
       <WireCreation
-        onDialogClose={hideModal}
+        onDialogClose={() => {
+          hideModal()
+          restoreFocus()
+        }}
         asDialog
         wires={wires}
         onDocumentCreated={() => onAction('used')}
       />
     )
-  }, [selectedWires, focusedWire, repository, session, showModal, hideModal, onAction])
+  }, [selectedWires, focusedWire, repository, session, showModal, hideModal, onAction, saveFocus, restoreFocus])
 
   const handleNavigation = useCallback((event: KeyboardEvent) => {
     if (
