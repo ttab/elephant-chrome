@@ -102,7 +102,7 @@ export const DocumentHistory = ({ uuid, currentVersion, wireState, onSelectVersi
       if (pending.history) c1.abort()
       if (pending.documents) c2.abort()
     }
-  }, [uuid, repository, session])
+  }, [uuid, repository, session?.accessToken])
 
   const isCollapsible = (history?.length ?? 0) > COLLAPSE_THRESHOLD
   const visibleHistory = history && isCollapsible && !showAll
