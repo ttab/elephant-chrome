@@ -1,14 +1,14 @@
 import { CommandList } from '@ttab/elephant-ui'
-import { TextFilter } from '@/components/Filter/common/TextFilter'
 import { ClearFilter } from '@/components/Filter/ClearFilter'
 import { useQuery } from '@/hooks/useQuery'
 import type { FilterProps } from '@/components/Filter'
 import { OptionsFilter } from '@/components/Filter/common/OptionsFilter'
 import { useSections } from '@/hooks/useSections'
-import { BinocularsIcon, ShapesIcon, SignalHighIcon, SquareCodeIcon } from '@ttab/elephant-ui/icons'
+import { ShapesIcon, SignalHighIcon, SquareCodeIcon } from '@ttab/elephant-ui/icons'
 import { useWireSources } from '@/hooks/useWireSources'
 import { Newsvalues } from '@/defaults/newsvalues'
 import type { JSX } from 'react'
+import { FreeTextFilter } from '@/components/Filter/common/FreeTextFilter'
 
 export const Commands = (props: FilterProps): JSX.Element => {
   if (props.page === undefined || props.pages === undefined || props.setPages === undefined || props.setSearch === undefined) {
@@ -36,12 +36,7 @@ export const Commands = (props: FilterProps): JSX.Element => {
 
   return (
     <CommandList>
-      <TextFilter
-        {...props}
-        label='Fritext'
-        filterPage='query'
-        Icon={BinocularsIcon}
-      />
+      <FreeTextFilter />
       <OptionsFilter
         {...props}
         options={optionsSections}
