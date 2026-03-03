@@ -47,6 +47,7 @@ export const DateChanger = ({ type }: { type: View }): JSX.Element | null => {
         to={linkTarget}
         props={getLinkProps(subDays)}
         target='self'
+        className='hidden @md/view:flex'
       >
         <ChevronLeftIcon
           strokeWidth={1.75}
@@ -60,6 +61,7 @@ export const DateChanger = ({ type }: { type: View }): JSX.Element | null => {
         to={linkTarget}
         props={getLinkProps(addDays)}
         target='self'
+        className='hidden @md/view:flex'
       >
         <ChevronRightIcon
           strokeWidth={1.75}
