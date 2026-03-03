@@ -5,6 +5,7 @@ import { Index } from '@/shared/Index'
 import type { Repository } from '@/shared/Repository'
 import { toast } from 'sonner'
 import type { Session } from 'next-auth'
+import { generateAuthorUUID } from '@/shared/userUri'
 
 vi.mock('@/shared/Index')
 vi.mock('@/shared/Repository')
@@ -83,9 +84,18 @@ describe('initializeAuthor', () => {
       repository: mockRepository
     })
 
+    const expectedUuid = generateAuthorUUID('core://user/5558')
+
     expect(result).toBe(true)
     // eslint-disable-next-line @typescript-eslint/unbound-method
-    expect(mockRepository.saveDocument).toHaveBeenCalled()
+    expect(mockRepository.saveDocument).toHaveBeenCalledWith(
+      expect.objectContaining({
+        uuid: expectedUuid,
+        uri: `core://author/${expectedUuid}`
+      }),
+      mockSession.accessToken,
+      expect.any(String)
+    )
     expect(toast.success).toHaveBeenCalledWith('Författardokument är skapat')
   })
 
@@ -196,6 +206,49 @@ describe('initializeAuthor', () => {
       mockSession.accessToken,
       expect.any(String)
     )
+  })
+
+  it('should remove old tt/keycloak same-as link when updating', async () => {
+    const mockDocument = {
+      links: [
+        {
+          rel: 'same-as',
+          type: 'tt/keycloak',
+          uri: 'core://user/sub/5558',
+          role: 'prod'
+        },
+        {
+          rel: 'source',
+          type: 'core/content-source',
+          uri: 'tt://content-source/tt',
+          title: 'TT'
+        }
+      ]
+    }
+    setupMocks(
+      { ok: true, hits: [{ document: mockDocument }] },
+      { status: { code: 'OK' } }
+    )
+
+    await initializeAuthor({
+      url: mockUrl,
+      session: mockSession,
+      repository: mockRepository
+    })
+
+    const savedDoc = (mockRepository.saveDocument as Mock)
+      .mock.calls[0][0] as { links: Array<Record<string, string>> }
+    const keycloakLinks = savedDoc.links.filter(
+      (l) => l.rel === 'same-as' && l.type === 'tt/keycloak'
+    )
+
+    expect(keycloakLinks).toHaveLength(1)
+    expect(keycloakLinks[0].uri).toBe('core://user/5558')
+
+    // Non-keycloak links should be preserved
+    expect(savedDoc.links.some(
+      (l) => l.type === 'core/content-source'
+    )).toBe(true)
   })
 
   it('should throw an error if saving the document fails', async () => {

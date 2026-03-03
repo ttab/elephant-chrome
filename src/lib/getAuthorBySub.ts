@@ -2,9 +2,10 @@ import type { IDBAuthor } from 'src/datastore/types'
 import { extractUserIdFromUri } from '@/shared/userUri'
 
 /**
- * Retrieve an author from IndexedDb by sub.
+ * Find an author whose sub matches the given user sub,
+ * comparing by extracted user ID to handle both URI formats.
  * @param authorList - Array of authors to search.
- * @param sub - Optional user sub string.
+ * @param sub - Optional user sub URI string.
  * @returns The matching author or undefined.
  */
 export function getAuthorBySub(

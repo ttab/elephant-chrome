@@ -6,14 +6,17 @@ import { v5 as uuidv5 } from 'uuid'
  */
 const AUTHOR_NAMESPACE = '1c021a3f-3e2c-4bbc-a7f2-23e246b091ab'
 
+const USER_URI_PREFIX = 'core://user/'
+
 /**
  * Extract the user ID from a core://user URI.
  * Handles both core://user/{id} and core://user/sub/{id}.
+ * Returns undefined for URIs that don't start with core://user/.
  */
 export function extractUserIdFromUri(
   uri: string
 ): string | undefined {
-  if (!uri) return undefined
+  if (!uri || !uri.startsWith(USER_URI_PREFIX)) return undefined
 
   const lastSlash = uri.lastIndexOf('/')
   if (lastSlash === -1 || lastSlash === uri.length - 1) {
@@ -25,6 +28,7 @@ export function extractUserIdFromUri(
 
 /**
  * Normalize any user URI format to core://user/{id}.
+ * Returns the original string unchanged if no ID can be extracted.
  */
 export function normalizeUserUri(uri: string): string {
   const id = extractUserIdFromUri(uri)

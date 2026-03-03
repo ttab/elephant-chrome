@@ -38,6 +38,13 @@ describe('extractUserIdFromUri', () => {
   it('returns undefined for trailing slash', () => {
     expect(extractUserIdFromUri('core://user/')).toBeUndefined()
   })
+
+  it('returns undefined for non-user URIs', () => {
+    expect(extractUserIdFromUri('https://example.com/foo'))
+      .toBeUndefined()
+    expect(extractUserIdFromUri('core://author/abc'))
+      .toBeUndefined()
+  })
 })
 
 describe('normalizeUserUri', () => {
@@ -62,6 +69,11 @@ describe('normalizeUserUri', () => {
 
   it('returns original string when no ID can be extracted', () => {
     expect(normalizeUserUri('core://user/')).toBe('core://user/')
+  })
+
+  it('is idempotent', () => {
+    const once = normalizeUserUri('core://user/sub/5558')
+    expect(normalizeUserUri(once)).toBe(once)
   })
 })
 

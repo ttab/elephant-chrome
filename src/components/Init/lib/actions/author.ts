@@ -36,6 +36,8 @@ export async function initializeAuthor({ url, session, repository }: {
     const client = new Index(url.href)
     const envRole = url.href.includes('.stage.') ? 'stage' : 'prod'
 
+    const userId = extractUserIdFromUri(session.user.sub)
+
     const authorDoc = await client.query<Author, AuthorFields>({
       accessToken: session.accessToken,
       documentType: 'core/author',
@@ -55,17 +57,17 @@ export async function initializeAuthor({ url, session, repository }: {
                   })
                 }
               },
-              {
-                conditions: {
-                  oneofKind: 'term',
-                  term: TermQueryV1.create({
-                    field: 'document.rel.same_as.uri',
-                    value: `core://user/sub/${
-                      extractUserIdFromUri(session.user.sub)
-                    }`
-                  })
-                }
-              },
+              ...(userId
+                ? [{
+                    conditions: {
+                      oneofKind: 'term' as const,
+                      term: TermQueryV1.create({
+                        field: 'document.rel.same_as.uri',
+                        value: `core://user/sub/${userId}`
+                      })
+                    }
+                  }]
+                : []),
               {
                 conditions: {
                   oneofKind: 'term',
@@ -111,12 +113,15 @@ export async function initializeAuthor({ url, session, repository }: {
 }
 
 /**
- * Verifies the author document by checking if it matches the user's environment role.
+ * Verifies that the author document is up-to-date with the current session.
+ * Checks environment role, URI format (rejecting legacy /sub/ format),
+ * and whether the stored user URI matches the current session sub.
  *
  * @param document - The search result containing potential author documents.
  * @param envRole - The environment role, either 'stage' or 'prod'.
  * @param session - The session containing user information.
- * @returns True if a matching author document is found, false if none match, or undefined if no documents exist.
+ * @returns True if the document is valid and current, false if it exists
+ *   but needs updating, or undefined if no document was found.
  * @throws If more than one author document is found.
  */
 function verifyAuthorDoc(document: IndexSearchResult<Author>, envRole: 'stage' | 'prod', session: Session): boolean | undefined {
@@ -137,13 +142,16 @@ function verifyAuthorDoc(document: IndexSearchResult<Author>, envRole: 'stage' |
         && link.type === 'tt/keycloak'
         && link.role === envRole)
 
-    // Self-heal: trigger update if same-as link uses old format
-    if (keycloakLink?.uri.includes('/sub/')) return false
+    if (!keycloakLink) return false
 
-    // Self-heal: trigger update if user sub changed
-    // (e.g. consultant UUID → employee digit prefix)
+    // Self-heal: reject legacy core://user/sub/{id} format so the
+    // caller will re-save with the canonical core://user/{id} format
+    if (keycloakLink.uri.includes('/sub/')) return false
+
+    // Self-heal: re-save if the stored URI no longer matches the
+    // current session (user ID may change across identity migrations)
     const currentUri = normalizeUserUri(session.user.sub)
-    if (keycloakLink?.uri !== currentUri) return false
+    if (keycloakLink.uri !== currentUri) return false
 
     return true
   }
