@@ -266,6 +266,11 @@ export const Wires = (): JSX.Element => {
     }
   }, [])
 
+  const handleRemoveStream = useCallback((streamId: string, wireIds: string[]) => {
+    removeStream(streamId)
+    setSelectedWires((prev) => prev.filter((w) => !wireIds.includes(w.id)))
+  }, [removeStream])
+
   // Add or remove a wire from selectedWires
   const handleToggleWire = useCallback((wire: Wire, isSelected: boolean) => {
     setSelectedWires((prev) => {
@@ -417,7 +422,7 @@ export const Wires = (): JSX.Element => {
                   selectedWires={selectedWires}
                   statusMutations={statusMutations}
                   onToggleWire={handleToggleWire}
-                  onRemove={removeStream}
+                  onRemove={handleRemoveStream}
                   onFilterChange={setFilter}
                   onClearFilter={clearFilter}
                 />
