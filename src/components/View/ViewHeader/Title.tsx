@@ -59,6 +59,16 @@ export const Title = ({
     }
   })
 
+  const titleVariants = cva('font-bold cursor-default whitespace-nowrap opacity-90 dark:bg-secondary', {
+    variants: {
+      asDialog: {
+        true: '',
+        false: 'hidden @md/view:block'
+      }
+    }
+  })
+
+  console.log('asDialog', asDialog)
   const [, setQuery] = useQuery()
 
   const handleEdit = () => {
@@ -98,7 +108,7 @@ export const Title = ({
       )}
 
       {!!displayTitle && (
-        <h2 role='header-title' className='hidden @md/view:block font-bold cursor-default whitespace-nowrap opacity-90 dark:bg-secondary'>
+        <h2 role='header-title' className={titleVariants({ asDialog: asDialog ?? false })}>
           {typeof shortTitle !== 'string'
             ? <>{displayTitle}</>
             : (
