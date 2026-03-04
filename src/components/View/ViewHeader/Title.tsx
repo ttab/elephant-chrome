@@ -1,7 +1,7 @@
 import { WifiOffIcon, type LucideIcon } from '@ttab/elephant-ui/icons'
 import { cva } from 'class-variance-authority'
 import { useEffect, useRef, useState, type PropsWithChildren, type JSX } from 'react'
-import { applicationMenu } from '@/defaults/applicationMenuItems'
+import { getApplicationMenu } from '@/defaults/applicationMenuItems'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import { useQuery } from '@/hooks/useQuery'
@@ -70,7 +70,7 @@ export const Title = ({
     setQuery({ preview: undefined })
   }
 
-  const { icon: ViewIcon, color } = applicationMenu.groups
+  const { icon: ViewIcon, color } = getApplicationMenu().groups
     .flatMap((g) => g.items)
     .find((i) => i.name === name) || {}
 

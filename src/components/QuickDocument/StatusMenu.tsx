@@ -11,7 +11,7 @@ import { useHistory, useNavigation, useWorkflowStatus } from '@/hooks/index'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import type { DocumentView } from './types'
-import { ViewMap } from './types' // Import the configuration map
+import { getViewMap } from './types' // Import the configuration map
 import { useTranslation } from 'react-i18next'
 
 interface StatusMenuHeaderProps {
@@ -21,7 +21,7 @@ interface StatusMenuHeaderProps {
 }
 
 export const StatusMenuLogic = ({ ydoc, propPlanningId, view }: StatusMenuHeaderProps) => {
-  const viewConfig = ViewMap[view] // Get view-specific configuration
+  const viewConfig = getViewMap()[view] // Get view-specific configuration
   const planningId = useDeliverablePlanningId(ydoc.id || '')
   const [publishTime] = useState<string | null>(null)
   const { viewId } = useView()

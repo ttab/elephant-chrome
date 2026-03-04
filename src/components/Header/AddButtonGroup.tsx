@@ -15,11 +15,11 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator
 } from '@ttab/elephant-ui'
-import { documentTypeValueFormat } from '@/defaults/documentTypeFormats'
+import { getDocumentTypeValueFormat } from '@/defaults/documentTypeFormats'
 import type { buttonVariants } from '@ttab/elephant-ui'
 import type { VariantProps } from 'class-variance-authority'
 import type { QueryParams } from '@/hooks/useQuery'
-import { applicationMenu } from '@/defaults/applicationMenuItems'
+import { getApplicationMenu } from '@/defaults/applicationMenuItems'
 import type { LucideIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import type { TFunction } from 'i18next'
@@ -47,7 +47,7 @@ const AddButton = ({
   t: TFunction
 }) => {
   const ViewDialog = Views[view.name]
-  const typeLabel = (t?: string) => t ? documentTypeValueFormat[t].label : ''
+  const typeLabel = (t?: string) => t ? getDocumentTypeValueFormat()[t].label : ''
 
   return (
     <Button
@@ -81,7 +81,7 @@ export const AddButtonGroup = ({ docType = 'core/planning-item', query }: { type
   const { t } = useTranslation()
 
   const getIcon = (t: View): { icon: LucideIcon | undefined, color?: string } => {
-    const group = applicationMenu.groups.find((g) => g.items.find((itm) => itm.name.includes(t)))
+    const group = getApplicationMenu().groups.find((g) => g.items.find((itm) => itm.name.includes(t)))
     const icon = group?.items.find((item) => item.name.includes(t))
     return { icon: icon?.icon, color: icon?.color }
   }

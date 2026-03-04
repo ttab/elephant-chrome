@@ -8,7 +8,7 @@ import {
   Button,
   Switch
 } from '@ttab/elephant-ui'
-import { timePickTypes } from '../../defaults/assignmentTimeConstants'
+import { getTimePickTypes } from '../../defaults/assignmentTimeConstants'
 import { dateToReadableDateTime, createDateWithTime } from '@/shared/datetime'
 import { useRegistry } from '@/hooks'
 import { type AssignmentData } from './types'
@@ -160,7 +160,7 @@ export const ExecutionTimeMenu = ({ handleOnSelect, assignment, startDate }: Exe
     }
   }
 
-  const timePickType = hasEndTime ? timePickTypes[1] : timePickTypes[2]
+  const timePickType = hasEndTime ? getTimePickTypes()[1] : getTimePickTypes()[2]
 
   return (
     <Popover open={open} onOpenChange={handleOpenChange}>

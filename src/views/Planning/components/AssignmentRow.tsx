@@ -38,7 +38,7 @@ import { getDeliverableType } from '@/shared/templates/lib/getDeliverableType'
 import { isVisualAssignmentType } from '@/defaults/assignmentTypes'
 import { CreatePrintArticle } from '@/components/CreatePrintArticle'
 import { snapshotDocument } from '@/lib/snapshotDocument'
-import { timeSlotTypes } from '@/defaults/assignmentTimeConstants'
+import { getTimeSlotTypes } from '@/defaults/assignmentTimeConstants'
 import useSWR from 'swr'
 import { useRepositoryEvents } from '@/hooks/useRepositoryEvents'
 import { type YDocument, useYValue } from '@/modules/yjs/hooks'
@@ -125,7 +125,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
     }
 
     if (publishSlot) {
-      const slotName = timeSlotTypes.find((slot) => slot.slots?.includes(publishSlot))?.label
+      const slotName = getTimeSlotTypes().find((slot) => slot.slots?.includes(publishSlot))?.label
       return {
         time: [slotName],
         tooltip: t('planning:assignment.publishWindow'),

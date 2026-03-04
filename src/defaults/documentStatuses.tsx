@@ -8,7 +8,7 @@ import {
 } from '@ttab/elephant-ui/icons'
 import i18n from 'i18next'
 
-export const DocumentStatuses: DefaultValueOption[] = [
+export const getDocumentStatuses = (): DefaultValueOption[] => [
   {
     value: 'usable',
     label: i18n.t('core:status.usable'),
@@ -71,7 +71,7 @@ export const DocumentStatuses: DefaultValueOption[] = [
   }
 ] as const
 
-export const PlanningEventStatuses: DefaultValueOption[] = [
+export const getPlanningEventStatuses = (): DefaultValueOption[] => [
   {
     value: 'usable',
     label: i18n.t('core:status.usable'),
@@ -124,7 +124,7 @@ export const PlanningEventStatuses: DefaultValueOption[] = [
   }
 ] as const
 
-export const PrintArticleStatuses: DefaultValueOption[] = [
+export const getPrintArticleStatuses = (): DefaultValueOption[] => [
   {
     label: 'Exporterad',
     value: 'usable',

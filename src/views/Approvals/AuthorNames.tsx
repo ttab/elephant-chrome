@@ -6,7 +6,7 @@ import type { IDBAuthor } from 'src/datastore/types'
 import type { StatusMeta } from '@/types'
 import type { Status, StatusOverviewItem } from '@ttab/elephant-api/repository'
 import { getAuthorBySub } from '@/lib/getAuthorBySub'
-import { DocumentStatuses } from '@/defaults/documentStatuses'
+import { getDocumentStatuses } from '@/defaults/documentStatuses'
 import { useTranslation } from 'react-i18next'
 import type { TFunction, Namespace } from 'i18next'
 import type { TranslationKey } from '@/types/i18next.d'
@@ -50,7 +50,7 @@ export const AuthorNames = ({ assignment }: { assignment: AssignmentInterface })
   const enhancedDisplay = useMemo(() => {
     if (!lastStatusUpdateAuthor?.name || !lastUpdated || !statusData?.workflowState) return display
 
-    const lastStatus = DocumentStatuses.find(
+    const lastStatus = getDocumentStatuses().find(
       (status) => status.value === statusData.workflowState
     )
     const Icon = lastStatus?.icon ?? AwardIcon
@@ -73,7 +73,7 @@ export const AuthorNames = ({ assignment }: { assignment: AssignmentInterface })
   const enhancedFull = useMemo(() => {
     if (!lastStatusUpdateAuthor?.name || !lastUpdated || !statusData?.workflowState) return full
 
-    const lastStatus = DocumentStatuses.find(
+    const lastStatus = getDocumentStatuses().find(
       (status) => status.value === statusData.workflowState
     )
 

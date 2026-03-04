@@ -7,7 +7,7 @@ import {
   XIcon
 } from '@ttab/elephant-ui/icons'
 import { type DefaultValueOption } from '@/types/index'
-import { PrintArticleStatuses } from '@/defaults/documentStatuses'
+import { getPrintArticleStatuses } from '@/defaults/documentStatuses'
 import { useQuery } from '@/hooks/useQuery'
 import { useDocuments } from '@/hooks/index/useDocuments'
 import { type PrintFlow, type PrintFlowFields, fields } from '@/shared/schemas/printFlow'
@@ -72,7 +72,7 @@ const SelectedButton = ({ type, value }: { value: string | string[] | undefined,
       case 'workflowState': {
         return {
           Icon: CircleCheckIcon,
-          options: PrintArticleStatuses
+          options: getPrintArticleStatuses()
         }
       }
       case 'printFlow': {

@@ -26,7 +26,7 @@ import { Error as ErrorView } from '../Error'
 import { Notes } from '@/components/Notes'
 
 import { getValueByYPath } from '@/shared/yUtils'
-import { contentMenuLabels } from '@/defaults/contentMenuLabels'
+import { getContentMenuLabels } from '@/defaults/contentMenuLabels'
 import { ScrollArea } from '@ttab/elephant-ui'
 import { Layouts } from './components/Layouts'
 import { useSession } from 'next-auth/react'
@@ -109,7 +109,7 @@ function EditorWrapper(props: ViewProps & {
       PrintText(),
       Text({
         countCharacters: ['heading-1'],
-        ...contentMenuLabels
+        ...getContentMenuLabels()
       }),
       ImagePlugin({
         repository,
@@ -132,7 +132,7 @@ function EditorWrapper(props: ViewProps & {
         },
         removable: true,
         locale: activeLanguage,
-        ...contentMenuLabels
+        ...getContentMenuLabels()
       })
     ]
   }, [openFactboxEditor, data, repository, openFactboxes, openImageSearch, t, activeLanguage])

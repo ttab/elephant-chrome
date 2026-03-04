@@ -18,7 +18,7 @@ const iconProps = {
 }
 
 // FIXME: These constants should be merged with ./assignmentTimeslots.ts
-export const timeSlotTypes: AssignmentValueOption[] = [
+export const getTimeSlotTypes = (): AssignmentValueOption[] => [
   {
     label: i18n.t('core:timeSlots.fullday'),
     value: 'fullday',
@@ -60,7 +60,7 @@ export const timeSlotTypes: AssignmentValueOption[] = [
   }
 ]
 
-export const timePickTypes: AssignmentValueOption[] = [
+export const getTimePickTypes = (): AssignmentValueOption[] => [
   {
     label: i18n.t('common:misc.selectTime'),
     value: 'endexecution',

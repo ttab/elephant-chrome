@@ -1,6 +1,6 @@
 import i18n from 'i18next'
 
-export const contentMenuLabels = {
+export const getContentMenuLabels = () => ({
   titleLabel: i18n.t('editor:contentMenu.title'),
   subTitleLabel: i18n.t('editor:contentMenu.subTitle'),
   bodyTextLabel: i18n.t('editor:contentMenu.bodyText'),
@@ -10,4 +10,4 @@ export const contentMenuLabels = {
   unorderedLabel: i18n.t('editor:contentMenu.unorderedList'),
   orderedLabel: i18n.t('editor:contentMenu.orderedList'),
   characterCountLabel: i18n.t('editor:numberOfChars')
-}
+})

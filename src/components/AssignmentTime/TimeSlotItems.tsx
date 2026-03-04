@@ -1,6 +1,6 @@
 import { CommandItem } from '@ttab/elephant-ui'
 import type { JSX } from 'react'
-import { timeSlotTypes as slotTypes } from '../../defaults/assignmentTimeConstants'
+import { getTimeSlotTypes } from '../../defaults/assignmentTimeConstants'
 import type { AssignmentValueOption } from './types'
 import type { TFunction } from 'i18next'
 import type { TranslationKey } from '@/types/i18next.d'
@@ -12,6 +12,7 @@ export const TimeSlotItems = ({ handleOnSelect, handleParentOpenChange, assignme
   t: TFunction
 }): JSX.Element[] => {
   const timeSlotTypes = (assignmentType?: string) => {
+    const slotTypes = getTimeSlotTypes()
     if (!assignmentType) {
       return slotTypes
     }

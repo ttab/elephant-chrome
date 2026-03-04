@@ -41,7 +41,7 @@ export interface ApplicationMenuItem {
   props?: ViewProps
 }
 
-export const applicationMenu: ApplicationMenu = {
+export const getApplicationMenu = (): ApplicationMenu => ({
   groups: [
     {
       name: 'views',
@@ -128,4 +128,4 @@ export const applicationMenu: ApplicationMenu = {
       ]
     }
   ]
-}
+})

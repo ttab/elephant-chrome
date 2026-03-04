@@ -12,7 +12,7 @@ import { MenuIcon, XIcon } from '@ttab/elephant-ui/icons'
 import { ThemeSwitcher } from './ThemeSwitcher'
 import { MenuItem } from './MenuItem'
 import { useSession } from 'next-auth/react'
-import { applicationMenu, type ApplicationMenuItem, type MenuGroups } from '@/defaults/applicationMenuItems'
+import { getApplicationMenu, type ApplicationMenuItem, type MenuGroups } from '@/defaults/applicationMenuItems'
 import { useUserTracker } from '@/hooks/useUserTracker'
 import { useCallback, useRef, useState, type JSX } from 'react'
 import { UserInfo } from './UserInfo'
@@ -39,6 +39,7 @@ export const Menu = (): JSX.Element => {
   }, [])
 
   // Get all sheet items for rendering sub-sheets
+  const applicationMenu = getApplicationMenu()
   const sheetItems = applicationMenu.groups
     .flatMap((group) => group.items)
     .filter((item) => item.target === 'sheet')

@@ -2,7 +2,7 @@ import { useYValue, type YDocument } from '@/modules/yjs/hooks'
 import { Select, SelectTrigger, SelectContent, SelectItem } from '@ttab/elephant-ui'
 import { useCallback, useMemo } from 'react'
 import type * as Y from 'yjs'
-import { DocumentStatuses } from '@/defaults/documentStatuses'
+import { getDocumentStatuses } from '@/defaults/documentStatuses'
 import { CircleDotIcon, CircleCheckIcon, CircleArrowUpIcon } from '@ttab/elephant-ui/icons'
 import type { DefaultValueOption } from '@/types/index'
 import { snapshotDocument } from '@/lib/snapshotDocument'
@@ -28,7 +28,7 @@ const TextAssignment = ({ workflowState }: {
   workflowState?: string
 }) => {
   const StatusIcon = useMemo(() => {
-    return DocumentStatuses.find((status) => status.value === workflowState)
+    return getDocumentStatuses().find((status) => status.value === workflowState)
   }, [workflowState])
 
   const { t } = useTranslation('shared')

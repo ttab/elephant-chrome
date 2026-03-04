@@ -7,7 +7,7 @@ import { useQuery } from '@/hooks/useQuery'
 import type { FilterProps } from '@/components/Filter'
 import { useSections } from '@/hooks/useSections'
 import { CircleCheckIcon, ShapesIcon } from '@ttab/elephant-ui/icons'
-import { DocumentStatuses } from '@/defaults/documentStatuses'
+import { getDocumentStatuses } from '@/defaults/documentStatuses'
 import { useUserTracker } from '@/hooks/useUserTracker'
 import { type JSX } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -39,7 +39,7 @@ export const Commands = (props: {
     <CommandList>
       <OptionsFilter
         {...props}
-        options={DocumentStatuses}
+        options={getDocumentStatuses()}
         label={t('core:labels.status')}
         filterPage='status'
         Icon={CircleCheckIcon}

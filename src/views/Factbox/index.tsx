@@ -9,7 +9,7 @@ import { Form, UserMessage, View } from '@/components'
 import { FactboxHeader } from './FactboxHeader'
 import { Error } from '@/views/Error'
 import { useMemo, useState, type JSX } from 'react'
-import { contentMenuLabels } from '@/defaults/contentMenuLabels'
+import { getContentMenuLabels } from '@/defaults/contentMenuLabels'
 import { snapshotDocument } from '@/lib/snapshotDocument'
 import type { YDocument } from '@/modules/yjs/hooks'
 import { useYDocument, useYValue } from '@/modules/yjs/hooks'
@@ -88,7 +88,7 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
       Bold(),
       Italic(),
       LocalizedQuotationMarks(),
-      Text({ ...contentMenuLabels })
+      Text({ ...getContentMenuLabels() })
     ]
   }, [])
 

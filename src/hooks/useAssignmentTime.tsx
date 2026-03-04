@@ -1,4 +1,4 @@
-import { timeSlotTypes } from '@/defaults/assignmentTimeConstants'
+import { getTimeSlotTypes } from '@/defaults/assignmentTimeConstants'
 import type { LucideIcon } from '@ttab/elephant-ui/icons'
 import { AlarmClockCheckIcon, CalendarClockIcon, ClockFadingIcon } from '@ttab/elephant-ui/icons'
 import { useYValue } from '@/modules/yjs/hooks'
@@ -61,7 +61,7 @@ export function useAssignmentTime(
   }
 
   if (publishSlot) {
-    const slotName = timeSlotTypes.find((slot) => slot.slots?.includes(publishSlot))
+    const slotName = getTimeSlotTypes().find((slot) => slot.slots?.includes(publishSlot))
 
     return {
       name: 'slot',

@@ -4,7 +4,7 @@ import {
   CommandItem,
   Button
 } from '@ttab/elephant-ui'
-import { timePickTypes } from '../../defaults/assignmentTimeConstants'
+import { getTimePickTypes } from '../../defaults/assignmentTimeConstants'
 import { type AssignmentData } from './types'
 import { TimeInput } from '../TimeInput'
 import { useYValue } from '@/modules/yjs/hooks'
@@ -17,6 +17,7 @@ export const TimeSelectItem = ({ handleOnSelect, assignment, handleParentOpenCha
   assignment: Y.Map<unknown>
   handleParentOpenChange: (open: boolean) => void
 }): JSX.Element => {
+  const timePickTypes = getTimePickTypes()
   const [open, setOpen] = useState(false)
   const [endTime, setEndTime] = useState('')
   const [data] = useYValue<AssignmentData>(assignment, `data`)

@@ -18,7 +18,7 @@ import { type DefaultValueOption } from '@/types/index'
 import { useSections } from '@/hooks/useSections'
 import { useWireSources } from '@/hooks/useWireSources'
 import { Newsvalues } from '@/defaults/newsvalues'
-import { DocumentStatuses } from '@/defaults/documentStatuses'
+import { getDocumentStatuses } from '@/defaults/documentStatuses'
 import type { QueryParams } from '@/hooks/useQuery'
 import { useQuery } from '@/hooks/useQuery'
 import { useOrganisers } from '@/hooks/useOrganisers'
@@ -129,7 +129,7 @@ const SelectedButton = ({ type, value }: { value: string | string[] | undefined,
       case 'status': {
         return {
           Icon: CircleCheckIcon,
-          options: DocumentStatuses
+          options: getDocumentStatuses()
         }
       }
       case 'organiser': {

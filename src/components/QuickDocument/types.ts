@@ -13,7 +13,7 @@ interface ViewConfig {
   statusErrorText: string
 }
 
-export const ViewMap: Record<DocumentView, ViewConfig> = {
+export const getViewMap = (): Record<DocumentView, ViewConfig> => ({
   Flash: {
     icon: ZapIcon,
     readOnlyIcon: ZapOffIcon,
@@ -31,4 +31,4 @@ export const ViewMap: Record<DocumentView, ViewConfig> = {
     linkTarget: 'Planning',
     statusErrorText: i18next.t('errors:messages.statusChangeforDocumentTypeFailed', { documentType: i18next.t('quickArticle:title') })
   }
-}
+})

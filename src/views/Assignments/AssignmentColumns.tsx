@@ -30,7 +30,7 @@ import { DotMenu } from '@/components/ui/DotMenu'
 import { Link } from '@/components'
 import { PenIcon, CalendarDaysIcon } from '@ttab/elephant-ui/icons'
 import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
-import { DocumentStatuses } from '@/defaults/documentStatuses'
+import { getDocumentStatuses } from '@/defaults/documentStatuses'
 import { selectableStatuses } from '../Planning/components/AssignmentStatus'
 import type { TFunction, Namespace } from 'i18next'
 import type { TranslationKey } from '@/types/i18next.d'
@@ -50,7 +50,7 @@ export function assignmentColumns<Ns extends Namespace>({ authors = [], locale, 
         Filter: ({ column, setSearch }) => (
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
-        options: [...DocumentStatuses, ...selectableStatuses],
+        options: [...getDocumentStatuses(), ...selectableStatuses],
         name: t('core:labels.status'),
         columnIcon: CircleCheckIcon,
         className: 'flex-none',

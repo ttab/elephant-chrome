@@ -18,7 +18,7 @@ import { EditorHeader } from './EditorHeader'
 import { Error } from '../Error'
 
 import { getValueByYPath } from '@/shared/yUtils'
-import { contentMenuLabels } from '@/defaults/contentMenuLabels'
+import { getContentMenuLabels } from '@/defaults/contentMenuLabels'
 import type { YDocument } from '@/modules/yjs/hooks'
 import { useYDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
@@ -124,7 +124,7 @@ function EditorWrapper(props: ViewProps & {
       }),
       Text({
         countCharacters: ['heading-1'],
-        ...contentMenuLabels
+        ...getContentMenuLabels()
       }),
       Factbox({
         headerTitle: t('editor:factbox.headerTitle'),

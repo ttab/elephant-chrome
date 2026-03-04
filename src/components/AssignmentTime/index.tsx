@@ -3,7 +3,7 @@ import { Block } from '@ttab/elephant-api/newsdoc'
 import { TimeDeliveryMenu } from './TimeDeliveryMenu'
 import { type AssignmentData } from './types'
 import { ExecutionTimeMenu } from './ExecutionTimeMenu'
-import { timeSlotTypes, timePickTypes } from '../../defaults/assignmentTimeConstants'
+import { getTimeSlotTypes, getTimePickTypes } from '../../defaults/assignmentTimeConstants'
 import type { FormProps } from '../Form/Root'
 import { useYValue } from '@/modules/yjs/hooks'
 import { deriveExecutionDates, getTimeSlot, getMedianSlot, getMidnightISOString, makeLocalString } from './utils'
@@ -21,6 +21,8 @@ export const AssignmentTime = ({ assignment, onChange }: {
 
   const { full_day: fullDay, end, start, publish_slot: publishSlot, end_date: endDate, start_date: startDate } = data || {}
   let selectedLabel = ''
+  const timeSlotTypes = getTimeSlotTypes()
+  const timePickTypes = getTimePickTypes()
 
   const selectedOption = timeSlotTypes.concat(timePickTypes).find((option) => {
     if (fullDay === 'true' && option.value === 'fullday') {

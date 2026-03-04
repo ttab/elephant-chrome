@@ -7,7 +7,7 @@ import { getValueByYPath } from '@/shared/yUtils'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import { BaseEditor } from '@/components/Editor/BaseEditor'
-import { contentMenuLabels } from '@/defaults/contentMenuLabels'
+import { getContentMenuLabels } from '@/defaults/contentMenuLabels'
 import { useTranslation } from 'react-i18next'
 
 export const DialogEditor = ({ ydoc, setTitle, onValidation, validateStateRef, type }: {
@@ -53,7 +53,7 @@ export const DialogEditor = ({ ydoc, setTitle, onValidation, validateStateRef, t
           Text({
             countCharacters: ['heading-1'],
             preventHotkeys: ['heading-1', 'heading-2', 'preamble'],
-            ...contentMenuLabels,
+            ...getContentMenuLabels(),
             titleLabel: type === 'flash' ? t('placeholders.flashTitle') : t('editor:contentMenu.title')
           })
         ]}

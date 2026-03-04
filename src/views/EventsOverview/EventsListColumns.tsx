@@ -16,7 +16,7 @@ import {
 } from '@ttab/elephant-ui/icons'
 import type { DotDropdownMenuActionItem } from '@/components/ui/DotMenu'
 import { DotMenu } from '@/components/ui/DotMenu'
-import { Newsvalues, NewsvalueMap, PlanningEventStatuses } from '@/defaults'
+import { Newsvalues, NewsvalueMap, getPlanningEventStatuses } from '@/defaults'
 import { Time } from '@/components/Table/Items/Time'
 import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
 import { Title } from '@/components/Table/Items/Title'
@@ -82,13 +82,13 @@ export function eventTableColumns<Ns extends Namespace>({ sections = [], organis
         Filter: ({ column, setSearch }) => (
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
-        options: PlanningEventStatuses,
+        options: getPlanningEventStatuses(),
         name: t('views:events.columnLabels.status'),
         columnIcon: CircleCheckIcon,
         className: 'flex-none',
         display: (value: string) => (
           <span>
-            {PlanningEventStatuses.find((status) => status.value === value)?.label}
+            {getPlanningEventStatuses().find((status) => status.value === value)?.label}
           </span>
         )
       },
