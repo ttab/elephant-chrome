@@ -9,7 +9,7 @@ const iconProps = {
   size: 18,
   strokeWidth: 1.75
 }
-export const Newsvalues: Array<DefaultValueOption & { label: string }> = [
+export const Newsvalues: Array<DefaultValueOption> = [
   {
     value: '6',
     label: '6',
