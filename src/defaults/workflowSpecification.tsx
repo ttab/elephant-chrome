@@ -371,12 +371,12 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
       isWorkflow: false,
       transitions: {
         usable: {
-          verify: true,
+          verify: false,
           title: 'Klar',
           description: 'Klarmarkera faktarutan för användning'
         },
         unpublished: {
-          verify: true,
+          verify: false,
           title: 'Kasta',
           description: 'Ta bort faktarutan'
         }
@@ -392,12 +392,12 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
       asSave: true,
       transitions: {
         unpublished: {
-          verify: true,
+          verify: false,
           title: 'Kasta',
           description: 'Ta bort faktarutan'
         },
         published: {
-          verify: true,
+          verify: false,
           title: 'Uppdatera',
           description: 'Uppdatera den publicerade faktarutan med ändringarna'
         }
@@ -409,6 +409,7 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
       isWorkflow: false,
       transitions: {
         usable: {
+          verify: false,
           title: 'Använd',
           description: 'Gör faktarutan användbar igen'
         }
