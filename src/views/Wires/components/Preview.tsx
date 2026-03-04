@@ -1,9 +1,8 @@
 import type { Wire } from '@/shared/schemas/wire'
 import { WirePreview } from '@/components/WirePreview/WirePreview'
 
-export const Preview = ({ wire, onClose }: {
+export const Preview = ({ wire }: {
   wire: Wire
-  onClose: () => void
 }) => {
-  return <WirePreview wire={wire} onClose={onClose} />
+  return <WirePreview wire={wire} />
 }
