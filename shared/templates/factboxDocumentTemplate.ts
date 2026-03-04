@@ -1,5 +1,5 @@
 import { Block, Document } from '@ttab/elephant-api/newsdoc'
-import type { TemplatePayload } from '.'
+import type { TemplatePayload } from './index.js'
 
 
 /**
