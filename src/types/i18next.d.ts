@@ -57,18 +57,6 @@ type InterPaths<T, Prefix extends string = ''> = {
 }[keyof T & string]
 
 /**
- * Dynamic key patterns that cannot be fully verified at compile time.
- * Two valid forms:
- *  - Namespaced:  `ns:prefix.${var}` where "ns" is a valid namespace
- *  - Bare:        `prefix.${var}`    where "prefix" is a valid intermediate key in some namespace
- */
-export type DynamicKey = {
-  [NS in keyof I18nResources]:
-    | `${NS}:${string}`
-    | `${InterPaths<I18nResources[NS]>}.${string}`
-}[keyof I18nResources]
-
-/**
  * Maps a string key to itself if valid, or to an error-message literal if not.
  * This causes TypeScript to report `'"❌ Invalid translation key: \"foo\""'` in
  * the error instead of the full TranslationKey union.
@@ -84,10 +72,9 @@ declare module 'i18next' {
   }
 
   /**
-   * Augmented overloads added to TFunction so that:
-   * 1. Cross-namespace t('ns:key') calls work without declaring namespaces in useTranslation([...]).
-   * 2. Only valid static keys are accepted — dynamic template-literal keys require an explicit
-   *    `as DynamicKey` cast at the call site to opt out of strict checking.
+   * Augmented overloads added to TFunction so that cross-namespace t('ns:key')
+   * calls work without declaring namespaces in useTranslation([...]).
+
    *
    * Later-declared interface members have higher overload priority in TypeScript,
    * so these are tried first. Genuinely missing static keys are caught as errors.
