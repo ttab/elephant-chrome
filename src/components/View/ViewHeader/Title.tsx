@@ -68,7 +68,6 @@ export const Title = ({
     }
   })
 
-  console.log('asDialog', asDialog)
   const [, setQuery] = useQuery()
 
   const handleEdit = () => {
