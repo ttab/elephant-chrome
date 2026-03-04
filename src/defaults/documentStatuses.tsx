@@ -74,6 +74,7 @@ export const DocumentStatuses: DefaultValueOption[] = [
 export const PlanningEventStatuses: DefaultValueOption[] = [
   {
     value: 'usable',
+    label: i18n.t('core:status.usable'),
     icon: CircleCheckIcon,
     iconProps: {
       className: 'bg-usable fill-usable rounded-full text-white dark:text-black',
@@ -83,6 +84,7 @@ export const PlanningEventStatuses: DefaultValueOption[] = [
   },
   {
     value: 'withheld',
+    label: i18n.t('core:status.withheld'),
     icon: CircleCheckIcon,
     iconProps: {
       className: 'bg-withheld fill-withheld rounded-full text-white dark:text-black',
@@ -92,6 +94,7 @@ export const PlanningEventStatuses: DefaultValueOption[] = [
   },
   {
     value: 'done',
+    label: i18n.t('core:status.done'),
     icon: CircleCheckIcon,
     iconProps: {
       className: 'bg-done fill-done rounded-full text-white dark:text-black',
@@ -101,6 +104,7 @@ export const PlanningEventStatuses: DefaultValueOption[] = [
   },
   {
     value: 'draft',
+    label: i18n.t('core:status.draft'),
     icon: CircleDotIcon,
     iconProps: {
       className: 'text-muted-foreground',
@@ -110,6 +114,7 @@ export const PlanningEventStatuses: DefaultValueOption[] = [
   },
   {
     value: 'unpublished',
+    label: i18n.t('core:status.unpublished'),
     icon: CircleArrowLeftIcon,
     iconProps: {
       className: 'bg-cancelled fill-cancelled rounded-full text-white dark:text-black',
