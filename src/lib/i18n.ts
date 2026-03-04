@@ -19,7 +19,7 @@ export const i18nInit = i18n
   .use(LanguageDetector)
   .init({
     // lng: language, // Default
-    ns: ['common', 'core', 'planning', 'shared', 'app', 'views', 'editor', 'workflows', 'factbox', 'event', 'metaSheet', 'flash', 'quickArticle', 'errors'],
+    ns: ['common', 'core', 'planning', 'shared', 'app', 'views', 'editor', 'workflows', 'factbox', 'event', 'metaSheet', 'flash', 'quickArticle', 'errors', 'wires'],
     defaultNS: 'common',
     detection: {
       // order: defines the priority of detection

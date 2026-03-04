@@ -11,6 +11,7 @@ import type planning from '../locales/en/planning.json'
 import type quickArticle from '../locales/en/quickArticle.json'
 import type shared from '../locales/en/shared.json'
 import type views from '../locales/en/views.json'
+import type wires from '../locales/en/wires.json'
 import type workflows from '../locales/en/workflows.json'
 
 // Recursively generate all dot-notation leaf key paths for a JSON namespace object.
@@ -34,6 +35,7 @@ type I18nResources = {
   quickArticle: typeof quickArticle
   shared: typeof shared
   views: typeof views
+  wires: typeof wires
   workflows: typeof workflows
 }
 

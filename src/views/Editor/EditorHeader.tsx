@@ -114,7 +114,7 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
                   onClick={(event) => openSources(event, { id: ydoc.id }, 'last')}
                 >
                   <CableIcon size={15} strokeWidth={1.75} />
-                  Källor
+                  {t('wires:sources.title')}
                 </Button>
               )}
             </div>

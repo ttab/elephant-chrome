@@ -12,6 +12,7 @@ import metaSheet from './metaSheet.json'
 import flash from './flash.json'
 import quickArticle from './quickArticle.json'
 import errors from './errors.json'
+import wires from './wires.json'
 
 export const en = {
   common,
@@ -27,5 +28,6 @@ export const en = {
   metaSheet,
   flash,
   quickArticle,
-  errors
+  errors,
+  wires
 }

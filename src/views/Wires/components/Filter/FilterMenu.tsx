@@ -6,6 +6,7 @@ import { useSections } from '@/hooks/useSections'
 import { useWireSources } from '@/hooks/useWireSources'
 import { Newsvalues } from '@/defaults/newsvalues'
 import { cn } from '@ttab/elephant-ui/utils'
+import { useTranslation } from 'react-i18next'
 
 interface FilterPopoverProps {
   streamId: string
@@ -16,6 +17,7 @@ interface FilterPopoverProps {
 type FilterPage = '' | 'query' | 'section' | 'source' | 'newsvalue'
 
 export const FilterMenu = ({ currentFilters, onFilterChange }: FilterPopoverProps): JSX.Element => {
+  const { t } = useTranslation('wires')
   const [open, setOpen] = useState(false)
   const [page, setPage] = useState<FilterPage>('')
   const [search, setSearch] = useState<string>('')
@@ -150,7 +152,7 @@ export const FilterMenu = ({ currentFilters, onFilterChange }: FilterPopoverProp
                 setSearch(value || '')
               }
             }}
-            placeholder={page === 'query' ? 'Fritext' : 'Sök alternativ'}
+            placeholder={page === 'query' ? t('filter.freeText') : t('filter.searchOptions')}
             className='h-9'
           />
 
@@ -161,28 +163,28 @@ export const FilterMenu = ({ currentFilters, onFilterChange }: FilterPopoverProp
                 className='flex gap-1 items-center'
               >
                 <BinocularsIcon size={18} strokeWidth={1.75} />
-                Fritext
+                {t('filter.freeText')}
               </CommandItem>
               <CommandItem
                 onSelect={() => handleNavigateToPage('section')}
                 className='flex gap-1 items-center'
               >
                 <ShapesIcon size={18} strokeWidth={1.75} />
-                Sektion
+                {t('filter.section')}
               </CommandItem>
               <CommandItem
                 onSelect={() => handleNavigateToPage('source')}
                 className='flex gap-1 items-center'
               >
                 <SquareCodeIcon size={18} strokeWidth={1.75} />
-                Källor
+                {t('filter.sources')}
               </CommandItem>
               <CommandItem
                 onSelect={() => handleNavigateToPage('newsvalue')}
                 className='flex gap-1 items-center'
               >
                 <SignalHighIcon size={18} strokeWidth={1.75} />
-                Nyhetsvärde
+                {t('filter.newsvalue')}
               </CommandItem>
             </CommandList>
           )}
