@@ -15,6 +15,7 @@ export async function createArticle({
   wires,
   planningId,
   planningTitle,
+  newsvalue,
   section,
   timeZone
 }: {
@@ -24,6 +25,7 @@ export async function createArticle({
   wires?: Wire[]
   planningId?: string
   planningTitle?: string
+  newsvalue?: string
   section?: {
     uuid: string
     title: string
@@ -44,7 +46,8 @@ export async function createArticle({
   const localDate = convertToISOStringInTimeZone(dt, timeZone).slice(0, 10)
   const [assignmentTitle] = getValueByYPath<string>(ydoc.ele, 'root.title')
   const [assignmentSlugline] = getValueByYPath<string>(ydoc.ele, 'meta.tt/slugline[0].value')
-  const [newsValue] = getValueByYPath<string>(ydoc.ele, 'meta.core/newsvalue[0].value')
+  const [ydocNewsValue] = getValueByYPath<string>(ydoc.ele, 'meta.core/newsvalue[0].value')
+  const resolvedNewsValue = newsvalue ?? ydocNewsValue
 
   const updatedPlanningId = await addAssignmentWithDeliverable({
     planningId,
@@ -53,13 +56,17 @@ export async function createArticle({
     deliverableId: ydoc.id,
     title: assignmentTitle || '',
     slugline: assignmentSlugline,
-    priority: newsValue ? parseInt(newsValue) : undefined,
+    priority: resolvedNewsValue ? parseInt(resolvedNewsValue) : undefined,
     publicVisibility: false,
     localDate,
     isoDateTime,
     section,
     wires
   })
+
+  if (!updatedPlanningId) {
+    throw new Error('CreateAssignmentError')
+  }
 
   // Create article in repo
   if (ydoc.isInProgress) {

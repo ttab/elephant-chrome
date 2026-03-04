@@ -46,7 +46,7 @@ export const WireViewContent = (props: ViewProps & {
   const { status, data: session } = useSession()
   const [showVerifyDialog, setShowVerifyDialog] = useState(false)
   const [searchOlder, setSearchOlder] = useState(false)
-  const [selectedPlanning, setSelectedPlanning] = useState<DefaultValueOption & { payload: { slugline?: string, sluglines?: string[] } } | undefined>(undefined)
+  const [selectedPlanning, setSelectedPlanning] = useState<DefaultValueOption & { payload: { slugline?: string, sluglines?: string[], newsvalue?: string } } | undefined>(undefined)
   const [title] = useYValue<Y.XmlText>(ydoc.ele, 'root.title', true)
   const documentAwareness = useRef<(value: boolean) => void>(null)
   const planningTitleRef = useRef<HTMLInputElement>(null)
@@ -58,6 +58,7 @@ export const WireViewContent = (props: ViewProps & {
     title: string
   } | undefined>(undefined)
   const [slugline, setSlugline] = useYValue<Y.XmlText>(ydoc.ele, 'meta.tt/slugline[0].value', true)
+  const [, setNewsvalue] = useYValue<string | undefined>(ydoc.ele, 'meta.core/newsvalue[0].value')
 
   const handleSubmit = (): void => {
     setShowVerifyDialog(true)
@@ -131,16 +132,19 @@ export const WireViewContent = (props: ViewProps & {
                       const sluglines = (option.payload as { sluglines: string[] | undefined }).sluglines
 
                       if (option.value !== selectedPlanning?.value) {
+                        const newsvalue = (option.payload as { newsvalue: string | undefined }).newsvalue
                         setSelectedPlanning({
                           value: option.value,
                           label: option.label,
                           payload: {
                             slugline,
-                            sluglines
+                            sluglines,
+                            newsvalue
                           }
                         })
 
                         setSlugline(toSlateYXmlText(slugline || ''))
+                        setNewsvalue(newsvalue || undefined)
                       } else {
                         setSelectedPlanning(undefined)
                       }
@@ -265,6 +269,7 @@ export const WireViewContent = (props: ViewProps & {
                     session,
                     planningId: selectedPlanning?.value,
                     planningTitle: planningTitleRef.current?.value,
+                    newsvalue: selectedPlanning?.payload?.newsvalue,
                     wires: props.wires,
                     section: (!selectedPlanning?.value) ? section || undefined : undefined,
                     timeZone
@@ -275,7 +280,9 @@ export const WireViewContent = (props: ViewProps & {
                     })
                     .catch((ex: unknown) => {
                       console.log(ex)
-                      toast.error('Det gick inte att skapa en artikel!')
+                      if (!(ex instanceof Error) || ex.message !== 'CreateAssignmentError') {
+                        toast.error('Det gick inte att skapa en artikel!')
+                      }
                     })
                 }}
                 onSecondary={() => {

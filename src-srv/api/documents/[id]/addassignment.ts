@@ -100,10 +100,14 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
               })]
             },
             meta: {
-              'core/newsvalue': [Block.create({
-                type: 'core/newsvalue',
-                value: String(priority)
-              })],
+              ...(priority !== undefined
+                ? {
+                    'core/newsvalue': [Block.create({
+                      type: 'core/newsvalue',
+                      value: String(priority)
+                    })]
+                  }
+                : {}),
               ...(slugline
                 ? {
                     'tt/slugline': [Block.create({
