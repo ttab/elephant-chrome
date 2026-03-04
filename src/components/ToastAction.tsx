@@ -1,9 +1,9 @@
 import type { JSX } from 'react'
-import type { Target } from '@/components/Link/lib/handleLink'
-import { useLink } from '@/hooks/useLink'
-import type { View } from '@/types/index'
-import { Button, Tooltip } from '@ttab/elephant-ui'
 import type { LucideIcon } from '@ttab/elephant-ui/icons'
+import type { Target } from '@/components/Link/lib/handleLink'
+import type { View } from '@/types'
+import { useLink } from '@/hooks/useLink'
+import { Button, Tooltip } from '@ttab/elephant-ui'
 
 export const ToastAction = ({ documentId, withView, Icon, label, target = 'last' }: {
   documentId: string | undefined
@@ -12,25 +12,21 @@ export const ToastAction = ({ documentId, withView, Icon, label, target = 'last'
   Icon?: LucideIcon
   target?: Target
 }): JSX.Element | null => {
-  const open = useLink(withView)
+  const openDocument = useLink(withView)
 
   if (!documentId) {
     return null
   }
 
   return (
-    <div className='flex flex-row w-full gap-2 justify-end'>
-      <Tooltip
-        content={label}
+    <Tooltip content={label}>
+      <Button
+        variant='icon'
+        className='text-muted-foreground'
+        onClick={(event) => openDocument(event, { id: documentId }, target)}
       >
-        <Button
-          variant='icon'
-          onClick={(event) =>
-            open(event, { id: documentId }, target)}
-        >
-          {Icon && <Icon size={16} strokeWidth={1.75} />}
-        </Button>
-      </Tooltip>
-    </div>
+        {Icon && <Icon size={16} strokeWidth={1.75} />}
+      </Button>
+    </Tooltip>
   )
 }

@@ -4,7 +4,6 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { calculateViewWidths, minimumSpaceRequired } from '@/navigation/lib'
 import type { ContentState, NavigationState, ViewProps } from './types'
 import { ViewWrapper } from './components'
-import { Navigation } from './views/Wires/components/Navigation'
 import { FaroErrorBoundary } from '@grafana/faro-react'
 import { Error } from './views'
 import { useIndexedDB } from './datastore/hooks/useIndexedDB'
@@ -38,8 +37,6 @@ export const AppContent = (): JSX.Element => {
           </ViewWrapper>
         )
       })}
-
-      <Navigation visibleContent={content} />
 
       <Dialog open={!idb?.isConnected}>
         <DialogContent className='focus-visible:outline-none'>

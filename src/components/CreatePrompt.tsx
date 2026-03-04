@@ -10,7 +10,7 @@ import {
 } from '@ttab/elephant-ui'
 import { LoaderIcon } from '@ttab/elephant-ui/icons'
 import type { MouseEvent, PropsWithChildren, JSX } from 'react'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 
 export const CreatePrompt = ({
   title,
@@ -32,10 +32,12 @@ export const CreatePrompt = ({
   planningTitle?: string
 } & PropsWithChildren): JSX.Element => {
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const isSubmittingRef = useRef(false)
 
   const handleSubmit = () => {
-    if (isSubmitting) return
+    if (isSubmittingRef.current) return
 
+    isSubmittingRef.current = true
     setIsSubmitting(true)
     onPrimary()
   }
