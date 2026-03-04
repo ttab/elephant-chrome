@@ -78,7 +78,8 @@ export function factboxColumns({ locale, timeZone }: { locale: LocaleData, timeZ
             <Title title={row.getValue<string>('title')} />
           </div>
         )
-      }
+      },
+      enableGlobalFilter: true
     },
     {
       id: 'description',
@@ -98,7 +99,8 @@ export function factboxColumns({ locale, timeZone }: { locale: LocaleData, timeZ
             {row.getValue<string>('description')}
           </div>
         )
-      }
+      },
+      enableGlobalFilter: true
     },
     {
       id: 'edited',
