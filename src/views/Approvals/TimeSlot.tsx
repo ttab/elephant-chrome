@@ -1,3 +1,5 @@
+import { showTranslatedText } from '@/lib/showTranslatedText'
+import type { TFunction } from 'i18next'
 import type { JSX } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -7,25 +9,11 @@ export const TimeSlot = ({ label, slots }: {
 }): JSX.Element => {
   const { startTime, endTime } = getTimeRange(slots)
   const { t } = useTranslation()
-  const showTranslatedText = (slot: string) => {
-    switch (slot) {
-      case 'morning':
-        return t('core:timeSlots.morning')
-      case 'forenoon':
-        return t('core:timeSlots.forenoon')
-      case 'afternoon':
-        return t('core:timeSlots.afternoon')
-      case 'evening':
-        return t('core:timeSlots.evening')
-      default:
-        return 'Translation missing'
-    }
-  }
 
   return (
     <>
       <div className='w-full flex flex-col p-2 pb-1'>
-        <span className='text-sm'>{showTranslatedText(label)}</span>
+        <span className='text-sm'>{showTranslatedText(label, t as TFunction)}</span>
 
         <div className='flex flex-row gap-1 text-xs text-gray-400'>
           {(startTime) && <time dateTime={startTime}>{startTime}</time>}

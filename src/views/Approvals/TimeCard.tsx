@@ -12,11 +12,14 @@ import { useMemo } from 'react'
 import { timesSlots } from '@/defaults/assignmentTimeslots'
 import type { LocaleData } from '@/types/index'
 import { useTranslation } from 'react-i18next'
+import { showTranslatedText } from '@/lib/showTranslatedText'
+import type { TFunction } from 'i18next'
 
 export const TimeCard = ({ assignment }: { assignment: AssignmentInterface }) => {
   const [query] = useQuery()
   const { timeZone, locale } = useRegistry()
   const { t } = useTranslation()
+
   const compareDate = useMemo(() => (
     typeof query?.from === 'string'
       ? parseDate(query.from)
@@ -62,7 +65,7 @@ function getAssignmentTime({ assignment, timeZone, locale, statusData, compareDa
   locale: LocaleData
   statusData: StatusData | null
   compareDate?: Date
-  t: (key: string) => string
+  t: TFunction
 }): string | undefined {
   if (
     assignment._deliverableStatus === 'draft'
@@ -89,24 +92,10 @@ function getAssignmentTime({ assignment, timeZone, locale, statusData, compareDa
   return undefined
 }
 
-export function getTimeslotLabel(hour: number, t: (key: string) => string): string | undefined {
-  const showTranslatedText = (slot: string) => {
-    switch (slot) {
-      case 'morning':
-        return t('core:timeSlots.morning')
-      case 'forenoon':
-        return t('core:timeSlots.forenoon')
-      case 'afternoon':
-        return t('core:timeSlots.afternoon')
-      case 'evening':
-        return t('core:timeSlots.evening')
-      default:
-        return 'Translation missing'
-    }
-  }
+export function getTimeslotLabel(hour: number, t: TFunction): string | undefined {
   for (const key in timesSlots) {
     if (timesSlots[key].slots.includes(hour)) {
-      return showTranslatedText(timesSlots[key].label)
+      return showTranslatedText(timesSlots[key].label, t)
     }
   }
   return undefined
