@@ -335,9 +335,6 @@ export function assignmentColumns<Ns extends Namespace>({ authors = [], locale, 
             <DotMenu
               items={[
                 {
-                  // to: 'Editor',
-                  // id: deliverableUuid,
-                  // title: t('views:assignments.actionMenu.openArticle')
                   label: t('views:assignments.actionMenu.openArticle'),
                   item: (
                     <Link to='Editor' target='last' props={{ id: deliverableUuid }} className='flex flex-row gap-5'>
@@ -349,9 +346,7 @@ export function assignmentColumns<Ns extends Namespace>({ authors = [], locale, 
                   )
                 },
                 {
-                  // to: 'Planning',
-                  // id: planningId,
-                  // title: t('views:assignments.actionMenu.openPlanning')
+
                   label: t('views:assignments.actionMenu.openPlanning'),
                   disabled: !planningId,
                   item: planningId
