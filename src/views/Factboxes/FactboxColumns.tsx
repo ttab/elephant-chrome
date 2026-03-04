@@ -49,7 +49,6 @@ export function factboxColumns({ locale, timeZone }: { locale: LocaleData, timeZ
         quickFilter: true
       },
       accessorFn: (data) => {
-        console.log(data)
         return data.fields['heads.usable.version']?.values[0] ? data.fields['heads.usable.version'].values[0] === '-1' ? 'unpublished' : 'usable' : 'draft'
       },
       cell: ({ row }) => {
