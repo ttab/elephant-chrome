@@ -23,31 +23,22 @@ import {
   useTable,
   useHistory,
   useNavigationKeys,
-  useOpenDocuments,
-  useWorkflowStatus
+  useOpenDocuments
 } from '@/hooks'
 import { handleLink } from '@/components/Link/lib/handleLink'
 import { NewItems } from './NewItems'
 import { LoadingText } from '../LoadingText'
 import { Row } from './Row'
 import { useModal } from '../Modal/useModal'
-import { PreviewSheet } from '@/views/Wires/components'
-import type { Wire as WireType } from '@/shared/schemas/wire'
-import { Wire } from '@/views/Wire'
 import { GroupedRows } from './GroupedRows'
-import { getWireStatus } from '../../lib/getWireStatus'
 import { type View } from '@/types/index'
 import { useTranslation } from 'react-i18next'
 const BASE_URL = import.meta.env.BASE_URL
 
 interface TableProps<TData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
-  type: 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires' | 'Factbox' | 'Print' | 'PrintEditor'
+  type: 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Factbox' | 'Print' | 'PrintEditor'
   onRowSelected?: (row?: TData) => void
-}
-
-function isRowTypeWire<TData, TValue>(type: TableProps<TData, TValue>['type']): type is 'Wires' {
-  return type === 'Wires'
 }
 
 function getNextTableIndex(
@@ -92,37 +83,10 @@ export const Table = <TData, TValue>({
   const { viewId: origin } = useView()
   const { table, loading } = useTable()
   const openDocuments = useOpenDocuments({ idOnly: true })
-  const { showModal, hideModal, currentModal } = useModal()
-  const [, setDocumentStatus] = useWorkflowStatus({})
+  const { hideModal, currentModal } = useModal()
   const { t } = useTranslation()
 
-  const handlePreview = useCallback((row: RowType<unknown>): void => {
-    row.toggleSelected(true)
-
-    const originalId = (row.original as { id: string }).id
-
-    showModal(
-      <PreviewSheet
-        id={originalId}
-        wire={row.original as WireType}
-        textOnly
-        handleClose={hideModal}
-      />,
-      'sheet',
-      {
-        id: originalId
-      },
-      'right'
-    )
-  }, [hideModal, showModal])
-
-
   const handleOpen = useCallback((event: MouseEvent<HTMLTableRowElement> | KeyboardEvent, row: RowType<unknown>): void => {
-    if (type === 'Wires') {
-      handlePreview(row)
-      return
-    }
-
     const target = event.target as HTMLElement
     if (target && 'dataset' in target && !target.dataset.rowAction) {
       if (!onRowSelected) {
@@ -156,10 +120,10 @@ export const Table = <TData, TValue>({
         })
       })
     }
-  }, [dispatch, state.viewRegistry, onRowSelected, origin, type, history, handlePreview, searchType])
+  }, [dispatch, state.viewRegistry, onRowSelected, origin, type, history, searchType])
 
   useNavigationKeys({
-    keys: ['ArrowUp', 'ArrowDown', 'Enter', 'Escape', ' ', 's', 'r', 'c', 'u'],
+    keys: ['ArrowUp', 'ArrowDown', 'Enter', 'Escape', ' '],
     onNavigation: (event) => {
       const rows = table.getRowModel().rowsById
       if (!Object.values(rows)?.length) {
@@ -182,69 +146,6 @@ export const Table = <TData, TValue>({
       if (event.key === 'Escape') {
         selectedRow?.toggleSelected(false)
         return
-      }
-
-      if (event.key === 'r') {
-        if (selectedRow && isRowTypeWire<TData, TValue>(type)) {
-          const wireRow = selectedRow as RowType<WireType>
-          const currentStatus = getWireStatus(wireRow.original)
-          void setDocumentStatus({
-            name: currentStatus === 'read' ? 'draft' : 'read',
-            uuid: wireRow.original.id,
-            version: BigInt(wireRow.original.fields.current_version.values?.[0])
-          }, undefined, true)
-        }
-        return
-      }
-
-      if (event.key === 'u') {
-        if (selectedRow && isRowTypeWire<TData, TValue>(type)) {
-          const wireRow = selectedRow as RowType<WireType>
-          const currentStatus = getWireStatus(wireRow.original)
-
-          void setDocumentStatus({
-            name: currentStatus === 'used' ? 'draft' : 'used',
-            uuid: wireRow.original.id,
-            version: BigInt(wireRow.original.fields.current_version.values?.[0])
-          }, undefined, true)
-        }
-        return
-      }
-
-      if (event.key === 's') {
-        if (selectedRow && isRowTypeWire<TData, TValue>(type)) {
-          const wireRow = selectedRow as RowType<WireType>
-          const currentStatus = getWireStatus(wireRow.original)
-
-          void setDocumentStatus({
-            name: currentStatus === 'saved' ? 'draft' : 'saved',
-            uuid: wireRow.original.id,
-            version: BigInt(wireRow.original.fields.current_version.values?.[0])
-          }, undefined, true)
-        }
-        return
-      }
-
-      if (event.key === 'c') {
-        if (selectedRow && isRowTypeWire<TData, TValue>(type)) {
-          const wireRow = selectedRow as RowType<WireType>
-
-          const onDocumentCreated = () => {
-            void setDocumentStatus({
-              name: 'used',
-              uuid: wireRow.original.id,
-              version: BigInt(wireRow.original.fields.current_version.values?.[0])
-            }, undefined, true)
-          }
-          showModal(
-            <Wire
-              onDialogClose={hideModal}
-              asDialog
-              wire={wireRow.original}
-              onDocumentCreated={onDocumentCreated}
-            />
-          )
-        }
       }
 
       if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
@@ -323,7 +224,7 @@ export const Table = <TData, TValue>({
 
   return (
     <>
-      {!['Wires', 'Factbox', 'Search'].includes(type) && (
+      {!['Factbox', 'Search'].includes(type) && (
         <Toolbar />
       )}
       {(type === 'Planning' || type === 'Event') && (

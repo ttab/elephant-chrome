@@ -12,6 +12,7 @@ import { UserMessagesReceiver } from './components/UserMessagesReceiver.tsx'
 import { Toaster } from '@ttab/elephant-ui'
 import './index.css'
 import { i18nInit } from './lib/i18n'
+import { SettingsProvider } from './modules/userSettings/SettingsProvider.tsx'
 
 banner()
 
@@ -31,9 +32,11 @@ i18nInit.then(() => {
               <SupportedLanguagesProvider>
                 <ThemeProvider defaultTheme='light' storageKey='ele-ui-theme'>
                   <Init>
-                    <UserMessagesReceiver>
-                      <App />
-                    </UserMessagesReceiver>
+                    <SettingsProvider application='se.ecms.elephant-chrome'>
+                      <UserMessagesReceiver>
+                        <App />
+                      </UserMessagesReceiver>
+                    </SettingsProvider>
                   </Init>
                 </ThemeProvider>
               </SupportedLanguagesProvider>

@@ -27,8 +27,8 @@ export async function addAssignmentWithDeliverable(payload: {
     uuid: string
     title: string
   }
+  wires?: Wire[]
   quickArticleData?: QuickArticleData
-  wire?: Wire
 }): Promise<string | undefined> {
   try {
     const response = await fetch(`${BASE_URL}/api/documents/${payload.planningId || 'create'}/addassignment/`, {
@@ -40,13 +40,17 @@ export async function addAssignmentWithDeliverable(payload: {
     })
 
     if (!response.ok) {
-      console.error('Failed backend call to add assignment', response.status, response.statusText)
       toast.error(i18n.t('errors:toasts.addAssignmentToPlanningError'))
+      const body = await response.text().catch(() => '(unreadable)')
+      console.error('Failed backend call to add assignment', response.status, response.statusText, body)
+      throw new Error(`Backend returned ${response.status}: ${body}`)
     }
 
     const result = await response.json() as { uuid: string }
+
     if (!result.uuid) {
-      throw new Error('Incorrect or no planning id received from backend')
+      console.error('Failed backend call to add assignment: no uuid in response', result)
+      throw new Error('No uuid in response from addassignment')
     }
 
     return result.uuid

@@ -12,7 +12,8 @@ import type {
   GetStatusHistoryReponse,
   GetMetricsResponse,
   AttachmentDetails,
-  StatusUpdate
+  StatusUpdate,
+  GetHistoryResponse
 } from '@ttab/elephant-api/repository'
 import { Block, Document } from '@ttab/elephant-api/newsdoc'
 import type { RpcError, FinishedUnaryCall } from '@protobuf-ts/runtime-rpc'
@@ -100,9 +101,10 @@ export class Repository {
    * @param options - { uuids: string[], accessToken: string }
    * @returns Promise<BulkGetResponse | null>
    */
-  async getDocuments({ documents, accessToken }: {
+  async getDocuments({ documents, accessToken, abort }: {
     documents: { uuid: string, version?: bigint }[]
     accessToken: string
+    abort?: AbortSignal
   }): Promise<BulkGetResponse | null> {
     if (!documents.length || !documents.filter((document) => isValidUUID(document.uuid)).length) {
       return null
@@ -112,8 +114,9 @@ export class Repository {
       const { response } = await this.#client.bulkGet({
         documents: documents.filter((doc) => doc?.version !== -1n).map((document) => {
           return ({ uuid: document.uuid, version: document.version || 0n })
-        })
-      }, meta(accessToken))
+        }),
+        subset: []
+      }, meta(accessToken, abort))
 
       return response
     } catch (err: unknown) {
@@ -139,7 +142,8 @@ export class Repository {
         status: '',
         lock: false,
         metaDocument: 1,
-        metaDocumentVersion: 0n
+        metaDocumentVersion: 0n,
+        subset: []
       }, meta(accessToken))
 
       return response
@@ -176,6 +180,45 @@ export class Repository {
       }
 
       throw new Error(`Unable to fetch documents meta: ${(err as Error)?.message || 'Unknown error'}`)
+    }
+  }
+
+  /**
+   * Retrieves the history for the given UUID.
+   *
+   * @param {Object} params - The parameters for retrieving history.
+   * @param {string} params.uuid - The UUID of the document.
+   * @param {string} params.accessToken - The access token.
+   * @param {AbortSignal} params.abort - The abort signal used to cancel the request.
+   * @returns {Promise<GetHistoryResponse | null>} The history or null if not found.
+   * @throws {Error} If the UUID format is invalid or unable to fetch history.
+   */
+  async getHistory({ uuid, accessToken, abort }: {
+    uuid: string
+    accessToken: string
+    abort?: AbortSignal
+  }): Promise<GetHistoryResponse | null> {
+    if (!isValidUUID(uuid)) {
+      throw new Error('Invalid uuid format')
+    }
+
+    try {
+      const { response } = await this.#client.getHistory(
+        {
+          uuid,
+          before: BigInt(0),
+          loadStatuses: true
+        },
+        meta(accessToken, abort)
+      )
+
+      return response
+    } catch (err) {
+      if ((err as RpcError).code === 'not_found') {
+        return null
+      }
+
+      throw new Error(`Unable to fetch document history: ${(err as Error)?.message || 'Unknown error'}`)
     }
   }
 

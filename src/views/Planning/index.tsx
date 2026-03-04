@@ -76,6 +76,7 @@ export const Planning = (props: ViewProps & {
       version: 0n,
       isMetaDocument: false,
       mainDocument: '',
+      subset: [],
       document: props.document || getTemplateFromView('Planning')(documentId)
     })
   }, [documentId, props.document])

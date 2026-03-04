@@ -46,6 +46,7 @@ import { toast } from 'sonner'
 import { AssignmentStatus } from './AssignmentStatus'
 import { useTranslation } from 'react-i18next'
 import type { TranslationKey } from '@/types/i18next.d'
+import { RelatedWires } from './RelatedWires'
 
 export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDialog }: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -86,6 +87,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
   const [endTime] = useYValue<string>(assignment, 'data.end')
   const [publishSlot] = useYValue<string>(assignment, 'data.publish_slot')
   const [authors = []] = useYValue<Block[]>(assignment, 'links.core/author')
+  const [wires] = useYValue<Block[]>(assignment, 'links.tt/wire')
   const [slugline] = useYValue<string>(assignment, 'meta.tt/slugline[0].value')
 
   const [showVerifyDialog, setShowVerifyDialog] = useState<boolean>(false)
@@ -402,6 +404,8 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
           </div>
         )
       }
+
+      <RelatedWires wires={wires} />
 
       <div className='flex flex-row @3xl/view:hidden'>
         <SluglineButton value={slugline} />
