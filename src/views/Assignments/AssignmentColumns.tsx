@@ -287,7 +287,7 @@ export function assignmentColumns<Ns extends Namespace>({ authors = [], locale, 
         display: (value: string | string[]) => {
           const items = AssignmentTypes
             .filter((type) => value.includes(type.value))
-            .map((item) => t(`shared:assignmentTypes.${item.value}` as TranslationKey))
+            .map((item) => item.label)
           return (
             <div className='flex flex-row gap-2'>
               <span>

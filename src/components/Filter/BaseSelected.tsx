@@ -4,8 +4,6 @@ import { useUserTracker } from '@/hooks/useUserTracker'
 import { CommandItem } from '@ttab/elephant-ui'
 import { CheckIcon } from '@ttab/elephant-ui/icons'
 import { cn } from '@ttab/elephant-ui/utils'
-import { useTranslation } from 'react-i18next'
-import type { TranslationKey } from '@/types/i18next.d'
 
 export const BaseSelected = ({ options, filterPage, facets }: {
   options: { label?: string, value: string }[]
@@ -13,22 +11,10 @@ export const BaseSelected = ({ options, filterPage, facets }: {
   filterPage: string
 }) => {
   const [filter, setFilter] = useQuery([filterPage])
-  const { t } = useTranslation('shared')
   const [currentFilters, setCurrentFilters] = useUserTracker<QueryParams | undefined>(`filters.Approvals.current`)
   const selected = new Set(filter[filterPage])
   return options.map((option) => {
     const isSelected = selected?.has?.(option.value)
-
-    const getTranslatedOptions = (filterType: string, option: { label?: string, value: string }) => {
-      switch (filterType) {
-        case 'aType':
-          return t(`assignmentTypes.${option.value}` as TranslationKey)
-        case 'status':
-          return t(`core:status.${option.value}` as TranslationKey)
-        default:
-          return option.label
-      }
-    }
 
     return (
       <CommandItem
@@ -73,7 +59,7 @@ export const BaseSelected = ({ options, filterPage, facets }: {
         >
           <CheckIcon size={18} strokeWidth={1.75} />
         </div>
-        <span>{getTranslatedOptions(filterPage, option)}</span>
+        <span>{option.label}</span>
         <span className='ml-auto flex h-4 w-4 items-center justify-center font-mono text-xs'>
           {facets?.get(option.value) && (
             <span className='ml-auto flex h-4 w-4 items-center justify-center font-mono text-xs'>
