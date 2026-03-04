@@ -5,7 +5,7 @@ import type { View } from '@/types/index'
 import { Button, Tooltip } from '@ttab/elephant-ui'
 import type { LucideIcon } from '@ttab/elephant-ui/icons'
 
-export const ToastAction = ({ documentId, withView, Icon, label, target }: {
+export const ToastAction = ({ documentId, withView, Icon, label, target = 'last' }: {
   documentId: string | undefined
   withView: View
   label?: string
