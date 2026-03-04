@@ -1,6 +1,6 @@
 import { useCallback, useMemo, type JSX } from 'react'
 import { ToggleGroup, ToggleGroupItem } from '@ttab/elephant-ui'
-import { DotDropdownMenu } from '../ui/DotMenu'
+import { DotMenu } from '@/components/ui/DotMenu'
 import type { QueryParams } from '@/hooks/useQuery'
 import { toast } from 'sonner'
 import { useUserTracker } from '@/hooks/useUserTracker'
@@ -139,13 +139,13 @@ export const QuickFilter = <TData,>(): JSX.Element => {
         </ToggleGroup>
       </div>
       <div className='hidden @2xl/view:flex justify-end'>
-        <DotDropdownMenu
+        <DotMenu
           trigger='vertical'
           items={saveFilterMenuItem}
         />
       </div>
       <div className='flex justify-end @2xl/view:hidden'>
-        <DotDropdownMenu
+        <DotMenu
           trigger='vertical'
           items={mobileDropdownItems}
         />

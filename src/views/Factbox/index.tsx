@@ -51,6 +51,7 @@ const Factbox = (props: ViewProps & { document?: Document }): JSX.Element => {
       version: 0n,
       isMetaDocument: false,
       mainDocument: '',
+      subset: [],
       document: props.document || getTemplateFromView('Factbox')(documentId)
     })
   }, [documentId, props.document])

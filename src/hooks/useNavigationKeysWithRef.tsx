@@ -10,7 +10,11 @@ type UseViewNavigationKeysProps = {
   capture?: boolean
 }
 
-export function useViewNavigationKeys({
+/**
+ * Convenience wrapper hook around useNavigationKeys that automatically creates a ref
+ * which can be used by the caller.
+ */
+export function useNavigationKeysWithRef({
   keys,
   onNavigation,
   preventDefault = true,

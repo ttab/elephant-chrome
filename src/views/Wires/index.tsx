@@ -1,7 +1,7 @@
 import { View, ViewHeader } from '@/components/View'
 import { type ViewMetadata } from '@/types/index'
 import { useCallback, useRef, useState, useMemo, type JSX, useEffect } from 'react'
-import { useRegistry, useView, useNavigationKeysView, useQuery } from '@/hooks'
+import { useRegistry, useView, useNavigationKeysWithRef, useQuery } from '@/hooks'
 import { useDocuments } from '@/hooks/index/useDocuments'
 import { QueryV1, BoolQueryV1, TermsQueryV1 } from '@ttab/elephant-api/index'
 import { fields as wireFields, type WireFields } from '@/shared/schemas/wire'
@@ -10,6 +10,7 @@ import { XIcon } from '@ttab/elephant-ui/icons'
 import { cn } from '@ttab/elephant-ui/utils'
 import { Stream } from './components/Stream'
 import { useStreamNavigation } from './hooks/useStreamNavigation'
+import { useSavedFocus } from './hooks/useSavedFocus'
 import type { Wire } from '@/shared/schemas/wire'
 import { Preview } from './components/Preview'
 import { WiresToolbar } from './components/WiresToolbar'
@@ -71,6 +72,7 @@ export const Wires = (): JSX.Element => {
   const [previewReloadCount, setPreviewReloadCount] = useState(0)
   const [focusedWire, setFocusedWire] = useState<Wire | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+  const { saveFocus, restoreFocus } = useSavedFocus()
   const [isDirty, setIsDirty] = useState<null | boolean>(null)
   const settingsAppliedRef = useRef(false)
 
@@ -266,6 +268,11 @@ export const Wires = (): JSX.Element => {
     }
   }, [])
 
+  const handleRemoveStream = useCallback((streamId: string, wireIds: string[]) => {
+    removeStream(streamId)
+    setSelectedWires((prev) => prev.filter((w) => !wireIds.includes(w.id)))
+  }, [removeStream])
+
   // Add or remove a wire from selectedWires
   const handleToggleWire = useCallback((wire: Wire, isSelected: boolean) => {
     setSelectedWires((prev) => {
@@ -286,9 +293,7 @@ export const Wires = (): JSX.Element => {
       : focusedWire ? [focusedWire] : []
     const nextStatuses = calculateWireStatuses(wires, newStatus)
 
-    // Store currently focused element
-    const activeElement = document.activeElement as HTMLElement
-    const focusedItemId = activeElement?.getAttribute('data-item-id')
+    saveFocus()
 
     // Clear selected statuses and start mutations
     setStatusMutations(nextStatuses)
@@ -305,20 +310,14 @@ export const Wires = (): JSX.Element => {
           setPreviewReloadCount((n) => n + 1)
         }
 
-        // Restore focus if we had a focused item
-        if (focusedItemId) {
-          requestAnimationFrame(() => {
-            const elementToFocus = document.querySelector(`[data-item-id="${focusedItemId}"]`) as HTMLElement
-            elementToFocus?.focus()
-          })
-        }
+        restoreFocus()
       }, 100)
 
       if (result.find((r) => !r.statusSet)) {
         toast.error('Någon eller några status-ändringar misslyckades!')
       }
     })
-  }, [selectedWires, focusedWire, repository, session, previewWire])
+  }, [selectedWires, focusedWire, repository, session, previewWire, saveFocus, restoreFocus])
 
   // Create a new article based on selected wires
   const onCreate = useCallback(() => {
@@ -328,16 +327,19 @@ export const Wires = (): JSX.Element => {
       ? [...selectedWires]
       : focusedWire ? [focusedWire] : []
 
-    // FIXME: This will make focus lost
+    saveFocus()
     showModal(
       <WireCreation
-        onDialogClose={hideModal}
+        onDialogClose={() => {
+          hideModal()
+          restoreFocus()
+        }}
         asDialog
         wires={wires}
         onDocumentCreated={() => onAction('used')}
       />
     )
-  }, [selectedWires, focusedWire, repository, session, showModal, hideModal, onAction])
+  }, [selectedWires, focusedWire, repository, session, showModal, hideModal, onAction, saveFocus, restoreFocus])
 
   const handleNavigation = useCallback((event: KeyboardEvent) => {
     if (
@@ -375,7 +377,7 @@ export const Wires = (): JSX.Element => {
     }
   }, [selectedWires, previewWire, onAction, onCreate])
 
-  const viewRef = useNavigationKeysView({
+  const viewRef = useNavigationKeysWithRef({
     keys: ['Escape', 's', 'r', 'u', 'c'],
     onNavigation: handleNavigation
   })
@@ -422,7 +424,7 @@ export const Wires = (): JSX.Element => {
                   selectedWires={selectedWires}
                   statusMutations={statusMutations}
                   onToggleWire={handleToggleWire}
-                  onRemove={removeStream}
+                  onRemove={handleRemoveStream}
                   onFilterChange={setFilter}
                   onClearFilter={clearFilter}
                 />
@@ -459,8 +461,8 @@ export const Wires = (): JSX.Element => {
         </div>
 
         {selectedWires.length > 0 && (
-          <div className='absolute top-1 left-0 right-0 flex justify-center items-center'>
-            <div className='border bg-background rounded-lg text-sm px-5 py-3 shadow-xl flex flex-col items-center gap-1'>
+          <div className='absolute top-1 left-0 right-0 flex justify-center items-center pointer-events-none z-20'>
+            <div className='border bg-background rounded-lg text-sm px-5 py-3 shadow-xl flex flex-col items-center gap-1 pointer-events-auto'>
               <div className='flex flex-row items-center gap-2 justify-items-center text-center'>
                 <div className='overflow-hidden truncate max-w-100 min-w-60'>
                   {`${selectedWires[0].fields['document.title']?.values[0]}`}

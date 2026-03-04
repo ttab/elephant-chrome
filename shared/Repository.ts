@@ -113,7 +113,8 @@ export class Repository {
       const { response } = await this.#client.bulkGet({
         documents: documents.filter((doc) => doc?.version !== -1n).map((document) => {
           return ({ uuid: document.uuid, version: document.version || 0n })
-        })
+        }),
+        subset: []
       }, meta(accessToken, abort))
 
       return response
@@ -140,7 +141,8 @@ export class Repository {
         status: '',
         lock: false,
         metaDocument: 1,
-        metaDocumentVersion: 0n
+        metaDocumentVersion: 0n,
+        subset: []
       }, meta(accessToken))
 
       return response

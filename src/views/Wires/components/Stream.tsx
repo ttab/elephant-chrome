@@ -40,7 +40,7 @@ export const Stream = memo(({
   selectedWires: Wire[]
   statusMutations: WireStatus[]
   onToggleWire: (wire: Wire, isSelected: boolean) => void
-  onRemove?: (streamId: string) => void
+  onRemove?: (streamId: string, wireIds: string[]) => void
   onFilterChange?: (streamId: string, type: string, values: string[]) => void
   onClearFilter?: (streamId: string, type: string) => void
 }): JSX.Element => {
@@ -187,7 +187,7 @@ export const Stream = memo(({
   }, [onToggleWire])
 
   const removeThisWire = useCallback(() => {
-    onRemove?.(wireStream.uuid)
+    onRemove?.(wireStream.uuid, allDataRef.current.map((w) => w.id))
   }, [onRemove, wireStream.uuid])
 
   const handleFilterChange = useCallback((type: string, values: string[]) => {

@@ -217,6 +217,10 @@ export const SettingsProvider = ({ application, children }: {
 
     const poll = async () => {
       let lastEventId = BigInt(-1)
+      let consecutiveFailures = 0
+      const MAX_ATTEMPTS = 10
+      const BASE_DELAY_MS = 1000
+      const MAX_DELAY_MS = 30000
 
       while (isActive && !abortController.signal.aborted) {
         try {
@@ -232,6 +236,8 @@ export const SettingsProvider = ({ application, children }: {
           )
 
           if (!isActive || abortController.signal.aborted) break
+
+          consecutiveFailures = 0
 
           if (response.lastId > lastEventId) {
             lastEventId = response.lastId
@@ -263,10 +269,20 @@ export const SettingsProvider = ({ application, children }: {
           if (abortController.signal.aborted) {
             throw new AbortError()
           }
-          console.error('Settings poll error', err)
-          // Back off before retrying
+
+          consecutiveFailures++
+          console.error(`Settings poll error (attempt ${consecutiveFailures}/${MAX_ATTEMPTS})`, err)
+
+          if (consecutiveFailures >= MAX_ATTEMPTS) {
+            console.error('Max retry attempts reached, stopping settings poll')
+            break
+          }
+
           if (isActive) {
-            await new Promise((resolve) => setTimeout(resolve, 5000))
+            // Exponential backoff with jitter to avoid thundering herd
+            const exponentialDelay = Math.min(BASE_DELAY_MS * 2 ** consecutiveFailures, MAX_DELAY_MS)
+            const jitter = Math.random() * 1000
+            await new Promise((resolve) => setTimeout(resolve, exponentialDelay + jitter))
           }
         }
       }

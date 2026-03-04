@@ -9,6 +9,7 @@ import { useRegistry } from '@/hooks/useRegistry'
 import { initialState } from '@/contexts/RegistryProvider'
 
 const mockDocumentData: EleDocumentResponse = {
+  subset: [],
   isMetaDocument: false,
   mainDocument: '',
   document: {

@@ -4,7 +4,7 @@ import { Editor } from '../components/PlainEditor'
 import { FaroErrorBoundary } from '@grafana/faro-react'
 import { Error } from '@/views'
 import type { Status as DocumentStatuses } from '@ttab/elephant-api/repository'
-import { useEffect, useRef, type JSX } from 'react'
+import { type JSX } from 'react'
 
 export const PreviewSheet = ({ id, handleClose, textOnly = true, version, versionStatusHistory }: {
   id: string
@@ -13,13 +13,6 @@ export const PreviewSheet = ({ id, handleClose, textOnly = true, version, versio
   versionStatusHistory?: DocumentStatuses[]
   handleClose: () => void
 }): JSX.Element => {
-  const containerRef = useRef<HTMLElement | null>(null)
-
-  useEffect(() => {
-    containerRef.current = (document.getElementById(id))
-  }, [id])
-
-
   return (
     <FaroErrorBoundary fallback={(error) => <Error error={error} />}>
       <div className='w-full flex flex-col gap-4'>

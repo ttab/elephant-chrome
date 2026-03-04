@@ -19,7 +19,7 @@ export const WirePreview = ({ wire }: {
     role: wire?.fields['document.meta.tt_wire.role'].values[0],
     newsvalue: wire?.fields['document.meta.core_newsvalue.value']?.values[0],
     status: getWireStatus(wire),
-    version: BigInt(wire?.fields['current_version'].values[0]) ?? 1n,
+    version: wire?.fields['current_version']?.values[0] ? BigInt(wire.fields['current_version'].values[0]) : 1n,
     wireState: getWireState(wire)
   }
 
