@@ -7,6 +7,8 @@ import { useLayouts } from '@/hooks/baboon/useLayouts'
 import { LayoutPanelContent } from '@/views/PrintEditor/components/LayoutPanelContent'
 import type { SWRResponse } from 'swr'
 import type { Document } from '@ttab/elephant-api/newsdoc'
+import { Block } from '@ttab/elephant-api/newsdoc'
+import { useYValue } from '@/modules/yjs/hooks/useYValue'
 
 // Mock window.matchMedia for UI components
 Object.defineProperty(window, 'matchMedia', {
@@ -27,11 +29,18 @@ vi.mock('@/hooks/baboon/useLayouts', () => ({
   useLayouts: vi.fn()
 }))
 
+vi.mock('@/modules/yjs/hooks/useYValue', () => ({
+  useYValue: vi.fn()
+}))
+
 // Mock child components
+let capturedOnLayoutSlotChange: ((name: string) => void) | undefined
+
 vi.mock('@/views/PrintEditor/components/LayoutsSelect', () => ({
-  LayoutsSelect: () => (
-    <div data-testid='layouts-select'>LayoutsSelect Mock</div>
-  )
+  LayoutsSelect: ({ onLayoutSlotChange }: { onLayoutSlotChange?: (name: string) => void }) => {
+    capturedOnLayoutSlotChange = onLayoutSlotChange
+    return <div data-testid='layouts-select'>LayoutsSelect Mock</div>
+  }
 }))
 
 vi.mock('@/views/PrintEditor/components/Position', () => ({
@@ -77,6 +86,8 @@ describe('LayoutPanelContent', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
+    capturedOnLayoutSlotChange = undefined
+    vi.mocked(useYValue).mockReturnValue([undefined, vi.fn()])
   })
 
   it('renders all main elements', () => {
@@ -220,5 +231,101 @@ describe('LayoutPanelContent', () => {
     const panel = container.firstChild as HTMLElement
     expect(panel).toHaveAttribute('data-custom', 'test-value')
     expect(panel).toHaveAttribute('aria-label', 'Test Panel')
+  })
+
+  it('passes onLayoutSlotChange to LayoutsSelect', () => {
+    render(<LayoutPanelContent {...mockProps} />)
+
+    expect(capturedOnLayoutSlotChange).toBeTypeOf('function')
+  })
+
+  it('resets additionals to slot defaults when layout slot changes', () => {
+    const mockSetAdditionals = vi.fn()
+    vi.mocked(useYValue).mockReturnValue([undefined, mockSetAdditionals])
+
+    vi.mocked(useLayouts).mockReturnValue({
+      data: {
+        uuid: 'layout-uuid',
+        type: 'core/layout',
+        uri: '',
+        url: '',
+        title: 'Test Layout',
+        content: [
+          Block.create({
+            type: 'tt/print-slot',
+            name: 'Slot A',
+            meta: [
+              Block.create({
+                type: 'tt/print-features',
+                content: [
+                  Block.create({ type: 'tt/print-feature', name: 'feature-1', value: 'true' }),
+                  Block.create({ type: 'tt/print-feature', name: 'feature-2', value: 'false' })
+                ]
+              })
+            ]
+          })
+        ],
+        meta: [],
+        links: [],
+        language: 'sv'
+      },
+      isLoading: false,
+      error: null,
+      refetch: vi.fn(),
+      isError: false,
+      isSuccess: true,
+      status: 'success',
+      mutate: vi.fn()
+    } as unknown as SWRResponse<Document | undefined, Error>)
+
+    render(<LayoutPanelContent {...mockProps} />)
+
+    capturedOnLayoutSlotChange?.('Slot A')
+
+    expect(mockSetAdditionals).toHaveBeenCalledTimes(1)
+    const defaults = mockSetAdditionals.mock.calls[0][0] as Block[]
+    expect(defaults).toHaveLength(2)
+    expect(defaults[0].name).toBe('feature-1')
+    expect(defaults[0].value).toBe('true')
+    expect(defaults[1].name).toBe('feature-2')
+    expect(defaults[1].value).toBe('false')
+  })
+
+  it('resets additionals to empty when slot has no features', () => {
+    const mockSetAdditionals = vi.fn()
+    vi.mocked(useYValue).mockReturnValue([undefined, mockSetAdditionals])
+
+    vi.mocked(useLayouts).mockReturnValue({
+      data: {
+        uuid: 'layout-uuid',
+        type: 'core/layout',
+        uri: '',
+        url: '',
+        title: 'Test Layout',
+        content: [
+          Block.create({
+            type: 'tt/print-slot',
+            name: 'Slot B',
+            meta: []
+          })
+        ],
+        meta: [],
+        links: [],
+        language: 'sv'
+      },
+      isLoading: false,
+      error: null,
+      refetch: vi.fn(),
+      isError: false,
+      isSuccess: true,
+      status: 'success',
+      mutate: vi.fn()
+    } as unknown as SWRResponse<Document | undefined, Error>)
+
+    render(<LayoutPanelContent {...mockProps} />)
+
+    capturedOnLayoutSlotChange?.('Slot B')
+
+    expect(mockSetAdditionals).toHaveBeenCalledWith([])
   })
 })

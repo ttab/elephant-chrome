@@ -107,7 +107,7 @@ export const useAssignments = ({
     }
 
     if (!Array.isArray(data)) {
-      return void mutate()
+      return
     }
 
     for (const slot of structuredData) {
@@ -125,10 +125,10 @@ export const useAssignments = ({
       }
     }
 
-    // Fallback: if the event is a document change, we need to refetch, or we can find new documents
-    // temp fix until we have a more fine grained way, aka websocket api.
-    // Should rely on swr cache, and not refresh unless the changed document is relevant
-    if (event.event === 'document') {
+    // Only refetch for planning-item document events, as those can introduce
+    // new assignments. Article/flash/editorial-info events only matter if they
+    // match a known assignment (handled above).
+    if (event.event === 'document' && event.type === 'core/planning-item') {
       void mutate()
     }
   })

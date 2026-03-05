@@ -20,8 +20,7 @@ import { EditorialInfoTypes } from '@/components/EditorialInfoTypes'
 import { ContentSource } from '@/components/ContentSource'
 import type * as Y from 'yjs'
 
-export function MetaSheet({ container, ydoc, readOnly, readOnlyVersion }: {
-  container: HTMLElement | null
+export function MetaSheet({ ydoc, readOnly, readOnlyVersion }: {
   ydoc: YDocument<Y.Map<unknown>>
   readOnly?: boolean
   readOnlyVersion?: bigint
@@ -31,7 +30,7 @@ export function MetaSheet({ container, ydoc, readOnly, readOnlyVersion }: {
   const [isOpen, setIsOpen] = useState(false)
 
   return (
-    <Sheet onOpenChange={setIsOpen}>
+    <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger className='rounded-md  w-9 h-9 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-table-focused'>
         {!isOpen
           ? <PanelRightOpenIcon size={18} strokeWidth={1.75} />
@@ -41,9 +40,9 @@ export function MetaSheet({ container, ydoc, readOnly, readOnlyVersion }: {
       <SheetDescription />
 
       <SheetContent
-        container={container}
         className='w-100vw h-100vh z-50 p-0 flex flex-col justify-between'
         defaultClose={false}
+        onCloseAutoFocus={(e) => e.preventDefault()}
       >
         <div>
           <SheetHeader>
@@ -89,6 +88,7 @@ export function MetaSheet({ container, ydoc, readOnly, readOnlyVersion }: {
                       <div id='content-source'>
                         <ContentSource ydoc={ydoc} path='links.core/content-source' />
                       </div>
+
                     </>
                   )}
 

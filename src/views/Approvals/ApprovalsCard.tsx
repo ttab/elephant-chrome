@@ -10,7 +10,6 @@ import { AvatarGroup } from '@/components/AvatarGroup'
 import { Popover, PopoverContent, PopoverTrigger, Tooltip } from '@ttab/elephant-ui'
 import { AuthorNames } from './AuthorNames'
 import { CAUSE_KEYS } from '@/defaults/causekeys'
-import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
 import { TimeCard } from './TimeCard'
 import type { TrackedDocument } from '@/hooks/useTrackedDocuments'
 
@@ -25,7 +24,6 @@ export const ApprovalsCard = ({ trackedDocument, assignment, isSelected, isFocus
   const sections = useSections()
   const openArticle = useLink('Editor')
   const openFlash = useLink('Flash')
-  const [documentStatus] = useWorkflowStatus({ documentId: assignment._deliverableId })
 
   const openType = (assignmentType: string) => assignmentType === 'core/flash' ? openFlash : openArticle
 
@@ -42,7 +40,7 @@ export const ApprovalsCard = ({ trackedDocument, assignment, isSelected, isFocus
 
   const internalInfo = assignment._deliverableDocument?.meta.find((block) => block.type === 'core/note' && block.role === 'internal')?.data?.text
 
-  const cause = documentStatus?.cause ? CAUSE_KEYS[documentStatus.cause as keyof typeof CAUSE_KEYS].short : ''
+  const cause = assignment._deliverableCause ? CAUSE_KEYS[assignment._deliverableCause as keyof typeof CAUSE_KEYS]?.short ?? '' : ''
 
   return (
     <Card.Root

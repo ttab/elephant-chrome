@@ -24,10 +24,10 @@ export const ViewMap: Record<DocumentView, ViewConfig> = {
   },
   QuickArticle: {
     icon: NewspaperIcon,
-    baseTitle: 'Snabbartikel',
-    newDialogTitle: 'Skapa ny snabbartikel',
+    baseTitle: 'Två på två',
+    newDialogTitle: 'Skapa ny två på två',
     iconColor: '#aabbcc',
     linkTarget: 'Planning',
-    statusErrorText: 'Kunde inte ändra status på snabbartikel! Det gick inte att hitta en kopplad planering.'
+    statusErrorText: 'Kunde inte ändra status på artikel! Det gick inte att hitta en kopplad planering.'
   }
 }

@@ -34,148 +34,153 @@ export interface StatusSpecification {
   className: string
 }
 
-const baseDeliverable: WorkflowSpecification = {
-  draft: {
-    title: 'Utkast',
-    description: 'Du jobbar på ett utkast av artikeln',
-    isWorkflow: true,
-    requireCause: true,
-    transitions: {
-      done: {
-        default: true,
-        verify: true,
-        title: 'Klarmarkera',
-        description: 'Markera artikeln som klar'
-      },
-      approved: {
-        verify: true,
-        title: 'Godkänn',
-        description: 'Godkänn artikeln för publicering'
-      },
-      usable: {
-        verify: true,
-        title: 'Publicera',
-        description: 'Publicera artikeln'
-      },
-      withheld: {
-        verify: true,
-        title: 'Schemalägg publicering',
-        description: 'Ange datum och tid för publicering'
+const baseDeliverable = (type: 'article' | 'flash'): WorkflowSpecification => {
+  const typeLabel = type === 'flash' ? 'flashen' : 'artikeln'
+  const typeLabelCap = typeLabel.charAt(0).toUpperCase() + typeLabel.slice(1)
+
+  return {
+    draft: {
+      title: 'Utkast',
+      description: `Du jobbar på ett utkast av ${typeLabel}`,
+      isWorkflow: true,
+      requireCause: true,
+      transitions: {
+        done: {
+          default: true,
+          verify: true,
+          title: 'Klarmarkera',
+          description: `Markera ${typeLabel} som klar`
+        },
+        approved: {
+          verify: true,
+          title: 'Godkänn',
+          description: `Godkänn ${typeLabel} för publicering`
+        },
+        usable: {
+          verify: true,
+          title: 'Publicera',
+          description: `Publicera ${typeLabel}`
+        },
+        withheld: {
+          verify: true,
+          title: 'Schemalägg publicering',
+          description: 'Ange datum och tid för publicering'
+        }
       }
-    }
-  },
-  done: {
-    title: 'Klar',
-    requireCause: true,
-    description: 'Artikeln är klar och väntar på godkännande',
-    isWorkflow: true,
-    transitions: {
-      approved: {
-        default: true,
-        verify: true,
-        title: 'Godkänn',
-        description: 'Godkänn artikeln för publicering'
-      },
-      usable: {
-        verify: true,
-        title: 'Publicera',
-        description: 'Publicera artikeln direkt'
-      },
-      withheld: {
-        verify: true,
-        title: 'Schemalägg publicering',
-        description: 'Ange datum och tid för publicering'
-      },
-      draft: {
-        verify: true,
-        title: 'Till utkast',
-        description: 'Gör om artikeln till ett utkast igen'
-      },
-      unpublished: {
-        verify: true,
-        title: 'Avpublicera',
-        description: 'Avbryt och arkivera artikeln'
+    },
+    done: {
+      title: 'Klar',
+      requireCause: true,
+      description: `${typeLabelCap} är klar och väntar på godkännande`,
+      isWorkflow: true,
+      transitions: {
+        approved: {
+          default: true,
+          verify: true,
+          title: 'Godkänn',
+          description: `Godkänn ${typeLabel} för publicering`
+        },
+        usable: {
+          verify: true,
+          title: 'Publicera',
+          description: `Publicera ${typeLabel} direkt`
+        },
+        withheld: {
+          verify: true,
+          title: 'Schemalägg publicering',
+          description: 'Ange datum och tid för publicering'
+        },
+        draft: {
+          verify: true,
+          title: 'Till utkast',
+          description: `Gör om ${typeLabel} till ett utkast igen`
+        },
+        unpublished: {
+          verify: true,
+          title: 'Avpublicera',
+          description: `Avbryt och arkivera ${typeLabel}`
+        }
       }
-    }
-  },
-  approved: {
-    title: 'Godkänd',
-    description: 'Artikeln är godkänd att publicera',
-    isWorkflow: true,
-    requireCause: true,
-    transitions: {
-      usable: {
-        default: true,
-        verify: true,
-        title: 'Publicera',
-        description: 'Publicera artikeln'
-      },
-      withheld: {
-        verify: true,
-        title: 'Schemalägg publicering',
-        description: 'Ange datum och tid för publicering'
-      },
-      draft: {
-        verify: true,
-        title: 'Till utkast',
-        description: 'Gör om artikeln till ett utkast igen'
-      },
-      unpublished: {
-        verify: true,
-        title: 'Avpublicera',
-        description: 'Avbryt och arkivera artikeln'
+    },
+    approved: {
+      title: 'Godkänd',
+      description: `${typeLabelCap} är godkänd att publicera`,
+      isWorkflow: true,
+      requireCause: true,
+      transitions: {
+        usable: {
+          default: true,
+          verify: true,
+          title: 'Publicera',
+          description: `Publicera ${typeLabel}`
+        },
+        withheld: {
+          verify: true,
+          title: 'Schemalägg publicering',
+          description: 'Ange datum och tid för publicering'
+        },
+        draft: {
+          verify: true,
+          title: 'Till utkast',
+          description: `Gör om ${typeLabel} till ett utkast igen`
+        },
+        unpublished: {
+          verify: true,
+          title: 'Avpublicera',
+          description: `Avbryt och arkivera ${typeLabel}`
+        }
       }
-    }
-  },
-  usable: {
-    title: 'Publicerad',
-    description: 'Artikeln är publicerad',
-    isWorkflow: true,
-    requireCause: true,
-    transitions: {
-      draft: {
-        default: true,
-        verify: true,
-        title: 'Ny version',
-        description: 'Fortsätt jobba på en ny version av artikeln'
-      },
-      unpublished: {
-        verify: true,
-        title: 'Avpublicera',
-        description: 'Avbryt publiceringen och arkivera artikeln'
+    },
+    usable: {
+      title: 'Publicerad',
+      description: `${typeLabelCap} är publicerad`,
+      isWorkflow: true,
+      requireCause: true,
+      transitions: {
+        draft: {
+          default: true,
+          verify: true,
+          title: 'Ny version',
+          description: `Fortsätt jobba på en ny version av ${typeLabel}`
+        },
+        unpublished: {
+          verify: true,
+          title: 'Avpublicera',
+          description: `Avbryt publiceringen och arkivera ${typeLabel}`
+        }
       }
-    }
-  },
-  withheld: {
-    title: 'Schemalagd',
-    description: 'Artikeln är schemalagd för automatisk publicering',
-    isWorkflow: true,
-    requireCause: true,
-    transitions: {
-      usable: {
-        default: true,
-        verify: true,
-        title: 'Publicera direkt',
-        description: 'Publicera artikeln direkt'
-      },
-      draft: {
-        verify: true,
-        title: 'Till utkast',
-        description: 'Avbryt schemalagd publicering och gör om till utkast igen'
+    },
+    withheld: {
+      title: 'Schemalagd',
+      description: `${typeLabelCap} är schemalagd för automatisk publicering`,
+      isWorkflow: true,
+      requireCause: true,
+      transitions: {
+        usable: {
+          default: true,
+          verify: true,
+          title: 'Publicera direkt',
+          description: `Publicera ${typeLabel} direkt`
+        },
+        draft: {
+          verify: true,
+          title: 'Till utkast',
+          description: `Avbryt schemalagd publicering och gör om till utkast igen`
+        }
       }
-    }
-  },
-  unpublished: {
-    title: 'Avpublicerad',
-    description: 'Artikeln har avpublicerats',
-    isWorkflow: true,
-    requireCause: true,
-    transitions: {
-      draft: {
-        default: true,
-        verify: true,
-        title: 'Ny version',
-        description: 'Fortsätt jobba på en ny version av artikeln'
+    },
+    unpublished: {
+      title: 'Avpublicerad',
+      description: `${typeLabelCap} har avpublicerats`,
+      isWorkflow: true,
+      requireCause: true,
+      transitions: {
+        draft: {
+          default: true,
+          verify: true,
+          title: 'Ny version',
+          description: `Fortsätt jobba på en ny version av ${typeLabel}`
+        }
       }
     }
   }
@@ -356,8 +361,8 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
       }
     }
   },
-  'core/article': baseDeliverable,
-  'core/flash': baseDeliverable,
+  'core/article': baseDeliverable('article'),
+  'core/flash': baseDeliverable('flash'),
   // Factbox workflow needs to be defined
   'core/factbox': {
     draft: {

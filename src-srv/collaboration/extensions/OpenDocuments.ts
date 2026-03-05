@@ -65,7 +65,7 @@ interface EleConnectedPayload extends connectedPayload {
  */
 export class OpenDocuments implements Extension {
   readonly priority = 1
-  readonly #name = 'tracked-documents'
+  readonly #name = 'tracked-documents-v1'
   readonly #mapName = 'documents'
   readonly #prefix = 'instance'
   readonly #instanceId: string

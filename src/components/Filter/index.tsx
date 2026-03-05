@@ -29,11 +29,12 @@ export const Filter = ({ pages, setPages, setSearch, children }:
           size='xs'
           role='combobox'
           aria-expanded={open}
+          className='h-9 w-9'
         >
           <ListFilterIcon
             size={18}
             strokeWidth={1.75}
-            className='@3xl/view:shrink-0 @3xl/view:mr-2'
+            className='@3xl/view:shrink-0'
           />
         </Button>
       </PopoverTrigger>

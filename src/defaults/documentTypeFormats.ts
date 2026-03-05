@@ -29,7 +29,7 @@ export const documentTypeValueFormat: Record<string, { icon: LucideIcon, key: st
   },
   'core/article': {
     icon: NewspaperIcon,
-    label: 'Artikel',
+    label: 'Två på två',
     key: 'Article',
     color: '#50BEBF'
   },

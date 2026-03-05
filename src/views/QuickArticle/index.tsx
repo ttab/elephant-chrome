@@ -45,6 +45,7 @@ export const QuickArticle = (props: ViewProps & {
       version: 0n,
       isMetaDocument: false,
       mainDocument: '',
+      subset: [],
       document: props.document || getTemplateFromView('QuickArticle')(documentId)
     })
   }, [documentId, props.document])
@@ -53,7 +54,7 @@ export const QuickArticle = (props: ViewProps & {
   if ((!props.asDialog && !documentId) || typeof documentId !== 'string') {
     return (
       <Error
-        title='Snabbartikel saknas'
+        title='Dokument saknas'
         message='Inget artikeldokument är angivet. Navigera tillbaka till översikten och försök igen.'
       />
     )

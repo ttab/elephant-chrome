@@ -1,5 +1,4 @@
-import { useView } from '@/hooks'
-import { useRef, useEffect, type JSX } from 'react'
+import { type JSX } from 'react'
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { ViewHeader } from '@/components/View'
 import { GanttChartSquareIcon } from '@ttab/elephant-ui/icons'
@@ -20,14 +19,8 @@ export const PlanningHeader = ({ ydoc, asDialog, onDialogClose, session, provide
   status: 'authenticated' | 'loading' | 'unauthenticated'
 
 }): JSX.Element => {
-  const { viewId } = useView()
-  const containerRef = useRef<HTMLElement | null>(null)
   const [planningData] = useYValue<PlanningData>(ydoc.ele, 'meta.core/planning-item[0].data')
   const [planningTitle] = useYValue<string>(ydoc.ele, 'root.title')
-
-  useEffect(() => {
-    containerRef.current = (document.getElementById(viewId))
-  }, [viewId])
 
   return (
     <ViewHeader.Root asDialog={asDialog}>
@@ -68,7 +61,7 @@ export const PlanningHeader = ({ ydoc, asDialog, onDialogClose, session, provide
 
       <ViewHeader.Action ydoc={ydoc} onDialogClose={onDialogClose} asDialog={asDialog}>
         {!asDialog && ydoc && (
-          <MetaSheet container={containerRef.current} ydoc={ydoc} />
+          <MetaSheet ydoc={ydoc} />
         )}
       </ViewHeader.Action>
     </ViewHeader.Root>
