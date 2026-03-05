@@ -6,7 +6,7 @@ import type * as Y from 'yjs'
 import type { Repository } from '@/shared/Repository'
 import { toast } from 'sonner'
 
-export const onSaveFactbox = async ({
+export const handleSaveFactbox = async function ({
   id,
   content,
   repository,
@@ -20,9 +20,10 @@ export const onSaveFactbox = async ({
   documentLanguage: string
   accessToken: string
   onClose: () => void
-}) => {
+}) {
   if (!id || !content || !repository || !accessToken) {
-    return
+    toast.error('Kunde inte spara faktaruta!')
+    throw new Error('Could not save factbox: missing data')
   }
 
   const { children } = yTextToSlateElement(content)
@@ -36,21 +37,26 @@ export const onSaveFactbox = async ({
     return
   }
 
+  if (!documentLanguage) {
+    toast.error('Kunde inte spara faktaruta!')
+    throw new Error('Could not save factbox: document language missing')
+  }
+
   const factboxBlock = revertFactbox(factboxElement)
 
   const document = Document.create({
     uuid: id,
     type: 'core/factbox',
     uri: `core://factbox/${id}`,
-    language: documentLanguage ?? 'sv-se',
+    language: documentLanguage,
     title: factboxBlock.title,
     content: factboxBlock.content
   })
 
   await repository.saveDocument(document, accessToken, 'usable')
     .then(() => toast.success('Faktarutan har sparats'))
-    .catch(() => {
-      throw new Error('Could not save factbox')
+    .catch((error) => {
+      throw new Error('Could not save factbox', { cause: error })
     })
     .finally(() => onClose?.())
 }

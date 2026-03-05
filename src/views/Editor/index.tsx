@@ -26,7 +26,7 @@ import { useYDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import { useSession } from 'next-auth/react'
 import { CreatePrompt } from '@/components/CreatePrompt'
-import { onSaveFactbox } from '@/lib/onSaveFactbox'
+import { handleSaveFactbox } from '@/lib/handleSaveFactbox'
 
 // Metadata definition
 const meta: ViewMetadata = {
@@ -169,24 +169,19 @@ function EditorWrapper(props: ViewProps & {
               if (!repository || !session?.accessToken || !documentLanguage || !content) {
                 return
               }
-
-              try {
-                void (async () => {
-                  await onSaveFactbox({
-                    id: promptState.id,
-                    content,
-                    repository,
-                    accessToken: session?.accessToken,
-                    documentLanguage,
-                    onClose: () => setCreatePrompt(undefined)
-                  })
-
-                  promptState.onSuccess()
-                })()
-              } catch (error) {
+              handleSaveFactbox({
+                id: promptState.id,
+                content,
+                repository,
+                accessToken: session?.accessToken,
+                documentLanguage,
+                onClose: () => setCreatePrompt(undefined)
+              }).then(() => {
+                promptState.onSuccess()
+              }).catch((error) => {
+                toast.error('Kunde inte spara faktarutan!')
                 console.error(error)
-                toast.error('Det uppstod ett fel när faktarutan sparades')
-              }
+              })
             }}
             onSecondary={() => {
               setCreatePrompt(undefined)
