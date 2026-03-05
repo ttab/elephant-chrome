@@ -24,7 +24,7 @@ export const Toolbar = <TData,>(): JSX.Element => {
   const handleResetFilters = useCallback(() => {
     table.resetColumnFilters()
     table.resetGlobalFilter()
-    setFilter({ query: [] })
+    setFilter({})
   }, [table, setFilter])
 
   return (
