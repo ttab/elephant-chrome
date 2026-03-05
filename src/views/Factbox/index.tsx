@@ -7,7 +7,7 @@ import { getValueByYPath } from '@/shared/yUtils'
 import { Form, UserMessage, View } from '@/components'
 import { FactboxHeader } from './FactboxHeader'
 import { Error } from '@/views/Error'
-import { useMemo, useState, type JSX } from 'react'
+import { useMemo, type JSX } from 'react'
 import { contentMenuLabels } from '@/defaults/contentMenuLabels'
 import { useYDocument, useYValue } from '@/modules/yjs/hooks'
 import { getTemplateFromView } from '@/shared/templates/lib/getTemplateFromView'
@@ -37,7 +37,6 @@ const meta: ViewMetadata = {
 const Factbox = (props: ViewProps & { document?: Document }): JSX.Element => {
   const [query] = useQuery()
   const documentId = props.id || query.id
-
   // Factbox should be responsible for creating new as well as editing
   const data = useMemo(() => {
     if (!props.document || !documentId || typeof documentId !== 'string') {
@@ -103,6 +102,7 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
         <FactboxHeader
           ydoc={ydoc}
           onDialogClose={props.onDialogClose}
+          asDialog={!!props?.asDialog}
         />
 
         <View.Content className='flex flex-col max-w-[1000px]' variant='grid'>
