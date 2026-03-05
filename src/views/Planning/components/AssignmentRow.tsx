@@ -2,7 +2,7 @@ import { AssignmentTimeDisplay } from '@/components/DataItem/AssignmentTimeDispl
 import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { AssigneeAvatars } from '@/components/DataItem/AssigneeAvatars'
 import type { DotDropdownMenuActionItem } from '@/components/ui/DotMenu'
-import { DotDropdownMenu } from '@/components/ui/DotMenu'
+import { DotMenu } from '@/components/ui/DotMenu'
 import {
   AlarmClockCheckIcon,
   Clock1Icon,
@@ -44,6 +44,7 @@ import { useRepositoryEvents } from '@/hooks/useRepositoryEvents'
 import { type YDocument, useYValue } from '@/modules/yjs/hooks'
 import { toast } from 'sonner'
 import { AssignmentStatus } from './AssignmentStatus'
+import { RelatedWires } from './RelatedWires'
 
 export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDialog }: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -83,6 +84,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
   const [endTime] = useYValue<string>(assignment, 'data.end')
   const [publishSlot] = useYValue<string>(assignment, 'data.publish_slot')
   const [authors = []] = useYValue<Block[]>(assignment, 'links.core/author')
+  const [wires] = useYValue<Block[]>(assignment, 'links.tt/wire')
   const [slugline] = useYValue<string>(assignment, 'meta.tt/slugline[0].value')
 
   const [showVerifyDialog, setShowVerifyDialog] = useState<boolean>(false)
@@ -364,7 +366,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
             <PenIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />
           </Button>
 
-          {!inProgress && <DotDropdownMenu items={menuItems} />}
+          {!inProgress && <DotMenu items={menuItems} />}
         </div>
       </div>
 
@@ -399,6 +401,8 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
           </div>
         )
       }
+
+      <RelatedWires wires={wires} />
 
       <div className='flex flex-row @3xl/view:hidden'>
         <SluglineButton value={slugline} />

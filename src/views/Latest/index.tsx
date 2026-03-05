@@ -6,12 +6,16 @@ import { useRegistry } from '@/hooks/useRegistry'
 import { handleLink } from '@/components/Link/lib/handleLink'
 import { useHistory, useNavigation, useView } from '@/hooks/index'
 import { cn } from '@ttab/elephant-ui/utils'
-import { ActionMenu } from '@/components/ActionMenu'
+import { DotMenu } from '@/components/ui/DotMenu'
+import { Link } from '@/components'
+import { PenIcon, CalendarDaysIcon, LibraryIcon } from '@ttab/elephant-ui/icons'
 import type { HitV1 } from '@ttab/elephant-api/index'
 import { useDeliverablePlanningId } from '@/hooks/index/useDeliverablePlanningId'
 import { useLatest } from './hooks/useLatest'
 import { SluglineButton } from '@/components/DataItem/Slugline'
 import { SectionBadge } from '@/components/DataItem/SectionBadge'
+import { CreatePrintArticle } from '@/components/CreatePrintArticle'
+import { useModal } from '@/components/Modal/useModal'
 
 const meta: ViewMetadata = {
   name: 'Latest',
@@ -123,20 +127,48 @@ const Content = ({ documents, locale }: {
 
 const Menu = ({ articleId }: { articleId: string }): JSX.Element => {
   const planningId = useDeliverablePlanningId(articleId)
+  const { showModal, hideModal } = useModal()
   return (
     <div className='shrink p-'>
-      <ActionMenu
-        actions={[
+      <DotMenu
+        items={[
           {
-            to: 'Editor',
-            id: articleId,
-            title: 'Öppna artikel'
+            label: 'Öppna artikel',
+            item: (
+              <Link to='Editor' target='last' props={{ id: articleId }} className='flex flex-row gap-5'>
+                <div className='pt-1'>
+                  <PenIcon size={14} strokeWidth={1.5} className='shrink' />
+                </div>
+                <div className='grow'>Öppna artikel</div>
+              </Link>
+            )
           },
-
           {
-            to: 'Planning',
-            id: planningId,
-            title: 'Öppna planering'
+            label: 'Öppna planering',
+            disabled: !planningId,
+            item: planningId
+              ? (
+                  <Link to='Planning' target='last' props={{ id: planningId }} className='flex flex-row gap-5'>
+                    <div className='pt-1'>
+                      <CalendarDaysIcon size={14} strokeWidth={1.5} className='shrink' />
+                    </div>
+                    <div className='grow'>Öppna planering</div>
+                  </Link>
+                )
+              : () => {}
+          },
+          {
+            label: 'Skapa printartikel',
+            icon: LibraryIcon,
+            item: () => {
+              showModal(
+                <CreatePrintArticle
+                  id={articleId}
+                  asDialog
+                  onDialogClose={hideModal}
+                />
+              )
+            }
           }
         ]}
       />

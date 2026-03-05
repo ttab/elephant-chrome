@@ -45,6 +45,7 @@ export const QuickArticle = (props: ViewProps & {
       version: 0n,
       isMetaDocument: false,
       mainDocument: '',
+      subset: [],
       document: props.document || getTemplateFromView('QuickArticle')(documentId)
     })
   }, [documentId, props.document])
