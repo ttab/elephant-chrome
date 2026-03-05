@@ -6,7 +6,7 @@ import type * as Y from 'yjs'
 import type { Repository } from '@/shared/Repository'
 import { toast } from 'sonner'
 
-export const handleSaveFactbox = async function ({
+export async function handleSaveFactbox({
   id,
   content,
   repository,
