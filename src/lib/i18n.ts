@@ -4,15 +4,13 @@ import { sv } from '../locales/sv-SE/index'
 import { nb } from '../locales/nb/index'
 import { en } from '../locales/en/index'
 import LanguageDetector from 'i18next-browser-languagedetector'
-import { supportedUILanguages } from '@/shared/getLanguage'
+import { getSystemLanguage, supportedUILanguages } from '@/shared/getSystemLanguage'
 
 const resources = {
   sv,
   nb,
   en
 }
-
-const envLang = process.env.SYSTEM_LANGUAGE ? process.env.SYSTEM_LANGUAGE.split('-')[0] : 'en'
 
 export const i18nInit = i18n
   .use(initReactI18next)
@@ -37,7 +35,12 @@ export const i18nInit = i18n
       const nb = ['nn', 'nb', 'no', 'nb-NO', 'nn-NO'].includes(lng)
       if (nb) return 'nb'
 
-      return supportedUILanguages.map((lng) => lng.code).includes(envLang) ? envLang : 'en'
+      try {
+        const langCode = getSystemLanguage().split('-')[0]
+        return supportedUILanguages.map((lng) => lng.code).includes(langCode) ? langCode : 'en'
+      } catch {
+        return 'en'
+      }
     },
     interpolation: {
       escapeValue: false, // React already does escaping,

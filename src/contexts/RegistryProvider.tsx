@@ -7,7 +7,7 @@ import React, {
   type JSX
 } from 'react'
 
-import { getServerUrls } from '@/lib/getServerUrls'
+import { getServerEnvs } from '@/lib/getServerEnvs'
 import { getUserTimeZone } from '@/lib/getUserTimeZone'
 import { Repository } from '@/shared/Repository'
 import { Spellchecker } from '@/shared/Spellchecker'
@@ -16,6 +16,7 @@ import { Workflow } from '@/shared/Workflow'
 import { User } from '@/shared/User'
 import type { LocaleData } from '@/types'
 import { Baboon } from '@/shared/Baboon'
+import { setSystemLanguage } from '@/shared/getSystemLanguage'
 import { DEFAULT_TIMEZONE } from '@/defaults/defaultTimezone'
 import { Collaboration } from '@/defaults'
 import { defaultLocale } from '@/defaults/locale'
@@ -52,6 +53,7 @@ export const initialState: RegistryProviderState = {
   locale: defaultLocale,
   timeZone: getUserTimeZone() || DEFAULT_TIMEZONE,
   userColor: colors[Math.floor(Math.random() * colors.length)],
+
   server: {
     webSocketUrl: new URL('http://localhost'),
     indexUrl: new URL('http://localhost'),
@@ -79,7 +81,8 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
   useEffect(() => {
     const initialize = async () => {
       try {
-        const server = await getServerUrls()
+        const { urls: server, envs } = await getServerEnvs()
+        setSystemLanguage(envs.systemLanguage)
         const locale = defaultLocale
 
         const repository = new Repository(server.repositoryUrl.href)
