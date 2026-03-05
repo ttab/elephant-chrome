@@ -27,7 +27,7 @@ export const FactboxHeader = ({ ydoc, onDialogClose }: {
               <StatusMenu
                 ydoc={ydoc}
               />
-              <MetaSheet container={containerRef.current} ydoc={ydoc} />
+              <MetaSheet ydoc={ydoc} />
             </>
             {!!ydoc && <ViewHeader.RemoteUsers ydoc={ydoc} />}
           </div>
