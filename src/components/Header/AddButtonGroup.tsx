@@ -25,6 +25,7 @@ import { useLink } from '@/hooks/useLink'
 import { useRegistry } from '@/hooks/index'
 import { useSession } from 'next-auth/react'
 import { createNewFactbox } from './lib/createNewFactbox'
+import { toast } from 'sonner'
 
 type Variant = VariantProps<typeof buttonVariants>['variant']
 type ButtonView = { name: View, type: string, icon?: { icon?: LucideIcon, color?: string } }
@@ -66,6 +67,7 @@ const AddButton = ({
             createNewFactbox(repository, session)
               .then((id) => openFactboxEditor(undefined, { id }, undefined)).catch((error) => {
                 console.error('Error creating Factbox document:', error)
+                toast.error('Kan inte skapa faktaruta')
               })
           } else {
             showModal(
