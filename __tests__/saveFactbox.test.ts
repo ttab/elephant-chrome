@@ -24,7 +24,7 @@ vi.mock('@ttab/textbit', () => ({
 
 vi.mock('sonner')
 
-import { handleSaveFactbox } from '@/lib/handleSaveFactbox'
+import { saveFactbox } from '@/lib/saveFactbox'
 import { yTextToSlateElement } from '@slate-yjs/core'
 import { revertFactbox } from '@/shared/transformations/newsdoc/core/factbox'
 import { TextbitElement } from '@ttab/textbit'
@@ -38,7 +38,7 @@ const mockFactboxElement = {
   properties: { original_id: TEST_ID }
 }
 
-describe('handleSaveFactbox', () => {
+describe('saveFactbox', () => {
   let mockRepository: Repository
 
   const makeParams = (overrides: Record<string, unknown> = {}) => ({
@@ -65,14 +65,14 @@ describe('handleSaveFactbox', () => {
 
   it('should throw error if passed parameters are incomplete', async () => {
     const params = makeParams({ id: '' })
-    await expect(handleSaveFactbox(params as unknown as Parameters<typeof handleSaveFactbox>[0]))
+    await expect(saveFactbox(params as unknown as Parameters<typeof saveFactbox>[0]))
       .rejects.toThrow('Could not save factbox: missing data')
     expect(toast.error).toHaveBeenCalledWith('Kunde inte spara faktaruta!')
   })
 
   it('should throw error if there is no documentLanguage', async () => {
     const params = makeParams({ documentLanguage: '' })
-    await expect(handleSaveFactbox(params as unknown as Parameters<typeof handleSaveFactbox>[0]))
+    await expect(saveFactbox(params as unknown as Parameters<typeof saveFactbox>[0]))
       .rejects.toThrow('Could not save factbox: document language missing')
     expect(toast.error).toHaveBeenCalledWith('Kunde inte spara faktaruta!')
   })
@@ -81,7 +81,7 @@ describe('handleSaveFactbox', () => {
     (mockRepository.saveDocument as Mock).mockResolvedValue(undefined)
 
     const params = makeParams()
-    await expect(handleSaveFactbox(params as unknown as Parameters<typeof handleSaveFactbox>[0]))
+    await expect(saveFactbox(params as unknown as Parameters<typeof saveFactbox>[0]))
       .resolves.toBeUndefined()
 
     // eslint-disable-next-line @typescript-eslint/unbound-method

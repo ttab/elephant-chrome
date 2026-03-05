@@ -26,7 +26,7 @@ import { useYDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import { useSession } from 'next-auth/react'
 import { CreatePrompt } from '@/components/CreatePrompt'
-import { handleSaveFactbox } from '@/lib/handleSaveFactbox'
+import { saveFactbox } from '@/lib/saveFactbox'
 
 // Metadata definition
 const meta: ViewMetadata = {
@@ -110,7 +110,7 @@ function EditorWrapper(props: ViewProps & {
   const { data: session } = useSession()
   const [promptState, setCreatePrompt] = useState<{ id: string, onSuccess: () => void } | undefined>()
 
-  const onSaveFactboxToArchive = useCallback((id: string, onSuccess: () => void) => {
+  const onSaveFactbox = useCallback((id: string, onSuccess: () => void) => {
     setCreatePrompt({ id, onSuccess })
   }, [])
 
@@ -139,10 +139,10 @@ function EditorWrapper(props: ViewProps & {
         factboxNewTitle: 'Fakta',
         saveToArchiveLabel: 'Spara till arkivet',
         unsavedLabel: 'Faktarutan har inte sparats till arkivet',
-        onSave: onSaveFactboxToArchive
+        onSave: onSaveFactbox
       })
     ]
-  }, [openFactboxEditor, openFactboxes, openImageSearch, onSaveFactboxToArchive])
+  }, [openFactboxEditor, openFactboxes, openImageSearch, onSaveFactbox])
 
   if (!content) {
     return <View.Root />
@@ -169,7 +169,7 @@ function EditorWrapper(props: ViewProps & {
               if (!repository || !session?.accessToken || !documentLanguage || !content) {
                 return
               }
-              handleSaveFactbox({
+              saveFactbox({
                 id: promptState.id,
                 content,
                 repository,
