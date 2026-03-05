@@ -395,11 +395,6 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
           verify: false,
           title: 'Kasta',
           description: 'Ta bort faktarutan'
-        },
-        published: {
-          verify: false,
-          title: 'Uppdatera',
-          description: 'Uppdatera den publicerade faktarutan med ändringarna'
         }
       }
     },
