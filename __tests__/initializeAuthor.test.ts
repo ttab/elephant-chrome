@@ -6,7 +6,6 @@ import type { Repository } from '@/shared/Repository'
 import { toast } from 'sonner'
 import type { Session } from 'next-auth'
 import i18n from 'i18next'
-import i18next from 'i18next'
 
 vi.mock('@/shared/Index')
 vi.mock('@/shared/Repository')
@@ -122,7 +121,7 @@ describe('initializeAuthor', () => {
       })
     ).rejects.toThrow('Failed to initialize author: Failed to create author doc')
 
-    expect(toast.error).toHaveBeenCalledWith(i18next.t('errors:toasts.authorSaveFailure', { errorMessage: 'Failed to create author doc' }))
+    expect(toast.error).toHaveBeenCalledWith(i18n.t('errors:toasts.authorSaveFailure', { errorMessage: 'Failed to create author doc' }))
   })
 
   it('should throw an error if multiple author documents are found', async () => {
