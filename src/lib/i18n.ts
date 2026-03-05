@@ -27,7 +27,7 @@ export async function initI18n(): Promise<typeof i18n> {
       caches: ['localStorage']
     },
     resources,
-    debug: process.env.NODE_ENV !== 'production',
+    debug: !['production', 'test'].includes(process.env.NODE_ENV ?? ''),
     fallbackLng: (lng) => {
       if (['nn', 'nb', 'no', 'nb-NO', 'nn-NO'].includes(lng)) return 'nb'
 
