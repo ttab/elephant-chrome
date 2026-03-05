@@ -1,5 +1,5 @@
 import type { JSX } from 'react'
-import { useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { View } from '@/components'
 import { Notes } from '@/components/Notes'
 import { Bold, Italic, Link, Text, TTVisual, Factbox, Table, LocalizedQuotationMarks } from '@ttab/textbit-plugins'
@@ -7,21 +7,26 @@ import { ImageSearchPlugin } from '../../plugins/ImageSearch'
 import { FactboxPlugin } from '../../plugins/Factboxes'
 import { Editor as PlainEditor } from '@/components/PlainEditor'
 import { BaseEditor } from '@/components/Editor/BaseEditor'
+import { toast } from 'sonner'
 
 import {
   useQuery,
   useLink,
-  useWorkflowStatus
+  useWorkflowStatus,
+  useRegistry
 } from '@/hooks'
 import type { ViewMetadata, ViewProps } from '@/types'
 import { EditorHeader } from './EditorHeader'
-import { Error } from '../Error'
+import { Error as ErrorComponent } from '../Error'
 
 import { getValueByYPath } from '@/shared/yUtils'
 import { contentMenuLabels } from '@/defaults/contentMenuLabels'
 import type { YDocument } from '@/modules/yjs/hooks'
 import { useYDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
+import { useSession } from 'next-auth/react'
+import { CreatePrompt } from '@/components/CreatePrompt'
+import { onSaveFactbox } from '@/lib/onSaveFactbox'
 
 // Metadata definition
 const meta: ViewMetadata = {
@@ -51,7 +56,7 @@ const Editor = (props: ViewProps): JSX.Element => {
   // Error handling for missing document
   if (!documentId || typeof documentId !== 'string') {
     return (
-      <Error
+      <ErrorComponent
         title='Artikeldokument saknas'
         message='Inget artikeldokument är angivet. Navigera tillbaka till översikten och försök igen.'
       />
@@ -101,6 +106,13 @@ function EditorWrapper(props: ViewProps & {
   const openFactboxEditor = useLink('Factbox')
   const openImageSearch = useLink('ImageSearch')
   const openFactboxes = useLink('Factboxes')
+  const { repository } = useRegistry()
+  const { data: session } = useSession()
+  const [promptState, setCreatePrompt] = useState<{ id: string, onSuccess: () => void } | undefined>()
+
+  const onSaveFactboxToArchive = useCallback((id: string, onSuccess: () => void) => {
+    setCreatePrompt({ id, onSuccess })
+  }, [])
 
   // Plugin configuration
   const configuredPlugins = useMemo(() => {
@@ -123,10 +135,14 @@ function EditorWrapper(props: ViewProps & {
         onEditOriginal: (id: string) => {
           openFactboxEditor(undefined, { id })
         },
-        removable: true
+        removable: true,
+        factboxNewTitle: 'Fakta',
+        saveToArchiveLabel: 'Spara till arkivet',
+        unsavedLabel: 'Faktarutan har inte sparats till arkivet',
+        onSave: onSaveFactboxToArchive
       })
     ]
-  }, [openFactboxEditor, openFactboxes, openImageSearch])
+  }, [openFactboxEditor, openFactboxes, openImageSearch, onSaveFactboxToArchive])
 
   if (!content) {
     return <View.Root />
@@ -142,7 +158,41 @@ function EditorWrapper(props: ViewProps & {
         lang={documentLanguage}
       >
         <EditorHeader ydoc={ydoc} planningId={props.planningId} readOnly={props.preview} />
+        {promptState && (
+          <CreatePrompt
+            key='createFactbox'
+            title='Spara faktaruta'
+            description='Vill du spara faktarutan till arkivet?'
+            secondaryLabel='Avbryt'
+            primaryLabel='Spara'
+            onPrimary={() => {
+              if (!repository || !session?.accessToken || !documentLanguage || !content) {
+                return
+              }
 
+              try {
+                void (async () => {
+                  await onSaveFactbox({
+                    id: promptState.id,
+                    content,
+                    repository,
+                    accessToken: session?.accessToken,
+                    documentLanguage,
+                    onClose: () => setCreatePrompt(undefined)
+                  })
+
+                  promptState.onSuccess()
+                })()
+              } catch (error) {
+                console.error(error)
+                toast.error('Det uppstod ett fel när faktarutan sparades')
+              }
+            }}
+            onSecondary={() => {
+              setCreatePrompt(undefined)
+            }}
+          />
+        )}
         <Notes ydoc={ydoc} />
 
         <View.Content className='flex flex-col max-w-[1000px]'variant='grid'>
