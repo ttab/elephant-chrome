@@ -1,11 +1,13 @@
 import '@testing-library/jest-dom'
 import { TextEncoder, TextDecoder } from 'util'
 import { setSystemLanguage } from './shared/getSystemLanguage'
+import { initI18n } from './src/lib/i18n'
 export * from '@testing-library/react'
 
 const TESTING_LANGUAGE = 'sv-se'
 
 setSystemLanguage(TESTING_LANGUAGE)
+await initI18n()
 
 /**
  * Global test setup file for Vitest

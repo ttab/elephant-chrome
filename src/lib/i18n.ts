@@ -12,38 +12,30 @@ const resources = {
   en
 }
 
-export const i18nInit = i18n
-  .use(initReactI18next)
-  .use(LanguageDetector)
-  .init({
-    // lng: language, // Default
+// Register plugins at module load so useTranslation() can find the i18n instance.
+// Actual initialization is deferred to initI18n() so that systemLanguage is
+// available when fallbackLng runs.
+i18n.use(initReactI18next).use(LanguageDetector)
+
+export function initI18n(): ReturnType<typeof i18n.init> {
+  return i18n.init({
     ns: ['common', 'core', 'planning', 'shared', 'app', 'views', 'editor', 'workflows', 'factbox', 'event', 'metaSheet', 'flash', 'quickArticle', 'errors', 'wires'],
     defaultNS: 'common',
     detection: {
-      // order: defines the priority of detection
-      // navigator: is the browser/system setting
-      // localStorage: i18next saves the preferred language setting as a 'i18nextLng' key in localstorage
       order: ['localStorage'],
-      // This is the default key used by i18next
       lookupLocalStorage: 'i18nextLng',
-      // Ensures changeLanguage() updates localstorage
       caches: ['localStorage']
     },
     resources,
-    debug: process.env.NODE_ENV !== 'production', // Useful during development to see loading errors
+    debug: process.env.NODE_ENV !== 'production',
     fallbackLng: (lng) => {
-      const nb = ['nn', 'nb', 'no', 'nb-NO', 'nn-NO'].includes(lng)
-      if (nb) return 'nb'
+      if (['nn', 'nb', 'no', 'nb-NO', 'nn-NO'].includes(lng)) return 'nb'
 
-      try {
-        const langCode = getSystemLanguage().split('-')[0]
-        return supportedUILanguages.map((lng) => lng.code).includes(langCode) ? langCode : 'en'
-      } catch {
-        return 'en'
-      }
+      const langCode = getSystemLanguage().split('-')[0]
+      return supportedUILanguages.map((l) => l.code).includes(langCode) ? langCode : 'en'
     },
     interpolation: {
-      escapeValue: false, // React already does escaping,
+      escapeValue: false,
       format: (value, formatStr) => {
         if (typeof value === 'string') {
           if (formatStr === 'lowercase') return value.toLowerCase()
@@ -58,5 +50,6 @@ export const i18nInit = i18n
     load: 'languageOnly',
     nonExplicitSupportedLngs: true
   })
+}
 
 export default i18n

@@ -17,6 +17,7 @@ import { User } from '@/shared/User'
 import type { LocaleData } from '@/types'
 import { Baboon } from '@/shared/Baboon'
 import { setSystemLanguage } from '@/shared/getSystemLanguage'
+import { initI18n } from '@/lib/i18n'
 import { DEFAULT_TIMEZONE } from '@/defaults/defaultTimezone'
 import { Collaboration } from '@/defaults'
 import { defaultLocale } from '@/defaults/locale'
@@ -83,6 +84,8 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
       try {
         const { urls: server, envs } = await getServerEnvs()
         setSystemLanguage(envs.systemLanguage)
+        await initI18n()
+
         const locale = defaultLocale
 
         const repository = new Repository(server.repositoryUrl.href)

@@ -1,5 +1,4 @@
 import ReactDOM from 'react-dom/client'
-import './lib/i18n'
 import { App } from './App.tsx'
 import { ThemeProvider, RegistryProvider } from '@/contexts'
 import { SessionProvider } from './contexts/SessionProvider'
@@ -11,7 +10,6 @@ import { Init } from './components/Init/index.tsx'
 import { UserMessagesReceiver } from './components/UserMessagesReceiver.tsx'
 import { Toaster } from '@ttab/elephant-ui'
 import './index.css'
-import { i18nInit } from './lib/i18n'
 import { SettingsProvider } from './modules/userSettings/SettingsProvider.tsx'
 
 banner()
@@ -22,35 +20,27 @@ if (!root) {
   throw new Error('Can not getElementById("root")')
 }
 
-i18nInit.then(() => {
-  ReactDOM.createRoot(root).render(
-    <>
-      <IndexedDBProvider>
-        <RegistryProvider>
-          <SessionProvider>
-            <RepositoryEventsProvider>
-              <SupportedLanguagesProvider>
-                <ThemeProvider defaultTheme='light' storageKey='ele-ui-theme'>
-                  <Init>
-                    <SettingsProvider application='se.ecms.elephant-chrome'>
-                      <UserMessagesReceiver>
-                        <App />
-                      </UserMessagesReceiver>
-                    </SettingsProvider>
-                  </Init>
-                </ThemeProvider>
-              </SupportedLanguagesProvider>
-            </RepositoryEventsProvider>
-          </SessionProvider>
-        </RegistryProvider>
-      </IndexedDBProvider>
-      <Toaster />
-    </>
-  )
-})
-  .catch((error) => {
-    console.error(error)
-    ReactDOM.createRoot(root).render(
-      <>No translation resources</>
-    )
-  })
+ReactDOM.createRoot(root).render(
+  <>
+    <IndexedDBProvider>
+      <RegistryProvider>
+        <SessionProvider>
+          <RepositoryEventsProvider>
+            <SupportedLanguagesProvider>
+              <ThemeProvider defaultTheme='light' storageKey='ele-ui-theme'>
+                <Init>
+                  <SettingsProvider application='se.ecms.elephant-chrome'>
+                    <UserMessagesReceiver>
+                      <App />
+                    </UserMessagesReceiver>
+                  </SettingsProvider>
+                </Init>
+              </ThemeProvider>
+            </SupportedLanguagesProvider>
+          </RepositoryEventsProvider>
+        </SessionProvider>
+      </RegistryProvider>
+    </IndexedDBProvider>
+    <Toaster />
+  </>
+)
