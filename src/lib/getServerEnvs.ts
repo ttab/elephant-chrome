@@ -61,6 +61,8 @@ export async function getServerEnvs(): Promise<ServerConfig> {
       }
     }
   } catch (ex) {
-    throw new Error('Failed fetching server envs', { cause: ex as Error })
+    const cause = ex instanceof Error ? ex : undefined
+    const detail = cause?.message ? `: ${cause.message}` : ''
+    throw new Error(`Failed fetching server envs${detail}`, { cause })
   }
 }

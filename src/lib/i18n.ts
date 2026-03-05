@@ -19,7 +19,11 @@ i18n.use(initReactI18next).use(LanguageDetector)
 
 export async function initI18n(): Promise<typeof i18n> {
   await i18n.init({
-    ns: ['common', 'core', 'planning', 'shared', 'app', 'views', 'editor', 'workflows', 'factbox', 'event', 'metaSheet', 'flash', 'quickArticle', 'errors', 'wires'],
+    ns: [
+      'common', 'core', 'planning', 'shared', 'app',
+      'views', 'editor', 'workflows', 'factbox', 'event',
+      'metaSheet', 'flash', 'quickArticle', 'errors', 'wires'
+    ],
     defaultNS: 'common',
     detection: {
       order: ['localStorage'],
@@ -31,8 +35,12 @@ export async function initI18n(): Promise<typeof i18n> {
     fallbackLng: (lng) => {
       if (['nn', 'nb', 'no', 'nb-NO', 'nn-NO'].includes(lng)) return 'nb'
 
-      const langCode = getSystemLanguage().split('-')[0]
-      return supportedUILanguages.map((l) => l.code).includes(langCode) ? langCode : 'en'
+      try {
+        const langCode = getSystemLanguage().split('-')[0]
+        return supportedUILanguages.map((l) => l.code).includes(langCode) ? langCode : 'en'
+      } catch {
+        return 'en'
+      }
     },
     interpolation: {
       escapeValue: false
@@ -42,9 +50,13 @@ export async function initI18n(): Promise<typeof i18n> {
     nonExplicitSupportedLngs: true
   })
 
-  i18n.services.formatter?.add('lowercase', (value: string) => value.toLowerCase())
-  i18n.services.formatter?.add('capitalize', (value: string) => value.charAt(0).toUpperCase() + value.slice(1))
-  i18n.services.formatter?.add('capitalized', (value: string) => value.charAt(0).toUpperCase() + value.slice(1))
+  if (!i18n.services.formatter) {
+    console.error('i18n formatter service unavailable — custom formatters not registered')
+  } else {
+    i18n.services.formatter.add('lowercase', (value: string) => value.toLowerCase())
+    i18n.services.formatter.add('capitalize', (value: string) => value.charAt(0).toUpperCase() + value.slice(1))
+    i18n.services.formatter.add('capitalized', (value: string) => value.charAt(0).toUpperCase() + value.slice(1))
+  }
 
   return i18n
 }

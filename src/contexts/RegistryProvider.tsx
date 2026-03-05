@@ -78,6 +78,7 @@ export const RegistryContext = createContext(initialState)
 export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element => {
   const [state, dispatch] = useReducer(reducer, initialState)
   const [isInitialized, setIsInitialized] = useState<boolean>(false)
+  const [initError, setInitError] = useState<string | null>(null)
 
   useEffect(() => {
     const initialize = async () => {
@@ -107,16 +108,32 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
         })
         setIsInitialized(true)
       } catch (ex) {
-        if (ex instanceof Error) {
-          console.error(`Failed initializing RegistryProvider, ${ex.message}`, ex)
-        } else {
-          console.error('Failed initializing RegistryProvider: Unknown error')
-        }
+        const message = ex instanceof Error ? ex.message : 'Unknown error'
+        console.error(`Failed initializing RegistryProvider: ${message}`, ex)
+        setInitError(message)
       }
     }
 
     void initialize()
   }, [])
+
+  if (initError) {
+    return (
+      <div className='flex h-screen items-center justify-center p-6'>
+        <div className='max-w-md text-center'>
+          <h1 className='text-2xl font-bold mb-2'>Failed to initialize</h1>
+          <p className='text-sm text-muted-foreground mb-4'>{initError}</p>
+          <button
+            type='button'
+            onClick={() => window.location.reload()}
+            className='px-4 py-2 text-sm font-medium rounded-md bg-primary text-primary-foreground hover:bg-primary/90'
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <RegistryContext.Provider value={{ ...state, dispatch }}>
