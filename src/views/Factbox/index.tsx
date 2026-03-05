@@ -74,7 +74,6 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
   const [content] = getValueByYPath<Y.XmlText>(ydoc.ele, 'content', true)
   const [documentLanguage] = getValueByYPath<string>(ydoc.ele, 'root.language')
   const { status } = useSession()
-  const [errorMessage] = useState<string | null>(null)
   const environmentIsSane = ydoc.provider && status === 'authenticated'
 
   const configuredPlugins = useMemo(() => {
@@ -114,7 +113,6 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
                 <TextInput
                   ydoc={ydoc}
                   value={title}
-                  autoFocus={!!props.asDialog}
                   className={cn(
                     !props.asDialog ? 'ms-[13px]' : 'ms-6 me-5'
                   )}
@@ -137,12 +135,6 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
                 <UserMessage asDialog={!!props?.asDialog} variant='destructive'>
                   Du är utloggad eller har tappat kontakt med systemet.
                   Vänligen försök logga in igen.
-                </UserMessage>
-              )}
-
-              {errorMessage && (
-                <UserMessage asDialog={!!props?.asDialog} variant='destructive'>
-                  {errorMessage}
                 </UserMessage>
               )}
             </div>
