@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, type MouseEvent, type JSX } from 'react'
+import { useState, useEffect, useCallback, type MouseEvent, type JSX, useMemo } from 'react'
 import {
   Command,
   CommandItem,
@@ -17,7 +17,7 @@ export const TimeSelectItem = ({ handleOnSelect, assignment, handleParentOpenCha
   assignment: Y.Map<unknown>
   handleParentOpenChange: (open: boolean) => void
 }): JSX.Element => {
-  const timePickTypes = getTimePickTypes()
+  const timePickTypes = useMemo(() => getTimePickTypes(), [])
   const [open, setOpen] = useState(false)
   const [endTime, setEndTime] = useState('')
   const [data] = useYValue<AssignmentData>(assignment, `data`)
@@ -47,7 +47,7 @@ export const TimeSelectItem = ({ handleOnSelect, assignment, handleParentOpenCha
       setOpen(false)
       handleParentOpenChange(false)
     }
-  }, [valid, endTime, handleOnSelect, handleParentOpenChange])
+  }, [valid, endTime, handleOnSelect, handleParentOpenChange, timePickTypes])
 
   const timePickType = data?.end && data?.start ? timePickTypes.find((t) => t.value === 'start-end-execution') : timePickTypes[0]
 

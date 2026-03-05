@@ -37,7 +37,7 @@ export const i18nInit = i18n
       const nb = ['nn', 'nb', 'no', 'nb-NO', 'nn-NO'].includes(lng)
       if (nb) return 'nb'
 
-      return supportedUILanguages.map((lng) => lng.code).includes(envLang) ? envLang : 'en'
+      return supportedUILanguages.map((l) => l.code).includes(envLang) ? envLang : 'en'
     },
     interpolation: {
       escapeValue: false, // React already does escaping,
