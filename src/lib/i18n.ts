@@ -17,8 +17,8 @@ const resources = {
 // available when fallbackLng runs.
 i18n.use(initReactI18next).use(LanguageDetector)
 
-export function initI18n(): ReturnType<typeof i18n.init> {
-  return i18n.init({
+export async function initI18n(): Promise<typeof i18n> {
+  await i18n.init({
     ns: ['common', 'core', 'planning', 'shared', 'app', 'views', 'editor', 'workflows', 'factbox', 'event', 'metaSheet', 'flash', 'quickArticle', 'errors', 'wires'],
     defaultNS: 'common',
     detection: {
@@ -35,21 +35,18 @@ export function initI18n(): ReturnType<typeof i18n.init> {
       return supportedUILanguages.map((l) => l.code).includes(langCode) ? langCode : 'en'
     },
     interpolation: {
-      escapeValue: false,
-      format: (value, formatStr) => {
-        if (typeof value === 'string') {
-          if (formatStr === 'lowercase') return value.toLowerCase()
-          if (formatStr === 'capitalize' || formatStr === 'capitalized') {
-            return value.charAt(0).toUpperCase() + value.slice(1)
-          }
-        }
-        return value as string
-      }
+      escapeValue: false
     },
     supportedLngs: ['sv', 'nb', 'en'],
     load: 'languageOnly',
     nonExplicitSupportedLngs: true
   })
+
+  i18n.services.formatter?.add('lowercase', (value: string) => value.toLowerCase())
+  i18n.services.formatter?.add('capitalize', (value: string) => value.charAt(0).toUpperCase() + value.slice(1))
+  i18n.services.formatter?.add('capitalized', (value: string) => value.charAt(0).toUpperCase() + value.slice(1))
+
+  return i18n
 }
 
 export default i18n
