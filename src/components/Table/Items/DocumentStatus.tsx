@@ -8,10 +8,9 @@ export const DocumentStatus = ({ type, status }: {
   status: string
 }): JSX.Element => {
   const visualStatus = selectableStatuses.find((s) => s.value === status)
-
   const label = isVisualAssignmentType(type)
     ? visualStatus?.label || null
-    : WorkflowSpecifications['core/article']?.[status]?.title || null
+    : type === 'core/factbox' ? WorkflowSpecifications['core/factbox']?.[status]?.title || null : WorkflowSpecifications['core/article']?.[status]?.title || null
 
   const docStatus = isVisualAssignmentType(type)
     ? { ...visualStatus, ...visualStatus?.iconProps }
