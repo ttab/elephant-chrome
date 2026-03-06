@@ -17,7 +17,6 @@ export const createNewFactbox = async (repository: Repository | undefined, sessi
     await repository.saveDocument(factboxDocument, session.accessToken)
     return id
   } catch (error) {
-    console.error('Error creating Factbox document:', error)
     throw error instanceof Error ? error : new Error('Error creating Factbox document')
   }
 }
