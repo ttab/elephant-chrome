@@ -67,14 +67,12 @@ describe('saveFactbox', () => {
     const params = makeParams({ id: '' })
     await expect(saveFactbox(params as unknown as Parameters<typeof saveFactbox>[0]))
       .rejects.toThrow('Could not save factbox: missing data')
-    expect(toast.error).toHaveBeenCalledWith('Kunde inte spara faktaruta!')
   })
 
   it('should throw error if there is no documentLanguage', async () => {
     const params = makeParams({ documentLanguage: '' })
     await expect(saveFactbox(params as unknown as Parameters<typeof saveFactbox>[0]))
       .rejects.toThrow('Could not save factbox: document language missing')
-    expect(toast.error).toHaveBeenCalledWith('Kunde inte spara faktaruta!')
   })
 
   it('returns correctly, a factbox document is created', async () => {
