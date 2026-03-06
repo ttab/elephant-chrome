@@ -21,7 +21,7 @@ const Note = ({ ydoc, noteIndex, handleRemove }: {
   const [value] = useYValue<Y.XmlText>(ydoc.ele, `meta.core/note[${noteIndex}].data.text`, true)
   const [showVerifyRemove, setShowVerifyDialog] = useState(false)
   const [showVerifyChange, setShowVerifyChange] = useState(false)
-  const { t } = useTranslation('views')
+  const { t } = useTranslation(['views', 'metaSheet'])
 
   const iconProps = {
     strokeWidth: 1.75,
@@ -30,8 +30,8 @@ const Note = ({ ydoc, noteIndex, handleRemove }: {
 
 
   const roles: DefaultValueOption[] = [
-    { value: 'public', label: 'Info till kund', icon: TextIcon, iconProps },
-    { value: 'internal', label: 'Intern info', icon: MessageCircleMoreIcon, iconProps }
+    { value: 'public', label: t('metaSheet:dropDownMenuItems.infoToCustomer'), icon: TextIcon, iconProps },
+    { value: 'internal', label: t('metaSheet:dropDownMenuItems.internalNote'), icon: MessageCircleMoreIcon, iconProps }
   ]
 
   const selectedOptions = roles.filter((r) => r.value === role)
