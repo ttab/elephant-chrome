@@ -118,6 +118,7 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
                   )}
                   label='Rubrik'
                   placeholder='Rubrik'
+                  autoFocus={title?.toString() === 'Fakta:' ? 'end' : true}
                 />
               </Form.Title>
             </Form.Content>
@@ -126,7 +127,6 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
           <div className='flex flex-col gap-4 mb-4 grow'>
             <BaseEditor.Text
               ydoc={ydoc}
-              autoFocus={true}
               editorType='factbox'
             />
 
