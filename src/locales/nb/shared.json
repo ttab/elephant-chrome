@@ -11,7 +11,7 @@
   "assignmentTypes": {
     "text": "Artikkel",
     "flash": "HAST",
-    "editorial-info": "Til red",
+    "editorial-info": "PRIV",
     "graphic": "Grafikk",
     "picture": "Foto",
     "video": "Video",
@@ -63,5 +63,8 @@
   "prompts": {
     "publishBeforeClose": "Vil du publisere endringer innen du stenger?",
     "savedButNotPublished": "Ändringarna er sparede men ikke publisert."
+  },
+  "editorialInfo": {
+    "noteText": "OBS! Denne meldingen er ikke ment for publisering."
   }
 }

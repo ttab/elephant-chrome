@@ -63,5 +63,8 @@
   "prompts": {
     "publishBeforeClose": "Do you want to publish the changes before closing?",
     "savedButNotPublished": "The changes have been saved but not published."
+  },
+  "editorialInfo": {
+    "noteText": "Note! This message is not intended for publication."
   }
 }
