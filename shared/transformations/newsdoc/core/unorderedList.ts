@@ -2,22 +2,30 @@ import { Block } from '@ttab/elephant-api/newsdoc'
 import type { TBElement } from '@ttab/textbit'
 import { toString } from '../../lib/toString.js'
 
-export function transformUnorderedList(element: Block): TBElement {
+function transformList(element: Block, listType: 'core/unordered-list' | 'core/ordered-list'): TBElement {
   return {
     id: element.id || crypto.randomUUID(),
     class: 'text',
-    type: 'core/unordered-list',
+    type: listType,
     children: element.content.map((child: Block) => {
       return {
         id: child.id || crypto.randomUUID(),
         class: 'text',
-        type: 'core/unordered-list/list-item',
+        type: `${listType}/list-item`,
         children: [
           { text: child.data.text }
         ]
       }
     })
   }
+}
+
+export function transformUnorderedList(element: Block): TBElement {
+  return transformList(element, 'core/unordered-list')
+}
+
+export function transformOrderedList(element: Block): TBElement {
+  return transformList(element, 'core/ordered-list')
 }
 
 export function revertUnorderedList(transformedList: TBElement): Block {
