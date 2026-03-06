@@ -178,7 +178,7 @@ export class CollaborationClient {
       websocketProvider: this.#hpWebsocketProvider,
       name: this.#documentName,
       document: this.#document,
-      token: this.#accessToken,
+      token: () => this.#accessToken,
       onAuthenticated: () => {
         console.log('🔐 HP authenticated:', this.#documentName)
       },
