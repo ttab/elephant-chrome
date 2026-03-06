@@ -1,4 +1,4 @@
-import { supportedUILanguages } from '@/shared/getLanguage'
+import { supportedUILanguages } from '@/shared/getSystemLanguage'
 import { Select, SelectContent, SelectItem, SelectTrigger } from '@ttab/elephant-ui'
 import { LanguagesIcon } from 'lucide-react'
 import { type JSX } from 'react'

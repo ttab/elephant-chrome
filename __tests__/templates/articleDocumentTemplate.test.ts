@@ -6,11 +6,6 @@ import type { TemplatePayload } from '@/shared/templates'
 describe('articleDocumentTemplate', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    vi.stubEnv('SYSTEM_LANGUAGE', 'sv-se')
-  })
-
-  afterEach(() => {
-    vi.unstubAllEnvs()
   })
 
   it('creates a document with correct id and type', () => {

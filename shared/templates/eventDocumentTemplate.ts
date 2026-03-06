@@ -3,7 +3,7 @@ import { fromZonedTime } from 'date-fns-tz'
 import type { TemplatePayload } from './index.js'
 import { newLocalDate } from '@/shared/datetime.js'
 import { DEFAULT_TIMEZONE } from '../../src/defaults/defaultTimezone.js'
-import getSystemLanguage from '@/shared/getLanguage.js'
+import { getSystemLanguage } from '@/shared/getSystemLanguage.js'
 
 /**
  * Create a template structure for a event document
