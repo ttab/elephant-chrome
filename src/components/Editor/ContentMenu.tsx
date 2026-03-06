@@ -3,14 +3,13 @@ import { Menu, usePluginRegistry } from '@ttab/textbit'
 import { ContentMenuGroup } from './ContentMenuGroup'
 import { ContentMenuItem } from './ContentMenuItem'
 
+const factBoxActions = ['core/text/set-body',
+  'core/ordered-list/add-ordered-list',
+  'core/unordered-list/add-unordered-list'
+]
+
 export const ContentMenu = ({ editorType}: { editorType?: string }): JSX.Element => {
   const { actions } = usePluginRegistry()
-
-  const factBoxActions = ['core/text/set-body',
-    'core/ordered-list/add-ordered-list',
-    'core/unordered-list/add-unordered-list'
-  ]
-
   const textActions = actions.filter((action) => action.plugin.class === 'text')
   const blockActions = actions.filter((action) => action.plugin.class === 'block')
   const factBoxTextActions = actions.filter((action) => factBoxActions.includes(action.name))
