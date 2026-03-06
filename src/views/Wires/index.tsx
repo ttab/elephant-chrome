@@ -22,6 +22,7 @@ import { toast } from 'sonner'
 import { useModal } from '@/components/Modal/useModal'
 import { WireCreation } from '@/views'
 import { useSettings } from '@/modules/userSettings'
+import { useTranslation } from 'react-i18next'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { Document } from '@ttab/elephant-api/newsdoc'
 import { RpcError } from '@protobuf-ts/runtime-rpc'
@@ -54,6 +55,7 @@ const EMPTY_STATE = Document.create({
 })
 
 export const Wires = (): JSX.Element => {
+  const { t } = useTranslation('wires')
   const { isActive } = useView()
   const { repository } = useRegistry()
   const { data: session } = useSession()
@@ -164,9 +166,9 @@ export const Wires = (): JSX.Element => {
         console.error('Failed to save wire settings:', error.message, error.meta)
         showModal(
           <Prompt
-            title='Kunde inte spara inställningar'
+            title={t('settings.saveError')}
             description={details || error.message}
-            primaryLabel='Stäng'
+            primaryLabel={t('common:actions.close')}
             onPrimary={hideModal}
           />
         )
@@ -174,9 +176,9 @@ export const Wires = (): JSX.Element => {
         console.error('Failed to save wire settings:', error)
         showModal(
           <Prompt
-            title='Kunde inte spara inställningar'
-            description={error instanceof Error ? error.message : 'Ett okänt fel inträffade'}
-            primaryLabel='Stäng'
+            title={t('settings.saveError')}
+            description={error instanceof Error ? error.message : t('settings.unknownError')}
+            primaryLabel={t('common:actions.close')}
             onPrimary={hideModal}
           />
         )
@@ -314,7 +316,7 @@ export const Wires = (): JSX.Element => {
       }, 100)
 
       if (result.find((r) => !r.statusSet)) {
-        toast.error('Någon eller några status-ändringar misslyckades!')
+        toast.error(t('toast.statusChangeFailed'))
       }
     })
   }, [selectedWires, focusedWire, repository, session, previewWire, saveFocus, restoreFocus])
@@ -385,7 +387,7 @@ export const Wires = (): JSX.Element => {
   return (
     <View.Root ref={viewRef}>
       <ViewHeader.Root className='z-10'>
-        <ViewHeader.Title title='Telegram' name='Wires' />
+        <ViewHeader.Title title={t('title')} name='Wires' />
 
         <ViewHeader.Content>
           <WiresToolbar
@@ -477,7 +479,7 @@ export const Wires = (): JSX.Element => {
               </div>
               <div className='text-center text-muted-foreground text-xs'>
                 <span className='bg-muted px-2 py-0.5 rounded-md text-xs font-semibold'>ESC</span>
-                <span> för att avmarkera valda telegram</span>
+                <span>{` ${t('stream.deselectHint')}`}</span>
               </div>
             </div>
           </div>

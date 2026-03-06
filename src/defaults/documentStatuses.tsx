@@ -6,11 +6,12 @@ import {
   BadgeCheckIcon,
   CircleArrowLeftIcon
 } from '@ttab/elephant-ui/icons'
+import i18n from 'i18next'
 
-export const DocumentStatuses: DefaultValueOption[] = [
+export const getDocumentStatuses = (): DefaultValueOption[] => [
   {
-    label: 'Publicerad',
     value: 'usable',
+    label: i18n.t('core:status.usable'),
     icon: CircleCheckIcon,
     iconProps: {
       className: 'bg-usable fill-usable rounded-full text-white dark:text-black',
@@ -19,8 +20,8 @@ export const DocumentStatuses: DefaultValueOption[] = [
     }
   },
   {
-    label: 'Tidsplanerad',
     value: 'withheld',
+    label: i18n.t('core:status.withheld'),
     icon: CircleCheckIcon,
     iconProps: {
       className: 'bg-withheld fill-withheld rounded-full text-white dark:text-black',
@@ -29,8 +30,8 @@ export const DocumentStatuses: DefaultValueOption[] = [
     }
   },
   {
-    label: 'Klar',
     value: 'done',
+    label: i18n.t('core:status.done'),
     icon: CircleCheckIcon,
     iconProps: {
       className: 'bg-done fill-done rounded-full text-white dark:text-black',
@@ -39,8 +40,8 @@ export const DocumentStatuses: DefaultValueOption[] = [
     }
   },
   {
-    label: 'Godkänd',
     value: 'approved',
+    label: i18n.t('core:status.approved'),
     icon: BadgeCheckIcon,
     iconProps: {
       className: 'bg-approved fill-approved rounded-full text-white dark:text-black',
@@ -49,8 +50,8 @@ export const DocumentStatuses: DefaultValueOption[] = [
     }
   },
   {
-    label: 'Utkast',
     value: 'draft',
+    label: i18n.t('core:status.draft'),
     icon: CircleDotIcon,
     iconProps: {
       className: 'text-muted-foreground',
@@ -59,8 +60,8 @@ export const DocumentStatuses: DefaultValueOption[] = [
     }
   },
   {
-    label: 'Avpublicerad',
     value: 'unpublished',
+    label: i18n.t('core:status.unpublished'),
     icon: CircleArrowLeftIcon,
     iconProps: {
       className: 'bg-cancelled fill-cancelled rounded-full text-white dark:text-black',
@@ -70,10 +71,10 @@ export const DocumentStatuses: DefaultValueOption[] = [
   }
 ] as const
 
-export const PlanningEventStatuses: DefaultValueOption[] = [
+export const getPlanningEventStatuses = (): DefaultValueOption[] => [
   {
-    label: 'Publicerad',
     value: 'usable',
+    label: i18n.t('core:status.usable'),
     icon: CircleCheckIcon,
     iconProps: {
       className: 'bg-usable fill-usable rounded-full text-white dark:text-black',
@@ -82,8 +83,8 @@ export const PlanningEventStatuses: DefaultValueOption[] = [
     }
   },
   {
-    label: 'Tidsplanerad',
     value: 'withheld',
+    label: i18n.t('core:status.withheld'),
     icon: CircleCheckIcon,
     iconProps: {
       className: 'bg-withheld fill-withheld rounded-full text-white dark:text-black',
@@ -92,8 +93,8 @@ export const PlanningEventStatuses: DefaultValueOption[] = [
     }
   },
   {
-    label: 'Intern',
     value: 'done',
+    label: i18n.t('core:status.done'),
     icon: CircleCheckIcon,
     iconProps: {
       className: 'bg-done fill-done rounded-full text-white dark:text-black',
@@ -102,8 +103,8 @@ export const PlanningEventStatuses: DefaultValueOption[] = [
     }
   },
   {
-    label: 'Utkast',
     value: 'draft',
+    label: i18n.t('core:status.draft'),
     icon: CircleDotIcon,
     iconProps: {
       className: 'text-muted-foreground',
@@ -112,8 +113,8 @@ export const PlanningEventStatuses: DefaultValueOption[] = [
     }
   },
   {
-    label: 'Avpublicerad',
     value: 'unpublished',
+    label: i18n.t('core:status.unpublished'),
     icon: CircleArrowLeftIcon,
     iconProps: {
       className: 'bg-cancelled fill-cancelled rounded-full text-white dark:text-black',
@@ -123,7 +124,7 @@ export const PlanningEventStatuses: DefaultValueOption[] = [
   }
 ] as const
 
-export const PrintArticleStatuses: DefaultValueOption[] = [
+export const getPrintArticleStatuses = (): DefaultValueOption[] => [
   {
     label: 'Exporterad',
     value: 'usable',

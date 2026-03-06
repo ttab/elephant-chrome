@@ -8,6 +8,7 @@ import {
   FileWarningIcon,
   ChartPieIcon
 } from '@ttab/elephant-ui/icons'
+import i18next from 'i18next'
 
 const iconProps = {
   size: 18,
@@ -17,44 +18,44 @@ const iconProps = {
 
 export const AssignmentTypes: DefaultValueOption[] = [
   {
-    label: 'Artikel',
     value: 'text',
+    label: i18next.t('shared:assignmentTypes.text'),
     icon: FileTextIcon,
     iconProps
   },
   {
-    label: 'Flash',
     value: 'flash',
+    label: i18next.t('shared:assignmentTypes.flash'),
     icon: ZapIcon,
     iconProps
   },
   {
-    label: 'Till red',
     value: 'editorial-info',
+    label: i18next.t('shared:assignmentTypes.editorial-info'),
     icon: FileWarningIcon,
     iconProps
   },
   {
-    label: 'Grafik',
     value: 'graphic',
+    label: i18next.t('shared:assignmentTypes.graphic'),
     icon: ChartPieIcon,
     iconProps
   },
   {
-    label: 'Bild',
     value: 'picture',
+    label: i18next.t('shared:assignmentTypes.picture'),
     icon: CameraIcon,
     iconProps
   },
   {
-    label: 'Video',
     value: 'video',
+    label: i18next.t('shared:assignmentTypes.video'),
     icon: VideoIcon,
     iconProps
   },
   {
-    label: 'Bild/Video',
     value: 'picture/video',
+    label: i18next.t('shared:assignmentTypes.picture/video'),
     icon: ApertureIcon,
     iconProps
   }

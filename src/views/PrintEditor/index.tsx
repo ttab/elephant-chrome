@@ -26,7 +26,7 @@ import { Error as ErrorView } from '../Error'
 import { Notes } from '@/components/Notes'
 
 import { getValueByYPath } from '@/shared/yUtils'
-import { contentMenuLabels } from '@/defaults/contentMenuLabels'
+import { getContentMenuLabels } from '@/defaults/contentMenuLabels'
 import { ScrollArea } from '@ttab/elephant-ui'
 import { Layouts } from './components/Layouts'
 import { useSession } from 'next-auth/react'
@@ -36,6 +36,7 @@ import { ChannelComboBox } from './components/ChannelComboBox'
 import { useYDocument, useYValue, type YDocument } from '@/modules/yjs/hooks'
 import { View } from '@/components/View'
 import { BaseEditor } from '@/components/Editor/BaseEditor'
+import { useTranslation } from 'react-i18next'
 
 const meta: ViewMetadata = {
   name: 'PrintEditor',
@@ -92,6 +93,9 @@ function EditorWrapper(props: ViewProps & {
   const openFactboxEditor = useLink('Factbox')
   const openImageSearch = useLink('ImageSearch')
   const openFactboxes = useLink('Factboxes')
+  const { t, i18n } = useTranslation()
+
+  const activeLanguage = i18n.resolvedLanguage
 
   // Plugin configuration
   const configuredPlugins = useMemo(() => {
@@ -105,7 +109,7 @@ function EditorWrapper(props: ViewProps & {
       PrintText(),
       Text({
         countCharacters: ['heading-1'],
-        ...contentMenuLabels
+        ...getContentMenuLabels()
       }),
       ImagePlugin({
         repository,
@@ -115,17 +119,23 @@ function EditorWrapper(props: ViewProps & {
         channelComponent: () => ChannelComboBox()
       }),
       TTVisual({
+        captionLabel: t('editor:image.captionLabel'),
+        bylineLabel: t('editor:image.bylineLabel'),
         enableCrop: true
       }),
       Factbox({
+        headerTitle: t('editor:factbox.headerTitle'),
+        modifiedLabel: t('editor:factbox.modifiedLabel'),
+        footerTitle: t('editor:factbox.footerTitle'),
         onEditOriginal: (id: string) => {
           openFactboxEditor(undefined, { id })
         },
         removable: true,
-        ...contentMenuLabels
+        locale: activeLanguage,
+        ...getContentMenuLabels()
       })
     ]
-  }, [openFactboxEditor, data, repository, openFactboxes, openImageSearch])
+  }, [openFactboxEditor, data, repository, openFactboxes, openImageSearch, t, activeLanguage])
 
   if (!content) {
     return <View.Root />

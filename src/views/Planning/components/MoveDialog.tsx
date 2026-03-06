@@ -19,6 +19,7 @@ import { toast } from 'sonner'
 import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { type YDocument, useYValue } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
+import { useTranslation } from 'react-i18next'
 
 export const MoveDialog = ({ ydoc, onClose, newDate }: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -31,17 +32,18 @@ export const MoveDialog = ({ ydoc, onClose, newDate }: {
   const [, setEndString] = useYValue<string>(ydoc.ele, 'meta.core/planning-item[0].data.end_date')
   // Record of assignment ids and times to change
   const assignmentTimes = useRef<Record<string, TimeDef | undefined>>({})
+  const { t } = useTranslation()
 
   return (
     <Dialog open={true}>
       <DialogContent className='focus-visible:outline-none'>
         <DialogHeader>
           <DialogTitle>
-            Byt datum på planering
+            {t('planning:move.dateSwitch')}
           </DialogTitle>
 
           <DialogDescription>
-            Planeringen och alla dess textuppdrag byter datum till
+            {t('planning:move.dateSwitchDescription')}
             {' '}
             {newDate}
             .
@@ -68,7 +70,7 @@ export const MoveDialog = ({ ydoc, onClose, newDate }: {
           </div>
 
           <DialogDescription>
-            Välj nedan om även bild- och videouppdrag ska byta datum.
+            {t('planning:move.dateSwitchAssignments')}
           </DialogDescription>
 
           <div className='flex flex-col gap-3 py-2 text-left'>
@@ -97,7 +99,7 @@ export const MoveDialog = ({ ydoc, onClose, newDate }: {
             variant='secondary'
             onClick={onClose}
           >
-            Avbryt
+            {t('common:actions.abort')}
           </Button>
 
           <Button
@@ -150,12 +152,12 @@ export const MoveDialog = ({ ydoc, onClose, newDate }: {
                   onClose()
                 }).catch((err) => {
                   console.error(err)
-                  toast.error('Planeringen har ändrats lokalt men gick inte att spara.')
+                  toast.error(t('errors:toasts.snapshotError'))
                 })
               }
             }}
           >
-            Flytta
+            {t('planning:move.label')}
           </Button>
         </DialogFooter>
       </DialogContent>

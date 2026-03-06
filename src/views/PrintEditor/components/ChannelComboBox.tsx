@@ -6,8 +6,10 @@ import { Transforms } from 'slate'
 import type { TVChannels, TVChannelsFields } from '@/shared/schemas/tvChannels'
 import { type TBElement } from '@ttab/textbit'
 import { useSlateStatic } from 'slate-react'
+import { useTranslation } from 'react-i18next'
 
 export const ChannelComboBox = () => {
+  const { t } = useTranslation()
   const { data } = useDocuments<TVChannels, TVChannelsFields>({
     documentType: 'tt/tv-channel',
     fields
@@ -70,6 +72,10 @@ export const ChannelComboBox = () => {
           },
           { at: [nodeIndex] }
         )
+      }}
+      translationStrings={{
+        nothingFound: t('misc.nothingFound'),
+        searching: t('misc.searching')
       }}
     />
   )

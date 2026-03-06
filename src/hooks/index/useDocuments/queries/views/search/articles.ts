@@ -1,4 +1,5 @@
 import type { QueryParams } from '@/hooks/useQuery'
+import { getSystemLanguage } from '@/shared/getSystemLanguage'
 import {
   QueryV1,
   BoolQueryV1,
@@ -20,6 +21,8 @@ function constructQuery(filter: QueryParams | undefined): QueryV1 | undefined {
     return
   }
 
+  const systemLanguage = getSystemLanguage()
+
   const query = QueryV1.create({
     conditions: {
       oneofKind: 'bool',
@@ -30,7 +33,7 @@ function constructQuery(filter: QueryParams | undefined): QueryV1 | undefined {
               oneofKind: 'terms',
               terms: TermsQueryV1.create({
                 field: 'document.language',
-                values: ['sv-se', 'sv']
+                values: [systemLanguage, systemLanguage.split('-')[0]]
               })
             }
           },

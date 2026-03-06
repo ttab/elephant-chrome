@@ -1,8 +1,9 @@
-import { timeSlotTypes } from '@/defaults/assignmentTimeConstants'
+import { getTimeSlotTypes } from '@/defaults/assignmentTimeConstants'
 import type { LucideIcon } from '@ttab/elephant-ui/icons'
 import { AlarmClockCheckIcon, CalendarClockIcon, ClockFadingIcon } from '@ttab/elephant-ui/icons'
 import { useYValue } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
+import { useTranslation } from 'react-i18next'
 
 export interface TimeDef {
   name: 'start' | 'range' | 'slot' | 'publish'
@@ -25,6 +26,7 @@ export function useAssignmentTime(
   const [startTime] = useYValue<string>(assignment, 'data.start')
   const [endTime] = useYValue<string>(assignment, 'data.end')
   const [publishSlot] = useYValue<string>(assignment, 'data.publish_slot')
+  const { t } = useTranslation('planning')
 
   if (typeof assignmentType !== 'string') {
     return undefined
@@ -42,7 +44,7 @@ export function useAssignmentTime(
           combineDateAndTime(newDate, originalStart),
           combineDateAndTime(newDate, originalEnd)
         ],
-        tooltip: 'Start- och sluttid',
+        tooltip: t('assignment.startEndTime'),
         icon: ClockFadingIcon
       }
     }
@@ -53,19 +55,19 @@ export function useAssignmentTime(
       name: 'start',
       time: [originalStart],
       newTime: [combineDateAndTime(newDate, originalStart)],
-      tooltip: 'Starttid',
+      tooltip: t('assignment.startTime'),
       icon: CalendarClockIcon
     }
   }
 
   if (publishSlot) {
-    const slotName = timeSlotTypes.find((slot) => slot.slots?.includes(publishSlot))
+    const slotName = getTimeSlotTypes().find((slot) => slot.slots?.includes(publishSlot))
 
     return {
       name: 'slot',
       time: [slotName?.label || ''],
       newTime: [slotName?.label || ''], // For slot types, newTime is same as time since it's just a label
-      tooltip: 'Publiceringsfönster',
+      tooltip: t('assignment.publishWindow'),
       icon: slotName?.icon
     }
   }
@@ -77,7 +79,7 @@ export function useAssignmentTime(
       name: 'publish',
       time: [originalPublish],
       newTime: [combineDateAndTime(newDate, originalPublish)],
-      tooltip: 'Publiceringstid',
+      tooltip: t('assignment.publishTime'),
       icon: AlarmClockCheckIcon
     }
   }
@@ -93,7 +95,7 @@ export function useAssignmentTime(
         combineDateAndTime(newDate, originalStart),
         combineDateAndTime(newDate, originalEnd)
       ],
-      tooltip: 'Start- och sluttid',
+      tooltip: t('assignment.startEndTime'),
       icon: ClockFadingIcon
     }
   }
@@ -105,7 +107,7 @@ export function useAssignmentTime(
       name: 'start',
       time: [originalStart],
       newTime: [combineDateAndTime(newDate, originalStart)],
-      tooltip: 'Starttid',
+      tooltip: t('assignment.startTime'),
       icon: CalendarClockIcon
     }
   }

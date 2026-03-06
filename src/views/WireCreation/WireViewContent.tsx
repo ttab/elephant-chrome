@@ -34,6 +34,7 @@ import { useYValue } from '@/modules/yjs/hooks/useYValue'
 import { TextInput } from '@/components/ui/TextInput'
 import type { EleDocumentResponse } from '@/shared/types'
 import { ValidateNow } from '@/components/ValidateNow'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
 export const WireViewContent = (props: ViewProps & {
@@ -58,6 +59,7 @@ export const WireViewContent = (props: ViewProps & {
     title: string
   } | undefined>(undefined)
   const [slugline, setSlugline] = useYValue<Y.XmlText>(ydoc.ele, 'meta.tt/slugline[0].value', true)
+  const { t } = useTranslation('wires')
   const [, setNewsvalue] = useYValue<string | undefined>(ydoc.ele, 'meta.core/newsvalue[0].value')
 
   const handleSubmit = (): void => {
@@ -70,7 +72,7 @@ export const WireViewContent = (props: ViewProps & {
         <ViewHeader.Content>
           {props.asDialog && (
             <div className='flex w-full h-full items-center space-x-2 font-bold'>
-              <ViewHeader.Title name='Wires' title='Skapa artikel' icon={CableIcon} iconColor='#FF6347' />
+              <ViewHeader.Title name='Wires' title={t('creation.title')} icon={CableIcon} iconColor='#FF6347' />
             </div>
           )}
         </ViewHeader.Content>
@@ -115,13 +117,13 @@ export const WireViewContent = (props: ViewProps & {
                   modal={props.asDialog}
                   className='min-w-0 w-full truncate justify-start max-w-48'
                   selectedOptions={selectedPlanning ? [selectedPlanning] : []}
-                  placeholder='Välj planering'
+                  placeholder={t('creation.selectPlanning')}
                   onOpenChange={(isOpen: boolean) => {
                     if (documentAwareness?.current) {
                       documentAwareness.current(isOpen)
                     }
                   }}
-                  fetch={(query) => fetch(query, session, index, locale, timeZone, {
+                  fetch={(query) => fetch(query, session, t, index, locale, timeZone, {
                     searchOlder,
                     sluglines: true
                   })}
@@ -177,7 +179,7 @@ export const WireViewContent = (props: ViewProps & {
                   defaultChecked={searchOlder}
                   onCheckedChange={(checked: boolean) => { setSearchOlder(checked) }}
                 />
-                <Label htmlFor='SearchOlder' className='text-muted-foreground'>Visa äldre</Label>
+                <Label htmlFor='SearchOlder' className='text-muted-foreground'>{t('creation.showOlder')}</Label>
               </>
             </Form.Group>
 
@@ -197,7 +199,7 @@ export const WireViewContent = (props: ViewProps & {
                 <>
                   <Input
                     className='pt-2 h-7 text-medium placeholder:text-[#5D709F] placeholder-shown:border-[#5D709F]'
-                    placeholder='Planeringstitel'
+                    placeholder={t('creation.planningTitle')}
                     ref={planningTitleRef}
                   />
                 </>
@@ -208,8 +210,8 @@ export const WireViewContent = (props: ViewProps & {
               <TextInput
                 ydoc={ydoc}
                 value={title}
-                label='Titel'
-                placeholder='Uppdragstitel'
+                label={t('creation.articleTitle')}
+                placeholder={t('creation.assignmentTitle')}
               />
             </Form.Group>
 
@@ -236,8 +238,8 @@ export const WireViewContent = (props: ViewProps & {
 
             <UserMessage asDialog={!!props?.asDialog}>
               {!selectedPlanning
-                ? (<>Väljer du ingen planering kommer en ny planering med tillhörande uppdrag skapas åt dig.</>)
-                : (<>Denna artikel kommer läggas i ett nytt uppdrag i den valda planeringen</>)}
+                ? (<>{t('creation.noPlanningHint')}</>)
+                : (<>{t('creation.withPlanningHint')}</>)}
             </UserMessage>
 
           </Form.Content>
@@ -246,12 +248,12 @@ export const WireViewContent = (props: ViewProps & {
             showVerifyDialog
             && (
               <CreatePrompt
-                title='Skapa artikel från telegram'
+                title={t('creation.dialogTitle')}
                 description={!selectedPlanning
-                  ? 'En ny planering med tillhörande uppdrag för denna artikel kommer att skapas åt dig.'
-                  : `Denna artikel kommer att läggas i ett nytt uppdrag i planeringen "${selectedPlanning.label}"`}
-                secondaryLabel='Avbryt'
-                primaryLabel='Skapa'
+                  ? t('creation.dialogNoPlanningDescription')
+                  : t('creation.dialogWithPlanningDescription', { planningLabel: selectedPlanning.label })}
+                secondaryLabel={t('common:actions.abort')}
+                primaryLabel={t('common:actions.create')}
                 onPrimary={() => {
                   if (!ydoc.connected || !ydoc.id || !session) {
                     console.error('Environment is not sane, article cannot be created')
@@ -281,7 +283,7 @@ export const WireViewContent = (props: ViewProps & {
                     .catch((ex: unknown) => {
                       console.log(ex)
                       if (!(ex instanceof Error) || ex.message !== 'CreateAssignmentError') {
-                        toast.error('Det gick inte att skapa en artikel!')
+                        toast.error(t('creation.createError'))
                       }
                     })
                 }}
@@ -302,13 +304,13 @@ export const WireViewContent = (props: ViewProps & {
                   props.onDocumentCreated?.()
                 }}
               >
-                Markera som använd
+                {t('creation.markUsed')}
               </Button>
             </>
             <Form.Submit
               onSubmit={handleSubmit}
             >
-              <Button type='submit'>Skapa artikel</Button>
+              <Button type='submit'>{t('creation.createButton')}</Button>
             </Form.Submit>
           </Form.Footer>
         </Form.Root>

@@ -1,0 +1,87 @@
+{
+  "title": "Wires",
+  "toolbar": {
+    "save": "Save view settings",
+    "saveRequiresFilter": "All columns must have at least one filter",
+    "addColumn": "Add column",
+    "markSaved": "Mark as saved",
+    "markSavedDisabled": "Select wires to mark as saved",
+    "markRead": "Mark as read",
+    "markReadDisabled": "Select wires to mark as read",
+    "markUsed": "Mark as used",
+    "markUsedDisabled": "Select wires to mark as used",
+    "createArticle": "Create article with associated planning from wire",
+    "createArticleDisabled": "Select wires to create article with associated planning",
+    "createArticleAriaLabel": "Create article from wire"
+  },
+  "stream": {
+    "addFilter": "Add filter to show wires",
+    "loadingMore": "Loading more...",
+    "noTitle": "No title",
+    "deselectHint": "to deselect selected wires"
+  },
+  "filter": {
+    "freeText": "Free text",
+    "searchOptions": "Search options",
+    "section": "Section",
+    "sources": "Sources",
+    "newsvalue": "News value",
+    "selected": "selected"
+  },
+  "toast": {
+    "openPlanning": "Open planning",
+    "openArticle": "Open article",
+    "statusChangeFailed": "One or more status changes failed!"
+  },
+  "settings": {
+    "saveError": "Could not save settings",
+    "unknownError": "An unknown error occurred"
+  },
+  "creation": {
+    "title": "Create article",
+    "selectPlanning": "Select planning",
+    "showOlder": "Show older",
+    "planningTitle": "Planning title",
+    "articleTitle": "Title",
+    "assignmentTitle": "Assignment title",
+    "noPlanningHint": "If you don't select a planning, a new planning with an associated assignment will be created for you.",
+    "withPlanningHint": "This article will be added to a new assignment in the selected planning",
+    "dialogTitle": "Create article from wire",
+    "dialogNoPlanningDescription": "A new planning with an associated assignment for this article will be created for you.",
+    "dialogWithPlanningDescription": "This article will be added to a new assignment in the planning \"{{planningLabel}}\"",
+    "articleCreated": "Article created",
+    "createError": "Could not create an article!",
+    "createError2": "Could not create new article!",
+    "markUsed": "Mark as used",
+    "createButton": "Create article"
+  },
+  "sources": {
+    "title": "Sources",
+    "errorTitle": "Article document missing",
+    "errorMessage": "No article document is specified. Navigate back to the overview and try again.",
+    "noWires": "No source wires",
+    "loadingWire": "Loading wire..."
+  },
+  "preview": {
+    "pressRelease": "Press release",
+    "statusRead": "Read",
+    "statusSaved": "Saved",
+    "statusUsed": "Used",
+    "version": "Version"
+  },
+  "history": {
+    "status": {
+      "done": "Done",
+      "saved": "Saved",
+      "approved": "Approved",
+      "read": "Read",
+      "usable": "Published",
+      "used": "Used",
+      "withheld": "Scheduled",
+      "cancelled": "Cancelled",
+      "unpublished": "Unpublished",
+      "flash": "Flash",
+      "system": "System"
+    }
+  }
+}

@@ -14,6 +14,7 @@ import { useDeliverablePlanningId } from '@/hooks/index/useDeliverablePlanningId
 import { useLatest } from './hooks/useLatest'
 import { SluglineButton } from '@/components/DataItem/Slugline'
 import { SectionBadge } from '@/components/DataItem/SectionBadge'
+import { useTranslation } from 'react-i18next'
 import { CreatePrintArticle } from '@/components/CreatePrintArticle'
 import { useModal } from '@/components/Modal/useModal'
 
@@ -36,9 +37,10 @@ const meta: ViewMetadata = {
 export const Latest = ({ setOpen }: { setOpen?: (open: boolean) => void }) => {
   const { locale } = useRegistry()
   const data = useLatest()
+  const { t } = useTranslation('common')
 
   if (!data?.length) {
-    return <div className='min-h-screen text-center py-2'>Laddar...</div>
+    return <div className='min-h-screen text-center py-2'>{t('misc.loading')}</div>
   }
 
   return (
@@ -127,24 +129,25 @@ const Content = ({ documents, locale }: {
 
 const Menu = ({ articleId }: { articleId: string }): JSX.Element => {
   const planningId = useDeliverablePlanningId(articleId)
+  const { t } = useTranslation('common')
   const { showModal, hideModal } = useModal()
   return (
     <div className='shrink p-'>
       <DotMenu
         items={[
           {
-            label: 'Öppna artikel',
+            label: t('actions.openType', { type: t('core:documentType.article') }),
             item: (
               <Link to='Editor' target='last' props={{ id: articleId }} className='flex flex-row gap-5'>
                 <div className='pt-1'>
                   <PenIcon size={14} strokeWidth={1.5} className='shrink' />
                 </div>
-                <div className='grow'>Öppna artikel</div>
+                <div className='grow'>{t('actions.openType', { type: t('core:documentType.article') })}</div>
               </Link>
             )
           },
           {
-            label: 'Öppna planering',
+            label: t('actions.openType', { type: t('core:documentType.planning') }),
             disabled: !planningId,
             item: planningId
               ? (
@@ -152,13 +155,13 @@ const Menu = ({ articleId }: { articleId: string }): JSX.Element => {
                     <div className='pt-1'>
                       <CalendarDaysIcon size={14} strokeWidth={1.5} className='shrink' />
                     </div>
-                    <div className='grow'>Öppna planering</div>
+                    <div className='grow'>{t('actions.openType', { type: t('core:documentType.planning') })}</div>
                   </Link>
                 )
               : () => {}
           },
           {
-            label: 'Skapa printartikel',
+            label: t('planning:assignment.createPrintArticle'),
             icon: LibraryIcon,
             item: () => {
               showModal(

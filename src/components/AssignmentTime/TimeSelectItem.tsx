@@ -4,11 +4,12 @@ import {
   CommandItem,
   Button
 } from '@ttab/elephant-ui'
-import { timePickTypes } from '../../defaults/assignmentTimeConstants'
+import { getTimePickTypes } from '../../defaults/assignmentTimeConstants'
 import { type AssignmentData } from './types'
 import { TimeInput } from '../TimeInput'
 import { useYValue } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
+import { useTranslation } from 'react-i18next'
 
 export const TimeSelectItem = ({ handleOnSelect, assignment, handleParentOpenChange }: {
   handleOnSelect: ({ value, selectValue }: { value: string, selectValue: string }) => void
@@ -16,10 +17,13 @@ export const TimeSelectItem = ({ handleOnSelect, assignment, handleParentOpenCha
   assignment: Y.Map<unknown>
   handleParentOpenChange: (open: boolean) => void
 }): JSX.Element => {
+  const timePickTypes = getTimePickTypes()
   const [open, setOpen] = useState(false)
   const [endTime, setEndTime] = useState('')
   const [data] = useYValue<AssignmentData>(assignment, `data`)
   const [valid, setValid] = useState(false)
+  const { t } = useTranslation()
+
 
   useEffect(() => {
     if (data?.end) {
@@ -64,7 +68,7 @@ export const TimeSelectItem = ({ handleOnSelect, assignment, handleParentOpenCha
       key={timePickTypes[0].label}
       value={timePickTypes[0].label}
       onSelect={(item) => {
-        if (item === 'Välj tid') {
+        if (item === t('planning:assignment.chooseTime')) {
           setOpen(!open)
         } else {
           handleParentOpenChange(false)
@@ -98,7 +102,7 @@ export const TimeSelectItem = ({ handleOnSelect, assignment, handleParentOpenCha
                 }
               }}
             >
-              Avbryt
+              {t('common:actions.abort')}
             </Button>
 
             <Button
@@ -107,7 +111,7 @@ export const TimeSelectItem = ({ handleOnSelect, assignment, handleParentOpenCha
               onKeyDown={handleConfirm}
               disabled={!valid}
             >
-              Klar
+              {t('common:actions.confirm')}
             </Button>
           </div>
         </div>

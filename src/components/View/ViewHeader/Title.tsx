@@ -1,10 +1,11 @@
 import { WifiOffIcon, type LucideIcon } from '@ttab/elephant-ui/icons'
 import { cva } from 'class-variance-authority'
 import { useEffect, useRef, useState, type PropsWithChildren, type JSX } from 'react'
-import { applicationMenu } from '@/defaults/applicationMenuItems'
+import { getApplicationMenu } from '@/defaults/applicationMenuItems'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import { useQuery } from '@/hooks/useQuery'
+import { useTranslation } from 'react-i18next'
 
 export const Title = ({
   name,
@@ -30,6 +31,7 @@ export const Title = ({
   const [isSynced, setIsSynced] = useState(true)
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
   const timeout2Ref = useRef<NodeJS.Timeout | null>(null)
+  const { t } = useTranslation()
 
   useEffect(() => {
     if (timeoutRef.current) {
@@ -77,15 +79,15 @@ export const Title = ({
     setQuery({ preview: undefined })
   }
 
-  const { icon: ViewIcon, color } = applicationMenu.groups
+  const { icon: ViewIcon, color } = getApplicationMenu().groups
     .flatMap((g) => g.items)
     .find((i) => i.name === name) || {}
 
   const displayTitle = preview && title
-    ? `${title} - Förhandsvisning`
+    ? `${title} - ${t('planning:preview')}`
     : title
   const displayShortTitle = preview && shortTitle
-    ? `${shortTitle} - Förhandsvisning`
+    ? `${shortTitle} - ${t('planning:preview')}`
     : shortTitle
 
   return (
