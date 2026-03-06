@@ -1,7 +1,10 @@
-import { parseStateless, type StatelessAuth, StatelessType } from '@/shared/stateless.js'
+// import { parseStateless, type StatelessAuth, StatelessType } from '@/shared/stateless.js'
 import type { User } from '@auth/express'
+import type {
+  onTokenSyncPayload
+} from '@hocuspocus/server'
 import {
-  type onStatelessPayload,
+  // type onStatelessPayload,
   type Extension,
   type onAuthenticatePayload
 } from '@hocuspocus/server'
@@ -45,19 +48,46 @@ export class Auth implements Extension {
     }
   }
 
-  async onStateless({ payload, connection }: onStatelessPayload): Promise<void> {
-    const statelessMessage = parseStateless<StatelessAuth>(payload)
+  // async onStateless({ payload, connection }: onStatelessPayload): Promise<void> {
+  //   const statelessMessage = parseStateless<StatelessAuth>(payload)
 
-    if (statelessMessage.type === StatelessType.AUTH) {
-      const jwt = await this.validateAccessToken(statelessMessage.message.accessToken)
+  //   if (statelessMessage.type === StatelessType.AUTH) {
+  //     const jwt = await this.validateAccessToken(statelessMessage.message.accessToken)
+
+  //     const context = connection.context as {
+  //       accessToken: string
+  //       user: User
+  //     }
+
+  //     context.accessToken = statelessMessage.message.accessToken
+  //     context.user = jwt
+  //   }
+  // }
+
+  async onTokenSync({ token, connection }: onTokenSyncPayload) {
+    console.log('🔄 Token sync requested')
+
+    if (!token) {
+      throw new Error('No token provided for sync')
+    }
+
+    try {
+      // Verify the new token
+      const jwt = await this.validateAccessToken(token)
 
       const context = connection.context as {
         accessToken: string
         user: User
       }
 
-      context.accessToken = statelessMessage.message.accessToken
+      context.accessToken = token
       context.user = jwt
+      console.log('✅ Token sync successful')
+
+      return { lastTokenSync: new Date() }
+    } catch (err) {
+      console.error('❌ Token sync failed:', (err as Error).message)
+      throw new Error(`Token sync failed: ${(err as Error).message}`)
     }
   }
 
