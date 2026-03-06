@@ -64,8 +64,8 @@ const AddButton = ({
         if (view.name === 'Factbox') {
           createNewFactbox(repository, session, id)
             .then((id) => openFactboxEditor(undefined, { id }, undefined)).catch((error) => {
-              console.error('Error creating Factbox document:', error)
-              toast.error('Kan inte skapa faktaruta')
+              console.error('Error opening created document:', error)
+              toast.error('Kan inte öppna skapad faktaruta')
             })
         } else if (showModal) {
           const initialDocument = getTemplateFromView(view.name)(id, { query })
