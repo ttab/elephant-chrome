@@ -22,7 +22,6 @@ export async function saveFactbox({
   onClose: () => void
 }) {
   if (!id || !content || !repository || !accessToken) {
-    toast.error('Kunde inte spara faktaruta!')
     throw new Error('Could not save factbox: missing data')
   }
 
@@ -38,7 +37,6 @@ export async function saveFactbox({
   }
 
   if (!documentLanguage) {
-    toast.error('Kunde inte spara faktaruta!')
     throw new Error('Could not save factbox: document language missing')
   }
 
