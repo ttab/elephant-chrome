@@ -227,362 +227,364 @@ export const StatusSpecifications: Record<string, StatusSpecification> = {
 }
 
 
-export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
-  'core/event': {
-    draft: {
-      title: i18n.t('workflows:core/event.draft.title'),
-      description: i18n.t('workflows:core/event.draft.description'),
-      isWorkflow: false,
-      asSave: false,
-      transitions: {
-        done: {
-          default: true,
-          verify: false,
-          title: i18n.t('workflows:core/event.draft.transitions.done.title'),
-          description: i18n.t('workflows:core/event.draft.transitions.done.description')
-        },
-        usable: {
-          verify: true,
-          title: i18n.t('workflows:core/event.draft.transitions.usable.title'),
-          description: i18n.t('workflows:core/event.draft.transitions.usable.description')
+export function getWorkflowSpecifications(): Record<string, WorkflowSpecification> {
+  return {
+    'core/event': {
+      draft: {
+        title: i18n.t('workflows:core/event.draft.title'),
+        description: i18n.t('workflows:core/event.draft.description'),
+        isWorkflow: false,
+        asSave: false,
+        transitions: {
+          done: {
+            default: true,
+            verify: false,
+            title: i18n.t('workflows:core/event.draft.transitions.done.title'),
+            description: i18n.t('workflows:core/event.draft.transitions.done.description')
+          },
+          usable: {
+            verify: true,
+            title: i18n.t('workflows:core/event.draft.transitions.usable.title'),
+            description: i18n.t('workflows:core/event.draft.transitions.usable.description')
+          }
+        }
+      },
+      done: {
+        title: i18n.t('workflows:core/event.done.title'),
+        description: i18n.t('workflows:core/event.done.description'),
+        isWorkflow: false,
+        transitions: {
+          usable: {
+            verify: true,
+            title: i18n.t('workflows:core/event.done.transitions.usable.title'),
+            description: i18n.t('workflows:core/event.done.transitions.usable.description')
+          },
+          unpublished: {
+            verify: true,
+            title: i18n.t('workflows:core/event.done.transitions.unpublished.title'),
+            description: i18n.t('workflows:core/event.done.transitions.unpublished.description')
+          }
+        }
+      },
+      usable: {
+        title: i18n.t('workflows:core/event.usable.title'),
+        asSaveCTA: i18n.t('workflows:core/event.usable.asSaveCTA'),
+        asSaveTitle: i18n.t('workflows:core/event.usable.asSaveTitle'),
+        description: i18n.t('workflows:core/event.usable.description'),
+        changedDescription: i18n.t('workflows:core/event.usable.changedDescription'),
+        updateDescription: i18n.t('workflows:core/event.usable.updateDescription'),
+        isWorkflow: false,
+        asSave: true,
+        transitions: {
+          unpublished: {
+            verify: true,
+            title: i18n.t('workflows:core/event.usable.transitions.unpublished.title'),
+            description: i18n.t('workflows:core/event.usable.transitions.unpublished.description')
+          }
+        }
+      },
+      unpublished: {
+        title: i18n.t('workflows:core/event.unpublished.title'),
+        description: i18n.t('workflows:core/event.unpublished.description'),
+        isWorkflow: false,
+        transitions: {
+          draft: {
+            verify: true,
+            title: i18n.t('workflows:core/event.unpublished.transitions.draft.title'),
+            description: i18n.t('workflows:core/event.unpublished.transitions.draft.description')
+          }
         }
       }
     },
-    done: {
-      title: i18n.t('workflows:core/event.done.title'),
-      description: i18n.t('workflows:core/event.done.description'),
-      isWorkflow: false,
-      transitions: {
-        usable: {
-          verify: true,
-          title: i18n.t('workflows:core/event.done.transitions.usable.title'),
-          description: i18n.t('workflows:core/event.done.transitions.usable.description')
-        },
-        unpublished: {
-          verify: true,
-          title: i18n.t('workflows:core/event.done.transitions.unpublished.title'),
-          description: i18n.t('workflows:core/event.done.transitions.unpublished.description')
+    'core/planning-item': {
+      draft: {
+        title: i18n.t('workflows:core/planning-item.draft.title'),
+        description: i18n.t('workflows:core/planning-item.draft.description'),
+        isWorkflow: false,
+        asSave: false,
+        transitions: {
+          done: {
+            default: true,
+            verify: false,
+            title: i18n.t('workflows:core/planning-item.draft.transitions.done.title'),
+            description: i18n.t('workflows:core/planning-item.draft.transitions.done.description')
+          },
+          usable: {
+            verify: true,
+            title: i18n.t('workflows:core/planning-item.draft.transitions.usable.title'),
+            description: i18n.t('workflows:core/planning-item.draft.transitions.usable.description')
+          }
+        }
+      },
+      done: {
+        title: i18n.t('workflows:core/planning-item.done.title'),
+        description: i18n.t('workflows:core/planning-item.done.description'),
+        isWorkflow: false,
+        transitions: {
+          usable: {
+            title: i18n.t('workflows:core/planning-item.done.transitions.usable.title'),
+            verify: true,
+            description: i18n.t('workflows:core/planning-item.done.transitions.usable.description')
+          },
+          unpublished: {
+            verify: true,
+            title: i18n.t('workflows:core/planning-item.done.transitions.unpublished.title'),
+            description: i18n.t('workflows:core/planning-item.done.transitions.unpublished.description')
+          }
+        }
+      },
+      usable: {
+        title: i18n.t('workflows:core/planning-item.usable.title'),
+        asSaveCTA: i18n.t('workflows:core/planning-item.usable.asSaveCTA'),
+        asSaveTitle: i18n.t('workflows:core/planning-item.usable.asSaveTitle'),
+        description: i18n.t('workflows:core/planning-item.usable.description'),
+        changedDescription: i18n.t('workflows:core/planning-item.usable.changedDescription'),
+        updateDescription: i18n.t('workflows:core/planning-item.usable.updateDescription'),
+        isWorkflow: false,
+        asSave: true,
+        transitions: {
+          unpublished: {
+            verify: true,
+            title: i18n.t('workflows:core/planning-item.usable.transitions.unpublished.title'),
+            description: i18n.t('workflows:core/planning-item.usable.transitions.unpublished.description')
+          }
+        }
+      },
+      unpublished: {
+        title: i18n.t('workflows:core/planning-item.unpublished.title'),
+        description: i18n.t('workflows:core/planning-item.unpublished.description'),
+        isWorkflow: false,
+        transitions: {
+          draft: {
+            verify: true,
+            title: i18n.t('workflows:core/planning-item.unpublished.transitions.draft.title'),
+            description: i18n.t('workflows:core/planning-item.unpublished.transitions.draft.description')
+          }
         }
       }
     },
-    usable: {
-      title: i18n.t('workflows:core/event.usable.title'),
-      asSaveCTA: i18n.t('workflows:core/event.usable.asSaveCTA'),
-      asSaveTitle: i18n.t('workflows:core/event.usable.asSaveTitle'),
-      description: i18n.t('workflows:core/event.usable.description'),
-      changedDescription: i18n.t('workflows:core/event.usable.changedDescription'),
-      updateDescription: i18n.t('workflows:core/event.usable.updateDescription'),
-      isWorkflow: false,
-      asSave: true,
-      transitions: {
-        unpublished: {
-          verify: true,
-          title: i18n.t('workflows:core/event.usable.transitions.unpublished.title'),
-          description: i18n.t('workflows:core/event.usable.transitions.unpublished.description')
+    'core/article': baseDeliverable('article'),
+    'core/flash': baseDeliverable('flash'),
+    'core/factbox': {
+      draft: {
+        title: i18n.t('workflows:core/factbox.draft.title'),
+        description: i18n.t('workflows:core/factbox.draft.description'),
+        isWorkflow: false,
+        transitions: {
+          usable: {
+            verify: true,
+            title: i18n.t('workflows:core/factbox.draft.transitions.usable.title'),
+            description: i18n.t('workflows:core/factbox.draft.transitions.usable.description')
+          }
+        }
+      },
+      usable: {
+        title: i18n.t('workflows:core/factbox.usable.title'),
+        asSaveCTA: i18n.t('workflows:core/factbox.usable.asSaveCTA'),
+        asSaveTitle: i18n.t('workflows:core/factbox.usable.asSaveTitle'),
+        description: i18n.t('workflows:core/factbox.usable.description'),
+        isWorkflow: false,
+        asSave: true,
+        transitions: {
+          draft: {
+            verify: true,
+            title: i18n.t('workflows:core/factbox.usable.transitions.draft.title'),
+            description: i18n.t('workflows:core/factbox.usable.transitions.draft.description')
+          }
         }
       }
     },
-    unpublished: {
-      title: i18n.t('workflows:core/event.unpublished.title'),
-      description: i18n.t('workflows:core/event.unpublished.description'),
-      isWorkflow: false,
-      transitions: {
-        draft: {
-          verify: true,
-          title: i18n.t('workflows:core/event.unpublished.transitions.draft.title'),
-          description: i18n.t('workflows:core/event.unpublished.transitions.draft.description')
+    'core/editorial-info': {
+      draft: {
+        title: i18n.t('workflows:core/editorial-info.draft.title'),
+        description: i18n.t('workflows:core/editorial-info.draft.description'),
+        isWorkflow: true,
+        transitions: {
+          done: {
+            default: true,
+            title: i18n.t('workflows:core/editorial-info.draft.transitions.done.title'),
+            description: i18n.t('workflows:core/editorial-info.draft.transitions.done.description')
+          },
+          approved: {
+            title: i18n.t('workflows:core/editorial-info.draft.transitions.approved.title'),
+            description: i18n.t('workflows:core/editorial-info.draft.transitions.approved.description')
+          },
+          usable: {
+            verify: true,
+            title: i18n.t('workflows:core/editorial-info.draft.transitions.usable.title'),
+            description: i18n.t('workflows:core/editorial-info.draft.transitions.usable.description')
+          }
         }
-      }
-    }
-  },
-  'core/planning-item': {
-    draft: {
-      title: i18n.t('workflows:core/planning-item.draft.title'),
-      description: i18n.t('workflows:core/planning-item.draft.description'),
-      isWorkflow: false,
-      asSave: false,
-      transitions: {
-        done: {
-          default: true,
-          verify: false,
-          title: i18n.t('workflows:core/planning-item.draft.transitions.done.title'),
-          description: i18n.t('workflows:core/planning-item.draft.transitions.done.description')
-        },
-        usable: {
-          verify: true,
-          title: i18n.t('workflows:core/planning-item.draft.transitions.usable.title'),
-          description: i18n.t('workflows:core/planning-item.draft.transitions.usable.description')
+      },
+      done: {
+        title: i18n.t('workflows:core/editorial-info.done.title'),
+        description: i18n.t('workflows:core/editorial-info.done.description'),
+        isWorkflow: true,
+        transitions: {
+          approved: {
+            default: true,
+            title: i18n.t('workflows:core/editorial-info.done.transitions.approved.title'),
+            description: i18n.t('workflows:core/editorial-info.done.transitions.approved.description')
+          },
+          usable: {
+            verify: true,
+            title: i18n.t('workflows:core/editorial-info.done.transitions.usable.title'),
+            description: i18n.t('workflows:core/editorial-info.done.transitions.usable.description')
+          },
+          draft: {
+            title: i18n.t('workflows:core/editorial-info.done.transitions.draft.title'),
+            description: i18n.t('workflows:core/editorial-info.done.transitions.draft.description')
+          }
         }
-      }
-    },
-    done: {
-      title: i18n.t('workflows:core/planning-item.done.title'),
-      description: i18n.t('workflows:core/planning-item.done.description'),
-      isWorkflow: false,
-      transitions: {
-        usable: {
-          title: i18n.t('workflows:core/planning-item.done.transitions.usable.title'),
-          verify: true,
-          description: i18n.t('workflows:core/planning-item.done.transitions.usable.description')
-        },
-        unpublished: {
-          verify: true,
-          title: i18n.t('workflows:core/planning-item.done.transitions.unpublished.title'),
-          description: i18n.t('workflows:core/planning-item.done.transitions.unpublished.description')
+      },
+      approved: {
+        title: i18n.t('workflows:core/editorial-info.approved.title'),
+        description: i18n.t('workflows:core/editorial-info.approved.description'),
+        isWorkflow: true,
+        transitions: {
+          usable: {
+            default: true,
+            verify: true,
+            title: i18n.t('workflows:core/editorial-info.approved.transitions.usable.title'),
+            description: i18n.t('workflows:core/editorial-info.approved.transitions.usable.description')
+          },
+          draft: {
+            title: i18n.t('workflows:core/editorial-info.approved.transitions.draft.title'),
+            description: i18n.t('workflows:core/editorial-info.approved.transitions.draft.description')
+          }
         }
-      }
-    },
-    usable: {
-      title: i18n.t('workflows:core/planning-item.usable.title'),
-      asSaveCTA: i18n.t('workflows:core/planning-item.usable.asSaveCTA'),
-      asSaveTitle: i18n.t('workflows:core/planning-item.usable.asSaveTitle'),
-      description: i18n.t('workflows:core/planning-item.usable.description'),
-      changedDescription: i18n.t('workflows:core/planning-item.usable.changedDescription'),
-      updateDescription: i18n.t('workflows:core/planning-item.usable.updateDescription'),
-      isWorkflow: false,
-      asSave: true,
-      transitions: {
-        unpublished: {
-          verify: true,
-          title: i18n.t('workflows:core/planning-item.usable.transitions.unpublished.title'),
-          description: i18n.t('workflows:core/planning-item.usable.transitions.unpublished.description')
-        }
-      }
-    },
-    unpublished: {
-      title: i18n.t('workflows:core/planning-item.unpublished.title'),
-      description: i18n.t('workflows:core/planning-item.unpublished.description'),
-      isWorkflow: false,
-      transitions: {
-        draft: {
-          verify: true,
-          title: i18n.t('workflows:core/planning-item.unpublished.transitions.draft.title'),
-          description: i18n.t('workflows:core/planning-item.unpublished.transitions.draft.description')
-        }
-      }
-    }
-  },
-  'core/article': baseDeliverable('article'),
-  'core/flash': baseDeliverable('flash'),
-  'core/factbox': {
-    draft: {
-      title: i18n.t('workflows:core/factbox.draft.title'),
-      description: i18n.t('workflows:core/factbox.draft.description'),
-      isWorkflow: false,
-      transitions: {
-        usable: {
-          verify: true,
-          title: i18n.t('workflows:core/factbox.draft.transitions.usable.title'),
-          description: i18n.t('workflows:core/factbox.draft.transitions.usable.description')
+      },
+      usable: {
+        title: i18n.t('workflows:core/editorial-info.usable.title'),
+        description: i18n.t('workflows:core/editorial-info.usable.description'),
+        isWorkflow: true,
+        transitions: {
+          draft: {
+            default: true,
+            title: i18n.t('workflows:core/editorial-info.usable.transitions.draft.title'),
+            description: i18n.t('workflows:core/editorial-info.usable.transitions.draft.description')
+          },
+          unpublished: {
+            title: i18n.t('workflows:core/editorial-info.usable.transitions.unpublished.title'),
+            description: i18n.t('workflows:core/editorial-info.usable.transitions.unpublished.description')
+          }
         }
       }
     },
-    usable: {
-      title: i18n.t('workflows:core/factbox.usable.title'),
-      asSaveCTA: i18n.t('workflows:core/factbox.usable.asSaveCTA'),
-      asSaveTitle: i18n.t('workflows:core/factbox.usable.asSaveTitle'),
-      description: i18n.t('workflows:core/factbox.usable.description'),
-      isWorkflow: false,
-      asSave: true,
-      transitions: {
-        draft: {
-          verify: true,
-          title: i18n.t('workflows:core/factbox.usable.transitions.draft.title'),
-          description: i18n.t('workflows:core/factbox.usable.transitions.draft.description')
+    'tt/print-article': {
+      draft: {
+        title: 'Utkast',
+        description: 'Du jobbar på ett utkast av printartikeln',
+        isWorkflow: true,
+        transitions: {
+          needs_proofreading: {
+            default: true,
+            title: 'Begär korrläsning',
+            description: 'Behöver korrläsning av printartikeln'
+          },
+          print_done: {
+            title: 'Klarmarkera',
+            description: 'Markera printartikeln som klar'
+          },
+          usable: {
+            verify: true,
+            title: 'Exportera',
+            description: 'Exportera printartikeln'
+          }
         }
-      }
-    }
-  },
-  'core/editorial-info': {
-    draft: {
-      title: i18n.t('workflows:core/editorial-info.draft.title'),
-      description: i18n.t('workflows:core/editorial-info.draft.description'),
-      isWorkflow: true,
-      transitions: {
-        done: {
-          default: true,
-          title: i18n.t('workflows:core/editorial-info.draft.transitions.done.title'),
-          description: i18n.t('workflows:core/editorial-info.draft.transitions.done.description')
-        },
-        approved: {
-          title: i18n.t('workflows:core/editorial-info.draft.transitions.approved.title'),
-          description: i18n.t('workflows:core/editorial-info.draft.transitions.approved.description')
-        },
-        usable: {
-          verify: true,
-          title: i18n.t('workflows:core/editorial-info.draft.transitions.usable.title'),
-          description: i18n.t('workflows:core/editorial-info.draft.transitions.usable.description')
+      },
+      needs_proofreading: {
+        title: 'Klar för korr',
+        description: 'Printartikeln behöver korrläsning',
+        isWorkflow: true,
+        transitions: {
+          print_done: {
+            title: 'Klarmarkera',
+            description: 'Markera printartikeln som klar'
+          },
+          usable: {
+            verify: true,
+            title: 'Exportera',
+            description: 'Exportera printartikeln'
+          },
+          cancelled: {
+            verify: true,
+            title: 'Kasta',
+            description: 'Kasta printartikeln'
+          },
+          draft: {
+            verify: true,
+            title: 'Till utkast',
+            description: 'Gör om printartikeln till ett utkast igen'
+          }
         }
-      }
-    },
-    done: {
-      title: i18n.t('workflows:core/editorial-info.done.title'),
-      description: i18n.t('workflows:core/editorial-info.done.description'),
-      isWorkflow: true,
-      transitions: {
-        approved: {
-          default: true,
-          title: i18n.t('workflows:core/editorial-info.done.transitions.approved.title'),
-          description: i18n.t('workflows:core/editorial-info.done.transitions.approved.description')
-        },
-        usable: {
-          verify: true,
-          title: i18n.t('workflows:core/editorial-info.done.transitions.usable.title'),
-          description: i18n.t('workflows:core/editorial-info.done.transitions.usable.description')
-        },
-        draft: {
-          title: i18n.t('workflows:core/editorial-info.done.transitions.draft.title'),
-          description: i18n.t('workflows:core/editorial-info.done.transitions.draft.description')
+      },
+      print_done: {
+        title: 'Klar',
+        description: 'Printartikeln är klar och väntar på godkännande',
+        isWorkflow: true,
+        transitions: {
+          approved: {
+            default: true,
+            title: 'Godkänn',
+            description: 'Godkänn printartikeln'
+          },
+          usable: {
+            verify: true,
+            title: 'Exportera',
+            description: 'Exportera printartikeln'
+          },
+          needs_proofreading: {
+            title: 'Begär korrläsning',
+            description: 'Behöver korrläsning av printartikeln'
+          },
+          cancelled: {
+            title: 'Kasta',
+            description: 'Kasta printartikeln'
+          },
+          draft: {
+            title: 'Till utkast',
+            description: 'Gör om printartikeln till ett utkast igen'
+          }
         }
-      }
-    },
-    approved: {
-      title: i18n.t('workflows:core/editorial-info.approved.title'),
-      description: i18n.t('workflows:core/editorial-info.approved.description'),
-      isWorkflow: true,
-      transitions: {
-        usable: {
-          default: true,
-          verify: true,
-          title: i18n.t('workflows:core/editorial-info.approved.transitions.usable.title'),
-          description: i18n.t('workflows:core/editorial-info.approved.transitions.usable.description')
-        },
-        draft: {
-          title: i18n.t('workflows:core/editorial-info.approved.transitions.draft.title'),
-          description: i18n.t('workflows:core/editorial-info.approved.transitions.draft.description')
+      },
+      usable: {
+        title: 'Exporterad',
+        asSaveCTA: 'Oexporterade ändringar',
+        asSaveTitle: 'Exportera ändrad version',
+        description: 'Printartikeln är exporterad',
+        changedDescription: 'Printartikeln har ändrats sedan den senaste exporten',
+        updateDescription: 'Uppdatera den exporterade printartikeln med de nya ändringarna',
+        isWorkflow: false,
+        asSave: true,
+        transitions: {
+          unpublished: {
+            verify: true,
+            title: 'Dra tillbaka',
+            description: 'Avbryt export och arkivera printartikeln'
+          }
         }
-      }
-    },
-    usable: {
-      title: i18n.t('workflows:core/editorial-info.usable.title'),
-      description: i18n.t('workflows:core/editorial-info.usable.description'),
-      isWorkflow: true,
-      transitions: {
-        draft: {
-          default: true,
-          title: i18n.t('workflows:core/editorial-info.usable.transitions.draft.title'),
-          description: i18n.t('workflows:core/editorial-info.usable.transitions.draft.description')
-        },
-        unpublished: {
-          title: i18n.t('workflows:core/editorial-info.usable.transitions.unpublished.title'),
-          description: i18n.t('workflows:core/editorial-info.usable.transitions.unpublished.description')
+      },
+      unpublished: {
+        title: 'Inställd',
+        description: 'Printartikeln är avpublicerad',
+        isWorkflow: true,
+        transitions: {
+          draft: {
+            title: 'Till utkast',
+            description: 'Gör om printartikeln till ett utkast igen'
+          }
         }
-      }
-    }
-  },
-  'tt/print-article': {
-    draft: {
-      title: 'Utkast',
-      description: 'Du jobbar på ett utkast av printartikeln',
-      isWorkflow: true,
-      transitions: {
-        needs_proofreading: {
-          default: true,
-          title: 'Begär korrläsning',
-          description: 'Behöver korrläsning av printartikeln'
-        },
-        print_done: {
-          title: 'Klarmarkera',
-          description: 'Markera printartikeln som klar'
-        },
-        usable: {
-          verify: true,
-          title: 'Exportera',
-          description: 'Exportera printartikeln'
-        }
-      }
-    },
-    needs_proofreading: {
-      title: 'Klar för korr',
-      description: 'Printartikeln behöver korrläsning',
-      isWorkflow: true,
-      transitions: {
-        print_done: {
-          title: 'Klarmarkera',
-          description: 'Markera printartikeln som klar'
-        },
-        usable: {
-          verify: true,
-          title: 'Exportera',
-          description: 'Exportera printartikeln'
-        },
-        cancelled: {
-          verify: true,
-          title: 'Kasta',
-          description: 'Kasta printartikeln'
-        },
-        draft: {
-          verify: true,
-          title: 'Till utkast',
-          description: 'Gör om printartikeln till ett utkast igen'
-        }
-      }
-    },
-    print_done: {
-      title: 'Klar',
-      description: 'Printartikeln är klar och väntar på godkännande',
-      isWorkflow: true,
-      transitions: {
-        approved: {
-          default: true,
-          title: 'Godkänn',
-          description: 'Godkänn printartikeln'
-        },
-        usable: {
-          verify: true,
-          title: 'Exportera',
-          description: 'Exportera printartikeln'
-        },
-        needs_proofreading: {
-          title: 'Begär korrläsning',
-          description: 'Behöver korrläsning av printartikeln'
-        },
-        cancelled: {
-          title: 'Kasta',
-          description: 'Kasta printartikeln'
-        },
-        draft: {
-          title: 'Till utkast',
-          description: 'Gör om printartikeln till ett utkast igen'
-        }
-      }
-    },
-    usable: {
-      title: 'Exporterad',
-      asSaveCTA: 'Oexporterade ändringar',
-      asSaveTitle: 'Exportera ändrad version',
-      description: 'Printartikeln är exporterad',
-      changedDescription: 'Printartikeln har ändrats sedan den senaste exporten',
-      updateDescription: 'Uppdatera den exporterade printartikeln med de nya ändringarna',
-      isWorkflow: false,
-      asSave: true,
-      transitions: {
-        unpublished: {
-          verify: true,
-          title: 'Dra tillbaka',
-          description: 'Avbryt export och arkivera printartikeln'
-        }
-      }
-    },
-    unpublished: {
-      title: 'Inställd',
-      description: 'Printartikeln är avpublicerad',
-      isWorkflow: true,
-      transitions: {
-        draft: {
-          title: 'Till utkast',
-          description: 'Gör om printartikeln till ett utkast igen'
-        }
-      }
-    },
-    cancelled: {
-      title: 'Kastad',
-      description: 'Printartikeln är kastad',
-      isWorkflow: true,
-      transitions: {
-        draft: {
-          title: 'Till utkast',
-          description: 'Gör om printartikeln till ett utkast igen'
+      },
+      cancelled: {
+        title: 'Kastad',
+        description: 'Printartikeln är kastad',
+        isWorkflow: true,
+        transitions: {
+          draft: {
+            title: 'Till utkast',
+            description: 'Gör om printartikeln till ett utkast igen'
+          }
         }
       }
     }

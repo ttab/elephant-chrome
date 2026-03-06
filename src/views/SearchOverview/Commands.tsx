@@ -12,7 +12,7 @@ import {
 } from '@ttab/elephant-ui/icons'
 import { useCategories, useOrganisers, useSections, useQuery, useAuthors } from '@/hooks'
 import { Newsvalues } from '@/defaults/newsvalues'
-import { AssignmentTypes } from '@/defaults/assignmentTypes'
+import { getAssignmentTypes } from '@/defaults/assignmentTypes'
 import type { FilterProps } from '@/components/Filter'
 import { DatePicker } from '@/components/Datepicker'
 import { useMemo, type JSX } from 'react'
@@ -82,7 +82,7 @@ export const Commands = (props: FilterProps & { type: SearchKeys }): JSX.Element
       {type !== 'articles' && type !== 'events' && (
         <OptionsFilter
           {...props}
-          options={AssignmentTypes}
+          options={getAssignmentTypes()}
           label={t('labels.type')}
           filterPage='aType'
           Icon={CrosshairIcon}

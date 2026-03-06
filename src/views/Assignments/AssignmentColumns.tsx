@@ -12,7 +12,7 @@ import {
 } from '@ttab/elephant-ui/icons'
 import { Newsvalues } from '@/defaults/newsvalues'
 import { FacetedFilter } from '@/components/Commands/FacetedFilter'
-import { AssignmentTypes, isVisualAssignmentType } from '@/defaults/assignmentTypes'
+import { getAssignmentTypes, isVisualAssignmentType } from '@/defaults/assignmentTypes'
 import { Type } from '@/components/Table/Items/Type'
 import { getNestedFacetedUniqueValues } from '@/components/Table/lib/getNestedFacetedUniqueValues'
 import { Assignees } from '@/components/Table/Items/Assignees'
@@ -280,12 +280,12 @@ export function assignmentColumns<Ns extends Namespace>({ authors = [], locale, 
         Filter: ({ column, setSearch }) => (
           <FacetedFilter column={column} setSearch={setSearch} facetFn={() => getNestedFacetedUniqueValues(column)} />
         ),
-        options: AssignmentTypes,
+        options: getAssignmentTypes(),
         name: t('views:assignments.columnLabels.type'),
         columnIcon: CrosshairIcon,
         className: 'box-content w-8 sm:w-8 pr-1 sm:pr-4',
         display: (value: string | string[]) => {
-          const items = AssignmentTypes
+          const items = getAssignmentTypes()
             .filter((type) => value.includes(type.value))
             .map((item) => item.label)
           return (
@@ -299,7 +299,7 @@ export function assignmentColumns<Ns extends Namespace>({ authors = [], locale, 
       },
       accessorFn: (data) => data.fields['document.meta.core_assignment.meta.core_assignment_type.value']?.values,
       cell: ({ row }) => {
-        const data = AssignmentTypes.filter(
+        const data = getAssignmentTypes().filter(
           (assignmentType) => (row.getValue<string[]>('assignmentType') || [])
             .includes(assignmentType.value)
         )

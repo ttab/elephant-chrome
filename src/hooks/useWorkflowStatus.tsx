@@ -8,7 +8,7 @@ import type { Repository, Status } from '@/shared/Repository'
 import { snapshotDocument } from '@/lib/snapshotDocument'
 import { getStatusFromMeta } from '@/lib/getStatusFromMeta'
 import type { Session } from 'next-auth'
-import { WorkflowSpecifications } from '@/defaults/workflowSpecification'
+import { getWorkflowSpecifications } from '@/defaults/workflowSpecification'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import { useTranslation } from 'react-i18next'
@@ -55,7 +55,7 @@ export const useWorkflowStatus = ({ ydoc, documentId: docId }: {
       try {
         const isWorkflow = meta.type === 'tt/wire'
           ? false
-          : !!WorkflowSpecifications[meta.type][state]?.isWorkflow
+          : !!getWorkflowSpecifications()[meta.type][state]?.isWorkflow
 
         return {
           uuid: documentId,
