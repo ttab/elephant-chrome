@@ -75,6 +75,16 @@ describe('saveFactbox', () => {
       .rejects.toThrow('Could not save factbox: document language missing')
   })
 
+  it('should throw error if saving the factbox fails', async () => {
+    const saveError = new Error('network error')
+    ;(mockRepository.saveDocument as Mock).mockRejectedValue(saveError)
+
+    const params = makeParams()
+    await expect(saveFactbox(params as unknown as Parameters<typeof saveFactbox>[0]))
+      .rejects.toThrow('Could not save factbox')
+    expect(params.onClose).toHaveBeenCalled()
+  })
+
   it('returns correctly, a factbox document is created', async () => {
     (mockRepository.saveDocument as Mock).mockResolvedValue(undefined)
 
