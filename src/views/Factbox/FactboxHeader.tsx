@@ -6,7 +6,7 @@ import { MetaSheet } from '@/components/MetaSheet/MetaSheet'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 
-export const FactboxHeader = ({ ydoc, asDialog, onDialogClose }: {
+export const FactboxHeader = ({ ydoc, onDialogClose, asDialog }: {
   ydoc: YDocument<Y.Map<unknown>>
   asDialog: boolean
   onDialogClose?: () => void
@@ -17,7 +17,7 @@ export const FactboxHeader = ({ ydoc, asDialog, onDialogClose }: {
         name='Factbox'
         title='Faktaruta'
         icon={BookTextIcon}
-        asDialog={asDialog}
+        asDialog={!asDialog}
       />
       <ViewHeader.Content className='justify-start'>
         <div className='max-w-[780px] mx-auto flex flex-row gap-1 justify-between items-center w-full'>

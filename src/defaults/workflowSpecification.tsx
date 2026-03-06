@@ -371,24 +371,42 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
       isWorkflow: false,
       transitions: {
         usable: {
-          verify: true,
-          title: 'Publicera',
-          description: 'Publicera faktarutan för användning'
+          verify: false,
+          title: 'Klar',
+          description: 'Klarmarkera faktarutan för användning'
+        },
+        unpublished: {
+          verify: false,
+          title: 'Kasta',
+          description: 'Ta bort faktarutan'
         }
       }
     },
     usable: {
       title: 'Användbar',
       asSaveCTA: 'Ändrad',
-      asSaveTitle: 'Publicera ny information',
+      asSaveTitle: 'Uppdatera',
+      updateDescription: 'Uppdatera faktarutan med ändringarna',
       description: 'Faktarutan är användbar',
       isWorkflow: false,
       asSave: true,
       transitions: {
-        draft: {
-          verify: true,
-          title: 'Till utkast',
-          description: 'Gör om faktarutan till ett utkast igen'
+        unpublished: {
+          verify: false,
+          title: 'Kasta',
+          description: 'Ta bort faktarutan'
+        }
+      }
+    },
+    unpublished: {
+      title: 'Kastad',
+      description: 'Faktarutan är inte synlig eller användbar',
+      isWorkflow: false,
+      transitions: {
+        usable: {
+          verify: false,
+          title: 'Använd',
+          description: 'Gör faktarutan användbar igen'
         }
       }
     }

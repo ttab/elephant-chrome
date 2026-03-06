@@ -8,6 +8,8 @@ import { revertPrintArticle, transformPrintArticle } from './tt/printArticle.js'
 import { revertPrintText, transformPrintText } from './tt/printText.js'
 import { revertImage, transformImage } from './core/image.js'
 import type { TBElement } from '@ttab/textbit'
+import { revertUnorderedList } from './core/unorderedList.js'
+import { revertOrderedList, transformOrderedList } from './core/orderedList.js'
 
 /**
  * Convert a NewsDoc block array to slate TBElement array
@@ -73,6 +75,10 @@ export function slateToNewsDoc(elements: TBElement[]): Block[] | undefined {
         return revertTvListing(element)
       case 'tt/print-article':
         return revertPrintArticle(element)
+      case 'core/unordered-list':
+        return revertUnorderedList(element)
+      case 'core/ordered-list':
+        return revertOrderedList(element)
       default:
         throw new Error(`Element not implemented: ${element.type}`)
     }
