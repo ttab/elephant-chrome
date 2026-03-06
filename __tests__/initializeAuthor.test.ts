@@ -80,7 +80,7 @@ describe('initializeAuthor', () => {
     expect(result).toBe(true)
     // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(mockRepository.saveDocument).toHaveBeenCalled()
-    expect(toast.success).toHaveBeenCalledWith(i18n.t('shared:operations.authorSaveSuccess'))
+    expect(toast.success).toHaveBeenCalledWith('Författardokument har sparats')
   })
 
   it('should update an existing author document when isValid === false', async () => {
@@ -106,7 +106,7 @@ describe('initializeAuthor', () => {
       mockSession.accessToken,
       expect.any(String)
     )
-    expect(toast.success).toHaveBeenCalledWith(i18n.t('shared:operations.authorUpdateSuccess'))
+    expect(toast.success).toHaveBeenCalledWith('Författardokument har uppdaterats')
   })
 
   it('should throw an error if saving the document fails', async () => {
@@ -121,7 +121,7 @@ describe('initializeAuthor', () => {
       })
     ).rejects.toThrow('Failed to initialize author: Failed to create author doc')
 
-    expect(toast.error).toHaveBeenCalledWith(i18n.t('errors:toasts.authorSaveFailure', { errorMessage: 'Failed to create author doc' }))
+    expect(toast.error).toHaveBeenCalledWith('Kunde inte spara författardokument: Failed to create author doc')
   })
 
   it('should throw an error if multiple author documents are found', async () => {
@@ -136,7 +136,7 @@ describe('initializeAuthor', () => {
       })
     ).rejects.toThrow('More than one author document found')
 
-    expect(toast.error).toHaveBeenCalledWith(i18n.t('errors:toasts.multipleAuthors'))
+    expect(toast.error).toHaveBeenCalledWith('Flera författardokument hittades, kontakta support')
   })
 
 
@@ -152,6 +152,6 @@ describe('initializeAuthor', () => {
       })
     ).rejects.toThrow('Failed to initialize author: Failed to fetch author document: undefined')
 
-    expect(toast.error).toHaveBeenCalledWith(i18n.t('errors:toasts.authorSaveFailure', { errorMessage: 'Failed to fetch author document: undefined' }))
+    expect(toast.error).toHaveBeenCalledWith('Kunde inte spara författardokument: Failed to fetch author document: undefined')
   })
 })

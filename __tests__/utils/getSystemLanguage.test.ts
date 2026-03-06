@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { getSystemLanguage, setSystemLanguage } from '@/shared/getSystemLanguage'
 
 describe('getSystemLanguage', () => {
@@ -6,6 +6,10 @@ describe('getSystemLanguage', () => {
     // Reset to known state — setupTests sets 'sv-se' globally,
     // so we re-set it per test for isolation
     setSystemLanguage('')
+  })
+
+  afterEach(() => {
+    setSystemLanguage('sv-se')
   })
 
   it('throws when not initialized', () => {
