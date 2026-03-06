@@ -40,7 +40,6 @@ export async function addAssignmentWithDeliverable(payload: {
     })
 
     if (!response.ok) {
-      toast.error(i18n.t('errors:toasts.addAssignmentToPlanningError'))
       const body = await response.text().catch(() => '(unreadable)')
       console.error('Failed backend call to add assignment', response.status, response.statusText, body)
       throw new Error(`Backend returned ${response.status}: ${body}`)

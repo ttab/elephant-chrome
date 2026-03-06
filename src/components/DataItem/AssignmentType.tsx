@@ -1,4 +1,4 @@
-import { AssignmentTypes } from '@/defaults'
+import { getAssignmentTypes } from '@/defaults'
 import { Button, Select, SelectContent, SelectItem, SelectTrigger } from '@ttab/elephant-ui'
 import { cn } from '@ttab/elephant-ui/utils'
 import { Block } from '@ttab/elephant-api/newsdoc'
@@ -21,7 +21,7 @@ export const AssignmentType = ({ assignment, editable = false, readOnly = false,
   const [, setAssignmentVisibility] = useYValue<string>(assignment, 'data.public')
   const { t } = useTranslation('shared')
 
-  const selectedOptions = AssignmentTypes.filter((type) => {
+  const selectedOptions = getAssignmentTypes().filter((type) => {
     const value = assignmentType?.map ? assignmentType.map((s) => s.value).sort().join('/') : ''
     return type.value === value
   })
@@ -99,7 +99,7 @@ export const AssignmentType = ({ assignment, editable = false, readOnly = false,
           : t(`assignmentTypes.${selectedOptions[0]?.value}` as TranslationKey)}
       </SelectTrigger>
       <SelectContent>
-        {AssignmentTypes.map((option) => (
+        {getAssignmentTypes().map((option) => (
           <SelectItem value={option.value} key={option.value}>
             <div className='flex flex-row gap-2'>
               {option.icon && <option.icon {...option.iconProps} />}

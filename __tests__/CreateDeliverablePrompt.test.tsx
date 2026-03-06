@@ -10,7 +10,6 @@ import type { TemplatePayload } from '@/shared/templates'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import type { HocuspocusProvider } from '@hocuspocus/provider'
 import { initialState, type RegistryProviderState } from '@/contexts/RegistryProvider'
-import i18n from '@/lib/i18n'
 
 // Mock environment variables
 const originalEnv = process.env
@@ -35,10 +34,6 @@ vi.mock('sonner', () => ({
 }))
 
 vi.mocked(useRegistry).mockReturnValue(initialState)
-
-beforeEach(() => {
-  vi.clearAllMocks()
-})
 
 beforeEach(() => {
   vi.clearAllMocks()
@@ -74,7 +69,7 @@ describe('CreateDeliverablePrompt', () => {
     deliverableType: 'article' as const,
     payload: validPayload,
     title: 'Test Title',
-    documentLabel: i18n.t('shared:assignmentTypes.text').toLocaleLowerCase(),
+    documentLabel: 'artikel',
     onClose: mockOnClose
   }
 
@@ -108,10 +103,10 @@ describe('CreateDeliverablePrompt', () => {
     it('renders the prompt dialog when all dependencies are available', () => {
       render(<CreateDeliverablePrompt {...defaultProps} />)
 
-      expect(screen.getByText(`${i18n.t('common:actions.create')} ${i18n.t('shared:assignmentTypes.text').toLocaleLowerCase()}?`)).toBeInTheDocument()
-      expect(screen.getByText(i18n.t(`planning:prompts.createPrompt`, { documentLabel: i18n.t('shared:assignmentTypes.text').toLocaleLowerCase(), title: ' Test Title' }))).toBeInTheDocument()
-      expect(screen.getByText(i18n.t('common:actions.create'))).toBeInTheDocument()
-      expect(screen.getByText(i18n.t('common:actions.abort'))).toBeInTheDocument()
+      expect(screen.getByText('Skapa artikel?')).toBeInTheDocument()
+      expect(screen.getByText('Vill du skapa en artikel för uppdraget Test Title?')).toBeInTheDocument()
+      expect(screen.getByText('Skapa')).toBeInTheDocument()
+      expect(screen.getByText('Avbryt')).toBeInTheDocument()
     })
 
     it('renders with flash deliverable type', () => {
@@ -119,12 +114,12 @@ describe('CreateDeliverablePrompt', () => {
         <CreateDeliverablePrompt
           {...defaultProps}
           deliverableType='flash'
-          documentLabel={i18n.t('shared:assignmentTypes.flash')}
+          documentLabel='Flash'
         />
       )
 
-      expect(screen.getByText(`${i18n.t('common:actions.create')} ${i18n.t('shared:assignmentTypes.flash')}?`)).toBeInTheDocument()
-      expect(screen.getByText(i18n.t('planning:prompts.createPrompt', { documentLabel: i18n.t('shared:assignmentTypes.flash'), title: ' Test Title' }))).toBeInTheDocument()
+      expect(screen.getByText('Skapa Flash?')).toBeInTheDocument()
+      expect(screen.getByText('Vill du skapa en Flash för uppdraget Test Title?')).toBeInTheDocument()
     })
 
     it('renders with editorial-info deliverable type', () => {
@@ -132,17 +127,17 @@ describe('CreateDeliverablePrompt', () => {
         <CreateDeliverablePrompt
           {...defaultProps}
           deliverableType='editorial-info'
-          documentLabel={i18n.t('shared:assignmentTypes.editorial-info')}
+          documentLabel='Till red'
         />
       )
 
-      expect(screen.getByText(`${i18n.t('common:actions.create')}`)).toBeInTheDocument()
+      expect(screen.getByText('Skapa')).toBeInTheDocument()
     })
 
     it('renders without title in description', () => {
       render(<CreateDeliverablePrompt {...defaultProps} title='' />)
 
-      expect(screen.getByText(i18n.t(`planning:prompts.createPrompt`, { documentLabel: i18n.t('shared:assignmentTypes.text').toLocaleLowerCase(), title: '' }))).toBeInTheDocument()
+      expect(screen.getByText('Vill du skapa en artikel för uppdraget?')).toBeInTheDocument()
     })
 
     it('does not render when repository is missing', () => {
@@ -183,7 +178,7 @@ describe('CreateDeliverablePrompt', () => {
 
       render(<CreateDeliverablePrompt {...defaultProps} />)
 
-      const createButton = screen.getByText(i18n.t('common:actions.create'))
+      const createButton = screen.getByText('Skapa')
       await user.click(createButton)
 
       await waitFor(() => {
@@ -205,7 +200,7 @@ describe('CreateDeliverablePrompt', () => {
 
       render(<CreateDeliverablePrompt {...defaultProps} />)
 
-      const cancelButton = screen.getByText(i18n.t('common:actions.abort'))
+      const cancelButton = screen.getByText('Avbryt')
       await user.click(cancelButton)
 
       expect(mockOnClose).toHaveBeenCalledWith()
@@ -230,12 +225,12 @@ describe('CreateDeliverablePrompt', () => {
         />
       )
 
-      const createButton = screen.getByText(i18n.t('common:actions.create'))
+      const createButton = screen.getByText('Skapa')
       await user.click(createButton)
 
       await waitFor(() => {
         expect(toast.error).toHaveBeenCalledWith(
-          i18n.t(`errors:toasts.creationFailed`, { error: i18n.t('errors:toasts.missingMetadata') })
+          'Misslyckades att skapa text: Saknar nyhetsvärde eller sektion'
         )
       })
 
@@ -259,12 +254,12 @@ describe('CreateDeliverablePrompt', () => {
         />
       )
 
-      const createButton = screen.getByText(i18n.t('common:actions.create'))
+      const createButton = screen.getByText('Skapa')
       await user.click(createButton)
 
       await waitFor(() => {
         expect(toast.error).toHaveBeenCalledWith(
-          i18n.t(`errors:toasts.creationFailed`, { error: i18n.t('errors:toasts.missingMetadata') })
+          'Misslyckades att skapa text: Saknar nyhetsvärde eller sektion'
         )
       })
 
@@ -281,12 +276,12 @@ describe('CreateDeliverablePrompt', () => {
 
       render(<CreateDeliverablePrompt {...defaultProps} />)
 
-      const createButton = screen.getByText(i18n.t('common:actions.create'))
+      const createButton = screen.getByText('Skapa')
       await user.click(createButton)
 
       await waitFor(() => {
         expect(toast.error).toHaveBeenCalledWith(
-          i18n.t(`errors:toasts.creationFailed`, { error: errorMessage })
+          'Misslyckades att skapa text: Network error'
         )
       })
 
@@ -299,12 +294,12 @@ describe('CreateDeliverablePrompt', () => {
 
       render(<CreateDeliverablePrompt {...defaultProps} />)
 
-      const createButton = screen.getByText(i18n.t('common:actions.create'))
+      const createButton = screen.getByText('Skapa')
       await user.click(createButton)
 
       await waitFor(() => {
         expect(toast.error).toHaveBeenCalledWith(
-          i18n.t(`errors:toasts.creationFailed`, { error: i18n.t('errors:messages.unknown') })
+          'Misslyckades att skapa text: Okänt fel'
         )
       })
     })
@@ -317,7 +312,7 @@ describe('CreateDeliverablePrompt', () => {
 
       render(<CreateDeliverablePrompt {...defaultProps} />)
 
-      const createButton = screen.getByText(i18n.t('common:actions.create'))
+      const createButton = screen.getByText('Skapa')
       await user.click(createButton)
 
       await waitFor(() => {
@@ -341,7 +336,7 @@ describe('CreateDeliverablePrompt', () => {
 
       render(<CreateDeliverablePrompt {...defaultProps} />)
 
-      const createButton = screen.getByText(i18n.t('common:actions.create'))
+      const createButton = screen.getByText('Skapa')
 
       await user.click(createButton)
       await user.click(createButton)
@@ -359,12 +354,12 @@ describe('CreateDeliverablePrompt', () => {
 
       render(<CreateDeliverablePrompt {...defaultProps} />)
 
-      const createButton = screen.getByText(i18n.t('common:actions.create'))
+      const createButton = screen.getByText('Skapa')
 
       await user.click(createButton)
       await waitFor(() => {
         expect(toast.error).toHaveBeenCalledWith(
-          i18n.t(`errors:toasts.creationFailed`, { error: 'First failure' })
+          'Misslyckades att skapa text: First failure'
         )
       })
 
@@ -390,7 +385,7 @@ describe('CreateDeliverablePrompt', () => {
 
       render(<CreateDeliverablePrompt {...defaultProps} />)
 
-      const createButton = screen.getByText(i18n.t('common:actions.create'))
+      const createButton = screen.getByText('Skapa')
       await user.click(createButton)
 
       await waitFor(() => {
@@ -410,7 +405,7 @@ describe('CreateDeliverablePrompt', () => {
 
       // First creation
       const { unmount } = render(<CreateDeliverablePrompt {...defaultProps} />)
-      await user.click(screen.getByText(i18n.t('common:actions.create')))
+      await user.click(screen.getByText('Skapa'))
 
       await waitFor(() => {
         expect(mockSaveDocument).toHaveBeenCalledWith(
@@ -425,7 +420,7 @@ describe('CreateDeliverablePrompt', () => {
       mockOnClose.mockClear()
 
       render(<CreateDeliverablePrompt {...defaultProps} />)
-      await user.click(screen.getByText(i18n.t('common:actions.create')))
+      await user.click(screen.getByText('Skapa'))
 
       await waitFor(() => {
         expect(mockSaveDocument).toHaveBeenCalledWith(

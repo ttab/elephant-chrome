@@ -1,5 +1,5 @@
 import { Prompt } from '@/components/Prompt'
-import { WorkflowSpecifications } from '@/defaults/workflowSpecification'
+import { getWorkflowSpecifications } from '@/defaults/workflowSpecification'
 import { useNavigationKeys } from '@/hooks/useNavigationKeys'
 import { type YDocument } from '@/modules/yjs/hooks'
 import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
@@ -22,7 +22,7 @@ export const ViewDialogClose = ({ ydoc, onClick, Icon = XIcon, asDialog }: {
   const [documentStatus] = useWorkflowStatus({ documentId: ydoc?.id })
   const { t } = useTranslation('shared')
   const asSave = (documentStatus?.type
-    ? WorkflowSpecifications[documentStatus.type][documentStatus.name].asSave && ydoc?.isChanged
+    ? getWorkflowSpecifications()[documentStatus.type][documentStatus.name].asSave && ydoc?.isChanged
     : false) || false
 
   const handleClose = () => {

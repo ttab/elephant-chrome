@@ -1,7 +1,7 @@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@ttab/elephant-ui'
 import { useRef, useState, useEffect, useCallback } from 'react'
 import { useWorkflow } from '@/hooks/index/useWorkflow'
-import { StatusSpecifications, WorkflowSpecifications, type WorkflowTransition } from '@/defaults/workflowSpecification'
+import { StatusSpecifications, getWorkflowSpecifications, type WorkflowTransition } from '@/defaults/workflowSpecification'
 import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
 import { StatusOptions } from './StatusOptions'
 import { StatusMenuContext } from './StatusMenuContext'
@@ -41,14 +41,14 @@ export const StatusMenu = ({ ydoc, publishTime, onBeforeStatusChange }: {
 
   // Read workflow specifications from current type and current status
   const isWorkflow = documentStatus?.type
-    ? WorkflowSpecifications[documentStatus.type][documentStatus.name].isWorkflow
+    ? getWorkflowSpecifications()[documentStatus.type][documentStatus.name].isWorkflow
     : false
   const isChanged = !isWorkflow ? ydoc.isChanged : false
   const asSave = (documentStatus?.type
-    ? WorkflowSpecifications[documentStatus.type][documentStatus.name].asSave && ydoc.isChanged
+    ? getWorkflowSpecifications()[documentStatus.type][documentStatus.name].asSave && ydoc.isChanged
     : false) || false
   const requireCause = !!documentStatus?.checkpoint && documentStatus.type
-    ? WorkflowSpecifications[documentStatus.type][documentStatus.name].requireCause || false
+    ? getWorkflowSpecifications()[documentStatus.type][documentStatus.name].requireCause || false
     : false
 
 

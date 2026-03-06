@@ -137,7 +137,7 @@ function EditorWrapper(props: ViewProps & {
         locale: activeLocale
       })
     ]
-  }, [openFactboxEditor, openFactboxes, openImageSearch, t])
+  }, [openFactboxEditor, openFactboxes, openImageSearch, t, activeLocale])
 
   if (!content) {
     return <View.Root />

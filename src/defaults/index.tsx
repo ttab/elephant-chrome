@@ -1,4 +1,4 @@
-export { AssignmentTypes } from './assignmentTypes'
+export { getAssignmentTypes } from './assignmentTypes'
 export { Newsvalues } from './newsvalues'
 export { NewsvalueMap } from './newsvalueMap'
 export { Collaboration } from './collaboration'

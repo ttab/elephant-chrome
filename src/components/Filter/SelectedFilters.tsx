@@ -24,7 +24,7 @@ import { useQuery } from '@/hooks/useQuery'
 import { useOrganisers } from '@/hooks/useOrganisers'
 import { useCategories } from '@/hooks/useCategories'
 import { useAuthors } from '@/hooks/useAuthors'
-import { AssignmentTypes } from '@/defaults/assignmentTypes'
+import { getAssignmentTypes } from '@/defaults/assignmentTypes'
 import { useUserTracker } from '@/hooks/useUserTracker'
 import { useTranslation } from 'react-i18next'
 
@@ -160,7 +160,7 @@ const SelectedButton = ({ type, value }: { value: string | string[] | undefined,
       case 'aType': {
         return {
           Icon: CrosshairIcon,
-          options: AssignmentTypes
+          options: getAssignmentTypes()
         }
       }
       default: {

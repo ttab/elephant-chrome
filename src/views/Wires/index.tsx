@@ -184,7 +184,7 @@ export const Wires = (): JSX.Element => {
         )
       }
     }
-  }, [streams, settings?.title, updateSettings, hideModal, showModal])
+  }, [streams, settings?.title, updateSettings, hideModal, showModal, t])
 
   useStreamNavigation({
     isActive,
@@ -319,7 +319,7 @@ export const Wires = (): JSX.Element => {
         toast.error(t('toast.statusChangeFailed'))
       }
     })
-  }, [selectedWires, focusedWire, repository, session, previewWire, saveFocus, restoreFocus])
+  }, [selectedWires, focusedWire, repository, session, previewWire, saveFocus, restoreFocus, t])
 
   // Create a new article based on selected wires
   const onCreate = useCallback(() => {
