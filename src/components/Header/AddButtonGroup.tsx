@@ -60,16 +60,16 @@ const AddButton = ({
       className={!withNew ? '' : cn('h-8 pr-4', className)}
       onClick={() => {
         const id = crypto.randomUUID()
-        const initialDocument = getTemplateFromView(view.name)(id, { query })
 
         if (showModal) {
           if (view.name === 'Factbox') {
-            createNewFactbox(repository, session)
+            createNewFactbox(repository, session, id)
               .then((id) => openFactboxEditor(undefined, { id }, undefined)).catch((error) => {
                 console.error('Error creating Factbox document:', error)
                 toast.error('Kan inte skapa faktaruta')
               })
           } else {
+            const initialDocument = getTemplateFromView(view.name)(id, { query })
             showModal(
               <ViewDialog
                 onDialogClose={hideModal}

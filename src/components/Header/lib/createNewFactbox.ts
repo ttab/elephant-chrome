@@ -2,7 +2,7 @@ import type { Repository } from '@/shared/Repository'
 import { getTemplateFromView } from '@/shared/templates/lib/getTemplateFromView'
 import type { Session } from 'next-auth'
 
-export const createNewFactbox = async (repository: Repository | undefined, session: Session | null) => {
+export const createNewFactbox = async (repository: Repository | undefined, session: Session | null, id: string) => {
   if (!session || !session.accessToken || !repository) {
     console.error('CreateFactbox: Missing required dependencies', {
       hasAccessToken: !!session?.accessToken,
@@ -11,7 +11,6 @@ export const createNewFactbox = async (repository: Repository | undefined, sessi
     throw new Error('Missing required dependencies for creating Factbox')
   }
 
-  const id = crypto.randomUUID()
   try {
     const factboxDocument = getTemplateFromView('Factbox')(id, { title: 'Fakta:' })
     await repository.saveDocument(factboxDocument, session.accessToken)
