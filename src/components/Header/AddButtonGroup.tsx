@@ -61,24 +61,22 @@ const AddButton = ({
       onClick={() => {
         const id = crypto.randomUUID()
 
-        if (showModal) {
-          if (view.name === 'Factbox') {
-            createNewFactbox(repository, session, id)
-              .then((id) => openFactboxEditor(undefined, { id }, undefined)).catch((error) => {
-                console.error('Error creating Factbox document:', error)
-                toast.error('Kan inte skapa faktaruta')
-              })
-          } else {
-            const initialDocument = getTemplateFromView(view.name)(id, { query })
-            showModal(
-              <ViewDialog
-                onDialogClose={hideModal}
-                asDialog
-                id={id}
-                document={initialDocument}
-              />
-            )
-          }
+        if (view.name === 'Factbox') {
+          createNewFactbox(repository, session, id)
+            .then((id) => openFactboxEditor(undefined, { id }, undefined)).catch((error) => {
+              console.error('Error creating Factbox document:', error)
+              toast.error('Kan inte skapa faktaruta')
+            })
+        } else if (showModal) {
+          const initialDocument = getTemplateFromView(view.name)(id, { query })
+          showModal(
+            <ViewDialog
+              onDialogClose={hideModal}
+              asDialog
+              id={id}
+              document={initialDocument}
+            />
+          )
         }
       }}
     >
