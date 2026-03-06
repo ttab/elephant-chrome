@@ -4,7 +4,7 @@ import { sv } from '../locales/sv-SE/index'
 import { nb } from '../locales/nb/index'
 import { en } from '../locales/en/index'
 import LanguageDetector from 'i18next-browser-languagedetector'
-import { supportedUILanguages } from '@/shared/getLanguage'
+import { getSystemLanguage, supportedUILanguages } from '@/shared/getSystemLanguage'
 
 const resources = {
   sv,
@@ -12,48 +12,52 @@ const resources = {
   en
 }
 
-const envLang = process.env.SYSTEM_LANGUAGE ? process.env.SYSTEM_LANGUAGE.split('-')[0] : 'en'
+// Register plugins at module load so useTranslation() can find the i18n instance.
+// Actual initialization is deferred to initI18n() so that systemLanguage is
+// available when fallbackLng runs.
+i18n.use(initReactI18next).use(LanguageDetector)
 
-export const i18nInit = i18n
-  .use(initReactI18next)
-  .use(LanguageDetector)
-  .init({
-    // lng: language, // Default
-    ns: ['common', 'core', 'planning', 'shared', 'app', 'views', 'editor', 'workflows', 'factbox', 'event', 'metaSheet', 'flash', 'quickArticle', 'errors', 'wires'],
+export async function initI18n(): Promise<typeof i18n> {
+  await i18n.init({
+    ns: [
+      'common', 'core', 'planning', 'shared', 'app',
+      'views', 'editor', 'workflows', 'factbox', 'event',
+      'metaSheet', 'flash', 'quickArticle', 'errors', 'wires'
+    ],
     defaultNS: 'common',
     detection: {
-      // order: defines the priority of detection
-      // navigator: is the browser/system setting
-      // localStorage: i18next saves the preferred language setting as a 'i18nextLng' key in localstorage
       order: ['localStorage'],
-      // This is the default key used by i18next
       lookupLocalStorage: 'i18nextLng',
-      // Ensures changeLanguage() updates localstorage
       caches: ['localStorage']
     },
     resources,
-    debug: process.env.NODE_ENV !== 'production', // Useful during development to see loading errors
+    debug: !['production', 'test'].includes(process.env.NODE_ENV ?? ''),
     fallbackLng: (lng) => {
-      const nb = ['nn', 'nb', 'no', 'nb-NO', 'nn-NO'].includes(lng)
-      if (nb) return 'nb'
+      if (['nn', 'nb', 'no', 'nb-NO', 'nn-NO'].includes(lng)) return 'nb'
 
-      return supportedUILanguages.map((lng) => lng.code).includes(envLang) ? envLang : 'en'
+      try {
+        const langCode = getSystemLanguage().split('-')[0]
+        return supportedUILanguages.map((l) => l.code).includes(langCode) ? langCode : 'en'
+      } catch {
+        return 'en'
+      }
     },
     interpolation: {
-      escapeValue: false, // React already does escaping,
-      format: (value, formatStr) => {
-        if (typeof value === 'string') {
-          if (formatStr === 'lowercase') return value.toLowerCase()
-          if (formatStr === 'capitalize' || formatStr === 'capitalized') {
-            return value.charAt(0).toUpperCase() + value.slice(1)
-          }
-        }
-        return value as string
-      }
+      escapeValue: false
     },
     supportedLngs: ['sv', 'nb', 'en'],
     load: 'languageOnly',
     nonExplicitSupportedLngs: true
   })
+
+  if (!i18n.services.formatter) {
+    console.error('i18n formatter service unavailable — custom formatters not registered')
+  } else {
+    i18n.services.formatter.add('lowercase', (value: string) => value.toLowerCase())
+    i18n.services.formatter.add('capitalize', (value: string) => value.charAt(0).toUpperCase() + value.slice(1))
+  }
+
+  return i18n
+}
 
 export default i18n

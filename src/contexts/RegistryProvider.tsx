@@ -7,7 +7,7 @@ import React, {
   type JSX
 } from 'react'
 
-import { getServerUrls } from '@/lib/getServerUrls'
+import { getServerEnvs } from '@/lib/getServerEnvs'
 import { getUserTimeZone } from '@/lib/getUserTimeZone'
 import { Repository } from '@/shared/Repository'
 import { Spellchecker } from '@/shared/Spellchecker'
@@ -16,6 +16,8 @@ import { Workflow } from '@/shared/Workflow'
 import { User } from '@/shared/User'
 import type { LocaleData } from '@/types'
 import { Baboon } from '@/shared/Baboon'
+import { setSystemLanguage } from '@/shared/getSystemLanguage'
+import { initI18n } from '@/lib/i18n'
 import { DEFAULT_TIMEZONE } from '@/defaults/defaultTimezone'
 import { Collaboration } from '@/defaults'
 import { defaultLocale } from '@/defaults/locale'
@@ -52,6 +54,7 @@ export const initialState: RegistryProviderState = {
   locale: defaultLocale,
   timeZone: getUserTimeZone() || DEFAULT_TIMEZONE,
   userColor: colors[Math.floor(Math.random() * colors.length)],
+
   server: {
     webSocketUrl: new URL('http://localhost'),
     indexUrl: new URL('http://localhost'),
@@ -75,11 +78,15 @@ export const RegistryContext = createContext(initialState)
 export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element => {
   const [state, dispatch] = useReducer(reducer, initialState)
   const [isInitialized, setIsInitialized] = useState<boolean>(false)
+  const [initError, setInitError] = useState<string | null>(null)
 
   useEffect(() => {
     const initialize = async () => {
       try {
-        const server = await getServerUrls()
+        const { urls: server, envs } = await getServerEnvs()
+        setSystemLanguage(envs.systemLanguage)
+        await initI18n()
+
         const locale = defaultLocale
 
         const repository = new Repository(server.repositoryUrl.href)
@@ -101,16 +108,32 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
         })
         setIsInitialized(true)
       } catch (ex) {
-        if (ex instanceof Error) {
-          console.error(`Failed initializing RegistryProvider, ${ex.message}`, ex)
-        } else {
-          console.error('Failed initializing RegistryProvider: Unknown error')
-        }
+        const message = ex instanceof Error ? ex.message : 'Unknown error'
+        console.error(`Failed initializing RegistryProvider: ${message}`, ex)
+        setInitError(message)
       }
     }
 
     void initialize()
   }, [])
+
+  if (initError) {
+    return (
+      <div className='flex h-screen items-center justify-center p-6'>
+        <div className='max-w-md text-center'>
+          <h1 className='text-2xl font-bold mb-2'>Failed to initialize</h1>
+          <p className='text-sm text-muted-foreground mb-4'>{initError}</p>
+          <button
+            type='button'
+            onClick={() => window.location.reload()}
+            className='px-4 py-2 text-sm font-medium rounded-md bg-primary text-primary-foreground hover:bg-primary/90'
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <RegistryContext.Provider value={{ ...state, dispatch }}>
