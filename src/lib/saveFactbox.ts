@@ -34,7 +34,7 @@ export async function saveFactbox({
   )
 
   if (!factboxElement) {
-    return
+    throw new Error('Could not save factbox: element not found')
   }
 
   if (!documentLanguage) {
