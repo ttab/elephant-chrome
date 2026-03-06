@@ -63,5 +63,8 @@
   "prompts": {
     "publishBeforeClose": "Vill du publicera ändringarna innan du stänger?",
     "savedButNotPublished": "Ändringarna är sparade men inte publicerade."
+  },
+  "editorialInfo": {
+    "noteText": "Obs! Detta meddelande är inte avsett för publicering."
   }
 }

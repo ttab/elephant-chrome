@@ -1,6 +1,7 @@
 import { Document } from '@ttab/elephant-api/newsdoc'
 import type { TemplatePayload } from './index.js'
 import { getSystemLanguage } from '@/shared/getSystemLanguage.js'
+import i18n from 'i18next'
 
 /**
  * Generates a document template for type editorial-info
@@ -35,7 +36,7 @@ export function editorialInfoDocumentTemplate(id: string, payload?: TemplatePayl
       {
         type: 'core/note',
         data: {
-          text: 'Obs! Detta meddelande är inte avsett för publicering.'
+          text: i18n.t('shared:editorialInfo.noteText')
         },
         role: 'public'
       },
