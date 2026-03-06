@@ -1,7 +1,7 @@
 import { Document } from '@ttab/elephant-api/newsdoc'
 import type { TemplatePayload } from './index.js'
 import { getSystemLanguage } from '@/shared/getSystemLanguage.js'
-import i18n from '@/lib/i18n.js'
+import i18n from 'i18next'
 
 /**
  * Generates a document template for type editorial-info
