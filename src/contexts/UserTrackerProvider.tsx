@@ -9,7 +9,6 @@ import {
 } from 'react'
 import { HocuspocusProvider } from '@hocuspocus/provider'
 import { useSession } from 'next-auth/react'
-import { createStateless, StatelessType } from '@/shared/stateless'
 import { useWebSocket } from '@/modules/yjs/hooks'
 
 interface UserTrackerProviderState {
@@ -77,9 +76,8 @@ export const UserTrackerProvider = ({ children }: PropsWithChildren): JSX.Elemen
 
   // TODO: This is duplicated in CollaborationProvider, there might be room for improvement
   useEffect(() => {
-    // When the token is refreshed we need to send it to the server
-    // and update the connection context with the new token
-    provider?.sendStateless(createStateless(StatelessType.AUTH, { accessToken: data.accessToken || '' }))
+    // When the token is refreshed, send it to the server via native hocuspocus token sync
+    void provider?.sendToken()
   }, [provider, data.accessToken])
 
   if (provider) {

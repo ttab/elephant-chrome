@@ -1,14 +1,6 @@
 import { createStateless, StatelessType, parseStateless } from '../shared/stateless'
 
 describe('stateless', () => {
-  it('should create and parse stateless auth message', () => {
-    const statelessMsg = createStateless(StatelessType.AUTH, { accessToken: 'secretToken' })
-    expect(statelessMsg).toEqual(`${StatelessType.AUTH}@${JSON.stringify({ accessToken: 'secretToken' })}`)
-
-    const parsed = parseStateless(statelessMsg)
-    expect(parsed).toEqual({ type: StatelessType.AUTH, message: { accessToken: 'secretToken' } })
-  })
-
   it('should create and parse a stateless message', () => {
     const statelessMsg = createStateless(StatelessType.MESSAGE, 'test message')
     expect(statelessMsg).toEqual(`${StatelessType.MESSAGE}@${JSON.stringify('test message')}`)
@@ -23,6 +15,17 @@ describe('stateless', () => {
 
     const parsed = parseStateless(statelessMsg)
     expect(parsed).toEqual({ type: StatelessType.CONTEXT, message: { visibility: true, usageId: 'abc', id: '123' } })
+  })
+
+  it('should create and parse a stateless error message', () => {
+    const raw = new Error('something went wrong')
+    const error = { type: 'Error', message: 'something went wrong', stack: 'Error: something went wrong\n  at fn (file.ts:1:1)', raw }
+    const statelessMsg = createStateless(StatelessType.ERROR, error)
+    expect(statelessMsg).toEqual(`${StatelessType.ERROR}@${JSON.stringify(error)}`)
+
+    const parsed = parseStateless(statelessMsg)
+    // Zod strips unknown keys (raw) when parsing against ErrorMessageSchema
+    expect(parsed).toEqual({ type: StatelessType.ERROR, message: { type: 'Error', message: 'something went wrong', stack: 'Error: something went wrong\n  at fn (file.ts:1:1)' } })
   })
 
   it('should throw an error for invalid stateless type', () => {

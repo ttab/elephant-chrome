@@ -65,8 +65,6 @@ export class Auth implements Extension {
   // }
 
   async onTokenSync({ token, connection }: onTokenSyncPayload) {
-    console.log('🔄 Token sync requested')
-
     if (!token) {
       throw new Error('No token provided for sync')
     }
@@ -82,7 +80,6 @@ export class Auth implements Extension {
 
       context.accessToken = token
       context.user = jwt
-      console.log('✅ Token sync successful')
 
       return { lastTokenSync: new Date() }
     } catch (err) {
