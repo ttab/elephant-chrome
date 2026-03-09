@@ -51,13 +51,6 @@ export type TranslationKey = {
     | `${NS}:${LeafPaths<I18nResources[NS]>}`
 }[keyof I18nResources]
 
-// Non-leaf (intermediate) paths: object nodes that have children.
-type InterPaths<T, Prefix extends string = ''> = {
-  [K in keyof T & string]: T[K] extends Record<string, unknown>
-    ? `${Prefix}${K}` | InterPaths<T[K], `${Prefix}${K}.`>
-    : never
-}[keyof T & string]
-
 /**
  * Maps a string key to itself if valid, or to an error-message literal if not.
  * This causes TypeScript to report `'"❌ Invalid translation key: \"foo\""'` in

@@ -23,7 +23,7 @@ describe('CommandMenu', () => {
       </NavigationProvider>
     )
     await userEvent.keyboard('{Control>}k')
-    expect(screen.getByText(i18n.t('views:plannings.label.plural'))).toBeInTheDocument()
+    expect(screen.getByText('Planeringar')).toBeInTheDocument()
     await userEvent.click(screen.getByRole('option'))
 
     const historyState = history.state as HistoryState

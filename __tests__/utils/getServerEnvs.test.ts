@@ -75,4 +75,10 @@ describe('getServerEnvs', () => {
 
     await expect(getServerEnvs()).rejects.toThrow('Failed fetching server envs')
   })
+
+  it('throws when a URL value is malformed', async () => {
+    mockFetch({ ...validPayload, indexUrl: 'not-a-url' })
+
+    await expect(getServerEnvs()).rejects.toThrow('Failed fetching server envs')
+  })
 })

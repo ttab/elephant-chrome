@@ -17,6 +17,17 @@ const resources = {
 // available when fallbackLng runs.
 i18n.use(initReactI18next).use(LanguageDetector)
 
+export function resolveFallbackLanguage(lng: string): string {
+  if (['nn', 'nb', 'no', 'nb-NO', 'nn-NO'].includes(lng)) return 'nb'
+
+  try {
+    const langCode = getSystemLanguage().split('-')[0]
+    return supportedUILanguages.map((l) => l.code).includes(langCode) ? langCode : 'en'
+  } catch {
+    return 'en'
+  }
+}
+
 export async function initI18n(): Promise<typeof i18n> {
   await i18n.init({
     ns: [
@@ -32,16 +43,7 @@ export async function initI18n(): Promise<typeof i18n> {
     },
     resources,
     debug: !['production', 'test'].includes(process.env.NODE_ENV ?? ''),
-    fallbackLng: (lng) => {
-      if (['nn', 'nb', 'no', 'nb-NO', 'nn-NO'].includes(lng)) return 'nb'
-
-      try {
-        const langCode = getSystemLanguage().split('-')[0]
-        return supportedUILanguages.map((l) => l.code).includes(langCode) ? langCode : 'en'
-      } catch {
-        return 'en'
-      }
-    },
+    fallbackLng: resolveFallbackLanguage,
     interpolation: {
       escapeValue: false
     },
