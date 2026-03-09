@@ -34,6 +34,7 @@ const imageSlate: TBElement = {
   properties: {
     rel: 'image',
     uri: 'core://image/abc-def-123',
+    url: '',
     type: 'core/image',
     text: 'A test image caption',
     html_caption: undefined,

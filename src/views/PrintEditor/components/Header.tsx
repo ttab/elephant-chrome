@@ -113,6 +113,7 @@ export const LayoutBoxHeader = ({ ydoc, selected, onSelectAll, onSelectedDelete 
       const _date = (fromDate || date) as string
       const response = await baboon.createPrintArticle({
         sourceUuid: ydoc.id,
+        sourceVersion: 0n,
         flowUuid: flowUuid || '',
         date: _date,
         article: name || ''

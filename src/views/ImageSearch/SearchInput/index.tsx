@@ -3,13 +3,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import React, { useState, type Dispatch, type SetStateAction, type JSX } from 'react'
 import type { MediaTypes } from '..'
 
-export const ImageSearchInput = ({ setQueryString, setMediaType }: {
+export const ImageSearchInput = ({ setQueryString, setMediaType, isNtb }: {
   setQueryString: Dispatch<SetStateAction<string>>
   setMediaType: Dispatch<SetStateAction<MediaTypes>>
+  isNtb: boolean
 }): JSX.Element => {
   const [query, setQuery] = useState('')
 
-  const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setQueryString(query)
   }
@@ -17,24 +18,25 @@ export const ImageSearchInput = ({ setQueryString, setMediaType }: {
   return (
     <form
       onSubmit={handleSubmit}
-      className='self-center w-full p-2 pl-0 gap-1 flex flex-row'
+      className='flex w-full items-center gap-2'
     >
       <SearchInput
-        className='p-2 w-full text-sm border-none focus:border-none'
-        type='text'
-        placeholder='Sök'
+        className='w-full text-sm'
+        placeholder='Sök bilder'
         name='imagesearch'
         onChange={(e) => setQuery(e.currentTarget.value)}
       />
-      <Select onValueChange={(option) => setMediaType(option as MediaTypes)}>
-        <SelectTrigger className='w-fit'>
-          <SelectValue placeholder='Bild' />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value='image'>Bild</SelectItem>
-          <SelectItem value='graphic'>Grafik</SelectItem>
-        </SelectContent>
-      </Select>
+      {!isNtb && (
+        <Select onValueChange={(option) => setMediaType(option as MediaTypes)}>
+          <SelectTrigger className='w-fit shrink-0'>
+            <SelectValue placeholder='Bild' />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value='image'>Bild</SelectItem>
+            <SelectItem value='graphic'>Grafik</SelectItem>
+          </SelectContent>
+        </Select>
+      )}
     </form>
   )
 }

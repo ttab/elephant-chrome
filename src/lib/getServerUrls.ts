@@ -1,3 +1,11 @@
+import type { ImageSearchProvider } from '@/types'
+
+const imageSearchProviders: ImageSearchProvider[] = ['tt', 'ntb']
+
+function isImageSearchProvider(value: string): value is ImageSearchProvider {
+  return (imageSearchProviders as string[]).includes(value)
+}
+
 const BASE_URL = import.meta.env.BASE_URL || ''
 
 interface ServerUrls {
@@ -5,7 +13,8 @@ interface ServerUrls {
   indexUrl: URL
   repositoryUrl: URL
   repositoryEventsUrl: URL
-  contentApiUrl: URL
+  imageSearchUrl: URL
+  imageSearchProvider: ImageSearchProvider
   spellcheckUrl: URL
   userUrl: URL
   faroUrl: URL
@@ -22,7 +31,7 @@ export async function getServerUrls(): Promise<ServerUrls> {
   try {
     const servers = await response.json() as Record<string, string>
     const attributes = [
-      'webSocketUrl', 'indexUrl', 'repositoryUrl', 'contentApiUrl',
+      'webSocketUrl', 'indexUrl', 'repositoryUrl', 'imageSearchUrl',
       'spellcheckUrl', 'userUrl', 'faroUrl', 'baboonUrl'
     ]
 
@@ -38,9 +47,15 @@ export async function getServerUrls(): Promise<ServerUrls> {
       urls[field] = new URL(value)
     }
 
+    const imageSearchProvider = servers.imageSearchProvider ?? ''
+    if (!isImageSearchProvider(imageSearchProvider)) {
+      throw new Error(`invalid imageSearchProvider: '${imageSearchProvider}', expected one of: ${imageSearchProviders.join(', ')}`)
+    }
+
     return {
       ...urls,
-      repositoryEventsUrl: new URL('/sse', urls['repositoryUrl'])
+      repositoryEventsUrl: new URL('/sse', urls['repositoryUrl']),
+      imageSearchProvider
     } as ServerUrls
   } catch (ex) {
     throw new Error('Failed fetching remote server urls in getServerUrls', { cause: ex as Error })

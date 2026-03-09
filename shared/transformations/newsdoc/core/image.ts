@@ -17,6 +17,7 @@ export const transformImage = (element: Block): TBElement => {
     width: data.width,
     height: data.height,
     uploadId: links[0].uri.split('/').at(-1) || '',
+    url: links[0].url,
     ...transformSoftcrop(meta) || {}
   }
 
@@ -61,7 +62,8 @@ export function revertImage(element: TBElement): Block {
       type: 'core/image',
       rel: 'image',
       uri: toString(properties?.uri),
-      uuid: imageId
+      uuid: imageId,
+      url: toString(properties?.url)
     }
   ]
 

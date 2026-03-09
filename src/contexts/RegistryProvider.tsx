@@ -14,8 +14,9 @@ import { Spellchecker } from '@/shared/Spellchecker'
 import { Index } from '@/shared/Index'
 import { Workflow } from '@/shared/Workflow'
 import { User } from '@/shared/User'
-import type { LocaleData } from '@/types'
+import type { ImageSearchProvider, LocaleData } from '@/types'
 import { Baboon } from '@/shared/Baboon'
+import { NTB } from '@/shared/NTB'
 import { DEFAULT_TIMEZONE } from '@/defaults/defaultTimezone'
 import { Collaboration } from '@/defaults'
 import { defaultLocale } from '@/defaults/locale'
@@ -29,7 +30,8 @@ export interface RegistryProviderState {
     indexUrl: URL
     repositoryEventsUrl: URL
     repositoryUrl: URL
-    contentApiUrl: URL
+    imageSearchUrl: URL
+    imageSearchProvider: ImageSearchProvider
     spellcheckUrl: URL
     userUrl: URL
     faroUrl: URL
@@ -41,6 +43,7 @@ export interface RegistryProviderState {
   spellchecker?: Spellchecker
   user?: User
   baboon?: Baboon
+  ntb?: NTB
   dispatch: React.Dispatch<Partial<RegistryProviderState>>
   userColor: string
 }
@@ -57,7 +60,8 @@ export const initialState: RegistryProviderState = {
     indexUrl: new URL('http://localhost'),
     repositoryEventsUrl: new URL('http://localhost'),
     repositoryUrl: new URL('http://localhost'),
-    contentApiUrl: new URL('http://localhost'),
+    imageSearchUrl: new URL('http://localhost'),
+    imageSearchProvider: 'tt',
     spellcheckUrl: new URL('http://localhost'),
     userUrl: new URL('http://localhost'),
     faroUrl: new URL('http://localhost'),
@@ -88,6 +92,9 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
         const spellchecker = new Spellchecker(server.spellcheckUrl.href)
         const user = new User(server.userUrl.href)
         const baboon = new Baboon(server.baboonUrl.href)
+        const ntb = server.imageSearchProvider === 'ntb'
+          ? new NTB(server.imageSearchUrl.href)
+          : undefined
 
         dispatch({
           server,
@@ -97,7 +104,8 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
           index,
           spellchecker,
           user,
-          baboon
+          baboon,
+          ntb
         })
         setIsInitialized(true)
       } catch (ex) {
@@ -124,7 +132,18 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
  * Registry context reducer
  */
 const reducer = (state: RegistryProviderState, action: Partial<RegistryProviderState>): RegistryProviderState => {
-  const { locale, timeZone, server, repository, workflow, index, spellchecker, user, baboon } = action
+  const {
+    locale,
+    timeZone,
+    server,
+    repository,
+    workflow,
+    index,
+    spellchecker,
+    user,
+    baboon,
+    ntb
+  } = action
   const partialState: Partial<RegistryProviderState> = {}
 
   if (typeof locale === 'object') {
@@ -161,6 +180,10 @@ const reducer = (state: RegistryProviderState, action: Partial<RegistryProviderS
 
   if (typeof baboon === 'object') {
     partialState.baboon = baboon
+  }
+
+  if (typeof ntb === 'object') {
+    partialState.ntb = ntb
   }
 
   return {
