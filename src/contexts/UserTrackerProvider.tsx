@@ -76,7 +76,6 @@ export const UserTrackerProvider = ({ children }: PropsWithChildren): JSX.Elemen
 
   // TODO: This is duplicated in CollaborationProvider, there might be room for improvement
   useEffect(() => {
-    // When the token is refreshed, send it to the server via native hocuspocus token sync
     void provider?.sendToken()
   }, [provider, data.accessToken])
 
