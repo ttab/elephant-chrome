@@ -1,7 +1,6 @@
 import type { Repository } from '@/shared/Repository'
 import { getTemplateFromView } from '@/shared/templates/lib/getTemplateFromView'
 import type { Session } from 'next-auth'
-import { toast } from 'sonner'
 
 export const createNewFactbox = async (repository: Repository | undefined, session: Session | null, id: string) => {
   if (!session || !session.accessToken || !repository) {
@@ -9,9 +8,7 @@ export const createNewFactbox = async (repository: Repository | undefined, sessi
       hasAccessToken: !!session?.accessToken,
       hasRepository: !!repository
     })
-    console.error('Missing required dependencies for creating Factbox')
-    toast.error('Kan inte skapa faktaruta')
-    return
+    throw new Error('Kan inte skapa faktaruta')
   }
 
   try {
@@ -19,7 +16,6 @@ export const createNewFactbox = async (repository: Repository | undefined, sessi
     await repository.saveDocument(factboxDocument, session.accessToken)
     return id
   } catch (error) {
-    console.error('Error creating Factbox document:', error)
-    toast.error('Kan inte skapa faktaruta')
+    throw new Error('Kan inte skapa faktaruta', { cause: error instanceof Error ? error : undefined })
   }
 }

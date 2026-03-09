@@ -83,9 +83,10 @@ export const AddButtonGroup = ({ docType = 'core/planning-item', query }: { type
     const id = crypto.randomUUID()
     if (view.name === 'Factbox') {
       createNewFactbox(repository, session, id)
-        .then((id) => openFactboxEditor(undefined, { id }, undefined)).catch((error) => {
-          console.error('Error opening created document:', error)
-          toast.error('Kan inte öppna skapad faktaruta')
+        .then((id) => openFactboxEditor(undefined, { id }, undefined))
+        .catch((error: unknown) => {
+          console.error('Error creating factbox:', error)
+          toast.error((error as Error).message)
         })
     } else if (showModal) {
       const initialDocument = getTemplateFromView(view.name)(id, { query })
