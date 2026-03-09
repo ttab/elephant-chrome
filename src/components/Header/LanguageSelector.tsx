@@ -24,7 +24,7 @@ export const LanguageSelector = (): JSX.Element => {
         <div className='mr-1.5 hidden md:block'><LanguagesIcon size={16} strokeWidth={1.75} /></div>
         {supportedUILanguages.find((lang) => lang.code === i18n.language)?.code.toUpperCase()}
       </SelectTrigger>
-      <SelectContent id='language-selector'>
+      <SelectContent id='language-selector' className='z-100'>
         {supportedUILanguages.map((lang) => (
           <SelectItem key={lang.code} value={lang.code}>
             {lang.label}
