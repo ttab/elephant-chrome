@@ -1,6 +1,7 @@
 import { type GetDocumentResponse } from '@ttab/elephant-api/repository'
 
 export const planning: GetDocumentResponse = {
+  subset: [],
   version: 21n,
   mainDocument: '',
   isMetaDocument: false,

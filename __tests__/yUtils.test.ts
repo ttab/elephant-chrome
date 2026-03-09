@@ -41,6 +41,7 @@ function createMockEleDocument(overrides: Partial<EleDocument> = {}): EleDocumen
 
 function createMockEleDocumentResponse(overrides: Partial<EleDocumentResponse> = {}): EleDocumentResponse {
   return {
+    subset: [],
     version: '1',
     mainDocument: '',
     isMetaDocument: false,

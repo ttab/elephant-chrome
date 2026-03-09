@@ -1,6 +1,7 @@
 import { type GetDocumentResponse } from '@ttab/elephant-api/repository'
 
 export const articleFactbox: GetDocumentResponse = {
+  subset: [],
   isMetaDocument: false,
   mainDocument: '',
   version: 22n,
