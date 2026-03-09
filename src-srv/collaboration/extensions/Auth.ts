@@ -48,22 +48,6 @@ export class Auth implements Extension {
     }
   }
 
-  // async onStateless({ payload, connection }: onStatelessPayload): Promise<void> {
-  //   const statelessMessage = parseStateless<StatelessAuth>(payload)
-
-  //   if (statelessMessage.type === StatelessType.AUTH) {
-  //     const jwt = await this.validateAccessToken(statelessMessage.message.accessToken)
-
-  //     const context = connection.context as {
-  //       accessToken: string
-  //       user: User
-  //     }
-
-  //     context.accessToken = statelessMessage.message.accessToken
-  //     context.user = jwt
-  //   }
-  // }
-
   async onTokenSync({ token, connection }: onTokenSyncPayload) {
     if (!token) {
       throw new Error('No token provided for sync')
