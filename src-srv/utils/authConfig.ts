@@ -3,6 +3,11 @@ import Keycloak from '@auth/express/providers/keycloak'
 import { type JWT } from '@auth/core/jwt'
 import type pino from 'pino'
 
+// Deduplicates concurrent refresh requests per user. When multiple
+// requests arrive with an expired access token, only the first one
+// calls Keycloak — the rest await the same promise.
+const inflightRefreshes = new Map<string, Promise<JWT>>()
+
 const scopes = [
   'openid',
   'profile',
@@ -79,12 +84,34 @@ export async function createAuthInfo(
           }
         }
 
+        // A previous refresh already failed — stop retrying
+        if (token.error === 'refreshAccessTokenError') {
+          return token
+        }
+
         // The user is already logged in, check if the access token is expired
         // We want to refresh with 150 seconds left
         const accessTokenExpires = (Number(token.accessTokenExpires) || 0) - 150 * 1000
         const remaining = accessTokenExpires - Date.now()
         if (remaining < 0) {
-          return await refreshAccessToken(logger, oidcConf, token, clientID, clientSecret).catch((e) => {
+          const key = String(token.sub ?? '')
+
+          // Deduplicate: if a refresh is already in flight for this
+          // user, await it instead of making a second Keycloak call.
+          const inflight = inflightRefreshes.get(key)
+          if (inflight) {
+            return await inflight
+          }
+
+          const promise = refreshAccessToken(
+            logger, oidcConf, token, clientID, clientSecret
+          ).finally(() => {
+            inflightRefreshes.delete(key)
+          })
+
+          inflightRefreshes.set(key, promise)
+
+          return await promise.catch((e) => {
             throw new Error('refresh access token', { cause: e })
           })
         }
@@ -146,7 +173,10 @@ async function refreshAccessToken(
     })
 
     if (!response.ok) {
-      throw new Error(`refresh request error response: ${response.statusText}`)
+      const body = await response.text().catch(() => '')
+      throw new Error(
+        `refresh request error response: ${response.statusText} ${body}`
+      )
     }
 
     const refreshedTokens = await response.json().catch((e) => {
