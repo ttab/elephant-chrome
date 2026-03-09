@@ -82,7 +82,8 @@ export const useWorkflowStatus = ({ ydoc, documentId: docId }: {
     'tt/print-article+meta',
     'core/planning-item',
     'core/planning-item+meta',
-    'core/factbox'
+    'core/factbox',
+    'core/factbox+meta'
 
   ], (event) => {
     if (event.uuid === documentId || event.mainDocument === documentId) {
