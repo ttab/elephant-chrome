@@ -65,7 +65,6 @@ export class Auth implements Extension {
 
       return { lastTokenSync: new Date() }
     } catch (err) {
-      console.error('❌ Token sync failed:', (err as Error).message)
       throw new Error(`Token sync failed: ${(err as Error).message}`)
     }
   }
