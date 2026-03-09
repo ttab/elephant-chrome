@@ -336,6 +336,49 @@ describe('Image transformations', () => {
     expect(imageLink?.uuid).toBe('')
   })
 
+  it('round-trips NTB image with mediamanager URI, url, and link credit', () => {
+    const ntbNewsDoc = Block.create({
+      id: 'ntb-image-456',
+      type: 'core/image',
+      data: {
+        text: 'NTB photo caption',
+        credit: 'NTB Photographer',
+        width: '1920',
+        height: '1080'
+      },
+      links: [
+        {
+          rel: 'image',
+          type: 'mediamanager/image',
+          uri: 'mediamanager://image/ntb/ntb-456',
+          uuid: 'ntb-456',
+          url: 'https://example.com/ntb/preview.jpg',
+          data: { credit: 'NTB Scanpix' }
+        }
+      ],
+      meta: []
+    })
+
+    const transformed = transformImage(ntbNewsDoc)
+    expect(transformed.properties?.uri).toBe('mediamanager://image/ntb/ntb-456')
+    expect(transformed.properties?.url).toBe('https://example.com/ntb/preview.jpg')
+    expect(transformed.properties?.credit).toBe('NTB Scanpix')
+    expect(transformed.properties?.type).toBe('mediamanager/image')
+    expect(transformed.children[1].children).toEqual([{ text: 'NTB photo caption' }])
+    expect(transformed.children[2].children).toEqual([{ text: 'NTB Photographer' }])
+
+    const reverted = revertImage(transformed)
+    const imageLink = reverted.links.find((l) => l.rel === 'image')
+    expect(imageLink?.uri).toBe('mediamanager://image/ntb/ntb-456')
+    expect(imageLink?.url).toBe('https://example.com/ntb/preview.jpg')
+    // revertImage hardcodes type to 'core/image' regardless of input
+    expect(imageLink?.type).toBe('core/image')
+    // mediamanager:// URI produces empty uuid since it doesn't match core://image/ split
+    expect(imageLink?.uuid).toBe('')
+    expect(reverted.data.text).toBe('NTB photo caption')
+    expect(reverted.data.credit).toBe('NTB Photographer')
+  })
+
   it('handles uri without image id', () => {
     const slateWithBadUri: TBElement = {
       ...imageSlate,
