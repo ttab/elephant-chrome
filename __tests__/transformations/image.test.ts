@@ -238,8 +238,10 @@ describe('Image transformations', () => {
     expect(transformed.properties?.rel).toBe('image')
     expect(transformed.properties?.type).toBe('core/image')
     expect(transformed.properties?.uri).toBe('core://image/abc-def-123')
+    expect(transformed.properties?.url).toBe('')
     expect(transformed.properties?.width).toBe('800')
     expect(transformed.properties?.height).toBe('600')
+    expect(transformed.properties?.uploadId).toBe('abc-def-123')
   })
 
   it('preserves dimensions through round-trip', () => {
@@ -276,6 +278,62 @@ describe('Image transformations', () => {
     const reverted = revertImage(transformed)
     const imageLink = reverted.links.find((l) => l.rel === 'image')
     expect(imageLink?.uuid).toBe('xyz-789')
+  })
+
+  it('round-trips url through transform and revert', () => {
+    const newsDocWithUrl = Block.create({
+      ...imageNewsDoc,
+      links: [
+        {
+          ...imageNewsDoc.links[0],
+          url: 'https://example.com/image.jpg'
+        }
+      ]
+    })
+    const transformed = transformImage(newsDocWithUrl)
+    expect(transformed.properties?.url).toBe('https://example.com/image.jpg')
+
+    const reverted = revertImage(transformed)
+    const imageLink = reverted.links.find((l) => l.rel === 'image')
+    expect(imageLink?.url).toBe('https://example.com/image.jpg')
+  })
+
+  it('throws when links array is empty', () => {
+    const newsDocWithoutLinks = Block.create({
+      ...imageNewsDoc,
+      links: []
+    })
+    expect(() => transformImage(newsDocWithoutLinks)).toThrow()
+  })
+
+  it('maps link data credit to properties.credit', () => {
+    const newsDocWithLinkCredit = Block.create({
+      ...imageNewsDoc,
+      links: [
+        {
+          ...imageNewsDoc.links[0],
+          data: { credit: 'Photo Agency' }
+        }
+      ]
+    })
+    const transformed = transformImage(newsDocWithLinkCredit)
+    expect(transformed.properties?.credit).toBe('Photo Agency')
+    // Block-level data.credit goes to byline child text, not properties.credit
+    expect(transformed.children[2].children).toEqual([{ text: 'Jane Smith' }])
+  })
+
+  it('produces empty uuid for non-core URI schemes', () => {
+    const slateWithMediamanagerUri: TBElement = {
+      ...imageSlate,
+      properties: {
+        ...imageSlate.properties,
+        uri: 'mediamanager://image/ntb/xyz-789'
+      }
+    }
+    const reverted = revertImage(slateWithMediamanagerUri)
+    const imageLink = reverted.links.find((l) => l.rel === 'image')
+    expect(imageLink?.uri).toBe('mediamanager://image/ntb/xyz-789')
+    expect(imageLink?.uuid).toBe('')
   })
 
   it('handles uri without image id', () => {
