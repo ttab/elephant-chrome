@@ -52,9 +52,8 @@ export function factboxColumns({ locale, timeZone }: { locale: LocaleData, timeZ
         return data.fields['heads.usable.version']?.values[0] ? data.fields['heads.usable.version'].values[0] === '-1' ? 'unpublished' : 'usable' : 'draft'
       },
       cell: ({ row }) => {
-        const status = row.original.fields['heads.usable.version']?.values[0]
-          ? row.original.fields['heads.usable.version'].values[0] === '-1' ? 'unpublished' : 'usable'
-          : 'draft'
+        const status = row.getValue<string>('documentStatus')
+
         return (
           <DocumentStatus status={status} type='core/factbox' />
         )
