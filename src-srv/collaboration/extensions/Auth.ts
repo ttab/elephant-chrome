@@ -1,10 +1,8 @@
-// import { parseStateless, type StatelessAuth, StatelessType } from '@/shared/stateless.js'
 import type { User } from '@auth/express'
 import type {
   onTokenSyncPayload
 } from '@hocuspocus/server'
 import {
-  // type onStatelessPayload,
   type Extension,
   type onAuthenticatePayload
 } from '@hocuspocus/server'
