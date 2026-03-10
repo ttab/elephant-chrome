@@ -1,9 +1,12 @@
 import { SettingsIcon } from '@ttab/elephant-ui/icons'
+import { useTranslation } from 'react-i18next'
 
-export const Checking = () => (
+export const Checking = () => {
+  const { t } = useTranslation('print')
+  return (
   <main className='flex flex-col items-center justify-center mt-8 gap-4'>
     <p className='flex gap-1'>
-      <span>Kontrollerar layouter</span>
+      <span>{t('editor.checking')}</span>
     </p>
     <section className='flex flex-row items-center justify-center gap-0'>
       <div className='animate-spin'>
@@ -17,4 +20,5 @@ export const Checking = () => (
       </div>
     </section>
   </main>
-)
+  )
+}

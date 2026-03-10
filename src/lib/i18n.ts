@@ -33,7 +33,7 @@ export async function initI18n(): Promise<typeof i18n> {
     ns: [
       'common', 'core', 'planning', 'shared', 'app',
       'views', 'editor', 'workflows', 'factbox', 'event',
-      'metaSheet', 'flash', 'quickArticle', 'errors', 'wires'
+      'metaSheet', 'flash', 'quickArticle', 'errors', 'wires', 'print'
     ],
     defaultNS: 'common',
     detection: {
