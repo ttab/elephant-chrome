@@ -1,11 +1,3 @@
-import type { ImageSearchProvider } from '@/types'
-
-const imageSearchProviders: ImageSearchProvider[] = ['tt', 'ntb']
-
-function isImageSearchProvider(value: string): value is ImageSearchProvider {
-  return (imageSearchProviders as string[]).includes(value)
-}
-
 const BASE_URL = import.meta.env.BASE_URL || ''
 
 interface ServerUrls {
@@ -14,7 +6,7 @@ interface ServerUrls {
   repositoryUrl: URL
   repositoryEventsUrl: URL
   imageSearchUrl: URL
-  imageSearchProvider: ImageSearchProvider
+  imageSearchProvider: string
   spellcheckUrl: URL
   userUrl: URL
   faroUrl: URL
@@ -47,15 +39,10 @@ export async function getServerUrls(): Promise<ServerUrls> {
       urls[field] = new URL(value)
     }
 
-    const imageSearchProvider = servers.imageSearchProvider ?? ''
-    if (!isImageSearchProvider(imageSearchProvider)) {
-      throw new Error(`invalid imageSearchProvider: '${imageSearchProvider}', expected one of: ${imageSearchProviders.join(', ')}`)
-    }
-
     return {
       ...urls,
       repositoryEventsUrl: new URL('/sse', urls['repositoryUrl']),
-      imageSearchProvider
+      imageSearchProvider: servers.imageSearchProvider ?? ''
     } as ServerUrls
   } catch (ex) {
     throw new Error('Failed fetching remote server urls in getServerUrls', { cause: ex as Error })

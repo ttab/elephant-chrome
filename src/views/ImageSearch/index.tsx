@@ -13,6 +13,7 @@ import { createNTBFetcher } from './lib/ntbFetcher'
 import { useRegistry } from '@/hooks/useRegistry'
 import { useSession } from 'next-auth/react'
 import type { ImageSearchResult as SearchResult } from './lib/types'
+import { Error } from '../Error'
 
 export type MediaTypes = 'image' | 'graphic'
 
@@ -46,7 +47,7 @@ const ImageSearchResult = ({ children }: {
 }
 
 export const ImageSearch = (): JSX.Element => {
-  const { server: { imageSearchUrl }, ntb } = useRegistry()
+  const { server: { imageSearchUrl, imageSearchProvider }, ntb } = useRegistry()
   const { data: session } = useSession()
   const [mediaType, setMediaType] = useState<MediaTypes>('image')
 
@@ -54,8 +55,15 @@ export const ImageSearch = (): JSX.Element => {
     if (ntb) {
       return createNTBFetcher(ntb, session, 'ntb')
     }
-    return createTTFetcher(imageSearchUrl, session, mediaType)
-  }, [ntb, session, imageSearchUrl, mediaType])
+
+    if (imageSearchProvider === 'tt') {
+      return createTTFetcher(imageSearchUrl, session, mediaType)
+    }
+  }, [ntb, session, imageSearchUrl, mediaType, imageSearchProvider])
+
+  if (!imageSearchProvider || !fetcher) {
+    return <Error title='Bildsökningsleverantör saknas' message='Ingen bildsökningsleverantör är konfigurerad' />
+  }
 
   return (
     <SWRConfig value={{ fetcher, shouldRetryOnError: false }}>

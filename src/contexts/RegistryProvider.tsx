@@ -14,7 +14,7 @@ import { Spellchecker } from '@/shared/Spellchecker'
 import { Index } from '@/shared/Index'
 import { Workflow } from '@/shared/Workflow'
 import { User } from '@/shared/User'
-import type { ImageSearchProvider, LocaleData } from '@/types'
+import type { LocaleData } from '@/types'
 import { Baboon } from '@/shared/Baboon'
 import { NTB } from '@/shared/NTB'
 import { DEFAULT_TIMEZONE } from '@/defaults/defaultTimezone'
@@ -31,7 +31,7 @@ export interface RegistryProviderState {
     repositoryEventsUrl: URL
     repositoryUrl: URL
     imageSearchUrl: URL
-    imageSearchProvider: ImageSearchProvider
+    imageSearchProvider?: string
     spellcheckUrl: URL
     userUrl: URL
     faroUrl: URL
@@ -61,7 +61,7 @@ export const initialState: RegistryProviderState = {
     repositoryEventsUrl: new URL('http://localhost'),
     repositoryUrl: new URL('http://localhost'),
     imageSearchUrl: new URL('http://localhost'),
-    imageSearchProvider: 'tt',
+    imageSearchProvider: '',
     spellcheckUrl: new URL('http://localhost'),
     userUrl: new URL('http://localhost'),
     faroUrl: new URL('http://localhost'),

@@ -83,8 +83,6 @@ export interface ViewProps {
   preview?: boolean
 }
 
-export type ImageSearchProvider = 'tt' | 'ntb'
-
 export type Theme = 'dark' | 'light' | 'system'
 
 export interface ThemeProviderState {
