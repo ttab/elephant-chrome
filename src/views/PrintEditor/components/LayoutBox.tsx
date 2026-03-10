@@ -141,7 +141,7 @@ export const LayoutBox = ({
     )
   }
 
-  const layoutLabel = linkTitle?.trim()?.length ? linkTitle : t('editor.layouts.defaultName')
+  const layoutLabel = linkTitle?.trim()?.length ? linkTitle : t('editor.layouts.placeholder1')
   const layoutTone: LayoutStatusTone = status === 'true'
     ? 'approved'
     : status === 'false'

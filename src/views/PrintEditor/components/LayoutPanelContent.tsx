@@ -98,7 +98,7 @@ export const LayoutPanelContent = forwardRef<HTMLDivElement, LayoutPanelContentP
         <Input
           type='text'
           readOnly
-          placeholder={t('editor.layouts.defaultName')}
+          placeholder={t('editor.layouts.placeholder2')}
           value={linkTitle}
         />
       </div>
