@@ -125,7 +125,10 @@ function EditorWrapper(props: ViewProps & {
       TTVisual({
         enableCrop: false
       }),
-      Image(),
+      Image({
+        removable: true,
+        enableCrop: false
+      }),
       Text({
         countCharacters: ['heading-1'],
         ...contentMenuLabels
