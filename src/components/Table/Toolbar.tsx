@@ -13,7 +13,7 @@ import { useQuery } from '@/hooks/useQuery'
 export const Toolbar = <TData,>(): JSX.Element => {
   const { table, command } = useTable<TData>()
   const [, setFilter] = useQuery(['query'])
-
+  const filterType = command.pages[1] ? 'filterOptions' : 'freetext'
   const { columnFilters, globalFilter } = table.getState() as {
     columnFilters: ColumnFiltersState
     globalFilter: string
@@ -37,7 +37,7 @@ export const Toolbar = <TData,>(): JSX.Element => {
         setSearch={command.setSearch}
         setGlobalTextFilter={table.setGlobalFilter}
       >
-        <Commands />
+        <Commands filterType={filterType} />
       </Filter>
       <Sort />
       <SelectedFilters table={table} />

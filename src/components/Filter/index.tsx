@@ -3,6 +3,7 @@ import { ListFilterIcon } from '@ttab/elephant-ui/icons'
 import type { Dispatch, PropsWithChildren, SetStateAction, JSX } from 'react'
 import { useMemo, useState } from 'react'
 import type { Updater } from '@tanstack/react-table'
+import { useQuery } from '@/hooks/useQuery'
 
 export interface FilterProps {
   page: string
@@ -16,11 +17,11 @@ export interface FilterProps {
 export const Filter = ({ pages, setPages, setSearch, children }:
   PropsWithChildren & FilterProps): JSX.Element => {
   const [open, setOpen] = useState(false)
+  const [filter] = useQuery(['query'])
 
   const onOpenChange = useMemo(
     () => handleOpenChange({ setOpen, setSearch, setPages }),
     [setOpen, setSearch, setPages])
-
   return (
     <Popover open={open} onOpenChange={onOpenChange} modal>
       <PopoverTrigger asChild>
@@ -40,17 +41,22 @@ export const Filter = ({ pages, setPages, setSearch, children }:
       </PopoverTrigger>
       <PopoverContent className='w-[200px] p-0' align='start'>
         <Command
-          shouldFilter={false}
+          shouldFilter={pages.length > 1 ? true : false}
           onKeyDown={(e) => {
             if (e.key === 'Escape') {
               setOpen(false)
             }
             if (e.key === 'ArrowLeft' || (e.key === 'Backspace')) {
-              e.preventDefault()
-              setSearch('')
-              if (pages.length > 0) {
+              if (pages.length === 1 && filter?.query?.[0]) {
+                e.stopPropagation()
+                return
+              }
+              if (pages.length > 1) {
+                e.preventDefault()
+                setSearch('')
                 setPages(pages.slice(0, -1))
               } else {
+                console.log('close')
                 setOpen(false)
               }
             }
