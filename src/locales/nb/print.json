@@ -84,7 +84,8 @@
     "layouts": {
       "title": "Oppsett",
       "loading": "Laster oppsett",
-      "defaultName": "Oppsett",
+      "placeholder1": "Oppsett",
+      "placeholder2": "Navn",
       "controls": "Oppsetkontroller",
       "togglePanel": "Lukk oppsetpanelet",
       "showLayout": "Vis {{title}} - {{name}}",

@@ -84,7 +84,8 @@
     "layouts": {
       "title": "Layouts",
       "loading": "Loading layout",
-      "defaultName": "Layout",
+      "placeholder1": "Layout",
+      "placeholder2": "Name",
       "controls": "Layout controls",
       "togglePanel": "Collapse layout panel",
       "showLayout": "Show {{title}} - {{name}}",
