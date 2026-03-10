@@ -64,7 +64,9 @@ export async function getServerEnvs(): Promise<ServerConfig> {
       envs: {
         systemLanguage: data['systemLanguage']
       },
-      featureFlags: {}
+      featureFlags: {
+        hasPrint: typeof data['hasPrint'] === 'string' ? data['hasPrint'] : undefined
+      }
     }
   } catch (ex) {
     const cause = ex instanceof Error ? ex : undefined
