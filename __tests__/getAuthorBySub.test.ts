@@ -64,4 +64,29 @@ describe('getAuthorBySub', () => {
 
     expect(result).toBeUndefined()
   })
+
+  it('matches canonical-format authors against canonical-format lookup', () => {
+    const canonicalAuthors: IDBAuthor[] = [
+      {
+        id: 'author-c',
+        name: 'Canonical Author',
+        firstName: 'Canonical',
+        lastName: 'Author',
+        email: 'ca@example.com',
+        sub: 'core://user/9999'
+      }
+    ]
+
+    expect(
+      getAuthorBySub(canonicalAuthors, 'core://user/9999')
+    ).toEqual(canonicalAuthors[0])
+
+    expect(
+      getAuthorBySub(canonicalAuthors, 'core://user/sub/9999')
+    ).toEqual(canonicalAuthors[0])
+  })
+
+  it('returns undefined for empty sub string', () => {
+    expect(getAuthorBySub(mockAuthors, '')).toBeUndefined()
+  })
 })
