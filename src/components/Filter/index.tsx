@@ -14,7 +14,7 @@ export interface FilterProps {
   setGlobalTextFilter?: (updater: Updater<unknown>) => void
 }
 
-export const Filter = ({ pages, setPages, setSearch, children }:
+export const Filter = ({ pages, setPages, setSearch, children, search }:
   PropsWithChildren & FilterProps): JSX.Element => {
   const [open, setOpen] = useState(false)
   const [filter] = useQuery(['query'])
@@ -47,7 +47,7 @@ export const Filter = ({ pages, setPages, setSearch, children }:
               setOpen(false)
             }
             if (e.key === 'ArrowLeft' || (e.key === 'Backspace')) {
-              if (pages.length === 1 && filter?.query?.[0]) {
+              if (pages.length > 0 && ((filter?.query?.[0]) || search)) {
                 e.stopPropagation()
                 return
               }
