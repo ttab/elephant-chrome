@@ -19,7 +19,10 @@ export const ViewDialogClose = ({ ydoc, onClick, Icon = XIcon, asDialog }: {
 }): JSX.Element => {
   const [showVerifyDialog, setShowVerifyDialog] = useState(false)
   const [documentStatus] = useWorkflowStatus({ documentId: ydoc?.id })
+  const root = ydoc?.ele.get('root') as Y.Map<unknown>
+  const documentType = root?.get('type')
 
+ 
   const asSave = (documentStatus?.type
     ? WorkflowSpecifications[documentStatus.type][documentStatus.name].asSave && ydoc?.isChanged
     : false) || false
@@ -55,8 +58,8 @@ export const ViewDialogClose = ({ ydoc, onClick, Icon = XIcon, asDialog }: {
       </Button>
       {showVerifyDialog && (
         <Prompt
-          title='Vill du publicera ändringarna innan du stänger?'
-          description='Dina ändringar är sparade men inte publicerade.'
+          title={documentType === 'core/factbox' ? 'Vill du uppdatera med ändringarna innan du stänger?' : 'Vill du publicera ändringarna innan du stänger?'}
+          description={documentType === 'core/factbox' ? 'Dina ändringar är sparade men dokumentet är inte satt som användbart.' : 'Dina ändringar är sparade men inte publicerade.'}
           onPrimary={() => {
             if (ydoc) {
               snapshotDocument(ydoc?.id, {
