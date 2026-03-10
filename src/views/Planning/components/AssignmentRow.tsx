@@ -103,6 +103,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
 
   const openDocument = assignmentType === 'flash' ? openFlash : openArticle
   const { showModal, hideModal } = useModal()
+  const { featureFlags } = useRegistry()
 
   const assignmentTime = useMemo(() => {
     if (typeof assignmentType !== 'string') {
@@ -268,20 +269,22 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
         )
       }
     },
-    {
-      label: t('planning:assignment.createPrintArticle'),
-      disabled: !isDocument,
-      icon: LibraryIcon,
-      item: () => {
-        showModal(
-          <CreatePrintArticle
-            id={documentId}
-            asDialog
-            onDialogClose={hideModal}
-          />
-        )
-      }
-    }
+    ...(featureFlags?.hasPrint === 'true'
+      ? [{
+          label: t('planning:assignment.createPrintArticle'),
+          disabled: !isDocument,
+          icon: LibraryIcon,
+          item: () => {
+            showModal(
+              <CreatePrintArticle
+                id={documentId}
+                asDialog
+                onDialogClose={hideModal}
+              />
+            )
+          }
+        }]
+      : [])
   ]
   const selected = articleId && openDocuments.includes(articleId)
   const workflowState = articleStatus?.meta?.workflowState

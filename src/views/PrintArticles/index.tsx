@@ -1,6 +1,7 @@
 import { View } from '@/components/View'
 import { type ViewMetadata } from '@/types/index'
 import { useMemo, useState, type JSX } from 'react'
+import { useRegistry } from '@/hooks'
 import { printArticlesListColumns } from './PrintArticlesListColumns'
 import { TableProvider } from '@/contexts/TableProvider'
 import { PrintArticleList } from './PrintArticlesList'
@@ -20,6 +21,8 @@ import { useInitFilters } from '@/hooks/useInitFilters'
 import { useDocuments } from '@/hooks/index/useDocuments'
 import type { PrintFlow, PrintFlowFields } from '@/shared/schemas/printFlow'
 import { fields } from '@/shared/schemas/printFlow'
+import { Error } from '../Error'
+import { useTranslation } from 'react-i18next'
 
 /**
  * Metadata for the PrintArticles view.
@@ -54,8 +57,10 @@ const meta: ViewMetadata = {
  * @returns The rendered PrintArticles component.
  */
 
-export const Print = (): JSX.Element => {
+export const Print = (): JSX.Element | null => {
+  const { featureFlags } = useRegistry()
   const [query] = useQuery()
+  const { t } = useTranslation(['errors', 'common'])
 
   const { data } = useDocuments<PrintFlow, PrintFlowFields>({
     documentType: 'tt/print-flow',
@@ -73,6 +78,16 @@ export const Print = (): JSX.Element => {
   })
 
   const [openCreateFlow, setOpenCreateFlow] = useState(false)
+
+  if (featureFlags?.hasPrint !== 'true') {
+    return (
+      <Error
+        title={t('errors:messages.errorTitle')}
+        message={t('errors:messages.unknownErrorAdminInfo')}
+      />
+    )
+  }
+
   return (
     <View.Root>
       <PrintArticlesHeader />
@@ -97,7 +112,7 @@ export const Print = (): JSX.Element => {
           <PrintFlows action='createFlow' />
           <DialogFooter>
             <Button variant='outline' onClick={() => setOpenCreateFlow(false)}>
-              Avbryt
+              {t('common:actions.abort')}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -131,6 +131,8 @@ const Menu = ({ articleId }: { articleId: string }): JSX.Element => {
   const planningId = useDeliverablePlanningId(articleId)
   const { t } = useTranslation('common')
   const { showModal, hideModal } = useModal()
+  const { featureFlags } = useRegistry()
+
   return (
     <div className='shrink p-'>
       <DotMenu
@@ -160,19 +162,21 @@ const Menu = ({ articleId }: { articleId: string }): JSX.Element => {
                 )
               : () => {}
           },
-          {
-            label: t('planning:assignment.createPrintArticle'),
-            icon: LibraryIcon,
-            item: () => {
-              showModal(
-                <CreatePrintArticle
-                  id={articleId}
-                  asDialog
-                  onDialogClose={hideModal}
-                />
-              )
-            }
-          }
+          ...(featureFlags?.hasPrint === 'true'
+            ? [{
+                label: t('planning:assignment.createPrintArticle'),
+                icon: LibraryIcon,
+                item: () => {
+                  showModal(
+                    <CreatePrintArticle
+                      id={articleId}
+                      asDialog
+                      onDialogClose={hideModal}
+                    />
+                  )
+                }
+              }]
+            : [])
         ]}
       />
     </div>

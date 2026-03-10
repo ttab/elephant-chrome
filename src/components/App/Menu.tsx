@@ -13,6 +13,7 @@ import { ThemeSwitcher } from './ThemeSwitcher'
 import { MenuItem } from './MenuItem'
 import { useSession } from 'next-auth/react'
 import { getApplicationMenu, type ApplicationMenuItem, type MenuGroups } from '@/defaults/applicationMenuItems'
+import { useRegistry } from '@/hooks'
 import { useUserTracker } from '@/hooks/useUserTracker'
 import { useCallback, useRef, useState, type JSX } from 'react'
 import { UserInfo } from './UserInfo'
@@ -24,6 +25,7 @@ import { useTranslation } from 'react-i18next'
 export const Menu = (): JSX.Element => {
   const { data } = useSession()
   const { t } = useTranslation('app')
+  const { featureFlags } = useRegistry()
   const triggerRef = useRef<HTMLButtonElement>(null)
   const [user] = useUserTracker<object>('')
   const [mainOpen, setMainMenuOpen] = useState<boolean>(false)
@@ -39,7 +41,7 @@ export const Menu = (): JSX.Element => {
   }, [])
 
   // Get all sheet items for rendering sub-sheets
-  const applicationMenu = getApplicationMenu()
+  const applicationMenu = getApplicationMenu(featureFlags)
   const sheetItems = applicationMenu.groups
     .flatMap((group) => group.items)
     .filter((item) => item.target === 'sheet')
