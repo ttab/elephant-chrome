@@ -2,32 +2,51 @@ import { DebouncedCommandInput } from '@/components/Commands/Menu/DebouncedComma
 import { useQuery, useTable } from '@/hooks/index'
 import { CommandItem } from '@ttab/elephant-ui'
 import { cn } from '@ttab/elephant-ui/utils'
-import { useState, type JSX } from 'react'
+import { useMemo, useState, type JSX } from 'react'
 
-export const FreeTextFilter = (): JSX.Element => {
-  const { table } = useTable()
+export const FreeTextFilter = ({ filterType }: { filterType: string }): JSX.Element => {
+  const { table, command } = useTable()
   const [filter, setFilter] = useQuery(['query'])
   const [selected, setSelected] = useState(true)
+  const { setSearch, search } = command
+
+  const filterTypeValue = useMemo(() => {
+    if (filterType === 'freetext') {
+      return filterType
+    }
+  }, [filterType])
+
   const handleInputChange = (value: string | undefined) => {
-    if (value) {
-      if (table.setGlobalFilter) {
-        table.setGlobalFilter(value)
+    if (filterTypeValue === 'freetext') {
+      if (value) {
+        if (table.setGlobalFilter) {
+          table.setGlobalFilter(value)
+        } else {
+          setFilter({ query: [value] })
+        }
       } else {
-        setFilter({ query: [value] })
+        if (table.resetGlobalFilter) {
+          table.resetGlobalFilter()
+        } else {
+          setFilter({ query: [] })
+        }
       }
     } else {
-      if (table.resetGlobalFilter) {
-        table.resetGlobalFilter()
+      console.log('filter type is not freetext, not setting search:', value)
+      if (value) {
+        setSearch(value)
       } else {
-        setFilter({ query: [] })
+        setSearch('')
       }
+      console.log('setting search:', search)
     }
   }
 
   return (
     <CommandItem
+      forceMount={true}
+      key='freetext'
       value='freetext'
-      autoFocus={selected}
       onKeyUp={(e) => {
         if (e.currentTarget.getAttribute('data-selected') === 'true') {
           setSelected(true)
@@ -35,21 +54,16 @@ export const FreeTextFilter = (): JSX.Element => {
           setSelected(false)
         }
       }}
-      className={cn('pb-0 mb-1.5',
-        ' data-[selected=true]:bg-white! data-[selected=true]:shadow-[inset_0_0px_3px_rgba(0,0,0,0.5)]')}
+      className={cn('pb-0 mb-1.5 bg-white!',
+        (filterType === 'freetext') && 'data-[selected=true]:shadow-[inset_0_0px_3px_rgba(0,0,0,0.5)]')}
     >
       <DebouncedCommandInput
-        value={filter?.query?.[0] ?? ''}
+        value={filter?.query?.[0] ?? search ?? ''}
         onChange={(value) => handleInputChange(value)}
-        placeholder='Fritext'
+        placeholder={filterType === 'freetext' ? 'Frisök' : 'Sök alternativ'}
         className='h-9'
         autoFocus={true}
-        readOnly={!selected}
-        onKeyDown={(e) => {
-          if (e.key === 'Backspace' && selected && e.currentTarget.value) {
-            e.stopPropagation()
-          }
-        }}
+        readOnly={!selected && filterType === 'freetext'}
       />
     </CommandItem>
   )
