@@ -60,7 +60,7 @@ export const FreeTextFilter = ({ filterType }: { filterType: string }): JSX.Elem
       <DebouncedCommandInput
         value={filter?.query?.[0] ?? search ?? ''}
         onChange={(value) => handleInputChange(value)}
-        placeholder={filterType === 'freetext' ? 'Frisök' : 'Sök alternativ'}
+        placeholder={filterType === 'freetext' ? 'Fritext' : 'Sök alternativ'}
         className='h-9'
         autoFocus={true}
         readOnly={!selected && filterType === 'freetext'}
