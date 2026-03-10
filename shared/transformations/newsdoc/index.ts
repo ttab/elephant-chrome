@@ -1,4 +1,4 @@
-import { transformText, revertText, transformUnorderedList, transformOrderedList, revertUnorderedList } from './core/index.js'
+import { transformText, revertText, transformUnorderedList, revertUnorderedList, revertOrderedList, transformOrderedList } from './core/index.js'
 import { transformVisual, revertVisual } from './tt/visual.js'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { revertFactbox, transformFactbox } from './core/factbox.js'
@@ -8,8 +8,7 @@ import { revertPrintArticle, transformPrintArticle } from './tt/printArticle.js'
 import { revertPrintText, transformPrintText } from './tt/printText.js'
 import { revertImage, transformImage } from './core/image.js'
 import type { TBElement } from '@ttab/textbit'
-import { revertUnorderedList } from './core/unorderedList.js'
-import { revertOrderedList, transformOrderedList } from './core/orderedList.js'
+
 
 /**
  * Convert a NewsDoc block array to slate TBElement array
@@ -67,7 +66,6 @@ export function slateToNewsDoc(elements: TBElement[]): Block[] | undefined {
       case 'core/factbox':
         return revertFactbox(element)
       case 'core/unordered-list':
-      case 'core/ordered-list':
         return revertUnorderedList(element)
       case 'core/table':
         return revertTable(element)
@@ -75,8 +73,6 @@ export function slateToNewsDoc(elements: TBElement[]): Block[] | undefined {
         return revertTvListing(element)
       case 'tt/print-article':
         return revertPrintArticle(element)
-      case 'core/unordered-list':
-        return revertUnorderedList(element)
       case 'core/ordered-list':
         return revertOrderedList(element)
       default:

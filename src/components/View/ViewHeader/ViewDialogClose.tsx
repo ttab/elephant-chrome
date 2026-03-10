@@ -22,7 +22,7 @@ export const ViewDialogClose = ({ ydoc, onClick, Icon = XIcon, asDialog }: {
   const root = ydoc?.ele.get('root') as Y.Map<unknown>
   const documentType = root?.get('type')
 
- 
+
   const asSave = (documentStatus?.type
     ? WorkflowSpecifications[documentStatus.type][documentStatus.name].asSave && ydoc?.isChanged
     : false) || false

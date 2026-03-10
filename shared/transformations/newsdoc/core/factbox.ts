@@ -3,7 +3,7 @@ import { TextbitElement, type TBElement } from '@ttab/textbit'
 import { newsDocToSlate } from '../index.js'
 import { toString } from '../../lib/toString.js'
 import { revertText } from './text.js'
-import { revertUnorderedList } from './unorderedList.js'
+import { revertUnorderedList } from './Lists.js'
 
 export const transformFactbox = (element: Block): TBElement => {
   const { id, data, title, content = [], links = [] } = element

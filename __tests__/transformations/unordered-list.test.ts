@@ -1,5 +1,5 @@
 import type { TBElement } from '@ttab/textbit'
-import { revertUnorderedList, transformUnorderedList } from '@/shared/transformations/newsdoc/core/unorderedList'
+import { revertUnorderedList, transformUnorderedList } from '@/shared/transformations/newsdoc/core/Lists'
 import { Block } from '@ttab/elephant-api/newsdoc'
 
 const unorderedListNewsDoc = Block.create({
