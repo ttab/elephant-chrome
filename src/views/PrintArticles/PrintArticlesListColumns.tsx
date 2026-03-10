@@ -5,6 +5,7 @@ import { getPrintArticleStatuses } from '@/defaults/documentStatuses'
 import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
 import { FacetedFilter } from '@/components/Commands/FacetedFilter'
 import type { PrintFlow } from '@/shared/schemas/printFlow'
+import i18next from 'i18next'
 
 /**
  * Generates column definitions for the Print Articles list.
@@ -29,7 +30,7 @@ export function printArticlesListColumns({ printFlows = [] }: {
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
         options: getPrintArticleStatuses(),
-        name: 'Status',
+        name: i18next.t('print:articles.columns.status'),
         columnIcon: CircleCheckIcon,
         className: 'flex-none w-16',
         display: (value: string) => (
@@ -61,7 +62,7 @@ export function printArticlesListColumns({ printFlows = [] }: {
         Filter: ({ column, setSearch }) => (
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
-        name: 'Flöde',
+        name: i18next.t('print:articles.columns.flow'),
         columnIcon: PenIcon,
         className: 'flex-1 w-[200px] hidden',
         display: (value: string) => (
@@ -81,7 +82,7 @@ export function printArticlesListColumns({ printFlows = [] }: {
       id: 'document.title',
       enableGrouping: false,
       meta: {
-        name: 'Titel',
+        name: i18next.t('print:articles.columns.title'),
         columnIcon: PenIcon,
         className: 'flex-1'
       },
@@ -95,7 +96,7 @@ export function printArticlesListColumns({ printFlows = [] }: {
       id: 'headline',
       enableGrouping: false,
       meta: {
-        name: 'Rubrik',
+        name: i18next.t('print:articles.columns.headline'),
         columnIcon: PenIcon,
         className: 'flex-1'
       },
@@ -125,7 +126,7 @@ export function printArticlesListColumns({ printFlows = [] }: {
       id: 'tvTitle',
       enableGrouping: false,
       meta: {
-        name: 'Artikel',
+        name: i18next.t('print:articles.columns.article'),
         columnIcon: PenIcon,
         className: 'flex-1 w-8'
       },

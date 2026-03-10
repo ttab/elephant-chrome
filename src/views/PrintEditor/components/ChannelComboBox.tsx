@@ -41,7 +41,7 @@ export const ChannelComboBox = () => {
       sortOrder='label'
       options={allTVChannels}
       selectedOptions={selectedOption}
-      placeholder={channel || 'Välj kanal'}
+      placeholder={channel || t('print:editor.channel.placeholder')}
       onSelect={(option) => {
         setSelectedChannel(option.label)
         if (!editor) {

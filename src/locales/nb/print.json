@@ -1,0 +1,193 @@
+{
+  "articles": {
+    "title": "Print",
+    "header": {
+      "createNew": "Opprett ny...",
+      "new": "Ny",
+      "newArticle": "Ny artikkel",
+      "newArticleTooltip": "Opprett en tekst i en flyt",
+      "newFlow": "Ny flyt",
+      "newFlowTooltip": "Åpne dialog for å velge en flyt. Artiklene for flyten vil deretter opprettes av backend i henhold til definisjonen i flyten.",
+      "openDictionary": "Åpne ordliste"
+    },
+    "columns": {
+      "status": "Status",
+      "flow": "Flyt",
+      "title": "Tittel",
+      "headline": "Overskrift",
+      "article": "Artikkel"
+    },
+    "status": {
+      "draft": "Utkast",
+      "needsProofreading": "Klar for korrektur",
+      "done": "Ferdig",
+      "exported": "Eksportert",
+      "suspended": "Avlyst",
+      "cancelled": "Forkastet"
+    },
+    "flowDialog": {
+      "title": "Liste over flyter",
+      "cancel": "Avbryt"
+    },
+    "errors": {
+      "fetchFlows": "Kunne ikke hente printflyter"
+    }
+  },
+  "flow": {
+    "title": {
+      "createArticle": "Opprett printartikkel",
+      "createFlow": "Opprett printflyt"
+    },
+    "placeholder": {
+      "selectFlow": "Velg printflyt",
+      "selectName": "Velg navn"
+    },
+    "description": {
+      "newArticleInFlow": "Ny printartikkel i valgt flyt",
+      "populateFlow": "Fyll valgt flyt med artikler"
+    },
+    "loading": "Laster printflyter...",
+    "actions": {
+      "cancel": "Avbryt",
+      "createArticle": "Opprett printartikkel",
+      "createFlow": "Opprett printflyt"
+    },
+    "errors": {
+      "fetchFlows": "Kunne ikke hente printflyter",
+      "noToken": "Ingen tilgangstoken funnet",
+      "createArticle": "Noe gikk galt ved oppretting av printartikkel",
+      "createFlow": "Noe gikk galt ved oppretting av printflyt"
+    },
+    "success": {
+      "articleCreated": "Printartikkel opprettet"
+    }
+  },
+  "editor": {
+    "error": {
+      "missingDocument": "Artikeldokument mangler",
+      "missingDocumentMessage": "Ingen artikeldokument er angitt. Naviger tilbake til oversikten og prøv igjen."
+    },
+    "stats": {
+      "words": "Ord:",
+      "characters": "Tegn:"
+    },
+    "articleTitle": {
+      "placeholder": "Printartikkelnavn",
+      "updateSuccess": "Tittel oppdatert",
+      "updateError": "Kunne ikke oppdatere tittel"
+    },
+    "additionals": "Tillegg",
+    "channel": {
+      "placeholder": "Velg kanal"
+    },
+    "checking": "Kontrollerer oppsett",
+    "layouts": {
+      "title": "Oppsett",
+      "loading": "Laster oppsett",
+      "defaultName": "Oppsett",
+      "controls": "Oppsetkontroller",
+      "togglePanel": "Lukk oppsetpanelet",
+      "showLayout": "Vis {{title}} - {{name}}",
+      "preview": "Forhåndsvis oppsett",
+      "images": {
+        "lowResTitle": "Bilder (under 130 ppi)"
+      },
+      "close": "Lukk",
+      "actions": {
+        "checkLayouts": "Kontroller oppsett",
+        "duplicate": "Dupliser artikkel",
+        "selectAll": "Velg alle oppsett",
+        "deleteSelected": "Slett valgte oppsett",
+        "statusErrors": "Oppsetfeil oppdaget",
+        "statusOk": "Alle oppsett godkjent"
+      },
+      "errors": {
+        "duplicate": "Noe gikk galt ved duplisering av printartikkel",
+        "checkLayouts": "Noe gikk galt ved kontroll av oppsett",
+        "render": "Noe gikk galt ved rendering av printartikkel",
+        "renderDescription": "Ukjent feil",
+        "saveBefore": "Kunne ikke lagre artikkel før forhåndsvisning"
+      },
+      "success": {
+        "duplicated": "Printartikkel duplisert til: {{date}}",
+        "openArticle": "Åpne artikkel"
+      },
+      "confirmDuplicate": {
+        "title": "Dupliser artikkel",
+        "description": "Er du sikker på at du vil duplisere denne artikkelen?",
+        "primary": "Dupliser",
+        "cancel": "Avbryt"
+      },
+      "confirmDeleteSelected": {
+        "title": "Slett oppsettene",
+        "description": "Er du sikker på at du vil slette valgte oppsett?",
+        "primary": "Slett valgte",
+        "cancel": "Avbryt"
+      },
+      "confirmDelete": {
+        "title": "Slett oppsettet",
+        "description": "Er du sikker på at du vil slette dette oppsettet?",
+        "primary": "Slett",
+        "cancel": "Avbryt"
+      }
+    },
+    "image": {
+      "errors": {
+        "upload": "Noe gikk galt ved opplasting av bildet!: {{error}}",
+        "notImage": "Filen ser ikke ut til å være et bilde, avbryter opplasting",
+        "readError": "Bildet kunne ikke leses ({{errorName}})",
+        "parseError": "Bildet kunne ikke tolkes, kontroller at filen ikke er korrupt",
+        "notImageData": "Innholdet ble ikke identifisert som et bilde",
+        "noDimensions": "Bildet mangler gyldige dimensjoner",
+        "uploadSuccess": "Bildeopplasting vellykket!"
+      }
+    }
+  },
+  "preview": {
+    "title": "Forhåndsvisning",
+    "error": "Feil ved rendering av artikkelen"
+  },
+  "dictionary": {
+    "title": "Orddeling",
+    "new": "Ny",
+    "columns": {
+      "word": "Ord",
+      "hyphenation": "Orddeling",
+      "noHyphenate": "Ikke del"
+    },
+    "save": "Lagre",
+    "cancel": "Avbryt",
+    "confirmDelete": {
+      "title": "Slett orddelingen",
+      "description": "Er du sikker på at du vil slette denne orddelingen?",
+      "primary": "Slett",
+      "cancel": "Avbryt"
+    },
+    "errors": {
+      "noToken": "Ingen tilgangstoken funnet",
+      "fetchDictionary": "Noe gikk galt ved henting av orddelingsordboken",
+      "listHyphenations": "Kunne ikke liste orddeling"
+    }
+  },
+  "create": {
+    "title": "Opprett printartikkel",
+    "placeholder": {
+      "selectFlow": "Velg printflyt",
+      "selectName": "Velg navn"
+    },
+    "loading": "Laster printflyter...",
+    "actions": {
+      "cancel": "Avbryt",
+      "create": "Opprett printartikkel",
+      "open": "Åpne printartikkel"
+    },
+    "errors": {
+      "fetchFlows": "Noe gikk galt ved henting av flyter",
+      "noToken": "Ingen tilgangstoken funnet",
+      "createArticle": "Noe gikk galt ved oppretting av printartikkel"
+    },
+    "success": {
+      "created": "Printartikkel opprettet"
+    }
+  }
+}
