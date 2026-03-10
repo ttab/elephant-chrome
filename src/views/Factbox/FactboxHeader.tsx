@@ -17,7 +17,7 @@ export const FactboxHeader = ({ ydoc, onDialogClose, asDialog }: {
         name='Factbox'
         title='Faktaruta'
         icon={BookTextIcon}
-        asDialog={!asDialog}
+        asDialog={asDialog}
       />
       <ViewHeader.Content className='justify-start'>
         <div className='max-w-[780px] mx-auto flex flex-row gap-1 justify-between items-center w-full'>
