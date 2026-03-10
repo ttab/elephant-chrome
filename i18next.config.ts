@@ -1,5 +1,5 @@
 import { defineConfig } from 'i18next-cli'
-import { supportedUILanguages } from '@/shared/getSystemLanguage'
+import { supportedUILanguages } from './shared/getSystemLanguage'
 
 export default defineConfig({
   locales: supportedUILanguages.map((lng) => lng.code),
