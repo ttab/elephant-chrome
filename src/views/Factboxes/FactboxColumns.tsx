@@ -53,9 +53,12 @@ export function factboxColumns({ locale, timeZone }: { locale: LocaleData, timeZ
       },
       cell: ({ row }) => {
         const status = row.getValue<string>('documentStatus')
+        const usableVersion = row.original.fields['heads.usable.version']?.values[0]
+        const currentVersion = row.original.fields['current_version']?.values[0]
+        const isChanged = usableVersion && usableVersion !== '-1' ? usableVersion !== currentVersion : false
 
         return (
-          <DocumentStatus status={status} type='core/factbox' />
+          <DocumentStatus status={status} isChanged={isChanged} type='core/factbox' />
         )
       }
     },
