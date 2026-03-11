@@ -10,7 +10,7 @@ import { useQuery } from '@/hooks'
 import { Error } from '@/views/Error'
 import { CableIcon } from '@ttab/elephant-ui/icons'
 import type { Block } from '@ttab/elephant-api/newsdoc'
-import { WirePreview } from '@/components/WirePreview/WirePreview'
+import { WirePreview } from '@/components/WirePreview'
 import { SourceEntry } from './SourceEntry'
 
 const meta: ViewMetadata = {

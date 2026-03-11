@@ -5,7 +5,7 @@ import type { Wire } from '@/shared/schemas/wire'
 import { Editor } from '@/components/PlainEditor'
 import { getWireStatus } from '@/lib/getWireStatus'
 import { getWireState } from '@/lib/getWireState'
-import { DocumentHistory } from './DocumentHistory'
+import { DocumentHistory } from './DocumentHistory/DocumentHistory'
 import { useState, useEffect } from 'react'
 
 export const WirePreview = ({ wire }: {
