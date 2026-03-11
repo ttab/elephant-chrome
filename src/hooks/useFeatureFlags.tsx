@@ -9,9 +9,7 @@ export const useFeatureFlags = (flags: (keyof AllowedFeatureFlag)[]): AllowedFea
     const resolvedFlags: AllowedFeatureFlag = {}
 
     flags.forEach((flag) => {
-      if (featureFlags[flag]) {
-        resolvedFlags[flag] = featureFlags[flag]
-      }
+      resolvedFlags[flag] = featureFlags[flag] ?? false
     })
 
     return resolvedFlags
