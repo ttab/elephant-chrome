@@ -128,7 +128,7 @@ function EditorWrapper(props: ViewProps & {
       Image({
         removable: true,
         enableCrop: false,
-        hideAction: true
+        visibility: () => [false, true, false]
       }),
       Text({
         countCharacters: ['heading-1'],
