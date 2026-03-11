@@ -162,7 +162,7 @@ const Menu = ({ articleId }: { articleId: string }): JSX.Element => {
                 )
               : () => {}
           },
-          ...(featureFlags?.hasPrint === 'true'
+          ...(featureFlags?.hasPrint
             ? [{
                 label: t('planning:assignment.createPrintArticle'),
                 icon: LibraryIcon,

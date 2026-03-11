@@ -22,9 +22,7 @@ import { DEFAULT_TIMEZONE } from '@/defaults/defaultTimezone'
 import { Collaboration } from '@/defaults'
 import { defaultLocale } from '@/defaults/locale'
 
-export interface FeatureFlags {
-  hasPrint?: string
-}
+export type FeatureFlags = Record<string, boolean>
 
 /** Registry registry provider state interface */
 export interface RegistryProviderState {

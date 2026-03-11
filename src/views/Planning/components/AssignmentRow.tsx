@@ -269,7 +269,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
         )
       }
     },
-    ...(featureFlags?.hasPrint === 'true'
+    ...(featureFlags?.hasPrint
       ? [{
           label: t('planning:assignment.createPrintArticle'),
           disabled: !isDocument,
