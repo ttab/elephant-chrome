@@ -35,6 +35,7 @@ import { useYDocument, useYValue, type YDocument } from '@/modules/yjs/hooks'
 import { View } from '@/components/View'
 import { BaseEditor } from '@/components/Editor/BaseEditor'
 import { useTranslation } from 'react-i18next'
+import { useFeatureFlags } from '@/hooks/useFeatureFlags'
 
 const meta: ViewMetadata = {
   name: 'PrintEditor',
@@ -54,7 +55,7 @@ const meta: ViewMetadata = {
 
 // Main Editor Component - Handles document initialization
 const PrintEditor = (props: ViewProps): JSX.Element | null => {
-  const { featureFlags } = useRegistry()
+  const featureFlags = useFeatureFlags(['hasPrint'])
   const [query] = useQuery()
   const documentId = props.id || query.id as string
   const { t } = useTranslation(['print', 'errors'])

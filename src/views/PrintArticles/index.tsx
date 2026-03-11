@@ -1,7 +1,6 @@
 import { View } from '@/components/View'
 import { type ViewMetadata } from '@/types/index'
 import { useMemo, useState, type JSX } from 'react'
-import { useRegistry } from '@/hooks'
 import { printArticlesListColumns } from './PrintArticlesListColumns'
 import { TableProvider } from '@/contexts/TableProvider'
 import { PrintArticleList } from './PrintArticlesList'
@@ -23,6 +22,7 @@ import type { PrintFlow, PrintFlowFields } from '@/shared/schemas/printFlow'
 import { fields } from '@/shared/schemas/printFlow'
 import { Error } from '../Error'
 import { useTranslation } from 'react-i18next'
+import { useFeatureFlags } from '@/hooks/useFeatureFlags'
 
 /**
  * Metadata for the PrintArticles view.
@@ -58,7 +58,7 @@ const meta: ViewMetadata = {
  */
 
 export const Print = (): JSX.Element | null => {
-  const { featureFlags } = useRegistry()
+  const featureFlags = useFeatureFlags(['hasPrint'])
   const [query] = useQuery()
   const { t } = useTranslation(['errors', 'common'])
 

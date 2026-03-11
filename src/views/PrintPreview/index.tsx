@@ -6,9 +6,9 @@ import { type ViewProps, type ViewMetadata } from '@/types'
 import { PreviewHeader } from './PreviewHeader'
 import { useEffect, useState, type JSX } from 'react'
 import { FrownIcon, SettingsIcon } from '@ttab/elephant-ui/icons'
-import { useRegistry } from '@/hooks'
 import { useTranslation } from 'react-i18next'
 import { Error } from '../Error'
+import { useFeatureFlags } from '@/hooks/useFeatureFlags'
 
 /**
  * PrintPreview component.
@@ -44,7 +44,7 @@ const meta: ViewMetadata = {
 
 // Main Editor Component - Handles document initialization
 const PrintPreview = (props: ViewProps): JSX.Element | null => {
-  const { featureFlags } = useRegistry()
+  const featureFlags = useFeatureFlags(['hasPrint'])
   const [height, setHeight] = useState(0)
 
   useEffect(() => {

@@ -1,9 +1,9 @@
 import { type ViewMetadata } from '@/types'
 import Dictionary from './Dictionary'
 import type { JSX } from 'react'
-import { useRegistry } from '@/hooks'
 import { Error } from '../Error'
 import { useTranslation } from 'react-i18next'
+import { useFeatureFlags } from '@/hooks/useFeatureFlags'
 
 /**
  * PrintPreview component.
@@ -39,7 +39,7 @@ const meta: ViewMetadata = {
 
 // Main Editor Component - Handles document initialization
 const PrintDictionary = (): JSX.Element | null => {
-  const { featureFlags } = useRegistry()
+  const featureFlags = useFeatureFlags(['hasPrint'])
   const { t } = useTranslation('errors')
 
   if (!featureFlags?.hasPrint) {
