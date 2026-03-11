@@ -20,6 +20,7 @@ import { UserInfo } from './UserInfo'
 import { MenuItemSubSheet } from './MenuItemSubSheet'
 import { LanguageSelector } from '../Header/LanguageSelector'
 import { useTranslation } from 'react-i18next'
+import { useFeatureFlags } from '@/hooks/useFeatureFlags'
 
 
 export const Menu = (): JSX.Element => {
