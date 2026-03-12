@@ -132,7 +132,13 @@ export const PrintFlows = ({ asDialog, onDialogClose, className, action }: ViewP
         <ViewHeader.Content>
           {asDialog && (
             <div className='flex w-full h-full items-center space-x-2 font-bold'>
-              <ViewHeader.Title name='printheader' title={action === 'createArticle' ? 'Skapa printartikel' : 'Skapa printflöde'} icon={LibraryIcon} iconColor='#006bb3' />
+              <ViewHeader.Title
+                name='printheader'
+                title={action === 'createArticle' ? 'Skapa printartikel' : 'Skapa printflöde'}
+                icon={LibraryIcon}
+                iconColor='#006bb3'
+                asDialog={asDialog}
+              />
             </div>
           )}
         </ViewHeader.Content>
