@@ -47,6 +47,7 @@ import { AssignmentStatus } from './AssignmentStatus'
 import { useTranslation } from 'react-i18next'
 import type { TranslationKey } from '@/types/i18next.d'
 import { RelatedWires } from './RelatedWires'
+import { useFeatureFlags } from '@/hooks/useFeatureFlags'
 
 export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDialog }: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -103,6 +104,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
 
   const openDocument = assignmentType === 'flash' ? openFlash : openArticle
   const { showModal, hideModal } = useModal()
+  const featureFlags = useFeatureFlags(['hasPrint'])
 
   const assignmentTime = useMemo(() => {
     if (typeof assignmentType !== 'string') {
@@ -268,20 +270,22 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
         )
       }
     },
-    {
-      label: t('planning:assignment.createPrintArticle'),
-      disabled: !isDocument,
-      icon: LibraryIcon,
-      item: () => {
-        showModal(
-          <CreatePrintArticle
-            id={documentId}
-            asDialog
-            onDialogClose={hideModal}
-          />
-        )
-      }
-    }
+    ...(featureFlags.hasPrint
+      ? [{
+          label: t('planning:assignment.createPrintArticle'),
+          disabled: !isDocument,
+          icon: LibraryIcon,
+          item: () => {
+            showModal(
+              <CreatePrintArticle
+                id={documentId}
+                asDialog
+                onDialogClose={hideModal}
+              />
+            )
+          }
+        }]
+      : [])
   ]
   const selected = articleId && openDocuments.includes(articleId)
   const workflowState = articleStatus?.meta?.workflowState

@@ -19,11 +19,12 @@ import { UserInfo } from './UserInfo'
 import { MenuItemSubSheet } from './MenuItemSubSheet'
 import { LanguageSelector } from '../Header/LanguageSelector'
 import { useTranslation } from 'react-i18next'
-
+import { useFeatureFlags } from '@/hooks/useFeatureFlags'
 
 export const Menu = (): JSX.Element => {
   const { data } = useSession()
   const { t } = useTranslation('app')
+  const featureFlags = useFeatureFlags()
   const triggerRef = useRef<HTMLButtonElement>(null)
   const [user] = useUserTracker<object>('')
   const [mainOpen, setMainMenuOpen] = useState<boolean>(false)
@@ -39,7 +40,7 @@ export const Menu = (): JSX.Element => {
   }, [])
 
   // Get all sheet items for rendering sub-sheets
-  const applicationMenu = getApplicationMenu()
+  const applicationMenu = getApplicationMenu(featureFlags)
   const sheetItems = applicationMenu.groups
     .flatMap((group) => group.items)
     .filter((item) => item.target === 'sheet')

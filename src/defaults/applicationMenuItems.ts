@@ -13,6 +13,7 @@ import {
   NewspaperIcon
 } from '@ttab/elephant-ui/icons'
 import type { ViewProps, View } from '../types'
+import type { AllowedFeatureFlag } from 'src/datastore/types'
 import i18next from 'i18next'
 
 /**
@@ -41,7 +42,7 @@ export interface ApplicationMenuItem {
   props?: ViewProps
 }
 
-export const getApplicationMenu = (): ApplicationMenu => ({
+export const getApplicationMenu = (featureFlags: AllowedFeatureFlag): ApplicationMenu => ({
   groups: [
     {
       name: 'views',
@@ -116,16 +117,18 @@ export const getApplicationMenu = (): ApplicationMenu => ({
         }
       ]
     },
-    {
-      name: 'Print',
-      items: [
-        {
+    ...(featureFlags.hasPrint
+      ? [{
           name: 'Print',
-          label: i18next.t('app:mainMenu.print'),
-          icon: LibraryIcon,
-          color: '#006bb3'
-        }
-      ]
-    }
+          items: [
+            {
+              name: 'Print' as View,
+              label: i18next.t('app:mainMenu.print'),
+              icon: LibraryIcon,
+              color: '#006bb3'
+            }
+          ]
+        }]
+      : [])
   ]
 })

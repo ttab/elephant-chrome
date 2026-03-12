@@ -26,7 +26,7 @@ export const Error = ({ title, error, message }: ViewProps & {
   error?: Error
   message?: string
 }): JSX.Element => {
-  const { t } = useTranslation('common')
+  const { t } = useTranslation(['common', 'errors'])
 
   return (
     <View.Root>

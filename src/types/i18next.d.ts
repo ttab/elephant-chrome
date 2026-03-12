@@ -13,6 +13,7 @@ import type shared from '../locales/en/shared.json'
 import type views from '../locales/en/views.json'
 import type wires from '../locales/en/wires.json'
 import type workflows from '../locales/en/workflows.json'
+import type print from '../locales/en/print.json'
 
 // Recursively generate all dot-notation leaf key paths for a JSON namespace object.
 type LeafPaths<T, Prefix extends string = ''> = {
@@ -37,6 +38,7 @@ type I18nResources = {
   views: typeof views
   wires: typeof wires
   workflows: typeof workflows
+  print: typeof print
 }
 
 /**

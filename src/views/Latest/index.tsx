@@ -17,6 +17,7 @@ import { SectionBadge } from '@/components/DataItem/SectionBadge'
 import { useTranslation } from 'react-i18next'
 import { CreatePrintArticle } from '@/components/CreatePrintArticle'
 import { useModal } from '@/components/Modal/useModal'
+import { useFeatureFlags } from '@/hooks/useFeatureFlags'
 
 const meta: ViewMetadata = {
   name: 'Latest',
@@ -131,6 +132,8 @@ const Menu = ({ articleId }: { articleId: string }): JSX.Element => {
   const planningId = useDeliverablePlanningId(articleId)
   const { t } = useTranslation('common')
   const { showModal, hideModal } = useModal()
+  const featureFlags = useFeatureFlags(['hasPrint'])
+
   return (
     <div className='shrink p-'>
       <DotMenu
@@ -160,19 +163,21 @@ const Menu = ({ articleId }: { articleId: string }): JSX.Element => {
                 )
               : () => {}
           },
-          {
-            label: t('planning:assignment.createPrintArticle'),
-            icon: LibraryIcon,
-            item: () => {
-              showModal(
-                <CreatePrintArticle
-                  id={articleId}
-                  asDialog
-                  onDialogClose={hideModal}
-                />
-              )
-            }
-          }
+          ...(featureFlags.hasPrint
+            ? [{
+                label: t('planning:assignment.createPrintArticle'),
+                icon: LibraryIcon,
+                item: () => {
+                  showModal(
+                    <CreatePrintArticle
+                      id={articleId}
+                      asDialog
+                      onDialogClose={hideModal}
+                    />
+                  )
+                }
+              }]
+            : [])
         ]}
       />
     </div>

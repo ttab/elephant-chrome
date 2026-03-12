@@ -11,8 +11,10 @@ import { Button, ScrollArea } from '@ttab/elephant-ui'
 import { Prompt } from '@/components/Prompt'
 import { useQuery } from '@/hooks/useQuery'
 import { Pagination } from '@/components/Table/Pagination'
+import { useTranslation } from 'react-i18next'
 
 const HypenationItem = ({ isNew, setIsNew, word, hypenated, ignore, handleListHyphenations }: { isNew: boolean, setIsNew: (isNew: boolean) => void, word: string, hypenated: string, ignore: boolean, handleListHyphenations: () => void }) => {
+  const { t } = useTranslation('print')
   const [_word, setWord] = useState(word)
   const [_hypenated, setHypenated] = useState(hypenated)
   const [_ignore, setIgnore] = useState(ignore)
@@ -26,10 +28,10 @@ const HypenationItem = ({ isNew, setIsNew, word, hypenated, ignore, handleListHy
     <div className='group/edit grid grid-cols-7 gap-x-2 gap-y-0 items-center hover:bg-gray-100 px-2' onClick={() => setEditMode(true)}>
       {promptIsOpen && (
         <Prompt
-          title='Radera avstavningen'
-          description='Är du säker på att du vill radera denna avstavning?'
-          primaryLabel='Radera'
-          secondaryLabel='Avbryt'
+          title={t('dictionary.confirmDelete.title')}
+          description={t('dictionary.confirmDelete.description')}
+          primaryLabel={t('dictionary.confirmDelete.primary')}
+          secondaryLabel={t('dictionary.confirmDelete.cancel')}
           onPrimary={() => {
             (async () => {
               await baboon?.removeHypenation({
@@ -93,7 +95,7 @@ const HypenationItem = ({ isNew, setIsNew, word, hypenated, ignore, handleListHy
                     })().catch(console.error)
                   }}
                 >
-                  Spara
+                  {t('dictionary.save')}
                 </Button>
                 {!isNew && (
                   <Button
@@ -117,7 +119,7 @@ const HypenationItem = ({ isNew, setIsNew, word, hypenated, ignore, handleListHy
                     setIsNew(false)
                   }}
                 >
-                  Avbryt
+                  {t('dictionary.cancel')}
                 </Button>
               </div>
             </>
@@ -145,6 +147,7 @@ const HypenationItem = ({ isNew, setIsNew, word, hypenated, ignore, handleListHy
 }
 
 const Dictionary = ({ className }: ViewProps): JSX.Element => {
+  const { t } = useTranslation('print')
   const { baboon } = useRegistry()
   const { data: session } = useSession()
   const [hyphenations, setHyphenations] = useState<Hypenation[]>([])
@@ -153,12 +156,12 @@ const Dictionary = ({ className }: ViewProps): JSX.Element => {
 
   const handleListHyphenations = async () => {
     if (!session?.accessToken) {
-      toast.error('Ingen access token hittades')
+      toast.error(t('dictionary.errors.noToken'))
       return
     }
 
     if (!baboon) {
-      toast.error('Något gick fel när avstämningsordlista skulle hämtas')
+      toast.error(t('dictionary.errors.fetchDictionary'))
       return
     }
     const hyphenations = await baboon?.listHypenations({
@@ -172,7 +175,7 @@ const Dictionary = ({ className }: ViewProps): JSX.Element => {
     handleListHyphenations()
       .catch((ex) => {
         console.error('Error listing hyphenations:', ex)
-        toast.error('Kunde inte lista hyphenations')
+        toast.error(t('dictionary.errors.listHyphenations'))
       })
   }, [query?.page?.[0]])
 
@@ -181,7 +184,7 @@ const Dictionary = ({ className }: ViewProps): JSX.Element => {
       <ViewHeader.Root>
         <ViewHeader.Content>
           <div className='flex h-full items-center space-x-2 font-bold'>
-            <ViewHeader.Title name='dictionary' title='Avstavningar' icon={BookAIcon} iconColor='#006bb3' />
+            <ViewHeader.Title name='dictionary' title={t('dictionary.title')} icon={BookAIcon} iconColor='#006bb3' />
           </div>
           <div className='flex items-center justify-end mt-4'>
             <Button
@@ -190,7 +193,7 @@ const Dictionary = ({ className }: ViewProps): JSX.Element => {
               className='mb-4 flex items-center gap-2'
             >
               <PlusIcon strokeWidth={1.75} size={18} />
-              Ny
+              {t('dictionary.new')}
             </Button>
           </div>
         </ViewHeader.Content>
@@ -200,13 +203,13 @@ const Dictionary = ({ className }: ViewProps): JSX.Element => {
         <div className='flex flex-col gap-2'>
           <div className='grid grid-cols-7 gap-2 mx-2'>
             <h3 className='font-bold text-sm col-span-2'>
-              Ord
+              {t('dictionary.columns.word')}
             </h3>
             <h3 className='font-bold text-sm col-span-2'>
-              Avstavning
+              {t('dictionary.columns.hyphenation')}
             </h3>
             <h3 className='font-bold text-sm col-span-1'>
-              Avstava ej
+              {t('dictionary.columns.noHyphenate')}
             </h3>
             <h3 className='font-bold text-sm col-span-2'></h3>
           </div>

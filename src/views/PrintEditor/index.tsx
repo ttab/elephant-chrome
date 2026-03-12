@@ -21,10 +21,8 @@ import {
 } from '@/hooks'
 import type { ViewMetadata, ViewProps } from '@/types'
 import { EditorHeader } from './PrintEditorHeader'
-import { Error as ErrorView } from '../Error'
-
+import { Error, Error as ErrorView } from '../Error'
 import { Notes } from '@/components/Notes'
-
 import { getValueByYPath } from '@/shared/yUtils'
 import { getContentMenuLabels } from '@/defaults/contentMenuLabels'
 import { ScrollArea } from '@ttab/elephant-ui'
@@ -37,6 +35,7 @@ import { useYDocument, useYValue, type YDocument } from '@/modules/yjs/hooks'
 import { View } from '@/components/View'
 import { BaseEditor } from '@/components/Editor/BaseEditor'
 import { useTranslation } from 'react-i18next'
+import { useFeatureFlags } from '@/hooks/useFeatureFlags'
 
 const meta: ViewMetadata = {
   name: 'PrintEditor',
@@ -55,16 +54,27 @@ const meta: ViewMetadata = {
 }
 
 // Main Editor Component - Handles document initialization
-const PrintEditor = (props: ViewProps): JSX.Element => {
+const PrintEditor = (props: ViewProps): JSX.Element | null => {
+  const featureFlags = useFeatureFlags(['hasPrint'])
   const [query] = useQuery()
   const documentId = props.id || query.id as string
+  const { t } = useTranslation(['print', 'errors'])
+
+  if (!featureFlags.hasPrint) {
+    return (
+      <Error
+        title={t('errors:messages.errorTitle')}
+        message={t('errors:messages.unknownErrorAdminInfo')}
+      />
+    )
+  }
 
   // Error handling for missing document
   if (!documentId || typeof documentId !== 'string') {
     return (
       <ErrorView
-        title='Artikeldokument saknas'
-        message='Inget artikeldokument är angivet. Navigera tillbaka till översikten och försök igen.'
+        title={t('print:editor.error.missingDocument')}
+        message={t('print:editor.error.missingDocumentMessage')}
       />
     )
   }
@@ -162,7 +172,7 @@ function EditorContainer({ ydoc }: {
 }): JSX.Element {
   const { stats } = useTextbit()
   const [flowName] = useYValue<string>(ydoc.ele, 'links.tt/print-flow[0].title')
-
+  const { t } = useTranslation('print')
 
   return (
     <>
@@ -190,12 +200,12 @@ function EditorContainer({ ydoc }: {
 
       <View.Footer>
         <div className='flex gap-2'>
-          <strong>Ord:</strong>
-          <span title='Antal ord: artikel (totalt)'>{`${stats.short.words} (${stats.full.words})`}</span>
+          <strong>{t('editor.stats.words')}</strong>
+          <span>{`${stats.short.words} (${stats.full.words})`}</span>
         </div>
         <div className='flex gap-2'>
-          <strong>Tecken:</strong>
-          <span title='Antal tecken: artikel (totalt)'>{`${stats.short.characters} (${stats.full.characters})`}</span>
+          <strong>{t('editor.stats.characters')}</strong>
+          <span>{`${stats.short.characters} (${stats.full.characters})`}</span>
         </div>
       </View.Footer>
     </>

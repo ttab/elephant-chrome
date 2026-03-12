@@ -22,10 +22,13 @@ import { DEFAULT_TIMEZONE } from '@/defaults/defaultTimezone'
 import { Collaboration } from '@/defaults'
 import { defaultLocale } from '@/defaults/locale'
 
+export type FeatureFlags = Record<string, boolean>
+
 /** Registry registry provider state interface */
 export interface RegistryProviderState {
   locale: LocaleData
   timeZone: string
+  featureFlags: FeatureFlags
   server: {
     webSocketUrl: URL
     indexUrl: URL
@@ -54,6 +57,7 @@ export const initialState: RegistryProviderState = {
   locale: defaultLocale,
   timeZone: getUserTimeZone() || DEFAULT_TIMEZONE,
   userColor: colors[Math.floor(Math.random() * colors.length)],
+  featureFlags: {},
 
   server: {
     webSocketUrl: new URL('http://localhost'),
@@ -83,7 +87,7 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
   useEffect(() => {
     const initialize = async () => {
       try {
-        const { urls: server, envs } = await getServerEnvs()
+        const { urls: server, envs, featureFlags } = await getServerEnvs()
         setSystemLanguage(envs.systemLanguage)
         await initI18n()
 
@@ -99,6 +103,7 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
         dispatch({
           server,
           locale,
+          featureFlags,
           workflow,
           repository,
           index,
@@ -147,7 +152,7 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
  * Registry context reducer
  */
 const reducer = (state: RegistryProviderState, action: Partial<RegistryProviderState>): RegistryProviderState => {
-  const { locale, timeZone, server, repository, workflow, index, spellchecker, user, baboon } = action
+  const { locale, timeZone, featureFlags, server, repository, workflow, index, spellchecker, user, baboon } = action
   const partialState: Partial<RegistryProviderState> = {}
 
   if (typeof locale === 'object') {
@@ -184,6 +189,10 @@ const reducer = (state: RegistryProviderState, action: Partial<RegistryProviderS
 
   if (typeof baboon === 'object') {
     partialState.baboon = baboon
+  }
+
+  if (typeof featureFlags === 'object') {
+    partialState.featureFlags = featureFlags
   }
 
   return {

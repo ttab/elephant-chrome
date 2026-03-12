@@ -13,6 +13,7 @@ import flash from './flash.json'
 import quickArticle from './quickArticle.json'
 import errors from './errors.json'
 import wires from './wires.json'
+import print from './print.json'
 
 export const nb = {
   common,
@@ -29,5 +30,6 @@ export const nb = {
   flash,
   quickArticle,
   errors,
-  wires
+  wires,
+  print
 }

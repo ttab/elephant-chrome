@@ -6,6 +6,7 @@ import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import { useQuery } from '@/hooks/useQuery'
 import { useTranslation } from 'react-i18next'
+import { useFeatureFlags } from '@/hooks/useFeatureFlags'
 
 export const Title = ({
   name,
@@ -32,6 +33,7 @@ export const Title = ({
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
   const timeout2Ref = useRef<NodeJS.Timeout | null>(null)
   const { t } = useTranslation()
+  const featureFlags = useFeatureFlags()
 
   useEffect(() => {
     if (timeoutRef.current) {
@@ -79,7 +81,7 @@ export const Title = ({
     setQuery({ preview: undefined })
   }
 
-  const { icon: ViewIcon, color } = getApplicationMenu().groups
+  const { icon: ViewIcon, color } = getApplicationMenu(featureFlags).groups
     .flatMap((g) => g.items)
     .find((i) => i.name === name) || {}
 

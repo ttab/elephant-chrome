@@ -21,6 +21,7 @@ describe('GET /api/envs', () => {
     process.env.FARO_URL = 'https://faro.example.com'
     process.env.BABOON_URL = 'https://baboon.example.com'
     process.env.SYSTEM_LANGUAGE = 'nb-NO'
+    process.env.HAS_PRINT = 'true'
 
     const result = await GET() as { payload: Record<string, string> }
 
@@ -33,7 +34,8 @@ describe('GET /api/envs', () => {
       spellcheckUrl: 'https://spell.example.com',
       faroUrl: 'https://faro.example.com',
       baboonUrl: 'https://baboon.example.com',
-      systemLanguage: 'nb-NO'
+      systemLanguage: 'nb-NO',
+      hasPrint: 'true'
     })
   })
 

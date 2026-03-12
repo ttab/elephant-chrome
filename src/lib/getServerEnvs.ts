@@ -16,9 +16,12 @@ interface ServerEnvs {
   systemLanguage: string
 }
 
+type FeatureFlags = Record<string, boolean>
+
 interface ServerConfig {
   urls: ServerUrls
   envs: ServerEnvs
+  featureFlags: FeatureFlags
 }
 
 export async function getServerEnvs(): Promise<ServerConfig> {
@@ -29,7 +32,7 @@ export async function getServerEnvs(): Promise<ServerConfig> {
   }
 
   try {
-    const data = await response.json() as Record<string, string>
+    const data = await response.json() as Record<string, unknown>
     const urlAttributes = [
       'webSocketUrl', 'indexUrl', 'repositoryUrl', 'contentApiUrl',
       'spellcheckUrl', 'userUrl', 'faroUrl', 'baboonUrl'
@@ -40,14 +43,14 @@ export async function getServerEnvs(): Promise<ServerConfig> {
     for (const field of urlAttributes) {
       const value = data[field]
 
-      if (typeof value != 'string' || value == '') {
+      if (typeof value !== 'string' || value === '') {
         throw new Error(`missing '${field}' server URL`)
       }
 
       urls[field] = new URL(value)
     }
 
-    if (!data['systemLanguage'] || typeof data['systemLanguage'] != 'string') {
+    if (!data['systemLanguage'] || typeof data['systemLanguage'] !== 'string') {
       throw new Error('missing \'systemLanguage\' server environment variable')
     }
 
@@ -58,6 +61,9 @@ export async function getServerEnvs(): Promise<ServerConfig> {
       } as ServerUrls,
       envs: {
         systemLanguage: data['systemLanguage']
+      },
+      featureFlags: {
+        hasPrint: data['hasPrint'] ? !!data['hasPrint'] : false
       }
     }
   } catch (ex) {
