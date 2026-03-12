@@ -5,7 +5,8 @@ interface ServerUrls {
   indexUrl: URL
   repositoryUrl: URL
   repositoryEventsUrl: URL
-  contentApiUrl: URL
+  imageSearchUrl: URL
+  imageSearchProvider: string
   spellcheckUrl: URL
   userUrl: URL
   faroUrl: URL
@@ -22,7 +23,7 @@ export async function getServerUrls(): Promise<ServerUrls> {
   try {
     const servers = await response.json() as Record<string, string>
     const attributes = [
-      'webSocketUrl', 'indexUrl', 'repositoryUrl', 'contentApiUrl',
+      'webSocketUrl', 'indexUrl', 'repositoryUrl', 'imageSearchUrl',
       'spellcheckUrl', 'userUrl', 'faroUrl', 'baboonUrl'
     ]
 
@@ -40,7 +41,8 @@ export async function getServerUrls(): Promise<ServerUrls> {
 
     return {
       ...urls,
-      repositoryEventsUrl: new URL('/sse', urls['repositoryUrl'])
+      repositoryEventsUrl: new URL('/sse', urls['repositoryUrl']),
+      imageSearchProvider: servers.imageSearchProvider ?? ''
     } as ServerUrls
   } catch (ex) {
     throw new Error('Failed fetching remote server urls in getServerUrls', { cause: ex as Error })

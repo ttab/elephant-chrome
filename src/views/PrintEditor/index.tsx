@@ -1,8 +1,9 @@
 import { useMemo, type JSX } from 'react'
-import { useTextbit } from '@ttab/textbit'
+import { useTextbit, type TBResource } from '@ttab/textbit'
 import {
   Bold,
   Italic,
+  Image,
   Text,
   TTVisual,
   Factbox,
@@ -31,7 +32,8 @@ import { ScrollArea } from '@ttab/elephant-ui'
 import { Layouts } from './components/Layouts'
 import { useSession } from 'next-auth/react'
 import type * as Y from 'yjs'
-import { ImagePlugin } from './ImagePlugin'
+import { imageConsume } from './lib/imageConsume'
+import { imageConsumes } from './lib/imageConsumes'
 import { ChannelComboBox } from './components/ChannelComboBox'
 import { useYDocument, useYValue, type YDocument } from '@/modules/yjs/hooks'
 import { View } from '@/components/View'
@@ -107,9 +109,20 @@ function EditorWrapper(props: ViewProps & {
         countCharacters: ['heading-1'],
         ...contentMenuLabels
       }),
-      ImagePlugin({
-        repository,
-        accessToken: data?.accessToken || ''
+      Image({
+        consume: ({ input }: { input: TBResource | TBResource[] }) =>
+          imageConsume(input, repository!),
+        consumes: imageConsumes,
+        removable: true,
+        enableCrop: true,
+        getImageSrc: async (properties: Record<string, unknown>) => {
+          const uploadId = properties.uploadId as string
+          if (!uploadId) return properties.src as string || ''
+          const details = await repository!.getAttachmentDetails(uploadId, data?.accessToken || '')
+          return details?.downloadLink ?? ''
+        },
+        captionLabel: 'Text',
+        bylineLabel: 'Byline'
       }),
       TVListing({
         channelComponent: () => ChannelComboBox()

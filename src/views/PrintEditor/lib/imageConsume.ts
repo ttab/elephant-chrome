@@ -3,7 +3,7 @@ import type { TBResource } from '@ttab/textbit'
 import { getCachedSession } from '@/shared/getCachedSession'
 import { toast } from 'sonner'
 
-export const consume = async (
+export const imageConsume = async (
   input: TBResource | TBResource[],
   repository: Repository
 ): Promise<TBResource | undefined> => {

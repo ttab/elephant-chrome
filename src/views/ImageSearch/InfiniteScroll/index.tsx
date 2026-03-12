@@ -7,7 +7,6 @@ interface Props<T> {
   loadingIndicator?: ReactNode
   endingIndicator?: ReactNode
   isReachingEnd: boolean | ((swr: SWRInfiniteResponse<T>) => boolean)
-  offset?: number
 }
 
 
@@ -39,8 +38,7 @@ const InfiniteScroll = <T,>(props: Props<T>): React.ReactElement<Props<T>> => {
     children,
     loadingIndicator,
     endingIndicator,
-    isReachingEnd,
-    offset = 0
+    isReachingEnd
   } = props
 
   const [intersecting, ref] = useIntersection<HTMLDivElement>()
@@ -58,8 +56,8 @@ const InfiniteScroll = <T,>(props: Props<T>): React.ReactElement<Props<T>> => {
       {typeof children === 'function'
         ? data?.map((item): ReactNode => children(item))
         : children}
-      <div className='flex relative bg-gray-200 min-h-[144px] place-content-center place-items-center'>
-        <div ref={ref} className={`absolute top-[${offset}]`}></div>
+      <div className='flex relative bg-gray-200 dark:bg-table-focused rounded-sm min-h-[144px] place-content-center place-items-center'>
+        <div ref={ref} className='absolute top-0'></div>
         {(swr.isLoading || swr.isValidating) && loadingIndicator}
         {ending && endingIndicator}
       </div>

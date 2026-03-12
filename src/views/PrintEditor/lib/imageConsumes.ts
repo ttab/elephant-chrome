@@ -1,7 +1,8 @@
 import { type TBConsumesFunction } from '@ttab/textbit'
-import { CONFIG } from '../config'
 
-export const consumes: TBConsumesFunction = ({ input }) => {
+const MAX_SIZE_MB = 50
+
+export const imageConsumes: TBConsumesFunction = ({ input }) => {
   if (!(input.data instanceof File)) {
     return [false]
   }
@@ -12,8 +13,8 @@ export const consumes: TBConsumesFunction = ({ input }) => {
   }
 
   // Hardcoded limit on 50 MB
-  if (size / 1024 / 1024 > CONFIG.maxSizeInMb) {
-    console.info(`Image is too large, ${size / 1024 / 1024}, max ${CONFIG.maxSizeInMb} Mb allowed`)
+  if (size / 1024 / 1024 > MAX_SIZE_MB) {
+    console.info(`Image is too large, ${size / 1024 / 1024}, max ${MAX_SIZE_MB} Mb allowed`)
     return [false]
   }
 
