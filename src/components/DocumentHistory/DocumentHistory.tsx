@@ -1,5 +1,5 @@
 import { useRegistry } from '@/hooks/useRegistry'
-import type { BulkGetItem } from '@ttab/elephant-api/repository'
+import type { BulkGetItem/* , DocumentVersion */ } from '@ttab/elephant-api/repository'
 import { useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 import { dateToReadableDateTime } from '@/shared/datetime'
@@ -9,9 +9,10 @@ import type { DocumentState } from '@/lib/getDocumentState'
 interface VersionEntry {
   version: bigint
   created: string
+  status: string
 }
 
-function getStatusForVersion(version: bigint, currentVersion: bigint | undefined, documentState?: DocumentState): string | null {
+/* function getStatusForVersion(version: bigint, currentVersion: bigint | undefined, documentState?: DocumentState): string | null {
   if (!documentState) return null
   const n = Number(version)
 
@@ -20,7 +21,6 @@ function getStatusForVersion(version: bigint, currentVersion: bigint | undefined
     if (documentState.isFlash) return 'flash'
     return documentState.status ?? null
   }
-
   // Past versions: flash takes priority, then status in descending importance
   if (documentState.wasFlash === n) return 'flash'
   if (documentState.wasUsed === n) return 'used'
@@ -28,11 +28,12 @@ function getStatusForVersion(version: bigint, currentVersion: bigint | undefined
   if (documentState.wasRead === n) return 'read'
   return null
 }
+ */
 
 const COLLAPSED_MAX = 4
 const COLLAPSE_THRESHOLD = 5
 
-export const DocumentHistory = ({ uuid, currentVersion, documentState, onSelectVersion, selectedVersion }: {
+export const DocumentHistory = ({ uuid, currentVersion, /* documentState, */ onSelectVersion, selectedVersion }: {
   uuid: string
   currentVersion?: bigint
   documentState?: DocumentState
@@ -76,7 +77,7 @@ export const DocumentHistory = ({ uuid, currentVersion, documentState, onSelectV
         // One entry per version, newest first
         const history: VersionEntry[] = [...result.versions]
           .sort((a, b) => (a.version < b.version ? 1 : a.version > b.version ? -1 : 0))
-          .map((v) => ({ version: v.version, created: v.created }))
+          .map((v) => ({ version: v.version, created: v.created, status: Object.keys(v.statuses)[0] }))
 
         pending.documents = true
         const documents = await repository.getDocuments({
@@ -117,7 +118,7 @@ export const DocumentHistory = ({ uuid, currentVersion, documentState, onSelectV
           && visibleHistory.map((item, index) => {
             const title = documents?.find((doc) => doc.version === item.version)?.document?.title
             const isCurrent = item.version === currentVersion
-            const status = getStatusForVersion(item.version, currentVersion, documentState)
+            const status = item.status // getStatusForVersion(item.version, currentVersion, documentState)
 
             return (
               <div key={`${item.version}`} className='grid grid-cols-[1.5rem_auto_1fr] group rounded'>

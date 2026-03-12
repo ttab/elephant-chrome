@@ -19,7 +19,6 @@ export type DocumentState = {
  * @returns {DocumentState}
  */
 export function getDocumentState(document: HitV1 | StatusOverviewItem): DocumentState {
-  console.log(document)
   let version: number
   let savedVersion: number
   let flashVersion: number
