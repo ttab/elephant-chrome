@@ -13,7 +13,7 @@ import {
   NewspaperIcon
 } from '@ttab/elephant-ui/icons'
 import type { ViewProps, View } from '../types'
-import type { FeatureFlags } from '@/contexts/RegistryProvider'
+import type { AllowedFeatureFlag } from 'src/datastore/types'
 import i18next from 'i18next'
 
 /**
