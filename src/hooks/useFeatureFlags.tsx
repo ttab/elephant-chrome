@@ -1,17 +1,19 @@
-import { useMemo } from 'react'
 import { useRegistry } from '.'
 import type { AllowedFeatureFlag } from 'src/datastore/types'
 
-export const useFeatureFlags = (flags: (keyof AllowedFeatureFlag)[]): AllowedFeatureFlag => {
+export const useFeatureFlags = <T extends keyof AllowedFeatureFlag>(
+  flags?: readonly T[]
+): Pick<AllowedFeatureFlag, T> => {
   const { featureFlags } = useRegistry()
-  const flagsKey = flags.join(',')
 
-  return useMemo(() => {
-    const resolvedFlags: AllowedFeatureFlag = {}
-    flags.forEach((flag) => {
-      resolvedFlags[flag] = featureFlags[flag] ?? false
-    })
-    return resolvedFlags
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [featureFlags, flagsKey])
+  if (!flags) {
+    return featureFlags as Pick<AllowedFeatureFlag, T>
+  }
+
+  const resolvedFlags = {} as Pick<AllowedFeatureFlag, T>
+  for (const flag of flags) {
+    resolvedFlags[flag] = featureFlags[flag] ?? false
+  }
+
+  return resolvedFlags
 }
