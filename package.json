@@ -15,7 +15,7 @@
   "scripts": {
     "debug": "concurrently npm:debug:vite",
     "debug:vite": "ttrun -- tsx watch --inspect --ignore vite.config.ts.timestamp* src-srv/index.ts",
-    "dev": "concurrently ttrun -- npm:dev:vite",
+    "dev": "ttrun -- concurrently npm:dev:vite",
     "dev:vite": "ttrun -- tsx watch --ignore vite.config.ts.timestamp* src-srv/index.ts",
     "dev:client": "concurrently npm:dev:client:*",
     "dev:client:web": "vite",
