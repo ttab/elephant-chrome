@@ -4,38 +4,38 @@ import { useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 import { dateToReadableDateTime } from '@/shared/datetime'
 import { HistoryEntry } from './HistoryEntry'
-import type { WireState } from '@/lib/getWireState'
+import type { DocumentState } from '@/lib/getDocumentState'
 
 interface VersionEntry {
   version: bigint
   created: string
 }
 
-function getStatusForVersion(version: bigint, currentVersion: bigint | undefined, wireState?: WireState): string | null {
-  if (!wireState) return null
+function getStatusForVersion(version: bigint, currentVersion: bigint | undefined, documentState?: DocumentState): string | null {
+  if (!documentState) return null
   const n = Number(version)
 
   if (version === currentVersion) {
     // Flash takes visual priority over other statuses
-    if (wireState.isFlash) return 'flash'
-    return wireState.status ?? null
+    if (documentState.isFlash) return 'flash'
+    return documentState.status ?? null
   }
 
   // Past versions: flash takes priority, then status in descending importance
-  if (wireState.wasFlash === n) return 'flash'
-  if (wireState.wasUsed === n) return 'used'
-  if (wireState.wasSaved === n) return 'saved'
-  if (wireState.wasRead === n) return 'read'
+  if (documentState.wasFlash === n) return 'flash'
+  if (documentState.wasUsed === n) return 'used'
+  if (documentState.wasSaved === n) return 'saved'
+  if (documentState.wasRead === n) return 'read'
   return null
 }
 
 const COLLAPSED_MAX = 4
 const COLLAPSE_THRESHOLD = 5
 
-export const DocumentHistory = ({ uuid, currentVersion, wireState, onSelectVersion, selectedVersion }: {
+export const DocumentHistory = ({ uuid, currentVersion, documentState, onSelectVersion, selectedVersion }: {
   uuid: string
   currentVersion?: bigint
-  wireState?: WireState
+  documentState?: DocumentState
   onSelectVersion: (version: bigint) => void
   selectedVersion: bigint | undefined
 }) => {
@@ -117,7 +117,7 @@ export const DocumentHistory = ({ uuid, currentVersion, wireState, onSelectVersi
           && visibleHistory.map((item, index) => {
             const title = documents?.find((doc) => doc.version === item.version)?.document?.title
             const isCurrent = item.version === currentVersion
-            const status = getStatusForVersion(item.version, currentVersion, wireState)
+            const status = getStatusForVersion(item.version, currentVersion, documentState)
 
             return (
               <div key={`${item.version}`} className='grid grid-cols-[1.5rem_auto_1fr] group rounded'>
