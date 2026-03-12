@@ -26,9 +26,9 @@
     "start:local": "NODE_ENV=production ttrun -- node dist/src-srv/index.js",
     "lint": "eslint . --cache",
     "tsc": "tsc --noEmit && tsc -p ./src-srv/tsconfig.json --noEmit",
-    "test": "ttrun -- vitest run",
-    "test:watch": "ttrun -- vitest",
-    "test:coverage": "ttrun -- vitest run --coverage",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "preview": "ttrun -- vite preview",
     "link:elephant-ui": "./tooling/link.sh ../elephant-ui",
     "unlink:elephant-ui": "./tooling/unlink.sh ../elephant-ui"
