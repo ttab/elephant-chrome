@@ -13,18 +13,18 @@ import { ThemeSwitcher } from './ThemeSwitcher'
 import { MenuItem } from './MenuItem'
 import { useSession } from 'next-auth/react'
 import { getApplicationMenu, type ApplicationMenuItem, type MenuGroups } from '@/defaults/applicationMenuItems'
-import { useRegistry } from '@/hooks'
 import { useUserTracker } from '@/hooks/useUserTracker'
 import { useCallback, useRef, useState, type JSX } from 'react'
 import { UserInfo } from './UserInfo'
 import { MenuItemSubSheet } from './MenuItemSubSheet'
 import { LanguageSelector } from '../Header/LanguageSelector'
 import { useTranslation } from 'react-i18next'
+import { useFeatureFlags } from '@/hooks/useFeatureFlags'
 
 export const Menu = (): JSX.Element => {
   const { data } = useSession()
   const { t } = useTranslation('app')
-  const { featureFlags } = useRegistry()
+  const featureFlags = useFeatureFlags()
   const triggerRef = useRef<HTMLButtonElement>(null)
   const [user] = useUserTracker<object>('')
   const [mainOpen, setMainMenuOpen] = useState<boolean>(false)

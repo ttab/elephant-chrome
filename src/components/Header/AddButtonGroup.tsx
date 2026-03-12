@@ -23,7 +23,7 @@ import { getApplicationMenu } from '@/defaults/applicationMenuItems'
 import type { LucideIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import type { TFunction } from 'i18next'
-import { useRegistry } from '@/hooks/index'
+import { useFeatureFlags } from '@/hooks/useFeatureFlags'
 
 type Variant = VariantProps<typeof buttonVariants>['variant']
 type ButtonView = { name: View, type: string, icon?: { icon?: LucideIcon, color?: string } }
@@ -80,7 +80,7 @@ const AddButton = ({
 export const AddButtonGroup = ({ docType = 'core/planning-item', query }: { type: View, query: QueryParams, docType?: string }) => {
   const { showModal, hideModal } = useModal()
   const { t } = useTranslation()
-  const { featureFlags } = useRegistry()
+  const featureFlags = useFeatureFlags()
 
   const getIcon = (t: View): { icon: LucideIcon | undefined, color?: string } => {
     const group = getApplicationMenu(featureFlags).groups.find((g) => g.items.find((itm) => itm.name.includes(t)))

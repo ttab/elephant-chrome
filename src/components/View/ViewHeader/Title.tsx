@@ -6,7 +6,7 @@ import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import { useQuery } from '@/hooks/useQuery'
 import { useTranslation } from 'react-i18next'
-import { useRegistry } from '@/hooks/index'
+import { useFeatureFlags } from '@/hooks/useFeatureFlags'
 
 export const Title = ({
   name,
@@ -33,7 +33,7 @@ export const Title = ({
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
   const timeout2Ref = useRef<NodeJS.Timeout | null>(null)
   const { t } = useTranslation()
-  const { featureFlags } = useRegistry()
+  const featureFlags = useFeatureFlags()
 
   useEffect(() => {
     if (timeoutRef.current) {

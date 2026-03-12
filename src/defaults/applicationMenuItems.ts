@@ -42,7 +42,7 @@ export interface ApplicationMenuItem {
   props?: ViewProps
 }
 
-export const getApplicationMenu = (featureFlags?: FeatureFlags): ApplicationMenu => ({
+export const getApplicationMenu = (featureFlags: AllowedFeatureFlag): ApplicationMenu => ({
   groups: [
     {
       name: 'views',
