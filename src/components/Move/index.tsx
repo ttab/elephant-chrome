@@ -160,7 +160,13 @@ export const Move = ({ ydoc, ...props }: ViewProps & {
         <ViewHeader.Content>
           {props.asDialog && (
             <div className='flex w-full h-full items-center space-x-2 font-bold'>
-              <ViewHeader.Title name='Assignment' title={t('planning:move.moveAssignment')} icon={ArrowRightLeftIcon} iconColor='#006bb3' />
+              <ViewHeader.Title
+                name='Assignment'
+                title={t('planning:move.moveAssignment')}
+                icon={ArrowRightLeftIcon}
+                iconColor='#006bb3'
+                asDialog={props.asDialog}
+              />
             </div>
           )}
         </ViewHeader.Content>

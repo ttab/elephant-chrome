@@ -102,7 +102,13 @@ export const CreatePrintArticle = ({ id, asDialog, onDialogClose, className }: V
         <ViewHeader.Content>
           {asDialog && (
             <div className='flex w-full h-full items-center space-x-2 font-bold'>
-              <ViewHeader.Title name='Assignment' title={t('create.title')} icon={LibraryIcon} iconColor='#006bb3' />
+              <ViewHeader.Title
+                name='Assignment'
+                title={t('create.title')}
+                icon={LibraryIcon}
+                iconColor='#006bb3'
+                asDialog={asDialog}
+              />
             </div>
           )}
         </ViewHeader.Content>

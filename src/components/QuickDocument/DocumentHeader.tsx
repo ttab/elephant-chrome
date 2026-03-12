@@ -35,6 +35,7 @@ export const DocumentHeader = ({
           icon={HeaderIcon}
           iconColor={config.iconColor}
           preview={preview}
+          asDialog={asDialog}
         />
       )}
 
@@ -46,6 +47,7 @@ export const DocumentHeader = ({
               title={config.newDialogTitle}
               icon={TitleIcon}
               iconColor={config.iconColor}
+              asDialog={asDialog}
             />
           )}
         </div>

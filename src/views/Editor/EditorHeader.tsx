@@ -29,8 +29,8 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
   const planningId = useDeliverablePlanningId(ydoc.id)
   const [publishTime] = useState<string | null>(null)
   const [workflowStatus] = useWorkflowStatus({ ydoc, documentId: ydoc.id })
-  const [documentType] = useYValue<string>(ydoc.ele, 'root.type')
   const { t } = useTranslation('shared')
+  const documentType = workflowStatus?.type
 
   const openLatestVersion = useLink('Editor')
   const openSources = useLink('Sources')
@@ -85,7 +85,9 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
     return true
   }, [planningId, dispatch, ydoc.id, history, state.viewRegistry, viewId, t])
 
-  const title = documentType === 'core/editorial-info' ? t('assignmentTypes.editorial-info') : t('assignmentTypes.text')
+  const title = documentType === 'core/editorial-info'
+    ? t('assignmentTypes.editorial-info')
+    : t('assignmentTypes.text')
 
   const isReadOnlyAndUpdated = workflowStatus && workflowStatus?.name !== 'usable' && readOnly
   const isUnpublished = workflowStatus?.name === 'unpublished'

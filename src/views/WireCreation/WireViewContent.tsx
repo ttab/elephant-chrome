@@ -72,7 +72,13 @@ export const WireViewContent = (props: ViewProps & {
         <ViewHeader.Content>
           {props.asDialog && (
             <div className='flex w-full h-full items-center space-x-2 font-bold'>
-              <ViewHeader.Title name='Wires' title={t('creation.title')} icon={CableIcon} iconColor='#FF6347' />
+              <ViewHeader.Title
+                name='Wires'
+                title={t('creation.title')}
+                icon={CableIcon}
+                iconColor='#FF6347'
+                asDialog={props.asDialog}
+              />
             </div>
           )}
         </ViewHeader.Content>

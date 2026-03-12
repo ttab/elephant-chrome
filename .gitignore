@@ -12,6 +12,7 @@ dist
 dist-ssr
 *.local
 .env
+ttrun.env
 
 # Editor directories and files
 .vscode/*
