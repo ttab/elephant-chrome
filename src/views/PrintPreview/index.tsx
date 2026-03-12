@@ -59,7 +59,7 @@ const PrintPreview = (props: ViewProps): JSX.Element | null => {
 
   const { t } = useTranslation(['print', 'errors'])
 
-  if (!featureFlags?.hasPrint) {
+  if (!featureFlags.hasPrint) {
     return (
       <Error
         title={t('errors:messages.errorTitle')}

@@ -79,7 +79,7 @@ export const Print = (): JSX.Element | null => {
 
   const [openCreateFlow, setOpenCreateFlow] = useState(false)
 
-  if (!featureFlags?.hasPrint) {
+  if (!featureFlags.hasPrint) {
     return (
       <Error
         title={t('errors:messages.errorTitle')}

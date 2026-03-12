@@ -117,7 +117,7 @@ export const getApplicationMenu = (featureFlags: AllowedFeatureFlag): Applicatio
         }
       ]
     },
-    ...(featureFlags?.hasPrint
+    ...(featureFlags.hasPrint
       ? [{
           name: 'Print',
           items: [

@@ -60,7 +60,7 @@ const PrintEditor = (props: ViewProps): JSX.Element | null => {
   const documentId = props.id || query.id as string
   const { t } = useTranslation(['print', 'errors'])
 
-  if (!featureFlags?.hasPrint) {
+  if (!featureFlags.hasPrint) {
     return (
       <Error
         title={t('errors:messages.errorTitle')}

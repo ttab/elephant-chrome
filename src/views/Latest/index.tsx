@@ -163,7 +163,7 @@ const Menu = ({ articleId }: { articleId: string }): JSX.Element => {
                 )
               : () => {}
           },
-          ...(featureFlags?.hasPrint
+          ...(featureFlags.hasPrint
             ? [{
                 label: t('planning:assignment.createPrintArticle'),
                 icon: LibraryIcon,

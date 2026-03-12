@@ -42,7 +42,7 @@ const PrintDictionary = (): JSX.Element | null => {
   const featureFlags = useFeatureFlags(['hasPrint'])
   const { t } = useTranslation('errors')
 
-  if (!featureFlags?.hasPrint) {
+  if (!featureFlags.hasPrint) {
     return (
       <Error
         title={t('messages.errorTitle')}
