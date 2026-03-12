@@ -36,7 +36,7 @@ export const Pagination = ({ total }: {
   ]
 
   return (
-    <div className='flex items-center justify-center gap-4 border-t w-full p-4 dark:bg-slate-800'>
+    <div className='flex items-center justify-center gap-4 border-t w-full p-4 dark:bg-secondary'>
       {total === undefined || total > 0
         ? (
             <>
