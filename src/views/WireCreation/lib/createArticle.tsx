@@ -79,7 +79,7 @@ export async function createArticle({
       title: 'whitespace-nowrap'
     },
     action: (
-      <div className='flex flex-row w-full gap-1 justify-end'>
+      <div className='flex w-full gap-1 justify-end [&>*]:w-auto'>
         <ToastAction
           documentId={updatedPlanningId}
           withView='Planning'
