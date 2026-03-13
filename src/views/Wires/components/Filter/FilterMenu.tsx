@@ -1,5 +1,5 @@
-import { Popover, PopoverTrigger, Button, PopoverContent, Command, CommandList, CommandItem } from '@ttab/elephant-ui'
-import { ListFilterIcon, BinocularsIcon, ShapesIcon, SignalHighIcon, SquareCodeIcon, CheckIcon } from '@ttab/elephant-ui/icons'
+import { Popover, PopoverTrigger, Button, PopoverContent, Command, CommandItem } from '@ttab/elephant-ui'
+import { ListFilterIcon, ShapesIcon, SignalHighIcon, SquareCodeIcon, CheckIcon } from '@ttab/elephant-ui/icons'
 import { useEffect, useMemo, useRef, useState, type JSX } from 'react'
 import { DebouncedCommandInput } from '@/components/Commands/Menu/DebouncedCommandInput'
 import { useSections } from '@/hooks/useSections'
@@ -71,7 +71,6 @@ export const FilterMenu = ({ currentFilters, onFilterChange }: FilterPopoverProp
 
   const handleBack = () => {
     setPage('')
-    setSearch('')
   }
 
   const handleQuerySubmit = () => {
@@ -100,7 +99,6 @@ export const FilterMenu = ({ currentFilters, onFilterChange }: FilterPopoverProp
       || opt.value.toLowerCase().includes(searchLower)
     )
   }
-
   return (
     <Popover open={open} onOpenChange={handleOpenChange} modal>
       <PopoverTrigger asChild>
@@ -155,37 +153,9 @@ export const FilterMenu = ({ currentFilters, onFilterChange }: FilterPopoverProp
           />
 
           {!page && (
-            <CommandList>
-              <CommandItem
-                onSelect={() => handleNavigateToPage('query')}
-                className='flex gap-1 items-center'
-              >
-                <BinocularsIcon size={18} strokeWidth={1.75} />
-                Fritext
-              </CommandItem>
-              <CommandItem
-                onSelect={() => handleNavigateToPage('section')}
-                className='flex gap-1 items-center'
-              >
-                <ShapesIcon size={18} strokeWidth={1.75} />
-                Sektion
-              </CommandItem>
-              <CommandItem
-                onSelect={() => handleNavigateToPage('source')}
-                className='flex gap-1 items-center'
-              >
-                <SquareCodeIcon size={18} strokeWidth={1.75} />
-                Källor
-              </CommandItem>
-              <CommandItem
-                onSelect={() => handleNavigateToPage('newsvalue')}
-                className='flex gap-1 items-center'
-              >
-                <SignalHighIcon size={18} strokeWidth={1.75} />
-                Nyhetsvärde
-              </CommandItem>
-            </CommandList>
+            <MenuList onSelect={handleNavigateToPage} />
           )}
+
 
           {page === 'section' && (
             <OptionsFilterList
@@ -216,6 +186,34 @@ export const FilterMenu = ({ currentFilters, onFilterChange }: FilterPopoverProp
   )
 }
 
+const MenuList = ({ onSelect }: { onSelect: (newPage: FilterPage) => void }) => {
+  return (
+    <>
+      <CommandItem
+        onSelect={() => onSelect('section')}
+        className='flex gap-1 items-center'
+      >
+        <ShapesIcon size={18} strokeWidth={1.75} />
+        Sektion
+      </CommandItem>
+      <CommandItem
+        onSelect={() => onSelect('source')}
+        className='flex gap-1 items-center'
+      >
+        <SquareCodeIcon size={18} strokeWidth={1.75} />
+        Källor
+      </CommandItem>
+      <CommandItem
+        onSelect={() => onSelect('newsvalue')}
+        className='flex gap-1 items-center'
+      >
+        <SignalHighIcon size={18} strokeWidth={1.75} />
+        Nyhetsvärde
+      </CommandItem>
+    </>
+  )
+}
+
 const OptionsFilterList = ({
   options,
   selectedValues,
@@ -226,7 +224,7 @@ const OptionsFilterList = ({
   onToggle: (value: string) => void
 }): JSX.Element => {
   return (
-    <CommandList>
+    <>
       {options.map((option) => {
         const isSelected = selectedValues.has(option.value)
 
@@ -250,6 +248,6 @@ const OptionsFilterList = ({
           </CommandItem>
         )
       })}
-    </CommandList>
+    </>
   )
 }

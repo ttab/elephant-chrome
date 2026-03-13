@@ -1,11 +1,12 @@
 import { CommandItem } from '@ttab/elephant-ui'
 import { type ReactNode } from 'react'
 import { FileQuestionIcon } from '@ttab/elephant-ui/icons'
-import { useTable } from '@/hooks'
+import { useQuery, useTable } from '@/hooks'
 
 export const ColumnFilter = (): ReactNode => {
   const { command, table } = useTable()
   const { setPages, setSearch, pages, page } = command
+  const [, setFilter] = useQuery(['query'])
 
   const columns = table.getAllColumns()
 
@@ -20,6 +21,7 @@ export const ColumnFilter = (): ReactNode => {
               onSelect={() => {
                 setPages([...pages, column.id])
                 setSearch('')
+                setFilter({ query: [] })
               }}
             >
               {column.columnDef.meta?.columnIcon
