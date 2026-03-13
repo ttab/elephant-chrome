@@ -166,7 +166,7 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
                         )}
                         label='Rubrik'
                         placeholder='Rubrik'
-                        autoFocus={title?.toString() === 'Fakta:' ? 'end' : true}
+                        autoFocus='end'
                       />
                     </Form.Title>
                   </Form.Content>

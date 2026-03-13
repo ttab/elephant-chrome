@@ -81,6 +81,7 @@ export const AddButtonGroup = ({ docType = 'core/planning-item', query }: { type
   const handleCreate = (view: ButtonView) => {
     const ViewDialog = Views[view.name]
     const id = crypto.randomUUID()
+
     if (view.name === 'Factbox') {
       createNewFactbox(repository, session, id)
         .then((id) => openFactboxEditor(undefined, { id }, undefined))

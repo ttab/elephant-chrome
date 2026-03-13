@@ -15,7 +15,7 @@ export const DocumentStatus = ({ type, status, isChanged }: {
       return visualStatus?.label || null
     }
     if (type === 'core/factbox') {
-      return WorkflowSpecifications['core/factbox']?.[status]?.title || null
+      return WorkflowSpecifications[type]?.[status]?.title || null
     }
 
     return WorkflowSpecifications['core/article']?.[status]?.title || null
