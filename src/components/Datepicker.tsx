@@ -63,13 +63,22 @@ export const DatePicker = ({ date, changeDate, setDate, resetToday, forceYear = 
     }
   })
 
+  const buttonWidth = cva('', {
+    variants: {
+      forceYear: {
+        true: 'w-[9.5rem]',
+        false: 'w-[6.5rem] @3xl/view:w-[9.5rem]'
+      }
+    }
+  })
+
   return (
     <Popover modal={true} open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
           variant='outline'
           size='xs'
-          className='justify-center text-left font-normal text-sm whitespace-nowrap px-2'
+          className={cn('justify-center text-center font-normal text-sm whitespace-nowrap px-2', buttonWidth({ forceYear }))}
           onKeyDown={(event) => {
             if (event.key !== 'Escape') {
               event?.stopPropagation()
