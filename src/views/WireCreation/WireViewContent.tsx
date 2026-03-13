@@ -91,11 +91,13 @@ export const WireViewContent = (props: ViewProps & {
           {!!selectedPlanning && <ValidateNow />}
           <Form.Content>
             <Form.Group icon={CableIcon}>
-              <Input
-                className='pl-0 pt-2 h-8 text-medium font-semibold border-0 truncate'
-                readOnly
-                value={props.wires?.[0]?.fields['document.title'].values?.[0]}
-              />
+              <>
+                <Input
+                  className='pl-0 pt-2 h-8 text-medium font-semibold border-0 truncate'
+                  readOnly
+                  value={props.wires?.[0]?.fields['document.title'].values?.[0]}
+                />
+              </>
             </Form.Group>
 
             {props.wires?.length > 1 && (
@@ -218,30 +220,35 @@ export const WireViewContent = (props: ViewProps & {
 
             <Form.Group icon={TagIcon}>
               {selectedPlanning && (
-                <SluglineEditable
-                  key={selectedPlanning?.value}
-                  ydoc={ydoc}
-                  value={slugline}
-                  compareValues={[
-                    ...(selectedPlanning?.payload?.sluglines || []),
-                    slugline?.toString()
-                  ]}
-                />
+                <>
+                  <SluglineEditable
+                    key={selectedPlanning?.value}
+                    ydoc={ydoc}
+                    value={slugline}
+                    compareValues={[
+                      ...(selectedPlanning?.payload?.sluglines || []),
+                      slugline?.toString()
+                    ]}
+                  />
+                </>
               )}
 
               {(!selectedPlanning) && (
-                <SluglineEditable
-                  ydoc={ydoc}
-                  value={slugline}
-                />
+                <>
+                  <SluglineEditable
+                    ydoc={ydoc}
+                    value={slugline}
+                  />
+                </>
               )}
             </Form.Group>
-
-            <UserMessage asDialog={!!props?.asDialog}>
-              {!selectedPlanning
-                ? (<>Väljer du ingen planering kommer en ny planering med tillhörande uppdrag skapas åt dig.</>)
-                : (<>Denna artikel kommer läggas i ett nytt uppdrag i den valda planeringen</>)}
-            </UserMessage>
+            <>
+              <UserMessage asDialog={!!props?.asDialog}>
+                {!selectedPlanning
+                  ? (<>Väljer du ingen planering kommer en ny planering med tillhörande uppdrag skapas åt dig.</>)
+                  : (<>Denna artikel kommer läggas i ett nytt uppdrag i den valda planeringen</>)}
+              </UserMessage>
+            </>
 
           </Form.Content>
 
