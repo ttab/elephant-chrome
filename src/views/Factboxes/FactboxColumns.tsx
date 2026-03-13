@@ -4,6 +4,7 @@ import { dateToReadableDateTime } from '@/shared/datetime'
 import type { LocaleData } from '@/types/index'
 import type { ColumnDef, Row } from '@tanstack/react-table'
 import { BoxesIcon } from '@ttab/elephant-ui/icons'
+import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
 
 interface FactboxData {
   title: string
@@ -35,6 +36,33 @@ export function factboxColumns({ locale, timeZone }: { locale: LocaleData, timeZ
 
   return [
     {
+      id: 'documentStatus',
+      meta: {
+        name: 'Status',
+        columnIcon: BoxesIcon,
+        className: 'flex-none',
+        options: [
+          { value: 'usable', label: 'Användbara' },
+          { value: 'draft', label: 'Utkast' },
+          { value: 'unpublished', label: 'Kastade' }
+        ],
+        quickFilter: true
+      },
+      accessorFn: (data) => {
+        return data.fields['heads.usable.version']?.values[0] ? data.fields['heads.usable.version'].values[0] === '-1' ? 'unpublished' : 'usable' : 'draft'
+      },
+      cell: ({ row }) => {
+        const status = row.getValue<string>('documentStatus')
+        const usableVersion = row.original.fields['heads.usable.version']?.values[0]
+        const currentVersion = row.original.fields['current_version']?.values[0]
+        const isChanged = usableVersion && usableVersion !== '-1' ? usableVersion !== currentVersion : false
+
+        return (
+          <DocumentStatus status={status} isChanged={isChanged} type='core/factbox' />
+        )
+      }
+    },
+    {
       id: 'title',
       meta: {
         name: 'Titel',
@@ -51,7 +79,8 @@ export function factboxColumns({ locale, timeZone }: { locale: LocaleData, timeZ
             <Title title={row.getValue<string>('title')} />
           </div>
         )
-      }
+      },
+      enableGlobalFilter: true
     },
     {
       id: 'description',
@@ -71,7 +100,8 @@ export function factboxColumns({ locale, timeZone }: { locale: LocaleData, timeZ
             {row.getValue<string>('description')}
           </div>
         )
-      }
+      },
+      enableGlobalFilter: true
     },
     {
       id: 'edited',

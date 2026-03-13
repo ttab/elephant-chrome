@@ -6,7 +6,7 @@ import { MetaSheet } from '@/components/MetaSheet/MetaSheet'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 
-export const FactboxHeader = ({ ydoc, asDialog, onDialogClose }: {
+export const FactboxHeader = ({ ydoc, onDialogClose, asDialog }: {
   ydoc: YDocument<Y.Map<unknown>>
   asDialog: boolean
   onDialogClose?: () => void

@@ -4,7 +4,7 @@ import { cn } from '@ttab/elephant-ui/utils'
 import { cva } from 'class-variance-authority'
 import { Button } from '@ttab/elephant-ui'
 import { RefreshCwIcon, SquareCheckIcon, SquareIcon, ZapIcon } from '@ttab/elephant-ui/icons'
-import { getWireState } from '@/lib/getWireState'
+import { getDocumentState } from '@/lib/getDocumentState'
 import type { WireStatus } from '../lib/setWireStatus'
 import { StreamEntryCell } from './StreamEntryCell'
 
@@ -67,7 +67,7 @@ export const StreamEntry = memo(({
   onFocus?: (item: Wire, event: React.FocusEvent<HTMLElement>) => void
   onPress?: (item: Wire, event: React.MouseEvent<HTMLElement> | React.KeyboardEvent<HTMLElement>) => void
 }): JSX.Element => {
-  const wireState = getWireState(entry)
+  const wireState = getDocumentState(entry)
 
   const handleClick = useCallback((e: React.MouseEvent<HTMLElement>) => {
     onPress?.(entry, e)

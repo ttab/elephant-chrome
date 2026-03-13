@@ -4,40 +4,24 @@ import { useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 import { dateToReadableDateTime } from '@/shared/datetime'
 import { HistoryEntry } from './HistoryEntry'
-import type { WireState } from '@/lib/getWireState'
+import type { DocumentState } from '@/lib/getDocumentState'
 
 interface VersionEntry {
   version: bigint
   created: string
-}
-
-function getStatusForVersion(version: bigint, currentVersion: bigint | undefined, wireState?: WireState): string | null {
-  if (!wireState) return null
-  const n = Number(version)
-
-  if (version === currentVersion) {
-    // Flash takes visual priority over other statuses
-    if (wireState.isFlash) return 'flash'
-    return wireState.status ?? null
-  }
-
-  // Past versions: flash takes priority, then status in descending importance
-  if (wireState.wasFlash === n) return 'flash'
-  if (wireState.wasUsed === n) return 'used'
-  if (wireState.wasSaved === n) return 'saved'
-  if (wireState.wasRead === n) return 'read'
-  return null
+  status: string
 }
 
 const COLLAPSED_MAX = 4
 const COLLAPSE_THRESHOLD = 5
 
-export const DocumentHistory = ({ uuid, currentVersion, wireState, onSelectVersion, selectedVersion }: {
+export const DocumentHistory = ({ uuid, currentVersion, onSelectVersion, selectedVersion, withStatusOnly = false }: {
   uuid: string
   currentVersion?: bigint
-  wireState?: WireState
+  documentState?: DocumentState
   onSelectVersion: (version: bigint) => void
   selectedVersion: bigint | undefined
+  withStatusOnly?: boolean
 }) => {
   const { repository, locale, timeZone } = useRegistry()
   const { data: session } = useSession()
@@ -74,9 +58,13 @@ export const DocumentHistory = ({ uuid, currentVersion, wireState, onSelectVersi
         }
 
         // One entry per version, newest first
-        const history: VersionEntry[] = [...result.versions]
+        let history: VersionEntry[] = [...result.versions]
           .sort((a, b) => (a.version < b.version ? 1 : a.version > b.version ? -1 : 0))
-          .map((v) => ({ version: v.version, created: v.created }))
+          .map((v) => ({ version: v.version, created: v.created, status: Object.keys(v.statuses)[0] }))
+
+        if (withStatusOnly) {
+          history = history.filter((version, i) => i === 0 || version.status !== undefined)
+        }
 
         pending.documents = true
         const documents = await repository.getDocuments({
@@ -86,7 +74,6 @@ export const DocumentHistory = ({ uuid, currentVersion, wireState, onSelectVersi
         })
 
         pending.documents = false
-
         setHistory(history)
         setDocuments(documents?.items ?? null)
       } catch (error) {
@@ -103,7 +90,7 @@ export const DocumentHistory = ({ uuid, currentVersion, wireState, onSelectVersi
       if (pending.history) c1.abort()
       if (pending.documents) c2.abort()
     }
-  }, [uuid, repository, session?.accessToken])
+  }, [uuid, repository, session?.accessToken, withStatusOnly])
 
   const isCollapsible = (history?.length ?? 0) > COLLAPSE_THRESHOLD
   const visibleHistory = history && isCollapsible && !showAll
@@ -117,7 +104,7 @@ export const DocumentHistory = ({ uuid, currentVersion, wireState, onSelectVersi
           && visibleHistory.map((item, index) => {
             const title = documents?.find((doc) => doc.version === item.version)?.document?.title
             const isCurrent = item.version === currentVersion
-            const status = getStatusForVersion(item.version, currentVersion, wireState)
+            const status = item.status
 
             return (
               <div key={`${item.version}`} className='grid grid-cols-[1.5rem_auto_1fr] group rounded'>
