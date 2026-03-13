@@ -13,7 +13,6 @@ export const Group = ({ children, icon: Icon, asDialog, onValidation, validateSt
     className={cn(`flex flex-col space-y-4 w-full
       [&_[role="textbox"]]:justify-center
       [&_[role="textbox"]]:pt-1
-      [&_[role="textbox"]]:px-2
       [&_[role="textbox"]]:h-7
       [&_[role="textbox"]]:font-sans
       [&_[role="textbox"]]:text-sm
