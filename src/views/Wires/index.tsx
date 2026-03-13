@@ -1,7 +1,7 @@
 import { View, ViewHeader } from '@/components/View'
 import { type ViewMetadata } from '@/types/index'
 import { useCallback, useRef, useState, useMemo, type JSX, useEffect } from 'react'
-import { useRegistry, useView, useNavigationKeysWithRef, useQuery } from '@/hooks'
+import { useRegistry, useView, useNavigationKeys, useNavigationKeysWithRef, useQuery } from '@/hooks'
 import { useDocuments } from '@/hooks/index/useDocuments'
 import { QueryV1, BoolQueryV1, TermsQueryV1 } from '@ttab/elephant-api/index'
 import { fields as wireFields, type WireFields } from '@/shared/schemas/wire'
@@ -377,8 +377,19 @@ export const Wires = (): JSX.Element => {
     }
   }, [selectedWires, previewWire, onAction, onCreate])
 
+  // Escape is unconstrained so it fires regardless of where focus is within the page.
+  // skipIfHandled defers to any capture-phase handler (e.g. Radix dialogs) that has
+  // already called event.preventDefault() to claim the event.
+  useNavigationKeys({
+    keys: ['Escape'],
+    onNavigation: handleNavigation,
+    skipIfHandled: true
+  })
+
+  // Other shortcut keys are constrained to the view container to avoid
+  // interfering with typing in other views
   const viewRef = useNavigationKeysWithRef({
-    keys: ['Escape', 's', 'r', 'u', 'c'],
+    keys: ['s', 'r', 'u', 'c'],
     onNavigation: handleNavigation
   })
 
