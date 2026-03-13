@@ -1,5 +1,5 @@
 import { Button, ButtonGroup, Tooltip } from '@ttab/elephant-ui'
-import { CheckIcon, EyeIcon, FolderIcon, Grid2X2PlusIcon, PlusIcon, SaveIcon } from '@ttab/elephant-ui/icons'
+import { BookOpenCheckIcon, CheckIcon, FolderDownIcon, Grid2X2PlusIcon, PlusIcon, SaveIcon } from '@ttab/elephant-ui/icons'
 
 export const WiresToolbar = ({ disabled = false, onAddStream, onSaveStreams, onAction, onCreate, isDirty, hasMissingFilters = false }: {
   disabled?: boolean
@@ -46,7 +46,7 @@ export const WiresToolbar = ({ disabled = false, onAddStream, onSaveStreams, onA
             className='w-9 h-9 px-0 hover:bg-done-background'
             disabled={disabled}
           >
-            <FolderIcon size={16} fill='oklch(98.51% 0.0264 99.9)' />
+            <FolderDownIcon size={16} />
           </Button>
         </Tooltip>
 
@@ -62,7 +62,7 @@ export const WiresToolbar = ({ disabled = false, onAddStream, onSaveStreams, onA
             className='w-9 h-9 px-0 hover:bg-approved-background'
             disabled={disabled}
           >
-            <EyeIcon size={16} fill='oklch(96.62% 0.0108 149.86)' />
+            <BookOpenCheckIcon size={16} />
           </Button>
         </Tooltip>
 
