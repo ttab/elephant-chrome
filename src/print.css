@@ -29,6 +29,18 @@
     box-shadow: none !important;
   }
 
+  /* Reset all nested containers so the browser can paginate freely.
+     Without this, overflow:hidden/auto + fixed heights clip content
+     at page boundaries, causing lines to be cut in half. */
+  section.is-active * {
+    overflow: visible !important;
+    max-height: none !important;
+  }
+
+  section.is-active div {
+    height: auto !important;
+  }
+
   /* Remove max-width constraints inside the active view */
   section.is-active .max-w-\[1000px\],
   section.is-active [class*="max-w-"] {
@@ -40,26 +52,9 @@
     align-self: stretch !important;
   }
 
-  /* Remove h-screen from View.Root container */
-  section.is-active > div,
-  section.is-active > [role="tablist"] {
-    height: auto !important;
-  }
-
   /* Unstick the view header for natural print flow */
   section.is-active .sticky {
     position: static !important;
-  }
-
-  /* Expand Radix ScrollArea to show all content */
-  [data-radix-scroll-area-root] {
-    overflow: visible !important;
-    height: auto !important;
-  }
-
-  [data-radix-scroll-area-viewport] {
-    overflow: visible !important;
-    height: auto !important;
   }
 
   /* Hide scrollbar decorations */
