@@ -53,7 +53,7 @@ export const HistoryEntry = ({ version, isCurrent = false, status, isLast, title
 
       <a
         className={cn(
-          'py-0.5 ps-3 items-center truncate',
+          'py-1 ps-3 items-center truncate',
           isSelectable ? 'cursor-pointer group-hover:bg-muted/60' : 'cursor-default',
           selected && 'font-semibold'
         )}
