@@ -190,14 +190,11 @@ export const WireViewContent = (props: ViewProps & {
 
             {!selectedPlanning && (
               <Form.Group icon={TagsIcon}>
-
                 <Section ydoc={ydoc} path='links.core/section[0]' onSelect={setSection} />
-                <SluglineEditable ydoc={ydoc} value={slugline} />
                 <Newsvalue ydoc={ydoc} path='meta.core/newsvalue[0].value' />
               </Form.Group>
-
-
             )}
+
             {!selectedPlanning && (
               <Form.Group icon={GanttChartSquareIcon}>
                 <>
@@ -248,8 +245,7 @@ export const WireViewContent = (props: ViewProps & {
 
           </Form.Content>
 
-          {
-            showVerifyDialog
+          {showVerifyDialog
             && (
               <CreatePrompt
                 title='Skapa artikel från telegram'
@@ -295,8 +291,7 @@ export const WireViewContent = (props: ViewProps & {
                   setShowVerifyDialog(false)
                 }}
               />
-            )
-          }
+            )}
 
           <Form.Footer className='flex justify-between flex-row-reverse'>
             <Form.Submit onSubmit={handleSubmit}>
