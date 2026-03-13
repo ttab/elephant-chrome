@@ -1,0 +1,69 @@
+@media print {
+  /* Hide app navigation header */
+  header {
+    display: none !important;
+  }
+
+  /* Reset outer app containers to allow content to expand */
+  body,
+  #root,
+  #root > div,
+  #root > div > div {
+    height: auto !important;
+    overflow: visible !important;
+    display: block !important;
+  }
+
+  /* Hide non-active views */
+  section:not(.is-active) {
+    display: none !important;
+  }
+
+  /* Make active view expand to full width and content height */
+  section.is-active {
+    width: 100% !important;
+    max-width: none !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    box-shadow: none !important;
+  }
+
+  /* Remove max-width constraints inside the active view */
+  section.is-active .max-w-\[1000px\],
+  section.is-active [class*="max-w-"] {
+    max-width: none !important;
+  }
+
+  /* Remove self-center so content fills the full width */
+  section.is-active .self-center {
+    align-self: stretch !important;
+  }
+
+  /* Remove h-screen from View.Root container */
+  section.is-active > div,
+  section.is-active > [role="tablist"] {
+    height: auto !important;
+  }
+
+  /* Unstick the view header for natural print flow */
+  section.is-active .sticky {
+    position: static !important;
+  }
+
+  /* Expand Radix ScrollArea to show all content */
+  [data-radix-scroll-area-root] {
+    overflow: visible !important;
+    height: auto !important;
+  }
+
+  [data-radix-scroll-area-viewport] {
+    overflow: visible !important;
+    height: auto !important;
+  }
+
+  /* Hide scrollbar decorations */
+  [data-radix-scroll-area-scrollbar] {
+    display: none !important;
+  }
+}
