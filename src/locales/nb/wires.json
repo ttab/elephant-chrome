@@ -1,0 +1,87 @@
+{
+  "title": "Telegram",
+  "toolbar": {
+    "save": "Lagre visningsinnstillinger",
+    "saveRequiresFilter": "Alle kolonner må ha minst ett filter",
+    "addColumn": "Legg til kolonne",
+    "markSaved": "Merk som lagret",
+    "markSavedDisabled": "Velg telegrammer for å merke som lagret",
+    "markRead": "Merk som lest",
+    "markReadDisabled": "Velg telegrammer for å merke som lest",
+    "markUsed": "Merk som brukt",
+    "markUsedDisabled": "Velg telegrammer for å merke som brukt",
+    "createArticle": "Opprett artikkel med tilhørende planlegging fra telegram",
+    "createArticleDisabled": "Velg telegrammer for å opprette artikkel med tilhørende planlegging",
+    "createArticleAriaLabel": "Opprett artikkel fra telegram"
+  },
+  "stream": {
+    "addFilter": "Legg til filter for å vise telegrammer",
+    "loadingMore": "Laster flere...",
+    "noTitle": "Ingen tittel",
+    "deselectHint": "for å fjerne merking av valgte telegrammer"
+  },
+  "filter": {
+    "freeText": "Fritekst",
+    "searchOptions": "Søk alternativ",
+    "section": "Seksjon",
+    "sources": "Kilder",
+    "newsvalue": "Nyhetsverdi",
+    "selected": "valgte"
+  },
+  "toast": {
+    "openPlanning": "Åpne planlegging",
+    "openArticle": "Åpne artikkel",
+    "statusChangeFailed": "En eller flere statusendringer mislyktes!"
+  },
+  "settings": {
+    "saveError": "Kunne ikke lagre innstillinger",
+    "unknownError": "En ukjent feil oppstod"
+  },
+  "creation": {
+    "title": "Opprett artikkel",
+    "selectPlanning": "Velg planlegging",
+    "showOlder": "Vis eldre",
+    "planningTitle": "Planleggingstittel",
+    "articleTitle": "Tittel",
+    "assignmentTitle": "Oppdragstittel",
+    "noPlanningHint": "Hvis du ikke velger en planlegging, vil en ny planlegging med tilhørende oppdrag bli opprettet for deg.",
+    "withPlanningHint": "Denne artikkelen vil bli lagt i et nytt oppdrag i den valgte planleggingen",
+    "dialogTitle": "Opprett artikkel fra telegram",
+    "dialogNoPlanningDescription": "En ny planlegging med tilhørende oppdrag for denne artikkelen vil bli opprettet for deg.",
+    "dialogWithPlanningDescription": "Denne artikkelen vil bli lagt i et nytt oppdrag i planleggingen \"{{planningLabel}}\"",
+    "articleCreated": "Artikkel opprettet",
+    "createError": "Kunne ikke opprette en artikkel!",
+    "createError2": "Kunne ikke opprette ny artikkel!",
+    "markUsed": "Merk som brukt",
+    "createButton": "Opprett artikkel"
+  },
+  "sources": {
+    "title": "Kilder",
+    "errorTitle": "Artikeldokument mangler",
+    "errorMessage": "Ingen artikeldokument er angitt. Naviger tilbake til oversikten og prøv igjen.",
+    "noWires": "Ingen kildetelegrammer",
+    "loadingWire": "Laster telegram…"
+  },
+  "preview": {
+    "pressRelease": "Pressemelding",
+    "statusRead": "Lest",
+    "statusSaved": "Lagret",
+    "statusUsed": "Brukt",
+    "version": "Versjon"
+  },
+  "history": {
+    "status": {
+      "done": "Ferdigmerket",
+      "saved": "Lagret",
+      "approved": "Godkjent",
+      "read": "Lest",
+      "usable": "Publisert",
+      "used": "Brukt",
+      "withheld": "Tidspublisert",
+      "cancelled": "Avbrutt",
+      "unpublished": "Avpublisert",
+      "flash": "Flash",
+      "system": "System"
+    }
+  }
+}

@@ -1,7 +1,7 @@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@ttab/elephant-ui'
 import { useRef, useState, useEffect, useCallback } from 'react'
 import { useWorkflow } from '@/hooks/index/useWorkflow'
-import { StatusSpecifications, WorkflowSpecifications, type WorkflowTransition } from '@/defaults/workflowSpecification'
+import { StatusSpecifications, getWorkflowSpecifications, type WorkflowTransition } from '@/defaults/workflowSpecification'
 import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
 import { StatusOptions } from './StatusOptions'
 import { StatusMenuContext } from './StatusMenuContext'
@@ -17,6 +17,7 @@ import { useHistory, useNavigation, useView } from '@/hooks/index'
 import type { View } from '@/types/index'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
+import { useTranslation } from 'react-i18next'
 
 export const StatusMenu = ({ ydoc, publishTime, onBeforeStatusChange }: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -36,17 +37,18 @@ export const StatusMenu = ({ ydoc, publishTime, onBeforeStatusChange }: {
   const { state, dispatch } = useNavigation()
   const history = useHistory()
   const { viewId } = useView()
+  const { t } = useTranslation()
 
   // Read workflow specifications from current type and current status
   const isWorkflow = documentStatus?.type
-    ? WorkflowSpecifications[documentStatus.type][documentStatus.name].isWorkflow
+    ? getWorkflowSpecifications()[documentStatus.type][documentStatus.name].isWorkflow
     : false
   const isChanged = !isWorkflow ? ydoc.isChanged : false
   const asSave = (documentStatus?.type
-    ? WorkflowSpecifications[documentStatus.type][documentStatus.name].asSave && ydoc.isChanged
+    ? getWorkflowSpecifications()[documentStatus.type][documentStatus.name].asSave && ydoc.isChanged
     : false) || false
   const requireCause = !!documentStatus?.checkpoint && documentStatus.type
-    ? WorkflowSpecifications[documentStatus.type][documentStatus.name].requireCause || false
+    ? getWorkflowSpecifications()[documentStatus.type][documentStatus.name].requireCause || false
     : false
 
 
@@ -112,7 +114,7 @@ export const StatusMenu = ({ ydoc, publishTime, onBeforeStatusChange }: {
         })
       })().catch((err) => console.error(err))
     } catch (error) {
-      toast.error('Det gick inte att avpublicera dokumentet')
+      toast.error(t('errors:toasts.unpublishError'))
       console.error('error while unpublishing document:', error)
     }
   }
@@ -164,7 +166,7 @@ export const StatusMenu = ({ ydoc, publishTime, onBeforeStatusChange }: {
                   state={{
                     verify: false,
                     isWorkflow: false,
-                    title: workflow[currentStatusName]?.asSaveTitle || 'Publicera ny information',
+                    title: workflow[currentStatusName]?.asSaveTitle || t('shared:status_menu.asSavePlaceholder'),
                     description: workflow[currentStatusName]?.updateDescription || workflow[currentStatusName]?.description
                   }}
                   onSelect={currentStatusName === 'usable' ? showPrompt : () => setStatus('usable')}

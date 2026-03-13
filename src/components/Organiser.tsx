@@ -7,11 +7,13 @@ import { useRef, type JSX } from 'react'
 import { type FormProps } from './Form/Root'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
+import { useTranslation } from 'react-i18next'
 
 export const Organiser = ({ ydoc, path, asDialog, onChange }: {
   ydoc: YDocument<Y.Map<unknown>>
   path: string
 } & FormProps): JSX.Element => {
+  const { t } = useTranslation('event')
   const allOrganisers = useOrganisers().map((_) => {
     return {
       value: _.id,
@@ -31,7 +33,7 @@ export const Organiser = ({ ydoc, path, asDialog, onChange }: {
         modal={asDialog}
         options={allOrganisers}
         selectedOptions={selectedOptions}
-        placeholder={organiser?.title || 'Lägg till organisatör'}
+        placeholder={organiser?.title || t('event:placeholders.addOrganiser')}
         onOpenChange={(isOpen: boolean) => {
           setFocused.current(true, (isOpen) ? path : '')
         }}
@@ -46,6 +48,10 @@ export const Organiser = ({ ydoc, path, asDialog, onChange }: {
               title: option.label
             })
           )
+        }}
+        translationStrings={{
+          nothingFound: t('common:misc.nothingFound'),
+          searching: t('common:misc.searching')
         }}
       />
     </Awareness>

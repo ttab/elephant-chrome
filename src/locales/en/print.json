@@ -1,0 +1,194 @@
+{
+  "articles": {
+    "title": "Print",
+    "header": {
+      "createNew": "Create new...",
+      "new": "New",
+      "newArticle": "New article",
+      "newArticleTooltip": "Create a text in a flow",
+      "newFlow": "New flow",
+      "newFlowTooltip": "Open dialog to choose a flow. Articles for the flow will then be created by the backend according to the flow definition.",
+      "openDictionary": "Open dictionary"
+    },
+    "columns": {
+      "status": "Status",
+      "flow": "Flow",
+      "title": "Title",
+      "headline": "Headline",
+      "article": "Article"
+    },
+    "status": {
+      "draft": "Draft",
+      "needsProofreading": "Ready for proofreading",
+      "done": "Done",
+      "exported": "Exported",
+      "suspended": "Suspended",
+      "cancelled": "Discarded"
+    },
+    "flowDialog": {
+      "title": "List of flows",
+      "cancel": "Cancel"
+    },
+    "errors": {
+      "fetchFlows": "Could not fetch print flows"
+    }
+  },
+  "flow": {
+    "title": {
+      "createArticle": "Create print article",
+      "createFlow": "Create print flow"
+    },
+    "placeholder": {
+      "selectFlow": "Choose print flow",
+      "selectName": "Choose name"
+    },
+    "description": {
+      "newArticleInFlow": "New print article in chosen flow",
+      "populateFlow": "Populate chosen flow with articles"
+    },
+    "loading": "Loading print flows...",
+    "actions": {
+      "cancel": "Cancel",
+      "createArticle": "Create print article",
+      "createFlow": "Create print flow"
+    },
+    "errors": {
+      "fetchFlows": "Could not fetch print flows",
+      "noToken": "No access token found",
+      "createArticle": "Something went wrong creating the print article",
+      "createFlow": "Something went wrong creating the print flow"
+    },
+    "success": {
+      "articleCreated": "Print article created"
+    }
+  },
+  "editor": {
+    "error": {
+      "missingDocument": "Article document missing",
+      "missingDocumentMessage": "No article document specified. Navigate back to the overview and try again."
+    },
+    "stats": {
+      "words": "Words:",
+      "characters": "Characters:"
+    },
+    "articleTitle": {
+      "placeholder": "Print article name",
+      "updateSuccess": "Title updated",
+      "updateError": "Could not update title"
+    },
+    "additionals": "Additions",
+    "channel": {
+      "placeholder": "Choose channel"
+    },
+    "checking": "Checking layouts",
+    "layouts": {
+      "title": "Layouts",
+      "loading": "Loading layout",
+      "placeholder1": "Layout",
+      "placeholder2": "Name",
+      "controls": "Layout controls",
+      "togglePanel": "Collapse layout panel",
+      "showLayout": "Show {{title}} - {{name}}",
+      "preview": "Preview layout",
+      "images": {
+        "lowResTitle": "Images (under 130 ppi)"
+      },
+      "close": "Close",
+      "actions": {
+        "checkLayouts": "Check layouts",
+        "duplicate": "Duplicate article",
+        "selectAll": "Select all layouts",
+        "deleteSelected": "Delete selected layouts",
+        "statusErrors": "Layout errors detected",
+        "statusOk": "All layouts approved"
+      },
+      "errors": {
+        "duplicate": "Something went wrong duplicating the print article",
+        "checkLayouts": "Something went wrong checking the layouts",
+        "render": "Something went wrong rendering the print article",
+        "renderDescription": "Unknown error",
+        "saveBefore": "Could not save article before preview"
+      },
+      "success": {
+        "duplicated": "Print article duplicated to: {{date}}",
+        "openArticle": "Open article"
+      },
+      "confirmDuplicate": {
+        "title": "Duplicate article",
+        "description": "Are you sure you want to duplicate this article?",
+        "primary": "Duplicate",
+        "cancel": "Cancel"
+      },
+      "confirmDeleteSelected": {
+        "title": "Delete the layouts",
+        "description": "Are you sure you want to delete the selected layouts?",
+        "primary": "Delete selected",
+        "cancel": "Cancel"
+      },
+      "confirmDelete": {
+        "title": "Delete the layout",
+        "description": "Are you sure you want to delete this layout?",
+        "primary": "Delete",
+        "cancel": "Cancel"
+      }
+    },
+    "image": {
+      "errors": {
+        "upload": "Something went wrong uploading the image!: {{error}}",
+        "notImage": "The file does not appear to be an image, aborting upload",
+        "readError": "The image could not be read ({{errorName}})",
+        "parseError": "The image could not be parsed, check that the file is not corrupt",
+        "notImageData": "The content was not identified as an image",
+        "noDimensions": "The image has no valid dimensions",
+        "uploadSuccess": "Image upload successful!"
+      }
+    }
+  },
+  "preview": {
+    "title": "Preview",
+    "error": "Error rendering the article"
+  },
+  "dictionary": {
+    "title": "Hyphenations",
+    "new": "New",
+    "columns": {
+      "word": "Word",
+      "hyphenation": "Hyphenation",
+      "noHyphenate": "Don't hyphenate"
+    },
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirmDelete": {
+      "title": "Delete the hyphenation",
+      "description": "Are you sure you want to delete this hyphenation?",
+      "primary": "Delete",
+      "cancel": "Cancel"
+    },
+    "errors": {
+      "noToken": "No access token found",
+      "fetchDictionary": "Something went wrong fetching the hyphenation dictionary",
+      "listHyphenations": "Could not list hyphenations"
+    }
+  },
+  "create": {
+    "title": "Create print article",
+    "placeholder": {
+      "selectFlow": "Choose print flow",
+      "selectName": "Choose name"
+    },
+    "loading": "Loading print flows...",
+    "actions": {
+      "cancel": "Cancel",
+      "create": "Create print article",
+      "open": "Open print article"
+    },
+    "errors": {
+      "fetchFlows": "Something went wrong fetching flows",
+      "noToken": "No access token found",
+      "createArticle": "Something went wrong creating the print article"
+    },
+    "success": {
+      "created": "Print article created"
+    }
+  }
+}

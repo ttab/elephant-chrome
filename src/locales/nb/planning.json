@@ -1,0 +1,55 @@
+{
+  "planningDocument": "Planleggingsdokument",
+  "assignment": {
+    "title": "Oppgavetittel",
+    "startEndTime": "Start- og sluttid",
+    "startTime": "Starttid",
+    "publishWindow": "Publiseringsvindu",
+    "publishTime": "Publiseringstid",
+    "createPrintArticle": "",
+    "removeAssignment": "Vil du fjerne oppdraget",
+    "chooseTime": "Velg tid",
+    "timeFromTo": "Tid fra-to",
+    "actions": {
+      "addAssignment": "Legg til oppdrag",
+      "addAssignee": "Legg til oppdragstaker"
+    },
+    "collaboration": {
+      "inProgress": "Ny oppdrag opprettes av",
+      "overtake": "Ta over"
+    }
+  },
+  "description": {
+    "internal": "Intern beskjed",
+    "public": "Beskrivelse"
+  },
+  "actions": {
+    "openPlanning": "Åpne planlegging"
+  },
+  "prompts": {
+    "slugMissing": "Stikkord mangler",
+    "slugMissingDescription": "Vennligst legg til en stikkord i oppgaven. Etter det kan du lage en tekst.",
+    "createPrompt": "Vil du opprette en {{documentLabel}} for oppdraget{{title}}?"
+  },
+  "move": {
+    "pickPlanning": "Velg plan",
+    "label": "Flytte",
+    "dateSwitch": "Endre dato på planlegging",
+    "dateSwitchDescription": "Planleggingen og alle tekstoppdragen endrer dato til",
+    "dateSwitchAssignments": "Velg nedenfor om bilde- og videooppdrag også skal endre datoer.",
+    "assignmentCreateInfo": "Hvis du ikke velger en timeplan, vil en ny timeplan med denne oppgaven bli opprettet for deg på den valgte datoen.",
+    "assignmentAddInfo": "Denne oppgaven vil bli lagt til i den valgte planleggingen.",
+    "assignmentMoveSuccess": "Oppdraget er flyttet",
+    "moveAssignment": "Flytte oppdrag",
+    "moveAssignmentConfirm": "Er du sikker på at du vil flytte oppgaven?",
+    "showOlder": "Vis eldre"
+  },
+  "related": {
+    "relatedEvents": "Koblede hendelser"
+  },
+  "slugline": "Legg til stikkord",
+  "story": "Legg til story",
+  "title": "Planleggingstittel",
+  "yourNewType": "Din nye skapede {{type, lowercase}}",
+  "preview": "Forhåndsvisning"
+}

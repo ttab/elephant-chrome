@@ -12,7 +12,7 @@ import {
 } from '@ttab/elephant-ui/icons'
 import { Newsvalues } from '@/defaults/newsvalues'
 import { FacetedFilter } from '@/components/Commands/FacetedFilter'
-import { AssignmentTypes, isVisualAssignmentType } from '@/defaults/assignmentTypes'
+import { getAssignmentTypes, isVisualAssignmentType } from '@/defaults/assignmentTypes'
 import { Type } from '@/components/Table/Items/Type'
 import { getNestedFacetedUniqueValues } from '@/components/Table/lib/getNestedFacetedUniqueValues'
 import { Assignees } from '@/components/Table/Items/Assignees'
@@ -30,15 +30,18 @@ import { DotMenu } from '@/components/ui/DotMenu'
 import { Link } from '@/components'
 import { PenIcon, CalendarDaysIcon } from '@ttab/elephant-ui/icons'
 import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
-import { DocumentStatuses } from '@/defaults/documentStatuses'
+import { getDocumentStatuses } from '@/defaults/documentStatuses'
 import { selectableStatuses } from '../Planning/components/AssignmentStatus'
+import type { TFunction, Namespace } from 'i18next'
+import type { TranslationKey } from '@/types/i18next.d'
 
-export function assignmentColumns({ authors = [], locale, timeZone, sections = [], currentDate }: {
+export function assignmentColumns<Ns extends Namespace>({ authors = [], locale, timeZone, sections = [], currentDate, t }: {
   authors?: IDBAuthor[]
   sections?: IDBSection[]
   locale: LocaleData
   timeZone: string
   currentDate: Date
+  t: TFunction<Ns>
 }): Array<ColumnDef<Assignment>> {
   return [
     {
@@ -47,8 +50,8 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
         Filter: ({ column, setSearch }) => (
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
-        options: [...DocumentStatuses, ...selectableStatuses],
-        name: 'Status',
+        options: [...getDocumentStatuses(), ...selectableStatuses],
+        name: t('core:labels.status'),
         columnIcon: CircleCheckIcon,
         className: 'flex-none',
         display: (value: string) => (
@@ -82,13 +85,13 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
     {
       id: 'startTime',
       meta: {
-        name: 'Uppdragstid',
+        name: t('views:assignments.columnLabels.assignmentTime'),
         columnIcon: Clock3Icon,
         className: '',
         display: (value: string) => {
           const [hour, day] = value.split(' ')
-          if (hour === 'undefined' || hour === 'Heldag') {
-            return <span>Heldag</span>
+          if (hour === 'undefined' || hour === t('core:timeSlots.fullday')) {
+            return <span>{t('core:timeSlots.fullday')}</span>
           }
 
           return (
@@ -110,7 +113,7 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
         }
 
         if (startTimeType === 'full_day') {
-          return 'Heldag'
+          return t('core:timeSlots.fullday')
         }
 
         const startDate = parseISO(startTime)
@@ -127,7 +130,7 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
     {
       id: 'title',
       meta: {
-        name: 'Titel',
+        name: t('core:labels.title'),
         columnIcon: BriefcaseIcon,
         className: 'flex-1'
       },
@@ -162,7 +165,7 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
         Filter: ({ column, setSearch }) => (
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
-        name: 'Sektion',
+        name: t('core:labels.section'),
         columnIcon: ShapesIcon,
         className: 'flex-none w-[115px] hidden @4xl/view:[display:revert]',
         display: (value: string) => (
@@ -192,7 +195,7 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
         options: Newsvalues,
-        name: 'Nyhetsvärde',
+        name: t('core:labels.newsvalue'),
         columnIcon: SignalHighIcon,
         className: 'box-content w-4 sm:w-8 pr-1 sm:pr-4 hidden sm:[display:revert]'
       },
@@ -215,7 +218,7 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
         Filter: ({ column, setSearch }) => (
           <FacetedFilter column={column} setSearch={setSearch} facetFn={() => getNestedFacetedUniqueValues(column)} />
         ),
-        name: 'Uppdragstagare',
+        name: t('core:labels.assignee'),
         columnIcon: UsersIcon,
         className: 'flex-none w-[112px] hidden @5xl/view:[display:revert]'
       },
@@ -240,7 +243,7 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
         Filter: ({ column, setSearch }) => (
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
-        name: 'Uppdragstid',
+        name: t('views:assignments.columnLabels.assignmentTime'),
         columnIcon: Clock3Icon,
         className: 'flex-none @5xl/view:w-[112px] w-[50px]'
       },
@@ -249,8 +252,8 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
         const startTime = row.getValue<string>('assignment_time')
         const startTimeType = row.original.fields['document.start_time.type'].values[0]
 
-        if (!startTime || startTime === 'Heldag' || startTime === '??') {
-          return <Time time={startTime} type={startTimeType} tooltip='Uppdragets starttid' />
+        if (!startTime || startTime === t('core:timeSlots.fullday') || startTime === '??') {
+          return <Time time={startTime} type={startTimeType} tooltip={t('views:assignments.tooltips.assignmentStartTime')} />
         }
         const formattedStart = dateInTimestampOrShortMonthDayTimestamp(
           startTime, locale.code.full, timeZone, currentDate
@@ -258,9 +261,13 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
 
         if (startTimeType === 'publish_slot') {
           const slotFormatted = Object.entries(timesSlots).find((slot) => slot[1].slots.includes(parseInt(startTime, 10)))?.[1]?.label
-          return <div className='items-center'>{slotFormatted}</div>
+          return (
+            <div className='items-center'>
+              {slotFormatted && t(`core:timeSlots.${slotFormatted}` as TranslationKey)}
+            </div>
+          )
         }
-        return <Time time={formattedStart} type='start' tooltip='Uppdragets starttid' />
+        return <Time time={formattedStart} type='start' tooltip={t('views:assignments.tooltips.assignmentStartTime')} />
       },
 
       sortingFn: 'basic',
@@ -273,12 +280,12 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
         Filter: ({ column, setSearch }) => (
           <FacetedFilter column={column} setSearch={setSearch} facetFn={() => getNestedFacetedUniqueValues(column)} />
         ),
-        options: AssignmentTypes,
-        name: 'Typ',
+        options: getAssignmentTypes(),
+        name: t('views:assignments.columnLabels.type'),
         columnIcon: CrosshairIcon,
         className: 'box-content w-8 sm:w-8 pr-1 sm:pr-4',
         display: (value: string | string[]) => {
-          const items = AssignmentTypes
+          const items = getAssignmentTypes()
             .filter((type) => value.includes(type.value))
             .map((item) => item.label)
           return (
@@ -292,7 +299,7 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
       },
       accessorFn: (data) => data.fields['document.meta.core_assignment.meta.core_assignment_type.value']?.values,
       cell: ({ row }) => {
-        const data = AssignmentTypes.filter(
+        const data = getAssignmentTypes().filter(
           (assignmentType) => (row.getValue<string[]>('assignmentType') || [])
             .includes(assignmentType.value)
         )
@@ -316,7 +323,7 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
     {
       id: 'action',
       meta: {
-        name: 'Action',
+        name: t('core:labels.action'),
         columnIcon: NavigationIcon,
         className: 'flex-none p-0'
       },
@@ -328,18 +335,19 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
             <DotMenu
               items={[
                 {
-                  label: 'Öppna artikel',
+                  label: t('views:assignments.actionMenu.openArticle'),
                   item: (
                     <Link to='Editor' target='last' props={{ id: deliverableUuid }} className='flex flex-row gap-5'>
                       <div className='pt-1'>
                         <PenIcon size={14} strokeWidth={1.5} className='shrink' />
                       </div>
-                      <div className='grow'>Öppna artikel</div>
+                      <div className='grow'>{t('views:assignments.actionMenu.openArticle')}</div>
                     </Link>
                   )
                 },
                 {
-                  label: 'Öppna planering',
+
+                  label: t('views:assignments.actionMenu.openPlanning'),
                   disabled: !planningId,
                   item: planningId
                     ? (
@@ -347,7 +355,7 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
                           <div className='pt-1'>
                             <CalendarDaysIcon size={14} strokeWidth={1.5} className='shrink' />
                           </div>
-                          <div className='grow'>Öppna planering</div>
+                          <div className='grow'>{t('views:assignments.actionMenu.openPlanning')}</div>
                         </Link>
                       )
                     : () => {}

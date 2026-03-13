@@ -1,5 +1,6 @@
 import { Button, ButtonGroup, Tooltip } from '@ttab/elephant-ui'
 import { CheckIcon, EyeIcon, FolderIcon, Grid2X2PlusIcon, PlusIcon, SaveIcon } from '@ttab/elephant-ui/icons'
+import { useTranslation } from 'react-i18next'
 
 export const WiresToolbar = ({ disabled = false, onAddStream, onSaveStreams, onAction, onCreate, isDirty, hasMissingFilters = false }: {
   disabled?: boolean
@@ -10,6 +11,8 @@ export const WiresToolbar = ({ disabled = false, onAddStream, onSaveStreams, onA
   isDirty: boolean
   hasMissingFilters?: boolean
 }) => {
+  const { t } = useTranslation('wires')
+
   const handleAddStream = () => {
     void onAddStream()
   }
@@ -21,12 +24,12 @@ export const WiresToolbar = ({ disabled = false, onAddStream, onSaveStreams, onA
   return (
     <div className='flex gap-2 ms-2'>
       <ButtonGroup className='p-0 rounded-md gap-1 border border-muted'>
-        <Tooltip content={hasMissingFilters ? 'Alla kolumner måste ha minst ett filter' : 'Spara inställningar för vyn'}>
+        <Tooltip content={hasMissingFilters ? t('toolbar.saveRequiresFilter') : t('toolbar.save')}>
           <Button variant='ghost' disabled={!isDirty || hasMissingFilters} className='w-9 h-9 px-0' onClick={handleSaveStreams}>
             <SaveIcon strokeWidth={1.75} size={18} />
           </Button>
         </Tooltip>
-        <Tooltip content='Lägg till kolumn'>
+        <Tooltip content={t('toolbar.addColumn')}>
           <Button variant='ghost' className='w-9 h-9 px-0' onClick={handleAddStream}>
             <Grid2X2PlusIcon strokeWidth={1.75} size={18} />
           </Button>
@@ -34,14 +37,14 @@ export const WiresToolbar = ({ disabled = false, onAddStream, onSaveStreams, onA
       </ButtonGroup>
 
       <ButtonGroup className='p-0 rounded-md gap-1 border border-muted'>
-        <Tooltip content={!disabled ? 'Markera som sparad' : 'Välj telegram för att markera som sparad'}>
+        <Tooltip content={!disabled ? t('toolbar.markSaved') : t('toolbar.markSavedDisabled')}>
           <Button
             onMouseDown={(e) => {
               e.preventDefault()
               onAction('saved')
             }}
             value='saved'
-            aria-label='Markera som sparad'
+            aria-label={t('toolbar.markSaved')}
             variant='ghost'
             className='w-9 h-9 px-0 hover:bg-done-background'
             disabled={disabled}
@@ -50,14 +53,14 @@ export const WiresToolbar = ({ disabled = false, onAddStream, onSaveStreams, onA
           </Button>
         </Tooltip>
 
-        <Tooltip content={!disabled ? 'Markera som läst' : 'Välj telegram för att markera som läst'}>
+        <Tooltip content={!disabled ? t('toolbar.markRead') : t('toolbar.markReadDisabled')}>
           <Button
             onMouseDown={(e) => {
               e.preventDefault()
               onAction('read')
             }}
             value='read'
-            aria-label='Markera som läst'
+            aria-label={t('toolbar.markRead')}
             variant='ghost'
             className='w-9 h-9 px-0 hover:bg-approved-background'
             disabled={disabled}
@@ -66,7 +69,7 @@ export const WiresToolbar = ({ disabled = false, onAddStream, onSaveStreams, onA
           </Button>
         </Tooltip>
 
-        <Tooltip content={!disabled ? 'Markera som använd' : 'Välj telegram för att markera som använd'}>
+        <Tooltip content={!disabled ? t('toolbar.markUsed') : t('toolbar.markUsedDisabled')}>
           <Button
             size='sm'
             onMouseDown={(e) => {
@@ -74,7 +77,7 @@ export const WiresToolbar = ({ disabled = false, onAddStream, onSaveStreams, onA
               onAction('used')
             }}
             value='used'
-            aria-label='Markera som använd'
+            aria-label={t('toolbar.markUsed')}
             variant='ghost'
             className='w-9 h-9 px-0 hover:bg-usable-background'
             disabled={disabled}
@@ -83,14 +86,14 @@ export const WiresToolbar = ({ disabled = false, onAddStream, onSaveStreams, onA
           </Button>
         </Tooltip>
 
-        <Tooltip content={!disabled ? 'Skapa artikel med tillhörande planering från telegram' : 'Välj telegram för att skapa artikel med tillhörande planering'}>
+        <Tooltip content={!disabled ? t('toolbar.createArticle') : t('toolbar.createArticleDisabled')}>
           <Button
             size='sm'
             onMouseDown={(e) => {
               e.preventDefault()
               onCreate()
             }}
-            aria-label='Skapa artikel från telegram'
+            aria-label={t('toolbar.createArticleAriaLabel')}
             variant='ghost'
             className='w-9 h-9 px-0 hover:bg-usable-background rounded-sm'
             disabled={disabled}

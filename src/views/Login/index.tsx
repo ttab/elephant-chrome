@@ -4,6 +4,7 @@ import { Button, Checkbox } from '@ttab/elephant-ui'
 import { signIn } from 'next-auth/react'
 import { LoadingText } from '@/components/LoadingText'
 import { useIndexedDB } from '../../../src/datastore/hooks/useIndexedDB'
+import { useTranslation } from 'react-i18next'
 // FIXME: Implement a better approach so we do not remove unsynced documents
 // import { CollaborationClientRegistry } from '@/modules/yjs/classes/CollaborationClientRegistry'
 
@@ -31,6 +32,7 @@ const LoginForm = ({ callbackUrl }: {
 }): JSX.Element => {
   const [trustGoogle, setTrustGoogle] = useState<boolean | 'indeterminate'>(trustGoogleLocalStorage())
   const IDB = useIndexedDB()
+  const { t } = useTranslation('views')
 
   return (
     <div className='flex flex-row flex-auto justify-center'>
@@ -49,7 +51,7 @@ const LoginForm = ({ callbackUrl }: {
           className='space-x-1'
           variant='outline'
         >
-          <p>Logga in med</p>
+          <p>{t('login.loginWith')}</p>
           <svg xmlns='http://www.w3.org/2000/svg' height='24' viewBox='0 0 24 24' width='24'>
             <path d='M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z' fill='#4285F4' />
             <path d='M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z' fill='#34A853' />
@@ -72,7 +74,7 @@ const LoginForm = ({ callbackUrl }: {
             htmlFor='remember'
             className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
           >
-            Kom ihåg mig nästa gång
+            {t('login.rememberMe')}
           </label>
         </div>
       </div>
@@ -83,11 +85,12 @@ const LoginForm = ({ callbackUrl }: {
 const LoginAutomatic = ({ callbackUrl }: {
   callbackUrl?: string
 }): JSX.Element => {
+  const { t } = useTranslation('views')
   useEffect(() => {
     signIn('keycloak', { callbackUrl: callbackUrl || import.meta.env.BASE_URL })
       .catch((error) => console.error(error))
   }, [callbackUrl])
-  return <LoadingText>Loggar in...</LoadingText>
+  return <LoadingText>{t('login.loggingIn')}</LoadingText>
 }
 
 export const Login = (props: ViewProps & {

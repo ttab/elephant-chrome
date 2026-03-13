@@ -1,5 +1,6 @@
 import { vi } from 'vitest'
 import { editorialInfoDocumentTemplate } from '@/shared/templates/editorialInfoDocumentTemplate.js'
+import { getSystemLanguage } from '@/shared/getSystemLanguage'
 import type { TemplatePayload } from '@/shared/templates'
 import { Block } from '@ttab/elephant-api/newsdoc'
 
@@ -14,7 +15,7 @@ describe('editorialInfoDocumentTemplate', () => {
     expect(doc.uuid).toBe('test-id-123')
     expect(doc.type).toBe('core/editorial-info')
     expect(doc.uri).toBe('core://editorial-info/test-id-123')
-    expect(doc.language).toBe('sv-se')
+    expect(doc.language).toBe(getSystemLanguage())
   })
 
   it('sets title from payload when provided', () => {

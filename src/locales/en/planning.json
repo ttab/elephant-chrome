@@ -1,0 +1,55 @@
+{
+  "planningDocument": "Planning document",
+  "assignment": {
+    "title": "Assignment title",
+    "startEndTime": "Start and end time",
+    "startTime": "Start time",
+    "publishWindow": "Publishing window",
+    "publishTime": "Publishing time",
+    "createPrintArticle": "Create print article",
+    "removeAssignment": "Do you want to remove the assignment",
+    "chooseTime": "Choose time",
+    "timeFromTo": "Time from-to",
+    "actions": {
+      "addAssignment": "Add assignment",
+      "addAssignee": "Add assignee"
+    },
+    "collaboration": {
+      "inProgress": "New assignment being created by",
+      "overtake": "Take over"
+    }
+  },
+  "description": {
+    "internal": "Internal message",
+    "public": "Public description"
+  },
+  "actions": {
+    "openPlanning": "Open planning"
+  },
+  "prompts": {
+    "slugMissing": "Slug missing",
+    "slugMissingDescription": "Please add a slug to the assignment. Then you can create a text.",
+    "createPrompt": "Do you want to create a {{documentLabel}} for the assignment{{title}}?"
+  },
+  "move": {
+    "pickPlanning": "Choose planning",
+    "label": "Move",
+    "dateSwitch": "Change planning date",
+    "dateSwitchDescription": "The planning and all its text assignments will change date to",
+    "dateSwitchAssignments": "Choose below if image and video assignments should also change date",
+    "assignmentCreateInfo": "If you do not choose a planning, a new planning with this assignment will be created for you on the selected date.",
+    "assignmentAddInfo": "This assignment will be added to the selected planning",
+    "assignmentMoveSuccess": "The assignment has been moved",
+    "moveAssignment": "Move assignment",
+    "moveAssignmentConfirm": "Are you sure you want to move the assignment?",
+    "showOlder": "Show older"
+  },
+  "related": {
+    "relatedEvents": "Linked events"
+  },
+  "slugline": "Add slug",
+  "story": "Add story",
+  "title": "Planning title",
+  "yourNewType": "Your newly created {{type, lowercase}}",
+  "preview": "Preview"
+}

@@ -1,0 +1,6 @@
+{
+  "title": "Factbox",
+  "action": {
+    "createFactbox": "Create factbox"
+  }
+}

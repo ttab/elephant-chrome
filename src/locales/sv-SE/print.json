@@ -1,0 +1,194 @@
+{
+  "articles": {
+    "title": "Print",
+    "header": {
+      "createNew": "Skapa ny...",
+      "new": "Nytt",
+      "newArticle": "Ny artikel",
+      "newArticleTooltip": "Skapa en text i ett flöde",
+      "newFlow": "Nytt flöde",
+      "newFlowTooltip": "Öppna dialogruta för att välja ett flöde. Artiklarna för flödet kommer sedan att skapas av backend enligt definitionen i flödet.",
+      "openDictionary": "Öppna ordlista"
+    },
+    "columns": {
+      "status": "Status",
+      "flow": "Flöde",
+      "title": "Titel",
+      "headline": "Rubrik",
+      "article": "Artikel"
+    },
+    "status": {
+      "draft": "Utkast",
+      "needsProofreading": "Klar för korr",
+      "done": "Klar",
+      "exported": "Exporterad",
+      "suspended": "Inställd",
+      "cancelled": "Kastad"
+    },
+    "flowDialog": {
+      "title": "Lista över flöden",
+      "cancel": "Avbryt"
+    },
+    "errors": {
+      "fetchFlows": "Kunde inte hämta printflöden"
+    }
+  },
+  "flow": {
+    "title": {
+      "createArticle": "Skapa printartikel",
+      "createFlow": "Skapa printflöde"
+    },
+    "placeholder": {
+      "selectFlow": "Välj printflöde",
+      "selectName": "Välj namn"
+    },
+    "description": {
+      "newArticleInFlow": "Ny printartikel i valt flöde",
+      "populateFlow": "Populera valt flöde med artiklar"
+    },
+    "loading": "Laddar printflöden..",
+    "actions": {
+      "cancel": "Avbryt",
+      "createArticle": "Skapa printartikel",
+      "createFlow": "Skapa printflöde"
+    },
+    "errors": {
+      "fetchFlows": "Kunde inte hämta printflöden",
+      "noToken": "Ingen access token hittades",
+      "createArticle": "Något gick fel när printartikel skulle skapas",
+      "createFlow": "Något gick fel när printflöde skulle skapas"
+    },
+    "success": {
+      "articleCreated": "Printartikel skapad"
+    }
+  },
+  "editor": {
+    "error": {
+      "missingDocument": "Artikeldokument saknas",
+      "missingDocumentMessage": "Inget artikeldokument är angivet. Navigera tillbaka till översikten och försök igen."
+    },
+    "stats": {
+      "words": "Ord:",
+      "characters": "Tecken:"
+    },
+    "articleTitle": {
+      "placeholder": "Printartikelnamn",
+      "updateSuccess": "Titel uppdaterad",
+      "updateError": "Kunde inte uppdatera titel"
+    },
+    "additionals": "Tillägg",
+    "channel": {
+      "placeholder": "Välj kanal"
+    },
+    "checking": "Kontrollerar layouter",
+    "layouts": {
+      "title": "Layouter",
+      "loading": "Laddar layout",
+      "placeholder1": "Layout",
+      "placeholder2": "Namn",
+      "controls": "Layoutkontroller",
+      "togglePanel": "Fäll in layoutpanelen",
+      "showLayout": "Visa {{title}} - {{name}}",
+      "preview": "Förhandsgranska layout",
+      "images": {
+        "lowResTitle": "Bilder (under 130 ppi)"
+      },
+      "close": "Stäng",
+      "actions": {
+        "checkLayouts": "Kontrollera layouter",
+        "duplicate": "Duplicera artikel",
+        "selectAll": "Välj alla layouter",
+        "deleteSelected": "Radera valda layouter",
+        "statusErrors": "Layoutfel upptäckta",
+        "statusOk": "Alla layouter godkända"
+      },
+      "errors": {
+        "duplicate": "Något gick fel när printartikel skulle dupliceras",
+        "checkLayouts": "Något gick fel när layouterna skulle kontrolleras",
+        "render": "Något gick fel när printartikel skulle renderas",
+        "renderDescription": "Okänt fel",
+        "saveBefore": "Kunde inte spara artikel innan förhandsgranskning"
+      },
+      "success": {
+        "duplicated": "Printartikel har duplicerats till: {{date}}",
+        "openArticle": "Öppna artikeln"
+      },
+      "confirmDuplicate": {
+        "title": "Duplicera artikel",
+        "description": "Är du säker på att du vill duplicera denna artikel?",
+        "primary": "Duplicera",
+        "cancel": "Avbryt"
+      },
+      "confirmDeleteSelected": {
+        "title": "Radera layouterna",
+        "description": "Är du säker på att du vill radera valda layouter?",
+        "primary": "Radera valda",
+        "cancel": "Avbryt"
+      },
+      "confirmDelete": {
+        "title": "Radera layouten",
+        "description": "Är du säker på att du vill radera denna layout?",
+        "primary": "Radera",
+        "cancel": "Avbryt"
+      }
+    },
+    "image": {
+      "errors": {
+        "upload": "Något gick fel när bilden laddades upp!: {{error}}",
+        "notImage": "Filen verkar inte vara en bild, avbryter uppladdning",
+        "readError": "Bilden kunde inte läsas ({{errorName}})",
+        "parseError": "Bilden kunde inte tolkas, kontrollera att filen inte är korrupt",
+        "notImageData": "Innehållet identifierades inte som en bild",
+        "noDimensions": "Bilden saknar giltiga dimensioner",
+        "uploadSuccess": "Bilduppladdning lyckades!"
+      }
+    }
+  },
+  "preview": {
+    "title": "Förhandsvisning",
+    "error": "Fel vid renderingen av artikeln"
+  },
+  "dictionary": {
+    "title": "Avstavningar",
+    "new": "Ny",
+    "columns": {
+      "word": "Ord",
+      "hyphenation": "Avstavning",
+      "noHyphenate": "Avstava ej"
+    },
+    "save": "Spara",
+    "cancel": "Avbryt",
+    "confirmDelete": {
+      "title": "Radera avstavningen",
+      "description": "Är du säker på att du vill radera denna avstavning?",
+      "primary": "Radera",
+      "cancel": "Avbryt"
+    },
+    "errors": {
+      "noToken": "Ingen access token hittades",
+      "fetchDictionary": "Något gick fel när avstämningsordlista skulle hämtas",
+      "listHyphenations": "Kunde inte lista hyphenations"
+    }
+  },
+  "create": {
+    "title": "Skapa printartikel",
+    "placeholder": {
+      "selectFlow": "Välj printflöde",
+      "selectName": "Välj namn"
+    },
+    "loading": "Laddar printflöden..",
+    "actions": {
+      "cancel": "Avbryt",
+      "create": "Skapa printartikel",
+      "open": "Öppna printartikel"
+    },
+    "errors": {
+      "fetchFlows": "Något gick fel när flöden skulle hämtas",
+      "noToken": "Ingen access token hittades",
+      "createArticle": "Något gick fel när printartikel skulle skapas"
+    },
+    "success": {
+      "created": "Printartikel skapad"
+    }
+  }
+}
