@@ -91,7 +91,7 @@ const quickArticle: DocumentTypeFormat = {
   'core/article': {
     icon: NewspaperIcon,
     label: 'Två på två',
-    key: 'Article',
+    key: 'QuickArticle',
     color: '#aabbcc'
   }
 }
