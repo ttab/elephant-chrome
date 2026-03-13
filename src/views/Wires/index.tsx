@@ -378,8 +378,7 @@ export const Wires = (): JSX.Element => {
   }, [selectedWires, previewWire, onAction, onCreate])
 
   // Escape is unconstrained so it fires regardless of where focus is within the page.
-  // skipIfHandled defers to any capture-phase handler (e.g. Radix dialogs) that has
-  // already called event.preventDefault() to claim the event.
+  // skipIfHandled defers to any capture-phase handler (e.g. modals).
   useNavigationKeys({
     keys: ['Escape'],
     onNavigation: handleNavigation,
