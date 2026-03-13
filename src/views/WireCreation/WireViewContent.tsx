@@ -190,9 +190,10 @@ export const WireViewContent = (props: ViewProps & {
 
             {!selectedPlanning && (
               <Form.Group icon={TagsIcon}>
-
                 <Section ydoc={ydoc} path='links.core/section[0]' onSelect={setSection} />
-                <SluglineEditable ydoc={ydoc} value={slugline} />
+                <>
+                  <SluglineEditable ydoc={ydoc} value={slugline} />
+                </>
                 <Newsvalue ydoc={ydoc} path='meta.core/newsvalue[0].value' />
               </Form.Group>
 
@@ -239,12 +240,13 @@ export const WireViewContent = (props: ViewProps & {
                 />
               )}
             </Form.Group>
-
-            <UserMessage asDialog={!!props?.asDialog}>
-              {!selectedPlanning
-                ? (<>Väljer du ingen planering kommer en ny planering med tillhörande uppdrag skapas åt dig.</>)
-                : (<>Denna artikel kommer läggas i ett nytt uppdrag i den valda planeringen</>)}
-            </UserMessage>
+            <>
+              <UserMessage asDialog={!!props?.asDialog}>
+                {!selectedPlanning
+                  ? (<>Väljer du ingen planering kommer en ny planering med tillhörande uppdrag skapas åt dig.</>)
+                  : (<>Denna artikel kommer läggas i ett nytt uppdrag i den valda planeringen</>)}
+              </UserMessage>
+            </>
 
           </Form.Content>
 
