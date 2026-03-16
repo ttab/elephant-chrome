@@ -1,11 +1,11 @@
-import { Popover, PopoverTrigger, Button, PopoverContent, Command, CommandItem } from '@ttab/elephant-ui'
+import { Popover, PopoverTrigger, Button, PopoverContent, Command, CommandItem, CommandList } from '@ttab/elephant-ui'
 import { ListFilterIcon, ShapesIcon, SignalHighIcon, SquareCodeIcon, CheckIcon } from '@ttab/elephant-ui/icons'
-import { useEffect, useMemo, useRef, useState, type JSX } from 'react'
-import { DebouncedCommandInput } from '@/components/Commands/Menu/DebouncedCommandInput'
+import { useEffect, useMemo, useState, type JSX } from 'react'
 import { useSections } from '@/hooks/useSections'
 import { useWireSources } from '@/hooks/useWireSources'
 import { Newsvalues } from '@/defaults/newsvalues'
 import { cn } from '@ttab/elephant-ui/utils'
+import { FreeTextFilter } from '@/components/Filter/common/FreeTextFilter'
 
 interface FilterPopoverProps {
   streamId: string
@@ -19,7 +19,7 @@ export const FilterMenu = ({ currentFilters, onFilterChange }: FilterPopoverProp
   const [open, setOpen] = useState(false)
   const [page, setPage] = useState<FilterPage>('')
   const [search, setSearch] = useState<string>('')
-  const inputRef = useRef<HTMLInputElement>(null)
+  const [queryInput, setQueryInput] = useState<string>('')
 
   const sections = useSections({ sort: 'title' })
   const wireSources = useWireSources({ sort: 'title' })
@@ -50,11 +50,10 @@ export const FilterMenu = ({ currentFilters, onFilterChange }: FilterPopoverProp
     return filter?.values?.[0] || ''
   }, [currentFilters])
 
+  // Keep local query input in sync when filter changes externally
   useEffect(() => {
-    if (inputRef.current && open) {
-      inputRef.current.focus()
-    }
-  }, [page, open])
+    setQueryInput(queryFilterValue)
+  }, [queryFilterValue])
 
   const handleOpenChange = (newOpen: boolean) => {
     if (!newOpen) {
@@ -71,11 +70,6 @@ export const FilterMenu = ({ currentFilters, onFilterChange }: FilterPopoverProp
 
   const handleBack = () => {
     setPage('')
-  }
-
-  const handleQuerySubmit = () => {
-    const value = inputRef.current?.value?.trim() || ''
-    onFilterChange('query', value ? [value] : [])
   }
 
   const handleToggleOption = (filterType: string, value: string) => {
@@ -99,6 +93,7 @@ export const FilterMenu = ({ currentFilters, onFilterChange }: FilterPopoverProp
       || opt.value.toLowerCase().includes(searchLower)
     )
   }
+  const currentInputValue = page === 'query' ? queryInput : search
   return (
     <Popover open={open} onOpenChange={handleOpenChange} modal>
       <PopoverTrigger asChild>
@@ -117,10 +112,8 @@ export const FilterMenu = ({ currentFilters, onFilterChange }: FilterPopoverProp
       </PopoverTrigger>
       <PopoverContent className='w-50 p-0' align='start'>
         <Command
+          shouldFilter={page ? true : false}
           onKeyDown={(e) => {
-            if (e.key === 'Enter' && page === 'query') {
-              handleQuerySubmit()
-            }
             if (e.key === 'Escape') {
               if (page) {
                 handleBack()
@@ -128,9 +121,13 @@ export const FilterMenu = ({ currentFilters, onFilterChange }: FilterPopoverProp
                 setOpen(false)
               }
             }
-            if (e.key === 'ArrowLeft' || (e.key === 'Backspace' && !inputRef.current?.value)) {
-              e.preventDefault()
+            if (e.key === 'ArrowLeft' || (e.key === 'Backspace')) {
+              if (queryInput || search || currentInputValue) {
+                e.stopPropagation()
+                return
+              }
               if (page) {
+                e.preventDefault()
                 handleBack()
               } else {
                 setOpen(false)
@@ -138,48 +135,55 @@ export const FilterMenu = ({ currentFilters, onFilterChange }: FilterPopoverProp
             }
           }}
         >
-          <DebouncedCommandInput
-            ref={inputRef}
-            value={page === 'query' ? queryFilterValue : search}
-            onChange={(value) => {
-              if (page === 'query') {
-                // Don't debounce for query filter - handle on Enter
-              } else {
-                setSearch(value || '')
-              }
-            }}
-            placeholder={page === 'query' ? 'Fritext' : 'Sök alternativ'}
-            className='h-9'
-          />
+          {page
+            && (
+              <FreeTextFilter
+                value={search}
+                onChange={(value) => setSearch(value || '')}
+                filterType='filterOptions'
+              />
+            )}
+          <CommandList>
+            {!page
+              && (
+                <FreeTextFilter
+                  value={queryInput}
+                  onChange={(value) => {
+                    setQueryInput(value)
+                    onFilterChange('query', value ? [value] : [])
+                  }}
+                  filterType='freetext'
+                />
+              )}
+            {!page && (
+              <MenuList onSelect={handleNavigateToPage} />
+            )}
 
-          {!page && (
-            <MenuList onSelect={handleNavigateToPage} />
-          )}
 
+            {page === 'section' && (
+              <OptionsFilterList
+                options={filterOptions(optionsSections)}
+                selectedValues={getCurrentFilterValues('core/section')}
+                onToggle={(value) => handleToggleOption('core/section', value)}
+              />
+            )}
 
-          {page === 'section' && (
-            <OptionsFilterList
-              options={filterOptions(optionsSections)}
-              selectedValues={getCurrentFilterValues('core/section')}
-              onToggle={(value) => handleToggleOption('core/section', value)}
-            />
-          )}
+            {page === 'source' && (
+              <OptionsFilterList
+                options={filterOptions(optionsSources)}
+                selectedValues={getCurrentFilterValues('core/source')}
+                onToggle={(value) => handleToggleOption('core/source', value)}
+              />
+            )}
 
-          {page === 'source' && (
-            <OptionsFilterList
-              options={filterOptions(optionsSources)}
-              selectedValues={getCurrentFilterValues('core/source')}
-              onToggle={(value) => handleToggleOption('core/source', value)}
-            />
-          )}
-
-          {page === 'newsvalue' && (
-            <OptionsFilterList
-              options={filterOptions(optionsNewsvalues)}
-              selectedValues={getCurrentFilterValues('core/newsvalue')}
-              onToggle={(value) => handleToggleOption('core/newsvalue', value)}
-            />
-          )}
+            {page === 'newsvalue' && (
+              <OptionsFilterList
+                options={filterOptions(optionsNewsvalues)}
+                selectedValues={getCurrentFilterValues('core/newsvalue')}
+                onToggle={(value) => handleToggleOption('core/newsvalue', value)}
+              />
+            )}
+          </CommandList>
         </Command>
       </PopoverContent>
     </Popover>
