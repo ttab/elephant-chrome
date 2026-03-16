@@ -1,5 +1,5 @@
 import { Popover, PopoverTrigger, Button, PopoverContent, Command, CommandItem, CommandList } from '@ttab/elephant-ui'
-import { ListFilterIcon, ShapesIcon, SignalHighIcon, SquareCodeIcon, CheckIcon } from '@ttab/elephant-ui/icons'
+import { ListFilterIcon, ShapesIcon, SignalHighIcon, SquareCodeIcon, CheckIcon, CircleCheckIcon } from '@ttab/elephant-ui/icons'
 import { useEffect, useMemo, useState, type JSX } from 'react'
 import { useSections } from '@/hooks/useSections'
 import { useWireSources } from '@/hooks/useWireSources'
@@ -13,7 +13,7 @@ interface FilterPopoverProps {
   onFilterChange: (type: string, values: string[]) => void
 }
 
-type FilterPage = '' | 'query' | 'section' | 'source' | 'newsvalue'
+type FilterPage = '' | 'query' | 'section' | 'source' | 'newsvalue' | 'wireStatus'
 
 export const FilterMenu = ({ currentFilters, onFilterChange }: FilterPopoverProps): JSX.Element => {
   const [open, setOpen] = useState(false)
@@ -38,6 +38,13 @@ export const FilterMenu = ({ currentFilters, onFilterChange }: FilterPopoverProp
     value: nv.value,
     label: nv.label
   })), [])
+
+  const optionsWireStatus = useMemo(() => [
+    { value: 'read', label: 'Läst' },
+    { value: 'saved', label: 'Sparad' },
+    { value: 'used', label: 'Använd' },
+    { value: 'flash', label: 'Flash' }
+  ], [])
 
   // Get current filter values for the active page
   const getCurrentFilterValues = (filterType: string): Set<string> => {
@@ -183,6 +190,14 @@ export const FilterMenu = ({ currentFilters, onFilterChange }: FilterPopoverProp
                 onToggle={(value) => handleToggleOption('core/newsvalue', value)}
               />
             )}
+
+            {page === 'wireStatus' && (
+              <OptionsFilterList
+                options={filterOptions(optionsWireStatus)}
+                selectedValues={getCurrentFilterValues('wireStatus')}
+                onToggle={(value) => handleToggleOption('wireStatus', value)}
+              />
+            )}
           </CommandList>
         </Command>
       </PopoverContent>
@@ -213,6 +228,13 @@ const MenuList = ({ onSelect }: { onSelect: (newPage: FilterPage) => void }) => 
       >
         <SignalHighIcon size={18} strokeWidth={1.75} />
         Nyhetsvärde
+      </CommandItem>
+      <CommandItem
+        onSelect={() => onSelect('wireStatus')}
+        className='flex gap-1 items-center'
+      >
+        <CircleCheckIcon size={18} strokeWidth={1.75} />
+        Telegramstatus
       </CommandItem>
     </>
   )
