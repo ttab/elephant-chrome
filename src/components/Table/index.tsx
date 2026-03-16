@@ -23,22 +23,16 @@ import {
   useTable,
   useHistory,
   useNavigationKeys,
-  useOpenDocuments,
-  useWorkflowStatus
+  useOpenDocuments
 } from '@/hooks'
 import { handleLink } from '@/components/Link/lib/handleLink'
 import { Row } from './Row'
 import { useModal } from '../Modal/useModal'
-import { PreviewSheet } from '@/views/Wires/components'
-import type { Wire as WireType } from '@/shared/schemas/wire'
-import { Wire as WireComponent } from '@/views/Wire'
 import { GroupedRows } from './GroupedRows'
-import { getWireStatus } from '../../lib/getWireStatus'
 import type { TableRowData, NavigationParams } from './types'
-import { isWire } from './lib/isWire'
 import type { NavigationKey } from '@/hooks/useNavigationKeys'
 
-const NAVIGATION_KEYS: NavigationKey[] = ['ArrowUp', 'ArrowDown', 'Enter', 'Escape', ' ', 's', 'r', 'c', 'u']
+const NAVIGATION_KEYS: NavigationKey[] = ['ArrowUp', 'ArrowDown', 'Enter', 'Escape', ' ']
 
 interface TableProps<TData extends TableRowData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
@@ -59,8 +53,7 @@ export const Table = <TData extends TableRowData, TValue>({
   const { viewId: origin } = useView()
   const { table } = useTable<TData>()
   const openDocuments = useOpenDocuments({ idOnly: true })
-  const { showModal, hideModal, currentModal } = useModal()
-  const [, setDocumentStatus] = useWorkflowStatus({})
+  const { hideModal, currentModal } = useModal()
 
   const availableRows = table.getRowModel().rows
   const groupingLength = table.getState().grouping.length
@@ -85,31 +78,7 @@ export const Table = <TData extends TableRowData, TValue>({
     }
   }, [availableRows, groupingLength])
 
-  const handlePreview = useCallback((row: RowType<TData & WireType>): void => {
-    row.toggleSelected(true)
-
-    showModal(
-      <PreviewSheet
-        id={row.original.id}
-        wire={row.original}
-        textOnly
-        handleClose={hideModal}
-      />,
-      'sheet',
-      {
-        id: row.original.id
-      },
-      'right'
-    )
-  }, [hideModal, showModal])
-
-
   const handleOpen = useCallback((event: MouseEvent<HTMLTableRowElement> | KeyboardEvent, row: RowType<TData>): void => {
-    if (isWire(row.original)) {
-      handlePreview(row as RowType<TData & WireType>)
-      return
-    }
-
     const target = event.target as HTMLElement
     if (target && 'dataset' in target && !target.dataset.rowAction) {
       if (!onRowSelected && !resolveNavigation) {
@@ -128,8 +97,6 @@ export const Table = <TData extends TableRowData, TValue>({
       handleLink({
         event,
         dispatch,
-        // TODO: Fix this, how do we identify searchtype
-        // viewItem: state.viewRegistry.get(!searchType ? type : searchType),
         viewItem: state.viewRegistry.get(navParams.opensWith || 'Error'),
         props: { id: navParams.id, version: navParams.version },
         viewId: crypto.randomUUID(),
@@ -143,7 +110,7 @@ export const Table = <TData extends TableRowData, TValue>({
         })
       })
     }
-  }, [dispatch, state.viewRegistry, onRowSelected, origin, history, handlePreview, resolveNavigation])
+  }, [dispatch, state.viewRegistry, onRowSelected, origin, history, resolveNavigation])
 
   const handleNavigation = useCallback((event: KeyboardEvent): void => {
     if (!navigableRows?.length) {
@@ -165,50 +132,6 @@ export const Table = <TData extends TableRowData, TValue>({
 
     if (event.key === 'Escape') {
       selectedRow?.toggleSelected(false)
-      return
-    }
-
-    if (['r', 'u', 's', 'c'].includes(event.key) && selectedRow && isWire(selectedRow.original)) {
-      const wireRow = selectedRow as unknown as RowType<WireType>
-      const wire = wireRow.original
-      const currentStatus = getWireStatus(wire)
-      const version = BigInt(wire.fields.current_version.values?.[0])
-
-      if (event.key === 'r') {
-        void setDocumentStatus({
-          name: currentStatus === 'read' ? 'draft' : 'read',
-          uuid: wire.id,
-          version
-        }, undefined, true)
-      } else if (event.key === 'u') {
-        void setDocumentStatus({
-          name: currentStatus === 'used' ? 'draft' : 'used',
-          uuid: wire.id,
-          version
-        }, undefined, true)
-      } else if (event.key === 's') {
-        void setDocumentStatus({
-          name: currentStatus === 'saved' ? 'draft' : 'saved',
-          uuid: wire.id,
-          version
-        }, undefined, true)
-      } else if (event.key === 'c') {
-        const onDocumentCreated = () => {
-          void setDocumentStatus({
-            name: 'used',
-            uuid: wire.id,
-            version
-          }, undefined, true)
-        }
-        showModal(
-          <WireComponent
-            onDialogClose={hideModal}
-            asDialog
-            wire={wire}
-            onDocumentCreated={onDocumentCreated}
-          />
-        )
-      }
       return
     }
 
@@ -237,7 +160,7 @@ export const Table = <TData extends TableRowData, TValue>({
 
       return
     }
-  }, [navigableRows, rowIndexMap, table, handleOpen, hideModal, currentModal, setDocumentStatus, showModal])
+  }, [navigableRows, rowIndexMap, table, handleOpen, hideModal, currentModal])
 
   useNavigationKeys({
     keys: NAVIGATION_KEYS,

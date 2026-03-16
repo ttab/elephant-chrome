@@ -67,8 +67,8 @@ export const fromGroupedNewsDoc = (payload: EleDocumentResponse): { document: Do
     version: BigInt(version),
     document: newsDocument,
     isMetaDocument,
-    mainDocument,
-    subset
+    subset,
+    mainDocument
   }
 }
 

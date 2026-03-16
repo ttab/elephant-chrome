@@ -19,7 +19,7 @@ import {
 import { useRegistry } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import type { JSX } from 'react'
-import { useRef, useState } from 'react'
+import { Fragment, useRef, useState } from 'react'
 import { UserMessage } from '@/components/UserMessage'
 import { Form } from '@/components/Form'
 import { fetch } from '@/lib/index/fetch-plannings-twirp'
@@ -34,18 +34,19 @@ import { useYValue } from '@/modules/yjs/hooks/useYValue'
 import { TextInput } from '@/components/ui/TextInput'
 import type { EleDocumentResponse } from '@/shared/types'
 import { ValidateNow } from '@/components/ValidateNow'
+import { toast } from 'sonner'
 
 export const WireViewContent = (props: ViewProps & {
   documentId: string
   data?: EleDocumentResponse
-  wire: WireType
+  wires: WireType[]
 }): JSX.Element | undefined => {
   // Create article using supplied data
   const ydoc = useYDocument<Y.Map<unknown>>(props.documentId, { data: props.data })
   const { status, data: session } = useSession()
   const [showVerifyDialog, setShowVerifyDialog] = useState(false)
   const [searchOlder, setSearchOlder] = useState(false)
-  const [selectedPlanning, setSelectedPlanning] = useState<DefaultValueOption & { payload: { slugline?: string, sluglines?: string[] } } | undefined>(undefined)
+  const [selectedPlanning, setSelectedPlanning] = useState<DefaultValueOption & { payload: { slugline?: string, sluglines?: string[], newsvalue?: string } } | undefined>(undefined)
   const [title] = useYValue<Y.XmlText>(ydoc.ele, 'root.title', true)
   const documentAwareness = useRef<(value: boolean) => void>(null)
   const planningTitleRef = useRef<HTMLInputElement>(null)
@@ -57,6 +58,7 @@ export const WireViewContent = (props: ViewProps & {
     title: string
   } | undefined>(undefined)
   const [slugline, setSlugline] = useYValue<Y.XmlText>(ydoc.ele, 'meta.tt/slugline[0].value', true)
+  const [, setNewsvalue] = useYValue<string | undefined>(ydoc.ele, 'meta.core/newsvalue[0].value')
 
   const handleSubmit = (): void => {
     setShowVerifyDialog(true)
@@ -68,7 +70,13 @@ export const WireViewContent = (props: ViewProps & {
         <ViewHeader.Content>
           {props.asDialog && (
             <div className='flex w-full h-full items-center space-x-2 font-bold'>
-              <ViewHeader.Title name='Wires' title='Skapa artikel' icon={CableIcon} iconColor='#FF6347' />
+              <ViewHeader.Title
+                name='Wires'
+                title='Skapa artikel'
+                icon={CableIcon}
+                iconColor='#FF6347'
+                asDialog={props.asDialog}
+              />
             </div>
           )}
         </ViewHeader.Content>
@@ -85,12 +93,27 @@ export const WireViewContent = (props: ViewProps & {
             <Form.Group icon={CableIcon}>
               <>
                 <Input
-                  className='pl-0 pt-2 h-8 text-medium border-0 truncate'
+                  className='pl-0 pt-2 h-8 text-medium font-semibold border-0 truncate'
                   readOnly
-                  value={props.wire.fields['document.title'].values?.[0]}
+                  value={props.wires?.[0]?.fields['document.title'].values?.[0]}
                 />
               </>
             </Form.Group>
+
+            {props.wires?.length > 1 && (
+              <div className='flex flex-col gap-0.5 -mt-6 ms-10.5'>
+                {props.wires?.map((wire, index) => (
+                  <Fragment key={wire.id}>
+                    {!!index
+                      && (
+                        <div className='pl-0 pt-2 text-xs'>
+                          {wire.fields['document.title'].values?.[0]}
+                        </div>
+                      )}
+                  </Fragment>
+                ))}
+              </div>
+            )}
 
             <Form.Group icon={GanttChartSquareIcon}>
               <Awareness path='wirePlanningItem' ref={documentAwareness} ydoc={ydoc}>
@@ -117,16 +140,19 @@ export const WireViewContent = (props: ViewProps & {
                       const sluglines = (option.payload as { sluglines: string[] | undefined }).sluglines
 
                       if (option.value !== selectedPlanning?.value) {
+                        const newsvalue = (option.payload as { newsvalue: string | undefined }).newsvalue
                         setSelectedPlanning({
                           value: option.value,
                           label: option.label,
                           payload: {
                             slugline,
-                            sluglines
+                            sluglines,
+                            newsvalue
                           }
                         })
 
                         setSlugline(toSlateYXmlText(slugline || ''))
+                        setNewsvalue(newsvalue || undefined)
                       } else {
                         setSelectedPlanning(undefined)
                       }
@@ -166,9 +192,10 @@ export const WireViewContent = (props: ViewProps & {
 
             {!selectedPlanning && (
               <Form.Group icon={TagsIcon}>
-
                 <Section ydoc={ydoc} path='links.core/section[0]' onSelect={setSection} />
-                <SluglineEditable ydoc={ydoc} value={slugline} />
+                <>
+                  <SluglineEditable ydoc={ydoc} value={slugline} />
+                </>
                 <Newsvalue ydoc={ydoc} path='meta.core/newsvalue[0].value' />
               </Form.Group>
 
@@ -197,30 +224,35 @@ export const WireViewContent = (props: ViewProps & {
 
             <Form.Group icon={TagIcon}>
               {selectedPlanning && (
-                <SluglineEditable
-                  key={selectedPlanning?.value}
-                  ydoc={ydoc}
-                  value={slugline}
-                  compareValues={[
-                    ...(selectedPlanning?.payload?.sluglines || []),
-                    slugline?.toString()
-                  ]}
-                />
+                <>
+                  <SluglineEditable
+                    key={selectedPlanning?.value}
+                    ydoc={ydoc}
+                    value={slugline}
+                    compareValues={[
+                      ...(selectedPlanning?.payload?.sluglines || []),
+                      slugline?.toString()
+                    ]}
+                  />
+                </>
               )}
 
               {(!selectedPlanning) && (
-                <SluglineEditable
-                  ydoc={ydoc}
-                  value={slugline}
-                />
+                <>
+                  <SluglineEditable
+                    ydoc={ydoc}
+                    value={slugline}
+                  />
+                </>
               )}
             </Form.Group>
-
-            <UserMessage asDialog={!!props?.asDialog}>
-              {!selectedPlanning
-                ? (<>Väljer du ingen planering kommer en ny planering med tillhörande uppdrag skapas åt dig.</>)
-                : (<>Denna artikel kommer läggas i ett nytt uppdrag i den valda planeringen</>)}
-            </UserMessage>
+            <>
+              <UserMessage asDialog={!!props?.asDialog}>
+                {!selectedPlanning
+                  ? (<>Väljer du ingen planering kommer en ny planering med tillhörande uppdrag skapas åt dig.</>)
+                  : (<>Denna artikel kommer läggas i ett nytt uppdrag i den valda planeringen</>)}
+              </UserMessage>
+            </>
 
           </Form.Content>
 
@@ -251,7 +283,8 @@ export const WireViewContent = (props: ViewProps & {
                     session,
                     planningId: selectedPlanning?.value,
                     planningTitle: planningTitleRef.current?.value,
-                    wire: props.wire,
+                    newsvalue: selectedPlanning?.payload?.newsvalue,
+                    wires: props.wires,
                     section: (!selectedPlanning?.value) ? section || undefined : undefined,
                     timeZone
                   })
@@ -261,6 +294,9 @@ export const WireViewContent = (props: ViewProps & {
                     })
                     .catch((ex: unknown) => {
                       console.log(ex)
+                      if (!(ex instanceof Error) || ex.message !== 'CreateAssignmentError') {
+                        toast.error('Det gick inte att skapa en artikel!')
+                      }
                     })
                 }}
                 onSecondary={() => {

@@ -12,8 +12,7 @@ vi.mock('@/hooks', () => ({
   useTable: vi.fn(),
   useHistory: vi.fn(),
   useNavigationKeys: vi.fn(),
-  useOpenDocuments: vi.fn(),
-  useWorkflowStatus: vi.fn()
+  useOpenDocuments: vi.fn()
 }))
 
 vi.mock('@/components/Modal/useModal', () => ({ useModal: vi.fn() }))
@@ -28,14 +27,6 @@ vi.mock('@/components/Table/GroupedRows', () => ({
 
 vi.mock('@/components/Link/lib/handleLink', () => ({ handleLink: vi.fn() }))
 
-vi.mock('@/views/Wires/components', () => ({
-  PreviewSheet: vi.fn(() => null)
-}))
-
-vi.mock('@/views/Wire', () => ({
-  Wire: vi.fn(() => null)
-}))
-
 vi.mock('@ttab/elephant-ui', () => ({
   Table: ({ children }: React.PropsWithChildren) => <table data-testid='main-table'>{children}</table>,
   TableBody: ({ children }: React.PropsWithChildren) => <tbody>{children}</tbody>
@@ -48,8 +39,7 @@ import {
   useTable,
   useHistory,
   useNavigationKeys,
-  useOpenDocuments,
-  useWorkflowStatus
+  useOpenDocuments
 } from '@/hooks'
 import { useModal } from '@/components/Modal/useModal'
 import { handleLink } from '@/components/Link/lib/handleLink'
@@ -73,26 +63,6 @@ function makeTableRow(id: string, overrides: Partial<RowType<TestData>> = {}): R
   } as unknown as RowType<TestData>
 }
 
-function makeWireTableRow(id: string): RowType<TestData> {
-  return makeTableRow(id, {
-    original: {
-      id,
-      fields: {
-        'document.meta.tt_wire.role': { values: ['main'] },
-        current_version: { values: ['1'] },
-        'heads.read.version': { values: ['0'] },
-        'heads.read.created': { values: [''] },
-        'heads.saved.version': { values: ['0'] },
-        'heads.saved.created': { values: [''] },
-        'heads.used.version': { values: ['0'] },
-        'heads.used.created': { values: [''] },
-        'heads.flash.version': { values: [] },
-        'document.meta.core_newsvalue.value': { values: ['3'] }
-      }
-    } as TestData
-  })
-}
-
 const columns: Array<ColumnDef<TestData>> = [{ id: 'col1' }]
 
 // Keyboard navigation callback capture
@@ -100,8 +70,6 @@ let capturedNavCallback: ((event: KeyboardEvent) => void) | undefined
 
 function setupDefaultMocks(rows: Array<RowType<TestData>> = [], grouping: string[] = []) {
   capturedNavCallback = undefined
-
-  const mockSetDocumentStatus = vi.fn().mockResolvedValue(undefined)
 
   vi.mocked(useNavigation).mockReturnValue({
     state: {
@@ -145,17 +113,14 @@ function setupDefaultMocks(rows: Array<RowType<TestData>> = [], grouping: string
 
   vi.mocked(useOpenDocuments).mockReturnValue([] as unknown as ReturnType<typeof useOpenDocuments>)
 
-  vi.mocked(useWorkflowStatus).mockReturnValue([undefined, mockSetDocumentStatus] as unknown as ReturnType<typeof useWorkflowStatus>)
-
-  const mockShowModal = vi.fn()
   const mockHideModal = vi.fn()
   vi.mocked(useModal).mockReturnValue({
-    showModal: mockShowModal,
+    showModal: vi.fn(),
     hideModal: mockHideModal,
     currentModal: null
   } as unknown as ReturnType<typeof useModal>)
 
-  return { mockSetDocumentStatus, mockShowModal, mockHideModal }
+  return { mockHideModal }
 }
 
 describe('Table', () => {
@@ -208,42 +173,7 @@ describe('Table', () => {
     })
   })
 
-  describe('handleOpen — wire rows', () => {
-    it('calls showModal with PreviewSheet when row is a wire', () => {
-      const wireRow = makeWireTableRow('wire-1')
-      const rows = [wireRow]
-      const { mockShowModal } = setupDefaultMocks(rows)
-      render(<Table columns={columns} />)
-
-      // Get handleOpen from the Row mock call
-      const rowCall = vi.mocked(Row).mock.calls[0]
-      const handleOpenFn = rowCall[0].handleOpen
-
-      act(() => {
-        handleOpenFn(new MouseEvent('click') as unknown as React.MouseEvent<HTMLTableRowElement>, wireRow)
-      })
-
-      expect(mockShowModal).toHaveBeenCalledTimes(1)
-    })
-
-    it('calls row.toggleSelected(true) when previewing a wire', () => {
-      const wireRow = makeWireTableRow('wire-1')
-      const rows = [wireRow]
-      setupDefaultMocks(rows)
-      render(<Table columns={columns} />)
-
-      const rowCall = vi.mocked(Row).mock.calls[0]
-      const handleOpenFn = rowCall[0].handleOpen
-
-      act(() => {
-        handleOpenFn(new MouseEvent('click') as unknown as React.MouseEvent<HTMLTableRowElement>, wireRow)
-      })
-
-      expect(wireRow.toggleSelected).toHaveBeenCalledWith(true)
-    })
-  })
-
-  describe('handleOpen — non-wire rows', () => {
+  describe('handleOpen', () => {
     it('calls handleLink when onRowSelected is provided and no rowAction', () => {
       const row = makeTableRow('doc-1')
       const rows = [row]
@@ -539,15 +469,14 @@ describe('Table', () => {
   describe('keyboard navigation — Enter/Escape/Space', () => {
     it('Enter calls hideModal then handleOpen on selected row', () => {
       const selectedRow = makeTableRow('sel-1')
-      const wireRow = makeWireTableRow('wire-sel')
-      const rows = [selectedRow, wireRow]
-      const { mockHideModal, mockShowModal } = setupDefaultMocks(rows)
+      const rows = [selectedRow]
+      const { mockHideModal } = setupDefaultMocks(rows)
       vi.mocked(useTable).mockReturnValue({
         table: {
           getRowModel: vi.fn(() => ({ rows })),
           getState: vi.fn(() => ({ grouping: [], rowSelection: {} })),
-          getGroupedSelectedRowModel: vi.fn(() => ({ flatRows: [wireRow] })),
-          getSelectedRowModel: vi.fn(() => ({ rows: [wireRow] }))
+          getGroupedSelectedRowModel: vi.fn(() => ({ flatRows: [selectedRow] })),
+          getSelectedRowModel: vi.fn(() => ({ rows: [selectedRow] }))
         }
       } as unknown as ReturnType<typeof useTable>)
       render(<Table columns={columns} />)
@@ -555,7 +484,6 @@ describe('Table', () => {
         capturedNavCallback!(new KeyboardEvent('keydown', { key: 'Enter' }))
       })
       expect(mockHideModal).toHaveBeenCalledTimes(1)
-      expect(mockShowModal).toHaveBeenCalledTimes(1) // wire preview
     })
 
     it('Escape calls toggleSelected(false) on selected row', () => {
@@ -577,139 +505,26 @@ describe('Table', () => {
       expect(selectedRow.toggleSelected).toHaveBeenCalledWith(false)
     })
 
-    it('Space calls handleOpen on selected row (preview)', () => {
-      const wireRow = makeWireTableRow('wire-space')
-      const rows = [wireRow]
-      const { mockShowModal } = setupDefaultMocks(rows)
+    it('Space calls handleOpen on selected row', () => {
+      const selectedRow = makeTableRow('sel-space')
+      const rows = [selectedRow]
+      setupDefaultMocks(rows)
+      const onRowSelected = vi.fn()
       vi.mocked(useTable).mockReturnValue({
         table: {
           getRowModel: vi.fn(() => ({ rows })),
           getState: vi.fn(() => ({ grouping: [], rowSelection: {} })),
-          getGroupedSelectedRowModel: vi.fn(() => ({ flatRows: [wireRow] })),
-          getSelectedRowModel: vi.fn(() => ({ rows: [wireRow] }))
+          getGroupedSelectedRowModel: vi.fn(() => ({ flatRows: [selectedRow] })),
+          getSelectedRowModel: vi.fn(() => ({ rows: [selectedRow] }))
         }
       } as unknown as ReturnType<typeof useTable>)
-      render(<Table columns={columns} />)
+      render(<Table columns={columns} onRowSelected={onRowSelected} />)
+      const spaceEvent = new KeyboardEvent('keydown', { key: ' ' })
+      Object.defineProperty(spaceEvent, 'target', { value: { dataset: {} } })
       act(() => {
-        capturedNavCallback!(new KeyboardEvent('keydown', { key: ' ' }))
+        capturedNavCallback!(spaceEvent)
       })
-      expect(mockShowModal).toHaveBeenCalledTimes(1)
-    })
-  })
-
-  describe('wire keyboard shortcuts', () => {
-    function setupWireSelection(wireRow: RowType<TestData>, rows?: RowType<TestData>[]) {
-      const allRows = rows ?? [wireRow]
-      const { mockSetDocumentStatus } = setupDefaultMocks(allRows)
-      vi.mocked(useTable).mockReturnValue({
-        table: {
-          getRowModel: vi.fn(() => ({ rows: allRows })),
-          getState: vi.fn(() => ({ grouping: [], rowSelection: {} })),
-          getGroupedSelectedRowModel: vi.fn(() => ({ flatRows: [wireRow] })),
-          getSelectedRowModel: vi.fn(() => ({ rows: [wireRow] }))
-        }
-      } as unknown as ReturnType<typeof useTable>)
-      return { mockSetDocumentStatus }
-    }
-
-    it('"r" toggles draft→read status', () => {
-      const wireRow = makeWireTableRow('wire-r')
-      const { mockSetDocumentStatus } = setupWireSelection(wireRow)
-      render(<Table columns={columns} />)
-      act(() => {
-        capturedNavCallback!(new KeyboardEvent('keydown', { key: 'r' }))
-      })
-      expect(mockSetDocumentStatus).toHaveBeenCalledWith(
-        expect.objectContaining({ name: 'read' }),
-        undefined,
-        true
-      )
-    })
-
-    it('"r" toggles read→draft status', () => {
-      const wireRow = makeWireTableRow('wire-r2')
-      // Give the wire a valid "read" status by mutating via unknown cast
-      const originalFields = (wireRow.original as unknown as { fields: Record<string, unknown> }).fields
-      Object.assign(originalFields, {
-        current_version: { values: ['2'] },
-        'heads.read.version': { values: ['2'] },
-        'heads.read.created': { values: ['2025-01-01T10:00:00Z'] }
-      })
-      const { mockSetDocumentStatus } = setupWireSelection(wireRow)
-      render(<Table columns={columns} />)
-      act(() => {
-        capturedNavCallback!(new KeyboardEvent('keydown', { key: 'r' }))
-      })
-      expect(mockSetDocumentStatus).toHaveBeenCalledWith(
-        expect.objectContaining({ name: 'draft' }),
-        undefined,
-        true
-      )
-    })
-
-    it('"s" toggles saved status', () => {
-      const wireRow = makeWireTableRow('wire-s')
-      const { mockSetDocumentStatus } = setupWireSelection(wireRow)
-      render(<Table columns={columns} />)
-      act(() => {
-        capturedNavCallback!(new KeyboardEvent('keydown', { key: 's' }))
-      })
-      expect(mockSetDocumentStatus).toHaveBeenCalledWith(
-        expect.objectContaining({ name: 'saved' }),
-        undefined,
-        true
-      )
-    })
-
-    it('"u" toggles used status', () => {
-      const wireRow = makeWireTableRow('wire-u')
-      const { mockSetDocumentStatus } = setupWireSelection(wireRow)
-      render(<Table columns={columns} />)
-      act(() => {
-        capturedNavCallback!(new KeyboardEvent('keydown', { key: 'u' }))
-      })
-      expect(mockSetDocumentStatus).toHaveBeenCalledWith(
-        expect.objectContaining({ name: 'used' }),
-        undefined,
-        true
-      )
-    })
-
-    it('"c" shows Wire creation dialog', () => {
-      const wireRow = makeWireTableRow('wire-c')
-      setupWireSelection(wireRow)
-      const mockShowModal = vi.fn()
-      vi.mocked(useModal).mockReturnValue({
-        showModal: mockShowModal,
-        hideModal: vi.fn(),
-        currentModal: null
-      } as unknown as ReturnType<typeof useModal>)
-      render(<Table columns={columns} />)
-      act(() => {
-        capturedNavCallback!(new KeyboardEvent('keydown', { key: 'c' }))
-      })
-      expect(mockShowModal).toHaveBeenCalledTimes(1)
-    })
-
-    it('shortcuts do nothing when selected row is not a wire', () => {
-      const plainRow = makeTableRow('plain-1')
-      const { mockSetDocumentStatus } = setupWireSelection(plainRow)
-      render(<Table columns={columns} />)
-      act(() => {
-        capturedNavCallback!(new KeyboardEvent('keydown', { key: 'r' }))
-      })
-      expect(mockSetDocumentStatus).not.toHaveBeenCalled()
-    })
-
-    it('shortcuts do nothing when no row is selected', () => {
-      setupDefaultMocks([])
-      const mockSetDocumentStatus = vi.fn()
-      vi.mocked(useWorkflowStatus).mockReturnValue([undefined, mockSetDocumentStatus] as unknown as ReturnType<typeof useWorkflowStatus>)
-      render(<Table columns={columns} />)
-      act(() => {
-        capturedNavCallback!(new KeyboardEvent('keydown', { key: 'r' }))
-      })
-      expect(mockSetDocumentStatus).not.toHaveBeenCalled()
+      expect(handleLink).toHaveBeenCalledTimes(1)
     })
   })
 })

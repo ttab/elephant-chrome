@@ -6,20 +6,11 @@ vi.mock('@/components/Table/Row', () => ({
   Row: vi.fn(() => <tr data-testid='regular-row' />)
 }))
 
-vi.mock('@/components/Table/WireRow', () => ({
-  WireRow: vi.fn(() => <tr data-testid='wire-row' />)
-}))
-
 vi.mock('@/components/Table/GroupedRowsHeader', () => ({
   GroupedRowsHeader: vi.fn(() => <tr data-testid='group-header' />)
 }))
 
-vi.mock('@/components/Table/lib/isWire', () => ({
-  isWire: vi.fn()
-}))
-
 import { GroupedRows } from '@/components/Table/GroupedRows'
-import { isWire } from '@/components/Table/lib/isWire'
 import { Row } from '@/components/Table/Row'
 import { GroupedRowsHeader } from '@/components/Table/GroupedRowsHeader'
 
@@ -52,7 +43,6 @@ const openDocuments = ['doc-a']
 describe('GroupedRows', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    vi.mocked(isWire).mockReturnValue(false)
   })
 
   it('returns an empty fragment when subRows is empty', () => {
@@ -80,34 +70,6 @@ describe('GroupedRows', () => {
     )
     expect(screen.getAllByTestId('group-header')).toHaveLength(1)
     expect(GroupedRowsHeader).toHaveBeenCalledTimes(1)
-  })
-
-  it('renders WireRow for each subRow when isWire returns true', () => {
-    vi.mocked(isWire).mockReturnValue(true)
-    const row = makeGroupRow(['sub-1', 'sub-2', 'sub-3'])
-    render(
-      <table>
-        <tbody>
-          <GroupedRows row={row} columns={columns} handleOpen={handleOpen} openDocuments={openDocuments} />
-        </tbody>
-      </table>
-    )
-    expect(screen.getAllByTestId('wire-row')).toHaveLength(3)
-    expect(screen.queryByTestId('regular-row')).toBeNull()
-  })
-
-  it('renders RegularRow for each subRow when isWire returns false', () => {
-    vi.mocked(isWire).mockReturnValue(false)
-    const row = makeGroupRow(['sub-1', 'sub-2'])
-    render(
-      <table>
-        <tbody>
-          <GroupedRows row={row} columns={columns} handleOpen={handleOpen} openDocuments={openDocuments} />
-        </tbody>
-      </table>
-    )
-    expect(screen.getAllByTestId('regular-row')).toHaveLength(2)
-    expect(screen.queryByTestId('wire-row')).toBeNull()
   })
 
   it('renders the correct number of sub-rows', () => {

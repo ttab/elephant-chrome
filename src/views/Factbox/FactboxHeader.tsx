@@ -1,5 +1,4 @@
-import { useView } from '@/hooks'
-import { useEffect, useRef, type JSX } from 'react'
+import { type JSX } from 'react'
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { ViewHeader } from '@/components/View'
 import { BookTextIcon } from '@ttab/elephant-ui/icons'
@@ -12,13 +11,6 @@ export const FactboxHeader = ({ ydoc, asDialog, onDialogClose }: {
   asDialog: boolean
   onDialogClose?: () => void
 }): JSX.Element => {
-  const { viewId } = useView()
-  const containerRef = useRef<HTMLElement | null>(null)
-
-  useEffect(() => {
-    containerRef.current = (document.getElementById(viewId))
-  }, [viewId])
-
   return (
     <ViewHeader.Root asDialog={asDialog}>
       <ViewHeader.Title
@@ -38,7 +30,7 @@ export const FactboxHeader = ({ ydoc, asDialog, onDialogClose }: {
                 <StatusMenu
                   ydoc={ydoc}
                 />
-                <MetaSheet container={containerRef.current} ydoc={ydoc} />
+                <MetaSheet ydoc={ydoc} />
               </>
             )}
             {!!ydoc && <ViewHeader.RemoteUsers ydoc={ydoc} />}

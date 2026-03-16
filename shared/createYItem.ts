@@ -71,7 +71,7 @@ export function appendAssignment(options: {
   type: 'text' | 'flash' | 'graphic' | 'picture' | 'video' | 'picture/video'
   slugLine?: string
   title?: string
-  wire?: Wire
+  wires?: Wire[]
   assignmentData?: Block['data']
 }): [number, Y.Map<unknown>] {
   const { document } = options
@@ -96,7 +96,7 @@ export function createNewAssignment({
   type,
   slugLine,
   title,
-  wire,
+  wires,
   assignmentData
 }: {
   document: Y.Doc
@@ -104,7 +104,7 @@ export function createNewAssignment({
   type: 'text' | 'flash' | 'graphic' | 'picture' | 'video' | 'picture/video'
   slugLine?: string
   title?: string
-  wire?: Wire
+  wires?: Wire[]
   assignmentData?: Block['data']
 }): Y.Map<unknown> {
   const meta = document.getMap('ele').get('meta') as Y.Map<unknown>
@@ -130,7 +130,7 @@ export function createNewAssignment({
     planningDate,
     slugLine: type !== 'flash' ? slugLine || slugLineFromPlanning : undefined,
     title: title,
-    wire,
+    wires,
     assignmentData
   })
 

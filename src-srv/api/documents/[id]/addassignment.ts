@@ -38,7 +38,7 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
     isoDateTime,
     publishTime,
     section,
-    wire,
+    wires,
     quickArticleData
   } = req.body as {
     planningId?: string
@@ -56,7 +56,7 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
       uuid: string
       title: string
     }
-    wire?: Wire
+    wires?: Wire[]
     quickArticleData?: { title?: string, text?: string, deliverableId: string }
   }
 
@@ -100,10 +100,14 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
               })]
             },
             meta: {
-              'core/newsvalue': [Block.create({
-                type: 'core/newsvalue',
-                value: String(priority)
-              })],
+              ...(priority !== undefined
+                ? {
+                    'core/newsvalue': [Block.create({
+                      type: 'core/newsvalue',
+                      value: String(priority)
+                    })]
+                  }
+                : {}),
               ...(slugline
                 ? {
                     'tt/slugline': [Block.create({
@@ -135,7 +139,7 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
     const [index] = appendAssignment({
       document,
       type,
-      wire,
+      wires,
       slugLine: slugline,
       title,
       assignmentData
