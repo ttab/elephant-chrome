@@ -5,6 +5,7 @@ import { WireSourceFilterValue } from './Value/WireSourceFilterValue'
 import { NewsvalueFilterValue } from './Value/NewsvalueFilterValue'
 import { QueryFilterValue } from './Value/QueryFilterValue'
 import { StatusFilterValue } from './Value/StatusFilterValue'
+import { WireStatusFilterValue } from './Value/WireStatusFilterValue'
 import { OrganiserFilterValue } from './Value/OrganiserFilterValue'
 import { CategoryFilterValue } from './Value/CategoryFilterValue'
 import { FromFilterValue } from './Value/FromFilterValue'
@@ -50,6 +51,8 @@ const SpecificFilterValue = ({ type, values }: {
       return <QueryFilterValue values={values} />
     case 'status':
       return <StatusFilterValue values={values} />
+    case 'wireStatus':
+      return <WireStatusFilterValue values={values} />
     case 'core/organiser':
       return <OrganiserFilterValue values={values} />
     case 'core/category':

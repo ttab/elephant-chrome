@@ -71,7 +71,13 @@ export const Stream = memo(({
   }, [skipFetch])
 
   const query = useMemo(() => constructQuery(debouncedFilters), [debouncedFilters])
-  const sort = useMemo(() => [SortingV1.create({ field: 'modified', desc: true })], [])
+  const sort = useMemo(() => {
+    const wireStatusFilter = debouncedFilters.find((f) => f.type === 'wireStatus')
+    const sortField = wireStatusFilter?.values.length === 1
+      ? `heads.${wireStatusFilter.values[0]}.created`
+      : 'modified'
+    return [SortingV1.create({ field: sortField, desc: true })]
+  }, [debouncedFilters])
   const options = useMemo(() => ({ setTableData: true, subscribe: true }), [])
 
   const { data, isLoading } = useDocuments<Wire, WireFields>({
