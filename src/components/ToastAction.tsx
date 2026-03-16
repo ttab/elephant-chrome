@@ -5,8 +5,9 @@ import type { View } from '@/types'
 import { useLink } from '@/hooks/useLink'
 import { Button, Tooltip } from '@ttab/elephant-ui'
 
-export const ToastAction = ({ documentId, withView, Icon, label, target = 'last' }: {
+export const ToastAction = ({ documentId, planningId, withView, Icon, label, target = 'last' }: {
   documentId: string | undefined
+  planningId?: string
   withView: View
   label?: string
   Icon?: LucideIcon
@@ -24,7 +25,7 @@ export const ToastAction = ({ documentId, withView, Icon, label, target = 'last'
         <Button
           variant='icon'
           className='text-muted-foreground'
-          onClick={(event) => openDocument(event, { id: documentId }, target)}
+          onClick={(event) => openDocument(event, { id: documentId, planningId }, target)}
         >
           {Icon && <Icon size={16} strokeWidth={1.75} />}
         </Button>
