@@ -15,6 +15,7 @@ import {
 } from '@tanstack/react-table'
 import { FilterValue } from './Filter/FilterValue'
 import { FilterMenu } from './Filter/FilterMenu'
+import type { WireFilter } from '../hooks/useWireViewState'
 import { type WireStream } from '../hooks/useWireViewState'
 import type { WireStatus } from '../lib/setWireStatus'
 import { StreamGroupHeader } from './StreamGroupHeader'
@@ -71,13 +72,7 @@ export const Stream = memo(({
   }, [skipFetch])
 
   const query = useMemo(() => constructQuery(debouncedFilters), [debouncedFilters])
-  const sort = useMemo(() => {
-    const wireStatusFilter = debouncedFilters.find((f) => f.type === 'wireStatus')
-    const sortField = wireStatusFilter?.values.length === 1
-      ? `heads.${wireStatusFilter.values[0]}.created`
-      : 'modified'
-    return [SortingV1.create({ field: sortField, desc: true })]
-  }, [debouncedFilters])
+  const sort = useMemo(() => [SortingV1.create({ field: 'modified', desc: true })], [])
   const options = useMemo(() => ({ setTableData: true, subscribe: true }), [])
 
   const { data, isLoading } = useDocuments<Wire, WireFields>({
@@ -116,6 +111,10 @@ export const Stream = memo(({
         next = Array.from(byId.values())
       }
 
+      const wireStatusFilter = wireStream.filters.find((f) => f.type === 'wireStatus')
+      if (wireStatusFilter?.values.length) {
+        next = filterStatuses(next, wireStatusFilter)
+      }
       allDataRef.current = next
       return next
     })
@@ -123,7 +122,7 @@ export const Stream = memo(({
     if (!isLoading) {
       loadingRef.current = false
     }
-  }, [data, isLoading, page])
+  }, [data, isLoading, page, wireStream.filters])
 
   // Reset to page 1 when debounced filters change.
   // Don't clear allData here — the data effect replaces it on page 1 once the fetch completes,
@@ -153,6 +152,29 @@ export const Stream = memo(({
     scrollContainer.addEventListener('scroll', handleScroll)
     return () => scrollContainer.removeEventListener('scroll', handleScroll)
   }, [isLoading, data])
+
+  const filterStatuses = (wires: Wire[], wireStatusFilter: WireFilter): Wire[] => {
+    const selectedStatuses = new Set(wireStatusFilter.values)
+    const ALL_STATUSES = ['read', 'saved', 'used', 'flash']
+    return wires.filter((wire) => {
+      const validStatuses = ALL_STATUSES
+        .map((key) => ({
+          key,
+          version: Number(wire.fields?.[`heads.${key}.version` as keyof typeof wire.fields]?.values?.[0]),
+          timestamp: new Date(wire.fields?.[`heads.${key}.created` as keyof typeof wire.fields]?.values?.[0] ?? '').getTime()
+        }))
+        .filter((s) => s.version >= 1 && !isNaN(s.timestamp))
+
+      if (!validStatuses.length) return false
+
+      const current = validStatuses.reduce((a, b) => {
+        if (b.version !== a.version) return b.version > a.version ? b : a
+        return b.timestamp > a.timestamp ? b : a
+      })
+
+      return selectedStatuses.has(current.key)
+    })
+  }
 
   // Convert selected wires array to TanStack Table format
   const rowSelection = useMemo<RowSelectionState>(() => {

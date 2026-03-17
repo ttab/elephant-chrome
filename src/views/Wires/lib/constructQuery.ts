@@ -47,31 +47,14 @@ export function constructQuery(filters: WireFilter[]): QueryV1 | undefined {
     } else if (filter.type === 'core/newsvalue') {
       addCondition('document.meta.core_newsvalue.value', filter.values)
     } else if (filter.type === 'wireStatus') {
-      // Hierarchy (highest to lowest): used > saved > read
-      // Each status condition must include must-not exclusions for higher statuses
-      const higherStatuses: Record<string, string[]> = {
-        used: ['flash', 'saved', 'read'],
-        flash: ['used', 'saved', 'read'],
-        read: [],
-        saved: []
-      }
+      const statusConditions = filter.values.map((status) =>
+        QueryV1.create({
 
-      const rangeGte1 = (status: string) => QueryV1.create({
-        conditions: {
-          oneofKind: 'range',
-          range: RangeQueryV1.create({ field: `heads.${status}.version`, gte: '1' })
-        }
-      })
-
-      const statusConditions = filter.values.map((status) => QueryV1.create({
-        conditions: {
-          oneofKind: 'bool',
-          bool: BoolQueryV1.create({
-            must: [rangeGte1(status)],
-            mustNot: (higherStatuses[status] ?? []).map(rangeGte1)
-          })
-        }
-      }))
+          conditions: {
+            oneofKind: 'range',
+            range: RangeQueryV1.create({ field: `heads.${status}.version`, gte: '1' })
+          }
+        }))
 
       boolConditions.must.push(QueryV1.create({
         conditions: {
