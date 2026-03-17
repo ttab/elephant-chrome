@@ -99,7 +99,7 @@ export const StreamEntry = memo(({
   const modified = new Date(entry.fields.modified.values[0])
   const compositeId = `${streamId}:${entry.id}`
   const { status, isFlash, wasFlash } = wireState
-  
+
   return (
     <div className='group relative'>
       <div
