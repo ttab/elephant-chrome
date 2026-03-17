@@ -1,5 +1,4 @@
 import { DateChanger } from '@/components/Header/Datechanger'
-import { TabsGrid } from '@/components/Header/LayoutSwitch'
 import { type View } from '@/types/index'
 import { PersonalAssignmentsFilter } from './PersonalAssignmentsFilter'
 import { useMemo, type JSX } from 'react'
@@ -25,10 +24,6 @@ export const Header = ({ assigneeId, type, docType }: {
       {showButton && (
         <AddButtonGroup type={type} docType={docType} query={query} />
       )}
-
-      <div className='hidden sm:block'>
-        <TabsGrid />
-      </div>
 
       <DateChanger type={type} />
 

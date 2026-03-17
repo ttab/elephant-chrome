@@ -113,7 +113,7 @@ export const Editor = ({ id, version, textOnly = false, direct, versionStatusHis
       )}
 
       <Textbit.Root
-        key={id}
+        key={documentUrl}
         value={filterText(content, textOnly)}
         plugins={getPlugins()}
         readOnly

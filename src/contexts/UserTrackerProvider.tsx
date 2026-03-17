@@ -4,11 +4,11 @@ import {
   useState,
   useMemo,
   useEffect,
+  useRef,
   type JSX
 } from 'react'
 import { HocuspocusProvider } from '@hocuspocus/provider'
 import { useSession } from 'next-auth/react'
-import { createStateless, StatelessType } from '@/shared/stateless'
 import { useWebSocket } from '@/modules/yjs/hooks'
 
 interface UserTrackerProviderState {
@@ -38,6 +38,9 @@ export const UserTrackerProvider = ({ children }: PropsWithChildren): JSX.Elemen
     throw new Error('UserTracker is not allowed without a valid access_token')
   }
 
+  const accessTokenRef = useRef(data.accessToken)
+  accessTokenRef.current = data.accessToken
+
   const provider = useMemo(() => {
     if (!webSocketProvider) {
       return
@@ -46,7 +49,7 @@ export const UserTrackerProvider = ({ children }: PropsWithChildren): JSX.Elemen
     return new HocuspocusProvider({
       websocketProvider: webSocketProvider,
       name: data.user.sub.replace('core://user/', ''),
-      token: data.accessToken,
+      token: () => accessTokenRef.current,
       onConnect: () => {
         setConnected(true)
       },
@@ -73,9 +76,7 @@ export const UserTrackerProvider = ({ children }: PropsWithChildren): JSX.Elemen
 
   // TODO: This is duplicated in CollaborationProvider, there might be room for improvement
   useEffect(() => {
-    // When the token is refreshed we need to send it to the server
-    // and update the connection context with the new token
-    provider?.sendStateless(createStateless(StatelessType.AUTH, { accessToken: data.accessToken || '' }))
+    void provider?.sendToken()
   }, [provider, data.accessToken])
 
   if (provider) {
