@@ -68,6 +68,17 @@ export async function initializeAuthor({ url, session, repository }: {
                     }
                   }]
                 : []),
+              ...(session.user.sub !== normalizeUserUri(session.user.sub)
+                ? [{
+                    conditions: {
+                      oneofKind: 'term' as const,
+                      term: TermQueryV1.create({
+                        field: 'document.rel.same_as.uri',
+                        value: session.user.sub
+                      })
+                    }
+                  }]
+                : []),
               {
                 conditions: {
                   oneofKind: 'term',
@@ -108,7 +119,7 @@ export async function initializeAuthor({ url, session, repository }: {
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
     toast.error(`Kunde inte ${operation === 'update' ? 'uppdatera' : 'skapa'} författardokument: ${errorMessage}`)
-    throw new Error(`Failed to initialize author: ${errorMessage}`)
+    throw new Error(`Failed to initialize author: ${errorMessage}`, { cause: error })
   }
 }
 
@@ -206,19 +217,29 @@ function createAuthorDoc(session: Session, envRole: 'stage' | 'prod', language: 
   const decodedToken = decodeJwt(session.accessToken) as {
     given_name: string
     family_name: string
+    email: string
   }
+
+
+  const parsedName = parseNameFromEmail(decodedToken.email)
+  const firstName = decodedToken.given_name || parsedName?.firstName
+  const lastName = decodedToken.family_name || parsedName?.lastName
+
+  const title = session.user.name?.includes('@')
+    ? [firstName, lastName].filter(Boolean).join(' ') || session.user.name
+    : session.user.name
 
   const uuid = generateAuthorUUID(session.user.sub)
   const document = Document.create({
     uuid,
     uri: `core://author/${uuid}`,
     type: 'core/author',
-    title: session.user.name,
+    title,
     meta: [{
       type: 'core/author',
       data: {
-        firstName: decodedToken.given_name,
-        lastName: decodedToken.family_name
+        firstName,
+        lastName
       }
     }, {
       type: 'core/contact-info',
@@ -231,4 +252,22 @@ function createAuthorDoc(session: Session, envRole: 'stage' | 'prod', language: 
   })
 
   return appendSub(document, session, envRole)
+}
+
+export function parseNameFromEmail(email: string | undefined): { firstName: string, lastName: string } | undefined {
+  if (!email) return undefined
+  const [localPart] = email.split('@')
+  const parts = localPart.split(/[._]/).filter(Boolean)
+
+  if (parts.length < 2) {
+    return undefined
+  }
+
+  const capitalize = (s: string) =>
+    s.split('-').map((p) => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase()).join('-')
+
+  return {
+    firstName: parts.slice(0, -1).map(capitalize).join(' '),
+    lastName: capitalize(parts[parts.length - 1])
+  }
 }

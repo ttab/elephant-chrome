@@ -39,6 +39,15 @@ describe('extractUserIdFromUri', () => {
     expect(extractUserIdFromUri('core://user/')).toBeUndefined()
   })
 
+  it('extracts UUID from keycloak://user/{uuid}', () => {
+    const uuid = 'cf8eb669-0c0f-432d-8fdf-b479ac2082a1'
+    expect(extractUserIdFromUri(`keycloak://user/${uuid}`)).toBe(uuid)
+  })
+
+  it('returns undefined for keycloak://user/ trailing slash', () => {
+    expect(extractUserIdFromUri('keycloak://user/')).toBeUndefined()
+  })
+
   it('returns undefined for non-user URIs', () => {
     expect(extractUserIdFromUri('https://example.com/foo'))
       .toBeUndefined()
@@ -67,12 +76,24 @@ describe('normalizeUserUri', () => {
     )
   })
 
-  it('returns original string when no ID can be extracted', () => {
-    expect(normalizeUserUri('core://user/')).toBe('core://user/')
+  it('normalizes keycloak://user/{uuid} to core://user/{uuid}', () => {
+    const uuid = 'cf8eb669-0c0f-432d-8fdf-b479ac2082a1'
+    expect(normalizeUserUri(`keycloak://user/${uuid}`)).toBe(
+      `core://user/${uuid}`
+    )
+  })
+
+  it('returns keycloak://user/<original-string> when no ID can be extracted', () => {
+    expect(normalizeUserUri('71f93d76-db76-4e26-b779-14d8c601e4ae')).toBe('keycloak://user/71f93d76-db76-4e26-b779-14d8c601e4ae')
   })
 
   it('is idempotent', () => {
     const once = normalizeUserUri('core://user/sub/5558')
+    expect(normalizeUserUri(once)).toBe(once)
+  })
+
+  it('is idempotent for keycloak URIs', () => {
+    const once = normalizeUserUri('keycloak://user/cf8eb669-0c0f-432d-8fdf-b479ac2082a1')
     expect(normalizeUserUri(once)).toBe(once)
   })
 })
@@ -88,6 +109,13 @@ describe('generateAuthorUUID', () => {
     const canonical = generateAuthorUUID('core://user/5558')
     const withSub = generateAuthorUUID('core://user/sub/5558')
     expect(canonical).toBe(withSub)
+  })
+
+  it('returns same UUID for keycloak and core URIs with same ID', () => {
+    const uuid = 'cf8eb669-0c0f-432d-8fdf-b479ac2082a1'
+    const fromCore = generateAuthorUUID(`core://user/${uuid}`)
+    const fromKeycloak = generateAuthorUUID(`keycloak://user/${uuid}`)
+    expect(fromCore).toBe(fromKeycloak)
   })
 
   it('returns different UUIDs for different users', () => {

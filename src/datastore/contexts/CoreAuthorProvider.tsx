@@ -49,7 +49,7 @@ export const CoreAuthorProvider = ({ children }: {
           email: _?.['document.meta.core_contact_info.data.email']?.[0].trim() || '',
           sub: (() => {
             const uri = _?.['document.rel.same_as.uri']
-              ?.find((m: string) => m?.startsWith('core://user/'))
+              ?.find((m: string) => m?.startsWith('core://user/') || m?.startsWith('keycloak://user/'))
               ?.trim()
             return uri ? normalizeUserUri(uri) : ''
           })()
