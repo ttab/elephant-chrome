@@ -372,7 +372,7 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
       transitions: {
         usable: {
           verify: false,
-          title: 'Klar',
+          title: 'Använd',
           description: 'Klarmarkera faktarutan för användning'
         },
         unpublished: {
