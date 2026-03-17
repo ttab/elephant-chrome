@@ -36,6 +36,52 @@ export type { InjectionPointProps, InjectionPointRendererProps } from '@/lib/inj
 export { useSlate } from 'slate-react'
 export { Editor as SlateEditor, Range as SlateRange } from 'slate'
 
+// Document service for plugins (full Twirp Documents client)
+export { useDocumentService } from './useDocumentAPI'
+export type { DocumentService } from './useDocumentAPI'
+
+// Comment service for plugins (threaded commenting with ACL)
+export { useCommentService } from './useCommentService'
+export type { CommentService } from './useCommentService'
+
+// Y.XmlText conversion utilities for Textbit-compatible collaborative text
+export { toSlateYXmlText } from '@/shared/transformations/lib/toSlateYXmlText'
+export { slateNodesToInsertDelta } from '@slate-yjs/core'
+
+// NewsDoc ↔ Slate transformations
+export { newsDocToSlate, slateToNewsDoc } from '@/shared/transformations/newsdoc'
+
+// Multi-editor support — prevents cross-editor interference in slate-yjs
+export { UniqueEditorOrigin } from '@/components/UniqueEditorOrigin'
+
+// Textbit editor components and hooks for building full editors in plugins
+export {
+  Textbit,
+  Toolbar as TextbitToolbar,
+  Menu as TextbitMenu,
+  useTextbit,
+  usePluginRegistry,
+  useAction,
+  useEditor,
+  useContextMenuHints,
+  type TBPluginDefinition,
+  type TBPluginInitFunction,
+} from '@ttab/textbit'
+
+// Textbit plugins for editor functionality
+export {
+  Bold,
+  Italic,
+  Underline,
+  Link,
+  Text as TextPlugin,
+  LocalizedQuotationMarks,
+  Blockquote,
+  OrderedList,
+  UnorderedList,
+  Table as TablePlugin,
+} from '@ttab/textbit-plugins'
+
 // Types that plugins need for registration and routing
 export type { ViewProps, ViewMetadata, ViewRegistryItem } from '@/types'
 export type { ActivityDefinition, ViewRouteFunc, ResolvedRoute } from '@/lib/documentActivity'

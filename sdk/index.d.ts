@@ -143,6 +143,55 @@ export interface ResolvedRoute {
   target?: 'self' | 'blank' | 'last' | undefined;
 }
 
+export { DocumentsClient, type GetDocumentRequest, type GetDocumentResponse, type BulkGetRequest, type BulkGetResponse, type Document, type Block } from '@ttab/elephant-api/repository';
+export type { RpcOptions } from '@protobuf-ts/runtime-rpc';
+
+export interface DocumentService {
+  /** The Twirp DocumentsClient — call any RPC method directly. */
+  client: import('@ttab/elephant-api/repository').DocumentsClient;
+  /** Pre-built RpcOptions with the current session's access token. */
+  options: import('@protobuf-ts/runtime-rpc').RpcOptions;
+}
+
+export declare function useDocumentService(): DocumentService | null;
+
+export { CommentsClient, type PostCommentRequest, type PostCommentResponse, type GetThreadRequest, type GetThreadResponse, type ListThreadsRequest, type ListThreadsResponse, type GetCommentRequest, type GetCommentResponse, type DeleteCommentRequest, type DeleteCommentResponse, type SetThreadACLRequest, type SetThreadACLResponse, type Comment, type CommentThread, type CommentACLEntry } from '@ttab/elephant-tt-api/intelligence';
+
+export interface CommentService {
+  /** The Twirp CommentsClient — call any RPC method directly. */
+  client: import('@ttab/elephant-tt-api/intelligence').CommentsClient;
+  /** Pre-built RpcOptions with the current session's access token. */
+  options: import('@protobuf-ts/runtime-rpc').RpcOptions;
+}
+
+export declare function useCommentService(): CommentService | null;
+
+/** Convert a plain text or HTML string into a Textbit-compatible Y.XmlText (standalone — not yet integrated into a doc). */
+export declare function toSlateYXmlText(text: string): Y.XmlText;
+
+/** Convert Slate Descendant[] to an insert delta for Y.XmlText.applyDelta(). From @slate-yjs/core. */
+export declare function slateNodesToInsertDelta(nodes: import('slate').Descendant[]): unknown[];
+
+/** Convert NewsDoc Block[] to Slate TBElement[] */
+export declare function newsDocToSlate(content: Block[]): unknown[];
+
+/** Convert Slate TBElement[] to NewsDoc Block[] */
+export declare function slateToNewsDoc(elements: unknown[]): Block[] | undefined;
+
+/**
+ * Patches the current Slate-Yjs editor to use a unique transaction origin.
+ * Prevents cross-editor interference when multiple Textbit editors share
+ * the same Y.Doc. Must be rendered as a child of Textbit.Root.
+ */
+export declare function UniqueEditorOrigin(): null;
+
+// Textbit editor — re-exported for plugin use
+export { Textbit, Toolbar as TextbitToolbar, Menu as TextbitMenu, useTextbit, usePluginRegistry, useAction, useEditor, useContextMenuHints } from '@ttab/textbit';
+export type { TBPluginDefinition, TBPluginInitFunction } from '@ttab/textbit';
+
+// Textbit plugins
+export { Bold, Italic, Underline, Link, Text as TextPlugin, LocalizedQuotationMarks, Blockquote, OrderedList, UnorderedList, Table as TablePlugin } from '@ttab/textbit-plugins';
+
 export interface PluginInstance {
   activate: (context: PluginContext) => void | (() => void);
 }

@@ -34,6 +34,7 @@ export interface RegistryProviderState {
     userUrl: URL
     faroUrl: URL
     baboonUrl: URL
+    intelligenceUrl: URL
   }
   repository?: Repository
   workflow?: Workflow
@@ -61,7 +62,8 @@ export const initialState: RegistryProviderState = {
     spellcheckUrl: new URL('http://localhost'),
     userUrl: new URL('http://localhost'),
     faroUrl: new URL('http://localhost'),
-    baboonUrl: new URL('http://localhost')
+    baboonUrl: new URL('http://localhost'),
+    intelligenceUrl: new URL('http://localhost')
   },
   dispatch: () => { }
 }
