@@ -14,17 +14,18 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator
 } from '@ttab/elephant-ui'
-import { documentTypeValueFormat } from '@/defaults/documentTypeFormats'
+import { addButtonGroupValueFormat } from '@/defaults/documentTypeFormats'
 import type { buttonVariants } from '@ttab/elephant-ui'
 import type { VariantProps } from 'class-variance-authority'
 import type { QueryParams } from '@/hooks/useQuery'
-import { applicationMenu } from '@/defaults/applicationMenuItems'
 import type { LucideIcon } from 'lucide-react'
 import { useLink } from '@/hooks/useLink'
 import { useRegistry } from '@/hooks/index'
 import { useSession } from 'next-auth/react'
 import { createNewFactbox } from './lib/createNewFactbox'
 import { toast } from 'sonner'
+
+const addButtonTypes = ['core/planning-item', 'core/event', 'core/article', 'core/factbox', 'core/flash'] as const
 
 type Variant = VariantProps<typeof buttonVariants>['variant']
 type ButtonView = { name: View, type: string, icon?: { icon?: LucideIcon, color?: string } }
@@ -42,7 +43,8 @@ const AddButton = ({
   view: ButtonView
   onClick: (view: ButtonView) => void
 }) => {
-  const typeLabel = (t?: string) => t ? documentTypeValueFormat[t].label : ''
+  const typeLabel = (t?: string) => t ? addButtonGroupValueFormat[t].label : ''
+
   return (
     <Button
       size='sm'
@@ -61,19 +63,11 @@ export const AddButtonGroup = ({ docType = 'core/planning-item', query }: { type
   const { repository } = useRegistry()
   const openFactboxEditor = useLink('Factbox')
   const { data: session } = useSession()
-  const getIcon = (t: View): { icon: LucideIcon | undefined, color?: string } => {
-    const group = applicationMenu.groups.find((g) => g.items.find((itm) => itm.name.includes(t)))
-    const icon = group?.items.find((item) => item.name.includes(t))
-    return { icon: icon?.icon, color: icon?.color }
-  }
 
-  const views: Array<{ name: View, type: string, icon?: { icon?: LucideIcon, color?: string } }> = [
-    { name: 'Planning', type: 'core/planning-item', icon: getIcon('Planning') },
-    { name: 'Event', type: 'core/event', icon: getIcon('Event') },
-    { name: 'QuickArticle', type: 'core/article', icon: getIcon('QuickArticle') },
-    { name: 'Factbox', type: 'core/factbox', icon: getIcon('Factbox') },
-    { name: 'Flash', type: 'core/flash', icon: getIcon('Flash') }
-  ]
+  const views: ButtonView[] = addButtonTypes.map((type) => {
+    const format = addButtonGroupValueFormat[type]
+    return { name: format.key as View, type, icon: { icon: format.icon, color: format.color } }
+  })
 
   const firstItem = views.find((view) => view.type === docType) as ButtonView
   const ItemIcon = firstItem.icon

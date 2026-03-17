@@ -1,7 +1,8 @@
-import { parseStateless, type StatelessAuth, StatelessType } from '@/shared/stateless.js'
 import type { User } from '@auth/express'
+import type {
+  onTokenSyncPayload
+} from '@hocuspocus/server'
 import {
-  type onStatelessPayload,
   type Extension,
   type onAuthenticatePayload
 } from '@hocuspocus/server'
@@ -45,19 +46,26 @@ export class Auth implements Extension {
     }
   }
 
-  async onStateless({ payload, connection }: onStatelessPayload): Promise<void> {
-    const statelessMessage = parseStateless<StatelessAuth>(payload)
+  async onTokenSync({ token, connection }: onTokenSyncPayload) {
+    if (!token) {
+      throw new Error('No token provided for sync')
+    }
 
-    if (statelessMessage.type === StatelessType.AUTH) {
-      const jwt = await this.validateAccessToken(statelessMessage.message.accessToken)
+    try {
+      // Verify the new token
+      const jwt = await this.validateAccessToken(token)
 
       const context = connection.context as {
         accessToken: string
         user: User
       }
 
-      context.accessToken = statelessMessage.message.accessToken
+      context.accessToken = token
       context.user = jwt
+
+      return { lastTokenSync: new Date() }
+    } catch (err) {
+      throw new Error(`Token sync failed`, { cause: err })
     }
   }
 

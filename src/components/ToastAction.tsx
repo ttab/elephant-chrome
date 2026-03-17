@@ -19,14 +19,16 @@ export const ToastAction = ({ documentId, withView, Icon, label, target = 'last'
   }
 
   return (
-    <Tooltip content={label}>
-      <Button
-        variant='icon'
-        className='text-muted-foreground'
-        onClick={(event) => openDocument(event, { id: documentId }, target)}
-      >
-        {Icon && <Icon size={16} strokeWidth={1.75} />}
-      </Button>
-    </Tooltip>
+    <div className='flex w-full justify-end'>
+      <Tooltip content={label}>
+        <Button
+          variant='icon'
+          className='text-muted-foreground'
+          onClick={(event) => openDocument(event, { id: documentId }, target)}
+        >
+          {Icon && <Icon size={16} strokeWidth={1.75} />}
+        </Button>
+      </Tooltip>
+    </div>
   )
 }

@@ -8,6 +8,7 @@ interface useNavigationKeysOptions {
   keys: NavigationKey[]
   stopPropagation?: boolean
   preventDefault?: boolean
+  skipIfHandled?: boolean
   enabled?: boolean
   capture?: boolean
   elementRef?: React.RefObject<HTMLElement | HTMLDivElement | null> | null
@@ -19,6 +20,7 @@ export const useNavigationKeys = (
     keys,
     stopPropagation = true,
     preventDefault = true,
+    skipIfHandled = false,
     enabled = true,
     capture = false,
     elementRef
@@ -68,6 +70,10 @@ export const useNavigationKeys = (
 
     // If key is a navigation key
     if (keys.some((key) => keyCombination === key)) {
+      if (skipIfHandled && event.defaultPrevented) {
+        return
+      }
+
       if (stopPropagation) {
         event.stopPropagation()
       }
@@ -85,7 +91,7 @@ export const useNavigationKeys = (
     if (!event.defaultPrevented && ['ArrowUp', 'ArrowDown'].includes(event.key)) {
       event.preventDefault()
     }
-  }, [onNavigation, keys, preventDefault, stopPropagation, isActive, viewId, elementRef])
+  }, [onNavigation, keys, preventDefault, stopPropagation, skipIfHandled, isActive, viewId, elementRef])
 
   useEffect(() => {
     if (!enabled) {

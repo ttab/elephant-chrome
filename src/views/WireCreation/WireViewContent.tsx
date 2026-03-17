@@ -70,7 +70,13 @@ export const WireViewContent = (props: ViewProps & {
         <ViewHeader.Content>
           {props.asDialog && (
             <div className='flex w-full h-full items-center space-x-2 font-bold'>
-              <ViewHeader.Title name='Wires' title='Skapa artikel' icon={CableIcon} iconColor='#FF6347' />
+              <ViewHeader.Title
+                name='Wires'
+                title='Skapa artikel'
+                icon={CableIcon}
+                iconColor='#FF6347'
+                asDialog={props.asDialog}
+              />
             </div>
           )}
         </ViewHeader.Content>
@@ -85,11 +91,13 @@ export const WireViewContent = (props: ViewProps & {
           {!!selectedPlanning && <ValidateNow />}
           <Form.Content>
             <Form.Group icon={CableIcon}>
-              <Input
-                className='pl-0 pt-2 h-8 text-medium font-semibold border-0 truncate'
-                readOnly
-                value={props.wires?.[0]?.fields['document.title'].values?.[0]}
-              />
+              <>
+                <Input
+                  className='pl-0 pt-2 h-8 text-medium font-semibold border-0 truncate'
+                  readOnly
+                  value={props.wires?.[0]?.fields['document.title'].values?.[0]}
+                />
+              </>
             </Form.Group>
 
             {props.wires?.length > 1 && (
@@ -184,14 +192,11 @@ export const WireViewContent = (props: ViewProps & {
 
             {!selectedPlanning && (
               <Form.Group icon={TagsIcon}>
-
                 <Section ydoc={ydoc} path='links.core/section[0]' onSelect={setSection} />
-                <SluglineEditable ydoc={ydoc} value={slugline} />
                 <Newsvalue ydoc={ydoc} path='meta.core/newsvalue[0].value' />
               </Form.Group>
-
-
             )}
+
             {!selectedPlanning && (
               <Form.Group icon={GanttChartSquareIcon}>
                 <>
@@ -215,35 +220,39 @@ export const WireViewContent = (props: ViewProps & {
 
             <Form.Group icon={TagIcon}>
               {selectedPlanning && (
-                <SluglineEditable
-                  key={selectedPlanning?.value}
-                  ydoc={ydoc}
-                  value={slugline}
-                  compareValues={[
-                    ...(selectedPlanning?.payload?.sluglines || []),
-                    slugline?.toString()
-                  ]}
-                />
+                <>
+                  <SluglineEditable
+                    key={selectedPlanning?.value}
+                    ydoc={ydoc}
+                    value={slugline}
+                    compareValues={[
+                      ...(selectedPlanning?.payload?.sluglines || []),
+                      slugline?.toString()
+                    ]}
+                  />
+                </>
               )}
 
               {(!selectedPlanning) && (
-                <SluglineEditable
-                  ydoc={ydoc}
-                  value={slugline}
-                />
+                <>
+                  <SluglineEditable
+                    ydoc={ydoc}
+                    value={slugline}
+                  />
+                </>
               )}
             </Form.Group>
-
-            <UserMessage asDialog={!!props?.asDialog}>
-              {!selectedPlanning
-                ? (<>Väljer du ingen planering kommer en ny planering med tillhörande uppdrag skapas åt dig.</>)
-                : (<>Denna artikel kommer läggas i ett nytt uppdrag i den valda planeringen</>)}
-            </UserMessage>
+            <>
+              <UserMessage asDialog={!!props?.asDialog}>
+                {!selectedPlanning
+                  ? (<>Väljer du ingen planering kommer en ny planering med tillhörande uppdrag skapas åt dig.</>)
+                  : (<>Denna artikel kommer läggas i ett nytt uppdrag i den valda planeringen</>)}
+              </UserMessage>
+            </>
 
           </Form.Content>
 
-          {
-            showVerifyDialog
+          {showVerifyDialog
             && (
               <CreatePrompt
                 title='Skapa artikel från telegram'
@@ -289,25 +298,10 @@ export const WireViewContent = (props: ViewProps & {
                   setShowVerifyDialog(false)
                 }}
               />
-            )
-          }
+            )}
 
-          <Form.Footer className='flex justify-between'>
-            <>
-              <Button
-                variant='secondary'
-                autoFocus
-                onClick={() => {
-                  props.onDialogClose?.()
-                  props.onDocumentCreated?.()
-                }}
-              >
-                Markera som använd
-              </Button>
-            </>
-            <Form.Submit
-              onSubmit={handleSubmit}
-            >
+          <Form.Footer className='flex justify-between flex-row-reverse'>
+            <Form.Submit onSubmit={handleSubmit}>
               <Button type='submit'>Skapa artikel</Button>
             </Form.Submit>
           </Form.Footer>

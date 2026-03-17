@@ -1,0 +1,47 @@
+Source Reference License
+
+Copyright (c) 2026 TT Nyhetsbyrån AB. All rights reserved.
+
+1. Definitions
+
+"Software" means the source code, documentation, and associated materials made available under this License.
+
+"Plugin" means a software component created by you that extends or integrates with the Software solely through the official interfaces or APIs documented and published by TT Nyhetsbyrån AB.
+
+"You" means the individual or legal entity exercising rights under this License.
+
+2. Reference and Debugging Rights
+
+Subject to the terms of this License, TT Nyhetsbyrån AB grants You a limited, non-exclusive, non-transferable, revocable right to read and inspect the Software solely for the purpose of:
+
+- Understanding the behavior of the Software to aid in debugging your Plugin; and
+- Developing Plugins that interface with the Software through its official APIs.
+
+3. Restrictions
+
+You may not, and may not permit others to:
+
+- **Run or deploy** the Software, in whole or in part, on any infrastructure, whether personal, commercial, or otherwise;
+- **Modify** the Software or create derivative works based upon it;
+- **Distribute, sublicense, sell, or transfer** the Software or any portion of it to any third party;
+- **Use** the Software, or any portion of it, as the basis for a competing product or service.
+
+4. Plugin Development
+
+Nothing in this License restricts your right to develop, distribute, or commercialize Plugins, provided that such Plugins do not incorporate any portion of the Software's source code and interact with the Software solely through its official APIs.
+
+5. No Other Rights
+
+All rights not expressly granted in Section 2 are reserved by TT Nyhetsbyrån AB. This License does not grant any rights to trademarks, trade names, or service marks of TT Nyhetsbyrån AB.
+
+6. Disclaimer of Warranties
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
+
+7. Limitation of Liability
+
+IN NO EVENT SHALL TT Nyhetsbyrån AB BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OF THE SOFTWARE FOR REFERENCE PURPOSES.
+
+8. Termination
+
+This License and the rights granted hereunder will terminate automatically if You fail to comply with any of its terms. Upon termination, You must destroy all copies of the Software in your possession.
