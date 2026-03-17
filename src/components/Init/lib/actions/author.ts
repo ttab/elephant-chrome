@@ -221,15 +221,20 @@ function createAuthorDoc(session: Session, envRole: 'stage' | 'prod', language: 
   }
 
 
-  const firstName = decodedToken.given_name || parseNameFromEmail(decodedToken.email)?.firstName
-  const lastName = decodedToken.family_name || parseNameFromEmail(decodedToken.email)?.lastName
+  const parsedName = parseNameFromEmail(decodedToken.email)
+  const firstName = decodedToken.given_name || parsedName?.firstName
+  const lastName = decodedToken.family_name || parsedName?.lastName
+
+  const title = session.user.name?.includes('@')
+    ? [firstName, lastName].filter(Boolean).join(' ') || session.user.name
+    : session.user.name
 
   const uuid = generateAuthorUUID(session.user.sub)
   const document = Document.create({
     uuid,
     uri: `core://author/${uuid}`,
     type: 'core/author',
-    title: session.user.name,
+    title,
     meta: [{
       type: 'core/author',
       data: {
