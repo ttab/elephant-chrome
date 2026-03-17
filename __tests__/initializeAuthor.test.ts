@@ -251,6 +251,64 @@ describe('initializeAuthor', () => {
     )).toBe(true)
   })
 
+  it('should create author document for keycloak://user sub', async () => {
+    mockSession.user.sub = 'keycloak://user/cf8eb669-0c0f-432d-8fdf-b479ac2082a1'
+    setupMocks({ ok: true, hits: [] }, { status: { code: 'OK' } })
+
+    const result = await initializeAuthor({
+      url: mockUrl,
+      session: mockSession,
+      repository: mockRepository
+    })
+
+    const expectedUuid = generateAuthorUUID('keycloak://user/cf8eb669-0c0f-432d-8fdf-b479ac2082a1')
+
+    expect(result).toBe(true)
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    expect(mockRepository.saveDocument).toHaveBeenCalledWith(
+      expect.objectContaining({
+        uuid: expectedUuid,
+        uri: `core://author/${expectedUuid}`
+      }),
+      mockSession.accessToken,
+      expect.any(String)
+    )
+
+    // Stored link should use normalized core://user/ format
+    const savedDoc = (mockRepository.saveDocument as Mock)
+      .mock.calls[0][0] as { links: Array<Record<string, string>> }
+    const keycloakLinks = savedDoc.links.filter(
+      (l) => l.rel === 'same-as' && l.type === 'tt/keycloak'
+    )
+    expect(keycloakLinks[0].uri).toBe('core://user/cf8eb669-0c0f-432d-8fdf-b479ac2082a1')
+  })
+
+  it('should find and validate existing author doc for keycloak://user sub', async () => {
+    mockSession.user.sub = 'keycloak://user/cf8eb669-0c0f-432d-8fdf-b479ac2082a1'
+    setupMocks({
+      ok: true,
+      hits: [{
+        document: {
+          links: [{
+            rel: 'same-as',
+            type: 'tt/keycloak',
+            uri: 'core://user/cf8eb669-0c0f-432d-8fdf-b479ac2082a1',
+            role: 'prod'
+          }]
+        }
+      }]
+    })
+
+    const result = await initializeAuthor({
+      url: mockUrl,
+      session: mockSession,
+      repository: mockRepository
+    })
+
+    expect(result).toBe(true)
+    expect(toast.success).not.toHaveBeenCalled()
+  })
+
   it('should throw an error if saving the document fails', async () => {
     setupMocks({ ok: true, hits: [] }, { status: { code: 'ERROR' } })
 

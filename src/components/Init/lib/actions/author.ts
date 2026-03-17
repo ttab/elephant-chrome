@@ -68,6 +68,17 @@ export async function initializeAuthor({ url, session, repository }: {
                     }
                   }]
                 : []),
+              ...(session.user.sub !== normalizeUserUri(session.user.sub)
+                ? [{
+                    conditions: {
+                      oneofKind: 'term' as const,
+                      term: TermQueryV1.create({
+                        field: 'document.rel.same_as.uri',
+                        value: session.user.sub
+                      })
+                    }
+                  }]
+                : []),
               {
                 conditions: {
                   oneofKind: 'term',
