@@ -289,7 +289,12 @@ export const WireViewContent = (props: ViewProps & {
                     })
                     .catch((ex: unknown) => {
                       console.log(ex)
-                      if (!(ex instanceof Error) || ex.message !== 'CreateAssignmentError') {
+                      if (!(ex instanceof Error) || ex.message === 'AssignmentRollbackError') {
+                        toast.error('Artikeln kunde inte bekräftas som sparad och uppdraget kunde inte tas bort. Kontrollera planeringen manuellt.', {
+                          duration: Infinity,
+                          closeButton: true
+                        })
+                      } else if (ex.message !== 'CreateAssignmentError') {
                         toast.error('Det gick inte att skapa en artikel!')
                       }
                     })

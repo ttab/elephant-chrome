@@ -5,6 +5,7 @@ import { toast } from 'sonner'
 import { ToastAction } from '@/components/ToastAction'
 import { CalendarDaysIcon, FileInputIcon } from '@ttab/elephant-ui/icons'
 import { addAssignmentWithDeliverable } from '@/lib/index/addAssignment'
+import { removeAssignmentWithDeliverable } from '@/lib/index/removeAssignment'
 import { convertToISOStringInTimeZone } from '@/shared/datetime'
 import { snapshotDocument } from '@/lib/snapshotDocument'
 import type { YDocument } from '@/modules/yjs/hooks'
@@ -76,7 +77,18 @@ export async function createArticle({
 
   // Explicitly save article to repository via HTTP — works even if the
   // Hocuspocus provider has been disconnected (dialog closed before this point)
-  await snapshotDocument(ydoc.id, { status: 'draft' }, yjsDocument)
+  try {
+    await snapshotDocument(ydoc.id, { status: 'draft' }, yjsDocument)
+  } catch (ex) {
+    // Roll back the assignment that was just added to the planning
+    try {
+      await removeAssignmentWithDeliverable(updatedPlanningId, ydoc.id, 'core/article')
+    } catch (rollbackEx) {
+      console.error('Failed to roll back assignment after article snapshot failure', rollbackEx)
+      throw new Error('AssignmentRollbackError')
+    }
+    throw ex
+  }
 
   toast.success(`Artikel skapad`, {
     duration: 8000,
