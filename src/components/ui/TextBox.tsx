@@ -14,7 +14,7 @@ export const TextBox = ({ icon: Icon, value, onChange, ...props }: {
   placeholder?: string
   className?: string
   singleLine?: boolean
-  autoFocus?: boolean
+  autoFocus?: boolean | 'start' | 'end'
   countCharacters?: boolean
   spellcheck?: boolean
   onBlur?: React.FocusEventHandler<HTMLDivElement>

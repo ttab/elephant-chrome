@@ -1,25 +1,26 @@
-import { useQuery } from '@/hooks'
+import { useQuery, useRegistry } from '@/hooks'
 import { type ViewProps, type ViewMetadata } from '@/types/index'
 import type * as Y from 'yjs'
 import { Bold, Italic, Text, OrderedList, UnorderedList, LocalizedQuotationMarks } from '@ttab/textbit-plugins'
-import { Button } from '@ttab/elephant-ui'
 import { useSession } from 'next-auth/react'
 import { getValueByYPath } from '@/shared/yUtils'
 import { Form, UserMessage, View } from '@/components'
 import { FactboxHeader } from './FactboxHeader'
-import { Error } from '@/views/Error'
-import { useMemo, useState, type JSX } from 'react'
+import { Error as ErrorView } from '@/views/Error'
+import { useEffect, useMemo, useState, type JSX } from 'react'
 import { contentMenuLabels } from '@/defaults/contentMenuLabels'
-import { snapshotDocument } from '@/lib/snapshotDocument'
-import type { YDocument } from '@/modules/yjs/hooks'
 import { useYDocument, useYValue } from '@/modules/yjs/hooks'
-import { TextInput } from '@/components/ui/TextInput'
 import { getTemplateFromView } from '@/shared/templates/lib/getTemplateFromView'
 import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
 import type { EleDocumentResponse } from '@/shared/types'
 import type { Document } from '@ttab/elephant-api/newsdoc'
 import { BaseEditor } from '@/components/Editor/BaseEditor'
+import { TextInput } from '@/components/ui/TextInput'
 import { cn } from '@ttab/elephant-ui/utils'
+import { DocumentHistory } from '@/components/DocumentHistory/DocumentHistory'
+import { type DocumentState, getDocumentState } from '@/lib/getDocumentState'
+import { Editor as PlainEditor } from '@/components/PlainEditor'
+
 
 const meta: ViewMetadata = {
   name: 'Factbox',
@@ -40,7 +41,6 @@ const meta: ViewMetadata = {
 const Factbox = (props: ViewProps & { document?: Document }): JSX.Element => {
   const [query] = useQuery()
   const documentId = props.id || query.id
-
   // Factbox should be responsible for creating new as well as editing
   const data = useMemo(() => {
     if (!props.document || !documentId || typeof documentId !== 'string') {
@@ -59,7 +59,7 @@ const Factbox = (props: ViewProps & { document?: Document }): JSX.Element => {
   // Error handling for missing document
   if (!documentId || typeof documentId !== 'string') {
     return (
-      <Error
+      <ErrorView
         title='Artikeldokument saknas'
         message='Inget artikeldokument är angivet. Navigera tillbaka till översikten och försök igen.'
       />
@@ -76,9 +76,28 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
   const [title] = useYValue<Y.XmlText>(ydoc.ele, 'root.title', true)
   const [content] = getValueByYPath<Y.XmlText>(ydoc.ele, 'content', true)
   const [documentLanguage] = getValueByYPath<string>(ydoc.ele, 'root.language')
-  const { status } = useSession()
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const { repository } = useRegistry()
+  const { data: session, status } = useSession()
+  const [factboxversion, setFactboxVersion] = useState<bigint | undefined>(undefined)
+  const [documentState, setDocumentState] = useState<DocumentState | undefined>(undefined)
+  const [currentVersion, setCurrentVersion] = useState<bigint | undefined>(undefined)
   const environmentIsSane = ydoc.provider && status === 'authenticated'
+
+  useEffect(() => {
+    if (!repository || !session?.accessToken) return
+    void repository.getStatuses({
+      uuids: [props.documentId],
+      statuses: ['usable', 'draft', 'unpublished'],
+      accessToken: session.accessToken
+    }).then((res) => {
+      const item = res?.items[0]
+      if (item) {
+        setCurrentVersion(item.version)
+        setDocumentState(getDocumentState(item))
+      }
+    })
+  }, [repository, session?.accessToken, props.documentId])
+
 
   const configuredPlugins = useMemo(() => {
     return [
@@ -91,119 +110,91 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
     ]
   }, [])
 
+  const isOldVersion = factboxversion !== undefined && factboxversion !== currentVersion
+
   if (!ydoc.provider?.isSynced || !content) {
     return <View.Root />
   }
 
   return (
     <View.Root asDialog={props.asDialog} className={props?.className}>
-      <BaseEditor.Root
+      <FactboxHeader
         ydoc={ydoc}
-        content={content}
-        lang={documentLanguage}
-        plugins={configuredPlugins}
-        className={cn(
-          'rounded-md border',
-          props.asDialog ? 'h-auto min-h-48' : ''
-        )}
-      >
-        <FactboxHeader
-          ydoc={ydoc}
-          asDialog={!!props.asDialog}
-          onDialogClose={props.onDialogClose}
+        onDialogClose={props.onDialogClose}
+        asDialog={!!props?.asDialog}
+      />
+
+      <div className='mx-12 border mt-2 py-1.5 px-3 rounded'>
+        <DocumentHistory
+          uuid={props.documentId}
+          currentVersion={currentVersion}
+          documentState={documentState}
+          onSelectVersion={setFactboxVersion}
+          selectedVersion={factboxversion}
+          withStatusOnly={true}
         />
+      </div>
 
-        <View.Content className='flex flex-col max-w-[1000px]' variant='grid'>
-          <Form.Root asDialog={props?.asDialog}>
-            <Form.Content>
-              <Form.Title>
-                <TextInput
-                  ydoc={ydoc}
-                  value={title}
-                  autoFocus={!!props.asDialog}
-                  className={cn(
-                    !props.asDialog ? 'ms-[13px]' : 'ms-6 me-5'
-                  )}
-                  label='Titel'
-                  placeholder='Titel'
-                />
-              </Form.Title>
-            </Form.Content>
-          </Form.Root>
-
-          <div className='flex flex-col gap-4 mb-4 grow'>
-            <BaseEditor.Text
+      {isOldVersion
+        ? (
+            <View.Content className='flex flex-col max-w-[1000px] pt-8' variant='grid'>
+              <PlainEditor
+                key={factboxversion.toString()}
+                id={props.documentId}
+                version={factboxversion}
+                direct
+                showTitle
+              />
+            </View.Content>
+          )
+        : (
+            <BaseEditor.Root
               ydoc={ydoc}
-              autoFocus={!props.asDialog}
-              className={cn(
-                props.asDialog ? 'rounded-md border me-[43px] min-h-48' : ''
-              )}
-            />
+              content={content}
+              lang={documentLanguage}
+              plugins={configuredPlugins}
+            >
+              <View.Content className='flex flex-col max-w-[1000px]'>
+                <Form.Root asDialog={props?.asDialog}>
+                  <Form.Content>
+                    <Form.Title>
+                      <TextInput
+                        ydoc={ydoc}
+                        value={title}
+                        className={cn(
+                          !props.asDialog ? 'ms-[13px]' : 'ms-6 me-5'
+                        )}
+                        label='Rubrik'
+                        placeholder='Rubrik'
+                        autoFocus='end'
+                      />
+                    </Form.Title>
+                  </Form.Content>
+                </Form.Root>
 
-            <div className='mx-12'>
-              {!environmentIsSane && (
-                <UserMessage asDialog={!!props?.asDialog} variant='destructive'>
-                  Du är utloggad eller har tappat kontakt med systemet.
-                  Vänligen försök logga in igen.
-                </UserMessage>
-              )}
+                <div className='flex flex-col gap-4 mb-4 grow'>
+                  <BaseEditor.Text
+                    ydoc={ydoc}
+                    editorType='factbox'
+                  />
 
-              {errorMessage && (
-                <UserMessage asDialog={!!props?.asDialog} variant='destructive'>
-                  {errorMessage}
-                </UserMessage>
-              )}
-            </div>
-          </div>
-        </View.Content>
+                  <div className='mx-12'>
+                    {!environmentIsSane && (
+                      <UserMessage asDialog={!!props?.asDialog} variant='destructive'>
+                        Du är utloggad eller har tappat kontakt med systemet.
+                        Vänligen försök logga in igen.
+                      </UserMessage>
+                    )}
+                  </div>
+                </div>
+              </View.Content>
 
-        <View.Footer>
-          {!props.asDialog
-            ? <BaseEditor.Footer />
-            : (
-                <FactboxDialogFooter
-                  ydoc={ydoc}
-                  disabled={!environmentIsSane}
-                  onError={setErrorMessage}
-                  onSuccess={props.onDialogClose}
-                />
-              )}
-        </View.Footer>
-      </BaseEditor.Root>
+              <View.Footer>
+                <BaseEditor.Footer />
+              </View.Footer>
+            </BaseEditor.Root>
+          )}
     </View.Root>
-  )
-}
-
-const FactboxDialogFooter = ({ ydoc, disabled, onSuccess, onError}: {
-  ydoc: YDocument<Y.Map<unknown>>
-  disabled?: boolean
-  onSuccess?: () => void
-  onError: (message: string) => void
-}) => {
-  const [title] = useYValue<string>(ydoc.ele, 'root.title')
-
-  const handleSubmit = (): void => {
-    if (disabled) {
-      return
-    }
-
-    snapshotDocument(ydoc.id, undefined, ydoc.provider?.document)
-      .then(() => {
-        onSuccess?.()
-      }).catch((ex) => {
-        onError('Det gick inte att skapa ny faktaruta!')
-        console.error(ex)
-      })
-  }
-
-  return (
-    <Button
-      onClick={handleSubmit}
-      disabled={!title || disabled}
-      className='whitespace-nowrap'
-    >
-      Skapa faktaruta
-    </Button>
   )
 }
 
