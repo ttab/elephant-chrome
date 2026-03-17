@@ -51,10 +51,19 @@ export const Title = ({
     }, 1000)
   }, [synced])
 
-  const viewVariants = cva('flex flex-1 gap-2 items-center grow-0 h-14 cursor-default dark:bg-secondary', {
+  const viewVariants = cva('flex grow-0 shrink basis-0 gap-2 items-center h-14 cursor-default dark:bg-secondary', {
     variants: {
       asDialog: {
         false: 'px-4'
+      }
+    }
+  })
+
+  const titleVariants = cva('font-bold cursor-default whitespace-nowrap opacity-90 dark:bg-secondary', {
+    variants: {
+      asDialog: {
+        true: '',
+        false: 'hidden @md/view:block'
       }
     }
   })
@@ -98,7 +107,7 @@ export const Title = ({
       )}
 
       {!!displayTitle && (
-        <h2 role='header-title' className='font-bold cursor-default whitespace-nowrap opacity-90 dark:bg-secondary'>
+        <h2 role='header-title' className={titleVariants({ asDialog: asDialog ?? false })}>
           {typeof shortTitle !== 'string'
             ? <>{displayTitle}</>
             : (

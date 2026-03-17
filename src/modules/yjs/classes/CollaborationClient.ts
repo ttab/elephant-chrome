@@ -106,14 +106,18 @@ export class CollaborationClient {
    * Update access token and re-authenticate
    */
   updateAccessToken(newAccessToken: string): void {
+    if (newAccessToken === this.#accessToken) {
+      return
+    }
+
     this.#accessToken = newAccessToken
 
-    if (this.#hp && this.#isConnected) {
-      // Send auth message to re-authenticate
-      const msg = `auth@${JSON.stringify({ accessToken: newAccessToken })}`
-      this.#hp.sendStateless(msg)
-      console.log('🔑 Access token updated for:', this.#documentName)
+    if (!this.#hp || !this.#isConnected) {
+      return
     }
+
+    void this.#hp.sendToken()
+    console.log('🔑 Token sync sent for:', this.#documentName)
   }
 
   /**
@@ -174,7 +178,7 @@ export class CollaborationClient {
       websocketProvider: this.#hpWebsocketProvider,
       name: this.#documentName,
       document: this.#document,
-      token: this.#accessToken,
+      token: () => this.#accessToken,
       onAuthenticated: () => {
         console.log('🔐 HP authenticated:', this.#documentName)
       },

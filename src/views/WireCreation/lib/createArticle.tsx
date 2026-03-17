@@ -3,27 +3,29 @@ import { getValueByYPath } from '@/shared/yUtils'
 import type { Wire } from '@/shared/schemas/wire'
 import { toast } from 'sonner'
 import { ToastAction } from '@/components/ToastAction'
+import { CalendarDaysIcon, FileInputIcon } from '@ttab/elephant-ui/icons'
 import { addAssignmentWithDeliverable } from '@/lib/index/addAssignment'
 import { convertToISOStringInTimeZone } from '@/shared/datetime'
-import { CalendarDaysIcon, FileInputIcon } from '@ttab/elephant-ui/icons'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 
 export async function createArticle({
   ydoc,
   status,
-  wire,
+  wires,
   planningId,
   planningTitle,
+  newsvalue,
   section,
   timeZone
 }: {
   ydoc: YDocument<Y.Map<unknown>>
   status: string
   session: Session
-  wire?: Wire
+  wires?: Wire[]
   planningId?: string
   planningTitle?: string
+  newsvalue?: string
   section?: {
     uuid: string
     title: string
@@ -44,7 +46,8 @@ export async function createArticle({
   const localDate = convertToISOStringInTimeZone(dt, timeZone).slice(0, 10)
   const [assignmentTitle] = getValueByYPath<string>(ydoc.ele, 'root.title')
   const [assignmentSlugline] = getValueByYPath<string>(ydoc.ele, 'meta.tt/slugline[0].value')
-  const [newsValue] = getValueByYPath<string>(ydoc.ele, 'meta.core/newsvalue[0].value')
+  const [ydocNewsValue] = getValueByYPath<string>(ydoc.ele, 'meta.core/newsvalue[0].value')
+  const resolvedNewsValue = newsvalue ?? ydocNewsValue
 
   const updatedPlanningId = await addAssignmentWithDeliverable({
     planningId,
@@ -53,13 +56,17 @@ export async function createArticle({
     deliverableId: ydoc.id,
     title: assignmentTitle || '',
     slugline: assignmentSlugline,
-    priority: newsValue ? parseInt(newsValue) : undefined,
+    priority: resolvedNewsValue ? parseInt(resolvedNewsValue) : undefined,
     publicVisibility: false,
     localDate,
     isoDateTime,
     section,
-    wire
+    wires
   })
+
+  if (!updatedPlanningId) {
+    throw new Error('CreateAssignmentError')
+  }
 
   // Create article in repo
   if (ydoc.isInProgress) {
@@ -67,27 +74,27 @@ export async function createArticle({
   }
 
   toast.success(`Artikel skapad`, {
+    duration: 8000,
     classNames: {
       title: 'whitespace-nowrap'
     },
-    action: [
-      <ToastAction
-        key='open-planning'
-        documentId={updatedPlanningId}
-        withView='Planning'
-        label='Öppna planering'
-        Icon={CalendarDaysIcon}
-        target='last'
-      />,
-
-      <ToastAction
-        key='open-article'
-        documentId={documentId}
-        withView='Editor'
-        label='Öppna artikel'
-        Icon={FileInputIcon}
-        target='last'
-      />
-    ]
+    action: (
+      <div className='flex w-full gap-1 justify-end [&>*]:w-auto'>
+        <ToastAction
+          documentId={updatedPlanningId}
+          withView='Planning'
+          Icon={CalendarDaysIcon}
+          label='Öppna planering'
+          target='last'
+        />
+        <ToastAction
+          documentId={documentId}
+          withView='Editor'
+          Icon={FileInputIcon}
+          label='Öppna artikel'
+          target='last'
+        />
+      </div>
+    )
   })
 }
