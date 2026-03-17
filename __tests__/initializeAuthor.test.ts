@@ -5,6 +5,7 @@ import { Index } from '@/shared/Index'
 import type { Repository } from '@/shared/Repository'
 import { toast } from 'sonner'
 import type { Session } from 'next-auth'
+import { generateAuthorUUID } from '@/shared/userUri'
 
 vi.mock('@/shared/Index')
 vi.mock('@/shared/Repository')
@@ -33,8 +34,8 @@ describe('initializeAuthor', () => {
       status: 'authenticated',
       error: '',
       user: {
-        sub: 'mockSub',
-        email: 'mockEmail',
+        sub: 'core://user/5558',
+        email: 'mock@example.com',
         name: 'Mock User',
         image: 'https://example.com/mock-image.jpg',
         id: 'mockId'
@@ -51,7 +52,16 @@ describe('initializeAuthor', () => {
   it('should return true if the author document is valid', async () => {
     setupMocks({
       ok: true,
-      hits: [{ document: { links: [{ type: 'tt/keycloak', role: 'prod' }] } }]
+      hits: [{
+        document: {
+          links: [{
+            rel: 'same-as',
+            type: 'tt/keycloak',
+            uri: 'core://user/5558',
+            role: 'prod'
+          }]
+        }
+      }]
     })
 
     const result = await initializeAuthor({
@@ -74,14 +84,30 @@ describe('initializeAuthor', () => {
       repository: mockRepository
     })
 
+    const expectedUuid = generateAuthorUUID('core://user/5558')
+
     expect(result).toBe(true)
     // eslint-disable-next-line @typescript-eslint/unbound-method
-    expect(mockRepository.saveDocument).toHaveBeenCalled()
+    expect(mockRepository.saveDocument).toHaveBeenCalledWith(
+      expect.objectContaining({
+        uuid: expectedUuid,
+        uri: `core://author/${expectedUuid}`
+      }),
+      mockSession.accessToken,
+      expect.any(String)
+    )
     expect(toast.success).toHaveBeenCalledWith('Författardokument är skapat')
   })
 
   it('should update an existing author document when isValid === false', async () => {
-    const mockDocument = { links: [{ type: 'tt/keycloak', role: 'stage' }] }
+    const mockDocument = {
+      links: [{
+        rel: 'same-as',
+        type: 'tt/keycloak',
+        uri: 'core://user/5558',
+        role: 'stage'
+      }]
+    }
     setupMocks({ ok: true, hits: [{ document: mockDocument }] }, { status: { code: 'OK' } })
 
     const result = await initializeAuthor({
@@ -103,6 +129,126 @@ describe('initializeAuthor', () => {
       expect.any(String)
     )
     expect(toast.success).toHaveBeenCalledWith('Författardokument är uppdaterat')
+  })
+
+  it('should update when user sub changes (consultant to employee)', async () => {
+    const mockDocument = {
+      links: [{
+        rel: 'same-as',
+        type: 'tt/keycloak',
+        uri: 'core://user/cf8eb669-0c0f-432d-8fdf-b479ac2082a1',
+        role: 'prod'
+      }]
+    }
+    setupMocks(
+      { ok: true, hits: [{ document: mockDocument }] },
+      { status: { code: 'OK' } }
+    )
+
+    const result = await initializeAuthor({
+      url: mockUrl,
+      session: mockSession,
+      repository: mockRepository
+    })
+
+    expect(result).toBe(true)
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    expect(mockRepository.saveDocument).toHaveBeenCalledWith(
+      expect.objectContaining({
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        links: expect.arrayContaining([
+          expect.objectContaining({
+            type: 'tt/keycloak',
+            uri: 'core://user/5558'
+          })
+        ])
+      }),
+      mockSession.accessToken,
+      expect.any(String)
+    )
+    expect(toast.success).toHaveBeenCalledWith(
+      'Författardokument är uppdaterat'
+    )
+  })
+
+  it('should update when same-as link uses old /sub/ format', async () => {
+    const mockDocument = {
+      links: [{
+        rel: 'same-as',
+        type: 'tt/keycloak',
+        uri: 'core://user/sub/5558',
+        role: 'prod'
+      }]
+    }
+    setupMocks(
+      { ok: true, hits: [{ document: mockDocument }] },
+      { status: { code: 'OK' } }
+    )
+
+    const result = await initializeAuthor({
+      url: mockUrl,
+      session: mockSession,
+      repository: mockRepository
+    })
+
+    expect(result).toBe(true)
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    expect(mockRepository.saveDocument).toHaveBeenCalledWith(
+      expect.objectContaining({
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        links: expect.arrayContaining([
+          expect.objectContaining({
+            type: 'tt/keycloak',
+            uri: 'core://user/5558'
+          })
+        ])
+      }),
+      mockSession.accessToken,
+      expect.any(String)
+    )
+  })
+
+  it('should remove old tt/keycloak same-as link when updating', async () => {
+    const mockDocument = {
+      links: [
+        {
+          rel: 'same-as',
+          type: 'tt/keycloak',
+          uri: 'core://user/sub/5558',
+          role: 'prod'
+        },
+        {
+          rel: 'source',
+          type: 'core/content-source',
+          uri: 'tt://content-source/tt',
+          title: 'TT'
+        }
+      ]
+    }
+    setupMocks(
+      { ok: true, hits: [{ document: mockDocument }] },
+      { status: { code: 'OK' } }
+    )
+
+    await initializeAuthor({
+      url: mockUrl,
+      session: mockSession,
+      repository: mockRepository
+    })
+
+    const savedDoc = (mockRepository.saveDocument as Mock)
+      .mock.calls[0][0] as { links: Array<Record<string, string>> }
+    const keycloakLinks = savedDoc.links.filter(
+      (l) => l.rel === 'same-as' && l.type === 'tt/keycloak'
+    )
+
+    expect(keycloakLinks).toHaveLength(1)
+    expect(keycloakLinks[0].uri).toBe('core://user/5558')
+
+    // Non-keycloak links should be preserved
+    expect(savedDoc.links.some(
+      (l) => l.type === 'core/content-source'
+    )).toBe(true)
   })
 
   it('should throw an error if saving the document fails', async () => {
