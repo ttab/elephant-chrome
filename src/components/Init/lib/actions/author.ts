@@ -119,7 +119,7 @@ export async function initializeAuthor({ url, session, repository }: {
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
     toast.error(`Kunde inte ${operation === 'update' ? 'uppdatera' : 'skapa'} författardokument: ${errorMessage}`)
-    throw new Error(`Failed to initialize author: ${errorMessage}`)
+    throw new Error(`Failed to initialize author: ${errorMessage}`, { cause: error })
   }
 }
 
@@ -217,7 +217,12 @@ function createAuthorDoc(session: Session, envRole: 'stage' | 'prod', language: 
   const decodedToken = decodeJwt(session.accessToken) as {
     given_name: string
     family_name: string
+    email: string
   }
+
+
+  const firstName = decodedToken.given_name || parseNameFromEmail(decodedToken.email)?.firstName
+  const lastName = decodedToken.family_name || parseNameFromEmail(decodedToken.email)?.lastName
 
   const uuid = generateAuthorUUID(session.user.sub)
   const document = Document.create({
@@ -228,8 +233,8 @@ function createAuthorDoc(session: Session, envRole: 'stage' | 'prod', language: 
     meta: [{
       type: 'core/author',
       data: {
-        firstName: decodedToken.given_name,
-        lastName: decodedToken.family_name
+        firstName,
+        lastName
       }
     }, {
       type: 'core/contact-info',
@@ -242,4 +247,22 @@ function createAuthorDoc(session: Session, envRole: 'stage' | 'prod', language: 
   })
 
   return appendSub(document, session, envRole)
+}
+
+export function parseNameFromEmail(email: string | undefined): { firstName: string, lastName: string } | undefined {
+  if (!email) return undefined
+  const [localPart] = email.split('@')
+  const parts = localPart.split(/[._]/).filter(Boolean)
+
+  if (parts.length < 2) {
+    return undefined
+  }
+
+  const capitalize = (s: string) =>
+    s.split('-').map((p) => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase()).join('-')
+
+  return {
+    firstName: parts.slice(0, -1).map(capitalize).join(' '),
+    lastName: capitalize(parts[parts.length - 1])
+  }
 }

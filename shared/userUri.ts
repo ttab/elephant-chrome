@@ -29,7 +29,7 @@ export function extractUserIdFromUri(
  */
 export function normalizeUserUri(uri: string): string {
   const id = extractUserIdFromUri(uri)
-  if (!id) return uri
+  if (!id) return `keycloak://user/${uri}`
   return `core://user/${id}`
 }
 

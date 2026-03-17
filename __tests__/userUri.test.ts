@@ -83,8 +83,8 @@ describe('normalizeUserUri', () => {
     )
   })
 
-  it('returns original string when no ID can be extracted', () => {
-    expect(normalizeUserUri('core://user/')).toBe('core://user/')
+  it('returns keycloak://user/<original-string> when no ID can be extracted', () => {
+    expect(normalizeUserUri('71f93d76-db76-4e26-b779-14d8c601e4ae')).toBe('keycloak://user/71f93d76-db76-4e26-b779-14d8c601e4ae')
   })
 
   it('is idempotent', () => {
