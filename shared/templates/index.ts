@@ -19,6 +19,7 @@ export interface TemplatePayload {
     'core/planning-item'?: Block[]
     'core/description'?: Block[]
     'core/event'?: Block[]
+    'ntb/hast'?: Block[]
   }
   links?: {
     'core/section'?: Block[]

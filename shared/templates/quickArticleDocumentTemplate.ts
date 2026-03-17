@@ -1,5 +1,6 @@
 import { Block, Document } from '@ttab/elephant-api/newsdoc'
 import type { TemplatePayload } from './index.ts'
+import { ENABLE_HAST } from '../../src/defaults/hast-tmp-flag.js'
 
 // Two-on-two document template, following the creation of flash-level text assignments
 export function quickArticleDocumentTemplate(id: string, payload?: TemplatePayload, text?: string): Document {
@@ -28,7 +29,10 @@ export function quickArticleDocumentTemplate(id: string, payload?: TemplatePaylo
       })],
       ...payload?.meta?.['tt/slugline'] || [Block.create({
         type: 'tt/slugline'
-      })]
+      })],
+      ...ENABLE_HAST
+        ? [Block.create({ type: 'ntb/hast', data: { value: '1' } })]
+        : []
     ],
     links: [
       ...payload?.links?.['core/section'] || []
