@@ -73,6 +73,7 @@ export const FilterMenu = ({ currentFilters, onFilterChange }: FilterPopoverProp
   const handleNavigateToPage = (newPage: FilterPage) => {
     setPage(newPage)
     setSearch('')
+    setQueryInput('')
   }
 
   const handleBack = () => {
