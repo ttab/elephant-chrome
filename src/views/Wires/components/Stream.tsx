@@ -1,5 +1,6 @@
 import { type JSX, useMemo, useCallback, useState, useRef, useEffect, memo } from 'react'
 import { fields, type Wire, type WireFields } from '@/shared/schemas/wire'
+import { getWireState } from '@/lib/getWireState'
 import { useDocuments } from '@/hooks/index/useDocuments'
 import { constructQuery } from '../lib/constructQuery'
 import { SortingV1 } from '@ttab/elephant-api/index'
@@ -47,9 +48,11 @@ export const Stream = memo(({
   const [page, setPage] = useState(1)
   const [allData, setAllData] = useState<Wire[]>([])
   const allDataRef = useRef<Wire[]>([])
+  const streamContainerRef = useRef<HTMLDivElement>(null)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const loadingRef = useRef(false)
   const lastToggledWireIdRef = useRef<string | null>(null)
+  const shiftAnchorRef = useRef<string | null>(null)
 
   const hasFilters = wireStream.filters.length > 0
   const skipFetch = REQUIRE_FILTERS && !hasFilters
@@ -186,6 +189,73 @@ export const Stream = memo(({
     lastToggledWireIdRef.current = wire.id
   }, [onToggleWire])
 
+  // Shift+Arrow: extend/contract selection from a marked entry (like text selection)
+  useEffect(() => {
+    const handleShiftNavigation = (e: KeyboardEvent) => {
+      if (!e.shiftKey || (e.key !== 'ArrowUp' && e.key !== 'ArrowDown')) return
+      if (e.ctrlKey || e.metaKey || e.altKey) return
+
+      const container = streamContainerRef.current
+      if (!container || !container.contains(document.activeElement)) return
+
+      const focusedEl = document.activeElement?.closest<HTMLElement>('[data-item-id]')
+      if (!focusedEl) return
+
+      const entryId = focusedEl.getAttribute('data-entry-id')
+      if (!entryId) return
+
+      // Only activate when the focused item is marked
+      if (!selectedWireIdsRef.current.has(entryId)) {
+        shiftAnchorRef.current = null
+        return
+      }
+
+      // Set anchor on first shift-navigate from a selected item
+      if (!shiftAnchorRef.current) {
+        shiftAnchorRef.current = entryId
+      }
+
+      const items = Array.from(container.querySelectorAll<HTMLElement>('[data-item-id]'))
+      const currentIndex = items.indexOf(focusedEl)
+      if (currentIndex === -1) return
+
+      const nextIndex = e.key === 'ArrowUp' ? currentIndex - 1 : currentIndex + 1
+      if (nextIndex < 0 || nextIndex >= items.length) return
+
+      const nextEl = items[nextIndex]
+      const nextEntryId = nextEl.getAttribute('data-entry-id')
+      if (!nextEntryId) return
+
+      const anchorIndex = items.findIndex(
+        (el) => el.getAttribute('data-entry-id') === shiftAnchorRef.current
+      )
+
+      // Moving away from anchor extends the selection; moving toward it contracts it
+      const movingAway = anchorIndex === -1
+        || Math.abs(nextIndex - anchorIndex) >= Math.abs(currentIndex - anchorIndex)
+
+      if (movingAway) {
+        const nextWire = allDataRef.current.find((w) => w.id === nextEntryId)
+        if (nextWire && getWireState(nextWire).status !== 'used') {
+          onToggleWire(nextWire, true)
+          lastToggledWireIdRef.current = nextEntryId
+        }
+      } else {
+        const currentWire = allDataRef.current.find((w) => w.id === entryId)
+        if (currentWire) {
+          onToggleWire(currentWire, false)
+          lastToggledWireIdRef.current = nextEntryId
+        }
+      }
+
+      e.preventDefault()
+      nextEl.focus()
+    }
+
+    document.addEventListener('keydown', handleShiftNavigation)
+    return () => document.removeEventListener('keydown', handleShiftNavigation)
+  }, [onToggleWire])
+
   const removeThisWire = useCallback(() => {
     onRemove?.(wireStream.uuid, allDataRef.current.map((w) => w.id))
   }, [onRemove, wireStream.uuid])
@@ -286,6 +356,7 @@ export const Stream = memo(({
 
   return (
     <div
+      ref={streamContainerRef}
       data-stream-id={wireStream.uuid}
       className='flex flex-col h-full snap-start snap-always w-110 shrink-0 border rounded-md overflow-hidden'
     >
