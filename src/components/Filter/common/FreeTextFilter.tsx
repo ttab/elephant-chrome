@@ -26,8 +26,8 @@ export const FreeTextFilter = ({ value, onChange, filterType, autoFocus = true }
           }
         }
       }}
-      className={cn('pb-0 mb-1.5 bg-white!',
-        filterType === 'freetext' && 'data-[selected=true]:shadow-[inset_0_0px_3px_rgba(0,0,0,0.5)]')}
+      className={cn('pb-0 mb-1.5 bg-white! dark:bg-background!',
+        filterType === 'freetext' && 'data-[selected=true]:shadow-[inset_0_0px_3px_rgba(0,0,0,0.5)] dark:data-[selected=true]:shadow-[inset_0_0px_3px_rgba(255,255,255,1)]')}
     >
       <DebouncedCommandInput
         value={value}
