@@ -291,14 +291,14 @@ export const WireViewContent = (props: ViewProps & {
                     })
                     .catch((ex: unknown) => {
                       if (ex instanceof Error && ex.message === 'AssignmentRollbackError') {
-                        toast.error(t('creation.assignmentRollbackError') as string, {
+                        toast.error(t('creation.assignmentRollbackError'), {
                           duration: Infinity,
                           closeButton: true
                         })
                       } else if (ex instanceof Error && ex.message === 'CreateAssignmentError') {
                         // Toast already shown by addAssignmentWithDeliverable
                       } else {
-                        toast.error(t('creation.createError') as string)
+                        toast.error(t('creation.createError'))
                       }
                     })
                 }}
