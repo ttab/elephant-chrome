@@ -25,7 +25,7 @@ const HypenationItem = ({ isNew, setIsNew, word, hypenated, ignore, handleListHy
   const [defaultWord] = useState(word)
 
   return (
-    <div className='group/edit grid grid-cols-7 gap-x-2 gap-y-0 items-center hover:bg-gray-100 px-2' onClick={() => setEditMode(true)}>
+    <div className='group/edit grid grid-cols-7 gap-x-2 gap-y-0 items-center hover:bg-gray-100 dark:hover:bg-table-focused px-2' onClick={() => setEditMode(true)}>
       {promptIsOpen && (
         <Prompt
           title={t('dictionary.confirmDelete.title')}

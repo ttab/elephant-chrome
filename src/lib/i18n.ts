@@ -1,6 +1,6 @@
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
-import { sv } from '../locales/sv-SE/index'
+import { sv } from '../locales/sv/index'
 import { nb } from '../locales/nb/index'
 import { en } from '../locales/en/index'
 import LanguageDetector from 'i18next-browser-languagedetector'

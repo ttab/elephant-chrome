@@ -93,11 +93,13 @@ export const WireViewContent = (props: ViewProps & {
           {!!selectedPlanning && <ValidateNow />}
           <Form.Content>
             <Form.Group icon={CableIcon}>
-              <Input
-                className='pl-0 pt-2 h-8 text-medium font-semibold border-0 truncate'
-                readOnly
-                value={props.wires?.[0]?.fields['document.title'].values?.[0]}
-              />
+              <>
+                <Input
+                  className='pl-0 pt-2 h-8 text-medium font-semibold border-0 truncate'
+                  readOnly
+                  value={props.wires?.[0]?.fields['document.title'].values?.[0]}
+                />
+              </>
             </Form.Group>
 
             {props.wires?.length > 1 && (
@@ -192,14 +194,11 @@ export const WireViewContent = (props: ViewProps & {
 
             {!selectedPlanning && (
               <Form.Group icon={TagsIcon}>
-
                 <Section ydoc={ydoc} path='links.core/section[0]' onSelect={setSection} />
-                <SluglineEditable ydoc={ydoc} value={slugline} />
                 <Newsvalue ydoc={ydoc} path='meta.core/newsvalue[0].value' />
               </Form.Group>
-
-
             )}
+
             {!selectedPlanning && (
               <Form.Group icon={GanttChartSquareIcon}>
                 <>
@@ -223,35 +222,39 @@ export const WireViewContent = (props: ViewProps & {
 
             <Form.Group icon={TagIcon}>
               {selectedPlanning && (
-                <SluglineEditable
-                  key={selectedPlanning?.value}
-                  ydoc={ydoc}
-                  value={slugline}
-                  compareValues={[
-                    ...(selectedPlanning?.payload?.sluglines || []),
-                    slugline?.toString()
-                  ]}
-                />
+                <>
+                  <SluglineEditable
+                    key={selectedPlanning?.value}
+                    ydoc={ydoc}
+                    value={slugline}
+                    compareValues={[
+                      ...(selectedPlanning?.payload?.sluglines || []),
+                      slugline?.toString()
+                    ]}
+                  />
+                </>
               )}
 
               {(!selectedPlanning) && (
-                <SluglineEditable
-                  ydoc={ydoc}
-                  value={slugline}
-                />
+                <>
+                  <SluglineEditable
+                    ydoc={ydoc}
+                    value={slugline}
+                  />
+                </>
               )}
             </Form.Group>
-
-            <UserMessage asDialog={!!props?.asDialog}>
-              {!selectedPlanning
-                ? (<>{t('creation.noPlanningHint')}</>)
-                : (<>{t('creation.withPlanningHint')}</>)}
-            </UserMessage>
+            <>
+              <UserMessage asDialog={!!props?.asDialog}>
+                {!selectedPlanning
+                  ? (<>{t('creation.noPlanningHint')}</>)
+                  : (<>{t('creation.withPlanningHint')}</>)}
+              </UserMessage>
+            </>
 
           </Form.Content>
 
-          {
-            showVerifyDialog
+          {showVerifyDialog
             && (
               <CreatePrompt
                 title={t('creation.dialogTitle')}
@@ -287,9 +290,15 @@ export const WireViewContent = (props: ViewProps & {
                       props.onDocumentCreated?.()
                     })
                     .catch((ex: unknown) => {
-                      console.log(ex)
-                      if (!(ex instanceof Error) || ex.message !== 'CreateAssignmentError') {
-                        toast.error(t('creation.createError'))
+                      if (ex instanceof Error && ex.message === 'AssignmentRollbackError') {
+                        toast.error(t('creation.assignmentRollbackError') as string, {
+                          duration: Infinity,
+                          closeButton: true
+                        })
+                      } else if (ex instanceof Error && ex.message === 'CreateAssignmentError') {
+                        // Toast already shown by addAssignmentWithDeliverable
+                      } else {
+                        toast.error(t('creation.createError') as string)
                       }
                     })
                 }}
@@ -297,26 +306,11 @@ export const WireViewContent = (props: ViewProps & {
                   setShowVerifyDialog(false)
                 }}
               />
-            )
-          }
+            )}
 
-          <Form.Footer className='flex justify-between'>
-            <>
-              <Button
-                variant='secondary'
-                autoFocus
-                onClick={() => {
-                  props.onDialogClose?.()
-                  props.onDocumentCreated?.()
-                }}
-              >
-                {t('creation.markUsed')}
-              </Button>
-            </>
-            <Form.Submit
-              onSubmit={handleSubmit}
-            >
-              <Button type='submit'>{t('creation.createButton')}</Button>
+          <Form.Footer className='flex justify-between flex-row-reverse'>
+            <Form.Submit onSubmit={handleSubmit}>
+              <Button type='submit'>{t('creation.title')}</Button>
             </Form.Submit>
           </Form.Footer>
         </Form.Root>

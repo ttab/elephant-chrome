@@ -1,0 +1,64 @@
+@media print {
+  /* Hide app navigation header */
+  header {
+    display: none !important;
+  }
+
+  /* Reset outer app containers to allow content to expand */
+  body,
+  #root,
+  #root > div,
+  #root > div > div {
+    height: auto !important;
+    overflow: visible !important;
+    display: block !important;
+  }
+
+  /* Hide non-active views */
+  section:not(.is-active) {
+    display: none !important;
+  }
+
+  /* Make active view expand to full width and content height */
+  section.is-active {
+    width: 100% !important;
+    max-width: none !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    box-shadow: none !important;
+  }
+
+  /* Reset all nested containers so the browser can paginate freely.
+     Without this, overflow:hidden/auto + fixed heights clip content
+     at page boundaries, causing lines to be cut in half. */
+  section.is-active * {
+    overflow: visible !important;
+    max-height: none !important;
+  }
+
+  section.is-active div {
+    height: auto !important;
+  }
+
+  /* Remove max-width constraints inside the active view */
+  section.is-active .max-w-\[1000px\],
+  section.is-active [class*="max-w-"] {
+    max-width: none !important;
+  }
+
+  /* Remove self-center so content fills the full width */
+  section.is-active .self-center {
+    align-self: stretch !important;
+  }
+
+  /* Unstick the view header for natural print flow */
+  section.is-active .sticky {
+    position: static !important;
+  }
+
+  /* Hide scrollbar decorations */
+  [data-radix-scroll-area-scrollbar] {
+    display: none !important;
+  }
+}

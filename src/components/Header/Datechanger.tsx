@@ -2,7 +2,8 @@ import { ChevronLeftIcon, ChevronRightIcon } from '@ttab/elephant-ui/icons'
 import { Link } from '@/components'
 import { DatePicker } from '../Datepicker'
 import { useQuery, useLink } from '@/hooks'
-import { addDays, subDays } from 'date-fns'
+import { addDays, subDays, format } from 'date-fns'
+import { parseDate } from '@/shared/datetime'
 import { type View } from '@/types/index'
 import { useMemo, type JSX } from 'react'
 
@@ -17,10 +18,7 @@ export const DateChanger = ({ type }: { type: View }): JSX.Element | null => {
 
   const currentDate = useMemo(() => {
     if (typeof from === 'string') {
-      const parsed = new Date(from)
-      if (!isNaN(parsed.getTime())) {
-        return parsed
-      }
+      return parseDate(from) ?? new Date()
     }
     return new Date()
   }, [from])
@@ -29,7 +27,7 @@ export const DateChanger = ({ type }: { type: View }): JSX.Element | null => {
 
   const changeDate = useLink(linkTarget || type)
 
-  const getDateString = (date: Date) => date.toISOString().split('T')[0]
+  const getDateString = (date: Date) => format(date, 'yyyy-MM-dd')
 
   const getLinkProps = (fn: (currentDate: Date, steps: number) => Date) => {
     const date = fn(currentDate, steps)

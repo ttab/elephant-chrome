@@ -5,7 +5,9 @@ import { toast } from 'sonner'
 import { ToastAction } from '@/components/ToastAction'
 import { CalendarDaysIcon, FileInputIcon } from '@ttab/elephant-ui/icons'
 import { addAssignmentWithDeliverable } from '@/lib/index/addAssignment'
+import { removeAssignmentWithDeliverable } from '@/lib/index/removeAssignment'
 import { convertToISOStringInTimeZone } from '@/shared/datetime'
+import { snapshotDocument } from '@/lib/snapshotDocument'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import i18n from '@/lib/i18n'
@@ -41,6 +43,11 @@ export async function createArticle({
     return
   }
 
+  // Capture Y.Doc reference synchronously before any await — the provider
+  // may be disconnected by the time async operations complete (dialog closes
+  // and unmounts the component, triggering CollaborationClientRegistry cleanup)
+  const yjsDocument = ydoc.provider?.document
+
   // Create and collect all base data for the assignment
   const dt = new Date()
   const isoDateTime = `${new Date().toISOString().split('.')[0]}Z` // Remove ms, add Z back again
@@ -69,9 +76,19 @@ export async function createArticle({
     throw new Error('CreateAssignmentError')
   }
 
-  // Create article in repo
-  if (ydoc.isInProgress) {
-    ydoc.setIsInProgress(false)
+  // Explicitly save article to repository via HTTP — works even if the
+  // Hocuspocus provider has been disconnected (dialog closed before this point)
+  try {
+    await snapshotDocument(ydoc.id, { status: 'draft' }, yjsDocument)
+  } catch (ex) {
+    // Roll back the assignment that was just added to the planning
+    try {
+      await removeAssignmentWithDeliverable(updatedPlanningId, ydoc.id, 'core/article')
+    } catch (rollbackEx) {
+      console.error('Failed to roll back assignment after article snapshot failure', rollbackEx)
+      throw new Error('AssignmentRollbackError')
+    }
+    throw ex
   }
 
   toast.success(i18n.t('wires:creation.articleCreated'), {
@@ -90,6 +107,7 @@ export async function createArticle({
         />
         <ToastAction
           documentId={documentId}
+          planningId={updatedPlanningId}
           withView='Editor'
           Icon={FileInputIcon}
           label={i18n.t('wires:toast.openArticle')}

@@ -10,6 +10,7 @@ import { Init } from './components/Init/index.tsx'
 import { UserMessagesReceiver } from './components/UserMessagesReceiver.tsx'
 import { Toaster } from '@ttab/elephant-ui'
 import './index.css'
+import './print.css'
 import { SettingsProvider } from './modules/userSettings/SettingsProvider.tsx'
 
 banner()

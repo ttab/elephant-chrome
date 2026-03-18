@@ -1,7 +1,8 @@
 import { Tooltip } from '@ttab/elephant-ui'
 import { cn } from '@ttab/elephant-ui/utils'
-import { HistoryIcon } from './HistoryIcon'
 import { useTranslation } from 'react-i18next'
+import { HistoryIcon, historyColors } from './HistoryIcon'
+import { MoveRightIcon } from '@ttab/elephant-ui/icons'
 
 export const HistoryEntry = ({ version, isCurrent = false, status, isLast, title, time, onSelect, selected = false }: {
   version?: bigint
@@ -41,19 +42,20 @@ export const HistoryEntry = ({ version, isCurrent = false, status, isLast, title
 
       <div
         className={cn(
-          'py-1 ps-2',
+          'py-1 ps-2 flex items-center gap-1',
           isSelectable ? 'cursor-pointer group-hover:bg-muted/60' : 'cursor-default',
           !title && 'text-muted-foreground',
           selected && 'font-semibold'
         )}
         onMouseDownCapture={handleSelect}
       >
+        {selected && <MoveRightIcon size={12} className='shrink-0 -ml-4' strokeWidth={3} color={historyColors[status ?? 'draft']} />}
         {time}
       </div>
 
       <a
         className={cn(
-          'py-0.5 ps-3 items-center truncate',
+          'py-1 ps-3 items-center truncate',
           isSelectable ? 'cursor-pointer group-hover:bg-muted/60' : 'cursor-default',
           selected && 'font-semibold'
         )}

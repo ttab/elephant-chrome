@@ -36,14 +36,14 @@ export const Pagination = ({ total }: {
   ]
 
   return (
-    <div className='flex items-center justify-center gap-4 border-t w-full p-4'>
+    <div className='flex items-center justify-center gap-4 border-t w-full p-4 dark:bg-secondary'>
       {total === undefined || total > 0
         ? (
             <>
               {buttons.map((button, index) => (
                 <div key={button.id} className='flex items-center gap-2'>
                   <div
-                    className={`flex items-center gap-2 ${button.disabled ? '' : 'cursor-pointer hover:bg-slate-200'}`}
+                    className={`flex items-center gap-2 ${button.disabled ? '' : 'cursor-pointer hover:bg-slate-200 dark:hover:bg-table-focused'}`}
                     onClick={() => {
                       if (button.disabled) {
                         return
@@ -51,7 +51,7 @@ export const Pagination = ({ total }: {
                       button.onClick()
                     }}
                   >
-                    <button.icon size={20} color={button.disabled ? '#E2E8F0' : '#000'} />
+                    <button.icon size={20} className={button.disabled ? 'text-slate-500/40 dark:text-slate-400' : 'text-slate-800 dark:text-slate-100'} />
                   </div>
                   {index === 0 && <span className='text-sm ml-2'>{page}</span>}
                 </div>

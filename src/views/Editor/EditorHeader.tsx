@@ -5,7 +5,7 @@ import { MetaSheet } from '@/components/MetaSheet/MetaSheet'
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { AddNote } from '@/components/Notes/AddNote'
 import { ViewHeader } from '@/components/View'
-import { CableIcon, PenBoxIcon, PenOffIcon } from '@ttab/elephant-ui/icons'
+import { CableIcon } from '@ttab/elephant-ui/icons'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { toast } from 'sonner'
 import { handleLink } from '@/components/Link/lib/handleLink'
@@ -16,6 +16,7 @@ import type { YDocument } from '@/modules/yjs/hooks'
 import { useYValue } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import { useTranslation } from 'react-i18next'
+import { documentTypeValueFormat } from '@/defaults/documentTypeFormats'
 
 export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: propPlanningId }: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -85,10 +86,6 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
     return true
   }, [planningId, dispatch, ydoc.id, history, state.viewRegistry, viewId, t])
 
-  const title = documentType === 'core/editorial-info'
-    ? t('assignmentTypes.editorial-info')
-    : t('assignmentTypes.text')
-
   const isReadOnlyAndUpdated = workflowStatus && workflowStatus?.name !== 'usable' && readOnly
   const isUnpublished = workflowStatus?.name === 'unpublished'
 
@@ -97,8 +94,11 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
       <ViewHeader.Title
         name='Editor'
         preview={readOnly && !readOnlyVersion}
-        title={title}
-        icon={readOnly ? PenOffIcon : PenBoxIcon}
+        title={documentTypeValueFormat?.[documentType || 'core/article']?.label}
+        icon={(() => {
+          const fmt = documentTypeValueFormat?.[documentType || 'core/article']
+          return (readOnly && fmt?.readonly?.icon) || fmt?.icon
+        })()}
         ydoc={!readOnly ? ydoc : undefined}
       />
 
@@ -107,7 +107,8 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
           <div className='flex flex-row gap-1 justify-start items-center @7xl/view:-ml-20'>
             <div className='hidden flex-row gap-2 justify-start items-center @lg/view:flex'>
               {!readOnly && <AddNote ydoc={ydoc} />}
-              {!readOnly && documentType !== 'core/editorial-info' && <Newsvalue ydoc={ydoc} path='meta.core/newsvalue[0].value' />}
+              {!readOnly && documentType !== 'core/editorial-info'
+                && <Newsvalue ydoc={ydoc} path='meta.core/newsvalue[0].value' />}
               {!!wireBlocks?.length && (
                 <Button
                   variant='ghost'

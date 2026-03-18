@@ -52,6 +52,7 @@
     "articleCreated": "Article created",
     "createError": "Could not create an article!",
     "createError2": "Could not create new article!",
+    "assignmentRollbackError": "The article couldn't be confirmed as saved and the assignment couldn't be removed. Please check the planning manually.",
     "markUsed": "Mark as used",
     "createButton": "Create article"
   },
