@@ -46,11 +46,13 @@ export const Filter = ({ pages, setPages, setSearch, children, search }:
             if (e.key === 'Escape') {
               setOpen(false)
             }
+
             if (e.key === 'ArrowLeft' || e.key === 'Backspace') {
               if (pages.length > 0 && ((filter?.query?.[0]) || search)) {
                 e.stopPropagation()
                 return
               }
+
               if (pages.length > 1) {
                 e.preventDefault()
                 setSearch('')
