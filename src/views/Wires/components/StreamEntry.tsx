@@ -78,7 +78,7 @@ export const StreamEntry = memo(({
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault()
       onPress?.(entry, e)
-    } else if (e.key === 'm') {
+    } else if (e.key === 'm' || e.key === 'M') {
       if (wireState.status !== 'used') {
         e.preventDefault()
         onToggleSelected(entry, e.shiftKey)
