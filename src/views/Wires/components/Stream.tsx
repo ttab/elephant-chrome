@@ -189,7 +189,7 @@ export const Stream = memo(({
     lastToggledWireIdRef.current = wire.id
   }, [onToggleWire])
 
-  // Shift+Arrow: extend/contract selection from a marked entry (like text selection)
+  // Shift+Arrow: extend/contract selection (like text selection in an editor)
   useEffect(() => {
     const handleShiftNavigation = (e: KeyboardEvent) => {
       if (!e.shiftKey || (e.key !== 'ArrowUp' && e.key !== 'ArrowDown')) return
@@ -204,17 +204,6 @@ export const Stream = memo(({
       const entryId = focusedEl.getAttribute('data-entry-id')
       if (!entryId) return
 
-      // Only activate when the focused item is marked
-      if (!selectedWireIdsRef.current.has(entryId)) {
-        shiftAnchorRef.current = null
-        return
-      }
-
-      // Set anchor on first shift-navigate from a selected item
-      if (!shiftAnchorRef.current) {
-        shiftAnchorRef.current = entryId
-      }
-
       const items = Array.from(container.querySelectorAll<HTMLElement>('[data-item-id]'))
       const currentIndex = items.indexOf(focusedEl)
       if (currentIndex === -1) return
@@ -225,6 +214,16 @@ export const Stream = memo(({
       const nextEl = items[nextIndex]
       const nextEntryId = nextEl.getAttribute('data-entry-id')
       if (!nextEntryId) return
+
+      // On the first Shift+Arrow press, set the anchor and mark the starting entry
+      if (!shiftAnchorRef.current) {
+        shiftAnchorRef.current = entryId
+        const currentWire = allDataRef.current.find((w) => w.id === entryId)
+        if (currentWire && getWireState(currentWire).status !== 'used') {
+          onToggleWire(currentWire, true)
+          lastToggledWireIdRef.current = entryId
+        }
+      }
 
       const anchorIndex = items.findIndex(
         (el) => el.getAttribute('data-entry-id') === shiftAnchorRef.current
@@ -252,8 +251,19 @@ export const Stream = memo(({
       nextEl.focus()
     }
 
+    // Reset the anchor when Shift is released so the next Shift+Arrow starts fresh
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.key === 'Shift') {
+        shiftAnchorRef.current = null
+      }
+    }
+
     document.addEventListener('keydown', handleShiftNavigation)
-    return () => document.removeEventListener('keydown', handleShiftNavigation)
+    document.addEventListener('keyup', handleKeyUp)
+    return () => {
+      document.removeEventListener('keydown', handleShiftNavigation)
+      document.removeEventListener('keyup', handleKeyUp)
+    }
   }, [onToggleWire])
 
   const removeThisWire = useCallback(() => {
