@@ -17,5 +17,26 @@
     border: none !important;
     border-radius: 0 !important;
     margin: 0 !important;
+    overflow-x: hidden !important;
+  }
+
+  /* The global print.css sets max-width: none on every element with a max-w-* class,
+     which breaks the width-constraint chain inside the preview and makes overflow-wrap
+     ineffective. Restore containment for elements inside the preview only. */
+  section.is-active [data-wires-preview] [class*="max-w-"] {
+    max-width: 100% !important;
+  }
+
+  /* truncate sets white-space: nowrap. In print, overflow: hidden is removed so the text
+     becomes visible. Allow wrapping. */
+  section.is-active [data-wires-preview] .truncate {
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+  }
+
+  /* Force long unbreakable strings (e.g. URLs) in the article body to wrap. */
+  section.is-active [data-slate-editor] {
+    overflow-wrap: anywhere !important;
   }
 }
