@@ -22,7 +22,6 @@ import type { WireStatus } from '../lib/setWireStatus'
 import { StreamGroupHeader } from './StreamGroupHeader'
 import { REQUIRE_FILTERS } from '../lib/featureFlags'
 import { getWireStatus } from '@/lib/getWireStatus'
-import { getWireState } from '@/lib/getWireState'
 
 const PAGE_SIZE = 80
 const FILTER_DEBOUNCE_MS = 400
