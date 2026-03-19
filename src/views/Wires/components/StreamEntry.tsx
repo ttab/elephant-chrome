@@ -70,7 +70,6 @@ export const StreamEntry = memo(({
 }): JSX.Element => {
   const wireState = getWireState(entry)
   const lastStatus = getWireStatus(entry)
-
   const handleClick = useCallback((e: React.MouseEvent<HTMLElement>) => {
     onPress?.(entry, e)
   }, [entry, onPress])
@@ -106,7 +105,7 @@ export const StreamEntry = memo(({
         data-item-id={compositeId}
         data-entry-id={entry.id}
         tabIndex={0}
-        className={cn(variants({ status, isFlash, wasSaved: lastStatus === 'saved', wasRead: lastStatus === 'read', wasUsed: lastStatus === 'used' }))}
+        className={cn(variants({ status: ['flash', 'draft'].some((s) => status.includes(s)) ? null : (status as 'read' | 'used' | 'saved'), isFlash, wasSaved: lastStatus === 'saved', wasRead: lastStatus === 'read', wasUsed: lastStatus === 'used' }))}
         onKeyDown={handleKeyDown}
         onFocus={handleFocus}
         onClick={handleClick}

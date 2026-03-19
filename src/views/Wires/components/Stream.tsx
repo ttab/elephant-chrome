@@ -20,6 +20,8 @@ import { type WireStream } from '../hooks/useWireViewState'
 import type { WireStatus } from '../lib/setWireStatus'
 import { StreamGroupHeader } from './StreamGroupHeader'
 import { REQUIRE_FILTERS } from '../lib/featureFlags'
+import { getWireStatus } from '@/lib/getWireStatus'
+import { getWireState } from '@/lib/getWireState'
 
 const PAGE_SIZE = 80
 const FILTER_DEBOUNCE_MS = 400
@@ -155,24 +157,11 @@ export const Stream = memo(({
 
   const filterStatuses = (wires: Wire[], wireStatusFilter: WireFilter): Wire[] => {
     const selectedStatuses = new Set(wireStatusFilter.values)
-    const ALL_STATUSES = ['read', 'saved', 'used', 'flash']
+
     return wires.filter((wire) => {
-      const validStatuses = ALL_STATUSES
-        .map((key) => ({
-          key,
-          version: Number(wire.fields?.[`heads.${key}.version` as keyof typeof wire.fields]?.values?.[0]),
-          timestamp: new Date(wire.fields?.[`heads.${key}.created` as keyof typeof wire.fields]?.values?.[0] ?? '').getTime()
-        }))
-        .filter((s) => s.version >= 1 && !isNaN(s.timestamp))
-
-      if (!validStatuses.length) return false
-
-      const current = validStatuses.reduce((a, b) => {
-        if (b.version !== a.version) return b.version > a.version ? b : a
-        return b.timestamp > a.timestamp ? b : a
-      })
-
-      return selectedStatuses.has(current.key)
+      const currentStatus = getWireState(wire)
+      const lastStatus = getWireStatus(wire)
+      return selectedStatuses.has(currentStatus.status) || selectedStatuses.has(lastStatus)
     })
   }
 
