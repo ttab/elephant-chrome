@@ -1,3 +1,4 @@
+import './print.css'
 import { View, ViewHeader } from '@/components/View'
 import { type ViewMetadata } from '@/types/index'
 import { useCallback, useRef, useState, useMemo, type JSX, useEffect } from 'react'
@@ -413,12 +414,14 @@ export const Wires = (): JSX.Element => {
 
       <View.Content variant='no-scroll' className='relative'>
         <div
+          data-wires-content
           className={cn(
             'h-full overflow-hidden @7xl/view:grid-cols-[auto_1fr]',
             previewWire && 'grid grid-rows-2 @7xl/view:grid-rows-1'
           )}
         >
           <div
+            data-wires-streams
             className={cn(
               'h-full overflow-x-auto overflow-y-hidden',
               previewWire && '@7xl/view:pr-2'
@@ -445,6 +448,7 @@ export const Wires = (): JSX.Element => {
           {!!previewWire
             && (
               <div
+                data-wires-preview
                 className={cn(
                   'relative rounded-lg grid shadow-xl border border-default-foreground/20 mx-1 justify-center',
                   'grid-rows-[auto_1fr] h-full overflow-hidden',

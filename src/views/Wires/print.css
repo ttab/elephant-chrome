@@ -1,0 +1,21 @@
+@media print {
+  /* Hide the wire streams panel — only the preview should be printed */
+  section.is-active [data-wires-streams] {
+    display: none !important;
+  }
+
+  /* Switch the content wrapper from grid to block so the preview fills the width */
+  section.is-active [data-wires-content] {
+    display: block !important;
+  }
+
+  /* Let the preview panel expand to fill the page */
+  section.is-active [data-wires-preview] {
+    width: 100% !important;
+    max-width: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+  }
+}
