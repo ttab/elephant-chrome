@@ -17,7 +17,7 @@
     border: none !important;
     border-radius: 0 !important;
     margin: 0 !important;
-    overflow-x: hidden !important;
+    overflow: hidden !important;
   }
 
   /* The global print.css sets max-width: none on every element with a max-w-* class,
