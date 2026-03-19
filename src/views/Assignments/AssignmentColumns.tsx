@@ -131,9 +131,12 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
         columnIcon: BriefcaseIcon,
         className: 'flex-1'
       },
-      accessorFn: (data) => data.fields['document.meta.core_assignment.title']?.values,
+      accessorFn: (data) => [
+        data.fields['document.meta.core_assignment.title']?.values?.join(' ') ?? '',
+        data.fields['document.title']?.values?.[0] ?? ''
+      ].join(' ').trim(),
       cell: ({ row }) => {
-        const assignmentTitle = row.getValue<string[]>('title')?.join(' ') || ''
+        const assignmentTitle = row.getValue<string>('title') || ''
         const planningTitle = row.original.fields['document.title'].values[0] || ''
         const assignees = (row.getValue<string[]>('assignees') || []).map((assigneeId) => {
           return authors.find((author) => author.id === assigneeId)?.name || ''
@@ -148,7 +151,8 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
           </>
         )
       },
-      enableGrouping: false
+      enableGrouping: false,
+      enableGlobalFilter: true
     },
     {
       id: 'section',

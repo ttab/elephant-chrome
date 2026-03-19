@@ -16,10 +16,13 @@ import {
 } from '@tanstack/react-table'
 import { FilterValue } from './Filter/FilterValue'
 import { FilterMenu } from './Filter/FilterMenu'
+import type { WireFilter } from '../hooks/useWireViewState'
 import { type WireStream } from '../hooks/useWireViewState'
 import type { WireStatus } from '../lib/setWireStatus'
 import { StreamGroupHeader } from './StreamGroupHeader'
 import { REQUIRE_FILTERS } from '../lib/featureFlags'
+import { getWireStatus } from '@/lib/getWireStatus'
+import { getWireState } from '@/lib/getWireState'
 
 const PAGE_SIZE = 80
 const FILTER_DEBOUNCE_MS = 400
@@ -113,6 +116,10 @@ export const Stream = memo(({
         next = Array.from(byId.values())
       }
 
+      const wireStatusFilter = wireStream.filters.find((f) => f.type === 'wireStatus')
+      if (wireStatusFilter?.values.length) {
+        next = filterStatuses(next, wireStatusFilter)
+      }
       allDataRef.current = next
       return next
     })
@@ -120,7 +127,7 @@ export const Stream = memo(({
     if (!isLoading) {
       loadingRef.current = false
     }
-  }, [data, isLoading, page])
+  }, [data, isLoading, page, wireStream.filters])
 
   // Reset to page 1 when debounced filters change.
   // Don't clear allData here — the data effect replaces it on page 1 once the fetch completes,
@@ -150,6 +157,16 @@ export const Stream = memo(({
     scrollContainer.addEventListener('scroll', handleScroll)
     return () => scrollContainer.removeEventListener('scroll', handleScroll)
   }, [isLoading, data])
+
+  const filterStatuses = (wires: Wire[], wireStatusFilter: WireFilter): Wire[] => {
+    const selectedStatuses = new Set(wireStatusFilter.values)
+
+    return wires.filter((wire) => {
+      const currentStatus = getWireState(wire)
+      const lastStatus = getWireStatus(wire)
+      return selectedStatuses.has(currentStatus.status) || selectedStatuses.has(lastStatus)
+    })
+  }
 
   // Convert selected wires array to TanStack Table format
   const rowSelection = useMemo<RowSelectionState>(() => {

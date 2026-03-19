@@ -1,6 +1,6 @@
 import type { Wire } from '@/shared/schemas/wire'
 
-type WireStatusKey = undefined | 'read' | 'saved' | 'used'
+export type WireStatusKey = 'read' | 'saved' | 'used' | 'flash' | 'draft'
 
 export type WireState = {
   status: WireStatusKey
@@ -31,6 +31,10 @@ export function getWireState(wire: Wire): WireState {
     status = 'saved'
   } else if (version === readVersion) {
     status = 'read'
+  } else if (version === flashVersion) {
+    status = 'flash'
+  } else {
+    status = 'draft'
   }
 
   return {

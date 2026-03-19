@@ -143,6 +143,7 @@ export const Wires = (): JSX.Element => {
                     return { type, uri: value, role: 'filter' }
                   case 'core/section':
                     return { type, uuid: value, role: 'filter' }
+                  case 'wireStatus':
                   case 'query':
                   case 'core/newsvalue':
                   default:
@@ -237,12 +238,14 @@ export const Wires = (): JSX.Element => {
       const sources = meta.filter((meta) => meta.type === 'core/source').map((meta) => meta.uri)
       const texts = meta.filter((meta) => meta.type === 'query').map((meta) => meta.value)
       const newsvalues = meta.filter((meta) => meta.type === 'core/newsvalue').map((meta) => meta.value)
+      const wireStatuses = meta.filter((meta) => meta.type === 'wireStatus').map((meta) => meta.value)
 
       addStream(uuid, {
         'core/section': sections,
         'core/source': sources,
         query: texts,
-        'core/newsvalue': newsvalues
+        'core/newsvalue': newsvalues,
+        wireStatus: wireStatuses
       })
     })
 
