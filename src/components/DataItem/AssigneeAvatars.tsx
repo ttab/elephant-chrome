@@ -3,26 +3,32 @@ import { Avatar, type AvatarSize } from '@/components'
 import { AvatarGroup } from '../AvatarGroup'
 import type { JSX } from 'react'
 
-export const AssigneeAvatars = ({ assignees, size = 'sm', color = '' }: {
+export const AssigneeAvatars = ({ assignees, size = 'sm', color = '', tooltip = true }: {
   assignees: string[]
   size?: string
   color?: string
+  tooltip?: boolean
 }): JSX.Element => {
   return (
     <AvatarGroup size={size as AvatarSize}>
       {(assignees || []).slice(0, 3).map((assignee: string, index: number) => {
+        if (tooltip) {
+          return (
+            <Tooltip key={index} content={assignee}>
+              <Avatar value={assignee} size={size as AvatarSize} color={color} variant={color ? 'color' : undefined} stacked={index > 0} />
+            </Tooltip>
+          )
+        }
         return (
-          <Tooltip key={index} content={assignee}>
-            <Avatar value={assignee} size={size as AvatarSize} color={color} variant={color ? 'color' : undefined} stacked={index > 0} />
-          </Tooltip>
+          <Avatar key={index} value={assignee} title={assignee} size={size as AvatarSize} color={color} variant={color ? 'color' : undefined} stacked={index > 0} />
         )
       })}
 
-      {assignees.length > 3 && (
+      {assignees.length > 3 && tooltip && (
         <Tooltip content={
           assignees.map((assignee, index) => (
-            <div key={index} className='flex p-1 text-xs font-semibold leading-7 items-center'>
-              <Avatar variant='muted' size='sm' value={assignee} className='mr-4' />
+            <div key={index} className='flex p-1 text-xs font-semibold leading-7 items-center z-100'>
+              <Avatar variant='muted' size='sm' value={assignee} className='mr-4' tooltip={tooltip} />
               <p>{assignee}</p>
             </div>
           ))
@@ -33,6 +39,7 @@ export const AssigneeAvatars = ({ assignees, size = 'sm', color = '' }: {
           </span>
         </Tooltip>
       )}
+
     </AvatarGroup>
   )
 }

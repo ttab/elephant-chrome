@@ -224,7 +224,7 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
         className: 'flex-none w-[112px] hidden @5xl/view:[display:revert]',
         display: (value: string) => {
           const names = value.split(',').filter(Boolean)
-          return <Assignees assignees={names} />
+          return <Assignees assignees={names} tooltip={false} />
         }
       },
       accessorFn: (data) => data.fields['document.meta.core_assignment.rel.assignee.uuid']?.values,
@@ -242,6 +242,7 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
 
         return <Assignees assignees={assignees} />
       },
+      sortingFn: 'alphanumeric',
       filterFn: (row, id, value: string[]) => {
         const assignees = row.getValue<string[]>(id) || []
         return value.some((v) => assignees.includes(v))
