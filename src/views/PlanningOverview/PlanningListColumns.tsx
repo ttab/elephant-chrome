@@ -153,7 +153,18 @@ export function planningListColumns({ sections = [], authors = [] }: {
         ),
         name: 'Uppdragstagare',
         columnIcon: UsersIcon,
-        className: 'flex-none w-[112px] hidden @5xl/view:[display:revert]'
+        className: 'flex-none w-[112px] hidden @5xl/view:[display:revert]',
+        display: (value: string) => {
+          const names = value.split(',').filter(Boolean)
+          return <Assignees assignees={names} tooltip={false}/>
+        }
+      },
+      getGroupingValue: (data) => {
+        const assignees = data.fields['document.meta.core_assignment.rel.assignee.uuid']?.values ?? []
+        return assignees
+          .map((uuid) => authors.find((a) => a.id === uuid)?.name ?? '??')
+          .sort()
+          .join(',')
       },
       accessorFn: (data) => data.fields['document.meta.core_assignment.rel.assignee.uuid']?.values,
       cell: ({ row }) => {
@@ -168,7 +179,7 @@ export function planningListColumns({ sections = [], authors = [] }: {
         const assignees = row.getValue<string[]>(id) || []
         return value.some((v) => assignees.includes(v))
       },
-      enableGrouping: false
+      enableGrouping: true
     },
     {
       id: 'type',
