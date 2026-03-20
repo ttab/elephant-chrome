@@ -69,7 +69,7 @@ export async function createFlash({
   const [flashTitle] = getValueByYPath<string>(ydoc.ele, 'root.title')
 
   const contentYXml = ydoc.ele.get('content') as YXmlText | undefined
-  const content = contentYXml ? yTextToSlateElement(contentYXml)?.children as TBElement[] : []
+  const content = contentYXml ? (yTextToSlateElement(contentYXml)?.children ?? []) as TBElement[] : []
 
   const bodyTextNode = (content).find((c) => {
     if (!('properties' in c) || typeof c.properties !== 'object' || c.properties === null) {
