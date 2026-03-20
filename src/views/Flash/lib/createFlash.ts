@@ -68,12 +68,17 @@ export async function createFlash({
   // Create and collect all base data for the assignment
   const [flashTitle] = getValueByYPath<string>(ydoc.ele, 'root.title')
 
-  const content = yTextToSlateElement((ydoc.ele.get('content') as YXmlText))?.children as TBElement[]
+  const contentYXml = ydoc.ele.get('content') as YXmlText | undefined
+  const content = contentYXml ? (yTextToSlateElement(contentYXml)?.children ?? []) as TBElement[] : []
 
-  const bodyTextNode = content.find((c) => {
+  const bodyTextNode = (content).find((c) => {
+    if (!('properties' in c) || typeof c.properties !== 'object' || c.properties === null) {
+      return false
+    }
+
     const properties = c.properties as { role?: string }
     return !properties.role
-  })?.children[0]
+  })?.children?.[0]
 
   const flashBodyText = bodyTextNode && 'text' in bodyTextNode ? bodyTextNode?.text : ''
 
