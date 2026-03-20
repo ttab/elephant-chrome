@@ -282,7 +282,9 @@ export const Wires = (): JSX.Element => {
   const handleToggleWire = useCallback((wire: Wire, isSelected: boolean) => {
     setSelectedWires((prev) => {
       if (isSelected) {
-        return [...prev, wire]
+        return (prev.some((w) => w.id === wire.id))
+          ? prev
+          : [...prev, wire]
       } else {
         return prev.filter((w) => w.id !== wire.id)
       }
