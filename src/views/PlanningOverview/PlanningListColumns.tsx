@@ -163,18 +163,25 @@ export function planningListColumns({ sections = [], authors = [] }: {
         const assignees = data.fields['document.meta.core_assignment.rel.assignee.uuid']?.values ?? []
         return assignees
           .map((uuid) => authors.find((a) => a.id === uuid)?.name ?? '??')
-          .sort()
+          .sort((a, b) => a.localeCompare(b))
           .join(',')
       },
       accessorFn: (data) => data.fields['document.meta.core_assignment.rel.assignee.uuid']?.values,
       cell: ({ row }) => {
-        const assignees = (row.getValue<string[]>('assignees') || []).map((assigneeId) => {
-          return authors.find((author) => author.id === assigneeId)?.name || ''
-        })
+        const assignees = (row.getValue<string[]>('assignees') || []).map((assigneeId) =>
+          authors.find((author) => author.id === assigneeId)?.name || '')
+          .sort((a, b) => a.localeCompare(b))
 
         return <Assignees assignees={assignees} />
       },
-      sortingFn: 'alphanumeric',
+      sortingFn: (rowA, rowB, columnId) => {
+        const toKey = (row: typeof rowA) =>
+          (row.getValue<string[]>(columnId) || [])
+            .map((uuid) => authors.find((a) => a.id === uuid)?.name ?? '??')
+            .sort((a, b) => a.localeCompare(b))
+            .join(',')
+        return toKey(rowA).localeCompare(toKey(rowB))
+      },
       filterFn: (row, id, value: string[]) => {
         const assignees = row.getValue<string[]>(id) || []
         return value.some((v) => assignees.includes(v))
