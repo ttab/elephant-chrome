@@ -32,6 +32,7 @@ export const Stream = memo(({
   onPress,
   selectedWires,
   statusMutations,
+  failedMutationUuids,
   onToggleWire,
   onRemove,
   onFilterChange,
@@ -42,6 +43,7 @@ export const Stream = memo(({
   onPress?: (item: Wire, event: React.MouseEvent<HTMLElement> | React.KeyboardEvent<HTMLElement>) => void
   selectedWires: Wire[]
   statusMutations: WireStatus[]
+  failedMutationUuids: ReadonlySet<string>
   onToggleWire: (wire: Wire, isSelected: boolean) => void
   onRemove?: (streamId: string, wireIds: string[]) => void
   onFilterChange?: (streamId: string, type: string, values: string[]) => void
@@ -55,6 +57,7 @@ export const Stream = memo(({
   const loadingRef = useRef(false)
   const lastToggledWireIdRef = useRef<string | null>(null)
   const shiftAnchorRef = useRef<string | null>(null)
+  const mutationSnapshotRef = useRef<Map<string, Wire['fields']>>(new Map())
 
   const hasFilters = wireStream.filters.length > 0
   const skipFetch = REQUIRE_FILTERS && !hasFilters
@@ -134,6 +137,54 @@ export const Stream = memo(({
   useEffect(() => {
     setPage(1)
   }, [debouncedFilters])
+
+  // When mutations arrive, apply optimistic field updates directly to allData so that
+  // page 2+ wires (not covered by the subscription refetch) also show the correct status
+  // immediately after the mutation spinner clears.
+  useEffect(() => {
+    if (!statusMutations.length) return
+
+    const snapshot = new Map<string, Wire['fields']>()
+    setAllData((prev) => prev.map((wire) => {
+      const mutation = statusMutations.find((m) => m.uuid === wire.id)
+      if (!mutation) return wire
+
+      snapshot.set(wire.id, wire.fields)
+
+      const version = String(mutation.version)
+      let updatedFields: Wire['fields']
+
+      if (mutation.name === 'draft') {
+        updatedFields = {
+          ...wire.fields,
+          'heads.read.version': { values: ['0'] },
+          'heads.saved.version': { values: ['0'] },
+          'heads.used.version': { values: ['0'] }
+        }
+      } else {
+        updatedFields = {
+          ...wire.fields,
+          [`heads.${mutation.name}.version`]: { values: [version] }
+        }
+      }
+
+      return { ...wire, fields: updatedFields }
+    }))
+    mutationSnapshotRef.current = snapshot
+  }, [statusMutations])
+
+  // Rollback fields for wires whose status mutation failed
+  useEffect(() => {
+    if (!failedMutationUuids.size) return
+
+    const snapshot = mutationSnapshotRef.current
+    setAllData((prev) => prev.map((wire) => {
+      if (!failedMutationUuids.has(wire.id)) return wire
+      const original = snapshot.get(wire.id)
+      return original ? { ...wire, fields: original } : wire
+    }))
+    mutationSnapshotRef.current = new Map()
+  }, [failedMutationUuids])
 
   // Infinite scroll handler
   useEffect(() => {
