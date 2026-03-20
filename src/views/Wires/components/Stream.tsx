@@ -407,7 +407,7 @@ export const Stream = memo(({
     if (showDateHeader || showTimeHeader) {
       const key = showDateHeader
         ? `date-${currentDate.toDateString()}`
-        : `time-${currentDate.toDateString()}-${currentDate.getHours()}`
+        : `time-${currentDate.toDateString()}-${currentDate.getHours()}-${row.id}`
 
       const isToday = currentDate.toDateString() === new Date().toDateString()
 
