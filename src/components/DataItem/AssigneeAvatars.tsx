@@ -24,7 +24,7 @@ export const AssigneeAvatars = ({ assignees, size = 'sm', color = '', tooltip = 
         )
       })}
 
-      {assignees.length > 3 && tooltip && (
+      {assignees.length > 3 && (
         <Tooltip content={
           assignees.map((assignee, index) => (
             <div key={index} className='flex p-1 text-xs font-semibold leading-7 items-center z-100'>
