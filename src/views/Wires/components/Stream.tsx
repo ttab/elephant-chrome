@@ -36,7 +36,11 @@ export const Stream = memo(({
   onToggleWire,
   onRemove,
   onFilterChange,
-  onClearFilter
+  onClearFilter,
+  previewWireId,
+  onPreviewWireUpdate,
+  focusedWireId,
+  onFocusedWireUpdate
 }: {
   wireStream: WireStream
   onFocus?: (item: Wire, event: React.FocusEvent<HTMLElement>) => void
@@ -48,6 +52,10 @@ export const Stream = memo(({
   onRemove?: (streamId: string, wireIds: string[]) => void
   onFilterChange?: (streamId: string, type: string, values: string[]) => void
   onClearFilter?: (streamId: string, type: string) => void
+  previewWireId?: string
+  onPreviewWireUpdate?: (wire: Wire) => void
+  focusedWireId?: string
+  onFocusedWireUpdate?: (wire: Wire) => void
 }): JSX.Element => {
   const [page, setPage] = useState(1)
   const [allData, setAllData] = useState<Wire[]>([])
@@ -166,9 +174,11 @@ export const Stream = memo(({
           'heads.used.version': { values: ['0'] }
         }
       } else {
+        const optimisticCreated = new Date().toISOString()
         updatedFields = {
           ...wire.fields,
-          [`heads.${mutation.name}.version`]: { values: [version] }
+          [`heads.${mutation.name}.version`]: { values: [version] },
+          [`heads.${mutation.name}.created`]: { values: [optimisticCreated] }
         }
       }
 
@@ -189,6 +199,27 @@ export const Stream = memo(({
     }))
     mutationSnapshotRef.current = new Map()
   }, [failedMutationUuids])
+
+  // Notify parent when the previewed or focused wire's data changes in allData
+  const lastPreviewWireRef = useRef<Wire | null>(null)
+  const lastFocusedWireRef = useRef<Wire | null>(null)
+  useEffect(() => {
+    if (previewWireId && onPreviewWireUpdate) {
+      const found = allData.find((w) => w.id === previewWireId)
+      if (found && found !== lastPreviewWireRef.current) {
+        lastPreviewWireRef.current = found
+        onPreviewWireUpdate(found)
+      }
+    }
+
+    if (focusedWireId && onFocusedWireUpdate) {
+      const found = allData.find((w) => w.id === focusedWireId)
+      if (found && found !== lastFocusedWireRef.current) {
+        lastFocusedWireRef.current = found
+        onFocusedWireUpdate(found)
+      }
+    }
+  }, [allData, previewWireId, onPreviewWireUpdate, focusedWireId, onFocusedWireUpdate])
 
   // Infinite scroll handler
   useEffect(() => {

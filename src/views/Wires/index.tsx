@@ -70,7 +70,6 @@ export const Wires = (): JSX.Element => {
   const previewRestoredRef = useRef(false)
   const [previewWire, setPreviewWire] = useState<Wire | null>(null)
   const previewDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const [previewReloadCount, setPreviewReloadCount] = useState(0)
   const [focusedWire, setFocusedWire] = useState<Wire | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const { saveFocus, restoreFocus } = useSavedFocus()
@@ -320,12 +319,6 @@ export const Wires = (): JSX.Element => {
       setTimeout(() => {
         setStatusMutations([])
         setFailedMutationUuids(new Set())
-
-        // Force preview to reload if it's showing one of the updated wires
-        if (previewWire && nextStatuses.find((s) => s.uuid === previewWire.id)) {
-          setPreviewReloadCount((n) => n + 1)
-        }
-
         restoreFocus()
       }, 100)
     })
@@ -452,6 +445,10 @@ export const Wires = (): JSX.Element => {
                   onRemove={handleRemoveStream}
                   onFilterChange={setFilter}
                   onClearFilter={clearFilter}
+                  previewWireId={previewWire?.id}
+                  onPreviewWireUpdate={setPreviewWire}
+                  focusedWireId={focusedWire?.id}
+                  onFocusedWireUpdate={setFocusedWire}
                 />
               ))}
             </div>
@@ -480,7 +477,7 @@ export const Wires = (): JSX.Element => {
                 </Button>
                 <Preview
                   wire={previewWire}
-                  key={previewReloadCount}
+                  key={previewWire.id}
                 />
               </div>
             )}
