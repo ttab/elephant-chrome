@@ -156,7 +156,7 @@ export function planningListColumns({ sections = [], authors = [] }: {
         className: 'flex-none w-[112px] hidden @5xl/view:[display:revert]',
         display: (value: string) => {
           const names = value.split(',').filter(Boolean)
-          return <Assignees assignees={names} tooltip={false}/>
+          return <Assignees assignees={names} tooltip={false} />
         }
       },
       getGroupingValue: (data) => {
