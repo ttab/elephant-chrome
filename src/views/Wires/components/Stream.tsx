@@ -1,4 +1,4 @@
-import { type JSX, useMemo, useCallback, useState, useRef, useEffect, memo } from 'react'
+import { type JSX, useMemo, useCallback, useState, useRef, useEffect, useLayoutEffect, memo } from 'react'
 import { fields, type Wire, type WireFields } from '@/shared/schemas/wire'
 import { getWireState } from '@/lib/getWireState'
 import { useDocuments } from '@/hooks/index/useDocuments'
@@ -58,6 +58,8 @@ export const Stream = memo(({
   const lastToggledWireIdRef = useRef<string | null>(null)
   const shiftAnchorRef = useRef<string | null>(null)
   const mutationSnapshotRef = useRef<Map<string, Wire['fields']>>(new Map())
+  const statusMutationsRef = useRef<WireStatus[]>(statusMutations)
+  statusMutationsRef.current = statusMutations
 
   const hasFilters = wireStream.filters.length > 0
   const skipFetch = REQUIRE_FILTERS && !hasFilters
@@ -141,7 +143,9 @@ export const Stream = memo(({
   // When mutations arrive, apply optimistic field updates directly to allData so that
   // page 2+ wires (not covered by the subscription refetch) also show the correct status
   // immediately after the mutation spinner clears.
-  useEffect(() => {
+  // useLayoutEffect fires before paint, so both this and the triggered re-render
+  // commit before the browser paints — one visual frame instead of two.
+  useLayoutEffect(() => {
     if (!statusMutations.length) return
 
     const snapshot = new Map<string, Wire['fields']>()
@@ -174,7 +178,7 @@ export const Stream = memo(({
   }, [statusMutations])
 
   // Rollback fields for wires whose status mutation failed
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!failedMutationUuids.size) return
 
     const snapshot = mutationSnapshotRef.current
@@ -355,7 +359,7 @@ export const Stream = memo(({
             streamId={wireStream.uuid}
             entry={row.original}
             isSelected={row.getIsSelected()}
-            statusMutation={statusMutations.find((m) => m.uuid === row.original.id)}
+            statusMutation={statusMutationsRef.current.find((m) => m.uuid === row.original.id)}
             onToggleSelected={handleToggleSelected}
             onPress={onPress}
             onFocus={onFocus}
@@ -363,7 +367,7 @@ export const Stream = memo(({
         )
       }
     ],
-    [wireStream.uuid, onPress, onFocus, statusMutations, handleToggleSelected]
+    [wireStream.uuid, onPress, onFocus, handleToggleSelected]
   )
 
   const table = useReactTable({
