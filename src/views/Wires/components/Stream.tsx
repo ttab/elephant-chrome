@@ -110,9 +110,29 @@ export const Stream = memo(({
     setAllData((prev) => {
       let next: Wire[]
 
-      // First page replaces everything
+      // First page replaces everything, but preserve any status head versions from prev
+      // that are ahead of what the server returned (e.g. OpenSearch hasn't indexed the
+      // status change yet, especially for text-filter streams where the subscription fires
+      // for new wires rather than for the status-field change on the current wire).
       if (page === 1) {
-        next = data
+        const prevById = new Map(prev.map((w) => [w.id, w]))
+        next = data.map((wire) => {
+          const existing = prevById.get(wire.id)
+          if (!existing) return wire
+          let mergedFields = wire.fields
+          for (const head of ['read', 'saved', 'used', 'flash'] as const) {
+            const prevVer = parseInt(existing.fields[`heads.${head}.version`]?.values[0] ?? '0', 10)
+            const dataVer = parseInt(wire.fields[`heads.${head}.version`]?.values[0] ?? '0', 10)
+            if (!isNaN(prevVer) && !isNaN(dataVer) && prevVer > dataVer) {
+              mergedFields = {
+                ...mergedFields,
+                [`heads.${head}.version`]: existing.fields[`heads.${head}.version`],
+                [`heads.${head}.created`]: existing.fields[`heads.${head}.created`]
+              }
+            }
+          }
+          return mergedFields === wire.fields ? wire : { ...wire, fields: mergedFields }
+        })
       } else if (isLoading) {
         // Don't append paginated data while still loading
         next = prev
