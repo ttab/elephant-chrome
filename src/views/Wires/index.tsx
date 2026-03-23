@@ -321,6 +321,10 @@ export const Wires = (): JSX.Element => {
         setFailedMutationUuids(new Set())
         restoreFocus()
       }, 100)
+    }).catch((error: unknown) => {
+      console.error('Unexpected error in executeWiresStatuses:', error)
+      setStatusMutations([])
+      setFailedMutationUuids(new Set())
     })
   }, [selectedWires, focusedWire, repository, session, previewWire, saveFocus, restoreFocus])
 

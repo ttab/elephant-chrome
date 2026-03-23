@@ -44,7 +44,8 @@ export async function executeWiresStatuses(
       uuid: ws.uuid,
       statusSet: succeededUuids.has(ws.uuid)
     }))
-  } catch {
+  } catch (error) {
+    console.error('Failed to bulk save wire statuses:', error)
     return wireStatuses.map((ws) => ({ uuid: ws.uuid, statusSet: false }))
   }
 }
