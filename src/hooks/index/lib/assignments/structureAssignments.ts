@@ -54,8 +54,8 @@ export function structureAssignments(
     const { publish, start, publish_slot } = assignment.data
     let hour: number | undefined
 
-    if (status === 'withheld' && publish) {
-      // When scheduled, we want it in that particular hour.
+    if ((status === 'withheld' || status === 'usable') && publish) {
+      // When scheduled or auto-published, use the publish time.
       hour = getHours(toZonedTime(parseISO(publish), timeZone))
     } else if (hasUsable && statusData.modified) {
       hour = getHours(parseISO(statusData.modified))
@@ -86,15 +86,15 @@ export function structureAssignments(
       if (a?._statusData && b?._statusData) {
         const aData = JSON.parse(a._statusData) as StatusData
         const bData = JSON.parse(b._statusData) as StatusData
-        const aWithheld = a._deliverableStatus === 'withheld' && a.data.publish
-        const bWithheld = b._deliverableStatus === 'withheld' && b.data.publish
+        const aHasPublish = ['withheld', 'usable'].includes(a._deliverableStatus || '') && a.data.publish
+        const bHasPublish = ['withheld', 'usable'].includes(b._deliverableStatus || '') && b.data.publish
 
-        if (aWithheld && bWithheld) {
+        if (aHasPublish && bHasPublish) {
           return a.data.publish.localeCompare(b.data.publish)
         }
 
-        if (aWithheld) return -1
-        if (bWithheld) return 1
+        if (aHasPublish) return -1
+        if (bHasPublish) return 1
 
         return getTimeValue(aData?.modified) > getTimeValue(bData.modified) ? -1 : 1
       }
@@ -104,13 +104,13 @@ export function structureAssignments(
       if (aHasSlot && !bHasSlot) return -1
       if (!aHasSlot && bHasSlot) return 1
 
-      const aWithheld = a._deliverableStatus === 'withheld' && a.data.publish
-      const bWithheld = b._deliverableStatus === 'withheld' && b.data.publish
-      if (aWithheld && bWithheld) {
+      const aHasPublish = ['withheld', 'usable'].includes(a._deliverableStatus || '') && a.data.publish
+      const bHasPublish = ['withheld', 'usable'].includes(b._deliverableStatus || '') && b.data.publish
+      if (aHasPublish && bHasPublish) {
         return a.data.publish.localeCompare(b.data.publish)
       }
-      if (aWithheld) return -1
-      if (bWithheld) return 1
+      if (aHasPublish) return -1
+      if (bHasPublish) return 1
 
 
       if (a.data.start && b.data.start) {
