@@ -70,9 +70,9 @@ export const Flash = (props: ViewProps & {
     )
   }
 
-  // If published or specific version has be specified
-  if (workflowStatus?.name === 'usable' || props.version || workflowStatus?.name === 'unpublished') {
-    const bigIntVersion = workflowStatus?.name === 'usable'
+  // If published, withheld or specific version has be specified
+  if (workflowStatus?.name === 'usable' || workflowStatus?.name === 'withheld' || props.version || workflowStatus?.name === 'unpublished') {
+    const bigIntVersion = workflowStatus?.name === 'usable' || workflowStatus?.name === 'withheld'
       ? workflowStatus?.version
       : BigInt(props.version ?? 0)
 

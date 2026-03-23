@@ -16,6 +16,8 @@ import type { YDocument } from '@/modules/yjs/hooks'
 import { useYValue } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import { documentTypeValueFormat } from '@/defaults/documentTypeFormats'
+import { snapshotDocument } from '@/lib/snapshotDocument'
+import { useCollaborationDocument } from '@/hooks/useCollaborationDocument'
 
 export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: propPlanningId }: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -27,6 +29,7 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
   const { state, dispatch } = useNavigation()
   const history = useHistory()
   const planningId = useDeliverablePlanningId(ydoc.id)
+  const planningYdoc = useCollaborationDocument({ documentId: planningId })
   const [publishTime] = useState<string | null>(null)
   const [workflowStatus] = useWorkflowStatus({ ydoc, documentId: ydoc.id })
   const documentType = workflowStatus?.type
@@ -34,6 +37,7 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
   const openLatestVersion = useLink('Editor')
   const openSources = useLink('Sources')
   const [wireBlocks] = useYValue<Block[]>(ydoc.ele, 'links.tt/wire')
+
 
   // FIXME: We must have a way to retrieve the publish time defined in the planning.
   // FIXME: When yjs opening of related planning have been fixed this should be readded/remade.
@@ -78,13 +82,19 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
         ? data.time
         : new Date()
 
+      if (!planningId) {
+        toast.error('Kunde inte schemalägga artikel! Planeringsid saknas')
+        return false
+      }
+
+      await snapshotDocument(planningId, {}, planningYdoc.document)
       await updateAssignmentTime(ydoc.id, planningId, newStatus, newTime)
     }
 
     return true
-  }, [planningId, dispatch, ydoc.id, history, state.viewRegistry, viewId])
+  }, [planningId, dispatch, ydoc.id, history, state.viewRegistry, viewId, planningYdoc.document])
 
-  const isReadOnlyAndUpdated = workflowStatus && workflowStatus?.name !== 'usable' && readOnly
+  const isReadOnlyAndUpdated = workflowStatus && workflowStatus?.name !== 'usable' && workflowStatus?.name !== 'withheld' && readOnly
   const isUnpublished = workflowStatus?.name === 'unpublished'
 
   return (
