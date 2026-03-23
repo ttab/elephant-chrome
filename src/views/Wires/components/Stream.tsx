@@ -66,6 +66,9 @@ export const Stream = memo(({
   const lastToggledWireIdRef = useRef<string | null>(null)
   const shiftAnchorRef = useRef<string | null>(null)
   const mutationSnapshotRef = useRef<Map<string, Wire['fields']>>(new Map())
+  // Snapshot of pre-mutation fields kept after a successful mutation so the merge
+  // can detect when server data still reflects the old (pre-mutation) state.
+  const convergeSnapshotRef = useRef<Map<string, Wire['fields']>>(new Map())
   const statusMutationsRef = useRef<WireStatus[]>(statusMutations)
   statusMutationsRef.current = statusMutations
 
@@ -119,10 +122,31 @@ export const Stream = memo(({
         next = data.map((wire) => {
           const existing = prevById.get(wire.id)
           if (!existing) return wire
+
+          const snapshot = convergeSnapshotRef.current.get(wire.id)
           let mergedFields = wire.fields
+          let converged = !!snapshot
+
           for (const head of ['read', 'saved', 'used', 'flash'] as const) {
             const prevVer = parseInt(existing.fields[`heads.${head}.version`]?.values[0] ?? '0', 10)
             const dataVer = parseInt(wire.fields[`heads.${head}.version`]?.values[0] ?? '0', 10)
+
+            if (snapshot) {
+              const snapshotVer = parseInt(snapshot[`heads.${head}.version`]?.values[0] ?? '0', 10)
+              // Server still shows the pre-mutation value for this head — it hasn't
+              // indexed the change yet. Preserve allData's optimistic fields regardless
+              // of version direction (critical for draft toggles where version goes to 0).
+              if (!isNaN(snapshotVer) && !isNaN(dataVer) && dataVer === snapshotVer && prevVer !== dataVer) {
+                mergedFields = {
+                  ...mergedFields,
+                  [`heads.${head}.version`]: existing.fields[`heads.${head}.version`],
+                  [`heads.${head}.created`]: existing.fields[`heads.${head}.created`]
+                }
+                converged = false
+                continue
+              }
+            }
+
             if (!isNaN(prevVer) && !isNaN(dataVer) && prevVer > dataVer) {
               mergedFields = {
                 ...mergedFields,
@@ -131,6 +155,11 @@ export const Stream = memo(({
               }
             }
           }
+
+          if (converged) {
+            convergeSnapshotRef.current.delete(wire.id)
+          }
+
           return mergedFields === wire.fields ? wire : { ...wire, fields: mergedFields }
         })
       } else if (isLoading) {
@@ -174,37 +203,45 @@ export const Stream = memo(({
   // useLayoutEffect fires before paint, so both this and the triggered re-render
   // commit before the browser paints — one visual frame instead of two.
   useLayoutEffect(() => {
-    if (!statusMutations.length) return
+    if (statusMutations.length) {
+      const snapshot = new Map<string, Wire['fields']>()
+      setAllData((prev) => prev.map((wire) => {
+        const mutation = statusMutations.find((m) => m.uuid === wire.id)
+        if (!mutation) return wire
 
-    const snapshot = new Map<string, Wire['fields']>()
-    setAllData((prev) => prev.map((wire) => {
-      const mutation = statusMutations.find((m) => m.uuid === wire.id)
-      if (!mutation) return wire
+        snapshot.set(wire.id, wire.fields)
 
-      snapshot.set(wire.id, wire.fields)
+        const version = String(mutation.version)
+        let updatedFields: Wire['fields']
 
-      const version = String(mutation.version)
-      let updatedFields: Wire['fields']
-
-      if (mutation.name === 'draft') {
-        updatedFields = {
-          ...wire.fields,
-          'heads.read.version': { values: ['0'] },
-          'heads.saved.version': { values: ['0'] },
-          'heads.used.version': { values: ['0'] }
+        if (mutation.name === 'draft') {
+          updatedFields = {
+            ...wire.fields,
+            'heads.read.version': { values: ['0'] },
+            'heads.saved.version': { values: ['0'] },
+            'heads.used.version': { values: ['0'] }
+          }
+        } else {
+          const optimisticCreated = new Date().toISOString()
+          updatedFields = {
+            ...wire.fields,
+            [`heads.${mutation.name}.version`]: { values: [version] },
+            [`heads.${mutation.name}.created`]: { values: [optimisticCreated] }
+          }
         }
-      } else {
-        const optimisticCreated = new Date().toISOString()
-        updatedFields = {
-          ...wire.fields,
-          [`heads.${mutation.name}.version`]: { values: [version] },
-          [`heads.${mutation.name}.created`]: { values: [optimisticCreated] }
-        }
-      }
 
-      return { ...wire, fields: updatedFields }
-    }))
-    mutationSnapshotRef.current = snapshot
+        return { ...wire, fields: updatedFields }
+      }))
+      mutationSnapshotRef.current = snapshot
+    } else if (mutationSnapshotRef.current.size > 0) {
+      // Mutations cleared (success path): transfer the pre-mutation snapshot so the
+      // merge effect can detect stale server data that still matches the old state.
+      convergeSnapshotRef.current = new Map([
+        ...convergeSnapshotRef.current,
+        ...mutationSnapshotRef.current
+      ])
+      mutationSnapshotRef.current = new Map()
+    }
   }, [statusMutations])
 
   // Rollback fields for wires whose status mutation failed
@@ -217,6 +254,10 @@ export const Stream = memo(({
       const original = snapshot.get(wire.id)
       return original ? { ...wire, fields: original } : wire
     }))
+    // Rollback restored originals — no convergence protection needed for these wires
+    for (const uuid of failedMutationUuids) {
+      convergeSnapshotRef.current.delete(uuid)
+    }
     mutationSnapshotRef.current = new Map()
   }, [failedMutationUuids])
 
