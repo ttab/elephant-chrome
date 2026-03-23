@@ -82,17 +82,18 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
         ? data.time
         : new Date()
 
-      if (!planningId) {
+      const resolvedPlanningId = planningId || propPlanningId
+      if (!resolvedPlanningId) {
         toast.error('Kunde inte schemalägga artikel! Planeringsid saknas')
         return false
       }
 
-      await snapshotDocument(planningId, {}, planningYdoc.document)
-      await updateAssignmentTime(ydoc.id, planningId, newStatus, newTime)
+      await snapshotDocument(resolvedPlanningId, {}, planningYdoc.document)
+      await updateAssignmentTime(ydoc.id, resolvedPlanningId, newStatus, newTime)
     }
 
     return true
-  }, [planningId, dispatch, ydoc.id, history, state.viewRegistry, viewId, planningYdoc.document])
+  }, [planningId, propPlanningId, dispatch, ydoc.id, history, state.viewRegistry, viewId, planningYdoc.document])
 
   const isReadOnlyAndUpdated = workflowStatus && workflowStatus?.name !== 'usable' && workflowStatus?.name !== 'withheld' && readOnly
   const isUnpublished = workflowStatus?.name === 'unpublished'
