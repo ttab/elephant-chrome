@@ -70,7 +70,6 @@ export const Wires = (): JSX.Element => {
   const previewRestoredRef = useRef(false)
   const [previewWire, setPreviewWire] = useState<Wire | null>(null)
   const previewDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const [previewReloadCount, setPreviewReloadCount] = useState(0)
   const [focusedWire, setFocusedWire] = useState<Wire | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const { saveFocus, restoreFocus } = useSavedFocus()
@@ -92,6 +91,7 @@ export const Wires = (): JSX.Element => {
 
   const [selectedWires, setSelectedWires] = useState<Wire[]>([])
   const [statusMutations, setStatusMutations] = useState<WireStatus[]>([])
+  const [failedMutationUuids, setFailedMutationUuids] = useState<ReadonlySet<string>>(new Set())
 
   // Fetch wire by ID from URL params to restore preview on load
   const initialWireQuery = useMemo(() => initialId
@@ -281,7 +281,9 @@ export const Wires = (): JSX.Element => {
   const handleToggleWire = useCallback((wire: Wire, isSelected: boolean) => {
     setSelectedWires((prev) => {
       if (isSelected) {
-        return [...prev, wire]
+        return (prev.some((w) => w.id === wire.id))
+          ? prev
+          : [...prev, wire]
       } else {
         return prev.filter((w) => w.id !== wire.id)
       }
@@ -306,20 +308,23 @@ export const Wires = (): JSX.Element => {
     // Execute wire status changes and wait for completion.
     // Using setTimeout for to avoid the progress spinner to blink and disappear too quickly.
     void executeWiresStatuses(repository, session, nextStatuses).then((result) => {
-      setTimeout(() => {
-        setStatusMutations([])
+      const failed = result.filter((r) => !r.statusSet).map((r) => r.uuid)
 
-        // Force preview to reload if it's showing one of the updated wires
-        if (previewWire && nextStatuses.find((s) => s.uuid === previewWire.id)) {
-          setPreviewReloadCount((n) => n + 1)
-        }
-
-        restoreFocus()
-      }, 100)
-
-      if (result.find((r) => !r.statusSet)) {
+      if (failed.length) {
+        // Signal rollback before clearing mutations so Stream can restore original fields
+        setFailedMutationUuids(new Set(failed))
         toast.error('Någon eller några status-ändringar misslyckades!')
       }
+
+      setTimeout(() => {
+        setStatusMutations([])
+        setFailedMutationUuids(new Set())
+        restoreFocus()
+      }, 100)
+    }).catch((error: unknown) => {
+      console.error('Unexpected error in executeWiresStatuses:', error)
+      setStatusMutations([])
+      setFailedMutationUuids(new Set())
     })
   }, [selectedWires, focusedWire, repository, session, previewWire, saveFocus, restoreFocus])
 
@@ -439,10 +444,15 @@ export const Wires = (): JSX.Element => {
                   onFocus={handleOnFocus}
                   selectedWires={selectedWires}
                   statusMutations={statusMutations}
+                  failedMutationUuids={failedMutationUuids}
                   onToggleWire={handleToggleWire}
                   onRemove={handleRemoveStream}
                   onFilterChange={setFilter}
                   onClearFilter={clearFilter}
+                  previewWireId={previewWire?.id}
+                  onPreviewWireUpdate={setPreviewWire}
+                  focusedWireId={focusedWire?.id}
+                  onFocusedWireUpdate={setFocusedWire}
                 />
               ))}
             </div>
@@ -471,7 +481,7 @@ export const Wires = (): JSX.Element => {
                 </Button>
                 <Preview
                   wire={previewWire}
-                  key={previewReloadCount}
+                  key={previewWire.id}
                 />
               </div>
             )}
