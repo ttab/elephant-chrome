@@ -1,5 +1,5 @@
 import { isVisualAssignmentType } from '@/defaults/assignmentTypes'
-import { StatusSpecifications, WorkflowSpecifications } from '@/defaults/workflowSpecification'
+import { getStatusSpecifications, WorkflowSpecifications } from '@/defaults/workflowSpecification'
 import type { JSX } from 'react'
 import { selectableStatuses } from '@/views/Planning/components/AssignmentStatus'
 
@@ -24,7 +24,7 @@ export const DocumentStatus = ({ type, status, isChanged }: {
   const label = getStatusLabel()
   const docStatus = isVisualAssignmentType(type)
     ? { ...visualStatus, ...visualStatus?.iconProps }
-    : StatusSpecifications[status]
+    : getStatusSpecifications(status, type)
 
   const Icon = docStatus?.icon
   return (

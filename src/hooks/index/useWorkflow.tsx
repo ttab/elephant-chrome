@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import {
   type WorkflowSpecification,
   type StatusSpecification,
-  StatusSpecifications,
+  getStatusSpecifications,
   WorkflowSpecifications
 } from '@/defaults/workflowSpecification'
 
@@ -33,12 +33,12 @@ export const useWorkflow = (type?: string): DocumentWorkflow => {
       // Filter out all status specifications based on statuses allowed for this type
       // Draft is always included here as it is not specified in the backend.
       const statuses = (wfStatuses || []).reduce((acc, wfStatus) => {
-        if (StatusSpecifications[wfStatus.name]) {
-          acc[wfStatus.name] = StatusSpecifications[wfStatus.name]
+        if (getStatusSpecifications(wfStatus.name, type)) {
+          acc[wfStatus.name] = getStatusSpecifications(wfStatus.name, type)
         }
 
         return acc
-      }, { draft: StatusSpecifications['draft'] } as Record<string, StatusSpecification>)
+      }, { draft: getStatusSpecifications('draft') } as Record<string, StatusSpecification>)
       setWorkflow({
         workflow: WorkflowSpecifications[type] || null,
         statuses

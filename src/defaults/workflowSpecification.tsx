@@ -6,6 +6,7 @@ import {
   CircleXIcon,
   type LucideIcon
 } from '@ttab/elephant-ui/icons'
+import { cn } from '@ttab/elephant-ui/utils'
 
 interface WorkflowItem {
   title: string
@@ -186,45 +187,77 @@ const baseDeliverable = (type: 'article' | 'flash'): WorkflowSpecification => {
   }
 }
 
-export const StatusSpecifications: Record<string, StatusSpecification> = {
-  draft: {
-    icon: CircleDotIcon,
-    className: ''
-  },
-  done: {
-    icon: CircleCheckIcon,
-    className: 'bg-done text-white fill-done rounded-full dark:text-black'
-  },
-  approved: {
-    icon: BadgeCheckIcon,
-    className: 'bg-approved text-white fill-approved rounded-full dark:text-black'
-  },
-  withheld: {
-    icon: CircleCheckIcon,
-    className: 'bg-withheld text-white fill-withheld rounded-full dark:text-black'
-  },
-  usable: {
-    icon: CircleCheckIcon,
-    className: 'bg-usable text-white fill-usable rounded-full dark:text-black'
-  },
-  unpublished: {
-    icon: CircleArrowLeftIcon,
-    className: 'bg-unpublished text-white fill-unpublished rounded-full dark:text-black'
-  },
-  print_done: {
-    icon: BadgeCheckIcon,
-    className: 'bg-approved text-white fill-approved rounded-full dark:text-black'
-  },
-  needs_proofreading: {
-    icon: CircleCheckIcon,
-    className: 'bg-done text-white fill-done rounded-full dark:text-black'
-  },
-  cancelled: {
-    icon: CircleXIcon,
-    className: 'bg-cancelled text-white fill-cancelled rounded-full dark:text-black'
-  }
+export const getAllStatuses = (): string[] => {
+  return [
+    'draft',
+    'done',
+    'approved',
+    'withheld',
+    'usable',
+    'unpublished',
+    'print_done',
+    'needs_proofreading',
+    'cancelled'
+  ]
 }
 
+export const getStatusSpecifications = (status: string, documentType?: string): StatusSpecification => {
+  switch (status) {
+    case 'draft':
+      return {
+        icon: CircleDotIcon,
+        className: ''
+      }
+    case 'done':
+      return {
+        icon: CircleCheckIcon,
+        className: 'bg-done text-white fill-done rounded-full dark:text-black'
+      }
+    case 'approved':
+      return {
+        icon: BadgeCheckIcon,
+        className: 'bg-approved text-white fill-approved rounded-full dark:text-black'
+      }
+    case 'withheld':
+      return {
+        icon: CircleCheckIcon,
+        className: 'bg-withheld text-white fill-withheld rounded-full dark:text-black'
+      }
+    case 'usable':
+      return {
+        icon: documentType === 'core/factbox' ? BadgeCheckIcon : CircleCheckIcon,
+        className: cn(
+          'text-white  rounded-full dark:text-black',
+          documentType === 'core/factbox' ? 'bg-approved fill-approved' : 'bg-usable fill-usable'
+        )
+      }
+    case 'unpublished':
+      return {
+        icon: CircleArrowLeftIcon,
+        className: 'bg-unpublished text-white fill-unpublished rounded-full dark:text-black'
+      }
+    case 'print_done':
+      return {
+        icon: BadgeCheckIcon,
+        className: 'bg-approved text-white fill-approved rounded-full dark:text-black'
+      }
+    case 'needs_proofreading':
+      return {
+        icon: CircleCheckIcon,
+        className: 'bg-done text-white fill-done rounded-full dark:text-black'
+      }
+    case 'cancelled':
+      return {
+        icon: CircleXIcon,
+        className: 'bg-cancelled text-white fill-cancelled rounded-full dark:text-black'
+      }
+    default:
+      return {
+        icon: CircleDotIcon,
+        className: ''
+      }
+  }
+}
 
 export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
   'core/event': {
@@ -372,8 +405,8 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
       transitions: {
         usable: {
           verify: false,
-          title: 'Använd',
-          description: 'Klarmarkera faktarutan för användning'
+          title: 'Godkänn',
+          description: 'Godkänn faktarutan för användning'
         },
         unpublished: {
           verify: false,
@@ -383,11 +416,11 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
       }
     },
     usable: {
-      title: 'Användbar',
+      title: 'Godkänd',
       asSaveCTA: 'Ändrad',
       asSaveTitle: 'Uppdatera',
-      updateDescription: 'Uppdatera faktarutan med ändringarna',
-      description: 'Faktarutan är användbar',
+      updateDescription: 'Godkänn ändringarna',
+      description: 'Faktarutan är godkänd',
       isWorkflow: false,
       asSave: true,
       transitions: {
@@ -405,8 +438,8 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
       transitions: {
         usable: {
           verify: false,
-          title: 'Använd',
-          description: 'Gör faktarutan användbar igen'
+          title: 'Godkänn',
+          description: 'Godkänn faktarutan för användning'
         }
       }
     }

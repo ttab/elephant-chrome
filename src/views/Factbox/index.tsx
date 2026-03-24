@@ -132,6 +132,7 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
           onSelectVersion={setFactboxVersion}
           selectedVersion={factboxversion}
           withStatusOnly={true}
+          documentType='core/factbox'
         />
       </div>
 

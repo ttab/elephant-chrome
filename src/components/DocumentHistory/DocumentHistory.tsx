@@ -15,13 +15,14 @@ interface VersionEntry {
 const COLLAPSED_MAX = 4
 const COLLAPSE_THRESHOLD = 5
 
-export const DocumentHistory = ({ uuid, currentVersion, onSelectVersion, selectedVersion, withStatusOnly = false }: {
+export const DocumentHistory = ({ uuid, currentVersion, onSelectVersion, selectedVersion, withStatusOnly = false, documentType }: {
   uuid: string
   currentVersion?: bigint
   documentState?: DocumentState
   onSelectVersion: (version: bigint) => void
   selectedVersion: bigint | undefined
   withStatusOnly?: boolean
+  documentType?: string
 }) => {
   const { repository, locale, timeZone } = useRegistry()
   const { data: session } = useSession()
@@ -104,7 +105,7 @@ export const DocumentHistory = ({ uuid, currentVersion, onSelectVersion, selecte
           && visibleHistory.map((item, index) => {
             const title = documents?.find((doc) => doc.version === item.version)?.document?.title
             const isCurrent = item.version === currentVersion
-            const status = item.status
+            const status = documentType === 'core/factbox' && item.status === 'usable' ? 'approved' : item.status
 
             return (
               <div key={`${item.version}`} className='grid grid-cols-[1.5rem_auto_1fr] group rounded'>
