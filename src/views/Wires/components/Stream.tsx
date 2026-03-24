@@ -205,33 +205,37 @@ export const Stream = memo(({
   useLayoutEffect(() => {
     if (statusMutations.length) {
       const snapshot = new Map<string, Wire['fields']>()
-      setAllData((prev) => prev.map((wire) => {
-        const mutation = statusMutations.find((m) => m.uuid === wire.id)
-        if (!mutation) return wire
+      setAllData((prev) => {
+        const next = prev.map((wire) => {
+          const mutation = statusMutations.find((m) => m.uuid === wire.id)
+          if (!mutation) return wire
 
-        snapshot.set(wire.id, wire.fields)
+          snapshot.set(wire.id, wire.fields)
 
-        const version = String(mutation.version)
-        let updatedFields: Wire['fields']
+          const version = String(mutation.version)
+          let updatedFields: Wire['fields']
 
-        if (mutation.name === 'draft') {
-          updatedFields = {
-            ...wire.fields,
-            'heads.read.version': { values: ['0'] },
-            'heads.saved.version': { values: ['0'] },
-            'heads.used.version': { values: ['0'] }
+          if (mutation.name === 'draft') {
+            updatedFields = {
+              ...wire.fields,
+              'heads.read.version': { values: ['0'] },
+              'heads.saved.version': { values: ['0'] },
+              'heads.used.version': { values: ['0'] }
+            }
+          } else {
+            const optimisticCreated = new Date().toISOString()
+            updatedFields = {
+              ...wire.fields,
+              [`heads.${mutation.name}.version`]: { values: [version] },
+              [`heads.${mutation.name}.created`]: { values: [optimisticCreated] }
+            }
           }
-        } else {
-          const optimisticCreated = new Date().toISOString()
-          updatedFields = {
-            ...wire.fields,
-            [`heads.${mutation.name}.version`]: { values: [version] },
-            [`heads.${mutation.name}.created`]: { values: [optimisticCreated] }
-          }
-        }
 
-        return { ...wire, fields: updatedFields }
-      }))
+          return { ...wire, fields: updatedFields }
+        })
+        allDataRef.current = next
+        return next
+      })
       mutationSnapshotRef.current = snapshot
     } else if (mutationSnapshotRef.current.size > 0) {
       // Mutations cleared (success path): transfer the pre-mutation snapshot so the
@@ -249,11 +253,15 @@ export const Stream = memo(({
     if (!failedMutationUuids.size) return
 
     const snapshot = mutationSnapshotRef.current
-    setAllData((prev) => prev.map((wire) => {
-      if (!failedMutationUuids.has(wire.id)) return wire
-      const original = snapshot.get(wire.id)
-      return original ? { ...wire, fields: original } : wire
-    }))
+    setAllData((prev) => {
+      const next = prev.map((wire) => {
+        if (!failedMutationUuids.has(wire.id)) return wire
+        const original = snapshot.get(wire.id)
+        return original ? { ...wire, fields: original } : wire
+      })
+      allDataRef.current = next
+      return next
+    })
     // Rollback restored originals — no convergence protection needed for these wires
     for (const uuid of failedMutationUuids) {
       convergeSnapshotRef.current.delete(uuid)
