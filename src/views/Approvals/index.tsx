@@ -88,6 +88,15 @@ export const ApprovalsView = (): JSX.Element => {
     }
   }, [slots, data, focusedId])
 
+  // When the focused item disappears from data, reset so the initial-focus effect re-runs
+  useEffect(() => {
+    if (focusedId === undefined) return
+    const found = data.some((col) => col.items.some((item) => item.id === focusedId))
+    if (!found) {
+      setFocusedId(undefined)
+    }
+  }, [data, focusedId])
+
   const [currentTab, setCurrentTab] = useState<string>('grid')
   const openEditors = useOpenDocuments({ idOnly: true, name: 'Editor' })
   const openPlannings = useOpenDocuments({ idOnly: true, name: 'Planning' })
