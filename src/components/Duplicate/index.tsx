@@ -169,12 +169,10 @@ export const Duplicate = ({ provider, title, session, status, type, dataInfo }: 
           description={createTexts(granularity).description}
           secondaryLabel='Avbryt'
           primaryLabel='Kopiera'
-          onPrimary={(duplicateId: string | undefined, duplicatedDocument: Document) => {
+          onPrimary={async (duplicateId: string | undefined, duplicatedDocument: Document) => {
             if (provider && status === 'authenticated' && duplicateId && session && repository) {
               try {
-                void (async () => {
-                  await repository.saveDocument(duplicatedDocument, session.accessToken).catch((err) => console.error(err))
-                })()
+                await repository.saveDocument(duplicatedDocument, session.accessToken)
 
                 toast.success(createTexts(granularity).success, {
                   action: <ToastAction documentId={duplicateId || undefined} withView={type} />
