@@ -71,7 +71,7 @@ export const StatusMenu = ({ ydoc, publishTime, onBeforeStatusChange }: {
     )
   }, [onBeforeStatusChange, setDocumentStatus])
 
-  const unPublishDocument = (newStatus?: string) => {
+  const unPublishDocument = async (newStatus?: string) => {
     if (!repository || !session?.accessToken || newStatus !== 'unpublished') {
       return
     }
@@ -84,33 +84,31 @@ export const StatusMenu = ({ ydoc, publishTime, onBeforeStatusChange }: {
     }
 
     try {
-      (async () => {
-        await repository?.saveMeta({
-          status,
-          accessToken: session?.accessToken || '',
-          cause: documentStatus?.cause,
-          isWorkflow: documentStatus?.type === 'core/article',
-          currentStatus: documentStatus
-        })
+      await repository.saveMeta({
+        status,
+        accessToken: session.accessToken,
+        cause: documentStatus?.cause,
+        isWorkflow: documentStatus?.type === 'core/article',
+        currentStatus: documentStatus
+      })
 
-        const viewType: Record<string, View> = {
-          'core/article': 'Editor',
-          'core/planning-item': 'Planning',
-          'core/event': 'Event',
-          'core/factbox': 'Factbox',
-          'core/flash': 'Flash',
-          'tt/print-article': 'PrintEditor'
-        }
-        handleLink({
-          dispatch,
-          viewItem: state.viewRegistry.get(viewType[documentStatus?.type || 'Error']),
-          props: { id: ydoc.id },
-          viewId: crypto.randomUUID(),
-          history,
-          origin: viewId,
-          target: 'self'
-        })
-      })().catch((err) => console.error(err))
+      const viewType: Record<string, View> = {
+        'core/article': 'Editor',
+        'core/planning-item': 'Planning',
+        'core/event': 'Event',
+        'core/factbox': 'Factbox',
+        'core/flash': 'Flash',
+        'tt/print-article': 'PrintEditor'
+      }
+      handleLink({
+        dispatch,
+        viewItem: state.viewRegistry.get(viewType[documentStatus?.type || 'Error']),
+        props: { id: ydoc.id },
+        viewId: crypto.randomUUID(),
+        history,
+        origin: viewId,
+        target: 'self'
+      })
     } catch (error) {
       toast.error('Det gick inte att avpublicera dokumentet')
       console.error('error while unpublishing document:', error)
