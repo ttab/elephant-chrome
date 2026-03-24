@@ -1,5 +1,5 @@
 import type { QueryParams } from '@/hooks/useQuery'
-import { QueryV1, BoolQueryV1, MultiMatchQueryV1 } from '@ttab/elephant-api/index'
+import { QueryV1, BoolQueryV1, MultiMatchQueryV1, TermsQueryV1 } from '@ttab/elephant-api/index'
 
 /**
  * Constructs a query object based on the provided filter parameters.
@@ -41,4 +41,23 @@ export function constructQuery(filter: QueryParams | undefined): QueryV1 | undef
   }
 
   return query
+}
+
+export function constructQueryById(id: string): QueryV1 {
+  return QueryV1.create({
+    conditions: {
+      oneofKind: 'bool',
+      bool: BoolQueryV1.create({
+        must: [{
+          conditions: {
+            oneofKind: 'terms',
+            terms: TermsQueryV1.create({
+              field: '_id',
+              values: [id]
+            })
+          }
+        }]
+      })
+    }
+  })
 }

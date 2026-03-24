@@ -27,6 +27,9 @@ import type * as Y from 'yjs'
 import { useSession } from 'next-auth/react'
 import { CreatePrompt } from '@/components/CreatePrompt'
 import { saveFactbox } from '@/lib/saveFactbox'
+import { transformFactbox } from '@/shared/transformations/newsdoc/core/factbox'
+import { Block } from '@ttab/elephant-api/newsdoc'
+import type { TBElement } from '@ttab/textbit'
 
 // Metadata definition
 const meta: ViewMetadata = {
@@ -109,10 +112,35 @@ function EditorWrapper(props: ViewProps & {
   const { repository } = useRegistry()
   const { data: session } = useSession()
   const [promptState, setCreatePrompt] = useState<{ id: string, onSuccess: () => void } | undefined>()
+  const [updateVersionPrompt, setUpdateVersionPrompt] = useState<{ onConfirm: () => void } | undefined>()
 
   const onSaveFactbox = useCallback((id: string, onSuccess: () => void) => {
     setCreatePrompt({ id, onSuccess })
   }, [])
+
+  const onGetUpdatedVersion = useCallback(async (id: string, onSuccess: (newElement: TBElement) => void) => {
+    if (!repository || !session?.accessToken) {
+      return
+    }
+
+    const response = await repository.getDocument({ uuid: id, accessToken: session.accessToken })
+    if (!response?.document) {
+      return
+    }
+
+    const { document } = response
+
+    const block = Block.create({
+      type: 'core/factbox',
+      title: document.title,
+      content: document.content,
+      links: [{ rel: 'source', uuid: document.uuid }]
+    })
+
+    setUpdateVersionPrompt({
+      onConfirm: () => onSuccess(transformFactbox(block))
+    })
+  }, [repository, session, setUpdateVersionPrompt])
 
   // Plugin configuration
   const configuredPlugins = useMemo(() => {
@@ -137,6 +165,7 @@ function EditorWrapper(props: ViewProps & {
         onEditOriginal: (id: string) => {
           openFactboxEditor(undefined, { id })
         },
+        onGetUpdatedVersion,
         removable: true,
         factboxNewTitle: 'Fakta',
         saveToArchiveLabel: 'Spara till arkivet',
@@ -144,7 +173,7 @@ function EditorWrapper(props: ViewProps & {
         onSave: onSaveFactbox
       })
     ]
-  }, [openFactboxEditor, openFactboxes, openImageSearch, onSaveFactbox])
+  }, [openFactboxEditor, openFactboxes, openImageSearch, onSaveFactbox, onGetUpdatedVersion])
 
   if (!content) {
     return <View.Root />
@@ -160,6 +189,23 @@ function EditorWrapper(props: ViewProps & {
         lang={documentLanguage}
       >
         <EditorHeader ydoc={ydoc} planningId={props.planningId} readOnly={props.preview} />
+        {updateVersionPrompt && (
+          <CreatePrompt
+            key='updateFactboxVersion'
+            title='Uppdatera faktaruta'
+            description='Vill du ersätta faktarutan med den senaste versionen?'
+            secondaryLabel='Avbryt'
+            primaryLabel='Ersätt'
+            onPrimary={() => {
+              updateVersionPrompt.onConfirm()
+              setUpdateVersionPrompt(undefined)
+              toast.success('Faktarutan har uppdaterats')
+            }}
+            onSecondary={() => {
+              setUpdateVersionPrompt(undefined)
+            }}
+          />
+        )}
         {promptState && (
           <CreatePrompt
             key='createFactbox'
