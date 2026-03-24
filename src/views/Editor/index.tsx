@@ -19,6 +19,7 @@ import { Error } from '../Error'
 
 import { getValueByYPath } from '@/shared/yUtils'
 import { contentMenuLabels } from '@/defaults/contentMenuLabels'
+import { InjectionPoint } from '@/lib/injectionPoints'
 import type { YDocument } from '@/modules/yjs/hooks'
 import { useYDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
@@ -155,6 +156,7 @@ function EditorWrapper(props: ViewProps & {
         </View.Content>
 
         <View.Footer>
+          <InjectionPoint id='se.ecms.core.article-editor.footer' ydoc={ydoc} />
           <BaseEditor.Footer />
         </View.Footer>
       </BaseEditor.Root>

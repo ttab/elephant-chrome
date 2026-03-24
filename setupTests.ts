@@ -31,7 +31,8 @@ function mockUrl(url: string): unknown {
         spellcheckUrl: 'https://example.com/index',
         userUrl: 'https://example.com/user',
         faroUrl: 'https://example.com/faro',
-        baboonUrl: 'https://example.com/baboon'
+        baboonUrl: 'https://example.com/baboon',
+        intelligenceUrl: 'https://example.com/intelligence'
       }
 
     case `${BASE_URL}/api/auth/session`:

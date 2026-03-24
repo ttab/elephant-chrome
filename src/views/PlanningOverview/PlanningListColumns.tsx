@@ -218,7 +218,7 @@ export function planningListColumns({ sections = [], authors = [] }: {
         const deliverableUuids = row.original.fields['document.meta.core_assignment.rel.deliverable.uuid']?.values || []
         const planningId = row.original.id
 
-        return <Actions deliverableUuids={deliverableUuids} planningId={planningId} />
+        return <Actions deliverableUuids={deliverableUuids} planningId={planningId} docType='core/planning-item' />
       },
       enableColumnFilter: false
     }

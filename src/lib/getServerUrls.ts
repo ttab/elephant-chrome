@@ -10,6 +10,7 @@ interface ServerUrls {
   userUrl: URL
   faroUrl: URL
   baboonUrl: URL
+  intelligenceUrl: URL
 }
 
 export async function getServerUrls(): Promise<ServerUrls> {
@@ -23,7 +24,7 @@ export async function getServerUrls(): Promise<ServerUrls> {
     const servers = await response.json() as Record<string, string>
     const attributes = [
       'webSocketUrl', 'indexUrl', 'repositoryUrl', 'contentApiUrl',
-      'spellcheckUrl', 'userUrl', 'faroUrl', 'baboonUrl'
+      'spellcheckUrl', 'userUrl', 'faroUrl', 'baboonUrl', 'intelligenceUrl'
     ]
 
     const urls = {} as Record<string, URL>

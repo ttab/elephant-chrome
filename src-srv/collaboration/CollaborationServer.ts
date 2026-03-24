@@ -88,6 +88,7 @@ export class CollaborationServer {
           options: {
             username: redisUsername,
             password: redisPassword,
+            enableReadyCheck: false,
             ...(redisProtocol === 'rediss:' ? { tls: { rejectUnauthorized: true } } : {})
           }
         }),
