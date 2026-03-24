@@ -58,8 +58,8 @@ export const ViewDialogClose = ({ ydoc, onClick, Icon = XIcon, asDialog }: {
       </Button>
       {showVerifyDialog && (
         <Prompt
-          title={documentType === 'core/factbox' ? 'Vill du uppdatera med ändringarna innan du stänger?' : 'Vill du publicera ändringarna innan du stänger?'}
-          description={documentType === 'core/factbox' ? 'Dina ändringar är sparade men dokumentet är inte satt som användbart.' : 'Dina ändringar är sparade men inte publicerade.'}
+          title={documentType === 'core/factbox' ? 'Vill du godkänna ändringarna innan du stänger?' : 'Vill du publicera ändringarna innan du stänger?'}
+          description={documentType === 'core/factbox' ? 'Dina ändringar är sparade men dokumentet är inte satt som godkänt.' : 'Dina ändringar är sparade men inte publicerade.'}
           onPrimary={() => {
             if (ydoc) {
               snapshotDocument(ydoc?.id, {
