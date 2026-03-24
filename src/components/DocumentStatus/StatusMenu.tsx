@@ -1,7 +1,7 @@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@ttab/elephant-ui'
 import { useRef, useState, useEffect, useCallback } from 'react'
 import { useWorkflow } from '@/hooks/index/useWorkflow'
-import { StatusSpecifications, WorkflowSpecifications, type WorkflowTransition } from '@/defaults/workflowSpecification'
+import { getStatusSpecifications, WorkflowSpecifications, type WorkflowTransition } from '@/defaults/workflowSpecification'
 import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
 import { StatusOptions } from './StatusOptions'
 import { StatusMenuContext } from './StatusMenuContext'
@@ -122,7 +122,7 @@ export const StatusMenu = ({ ydoc, publishTime, onBeforeStatusChange }: {
   }
 
   const currentStatusName = documentStatus.name
-  const currentStatusDef = statuses[currentStatusName] || StatusSpecifications[currentStatusName]
+  const currentStatusDef = statuses[currentStatusName] || getStatusSpecifications(currentStatusName, documentStatus.type)
   const transitions = workflow[currentStatusName]?.transitions || {}
 
   if (!Object.keys(transitions).length && currentStatusName !== 'unpublished') {
@@ -155,6 +155,7 @@ export const StatusMenu = ({ ydoc, publishTime, onBeforeStatusChange }: {
               statuses={statuses}
               onSelect={showPrompt}
               hasChanges={asSave && isChanged}
+              documentType={documentStatus.type}
             >
               {asSave && isChanged && (
                 <StatusMenuOption
@@ -174,8 +175,8 @@ export const StatusMenu = ({ ydoc, publishTime, onBeforeStatusChange }: {
             </StatusOptions>
 
             <StatusMenuContext
-              icon={currentStatusDef?.icon || StatusSpecifications[currentStatusName]?.icon}
-              className={currentStatusDef?.className || StatusSpecifications[currentStatusName]?.className}
+              icon={currentStatusDef?.icon || getStatusSpecifications(currentStatusName, documentStatus.type)?.icon}
+              className={currentStatusDef?.className || getStatusSpecifications(currentStatusName, documentStatus.type)?.className}
               title={workflow[currentStatusName]?.title}
               description={asSave && isChanged && workflow[currentStatusName]?.changedDescription
                 ? workflow[currentStatusName]?.changedDescription
