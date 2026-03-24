@@ -101,7 +101,7 @@ export const FlashDialog = (props: {
   }
 
   // Create a quick-article after flash creation
-  const createAndSaveQuickArticle = (data: {
+  const createAndSaveQuickArticle = async (data: {
     documentStatus: CreateFlashDocumentStatus
     updatedPlanningId: string
     quickArticleData: QuickArticleData | undefined
@@ -116,45 +116,51 @@ export const FlashDialog = (props: {
 
     const quickArticleDocument = quickArticleDocumentTemplate(deliverableId, payload, text)
 
-    void (async () => {
+    try {
       await repository?.saveDocument(
         quickArticleDocument,
         session?.accessToken || '',
         // A two-on-two article following a directly published Flash has already been cleared, and should find its way
         // high up in the Approvals view, ready to be published again by editors - hence the 'done' status.
         'done'
-      ).catch((error) => console.error('could not save quick-article document', error))
+      )
+    } catch (error) {
+      console.error('could not save quick-article document', error)
+      toast.error('Fel när två på två skapades', {
+        action: <ToastAction withView='Flash' documentId={data.updatedPlanningId} />
+      })
+      return
+    }
 
-      createQuickArticleAfterFlash({
+    try {
+      const id = await createQuickArticleAfterFlash({
         planningId: data?.updatedPlanningId,
         timeZone,
         startDate,
         data: quickArticleData
       })
-        .then((id) => {
-          toast.success('Två på två har skapats', {
-            classNames: {
-              title: 'whitespace-nowrap'
-            },
-            action: (
-              <ToastAction
-                key='open-article'
-                documentId={id}
-                withView='Editor'
-                target='last'
-                Icon={NewspaperIcon}
-                label='Öppna artikel'
-              />
-            )
-          })
-        })
-        .catch(() => {
-          // Flash creation OK, quick-article creation unsuccessful
-          toast.error('Fel när två på två skapades', {
-            action: <ToastAction withView='Flash' documentId={data.updatedPlanningId} />
-          })
-        })
-    })()
+
+      toast.success('Två på två har skapats', {
+        classNames: {
+          title: 'whitespace-nowrap'
+        },
+        action: (
+          <ToastAction
+            key='open-article'
+            documentId={id}
+            withView='Editor'
+            target='last'
+            Icon={NewspaperIcon}
+            label='Öppna artikel'
+          />
+        )
+      })
+    } catch {
+      // Flash creation OK, quick-article creation unsuccessful
+      toast.error('Fel när två på två skapades', {
+        action: <ToastAction withView='Flash' documentId={data.updatedPlanningId} />
+      })
+    }
   }
 
   const handleCreationSuccess = (data: {
@@ -180,7 +186,7 @@ export const FlashDialog = (props: {
     })
 
     if (data?.quickArticleData) {
-      createAndSaveQuickArticle(data, startDate)
+      void createAndSaveQuickArticle(data, startDate)
     }
 
     config.setPrompt(false)
