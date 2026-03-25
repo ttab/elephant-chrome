@@ -75,6 +75,7 @@ export const DocumentHistory = ({ uuid, currentVersion, onSelectVersion, selecte
         })
 
         pending.documents = false
+
         setHistory(history)
         setDocuments(documents?.items ?? null)
       } catch (error) {

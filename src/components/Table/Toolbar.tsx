@@ -8,10 +8,12 @@ import { Commands } from '@/components/Commands'
 import { Sort } from '../Sort'
 import { useMemo, useCallback, type JSX } from 'react'
 import { QuickFilter } from './QuickFilter'
+import { useQuery } from '@/hooks/useQuery'
 
 export const Toolbar = <TData,>(): JSX.Element => {
   const { table, command } = useTable<TData>()
-
+  const [, setFilter] = useQuery(['query'])
+  const filterType = command.pages[1] ? 'filterOptions' : 'freetext'
   const { columnFilters, globalFilter } = table.getState() as {
     columnFilters: ColumnFiltersState
     globalFilter: string
@@ -22,7 +24,8 @@ export const Toolbar = <TData,>(): JSX.Element => {
   const handleResetFilters = useCallback(() => {
     table.resetColumnFilters()
     table.resetGlobalFilter()
-  }, [table])
+    setFilter({})
+  }, [table, setFilter])
 
   return (
     <div className='bg-background flex flex-wrap grow items-center space-x-2 border-b px-4 py-1 pr-2.5 sticky top-0 z-10'>
@@ -34,7 +37,7 @@ export const Toolbar = <TData,>(): JSX.Element => {
         setSearch={command.setSearch}
         setGlobalTextFilter={table.setGlobalFilter}
       >
-        <Commands />
+        <Commands filterType={filterType} />
       </Filter>
       <Sort />
       <SelectedFilters table={table} />

@@ -41,3 +41,6 @@ tsconfig.node.tsbuildinfo
 tsconfig.tsbuildinfo
 .eslintcache
 bundle-analysis.html
+
+# Worktrees
+.worktrees

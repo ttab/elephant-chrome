@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import type { HocuspocusProvider } from '@hocuspocus/provider'
 import type { Session } from 'next-auth'
-import { CopyPlusIcon } from '@ttab/elephant-ui/icons'
+import { CopyPlusIcon, CalendarDaysIcon, CalendarPlus2Icon } from '@ttab/elephant-ui/icons'
 import { ToastAction } from '@/components/ToastAction'
 import type { EventData } from '@/views/Event/components/EventTime'
 import type { PlanningData } from '@/types/index'
@@ -169,15 +169,20 @@ export const Duplicate = ({ provider, title, session, status, type, dataInfo }: 
           description={createTexts(granularity).description}
           secondaryLabel='Avbryt'
           primaryLabel='Kopiera'
-          onPrimary={(duplicateId: string | undefined, duplicatedDocument: Document) => {
+          onPrimary={async (duplicateId: string | undefined, duplicatedDocument: Document) => {
             if (provider && status === 'authenticated' && duplicateId && session && repository) {
               try {
-                void (async () => {
-                  await repository.saveDocument(duplicatedDocument, session.accessToken).catch((err) => console.error(err))
-                })()
+                await repository.saveDocument(duplicatedDocument, session.accessToken)
 
                 toast.success(createTexts(granularity).success, {
-                  action: <ToastAction documentId={duplicateId || undefined} withView={type} />
+                  action: (
+                    <ToastAction
+                      documentId={duplicateId || undefined}
+                      withView={type}
+                      Icon={type === 'Event' ? CalendarPlus2Icon : CalendarDaysIcon}
+                      label={type === 'Event' ? 'Öppna händelse' : 'Öppna planering'}
+                    />
+                  )
                 })
               } catch (error) {
                 toast.error(`Något gick fel: ${JSON.stringify(error)}`)

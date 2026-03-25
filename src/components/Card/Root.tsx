@@ -29,7 +29,7 @@ export const Root = ({ className, isFocused = false, isSelected = false, status,
         block: 'nearest'
       })
     }
-  })
+  }, [isFocused, isActive])
 
   useNavigationKeys({
     elementRef: ref,

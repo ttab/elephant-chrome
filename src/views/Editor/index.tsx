@@ -98,8 +98,10 @@ function EditorWrapper(props: ViewProps & {
   planningId?: string | null
   preview?: boolean
 }): JSX.Element {
+  const { preview, planningId } = props
+
   const ydoc = useYDocument<Y.Map<unknown>>(props.documentId, {
-    visibility: !props.preview
+    visibility: !preview
   })
   const [documentLanguage] = getValueByYPath<string>(ydoc.ele, 'root.language')
   const [content] = getValueByYPath<Y.XmlText>(ydoc.ele, 'content', true)
@@ -127,7 +129,8 @@ function EditorWrapper(props: ViewProps & {
       OrderedList(),
       UnorderedList(),
       TTVisual({
-        enableCrop: false
+        enableCrop: false,
+        removable: !preview
       }),
       Text({
         countCharacters: ['heading-1'],
@@ -137,14 +140,14 @@ function EditorWrapper(props: ViewProps & {
         onEditOriginal: (id: string) => {
           openFactboxEditor(undefined, { id })
         },
-        removable: true,
+        removable: !preview,
         factboxNewTitle: 'Fakta',
         saveToArchiveLabel: 'Spara till arkivet',
         unsavedLabel: 'Faktarutan har inte sparats till arkivet',
         onSave: onSaveFactbox
       })
     ]
-  }, [openFactboxEditor, openFactboxes, openImageSearch, onSaveFactbox])
+  }, [openFactboxEditor, openFactboxes, openImageSearch, onSaveFactbox, preview])
 
   if (!content) {
     return <View.Root />
@@ -155,11 +158,11 @@ function EditorWrapper(props: ViewProps & {
       <BaseEditor.Root
         ydoc={ydoc}
         content={content}
-        readOnly={props.preview}
+        readOnly={preview}
         plugins={configuredPlugins}
         lang={documentLanguage}
       >
-        <EditorHeader ydoc={ydoc} planningId={props.planningId} readOnly={props.preview} />
+        <EditorHeader ydoc={ydoc} planningId={planningId} readOnly={preview} />
         {promptState && (
           <CreatePrompt
             key='createFactbox'

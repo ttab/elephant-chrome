@@ -1,9 +1,11 @@
 import type { Wire } from '@/shared/schemas/wire'
+import type { WireStatusKey } from './getWireState'
 
-export function getWireStatus(wire: Wire): 'draft' | 'read' | 'saved' | 'used' {
+export function getWireStatus(wire: Wire): WireStatusKey {
   const statusFields = [
     { key: 'read', created: wire.fields?.['heads.read.created']?.values?.[0], version: wire.fields?.['heads.read.version']?.values?.[0] },
     { key: 'saved', created: wire.fields?.['heads.saved.created']?.values?.[0], version: wire.fields?.['heads.saved.version']?.values?.[0] },
+    { key: 'flash', created: wire.fields?.['heads.flash.created']?.values?.[0], version: wire.fields?.['heads.flash.version']?.values?.[0] },
     { key: 'used', created: wire.fields?.['heads.used.created']?.values?.[0], version: wire.fields?.['heads.used.version']?.values?.[0] }
   ]
 
@@ -23,6 +25,5 @@ export function getWireStatus(wire: Wire): 'draft' | 'read' | 'saved' | 'used' {
   // Find the status with the most recent timestamp
   const mostRecent = validStatuses.reduce((a, b) =>
     (b.timestamp > a.timestamp ? b : a))
-
-  return mostRecent.key as 'read' | 'saved' | 'used'
+  return mostRecent.key as WireStatusKey
 }

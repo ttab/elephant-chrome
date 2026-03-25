@@ -131,9 +131,12 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
         columnIcon: BriefcaseIcon,
         className: 'flex-1'
       },
-      accessorFn: (data) => data.fields['document.meta.core_assignment.title']?.values,
+      accessorFn: (data) => [
+        data.fields['document.meta.core_assignment.title']?.values?.join(' ') ?? '',
+        data.fields['document.title']?.values?.[0] ?? ''
+      ].join(' ').trim(),
       cell: ({ row }) => {
-        const assignmentTitle = row.getValue<string[]>('title')?.join(' ') || ''
+        const assignmentTitle = row.getValue<string>('title') || ''
         const planningTitle = row.original.fields['document.title'].values[0] || ''
         const assignees = (row.getValue<string[]>('assignees') || []).map((assigneeId) => {
           return authors.find((author) => author.id === assigneeId)?.name || ''
@@ -148,7 +151,8 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
           </>
         )
       },
-      enableGrouping: false
+      enableGrouping: false,
+      enableGlobalFilter: true
     },
     {
       id: 'section',
@@ -217,21 +221,40 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
         ),
         name: 'Uppdragstagare',
         columnIcon: UsersIcon,
-        className: 'flex-none w-[112px] hidden @5xl/view:[display:revert]'
+        className: 'flex-none w-[112px] hidden @5xl/view:[display:revert]',
+        display: (value: string) => {
+          const names = value.split(',').filter(Boolean)
+          return <Assignees assignees={names} tooltip={false} />
+        }
       },
       accessorFn: (data) => data.fields['document.meta.core_assignment.rel.assignee.uuid']?.values,
+      getGroupingValue: (data) => {
+        const assignees = data.fields['document.meta.core_assignment.rel.assignee.uuid']?.values ?? []
+        return assignees
+          .map((uuid) => authors.find((a) => a.id === uuid)?.name ?? '??')
+          .sort((a, b) => a.localeCompare(b))
+          .join(',')
+      },
       cell: ({ row }) => {
-        const assignees = (row.getValue<string[]>('assignees') || []).map((assigneeId) => {
-          return authors.find((author) => author.id === assigneeId)?.name || ''
-        })
+        const assignees = (row.getValue<string[]>('assignees') || [])
+          .map((assigneeId) => authors.find((author) => author.id === assigneeId)?.name || '')
+          .sort((a, b) => a.localeCompare(b))
 
         return <Assignees assignees={assignees} />
+      },
+      sortingFn: (rowA, rowB, columnId) => {
+        const toKey = (row: typeof rowA) =>
+          (row.getValue<string[]>(columnId) || [])
+            .map((uuid) => authors.find((a) => a.id === uuid)?.name ?? '??')
+            .sort((a, b) => a.localeCompare(b))
+            .join(',')
+        return toKey(rowA).localeCompare(toKey(rowB))
       },
       filterFn: (row, id, value: string[]) => {
         const assignees = row.getValue<string[]>(id) || []
         return value.some((v) => assignees.includes(v))
       },
-      enableGrouping: false
+      enableGrouping: true
     },
     {
       id: 'assignment_time',

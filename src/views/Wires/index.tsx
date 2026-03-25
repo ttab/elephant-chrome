@@ -1,3 +1,4 @@
+import './print.css'
 import { View, ViewHeader } from '@/components/View'
 import { type ViewMetadata } from '@/types/index'
 import { useCallback, useRef, useState, useMemo, type JSX, useEffect } from 'react'
@@ -69,7 +70,6 @@ export const Wires = (): JSX.Element => {
   const previewRestoredRef = useRef(false)
   const [previewWire, setPreviewWire] = useState<Wire | null>(null)
   const previewDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const [previewReloadCount, setPreviewReloadCount] = useState(0)
   const [focusedWire, setFocusedWire] = useState<Wire | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const { saveFocus, restoreFocus } = useSavedFocus()
@@ -91,6 +91,7 @@ export const Wires = (): JSX.Element => {
 
   const [selectedWires, setSelectedWires] = useState<Wire[]>([])
   const [statusMutations, setStatusMutations] = useState<WireStatus[]>([])
+  const [failedMutationUuids, setFailedMutationUuids] = useState<ReadonlySet<string>>(new Set())
 
   // Fetch wire by ID from URL params to restore preview on load
   const initialWireQuery = useMemo(() => initialId
@@ -142,6 +143,7 @@ export const Wires = (): JSX.Element => {
                     return { type, uri: value, role: 'filter' }
                   case 'core/section':
                     return { type, uuid: value, role: 'filter' }
+                  case 'wireStatus':
                   case 'query':
                   case 'core/newsvalue':
                   default:
@@ -236,12 +238,14 @@ export const Wires = (): JSX.Element => {
       const sources = meta.filter((meta) => meta.type === 'core/source').map((meta) => meta.uri)
       const texts = meta.filter((meta) => meta.type === 'query').map((meta) => meta.value)
       const newsvalues = meta.filter((meta) => meta.type === 'core/newsvalue').map((meta) => meta.value)
+      const wireStatuses = meta.filter((meta) => meta.type === 'wireStatus').map((meta) => meta.value)
 
       addStream(uuid, {
         'core/section': sections,
         'core/source': sources,
         query: texts,
-        'core/newsvalue': newsvalues
+        'core/newsvalue': newsvalues,
+        wireStatus: wireStatuses
       })
     })
 
@@ -277,7 +281,9 @@ export const Wires = (): JSX.Element => {
   const handleToggleWire = useCallback((wire: Wire, isSelected: boolean) => {
     setSelectedWires((prev) => {
       if (isSelected) {
-        return [...prev, wire]
+        return (prev.some((w) => w.id === wire.id))
+          ? prev
+          : [...prev, wire]
       } else {
         return prev.filter((w) => w.id !== wire.id)
       }
@@ -302,20 +308,23 @@ export const Wires = (): JSX.Element => {
     // Execute wire status changes and wait for completion.
     // Using setTimeout for to avoid the progress spinner to blink and disappear too quickly.
     void executeWiresStatuses(repository, session, nextStatuses).then((result) => {
-      setTimeout(() => {
-        setStatusMutations([])
+      const failed = result.filter((r) => !r.statusSet).map((r) => r.uuid)
 
-        // Force preview to reload if it's showing one of the updated wires
-        if (previewWire && nextStatuses.find((s) => s.uuid === previewWire.id)) {
-          setPreviewReloadCount((n) => n + 1)
-        }
-
-        restoreFocus()
-      }, 100)
-
-      if (result.find((r) => !r.statusSet)) {
+      if (failed.length) {
+        // Signal rollback before clearing mutations so Stream can restore original fields
+        setFailedMutationUuids(new Set(failed))
         toast.error('Någon eller några status-ändringar misslyckades!')
       }
+
+      setTimeout(() => {
+        setStatusMutations([])
+        setFailedMutationUuids(new Set())
+        restoreFocus()
+      }, 100)
+    }).catch((error: unknown) => {
+      console.error('Unexpected error in executeWiresStatuses:', error)
+      setStatusMutations([])
+      setFailedMutationUuids(new Set())
     })
   }, [selectedWires, focusedWire, repository, session, previewWire, saveFocus, restoreFocus])
 
@@ -413,12 +422,14 @@ export const Wires = (): JSX.Element => {
 
       <View.Content variant='no-scroll' className='relative'>
         <div
+          data-wires-content
           className={cn(
             'h-full overflow-hidden @7xl/view:grid-cols-[auto_1fr]',
             previewWire && 'grid grid-rows-2 @7xl/view:grid-rows-1'
           )}
         >
           <div
+            data-wires-streams
             className={cn(
               'h-full overflow-x-auto overflow-y-hidden',
               previewWire && '@7xl/view:pr-2'
@@ -433,10 +444,15 @@ export const Wires = (): JSX.Element => {
                   onFocus={handleOnFocus}
                   selectedWires={selectedWires}
                   statusMutations={statusMutations}
+                  failedMutationUuids={failedMutationUuids}
                   onToggleWire={handleToggleWire}
                   onRemove={handleRemoveStream}
                   onFilterChange={setFilter}
                   onClearFilter={clearFilter}
+                  previewWireId={previewWire?.id}
+                  onPreviewWireUpdate={setPreviewWire}
+                  focusedWireId={focusedWire?.id}
+                  onFocusedWireUpdate={setFocusedWire}
                 />
               ))}
             </div>
@@ -445,6 +461,7 @@ export const Wires = (): JSX.Element => {
           {!!previewWire
             && (
               <div
+                data-wires-preview
                 className={cn(
                   'relative rounded-lg grid shadow-xl border border-default-foreground/20 mx-1 justify-center',
                   'grid-rows-[auto_1fr] h-full overflow-hidden',
@@ -464,7 +481,7 @@ export const Wires = (): JSX.Element => {
                 </Button>
                 <Preview
                   wire={previewWire}
-                  key={previewReloadCount}
+                  key={previewWire.id}
                 />
               </div>
             )}
