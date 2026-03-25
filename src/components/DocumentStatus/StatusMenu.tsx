@@ -24,7 +24,7 @@ export const StatusMenu = ({ ydoc, onBeforeStatusChange, planningId }: {
     status: string,
     data?: Record<string, unknown>
   ) => Promise<boolean>
-  planningId: string
+  planningId?: string
 }) => {
   const [documentStatus, setDocumentStatus] = useWorkflowStatus({ ydoc })
   const containerRef = useRef<HTMLDivElement>(null)
@@ -192,7 +192,7 @@ export const StatusMenu = ({ ydoc, onBeforeStatusChange, planningId }: {
               prompt={prompt}
               showPrompt={showPrompt}
               setStatus={(...args) => void setStatus(...args)}
-              planningId={planningId}
+              planningId={planningId || ''}
               requireCause={!!documentStatus.checkpoint}
             />
           )}

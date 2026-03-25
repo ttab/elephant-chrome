@@ -16,7 +16,7 @@ export const PromptSchedule = ({ prompt, planningId, setStatus, showPrompt, requ
   prompt: {
     status: string
   } & WorkflowTransition
-  planningId: string
+  planningId?: string
   setStatus: (status: string, data: Record<string, unknown>) => void
   showPrompt: React.Dispatch<React.SetStateAction<({
     status: string
@@ -24,7 +24,7 @@ export const PromptSchedule = ({ prompt, planningId, setStatus, showPrompt, requ
   requireCause?: boolean
 }) => {
   const { timeZone } = useRegistry()
-  const planningYdoc = useCollaborationDocument({ documentId: planningId })
+  const planningYdoc = useCollaborationDocument({ documentId: planningId || '' })
   const ele = planningYdoc.document ? planningYdoc.document.getMap('ele') : undefined
   const [publishDate] = useYValue<Date>(ele, 'meta.core/planning-item[0].data.start_date') as Date[]
   const now = new Date()
