@@ -31,14 +31,20 @@ const HypenationItem = ({ isNew, setIsNew, word, hypenated, ignore, handleListHy
           primaryLabel='Radera'
           secondaryLabel='Avbryt'
           onPrimary={() => {
-            (async () => {
-              await baboon?.removeHypenation({
-                language: 'sv',
-                word: _word
-              }, session?.accessToken || '')
-              handleListHyphenations()
-            })().catch(console.error)
-            setPromptIsOpen(false)
+            baboon?.removeHypenation({
+              language: 'sv',
+              word: _word
+            }, session?.accessToken || '')
+              .then(() => {
+                handleListHyphenations()
+              })
+              .catch((error) => {
+                console.error('Failed to remove hyphenation:', error)
+                toast.error('Kunde inte radera avstavningen')
+              })
+              .finally(() => {
+                setPromptIsOpen(false)
+              })
           }}
           onSecondary={() => {
             setPromptIsOpen(false)
@@ -73,24 +79,30 @@ const HypenationItem = ({ isNew, setIsNew, word, hypenated, ignore, handleListHy
                 <Button
                   size='sm'
                   onClick={(e) => {
-                    e.stopPropagation();
-                    (async () => {
-                      if (defaultWord.trim() !== '') {
-                        await baboon?.removeHypenation({
-                          language: 'sv',
-                          word: defaultWord
-                        }, session?.accessToken || '')
-                      }
-                      await baboon?.setHypenation({
+                    e.stopPropagation()
+                    const remove = defaultWord.trim() !== ''
+                      ? baboon?.removeHypenation({
+                        language: 'sv',
+                        word: defaultWord
+                      }, session?.accessToken || '')
+                      : Promise.resolve()
+
+                    remove
+                      ?.then(() => baboon?.setHypenation({
                         language: 'sv',
                         word: _word,
                         hypenated: _hypenated,
                         ignore: _ignore
-                      }, session?.accessToken || '')
-                      handleListHyphenations()
-                      setEditMode(false)
-                      setIsNew(false)
-                    })().catch(console.error)
+                      }, session?.accessToken || ''))
+                      .then(() => {
+                        handleListHyphenations()
+                        setEditMode(false)
+                        setIsNew(false)
+                      })
+                      .catch((error) => {
+                        console.error('Failed to save hyphenation:', error)
+                        toast.error('Kunde inte spara avstavningen')
+                      })
                   }}
                 >
                   Spara
