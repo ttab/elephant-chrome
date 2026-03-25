@@ -223,6 +223,9 @@ export const StatusMenu = ({ ydoc, publishTime, onBeforeStatusChange }: {
               currentCause={documentStatus.cause}
               requireCause={requireCause}
               unPublishDocument={unPublishDocument}
+              ele={ydoc.ele}
+              usableId={documentStatus.usableId}
+              documentType={documentStatus.type}
             />
           )}
         </>

@@ -6,7 +6,7 @@ import {
 } from '@/components'
 import { Button, Checkbox, ComboBox, Label } from '@ttab/elephant-ui'
 import { CircleXIcon, TagsIcon, GanttChartSquareIcon, NewspaperIcon } from '@ttab/elephant-ui/icons'
-import { useRegistry, useSections } from '@/hooks'
+import { useRegistry, useSections, useWorkflowStatus } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import { useMemo, useRef, useState } from 'react'
 import { UserMessage } from '@/components/UserMessage'
@@ -28,6 +28,8 @@ import { DialogEditor } from '@/components/QuickDocument/DialogEditor'
 import { toSlateYXmlText } from '@/shared/yUtils'
 import { getLabel, type PromptConfig, promptConfig } from '@/components/QuickDocument/dialogConfig'
 import { ValidateNow } from '@/components/ValidateNow'
+import { HastToggle } from '@/components/HastToggle'
+
 
 export const QuickArticleDialog = (props: {
   documentId: string
@@ -56,7 +58,7 @@ export const QuickArticleDialog = (props: {
   const [, setYSection] = useYValue<Block | undefined>(ydoc.ele, 'links.core/section[0]')
 
   const [slugline, setSlugline] = useYValue<Y.XmlText>(ydoc.ele, 'meta.tt/slugline[0].value', true)
-
+  const [workflowStatus] = useWorkflowStatus({ ydoc, documentId: ydoc.id })
   const handleSubmit = (setCreatePrompt: Dispatch<SetStateAction<boolean>>): void => {
     setCreatePrompt(true)
   }
@@ -203,8 +205,14 @@ export const QuickArticleDialog = (props: {
                 />
               )}
               <Newsvalue ydoc={ydoc} path='meta.core/newsvalue[0].value' />
+
             </Form.Group>
 
+            <HastToggle
+              ele={ydoc.ele}
+              usableId={workflowStatus?.usableId}
+              className='w-full'
+            />
             <UserMessage asDialog={!!props?.asDialog}>
               {!selectedPlanning
                 ? (<>Väljer du ingen planering kommer en ny planering med tillhörande uppdrag skapas åt dig.</>)
