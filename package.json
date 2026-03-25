@@ -31,7 +31,9 @@
     "test:coverage": "vitest run --coverage",
     "preview": "ttrun -- vite preview",
     "link:elephant-ui": "./tooling/link.sh ../elephant-ui",
-    "unlink:elephant-ui": "./tooling/unlink.sh ../elephant-ui"
+    "unlink:elephant-ui": "./tooling/unlink.sh ../elephant-ui",
+    "lang:lint": "i18next-cli lint",
+    "lang:sync": "i18next-cli sync"
   },
   "overrides": {
     "@grafana/faro-web-sdk": "$@grafana/faro-react",
