@@ -186,13 +186,7 @@ export const LayoutBox = ({
               <h3 className='font-bold text-gray-500 mt-2'>{t('editor.layouts.images.lowResTitle')}</h3>
               {lowresPics.map((image, indexLow) => (
                 <div key={indexLow}>
-                  {indexLow + 1}
-                  .
-                  &nbsp;
-                  {image.frame}
-                  &nbsp;(
-                  {Math.round(image.ppi)}
-                  &nbsp;ppi)
+                  {t('common:misc.ppiItem', { index: indexLow + 1, frame: image.frame, ppi: Math.round(image.ppi) })}
                 </div>
               ))}
             </div>
@@ -202,7 +196,7 @@ export const LayoutBox = ({
         if (response?.response?.overflows?.length) {
           overflowToastText = (
             <div>
-              <h3 className='font-bold text-gray-500 mt-2'>Overflows</h3>
+              <h3 className='font-bold text-gray-500 mt-2'>{t('common:misc.overflowsTitle')}</h3>
               {response?.response?.overflows?.map((overflow, indexOverflow) => (
                 <div key={indexOverflow}>
                   {indexOverflow + 1}
@@ -218,7 +212,7 @@ export const LayoutBox = ({
         if (response?.response?.underflows?.length) {
           underflowToastText = (
             <div>
-              <h3 className='font-bold text-gray-500 mt-2'>Underflows</h3>
+              <h3 className='font-bold text-gray-500 mt-2'>{t('common:misc.underflowsTitle')}</h3>
               {response?.response?.underflows?.map((underflow, indexUnderflow) => (
                 <div key={indexUnderflow}>
                   {indexUnderflow + 1}

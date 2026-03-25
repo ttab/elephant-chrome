@@ -35,7 +35,7 @@ export const createSearchColumns = (params: SearchColumnsParams, t: TFunction) =
             )
           }
 
-          return <span>???</span>
+          return <span>{t('common:misc.unknownDate')}</span>
         }
       },
       accessorFn: (data: { fields?: Record<string, { values?: string[] }> }) => {

@@ -44,6 +44,15 @@
     "error": "Error",
     "selectTime": "Select time",
     "searching": "Searching...",
-    "nothingFound": "Nothing found"
+    "nothingFound": "Nothing found",
+    "failedToInitialize": "Failed to initialize",
+    "retry": "Retry",
+    "escKey": "ESC",
+    "google": "oogle",
+    "unknownDate": "???",
+    "ppiItem": "{{index}}. {{frame}} ({{ppi}} ppi)",
+    "overflowsTitle": "Overflows",
+    "underflowsTitle": "Underflows",
+    "figureBylineLabel": "Byline:"
   }
 }

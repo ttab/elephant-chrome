@@ -44,6 +44,15 @@
     "error": "Feil",
     "selectTime": "Velg tid",
     "searching": "Søker...",
-    "nothingFound": "Ingenting ble funnet"
+    "nothingFound": "Ingenting ble funnet",
+    "failedToInitialize": "Klarte ikke å initialisere",
+    "retry": "Prøv igjen",
+    "escKey": "ESC",
+    "google": "oogle",
+    "unknownDate": "???",
+    "ppiItem": "{{index}}. {{frame}} ({{ppi}} ppi)",
+    "overflowsTitle": "Overflyt",
+    "underflowsTitle": "Underflyt",
+    "figureBylineLabel": "Byline:"
   }
 }

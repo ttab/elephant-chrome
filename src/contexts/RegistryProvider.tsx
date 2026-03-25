@@ -6,6 +6,7 @@ import React, {
   useState,
   type JSX
 } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { getServerEnvs } from '@/lib/getServerEnvs'
 import { getUserTimeZone } from '@/lib/getUserTimeZone'
@@ -83,6 +84,7 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
   const [state, dispatch] = useReducer(reducer, initialState)
   const [isInitialized, setIsInitialized] = useState<boolean>(false)
   const [initError, setInitError] = useState<string | null>(null)
+  const { t } = useTranslation('common')
 
   useEffect(() => {
     const initialize = async () => {
@@ -126,14 +128,14 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
     return (
       <div className='flex h-screen items-center justify-center p-6'>
         <div className='max-w-md text-center'>
-          <h1 className='text-2xl font-bold mb-2'>Failed to initialize</h1>
+          <h1 className='text-2xl font-bold mb-2'>{t('misc.failedToInitialize')}</h1>
           <p className='text-sm text-muted-foreground mb-4'>{initError}</p>
           <button
             type='button'
             onClick={() => window.location.reload()}
             className='px-4 py-2 text-sm font-medium rounded-md bg-primary text-primary-foreground hover:bg-primary/90'
           >
-            Retry
+            {t('misc.retry')}
           </button>
         </div>
       </div>

@@ -44,6 +44,15 @@
     "error": "Fel",
     "selectTime": "Välj tid",
     "searching": "Söker...",
-    "nothingFound": "Ingenting hittades"
+    "nothingFound": "Ingenting hittades",
+    "failedToInitialize": "Kunde inte initialisera",
+    "retry": "Försök igen",
+    "escKey": "ESC",
+    "google": "oogle",
+    "unknownDate": "???",
+    "ppiItem": "{{index}}. {{frame}} ({{ppi}} ppi)",
+    "overflowsTitle": "Överflöde",
+    "underflowsTitle": "Underflöde",
+    "figureBylineLabel": "Byline:"
   }
 }

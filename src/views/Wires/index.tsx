@@ -505,7 +505,7 @@ export const Wires = (): JSX.Element => {
                 )}
               </div>
               <div className='text-center text-muted-foreground text-xs'>
-                <span className='bg-muted px-2 py-0.5 rounded-md text-xs font-semibold'>ESC</span>
+                <span className='bg-muted px-2 py-0.5 rounded-md text-xs font-semibold'>{t('common:misc.escKey')}</span>
                 <span>{` ${t('stream.deselectHint')}`}</span>
               </div>
             </div>
