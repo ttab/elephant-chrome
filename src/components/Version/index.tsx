@@ -31,6 +31,11 @@ export const Version = ({ documentId, hideDetails = false, textOnly = true }: { 
   const authors = useAuthors()
   const [lastUpdated, setLastUpdated] = useState('')
   const { t } = useTranslation('metaSheet')
+
+  const getStatusCreator = (status: DocumentStatus) => {
+    return status.creator === 'internal://scheduler' ? status.meta['scheduled-by'] : status.creator
+  }
+
   const { data: versionStatusHistory, error } = useSWR<DocumentStatus[], Error>(`version/${documentId}`, async (): Promise<Array<DocumentStatus & {
     bylines?: Block[]
     title?: string
@@ -97,7 +102,7 @@ export const Version = ({ documentId, hideDetails = false, textOnly = true }: { 
     const lastStatus = { ...result?.statuses[0], name: 'usable' }
     const createdBy = getAuthorBySub(
       authors,
-      lastStatus?.creator || result?.statuses[0]?.creator
+      getStatusCreator(lastStatus) || result?.statuses[0]?.creator
     )?.name || '???'
 
     setVersion({
@@ -127,7 +132,8 @@ export const Version = ({ documentId, hideDetails = false, textOnly = true }: { 
     }
 
     const getUsable = (v: DocumentStatus): Status | undefined => {
-      const status: Status = { name: '', created: v.created, creator: createdBy(v.creator) }
+      const creator = getStatusCreator(v)
+      const status: Status = { name: '', created: v.created, creator: createdBy(creator) }
 
       if (v.meta && 'cause' in v.meta) {
         if ((CAUSE_KEYS as Record<string, { short: string, long: string }>)[v?.meta?.cause]) {
@@ -193,6 +199,7 @@ export const Version = ({ documentId, hideDetails = false, textOnly = true }: { 
         onValueChange={(option) => {
           const current = versionStatusHistory?.find((v) => v.version === BigInt(option))
           setVersion(current)
+
           showModal(
             <PreviewSheet
               id={documentId}
