@@ -152,9 +152,15 @@ export const FlashDialog = (props: {
           })
         })
         .catch(() => {
-          // Flash creation OK, quick-article creation unsuccessful
           toast.error(t('errors:messages.createQuickArticleFailed'), {
-            action: <ToastAction withView='Flash' documentId={data.updatedPlanningId} />
+            action: (
+              <ToastAction
+                withView='Flash'
+                documentId={data.updatedPlanningId}
+                Icon={ZapIcon}
+                label='Öppna flash'
+              />
+            )
           })
         })
     })()
@@ -215,15 +221,28 @@ export const FlashDialog = (props: {
     console.error(ex)
 
     if (ex?.message === 'FlashCreationError') {
-      // Both flash and quick-article creation were unsuccessful
       toast.error(t('errors:messages.flashCreationFailed'), {
-        action: <ToastAction documentId={ydoc.id} withView='Flash' />
+        action: (
+          <ToastAction
+            documentId={ydoc.id}
+            withView='Flash'
+            Icon={ZapIcon}
+            label='Öppna flash'
+          />
+        )
       })
     }
 
     if (ex?.message === 'CreateAssignmentError') {
       toast.error(t('errors:messages.createAssignmentError'), {
-        action: <ToastAction documentId={ydoc.id} withView='Flash' />
+        action: (
+          <ToastAction
+            documentId={ydoc.id}
+            withView='Flash'
+            Icon={ZapIcon}
+            label='Öppna flash'
+          />
+        )
       })
     }
   }

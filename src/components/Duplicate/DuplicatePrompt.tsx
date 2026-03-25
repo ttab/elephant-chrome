@@ -31,7 +31,7 @@ export const DuplicatePrompt = ({
   description: string
   primaryLabel: string
   secondaryLabel?: string
-  onPrimary: (duplicateId: string | undefined, duplicatedDocument: Document) => void
+  onPrimary: (duplicateId: string | undefined, duplicatedDocument: Document) => void | Promise<void>
   onSecondary?: (event: MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement> | KeyboardEvent) => void
   provider?: HocuspocusProvider
   duplicateDate: { from: Date, to?: Date | undefined }
@@ -169,11 +169,11 @@ export const DuplicatePrompt = ({
             autoFocus
             disabled={!duplicateId || !duplicatedDocument}
             onClick={() => {
-              onPrimary(duplicateId, duplicatedDocument)
+              void onPrimary(duplicateId, duplicatedDocument)
             }}
             onKeyDown={(event: React.KeyboardEvent<HTMLButtonElement>) => {
               if (event.key === 'Enter') {
-                onPrimary(duplicateId, duplicatedDocument)
+                void onPrimary(duplicateId, duplicatedDocument)
               }
             }}
           >

@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import type { HocuspocusProvider } from '@hocuspocus/provider'
 import type { Session } from 'next-auth'
-import { CopyPlusIcon } from '@ttab/elephant-ui/icons'
+import { CopyPlusIcon, CalendarDaysIcon, CalendarPlus2Icon } from '@ttab/elephant-ui/icons'
 import { ToastAction } from '@/components/ToastAction'
 import type { EventData } from '@/views/Event/components/EventTime'
 import type { PlanningData } from '@/types/index'
@@ -172,15 +172,20 @@ export const Duplicate = ({ provider, title, session, status, type, dataInfo }: 
           description={createTexts(granularity, t).description}
           secondaryLabel={t('common:actions.abort')}
           primaryLabel={t('common:actions.copy')}
-          onPrimary={(duplicateId: string | undefined, duplicatedDocument: Document) => {
+          onPrimary={async (duplicateId: string | undefined, duplicatedDocument: Document) => {
             if (provider && status === 'authenticated' && duplicateId && session && repository) {
               try {
-                void (async () => {
-                  await repository.saveDocument(duplicatedDocument, session.accessToken).catch((err) => console.error(err))
-                })()
+                await repository.saveDocument(duplicatedDocument, session.accessToken)
 
                 toast.success(createTexts(granularity, t).success, {
-                  action: <ToastAction documentId={duplicateId || undefined} withView={type} />
+                  action: (
+                    <ToastAction
+                      documentId={duplicateId || undefined}
+                      withView={type}
+                      Icon={type === 'Event' ? CalendarPlus2Icon : CalendarDaysIcon}
+                      label={t('common:actions.openType', { type: type === 'Event' ? t('core:documentType.event') : t('core:documentType.planning') })}
+                    />
+                  )
                 })
               } catch (error) {
                 toast.error(`${t('errors:messages.someError')}: ${JSON.stringify(error)}`)

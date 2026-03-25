@@ -58,19 +58,30 @@ export const StatusMenu = ({ ydoc, publishTime, onBeforeStatusChange }: {
     }
   }, [])
 
+  const [isTransitioning, setIsTransitioning] = useState(false)
+
   // Callback function to set status. Will first call onBeforeStatusChange() if
   // provided by props, then proceed to change the status if allowed.
   const setStatus = useCallback(async (newStatus: string, data?: Record<string, unknown>) => {
-    if (onBeforeStatusChange) {
-      if (await onBeforeStatusChange(newStatus, data) !== true) {
-        return
-      }
-    }
+    setIsTransitioning(true)
 
-    await setDocumentStatus(
-      newStatus,
-      (typeof data?.cause === 'string') ? data.cause : undefined
-    )
+    try {
+      if (onBeforeStatusChange) {
+        if (await onBeforeStatusChange(newStatus, data) !== true) {
+          setIsTransitioning(false)
+          return
+        }
+      }
+
+      await setDocumentStatus(
+        newStatus,
+        (typeof data?.cause === 'string') ? data.cause : undefined
+      )
+    } catch (error) {
+      console.error('Failed to change status:', error)
+    } finally {
+      setIsTransitioning(false)
+    }
   }, [onBeforeStatusChange, setDocumentStatus])
 
   const unPublishDocument = (newStatus?: string) => {
@@ -84,6 +95,8 @@ export const StatusMenu = ({ ydoc, publishTime, onBeforeStatusChange }: {
       name: 'usable',
       version: -1n
     }
+
+    setIsTransitioning(true)
 
     try {
       (async () => {
@@ -112,10 +125,14 @@ export const StatusMenu = ({ ydoc, publishTime, onBeforeStatusChange }: {
           origin: viewId,
           target: 'self'
         })
-      })().catch((err) => console.error(err))
+      })().catch((err) => {
+        console.error(err)
+        setIsTransitioning(false)
+      })
     } catch (error) {
       toast.error(t('errors:toasts.unpublishError'))
       console.error('error while unpublishing document:', error)
+      setIsTransitioning(false)
     }
   }
 
@@ -143,6 +160,7 @@ export const StatusMenu = ({ ydoc, publishTime, onBeforeStatusChange }: {
               currentStatusName={currentStatusName}
               currentStatusDef={currentStatusDef}
               asSave={asSave}
+              isTransitioning={isTransitioning}
             />
           </DropdownMenuTrigger>
 
