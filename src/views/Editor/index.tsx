@@ -93,8 +93,10 @@ function EditorWrapper(props: ViewProps & {
   planningId?: string | null
   preview?: boolean
 }): JSX.Element {
+  const { preview, planningId } = props
+
   const ydoc = useYDocument<Y.Map<unknown>>(props.documentId, {
-    visibility: !props.preview
+    visibility: !preview
   })
   const [documentLanguage] = getValueByYPath<string>(ydoc.ele, 'root.language')
   const [content] = getValueByYPath<Y.XmlText>(ydoc.ele, 'content', true)
@@ -113,7 +115,8 @@ function EditorWrapper(props: ViewProps & {
       Table(),
       LocalizedQuotationMarks(),
       TTVisual({
-        enableCrop: false
+        enableCrop: false,
+        removable: !preview
       }),
       Text({
         countCharacters: ['heading-1'],
@@ -123,10 +126,10 @@ function EditorWrapper(props: ViewProps & {
         onEditOriginal: (id: string) => {
           openFactboxEditor(undefined, { id })
         },
-        removable: true
+        removable: !preview
       })
     ]
-  }, [openFactboxEditor, openFactboxes, openImageSearch])
+  }, [openFactboxEditor, openFactboxes, openImageSearch, preview])
 
   if (!content) {
     return <View.Root />
@@ -137,11 +140,11 @@ function EditorWrapper(props: ViewProps & {
       <BaseEditor.Root
         ydoc={ydoc}
         content={content}
-        readOnly={props.preview}
+        readOnly={preview}
         plugins={configuredPlugins}
         lang={documentLanguage}
       >
-        <EditorHeader ydoc={ydoc} planningId={props.planningId} readOnly={props.preview} />
+        <EditorHeader ydoc={ydoc} planningId={planningId} readOnly={preview} />
 
         <Notes ydoc={ydoc} />
 
