@@ -70,7 +70,7 @@ function getAssignmentTime({ assignment, timeZone, locale, statusData, compareDa
     return getTimeslotLabel(parseInt(assignment.data.publish_slot))
   }
 
-  if (assignment.data.publish && assignment._deliverableStatus === 'withheld') {
+  if (assignment.data.publish && ['withheld', 'usable'].includes(assignment._deliverableStatus || '')) {
     return format(toZonedTime(parseISO(assignment.data.publish), timeZone), 'HH:mm')
   }
 
@@ -103,8 +103,9 @@ function getTimeTooltip({ assignment, statusData, timeZone, locale, compareDate 
   locale: LocaleData
   compareDate?: Date
 }): string {
-  if (assignment._deliverableStatus === 'withheld' && assignment.data.publish) {
-    return `Schemalagd kl ${format(toZonedTime(parseISO(assignment.data.publish), timeZone), 'HH:mm')}`
+  if (assignment.data.publish && ['withheld', 'usable'].includes(assignment._deliverableStatus || '')) {
+    const label = assignment._deliverableStatus === 'withheld' ? 'Schemalagd' : 'Publicerad'
+    return `${label} kl ${format(toZonedTime(parseISO(assignment.data.publish), timeZone), 'HH:mm')}`
   }
   if (statusData?.modified) {
     if (compareDate) {

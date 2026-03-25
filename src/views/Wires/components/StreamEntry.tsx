@@ -4,7 +4,7 @@ import { cn } from '@ttab/elephant-ui/utils'
 import { cva } from 'class-variance-authority'
 import { Button } from '@ttab/elephant-ui'
 import { RefreshCwIcon, SquareCheckIcon, SquareIcon, ZapIcon } from '@ttab/elephant-ui/icons'
-import { getWireState } from '@/lib/getWireState'
+import { getWireState, type WireStatusKey } from '@/lib/getWireState'
 import type { WireStatus } from '../lib/setWireStatus'
 import { StreamEntryCell } from './StreamEntryCell'
 import { getWireStatus } from '@/lib/getWireStatus'
@@ -70,6 +70,11 @@ export const StreamEntry = memo(({
 }): JSX.Element => {
   const wireState = getWireState(entry)
   const lastStatus = getWireStatus(entry)
+  // Use the pending mutation's status for optimistic display; fall back to actual wire state.
+  // Rollback is automatic: clearing statusMutations (on both success and failure) reverts to
+  // wireState.status, which reflects real data since no local data was mutated.
+  const status: WireStatusKey = statusMutation ? statusMutation.name : wireState.status
+
   const handleClick = useCallback((e: React.MouseEvent<HTMLElement>) => {
     onPress?.(entry, e)
   }, [entry, onPress])
@@ -79,12 +84,12 @@ export const StreamEntry = memo(({
       e.preventDefault()
       onPress?.(entry, e)
     } else if (e.key === 'm' || e.key === 'M') {
-      if (wireState.status !== 'used') {
+      if (status !== 'used') {
         e.preventDefault()
         onToggleSelected(entry, e.shiftKey)
       }
     }
-  }, [entry, onPress, onToggleSelected, wireState.status])
+  }, [entry, onPress, onToggleSelected, status])
 
   const handleFocus = useCallback((e: React.FocusEvent<HTMLElement>) => {
     onFocus?.(entry, e)
@@ -97,7 +102,7 @@ export const StreamEntry = memo(({
 
   const modified = new Date(entry.fields.modified.values[0])
   const compositeId = `${streamId}:${entry.id}`
-  const { status, isFlash, wasFlash } = wireState
+  const { isFlash, wasFlash } = wireState
 
   return (
     <div className='group relative'>
