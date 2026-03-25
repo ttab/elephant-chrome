@@ -4,7 +4,7 @@ import { BookAIcon, CheckIcon, PencilIcon, PlusIcon, TrashIcon } from '@ttab/ele
 import { cn } from '@ttab/elephant-ui/utils'
 import { useRegistry } from '@/hooks/useRegistry'
 import { useSession } from 'next-auth/react'
-import { useEffect, useState, type JSX } from 'react'
+import { useCallback, useEffect, useState, type JSX } from 'react'
 import { toast } from 'sonner'
 import { type Hypenation } from '@ttab/elephant-tt-api/baboon'
 import { Button, ScrollArea } from '@ttab/elephant-ui'
@@ -162,8 +162,9 @@ const Dictionary = ({ className }: ViewProps): JSX.Element => {
   const [hyphenations, setHyphenations] = useState<Hypenation[]>([])
   const [isNew, setIsNew] = useState(false)
   const [query] = useQuery(['page'])
+  const currentPage = query?.page?.[0]
 
-  const handleListHyphenations = async () => {
+  const handleListHyphenations = useCallback(async () => {
     if (!session?.accessToken) {
       toast.error('Ingen access token hittades')
       return
@@ -173,12 +174,12 @@ const Dictionary = ({ className }: ViewProps): JSX.Element => {
       toast.error('Något gick fel när avstämningsordlista skulle hämtas')
       return
     }
-    const hyphenations = await baboon?.listHypenations({
+    const hyphenations = await baboon.listHypenations({
       language: 'sv',
-      page: BigInt(parseInt(query?.page?.[0] || '1') - 1)
-    }, session?.accessToken)
+      page: BigInt(parseInt(currentPage || '1') - 1)
+    }, session.accessToken)
     setHyphenations(hyphenations?.response?.items || [])
-  }
+  }, [baboon, session?.accessToken, currentPage])
 
   useEffect(() => {
     handleListHyphenations()
@@ -186,7 +187,7 @@ const Dictionary = ({ className }: ViewProps): JSX.Element => {
         console.error('Error listing hyphenations:', ex)
         toast.error('Kunde inte lista hyphenations')
       })
-  }, [query?.page?.[0]])
+  }, [handleListHyphenations])
 
   return (
     <View.Root className={cn(className, 'min-h-[900px]')}>
