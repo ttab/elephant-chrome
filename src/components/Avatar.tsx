@@ -34,13 +34,14 @@ const avatarVariants = cva('cursor-default text-opacity-60',
 
 export type AvatarSize = 'xxs' | 'xs' | 'sm' | 'lg' | 'xl' | 'default' | undefined | null
 
-export const Avatar = ({ user, value, variant = 'default', size = 'default', color, stacked = false, className }:
+export const Avatar = ({ user, value, variant = 'default', size = 'default', color, stacked = false, className, tooltip }:
   React.HTMLAttributes<HTMLDivElement>
   & VariantProps<typeof avatarVariants> & {
     value?: string
     user?: Session['user'] | undefined
     color?: string
     stacked?: boolean
+    tooltip?: boolean
   }): JSX.Element => {
   const style = color ? { backgroundColor: color } : {} // rgb(x, y, z)
   const compoundClassName = cn(className, variant === 'color' && 'border border-gray')
@@ -51,6 +52,7 @@ export const Avatar = ({ user, value, variant = 'default', size = 'default', col
       <AvatarFallback
         className={cn(avatarVariants({ variant, className: compoundClassName }))}
         style={style}
+        title={!tooltip ? user?.name || value : undefined}
       >
         {size !== 'xxs'
           ? getInitials(user?.name || value)
