@@ -26,6 +26,7 @@
     "section": "Sektion",
     "sources": "Källor",
     "newsvalue": "Nyhetsvärde",
+    "wireStatus": "Telegramstatus",
     "selected": "valda"
   },
   "toast": {
@@ -61,7 +62,8 @@
     "errorTitle": "Artikeldokument saknas",
     "errorMessage": "Inget artikeldokument är angivet. Navigera tillbaka till översikten och försök igen.",
     "noWires": "Inga källtelegram",
-    "loadingWire": "Laddar telegram…"
+    "loadingWire": "Laddar telegram…",
+    "sourceWires": "Källtelegram"
   },
   "preview": {
     "pressRelease": "Pressmeddelande",

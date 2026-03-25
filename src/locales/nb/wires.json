@@ -26,6 +26,7 @@
     "section": "Seksjon",
     "sources": "Kilder",
     "newsvalue": "Nyhetsverdi",
+    "wireStatus": "Telegramstatus",
     "selected": "valgte"
   },
   "toast": {
@@ -61,7 +62,8 @@
     "errorTitle": "Artikeldokument mangler",
     "errorMessage": "Ingen artikeldokument er angitt. Naviger tilbake til oversikten og prøv igjen.",
     "noWires": "Ingen kildetelegrammer",
-    "loadingWire": "Laster telegram…"
+    "loadingWire": "Laster telegram…",
+    "sourceWires": "Kildetelegram"
   },
   "preview": {
     "pressRelease": "Pressemelding",

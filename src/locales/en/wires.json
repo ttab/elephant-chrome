@@ -26,6 +26,7 @@
     "section": "Section",
     "sources": "Sources",
     "newsvalue": "News value",
+    "wireStatus": "Wire status",
     "selected": "selected"
   },
   "toast": {
@@ -61,7 +62,8 @@
     "errorTitle": "Article document missing",
     "errorMessage": "No article document is specified. Navigate back to the overview and try again.",
     "noWires": "No source wires",
-    "loadingWire": "Loading wire..."
+    "loadingWire": "Loading wire...",
+    "sourceWires": "Source wires"
   },
   "preview": {
     "pressRelease": "Press release",

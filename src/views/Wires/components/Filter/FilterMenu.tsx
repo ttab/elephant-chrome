@@ -209,7 +209,7 @@ export const FilterMenu = ({ currentFilters, onFilterChange }: FilterPopoverProp
 }
 
 const MenuList = ({ onSelect }: { onSelect: (newPage: FilterPage) => void }) => {
-  const { t } = useTranslation('wires')
+  const { t } = useTranslation(['wires', 'core'])
 
   return (
     <>
@@ -218,28 +218,28 @@ const MenuList = ({ onSelect }: { onSelect: (newPage: FilterPage) => void }) => 
         className='flex gap-1 items-center'
       >
         <ShapesIcon size={18} strokeWidth={1.75} />
-        {t('labels.section')}
+        {t('core:labels.section')}
       </CommandItem>
       <CommandItem
         onSelect={() => onSelect('source')}
         className='flex gap-1 items-center'
       >
         <SquareCodeIcon size={18} strokeWidth={1.75} />
-        {t('filter.sources')}
+        {t('wires:filter.sources')}
       </CommandItem>
       <CommandItem
         onSelect={() => onSelect('newsvalue')}
         className='flex gap-1 items-center'
       >
         <SignalHighIcon size={18} strokeWidth={1.75} />
-        {t('filter.newsvalue')}
+        {t('wires:filter.newsvalue')}
       </CommandItem>
       <CommandItem
         onSelect={() => onSelect('wireStatus')}
         className='flex gap-1 items-center'
       >
         <CircleCheckIcon size={18} strokeWidth={1.75} />
-        {t('filter.wireStatus')}
+        {t('wires:filter.wireStatus')}
       </CommandItem>
     </>
   )
