@@ -24,7 +24,10 @@
     "public": "Public description"
   },
   "actions": {
-    "openPlanning": "Open planning"
+    "openPlanning": "Open planning",
+    "open": "Open",
+    "assignments": "Assignments",
+    "noDeliverables": "No deliverables"
   },
   "prompts": {
     "slugMissing": "Slug missing",

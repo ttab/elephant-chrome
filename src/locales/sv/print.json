@@ -90,6 +90,8 @@
       "togglePanel": "Fäll in layoutpanelen",
       "showLayout": "Visa {{title}} - {{name}}",
       "preview": "Förhandsgranska layout",
+      "overflowsTitle": "Överflöde",
+      "underflowsTitle": "Underflöde",
       "images": {
         "lowResTitle": "Bilder (under 130 ppi)"
       },
@@ -133,6 +135,7 @@
       }
     },
     "image": {
+      "bylineLabel": "Byline:",
       "errors": {
         "upload": "Något gick fel när bilden laddades upp!: {{error}}",
         "notImage": "Filen verkar inte vara en bild, avbryter uppladdning",

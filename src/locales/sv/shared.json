@@ -66,5 +66,9 @@
   },
   "editorialInfo": {
     "noteText": "Obs! Detta meddelande är inte avsett för publicering."
+  },
+  "init": {
+    "failedTitle": "Kunde inte initiera",
+    "retryButton": "Försök igen"
   }
 }

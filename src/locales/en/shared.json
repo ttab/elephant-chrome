@@ -66,5 +66,9 @@
   },
   "editorialInfo": {
     "noteText": "Note! This message is not intended for publication."
+  },
+  "init": {
+    "failedTitle": "Failed to initialize",
+    "retryButton": "Retry"
   }
 }
