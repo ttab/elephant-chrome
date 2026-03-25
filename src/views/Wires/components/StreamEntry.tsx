@@ -5,9 +5,10 @@ import { cn } from '@ttab/elephant-ui/utils'
 import { cva } from 'class-variance-authority'
 import { Button } from '@ttab/elephant-ui'
 import { RefreshCwIcon, SquareCheckIcon, SquareIcon, ZapIcon } from '@ttab/elephant-ui/icons'
-import { getWireState } from '@/lib/getWireState'
+import { getWireState, type WireStatusKey } from '@/lib/getWireState'
 import type { WireStatus } from '../lib/setWireStatus'
 import { StreamEntryCell } from './StreamEntryCell'
+import { getWireStatus } from '@/lib/getWireStatus'
 
 const variants = cva(
   `
@@ -70,6 +71,11 @@ export const StreamEntry = memo(({
 }): JSX.Element => {
   const { t } = useTranslation('wires')
   const wireState = getWireState(entry)
+  const lastStatus = getWireStatus(entry)
+  // Use the pending mutation's status for optimistic display; fall back to actual wire state.
+  // Rollback is automatic: clearing statusMutations (on both success and failure) reverts to
+  // wireState.status, which reflects real data since no local data was mutated.
+  const status: WireStatusKey = statusMutation ? statusMutation.name : wireState.status
 
   const handleClick = useCallback((e: React.MouseEvent<HTMLElement>) => {
     onPress?.(entry, e)
@@ -79,13 +85,13 @@ export const StreamEntry = memo(({
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault()
       onPress?.(entry, e)
-    } else if (e.key === 'm') {
-      if (wireState.status !== 'used') {
+    } else if (e.key === 'm' || e.key === 'M') {
+      if (status !== 'used') {
         e.preventDefault()
         onToggleSelected(entry, e.shiftKey)
       }
     }
-  }, [entry, onPress, onToggleSelected, wireState.status])
+  }, [entry, onPress, onToggleSelected, status])
 
   const handleFocus = useCallback((e: React.FocusEvent<HTMLElement>) => {
     onFocus?.(entry, e)
@@ -98,7 +104,7 @@ export const StreamEntry = memo(({
 
   const modified = new Date(entry.fields.modified.values[0])
   const compositeId = `${streamId}:${entry.id}`
-  const { status, isFlash, wasFlash, wasSaved, wasUsed, wasRead } = wireState
+  const { isFlash, wasFlash } = wireState
 
   return (
     <div className='group relative'>
@@ -106,7 +112,7 @@ export const StreamEntry = memo(({
         data-item-id={compositeId}
         data-entry-id={entry.id}
         tabIndex={0}
-        className={cn(variants({ status, isFlash, wasSaved: !!wasSaved, wasUsed: !!wasUsed, wasRead: !!wasRead }))}
+        className={cn(variants({ status: ['flash', 'draft'].some((s) => status.includes(s)) ? null : (status as 'read' | 'used' | 'saved'), isFlash, wasSaved: lastStatus === 'saved', wasRead: lastStatus === 'read', wasUsed: lastStatus === 'used' }))}
         onKeyDown={handleKeyDown}
         onFocus={handleFocus}
         onClick={handleClick}

@@ -17,38 +17,37 @@ type WireStatusResult = {
 }
 
 /**
- * Updates wire statuses and returns results indicating success/failure for each wire
+ * Updates wire statuses in bulk and returns results indicating success/failure for each wire
  */
 export async function executeWiresStatuses(
   repository: Repository,
   session: Session,
   wireStatuses: WireStatus[]
 ): Promise<WireStatusResult[]> {
-  const results = await Promise.allSettled(
-    wireStatuses.map((wireStatus) =>
-      setWireStatus(repository, session, wireStatus)
-        .then(() => ({ uuid: wireStatus.uuid, statusSet: true }))
-        .catch(() => ({ uuid: wireStatus.uuid, statusSet: false }))
-    )
-  )
-
-  return results.map((result) =>
-    result.status === 'fulfilled'
-      ? result.value
-      : { uuid: '', statusSet: false }
-  )
-}
-
-async function setWireStatus(repository: Repository, session: Session, status: WireStatus) {
-  if (!repository || !session.accessToken) {
-    throw new Error('Repository or session access token is not available')
+  if (!wireStatuses.length) {
+    return []
   }
 
-  await repository.saveMeta({
-    status,
-    currentStatus: undefined,
-    accessToken: session.accessToken
-  })
+  if (!session.accessToken) {
+    return wireStatuses.map((ws) => ({ uuid: ws.uuid, statusSet: false }))
+  }
+
+  try {
+    const response = await repository.bulkSaveMeta({
+      statuses: wireStatuses,
+      accessToken: session.accessToken
+    })
+
+    const succeededUuids = new Set(response.updates.map((u) => u.uuid))
+
+    return wireStatuses.map((ws) => ({
+      uuid: ws.uuid,
+      statusSet: succeededUuids.has(ws.uuid)
+    }))
+  } catch (error) {
+    console.error('Failed to bulk save wire statuses:', error)
+    return wireStatuses.map((ws) => ({ uuid: ws.uuid, statusSet: false }))
+  }
 }
 
 export function calculateWireStatuses(wires: Wire[], newStatus: WireStatusName) {

@@ -21,12 +21,31 @@ function getStatusForVersion(version: bigint, currentVersion: bigint | undefined
     return wireState.status ?? null
   }
 
-  // Past versions: flash takes priority, then status in descending importance
-  if (wireState.wasFlash === n) return 'flash'
-  if (wireState.wasUsed === n) return 'used'
-  if (wireState.wasSaved === n) return 'saved'
-  if (wireState.wasRead === n) return 'read'
-  return null
+  // Collect all past-version statuses that match this version number
+  const candidates: Array<{ key: string, created: string | undefined }> = []
+  if (wireState.wasFlash === n) {
+    candidates.push({ key: 'flash', created: wireState.wasFlashCreated })
+  }
+  if (wireState.wasUsed === n) {
+    candidates.push({ key: 'used', created: wireState.wasUsedCreated })
+  }
+  if (wireState.wasSaved === n) {
+    candidates.push({ key: 'saved', created: wireState.wasSavedCreated })
+  }
+  if (wireState.wasRead === n) {
+    candidates.push({ key: 'read', created: wireState.wasReadCreated })
+  }
+
+  if (candidates.length === 0) return null
+  if (candidates.length === 1) return candidates[0].key
+
+  // Multiple statuses on the same past version — pick the youngest (most recent timestamp)
+  const winner = candidates.reduce((best, candidate) => {
+    if (!candidate.created) return best
+    if (!best.created) return candidate
+    return new Date(candidate.created).getTime() > new Date(best.created).getTime() ? candidate : best
+  })
+  return winner.key
 }
 
 const COLLAPSED_MAX = 4

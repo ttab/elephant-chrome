@@ -2,6 +2,7 @@ import { TwirpFetchTransport } from '@protobuf-ts/twirp-transport'
 import { DocumentsClient, MetricsClient } from '@ttab/elephant-api/repository'
 import type {
   BulkGetResponse,
+  BulkUpdateResponse,
   GetDocumentResponse,
   GetMetaResponse,
   GetStatusOverviewResponse,
@@ -296,6 +297,53 @@ export class Repository {
       return response
     } catch (err: unknown) {
       throw new Error(`Unable to save meta: ${(err as Error)?.message || 'Unknown error'}`)
+    }
+  }
+
+  /**
+   * Saves meta information for multiple documents in a single bulk request.
+   *
+   * @param {Object} params - The parameters for saving meta information.
+   * @param {Status[]} params.statuses - Array of status objects to update.
+   * @param {string} params.accessToken - The access token.
+   * @returns {Promise<BulkUpdateResponse>} The responses for each update.
+   * @throws {Error} If unable to bulk save meta information.
+   */
+  async bulkSaveMeta({ statuses, accessToken }: {
+    statuses: Status[]
+    accessToken: string
+  }): Promise<BulkUpdateResponse> {
+    try {
+      const { response } = await this.#client.bulkUpdate({
+        updates: statuses.map((status) => ({
+          uuid: status.uuid,
+          status: status.name === 'draft'
+            ? [
+                { name: 'read', version: -1n, meta: {}, ifMatch: -1n },
+                { name: 'saved', version: -1n, meta: {}, ifMatch: -1n },
+                { name: 'used', version: -1n, meta: {}, ifMatch: -1n }
+              ]
+            : [{
+                name: status.name,
+                version: status.version,
+                meta: {},
+                ifMatch: status.version
+              }],
+          meta: {},
+          ifMatch: status.version,
+          acl: [],
+          updateMetaDocument: false,
+          lockToken: '',
+          ifWorkflowState: '',
+          ifStatusHeads: {},
+          attachObjects: {},
+          detachObjects: []
+        }))
+      }, meta(accessToken))
+
+      return response
+    } catch (err: unknown) {
+      throw new Error(`Unable to bulk save meta: ${(err as Error)?.message || 'Unknown error'}`)
     }
   }
 

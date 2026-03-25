@@ -35,6 +35,8 @@ export const DialogEditor = ({ ydoc, setTitle, onValidation, validateStateRef, t
     return <></>
   }
 
+  const countCharacters = type === 'flash' ? ['heading-1', 'body'] : ['heading-1']
+
   return (
     <Validation
       ydoc={ydoc}
@@ -51,7 +53,7 @@ export const DialogEditor = ({ ydoc, setTitle, onValidation, validateStateRef, t
         plugins={[
           ...plugins.map((initPlugin) => initPlugin()),
           Text({
-            countCharacters: ['heading-1'],
+            countCharacters,
             preventHotkeys: ['heading-1', 'heading-2', 'preamble'],
             ...getContentMenuLabels(),
             titleLabel: type === 'flash' ? t('placeholders.flashTitle') : t('editor:contentMenu.title')

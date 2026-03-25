@@ -51,7 +51,6 @@ export const Editor = ({ id, version, textOnly = false, direct, versionStatusHis
     const basePlugins = [Text, UnorderedList, OrderedList, Bold, Italic, Link, Table]
     return [
       ...basePlugins.map((initPlugin) => initPlugin()),
-      Text(),
       TTVisual({
         captionLabel: t('image.captionLabel'),
         bylineLabel: t('image.bylineLabel'),
