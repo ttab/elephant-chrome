@@ -8,7 +8,7 @@ import type * as Y from 'yjs'
 import { Block, type Document } from '@ttab/elephant-api/newsdoc'
 import { LoaderIcon } from 'lucide-react'
 
-export const Additionals = ({ ydoc, basePath, layout}: {
+export const Additionals = ({ ydoc, basePath, layout }: {
   ydoc: YDocument<Y.Map<unknown>>
   basePath: string
   layout?: Document

@@ -175,7 +175,7 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
   )
 }
 
-const FactboxDialogFooter = ({ ydoc, disabled, onSuccess, onError}: {
+const FactboxDialogFooter = ({ ydoc, disabled, onSuccess, onError }: {
   ydoc: YDocument<Y.Map<unknown>>
   disabled?: boolean
   onSuccess?: () => void

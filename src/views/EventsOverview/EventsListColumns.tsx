@@ -29,7 +29,7 @@ import type { LocaleData } from '@/types/index'
 import type { TFunction, Namespace } from 'i18next'
 import i18next from 'i18next'
 
-export function eventTableColumns<Ns extends Namespace>({ sections = [], organisers = [], locale}: {
+export function eventTableColumns<Ns extends Namespace>({ sections = [], organisers = [], locale }: {
   sections?: IDBSection[]
   organisers?: IDBOrganiser[]
   locale: LocaleData
