@@ -37,13 +37,10 @@ const LoginForm = ({ callbackUrl }: {
       <div className='self-center flex flex-col gap-4'>
         <Button
           onClick={() => {
-            (async () => {
-              await IDB.remove()
+            IDB.remove()
               // FIXME: Implement a better approach so we do not remove unsynced documents
-              // await CollaborationClientRegistry.cleanupLocalDocuments()
-            })().catch((err) => console.error(err))
-            signIn('keycloak', { callbackUrl: callbackUrl || import.meta.env.BASE_URL })
-              .catch((error) => console.error(error))
+              .then(() => signIn('keycloak', { callbackUrl: callbackUrl || import.meta.env.BASE_URL }))
+              .catch((error) => console.error('Login failed:', error))
           }}
           size='lg'
           className='space-x-1'
