@@ -25,3 +25,5 @@ jobs:
         run: npm run lint
       - name: TSC
         run: npm run tsc
+      - name: i18n lint
+        run: npm run lang:lint
