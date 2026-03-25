@@ -191,6 +191,7 @@ export const LayoutBox = ({
                   &nbsp;
                   {image.frame}
                   &nbsp;(
+                  {/* eslint-disable-next-line i18next/no-literal-string */}
                   {Math.round(image.ppi)}
                   &nbsp;ppi)
                 </div>

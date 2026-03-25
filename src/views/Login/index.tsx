@@ -37,6 +37,7 @@ const LoginForm = ({ callbackUrl }: {
   return (
     <div className='flex flex-row flex-auto justify-center'>
       <div className='self-center flex flex-col gap-4'>
+        {/* eslint-disable i18next/no-literal-string */}
         <Button
           onClick={() => {
             (async () => {
