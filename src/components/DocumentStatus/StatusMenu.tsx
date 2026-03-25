@@ -18,13 +18,13 @@ import type { View } from '@/types/index'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 
-export const StatusMenu = ({ ydoc, publishTime, onBeforeStatusChange }: {
+export const StatusMenu = ({ ydoc, onBeforeStatusChange, planningId }: {
   ydoc: YDocument<Y.Map<unknown>>
-  publishTime?: Date
   onBeforeStatusChange?: (
     status: string,
     data?: Record<string, unknown>
   ) => Promise<boolean>
+  planningId: string
 }) => {
   const [documentStatus, setDocumentStatus] = useWorkflowStatus({ ydoc })
   const containerRef = useRef<HTMLDivElement>(null)
@@ -192,7 +192,7 @@ export const StatusMenu = ({ ydoc, publishTime, onBeforeStatusChange }: {
               prompt={prompt}
               showPrompt={showPrompt}
               setStatus={(...args) => void setStatus(...args)}
-              publishTime={publishTime}
+              planningId={planningId}
               requireCause={!!documentStatus.checkpoint}
             />
           )}
