@@ -123,78 +123,79 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
         onDialogClose={props.onDialogClose}
         asDialog={!!props?.asDialog}
       />
+      <div className='flex flex-col w-full max-w-[1000px] mx-auto'>
 
-      <div className='mx-12 border mt-2 py-1.5 px-3 rounded'>
-        <DocumentHistory
-          uuid={props.documentId}
-          currentVersion={currentVersion}
-          documentState={documentState}
-          onSelectVersion={setFactboxVersion}
-          selectedVersion={factboxversion}
-          withStatusOnly={true}
-          documentType='core/factbox'
-        />
-      </div>
-
-      {isOldVersion
-        ? (
-            <View.Content className='flex flex-col max-w-[1000px] pt-8' variant='grid'>
-              <PlainEditor
-                key={factboxversion.toString()}
-                id={props.documentId}
-                version={factboxversion}
-                direct
-                showTitle
-              />
-            </View.Content>
-          )
-        : (
-            <BaseEditor.Root
-              ydoc={ydoc}
-              content={content}
-              lang={documentLanguage}
-              plugins={configuredPlugins}
-            >
-              <View.Content className='flex flex-col max-w-[1000px]'>
-                <Form.Root asDialog={props?.asDialog}>
-                  <Form.Content>
-                    <Form.Title>
-                      <TextInput
-                        ydoc={ydoc}
-                        value={title}
-                        className={cn(
-                          !props.asDialog ? 'ms-[13px]' : 'ms-6 me-5'
-                        )}
-                        label='Rubrik'
-                        placeholder='Rubrik'
-                        autoFocus='end'
-                      />
-                    </Form.Title>
-                  </Form.Content>
-                </Form.Root>
-
-                <div className='flex flex-col gap-4 mb-4 grow'>
-                  <BaseEditor.Text
-                    ydoc={ydoc}
-                    editorType='factbox'
-                  />
-
-                  <div className='mx-12'>
-                    {!environmentIsSane && (
-                      <UserMessage asDialog={!!props?.asDialog} variant='destructive'>
-                        Du är utloggad eller har tappat kontakt med systemet.
-                        Vänligen försök logga in igen.
-                      </UserMessage>
-                    )}
-                  </div>
-                </div>
+        <div className='border mx-12 mt-2 py-1.5 px-3 rounded'>
+          <DocumentHistory
+            uuid={props.documentId}
+            currentVersion={currentVersion}
+            documentState={documentState}
+            onSelectVersion={setFactboxVersion}
+            selectedVersion={factboxversion}
+            withStatusOnly={true}
+            documentType='core/factbox'
+          />
+        </div>
+        {isOldVersion
+          ? (
+              <View.Content className='flex flex-col max-w-[1000px] pt-8' variant='grid'>
+                <PlainEditor
+                  key={factboxversion.toString()}
+                  id={props.documentId}
+                  version={factboxversion}
+                  direct
+                  showTitle
+                />
               </View.Content>
+            )
+          : (
+              <BaseEditor.Root
+                ydoc={ydoc}
+                content={content}
+                lang={documentLanguage}
+                plugins={configuredPlugins}
+              >
+                <View.Content className='flex flex-col max-w-[1000px]'>
+                  <Form.Root asDialog={props?.asDialog}>
+                    <Form.Content>
+                      <Form.Title>
+                        <TextInput
+                          ydoc={ydoc}
+                          value={title}
+                          className={cn(
+                            !props.asDialog ? 'ms-[13px]' : 'ms-6 me-5'
+                          )}
+                          label='Rubrik'
+                          placeholder='Rubrik'
+                          autoFocus='end'
+                        />
+                      </Form.Title>
+                    </Form.Content>
+                  </Form.Root>
 
-              <View.Footer>
-                <BaseEditor.Footer />
-              </View.Footer>
-            </BaseEditor.Root>
-          )}
+                  <div className='flex flex-col gap-4 mb-4 grow'>
+                    <BaseEditor.Text
+                      ydoc={ydoc}
+                      editorType='factbox'
+                    />
+
+                    <div className='mx-12'>
+                      {!environmentIsSane && (
+                        <UserMessage asDialog={!!props?.asDialog} variant='destructive'>
+                          Du är utloggad eller har tappat kontakt med systemet.
+                          Vänligen försök logga in igen.
+                        </UserMessage>
+                      )}
+                    </div>
+                  </div>
+                </View.Content>
+
+                <View.Footer>
+                  <BaseEditor.Footer />
+                </View.Footer>
+              </BaseEditor.Root>
+            )}
+      </div>
     </View.Root>
   )
 }

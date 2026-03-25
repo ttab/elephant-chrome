@@ -20,7 +20,7 @@ export const FactboxHeader = ({ ydoc, onDialogClose, asDialog }: {
         asDialog={asDialog}
       />
       <ViewHeader.Content className='justify-start'>
-        <div className='max-w-[780px] mx-auto flex flex-row gap-1 justify-between items-center w-full'>
+        <div className='max-w-[850px] mx-auto flex flex-row gap-1 justify-between items-center w-full'>
           <div className='flex flex-row gap-2 justify-start items-center @6xl/view:-ml-20'>
           </div>
 
@@ -30,15 +30,18 @@ export const FactboxHeader = ({ ydoc, onDialogClose, asDialog }: {
                 <StatusMenu
                   ydoc={ydoc}
                 />
-                <MetaSheet ydoc={ydoc} />
               </>
             )}
-            {!!ydoc && <ViewHeader.RemoteUsers ydoc={ydoc} />}
+            {!!ydoc && !asDialog && (
+              <ViewHeader.RemoteUsers ydoc={ydoc} />
+            )}
           </div>
         </div>
       </ViewHeader.Content>
       <ViewHeader.Action ydoc={ydoc} onDialogClose={onDialogClose} asDialog={asDialog} />
-
+      {!asDialog && ydoc && (
+        <MetaSheet ydoc={ydoc} />
+      )}
     </ViewHeader.Root>
   )
 }
