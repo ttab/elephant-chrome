@@ -20,7 +20,7 @@ export const PromptDefault = ({
   } & WorkflowTransition) | undefined>>
   requireCause?: boolean
   currentCause?: string
-  unPublishDocument?: (name: string) => void
+  unPublishDocument?: (name: string) => Promise<void>
 }) => {
   const [cause, setCause] = useState<string | undefined>(currentCause)
   const isUnpublishPrompt = prompt.status === 'unpublished'
