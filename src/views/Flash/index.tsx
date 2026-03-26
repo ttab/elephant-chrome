@@ -13,7 +13,7 @@ import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type { Document } from '@ttab/elephant-api/newsdoc'
 import { DocumentHeader } from '@/components/QuickDocument/DocumentHeader'
-import { useDeliverablePlanningId } from '@/hooks/index/useDeliverablePlanningId'
+import { useDeliverableInfo } from '@/hooks/useDeliverableInfo'
 import { useTranslation } from 'react-i18next'
 
 const meta: ViewMetadata = {
@@ -46,7 +46,7 @@ export const Flash = (props: ViewProps & {
 
   // We must not read query.id if we are in a dialog or we pick up other documents ids
   const documentId = props.id || (!props.asDialog && query.id) || persistentDocumentId.current
-  const planningId = useDeliverablePlanningId(documentId as string || '')
+  const planningId = useDeliverableInfo(documentId as string || '')?.planningUuid ?? ''
 
   const data = useMemo(() => {
     if (!documentId || typeof documentId !== 'string') {

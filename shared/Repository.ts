@@ -14,7 +14,8 @@ import type {
   GetMetricsResponse,
   AttachmentDetails,
   StatusUpdate,
-  GetHistoryResponse
+  GetHistoryResponse,
+  GetDeliverableInfoResponse
 } from '@ttab/elephant-api/repository'
 import { Block, Document } from '@ttab/elephant-api/newsdoc'
 import type { RpcError, FinishedUnaryCall } from '@protobuf-ts/runtime-rpc'
@@ -181,6 +182,26 @@ export class Repository {
       }
 
       throw new Error(`Unable to fetch documents meta: ${(err as Error)?.message || 'Unknown error'}`)
+    }
+  }
+
+  async getDeliverableInfo({ uuid, accessToken }: {
+    uuid: string
+    accessToken: string
+  }): Promise<GetDeliverableInfoResponse | null> {
+    if (!isValidUUID(uuid)) {
+      return null
+    }
+
+    try {
+      const { response } = await this.#client.getDeliverableInfo({ uuid }, meta(accessToken))
+      return response
+    } catch (err: unknown) {
+      if ((err as { code: string })?.code === 'not_found') {
+        return null
+      }
+
+      throw new Error(`Unable to fetch deliverable info: ${(err as Error)?.message || 'Unknown error'}`)
     }
   }
 
