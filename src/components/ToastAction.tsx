@@ -9,8 +9,8 @@ export const ToastAction = ({ documentId, planningId, withView, Icon, label, tar
   documentId: string | undefined
   planningId?: string
   withView: View
-  label?: string
-  Icon?: LucideIcon
+  label: string
+  Icon: LucideIcon
   target?: Target
 }): JSX.Element | null => {
   const openDocument = useLink(withView)
