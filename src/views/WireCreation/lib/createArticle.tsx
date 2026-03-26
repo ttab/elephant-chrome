@@ -11,6 +11,7 @@ import { convertToISOStringInTimeZone } from '@/shared/datetime'
 import { snapshotDocument } from '@/lib/snapshotDocument'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
+import i18n from '@/lib/i18n'
 
 export async function createArticle({
   ydoc,
@@ -39,7 +40,7 @@ export async function createArticle({
 
   if (!ydoc.connected || status !== 'authenticated' || !ydoc.id) {
     console.error(`Failed adding new wire article ${ydoc.id} to a planning`)
-    toast.error('Kunde inte skapa ny artikel!')
+    toast.error(i18n.t('wires:creation.createError2'))
     return
   }
 
@@ -101,7 +102,7 @@ export async function createArticle({
     throw ex
   }
 
-  toast.success(`Artikel skapad`, {
+  toast.success(i18n.t('wires:creation.articleCreated'), {
     duration: 8000,
     classNames: {
       title: 'whitespace-nowrap'
@@ -112,7 +113,7 @@ export async function createArticle({
           documentId={updatedPlanningId}
           withView='Planning'
           Icon={CalendarDaysIcon}
-          label='Öppna planering'
+          label={i18n.t('wires:toast.openPlanning')}
           target='last'
         />
         <ToastAction
@@ -120,7 +121,7 @@ export async function createArticle({
           planningId={updatedPlanningId}
           withView='Editor'
           Icon={FileInputIcon}
-          label='Öppna artikel'
+          label={i18n.t('wires:toast.openArticle')}
           target='last'
         />
       </div>

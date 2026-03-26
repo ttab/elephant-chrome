@@ -14,6 +14,8 @@ import type { FormProps } from '@/components/Form/Root'
 import { useYValue } from '@/modules/yjs/hooks'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
+import type { TFunction } from 'i18next'
+import { useTranslation } from 'react-i18next'
 
 export interface EventData {
   end: string
@@ -55,7 +57,7 @@ const dateTimeLabel = ({
 }
 
 
-const dateLabel = ({ fromDate, toDate, locale, timeZone }: { fromDate?: string | undefined, toDate?: string | undefined, locale: string, timeZone: string }): string => {
+const dateLabel = ({ fromDate, toDate, locale, timeZone, t }: { fromDate?: string | undefined, toDate?: string | undefined, locale: string, timeZone: string, t: TFunction }): string => {
   if (!fromDate || !toDate) {
     return ''
   }
@@ -64,7 +66,7 @@ const dateLabel = ({ fromDate, toDate, locale, timeZone }: { fromDate?: string |
   const sameDay = isSameDate(fromDate, toDate)
   const from = dateToReadableDay(fromDateObject, locale, timeZone)
   const to = dateToReadableDay(toDateObject, locale, timeZone)
-  return `Heldag ${sameDay ? ` ${from}` : ` ${from} - ${to}`}`
+  return `${t('core:timeSlots.fullday')} ${sameDay ? ` ${from}` : ` ${from} - ${to}`}`
 }
 
 const testValid = (time: string): boolean => {
@@ -102,6 +104,7 @@ export const EventTimeMenu = ({ ydoc, onChange }: {
   const [startTimeValid, setStartTimeValid] = useState(false)
   const [endTimeValid, setEndTimeValid] = useState(false)
   const [fullDay, setFullDay] = useState(false)
+  const { t } = useTranslation()
 
   useEffect(() => {
     if (!mounted && eventData) {
@@ -240,7 +243,8 @@ export const EventTimeMenu = ({ ydoc, onChange }: {
       fromDate: eventData?.start,
       toDate: eventData?.end,
       timeZone,
-      locale: locale.code.full
+      locale: locale.code.full,
+      t
     })
     : dateTimeLabel({
       fromDate: eventData?.start,
@@ -268,7 +272,7 @@ export const EventTimeMenu = ({ ydoc, onChange }: {
             checked={fullDay}
             className='self-center'
           />
-          <label htmlFor='wholeDaySwitch' className='text-sm self-center p-2'>Heldag</label>
+          <label htmlFor='wholeDaySwitch' className='text-sm self-center p-2'>{t?.('core:timeSlots.fullday') || ''}</label>
         </div>
         <div className={`${!fullDay && startDateValue && endDateValue && startDateValue > endDateValue ? 'border-2 rounded-md border-red-400 relative' : ''}`}>
           {!fullDay && startDateValue && endDateValue && startDateValue > endDateValue && (
@@ -316,7 +320,7 @@ export const EventTimeMenu = ({ ydoc, onChange }: {
               setOpen(false)
             }}
           >
-            Avbryt
+            {t?.('common:actions.abort') || ''}
           </Button>
           <Button
             variant='outline'
@@ -333,7 +337,7 @@ export const EventTimeMenu = ({ ydoc, onChange }: {
               setOpen(false)
             }}
           >
-            Klar
+            {t?.('common:actions.confirm') || ''}
           </Button>
         </div>
       </div>

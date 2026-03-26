@@ -20,6 +20,8 @@ import type { buttonVariants } from '@ttab/elephant-ui'
 import type { VariantProps } from 'class-variance-authority'
 import type { QueryParams } from '@/hooks/useQuery'
 import type { LucideIcon } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
+import type { TFunction } from 'i18next'
 
 const addButtonTypes = ['core/planning-item', 'core/event', 'core/article', 'core/factbox', 'core/flash'] as const
 
@@ -33,7 +35,8 @@ const AddButton = ({
   showModal,
   hideModal,
   view,
-  query
+  query,
+  t
 }: {
   query: QueryParams
   withNew?: boolean
@@ -42,6 +45,7 @@ const AddButton = ({
   showModal?: (content: ReactNode, type?: 'dialog') => void
   hideModal?: () => void
   view: ButtonView
+  t: TFunction
 }) => {
   const ViewDialog = Views[view.name]
   const typeLabel = (t?: string) => t ? addButtonGroupValueFormat[t].label : ''
@@ -68,17 +72,18 @@ const AddButton = ({
       }}
     >
       {withNew && <PlusIcon size={18} strokeWidth={1.75} />}
-      <span className='pl-0.5'>{`${withNew ? 'Ny' : typeLabel(view.type)}`}</span>
+      <span className='pl-0.5'>{`${withNew ? t('common:misc.new') : typeLabel(view.type)}`}</span>
     </Button>
   )
 }
 
 export const AddButtonGroup = ({ docType = 'core/planning-item', query }: { type: View, query: QueryParams, docType?: string }) => {
   const { showModal, hideModal } = useModal()
+  const { t } = useTranslation()
 
   const views: ButtonView[] = addButtonTypes.map((type) => {
     const format = addButtonGroupValueFormat[type]
-    return { name: format.key as View, type, icon: { icon: format.icon, color: format.color } }
+    return { name: format.key as View, type, icon: { icon: format.icon, color: format.color, label: format.label } }
   })
 
   const firstItem = views.find((view) => view.type === docType) as ButtonView
@@ -88,6 +93,7 @@ export const AddButtonGroup = ({ docType = 'core/planning-item', query }: { type
   return (
     <ButtonGroup>
       <AddButton
+        t={t}
         withNew
         showModal={showModal}
         hideModal={hideModal}
@@ -111,6 +117,7 @@ export const AddButtonGroup = ({ docType = 'core/planning-item', query }: { type
             <DropdownMenuItem inset={false} className='py-0 px-1'>
               {ItemIcon?.icon && <ItemIcon.icon strokeWidth={1.75} size={18} color={ItemIcon.color} />}
               <AddButton
+                t={t}
                 variant='ghost'
                 className='px-0'
                 showModal={showModal}
@@ -128,6 +135,7 @@ export const AddButtonGroup = ({ docType = 'core/planning-item', query }: { type
               <DropdownMenuItem inset={false} className='py-0 px-1' key={view.name}>
                 {ViewIcon?.icon && <ViewIcon.icon strokeWidth={1.75} size={18} color={ViewIcon.color} />}
                 <AddButton
+                  t={t}
                   variant='ghost'
                   className='px-0'
                   showModal={showModal}

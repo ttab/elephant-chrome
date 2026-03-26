@@ -32,6 +32,7 @@ import { Row } from './Row'
 import { useModal } from '../Modal/useModal'
 import { GroupedRows } from './GroupedRows'
 import { type View } from '@/types/index'
+import { useTranslation } from 'react-i18next'
 const BASE_URL = import.meta.env.BASE_URL
 
 interface TableProps<TData, TValue> {
@@ -83,6 +84,7 @@ export const Table = <TData, TValue>({
   const { table, loading } = useTable()
   const openDocuments = useOpenDocuments({ idOnly: true })
   const { hideModal, currentModal } = useModal()
+  const { t } = useTranslation()
 
   const handleOpen = useCallback((event: MouseEvent<HTMLTableRowElement> | KeyboardEvent, row: RowType<unknown>): void => {
     const target = event.target as HTMLElement
@@ -186,8 +188,8 @@ export const Table = <TData, TValue>({
               {loading
                 ? isSearchTable
                   ? ''
-                  : 'Laddar...'
-                : 'Inga resultat hittades'}
+                  : t('common:misc.loading')
+                : t('errors:messages.noResultsFound')}
             </LoadingText>
           </TableCell>
         </TableRow>
@@ -228,9 +230,7 @@ export const Table = <TData, TValue>({
       {(type === 'Planning' || type === 'Event') && (
         <NewItems.Root>
           <NewItems.Table
-            header={`Dina nya skapade ${type === 'Planning'
-              ? 'planeringar'
-              : 'händelser'}`}
+            header={t('planning:yourNewType', { type: (type === 'Planning' ? t('event:subheadings.plannings') : t('event:subheadings.events')) })}
             type={type}
           />
         </NewItems.Root>

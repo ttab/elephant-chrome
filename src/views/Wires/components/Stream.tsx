@@ -7,6 +7,7 @@ import { SortingV1 } from '@ttab/elephant-api/index'
 import { StreamEntry } from './StreamEntry'
 import { XIcon } from '@ttab/elephant-ui/icons'
 import { Button } from '@ttab/elephant-ui'
+import { useTranslation } from 'react-i18next'
 import {
   useReactTable,
   getCoreRowModel,
@@ -57,6 +58,7 @@ export const Stream = memo(({
   focusedWireId?: string
   onFocusedWireUpdate?: (wire: Wire) => void
 }): JSX.Element => {
+  const { t } = useTranslation('wires')
   const [page, setPage] = useState(1)
   const [allData, setAllData] = useState<Wire[]>([])
   const allDataRef = useRef<Wire[]>([])
@@ -566,7 +568,7 @@ export const Stream = memo(({
       {skipFetch
         ? (
             <div className='flex-1 basis-0 flex items-center justify-center bg-muted'>
-              <p className='text-sm text-muted-foreground'>Lägg till filter för att visa telegram</p>
+              <p className='text-sm text-muted-foreground'>{t('stream.addFilter')}</p>
             </div>
           )
         : (
@@ -589,7 +591,7 @@ export const Stream = memo(({
 
                 {isLoading && page > 1 && (
                   <div className='py-4 text-center text-sm text-muted-foreground'>
-                    Laddar fler...
+                    {t('stream.loadingMore')}
                   </div>
                 )}
               </div>
