@@ -2,12 +2,14 @@ import { SearchInput } from '@/components/SearchInput'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@ttab/elephant-ui'
 import React, { useState, type Dispatch, type SetStateAction, type JSX } from 'react'
 import type { MediaTypes } from '..'
+import { useTranslation } from 'react-i18next'
 
 export const ImageSearchInput = ({ setQueryString, setMediaType }: {
   setQueryString: Dispatch<SetStateAction<string>>
   setMediaType: Dispatch<SetStateAction<MediaTypes>>
 }): JSX.Element => {
   const [query, setQuery] = useState('')
+  const { t } = useTranslation()
 
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault()
@@ -22,17 +24,17 @@ export const ImageSearchInput = ({ setQueryString, setMediaType }: {
       <SearchInput
         className='p-2 w-full text-sm border-none focus:border-none'
         type='text'
-        placeholder='Sök'
+        placeholder={t('views:search.placeholders.search')}
         name='imagesearch'
         onChange={(e) => setQuery(e.currentTarget.value)}
       />
       <Select onValueChange={(option) => setMediaType(option as MediaTypes)}>
         <SelectTrigger className='w-fit'>
-          <SelectValue placeholder='Bild' />
+          <SelectValue placeholder={t('views:imageSearch.labels.mediaType')} />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value='image'>Bild</SelectItem>
-          <SelectItem value='graphic'>Grafik</SelectItem>
+          <SelectItem value='image'>{t('views:imageSearch.labels.image')}</SelectItem>
+          <SelectItem value='graphic'>{t('views:imageSearch.labels.graphic')}</SelectItem>
         </SelectContent>
       </Select>
     </form>

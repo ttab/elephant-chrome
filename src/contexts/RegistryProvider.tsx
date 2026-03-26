@@ -7,7 +7,7 @@ import React, {
   type JSX
 } from 'react'
 
-import { getServerUrls } from '@/lib/getServerUrls'
+import { getServerEnvs } from '@/lib/getServerEnvs'
 import { getUserTimeZone } from '@/lib/getUserTimeZone'
 import { Repository } from '@/shared/Repository'
 import { Spellchecker } from '@/shared/Spellchecker'
@@ -16,14 +16,20 @@ import { Workflow } from '@/shared/Workflow'
 import { User } from '@/shared/User'
 import type { LocaleData } from '@/types'
 import { Baboon } from '@/shared/Baboon'
+import { setSystemLanguage } from '@/shared/getSystemLanguage'
+import { initI18n } from '@/lib/i18n'
+import { useTranslation } from 'react-i18next'
 import { DEFAULT_TIMEZONE } from '@/defaults/defaultTimezone'
 import { Collaboration } from '@/defaults'
 import { defaultLocale } from '@/defaults/locale'
+
+export type FeatureFlags = Record<string, boolean>
 
 /** Registry registry provider state interface */
 export interface RegistryProviderState {
   locale: LocaleData
   timeZone: string
+  featureFlags: FeatureFlags
   server: {
     webSocketUrl: URL
     indexUrl: URL
@@ -52,6 +58,8 @@ export const initialState: RegistryProviderState = {
   locale: defaultLocale,
   timeZone: getUserTimeZone() || DEFAULT_TIMEZONE,
   userColor: colors[Math.floor(Math.random() * colors.length)],
+  featureFlags: {},
+
   server: {
     webSocketUrl: new URL('http://localhost'),
     indexUrl: new URL('http://localhost'),
@@ -73,13 +81,18 @@ export const RegistryContext = createContext(initialState)
 
 /** Registry context provider component */
 export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element => {
+  const { t } = useTranslation('shared')
   const [state, dispatch] = useReducer(reducer, initialState)
   const [isInitialized, setIsInitialized] = useState<boolean>(false)
+  const [initError, setInitError] = useState<string | null>(null)
 
   useEffect(() => {
     const initialize = async () => {
       try {
-        const server = await getServerUrls()
+        const { urls: server, envs, featureFlags } = await getServerEnvs()
+        setSystemLanguage(envs.systemLanguage)
+        await initI18n()
+
         const locale = defaultLocale
 
         const repository = new Repository(server.repositoryUrl.href)
@@ -92,6 +105,7 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
         dispatch({
           server,
           locale,
+          featureFlags,
           workflow,
           repository,
           index,
@@ -101,16 +115,32 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
         })
         setIsInitialized(true)
       } catch (ex) {
-        if (ex instanceof Error) {
-          console.error(`Failed initializing RegistryProvider, ${ex.message}`, ex)
-        } else {
-          console.error('Failed initializing RegistryProvider: Unknown error')
-        }
+        const message = ex instanceof Error ? ex.message : 'Unknown error'
+        console.error(`Failed initializing RegistryProvider: ${message}`, ex)
+        setInitError(message)
       }
     }
 
     void initialize()
   }, [])
+
+  if (initError) {
+    return (
+      <div className='flex h-screen items-center justify-center p-6'>
+        <div className='max-w-md text-center'>
+          <h1 className='text-2xl font-bold mb-2'>{t('init.failedTitle')}</h1>
+          <p className='text-sm text-muted-foreground mb-4'>{initError}</p>
+          <button
+            type='button'
+            onClick={() => window.location.reload()}
+            className='px-4 py-2 text-sm font-medium rounded-md bg-primary text-primary-foreground hover:bg-primary/90'
+          >
+            {t('init.retryButton')}
+          </button>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <RegistryContext.Provider value={{ ...state, dispatch }}>
@@ -124,7 +154,7 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
  * Registry context reducer
  */
 const reducer = (state: RegistryProviderState, action: Partial<RegistryProviderState>): RegistryProviderState => {
-  const { locale, timeZone, server, repository, workflow, index, spellchecker, user, baboon } = action
+  const { locale, timeZone, featureFlags, server, repository, workflow, index, spellchecker, user, baboon } = action
   const partialState: Partial<RegistryProviderState> = {}
 
   if (typeof locale === 'object') {
@@ -161,6 +191,10 @@ const reducer = (state: RegistryProviderState, action: Partial<RegistryProviderS
 
   if (typeof baboon === 'object') {
     partialState.baboon = baboon
+  }
+
+  if (typeof featureFlags === 'object') {
+    partialState.featureFlags = featureFlags
   }
 
   return {

@@ -2,9 +2,11 @@ import { Command } from '@ttab/elephant-ui'
 import { DebouncedCommandInput } from '@/components/Commands/Menu/DebouncedCommandInput'
 import { useQuery } from '@/hooks/useQuery'
 import type { JSX } from 'react'
+import { useTranslation } from 'react-i18next'
 
 export const Toolbar = (): JSX.Element => {
   const [filter, setFilter] = useQuery(['query'])
+  const { t } = useTranslation('shared')
 
   return (
     <div className='bg-table-bg flex items-center justify-between py-1 px-4 border-b sticky top-0 z-10'>
@@ -21,7 +23,7 @@ export const Toolbar = (): JSX.Element => {
                 setFilter({})
               }
             }}
-            placeholder='Fritextsökning'
+            placeholder={t('toolbar.freeTextSearch')}
             className='h-9'
           />
         </Command>

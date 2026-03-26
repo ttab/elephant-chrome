@@ -9,7 +9,7 @@ import { getValueByYPath } from '@/shared/yUtils'
 import { useYDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import { BaseEditor } from '@/components/Editor/BaseEditor'
-import { contentMenuLabels } from '@/defaults/contentMenuLabels'
+import { getContentMenuLabels } from '@/defaults/contentMenuLabels'
 import { useDeliverablePlanningId } from '@/hooks/index/useDeliverablePlanningId'
 
 export const FlashView = (props: ViewProps & {
@@ -51,7 +51,7 @@ export const FlashView = (props: ViewProps & {
           Text({
             countCharacters: ['heading-1', 'body'],
             preventHotkeys: ['heading-1', 'heading-2', 'preamble'],
-            ...contentMenuLabels
+            ...getContentMenuLabels()
           })
         ]}
       >

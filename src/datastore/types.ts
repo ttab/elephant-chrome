@@ -64,3 +64,7 @@ export interface IDBLanguage {
 export interface SupportedLanguage {
   code: string
 }
+
+export interface AllowedFeatureFlag {
+  hasPrint?: boolean
+}

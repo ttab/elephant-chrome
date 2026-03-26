@@ -10,7 +10,7 @@ import { Gutter } from './Gutter'
 import { cn } from '@ttab/elephant-ui/utils'
 import { useView } from '@/hooks/useView'
 import { useEffect, useRef } from 'react'
-
+import { useTranslation } from 'react-i18next'
 
 const EditorRoot = (props: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -102,16 +102,17 @@ const EditorText = (props: {
 
 const EditorFooter = () => {
   const { stats } = useTextbit()
+  const { t } = useTranslation('editor')
 
   return (
     <>
       <div className='flex gap-2'>
-        <strong>Ord:</strong>
-        <span title='Antal ord: artikel (totalt)'>{`${stats.short.words} (${stats.full.words})`}</span>
+        <strong>{`${t('footer.words')}:`}</strong>
+        <span title={t('footer.numberOfWords')}>{`${stats.short.words} (${stats.full.words})`}</span>
       </div>
       <div className='flex gap-2'>
-        <strong>Tecken:</strong>
-        <span title='Antal tecken: artikel (totalt)'>{`${stats.short.characters} (${stats.full.characters})`}</span>
+        <strong>{`${t('footer.chars')}:`}</strong>
+        <span title={t('footer.numberOfChars')}>{`${stats.short.characters} (${stats.full.characters})`}</span>
       </div>
     </>
   )

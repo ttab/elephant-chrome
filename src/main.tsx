@@ -42,7 +42,6 @@ ReactDOM.createRoot(root).render(
         </SessionProvider>
       </RegistryProvider>
     </IndexedDBProvider>
-
     <Toaster />
   </>
 )

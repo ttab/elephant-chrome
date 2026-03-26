@@ -16,6 +16,7 @@ import { useSession } from 'next-auth/react'
 import { useQuery } from '@/hooks/useQuery'
 import { format } from 'date-fns'
 import { useLink } from '@/hooks/useLink'
+import { useTranslation } from 'react-i18next'
 
 /**
  * PrintFlows component.
@@ -34,13 +35,14 @@ import { useLink } from '@/hooks/useLink'
 const fallbackDate = new Date()
 
 export const PrintFlows = ({ asDialog, onDialogClose, className, action }: ViewProps & { action: 'createArticle' | 'createFlow' }): JSX.Element => {
+  const { t } = useTranslation('print')
   const { data, error } = useDocuments<PrintFlow, PrintFlowFields>({
     documentType: 'tt/print-flow',
     fields
   })
 
   if (error) {
-    toast.error('Kunde inte hämta printflöden')
+    toast.error(t('flow.errors.fetchFlows'))
     console.error('Could not fetch PrintFlows:', error)
   }
   const openPrintArticle = useLink('PrintEditor')
@@ -65,12 +67,12 @@ export const PrintFlows = ({ asDialog, onDialogClose, className, action }: ViewP
 
   const handleCreateArticle = async () => {
     if (!session?.accessToken) {
-      toast.error('Ingen access token hittades')
+      toast.error(t('flow.errors.noToken'))
       return
     }
 
     if (!baboon || isSubmitDisabled) {
-      toast.error('Något gick fel när printartikel skulle skapas')
+      toast.error(t('flow.errors.createArticle'))
       return
     }
 
@@ -84,7 +86,7 @@ export const PrintFlows = ({ asDialog, onDialogClose, className, action }: ViewP
 
       if (response?.status.code === 'OK') {
         openPrintArticle(undefined, { id: response?.response?.articles?.[0]?.uuid }, 'self')
-        toast.success('Printartikel skapad')
+        toast.success(t('flow.success.articleCreated'))
 
         if (onDialogClose) {
           onDialogClose()
@@ -92,17 +94,17 @@ export const PrintFlows = ({ asDialog, onDialogClose, className, action }: ViewP
       }
     } catch (ex) {
       console.error('Error creating print article:', ex)
-      toast.error('Något gick fel när printartikel skulle skapas')
+      toast.error(t('flow.errors.createArticle'))
     }
   }
   const handleCreateFlow = async () => {
     if (!session?.accessToken) {
-      toast.error('Ingen access token hittades')
+      toast.error(t('flow.errors.noToken'))
       return
     }
 
     if (!baboon || isSubmitDisabled) {
-      toast.error('Något gick fel när printflöde skulle skapas')
+      toast.error(t('flow.errors.createFlow'))
       return
     }
 
@@ -115,7 +117,7 @@ export const PrintFlows = ({ asDialog, onDialogClose, className, action }: ViewP
       }, session.accessToken)
 
       if (response?.status.code === 'OK') {
-        toast.success('Printartikel skapad')
+        toast.success(t('flow.success.articleCreated'))
 
         if (onDialogClose) {
           onDialogClose()
@@ -123,7 +125,7 @@ export const PrintFlows = ({ asDialog, onDialogClose, className, action }: ViewP
       }
     } catch (ex) {
       console.error('Error creating print flow:', ex)
-      toast.error(ex instanceof Error ? ex.message : 'Något gick fel när printflöde skulle skapas')
+      toast.error(ex instanceof Error ? ex.message : t('flow.errors.createFlow'))
     }
   }
   return (
@@ -134,7 +136,7 @@ export const PrintFlows = ({ asDialog, onDialogClose, className, action }: ViewP
             <div className='flex w-full h-full items-center space-x-2 font-bold'>
               <ViewHeader.Title
                 name='printheader'
-                title={action === 'createArticle' ? 'Skapa printartikel' : 'Skapa printflöde'}
+                title={action === 'createArticle' ? t('flow.title.createArticle') : t('flow.title.createFlow')}
                 icon={LibraryIcon}
                 iconColor='#006bb3'
                 asDialog={asDialog}
@@ -158,7 +160,7 @@ export const PrintFlows = ({ asDialog, onDialogClose, className, action }: ViewP
                       }}
                     >
                       <SelectTrigger>
-                        {selectedPrintFlow?.label || 'Välj printflöde'}
+                        {selectedPrintFlow?.label || t('flow.placeholder.selectFlow')}
                       </SelectTrigger>
                       <SelectContent>
                         {allPrintFlows.map((flow) => (
@@ -179,7 +181,7 @@ export const PrintFlows = ({ asDialog, onDialogClose, className, action }: ViewP
                         }}
                       >
                         <SelectTrigger>
-                          {articleName || 'Välj namn'}
+                          {articleName || t('flow.placeholder.selectName')}
                         </SelectTrigger>
                         <SelectContent className='max-h-[300px] overflow-y-auto'>
                           {allArticleNames.map((type) => (
@@ -194,21 +196,21 @@ export const PrintFlows = ({ asDialog, onDialogClose, className, action }: ViewP
                 </Form.Content>
                 <p className='text-sm text-gray-500'>
                   {action === 'createArticle'
-                    ? 'Ny printartikel i valt flöde'
-                    : 'Populera valt flöde med artiklar'}
+                    ? t('flow.description.newArticleInFlow')
+                    : t('flow.description.populateFlow')}
                 </p>
                 <Form.Footer>
                   <Form.Submit
                     onSubmit={() => {
                       if (!session?.accessToken) {
                         console.error('No access token found')
-                        toast.error('Ingen access token hittades')
+                        toast.error(t('flow.errors.noToken'))
                         return
                       }
 
                       if (isSubmitDisabled) {
                         console.error('Missing required fields')
-                        toast.error('Något gick fel när printartikel skulle skapas')
+                        toast.error(t('flow.errors.createArticle'))
                         return
                       }
                       if (action === 'createArticle') {
@@ -224,14 +226,14 @@ export const PrintFlows = ({ asDialog, onDialogClose, className, action }: ViewP
                     }}
                   >
                     <div className='flex justify-end gap-4'>
-                      <Button variant='secondary' type='reset'>Avbryt</Button>
-                      <Button type='submit' disabled={isSubmitDisabled}>{action === 'createArticle' ? 'Skapa printartikel' : 'Skapa printflöde'}</Button>
+                      <Button variant='secondary' type='reset'>{t('flow.actions.cancel')}</Button>
+                      <Button type='submit' disabled={isSubmitDisabled}>{action === 'createArticle' ? t('flow.actions.createArticle') : t('flow.actions.createFlow')}</Button>
                     </div>
                   </Form.Submit>
                 </Form.Footer>
               </Form.Root>
             )
-          : <LoadingText>Laddar printflöden..</LoadingText>}
+          : <LoadingText>{t('flow.loading')}</LoadingText>}
       </View.Content>
     </View.Root>
   )

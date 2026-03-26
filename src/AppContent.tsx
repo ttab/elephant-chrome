@@ -7,11 +7,13 @@ import { ViewWrapper } from './components'
 import { FaroErrorBoundary } from '@grafana/faro-react'
 import { Error } from './views'
 import { useIndexedDB } from './datastore/hooks/useIndexedDB'
+import { useTranslation } from 'react-i18next'
 
 export const AppContent = (): JSX.Element => {
   const { setActiveView } = useHistory()
   const { state } = useNavigation()
   const idb = useIndexedDB()
+  const { t } = useTranslation('app')
 
   useResize()
 
@@ -41,10 +43,9 @@ export const AppContent = (): JSX.Element => {
       <Dialog open={!idb?.isConnected}>
         <DialogContent className='focus-visible:outline-none'>
           <DialogHeader>
-            <DialogTitle>Du behöver ladda om fönstret</DialogTitle>
+            <DialogTitle>{t('systemMessages.reloadWindowTitle')}</DialogTitle>
             <DialogDescription>
-              Systemet har uppdaterats med nya eller ändrade funktioner.
-              Ladda om fönstret för att jobba vidare i den nya versionen.
+              {t('systemMessages.reloadWindowDescription')}
             </DialogDescription>
           </DialogHeader>
         </DialogContent>
