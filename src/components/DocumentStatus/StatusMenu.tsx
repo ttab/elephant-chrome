@@ -205,12 +205,12 @@ export const StatusMenu = ({ ydoc, onBeforeStatusChange, planningId }: {
 
       {prompt && (
         <>
-          {prompt.status === 'withheld' && (
+          {prompt.status === 'withheld' && planningId && (
             <PromptSchedule
               prompt={prompt}
               showPrompt={showPrompt}
               setStatus={(...args) => void setStatus(...args)}
-              planningId={planningId || ''}
+              planningId={planningId}
               requireCause={!!documentStatus.checkpoint}
             />
           )}
