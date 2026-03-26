@@ -32,14 +32,13 @@ export const PromptSchedule = ({ prompt, planningId, setStatus, showPrompt, requ
   const [cause, setCause] = useState<string | undefined>()
 
   useEffect(() => {
-    // Don't set time until we have loaded the planning document and can read the publish date
-    if (!planningId) {
-      setTime(now)
-      return
-    }
     if (loading) return
 
-    if (publishDate) {
+    const formatedPublishDate = publishDate.toLocaleString()
+    const formatedNow = now.toLocaleString().slice(0, 10)
+
+    // only set to pulish date if it's in the future, otherwise default to now
+    if (publishDate && formatedPublishDate >= formatedNow) {
       const d = new Date(publishDate)
       d.setHours(now.getHours(), now.getMinutes(), 0, 0)
       setTime(d)
