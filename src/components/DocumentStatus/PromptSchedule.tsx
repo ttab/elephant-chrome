@@ -16,7 +16,7 @@ export const PromptSchedule = ({ prompt, planningId, setStatus, showPrompt, requ
   prompt: {
     status: string
   } & WorkflowTransition
-  planningId?: string
+  planningId: string
   setStatus: (status: string, data: Record<string, unknown>) => void
   showPrompt: React.Dispatch<React.SetStateAction<({
     status: string
@@ -24,8 +24,8 @@ export const PromptSchedule = ({ prompt, planningId, setStatus, showPrompt, requ
   requireCause?: boolean
 }) => {
   const { timeZone } = useRegistry()
-  const planningYdoc = useCollaborationDocument({ documentId: planningId || '' })
-  const ele = planningYdoc.document ? planningYdoc.document.getMap('ele') : undefined
+  const { loading, document } = useCollaborationDocument({ documentId: planningId })
+  const ele = document ? document.getMap('ele') : undefined
   const [publishDate] = useYValue<Date>(ele, 'meta.core/planning-item[0].data.start_date') as Date[]
   const now = new Date()
   const [time, setTime] = useState(now)
@@ -33,12 +33,20 @@ export const PromptSchedule = ({ prompt, planningId, setStatus, showPrompt, requ
 
   useEffect(() => {
     // Don't set time until we have loaded the planning document and can read the publish date
-    if (planningYdoc.loading) return
+    if (!planningId) {
+      setTime(now)
+      return
+    }
+    if (loading) return
 
-    const d = new Date(publishDate)
-    d.setHours(now.getHours(), now.getMinutes(), 0, 0)
-    setTime(d)
-  }, [planningYdoc.loading])
+    if (publishDate) {
+      const d = new Date(publishDate)
+      d.setHours(now.getHours(), now.getMinutes(), 0, 0)
+      setTime(d)
+    }
+    // should only run when loading changes
+    // eslint-disable-next-line
+  }, [loading])
 
   return (
     <Prompt
@@ -89,7 +97,7 @@ export const PromptSchedule = ({ prompt, planningId, setStatus, showPrompt, requ
 
           <div className='flex flex-col gap-2'>
             <Label htmlFor='ScheduledTime'>Datum i planeringen</Label>
-            {planningYdoc.loading
+            {loading && planningId
               ? (
                   <LoaderIcon size={14} strokeWidth={1.75} className='animate-spin mx-auto' />
                 )
