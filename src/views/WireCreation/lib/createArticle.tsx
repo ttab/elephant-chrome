@@ -1,5 +1,6 @@
 import type { Session } from 'next-auth'
-import { getValueByYPath } from '@/shared/yUtils'
+import { getValueByYPath, setValueByYPath } from '@/shared/yUtils'
+import { Block } from '@ttab/elephant-api/newsdoc'
 import type { Wire } from '@/shared/schemas/wire'
 import { toast } from 'sonner'
 import { ToastAction } from '@/components/ToastAction'
@@ -28,7 +29,7 @@ export async function createArticle({
   planningId?: string
   planningTitle?: string
   newsvalue?: string
-  section?: {
+  section: {
     uuid: string
     title: string
   }
@@ -74,6 +75,16 @@ export async function createArticle({
   if (!updatedPlanningId) {
     throw new Error('CreateAssignmentError')
   }
+
+  // Set section on the article document. This is the authoritative write — it
+  // covers both cases: new planning (Section component may have already written
+  // it) and existing planning (Section component is not rendered).
+  setValueByYPath(ydoc.ele, 'links.core/section[0]', Block.create({
+    type: 'core/section',
+    rel: 'section',
+    uuid: section.uuid,
+    title: section.title
+  }))
 
   // Explicitly save article to repository via HTTP — works even if the
   // Hocuspocus provider has been disconnected (dialog closed before this point)

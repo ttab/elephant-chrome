@@ -16,7 +16,7 @@ import {
   BriefcaseBusinessIcon,
   TagIcon
 } from '@ttab/elephant-ui/icons'
-import { useRegistry } from '@/hooks'
+import { useRegistry, useSections } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import type { JSX } from 'react'
 import { Fragment, useRef, useState } from 'react'
@@ -46,11 +46,12 @@ export const WireViewContent = (props: ViewProps & {
   const { status, data: session } = useSession()
   const [showVerifyDialog, setShowVerifyDialog] = useState(false)
   const [searchOlder, setSearchOlder] = useState(false)
-  const [selectedPlanning, setSelectedPlanning] = useState<DefaultValueOption & { payload: { slugline?: string, sluglines?: string[], newsvalue?: string } } | undefined>(undefined)
+  const [selectedPlanning, setSelectedPlanning] = useState<DefaultValueOption & { payload: { slugline?: string, sluglines?: string[], newsvalue?: string, sectionUuid: string, sectionTitle: string } } | undefined>(undefined)
   const [title] = useYValue<Y.XmlText>(ydoc.ele, 'root.title', true)
   const documentAwareness = useRef<(value: boolean) => void>(null)
   const planningTitleRef = useRef<HTMLInputElement>(null)
   const { index, locale, timeZone } = useRegistry()
+  const sections = useSections()
   const [section, setSection] = useState<{
     type: string
     rel: string
@@ -141,13 +142,27 @@ export const WireViewContent = (props: ViewProps & {
 
                       if (option.value !== selectedPlanning?.value) {
                         const newsvalue = (option.payload as { newsvalue: string | undefined }).newsvalue
+                        const sectionUuid = (option.payload as { section: string | undefined }).section
+                        const sectionTitle = sections.find((value) => value.id === sectionUuid)?.title
+
+                        if (!sectionUuid || !sectionTitle) {
+                          console.error('Selected planning is missing section data, cannot create article')
+                          toast.error('Vald planering saknar sektion och kan inte användas.', {
+                            duration: Infinity,
+                            closeButton: true
+                          })
+                          return
+                        }
+
                         setSelectedPlanning({
                           value: option.value,
                           label: option.label,
                           payload: {
                             slugline,
                             sluglines,
-                            newsvalue
+                            newsvalue,
+                            sectionUuid,
+                            sectionTitle
                           }
                         })
 
@@ -220,26 +235,22 @@ export const WireViewContent = (props: ViewProps & {
 
             <Form.Group icon={TagIcon}>
               {selectedPlanning && (
-                <>
-                  <SluglineEditable
-                    key={selectedPlanning?.value}
-                    ydoc={ydoc}
-                    value={slugline}
-                    compareValues={[
-                      ...(selectedPlanning?.payload?.sluglines || []),
-                      slugline?.toString()
-                    ]}
-                  />
-                </>
+                <SluglineEditable
+                  key={selectedPlanning?.value}
+                  ydoc={ydoc}
+                  value={slugline}
+                  compareValues={[
+                    ...(selectedPlanning?.payload?.sluglines || []),
+                    slugline?.toString()
+                  ]}
+                />
               )}
 
-              {(!selectedPlanning) && (
-                <>
-                  <SluglineEditable
-                    ydoc={ydoc}
-                    value={slugline}
-                  />
-                </>
+              {!selectedPlanning && (
+                <SluglineEditable
+                  ydoc={ydoc}
+                  value={slugline}
+                />
               )}
             </Form.Group>
             <>
@@ -262,7 +273,11 @@ export const WireViewContent = (props: ViewProps & {
                 secondaryLabel='Avbryt'
                 primaryLabel='Skapa'
                 onPrimary={() => {
-                  if (!ydoc.connected || !ydoc.id || !session) {
+                  const effectiveSection = selectedPlanning?.value
+                    ? { uuid: selectedPlanning.payload.sectionUuid, title: selectedPlanning.payload.sectionTitle }
+                    : section
+
+                  if (!ydoc.connected || !ydoc.id || !session || !effectiveSection?.uuid) {
                     console.error('Environment is not sane, article cannot be created')
                     return
                   }
@@ -270,7 +285,6 @@ export const WireViewContent = (props: ViewProps & {
                   if (props?.onDialogClose) {
                     props.onDialogClose(ydoc.id)
                   }
-
 
                   createArticle({
                     ydoc,
@@ -280,7 +294,7 @@ export const WireViewContent = (props: ViewProps & {
                     planningTitle: planningTitleRef.current?.value,
                     newsvalue: selectedPlanning?.payload?.newsvalue,
                     wires: props.wires,
-                    section: (!selectedPlanning?.value) ? section || undefined : undefined,
+                    section: effectiveSection,
                     timeZone
                   })
                     .then(() => {
