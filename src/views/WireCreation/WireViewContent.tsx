@@ -220,26 +220,19 @@ export const WireViewContent = (props: ViewProps & {
 
             <Form.Group icon={TagIcon}>
               {selectedPlanning && (
-                <>
-                  <SluglineEditable
-                    key={selectedPlanning?.value}
-                    ydoc={ydoc}
-                    value={slugline}
-                    compareValues={[
-                      ...(selectedPlanning?.payload?.sluglines || []),
-                      slugline?.toString()
-                    ]}
-                  />
-                </>
+                <SluglineEditable
+                  key={selectedPlanning?.value}
+                  ydoc={ydoc}
+                  value={slugline}
+                  compareValues={selectedPlanning?.payload?.sluglines || []}
+                />
               )}
 
-              {(!selectedPlanning) && (
-                <>
-                  <SluglineEditable
-                    ydoc={ydoc}
-                    value={slugline}
-                  />
-                </>
+              {!selectedPlanning && (
+                <SluglineEditable
+                  ydoc={ydoc}
+                  value={slugline}
+                />
               )}
             </Form.Group>
             <>

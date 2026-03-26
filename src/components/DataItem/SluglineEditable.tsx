@@ -24,10 +24,14 @@ export const SluglineEditable = ({ ydoc, rootMap, value, documentStatus, onValid
   const [inProgressAssignment] = useYValue<Block>(ydoc.ctx, `core/assignment.${session?.user.sub || ''}`)
 
   // Get all current sluglines from assignments for validation purposes
-  // or use provided compareValues
+  // or use provided compareValues (e.g. from a planning's existing assignments).
+  // When external compareValues are provided we append the current reactive
+  // slugline so that isUnique() can detect duplicates (value appears > 1 time).
   const slugLines = useMemo(() => {
     if (compareValues?.length) {
-      return compareValues
+      if (slugLine == null) return compareValues
+      const currentValue = typeof slugLine === 'string' ? slugLine : String(slugLine)
+      return [...compareValues, currentValue]
     }
 
     if (!path.includes('assignment')) return []
@@ -54,7 +58,7 @@ export const SluglineEditable = ({ ydoc, rootMap, value, documentStatus, onValid
     }
 
     return collected
-  }, [assignments, inProgressAssignment, compareValues, path])
+  }, [assignments, inProgressAssignment, compareValues, path, slugLine])
 
   if (!editable && typeof slugLine !== 'string') {
     return <></>
