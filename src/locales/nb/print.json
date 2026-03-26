@@ -90,6 +90,8 @@
       "togglePanel": "Lukk oppsetpanelet",
       "showLayout": "Vis {{title}} - {{name}}",
       "preview": "Forhåndsvis oppsett",
+      "overflowsTitle": "Overflyt",
+      "underflowsTitle": "Underflyt",
       "images": {
         "lowResTitle": "Bilder (under 130 ppi)"
       },
@@ -133,6 +135,7 @@
       }
     },
     "image": {
+      "bylineLabel": "Byline:",
       "errors": {
         "upload": "Noe gikk galt ved opplasting av bildet!: {{error}}",
         "notImage": "Filen ser ikke ut til å være et bilde, avbryter opplasting",

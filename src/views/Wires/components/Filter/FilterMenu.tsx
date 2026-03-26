@@ -46,7 +46,7 @@ export const FilterMenu = ({ currentFilters, onFilterChange }: FilterPopoverProp
     { value: 'saved', label: t('history.status.saved') },
     { value: 'used', label: t('history.status.used') },
     { value: 'flash', label: t('history.status.flash') }
-  ], [])
+  ], [t])
 
   // Get current filter values for the active page
   const getCurrentFilterValues = (filterType: string): Set<string> => {

@@ -505,6 +505,7 @@ export const Wires = (): JSX.Element => {
                 )}
               </div>
               <div className='text-center text-muted-foreground text-xs'>
+                {/* eslint-disable-next-line i18next/no-literal-string */}
                 <span className='bg-muted px-2 py-0.5 rounded-md text-xs font-semibold'>ESC</span>
                 <span>{` ${t('stream.deselectHint')}`}</span>
               </div>

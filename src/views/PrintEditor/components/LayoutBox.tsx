@@ -191,6 +191,7 @@ export const LayoutBox = ({
                   &nbsp;
                   {image.frame}
                   &nbsp;(
+                  {/* eslint-disable-next-line i18next/no-literal-string */}
                   {Math.round(image.ppi)}
                   &nbsp;ppi)
                 </div>
@@ -202,7 +203,7 @@ export const LayoutBox = ({
         if (response?.response?.overflows?.length) {
           overflowToastText = (
             <div>
-              <h3 className='font-bold text-gray-500 mt-2'>Overflows</h3>
+              <h3 className='font-bold text-gray-500 mt-2'>{t('editor.layouts.overflowsTitle')}</h3>
               {response?.response?.overflows?.map((overflow, indexOverflow) => (
                 <div key={indexOverflow}>
                   {indexOverflow + 1}
@@ -218,7 +219,7 @@ export const LayoutBox = ({
         if (response?.response?.underflows?.length) {
           underflowToastText = (
             <div>
-              <h3 className='font-bold text-gray-500 mt-2'>Underflows</h3>
+              <h3 className='font-bold text-gray-500 mt-2'>{t('editor.layouts.underflowsTitle')}</h3>
               {response?.response?.underflows?.map((underflow, indexUnderflow) => (
                 <div key={indexUnderflow}>
                   {indexUnderflow + 1}

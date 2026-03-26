@@ -24,7 +24,10 @@
     "public": "Publik beskrivning"
   },
   "actions": {
-    "openPlanning": "Öppna planering"
+    "openPlanning": "Öppna planering",
+    "open": "Öppna",
+    "assignments": "Uppdrag",
+    "noDeliverables": "Inga leverabler"
   },
   "prompts": {
     "slugMissing": "Slugg saknas",

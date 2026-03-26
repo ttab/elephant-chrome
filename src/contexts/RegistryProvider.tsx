@@ -18,6 +18,7 @@ import type { LocaleData } from '@/types'
 import { Baboon } from '@/shared/Baboon'
 import { setSystemLanguage } from '@/shared/getSystemLanguage'
 import { initI18n } from '@/lib/i18n'
+import { useTranslation } from 'react-i18next'
 import { DEFAULT_TIMEZONE } from '@/defaults/defaultTimezone'
 import { Collaboration } from '@/defaults'
 import { defaultLocale } from '@/defaults/locale'
@@ -80,6 +81,7 @@ export const RegistryContext = createContext(initialState)
 
 /** Registry context provider component */
 export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element => {
+  const { t } = useTranslation('shared')
   const [state, dispatch] = useReducer(reducer, initialState)
   const [isInitialized, setIsInitialized] = useState<boolean>(false)
   const [initError, setInitError] = useState<string | null>(null)
@@ -126,14 +128,14 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
     return (
       <div className='flex h-screen items-center justify-center p-6'>
         <div className='max-w-md text-center'>
-          <h1 className='text-2xl font-bold mb-2'>Failed to initialize</h1>
+          <h1 className='text-2xl font-bold mb-2'>{t('init.failedTitle')}</h1>
           <p className='text-sm text-muted-foreground mb-4'>{initError}</p>
           <button
             type='button'
             onClick={() => window.location.reload()}
             className='px-4 py-2 text-sm font-medium rounded-md bg-primary text-primary-foreground hover:bg-primary/90'
           >
-            Retry
+            {t('init.retryButton')}
           </button>
         </div>
       </div>

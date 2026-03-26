@@ -29,6 +29,7 @@ const SelectedBadge = ({ value, options }: SelectedBase & {
           className='rounded-sm px-1 font-normal'
         >
           {value.length}
+          {/* eslint-disable-next-line i18next/no-literal-string */}
           {' '}
           selected
         </Badge>

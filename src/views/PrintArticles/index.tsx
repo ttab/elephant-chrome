@@ -107,7 +107,7 @@ export const Print = (): JSX.Element | null => {
       <Dialog open={openCreateFlow}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Lista över flöden</DialogTitle>
+            <DialogTitle>{t('print:articles.flowDialog.title')}</DialogTitle>
           </DialogHeader>
           <PrintFlows action='createFlow' />
           <DialogFooter>

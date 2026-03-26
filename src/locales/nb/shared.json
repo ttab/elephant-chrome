@@ -66,5 +66,9 @@
   },
   "editorialInfo": {
     "noteText": "OBS! Denne meldingen er ikke ment for publisering."
+  },
+  "init": {
+    "failedTitle": "Kunne ikke initialisere",
+    "retryButton": "Prøv igjen"
   }
 }

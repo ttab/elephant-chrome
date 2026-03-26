@@ -90,6 +90,8 @@
       "togglePanel": "Collapse layout panel",
       "showLayout": "Show {{title}} - {{name}}",
       "preview": "Preview layout",
+      "overflowsTitle": "Overflows",
+      "underflowsTitle": "Underflows",
       "images": {
         "lowResTitle": "Images (under 130 ppi)"
       },
@@ -133,6 +135,7 @@
       }
     },
     "image": {
+      "bylineLabel": "Byline:",
       "errors": {
         "upload": "Something went wrong uploading the image!: {{error}}",
         "notImage": "The file does not appear to be an image, aborting upload",

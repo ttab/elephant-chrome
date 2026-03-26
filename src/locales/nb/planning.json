@@ -24,7 +24,10 @@
     "public": "Beskrivelse"
   },
   "actions": {
-    "openPlanning": "Åpne planlegging"
+    "openPlanning": "Åpne planlegging",
+    "open": "Åpne",
+    "assignments": "Oppdrag",
+    "noDeliverables": "Ingen leveranser"
   },
   "prompts": {
     "slugMissing": "Stikkord mangler",
