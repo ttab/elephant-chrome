@@ -1,3 +1,4 @@
+import i18n from 'i18next'
 import {
   BriefcaseBusinessIcon,
   CalendarDaysIcon,
@@ -24,7 +25,7 @@ type DocumentTypeFormat = Record<string, {
 const event: DocumentTypeFormat = {
   'core/event': {
     icon: CalendarPlus2Icon,
-    label: 'Händelse',
+    get label() { return i18n.t('views:events.label.singular') },
     key: 'Event',
     color: '#D802FD'
   }
@@ -33,7 +34,7 @@ const event: DocumentTypeFormat = {
 const planning: DocumentTypeFormat = {
   'core/planning-item': {
     icon: CalendarDaysIcon,
-    label: 'Planering',
+    get label() { return i18n.t('views:plannings.label.singular') },
     key: 'Planning',
     color: '#FF971E'
   }
@@ -42,7 +43,7 @@ const planning: DocumentTypeFormat = {
 const assignment: DocumentTypeFormat = {
   'core/assignment': {
     icon: BriefcaseBusinessIcon,
-    label: 'Uppdrag',
+    get label() { return i18n.t('views:assignments.title') },
     key: 'Assignment',
     color: '#006bb3'
   }
@@ -51,7 +52,7 @@ const assignment: DocumentTypeFormat = {
 const article: DocumentTypeFormat = {
   'core/article': {
     icon: PenBoxIcon,
-    label: 'Artikel',
+    get label() { return i18n.t('quickArticle:title') },
     key: 'Article',
     color: '#50BEBF',
     readonly: {
@@ -63,7 +64,7 @@ const article: DocumentTypeFormat = {
 const editorialInfo: DocumentTypeFormat = {
   'core/editorial-info': {
     icon: FileWarningIcon,
-    label: 'Till red',
+    get label() { return i18n.t('shared:assignmentTypes.editorial-info') },
     key: 'EditorialInfo',
     color: '#50BEBF'
   }
@@ -72,7 +73,7 @@ const editorialInfo: DocumentTypeFormat = {
 const factbox: DocumentTypeFormat = {
   'core/factbox': {
     icon: BoxesIcon,
-    label: 'Faktaruta',
+    get label() { return i18n.t('factbox:title') },
     key: 'Factbox',
     color: '#99c5c4'
   }
@@ -81,7 +82,7 @@ const factbox: DocumentTypeFormat = {
 const flash: DocumentTypeFormat = {
   'core/flash': {
     icon: ZapIcon,
-    label: 'Flash',
+    get label() { return i18n.t('flash:title') },
     key: 'Flash',
     color: '#FF5150'
   }
@@ -90,7 +91,7 @@ const flash: DocumentTypeFormat = {
 const quickArticle: DocumentTypeFormat = {
   'core/article': {
     icon: NewspaperIcon,
-    label: 'Två på två',
+    get label() { return i18n.t('quickArticle:title') },
     key: 'QuickArticle',
     color: '#aabbcc'
   }

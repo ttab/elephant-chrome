@@ -35,16 +35,19 @@ import type * as Y from 'yjs'
 import { useRegistry } from '@/hooks/useRegistry'
 import { useSession } from 'next-auth/react'
 import { getDeliverableType } from '@/shared/templates/lib/getDeliverableType'
-import { AssignmentTypes, isVisualAssignmentType } from '@/defaults/assignmentTypes'
+import { isVisualAssignmentType } from '@/defaults/assignmentTypes'
 import { CreatePrintArticle } from '@/components/CreatePrintArticle'
 import { snapshotDocument } from '@/lib/snapshotDocument'
-import { timeSlotTypes } from '@/defaults/assignmentTimeConstants'
+import { getTimeSlotTypes } from '@/defaults/assignmentTimeConstants'
 import useSWR from 'swr'
 import { useRepositoryEvents } from '@/hooks/useRepositoryEvents'
 import { type YDocument, useYValue } from '@/modules/yjs/hooks'
 import { toast } from 'sonner'
 import { AssignmentStatus } from './AssignmentStatus'
+import { useTranslation } from 'react-i18next'
+import type { TranslationKey } from '@/types/i18next.d'
 import { RelatedWires } from './RelatedWires'
+import { useFeatureFlags } from '@/hooks/useFeatureFlags'
 
 export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDialog }: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -59,6 +62,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
   const openDocuments = useOpenDocuments({ idOnly: true, name: 'Editor' })
   const { repository } = useRegistry()
   const { data: session } = useSession()
+  const { t } = useTranslation()
 
   const base = `meta.core/assignment[${index}]`
   const [assignment] = useYValue<Y.Map<unknown>>(ydoc.ele, base, true)
@@ -95,11 +99,12 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
   const documentId = articleId || flashId || editorialInfoId
   const isDocument = assignmentType === 'flash' || assignmentType === 'text' || assignmentType === 'editorial-info'
   const documentLabel = assignmentType
-    ? AssignmentTypes.find((a) => a.value === assignmentType)?.label?.toLowerCase()
-    : 'okänt'
+    ? t(`shared:assignmentTypes.${assignmentType}` as TranslationKey)
+    : t('common:misc.unknown')
 
   const openDocument = assignmentType === 'flash' ? openFlash : openArticle
   const { showModal, hideModal } = useModal()
+  const featureFlags = useFeatureFlags(['hasPrint'])
 
   const assignmentTime = useMemo(() => {
     if (typeof assignmentType !== 'string') {
@@ -111,23 +116,23 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
       if (endAndStartAreNotEqual) {
         return {
           time: [new Date(startTime), new Date(endTime)],
-          tooltip: 'Start- och sluttid',
+          tooltip: t('planning:assignment.startEndTime'),
           type: assignmentType
         }
       }
 
       return {
         time: [new Date(startTime)],
-        tooltip: 'Starttid',
+        tooltip: t('planning:assignment.startTime'),
         type: assignmentType
       }
     }
 
     if (publishSlot) {
-      const slotName = timeSlotTypes.find((slot) => slot.slots?.includes(publishSlot))?.label
+      const slotName = getTimeSlotTypes().find((slot) => slot.slots?.includes(publishSlot))?.label
       return {
         time: [slotName],
-        tooltip: 'Publiceringsfönster',
+        tooltip: t('planning:assignment.publishWindow'),
         type: assignmentType
       }
     }
@@ -135,7 +140,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
     if (publishTime) {
       return {
         time: [new Date(publishTime)],
-        tooltip: 'Publiceringstid',
+        tooltip: t('planning:assignment.publishTime'),
         type: assignmentType
       }
     }
@@ -143,7 +148,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
     if (endAndStartAreNotEqual) {
       return {
         time: [new Date(startTime), new Date(endTime)],
-        tooltip: 'Start- och sluttid',
+        tooltip: t('planning:assignment.startEndTime'),
         type: assignmentType
       }
     }
@@ -151,11 +156,11 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
     if (startTime) {
       return {
         time: [new Date(startTime)],
-        tooltip: 'Starttid',
+        tooltip: t('planning:assignment.startTime'),
         type: assignmentType
       }
     }
-  }, [publishTime, assignmentType, startTime, endTime, publishSlot])
+  }, [publishTime, assignmentType, startTime, endTime, publishSlot, t])
 
   const TimeIcon = useMemo(() => {
     const timeIcons: Record<string, React.FC<LucideProps>> = {
@@ -215,7 +220,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
 
   const menuItems: DotDropdownMenuActionItem[] = [
     {
-      label: 'Öppna',
+      label: t('common:actions.open'),
       disabled: !isDocument,
       icon: isUsable ? EyeIcon : FileInputIcon,
       item: <T extends HTMLElement>(event: MouseEvent<T>) => {
@@ -226,7 +231,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
       }
     },
     {
-      label: 'Redigera',
+      label: t('common:actions.edit'),
       icon: EditIcon,
       disabled: !onSelect,
       item: <T extends HTMLElement>(event: MouseEvent<T>) => {
@@ -238,7 +243,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
       }
     },
     {
-      label: 'Ta bort',
+      label: t('common:actions.remove'),
       disabled: isUsable,
       icon: DeleteIcon,
       item: () => {
@@ -246,7 +251,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
       }
     },
     {
-      label: 'Flytta',
+      label: t('common:actions.move'),
       icon: MoveRightIcon,
       item: () => {
         showModal(
@@ -265,20 +270,22 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
         )
       }
     },
-    {
-      label: 'Skapa printartikel',
-      disabled: !isDocument,
-      icon: LibraryIcon,
-      item: () => {
-        showModal(
-          <CreatePrintArticle
-            id={documentId}
-            asDialog
-            onDialogClose={hideModal}
-          />
-        )
-      }
-    }
+    ...(featureFlags.hasPrint
+      ? [{
+          label: t('planning:assignment.createPrintArticle'),
+          disabled: !isDocument,
+          icon: LibraryIcon,
+          item: () => {
+            showModal(
+              <CreatePrintArticle
+                id={documentId}
+                asDialog
+                onDialogClose={hideModal}
+              />
+            )
+          }
+        }]
+      : [])
   ]
   const selected = articleId && openDocuments.includes(articleId)
   const workflowState = articleStatus?.meta?.workflowState
@@ -410,10 +417,10 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
 
       {showVerifyDialog && (
         <Prompt
-          title='Ta bort?'
-          description={`Vill du ta bort uppdraget${title ? ' ' + title : ''}?`}
-          secondaryLabel='Avbryt'
-          primaryLabel='Ta bort'
+          title={`${t('common:actions.remove')}?`}
+          description={`${t('planning:assignment.removeAssignment')}${title ? ' ' + title : ''}?`}
+          secondaryLabel={t('common:actions.abort')}
+          primaryLabel={t('common:actions.remove')}
           onPrimary={(event) => {
             event.stopPropagation()
             setShowVerifyDialog(false)
@@ -427,8 +434,8 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
 
       {showCreateDialogPayload && !slugline && assignmentType !== 'flash' && (
         <Prompt
-          title='Slugg saknas'
-          description='Vänligen lägg till en slugg på uppdraget. Därefter kan du skapa en text.'
+          title={t('planning:prompts.slugMissing')}
+          description={t('planning:prompts.slugMissingDescription')}
           primaryLabel='Ok'
           onPrimary={(event) => {
             event.preventDefault()
@@ -461,7 +468,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
 
             if (!document) {
               console.error('AssignmentRow: Document reference lost after deliverable creation', { id })
-              toast.error('Kunde inte länka leverabel till uppdrag')
+              toast.error(t('errors:toasts.createDeliverableLinkError'))
               setShowCreateDialogPayload(false)
               return
             }
@@ -478,13 +485,15 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
                 type: getDeliverableType(assignmentType)
               })
             } catch (ex: unknown) {
-              const errorMessage = ex instanceof Error ? ex.message : 'Okänt fel'
+              const errorMessage = ex instanceof Error ? ex.message : t('errors:messages.unknown')
+              const linkError = t('errors:toasts.createDeliverableLinkError')
+
               console.error('AssignmentRow: Failed to link deliverable to assignment', {
                 id,
                 assignmentIndex: index,
                 error: errorMessage
               })
-              toast.error(`Kunde inte länka leverabel: ${errorMessage}`)
+              toast.error(`${linkError}: ${errorMessage}`)
               setShowCreateDialogPayload(false)
               setIsLinking(false)
               return
@@ -497,7 +506,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
                 openDocument(undefined, { id, planningId }, 'blank')
                 setIsLinking(false)
               }).catch((ex: unknown) => {
-                const errorMessage = ex instanceof Error ? ex.message : 'Kunde inte spara planeringen'
+                const errorMessage = ex instanceof Error ? ex.message : t('errors:toasts.saveError')
                 console.error('AssignmentRow: Failed to snapshot planning document', {
                   planningId,
                   deliverableId: id,

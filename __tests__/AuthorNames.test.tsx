@@ -299,7 +299,7 @@ describe('AuthorNames with various statusData assert tooltip', () => {
     render(<AuthorNames assignment={a} />)
 
     // Should only show whoever sat status done
-    expect(screen.getByTitle('Klar av Alice Johnson'))
+    expect(screen.getByTitle('Klar av Alice Johnson')).toBeInTheDocument()
   })
 
   it('renders correctly with statusDataCreator', () => {
@@ -307,7 +307,7 @@ describe('AuthorNames with various statusData assert tooltip', () => {
     render(<AuthorNames assignment={a} />)
 
     // Should only show document creator
-    expect(screen.getByTitle('Skapad av Bob Lee'))
+    expect(screen.getByTitle('Skapad av Bob Lee')).toBeInTheDocument()
   })
 
   it('renders correctly with statusDataStatusAfterDraft', () => {
@@ -315,7 +315,7 @@ describe('AuthorNames with various statusData assert tooltip', () => {
     render(<AuthorNames assignment={a} />)
 
     // Should show who set status after draft and last status (in this case the same status)
-    expect(screen.getByTitle('Av Bob Lee, Godkänd av Bob Lee')).toBeInTheDocument()
+    expect(screen.getByTitle('av Bob Lee, Godkänd av Bob Lee')).toBeInTheDocument()
   })
 
   it('renders correctly with statusDataCreatorApproved', () => {
@@ -352,7 +352,7 @@ describe('AuthorNames with various statusData assert tooltip', () => {
     it('renders correctly with statusDataBylineCreator', () => {
       const a = assignment(byline, JSON.stringify(statusDataBylineCreator))
       render(<AuthorNames assignment={a} />)
-      expect(screen.getByTitle('Byline John Doe'))
+      expect(screen.getByTitle('Byline John Doe')).toBeInTheDocument()
       expect(screen.getByText('John Doe')).toBeInTheDocument()
     })
   })

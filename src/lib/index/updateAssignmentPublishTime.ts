@@ -1,9 +1,10 @@
+import type { TFunction, Namespace } from 'i18next'
 import { toast } from 'sonner'
 
 const BASE_URL = import.meta.env.BASE_URL || ''
 
-export async function updateAssignmentTime(
-  deliverableId: string, planningId: string, newStatus: string, newTime: Date
+export async function updateAssignmentTime<Ns extends Namespace>(
+  deliverableId: string, planningId: string, newStatus: string, newTime: Date, t: TFunction<Ns>
 ) {
   try {
     const response = await fetch(`${BASE_URL}/api/documents/${planningId}`, {
@@ -23,12 +24,12 @@ export async function updateAssignmentTime(
 
     if (!response.ok) {
       console.error('Failed backend call to set assignment publish time', response.status, response.statusText)
-      toast.error('Det gick inte att ändra status. Uppdragets publiceringstid kunde inte ändras i den kopplade planeringen.')
+      toast.error(t('errors:messages.changeStatusError'))
       return false
     }
   } catch (ex) {
     console.error('Failed backend call to set publish time when changing status', (ex as Error).message)
-    toast.error('Det gick inte att ändra status. Uppdragets publiceringstid kunde inte ändras i den kopplade planeringen.')
+    toast.error(t('errors:messages.changeStatusError'))
     return false
   }
 }

@@ -1,0 +1,53 @@
+{
+  "documentType": {
+    "planning": "planning",
+    "event": "event",
+    "assignment": "assignment",
+    "article": "article",
+    "flash": "flash",
+    "quickArticle": "quick article"
+  },
+  "labels": {
+    "newsvalue": "News value",
+    "section": "Section",
+    "assignee": "Assignee",
+    "assignmentType": "Type",
+    "title": "Title",
+    "time": "Time",
+    "status": "Status",
+    "type": "Type",
+    "organiser": "Organiser",
+    "category": "Category",
+    "action": "Action",
+    "story": "Story",
+    "showOlder": "Show older"
+  },
+  "status": {
+    "draft": "Draft",
+    "internal": "Internal",
+    "approved": "Approved",
+    "usable": "Published",
+    "unpublished": "Unpublished",
+    "done": "Done",
+    "print_done": "Done",
+    "needs_proofreading": "Ready for check",
+    "withheld": "Scheduled",
+    "cancelled": "Cancelled",
+    "changed": "Changed",
+    "moved": "moved",
+    "todo": "To do",
+    "started": "Started",
+    "public": "Public",
+    "sent": "Sent",
+    "typeApproved": "{{type}} approved",
+    "typeDone": "{{type}} done",
+    "typeSaved": "{{type}} saved"
+  },
+  "timeSlots": {
+    "morning": "Morning",
+    "forenoon": "Forenoon",
+    "afternoon": "Afternoon",
+    "evening": "Evening",
+    "fullday": "Full day"
+  }
+}

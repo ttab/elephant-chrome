@@ -8,7 +8,9 @@ export const GET = (): Promise<unknown> => {
       contentApiUrl: process.env.CONTENT_API_PUBLIC_URL ?? process.env.CONTENT_API_URL ?? '',
       spellcheckUrl: process.env.SPELLCHECK_PUBLIC_URL ?? process.env.SPELLCHECK_URL ?? '',
       faroUrl: process.env.FARO_PUBLIC_URL ?? process.env.FARO_URL ?? '',
-      baboonUrl: process.env.BABOON_PUBLIC_URL ?? process.env.BABOON_URL ?? ''
+      baboonUrl: process.env.BABOON_PUBLIC_URL ?? process.env.BABOON_URL ?? '',
+      systemLanguage: process.env.SYSTEM_LANGUAGE ?? '',
+      hasPrint: process.env.HAS_PRINT ?? ''
     }
   })
 }
