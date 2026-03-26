@@ -11,7 +11,6 @@ export const Cancel = ({ cancelled, setCancelled, onChange }: {
   const isCancelled = typeof cancelled === 'string' ? cancelled === 'true' ? true : false : cancelled
   return useMemo(() => (
     <div className='flex items-center gap-2'>
-      {/* eslint-disable-next-line i18next/no-literal-string */}
       <span className='my-0 mr-4 invisible'>x</span>
       <Checkbox
         id='cancelled'
