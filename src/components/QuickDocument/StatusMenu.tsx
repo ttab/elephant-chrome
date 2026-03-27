@@ -1,7 +1,7 @@
 // src/components/DocumentHeader/StatusMenuLogic.tsx
 
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
-import { useCallback, useState } from 'react'
+import { useCallback } from 'react'
 import { toast } from 'sonner'
 import { useDeliverablePlanningId } from '@/hooks/index/useDeliverablePlanningId'
 import { updateAssignmentTime } from '@/lib/index/updateAssignmentPublishTime'
@@ -23,7 +23,6 @@ interface StatusMenuHeaderProps {
 export const StatusMenuLogic = ({ ydoc, propPlanningId, view }: StatusMenuHeaderProps) => {
   const viewConfig = getViewMap()[view] // Get view-specific configuration
   const planningId = useDeliverablePlanningId(ydoc.id || '')
-  const [publishTime] = useState<string | null>(null)
   const { viewId } = useView()
   const { state, dispatch } = useNavigation()
   const history = useHistory()
@@ -97,7 +96,7 @@ export const StatusMenuLogic = ({ ydoc, propPlanningId, view }: StatusMenuHeader
       {!!(propPlanningId || planningId) && ydoc.id && (
         <StatusMenu
           ydoc={ydoc}
-          publishTime={publishTime ? new Date(publishTime) : undefined}
+          planningId={propPlanningId || planningId}
           onBeforeStatusChange={onBeforeStatusChange}
         />
       )}

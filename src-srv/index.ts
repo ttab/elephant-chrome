@@ -144,7 +144,7 @@ export async function runServer(): Promise<string> {
   })
 
 
-  process.on('unhandledException', (ex: Error) => {
+  process.on('uncaughtException', (ex: Error) => {
     logger.fatal({ err: ex }, 'Unhandled exception')
 
     collaborationServer.close().then(() => {
