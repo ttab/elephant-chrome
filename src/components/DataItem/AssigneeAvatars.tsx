@@ -15,7 +15,7 @@ export const AssigneeAvatars = ({ assignees, size = 'sm', color = '', tooltip = 
         if (tooltip) {
           return (
             <Tooltip key={index} content={assignee}>
-              <Avatar value={assignee} size={size as AvatarSize} color={color} variant={color ? 'color' : undefined} stacked={index > 0} />
+              <Avatar value={assignee} size={size as AvatarSize} color={color} tooltip={tooltip} variant={color ? 'color' : undefined} stacked={index > 0} />
             </Tooltip>
           )
         }
