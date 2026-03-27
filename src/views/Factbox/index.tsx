@@ -9,7 +9,7 @@ import { Form, UserMessage, View } from '@/components'
 import { FactboxHeader } from './FactboxHeader'
 import { Error } from '@/views/Error'
 import { useMemo, useState, type JSX } from 'react'
-import { contentMenuLabels } from '@/defaults/contentMenuLabels'
+import { getContentMenuLabels } from '@/defaults/contentMenuLabels'
 import { snapshotDocument } from '@/lib/snapshotDocument'
 import type { YDocument } from '@/modules/yjs/hooks'
 import { useYDocument, useYValue } from '@/modules/yjs/hooks'
@@ -20,6 +20,7 @@ import type { EleDocumentResponse } from '@/shared/types'
 import type { Document } from '@ttab/elephant-api/newsdoc'
 import { BaseEditor } from '@/components/Editor/BaseEditor'
 import { cn } from '@ttab/elephant-ui/utils'
+import { useTranslation } from 'react-i18next'
 
 const meta: ViewMetadata = {
   name: 'Factbox',
@@ -40,6 +41,7 @@ const meta: ViewMetadata = {
 const Factbox = (props: ViewProps & { document?: Document }): JSX.Element => {
   const [query] = useQuery()
   const documentId = props.id || query.id
+  const { t } = useTranslation('common')
 
   // Factbox should be responsible for creating new as well as editing
   const data = useMemo(() => {
@@ -60,8 +62,8 @@ const Factbox = (props: ViewProps & { document?: Document }): JSX.Element => {
   if (!documentId || typeof documentId !== 'string') {
     return (
       <Error
-        title='Artikeldokument saknas'
-        message='Inget artikeldokument är angivet. Navigera tillbaka till översikten och försök igen.'
+        title={t('errors:messages.articleMissingTitle')}
+        message={t('errors:messages.articleMissingDescription')}
       />
     )
   }
@@ -79,7 +81,7 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
   const { status } = useSession()
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const environmentIsSane = ydoc.provider && status === 'authenticated'
-
+  const { t } = useTranslation('core')
   const configuredPlugins = useMemo(() => {
     return [
       UnorderedList(),
@@ -87,7 +89,7 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
       Bold(),
       Italic(),
       LocalizedQuotationMarks(),
-      Text({ ...contentMenuLabels })
+      Text({ ...getContentMenuLabels() })
     ]
   }, [])
 
@@ -124,8 +126,8 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
                   className={cn(
                     !props.asDialog ? 'ms-[13px]' : 'ms-6 me-5'
                   )}
-                  label='Titel'
-                  placeholder='Titel'
+                  label={t('labels.title')}
+                  placeholder={t('labels.title')}
                 />
               </Form.Title>
             </Form.Content>
@@ -143,8 +145,7 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
             <div className='mx-12'>
               {!environmentIsSane && (
                 <UserMessage asDialog={!!props?.asDialog} variant='destructive'>
-                  Du är utloggad eller har tappat kontakt med systemet.
-                  Vänligen försök logga in igen.
+                  {t('errors:messages.unwellEnvironment')}
                 </UserMessage>
               )}
 
@@ -174,13 +175,14 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
   )
 }
 
-const FactboxDialogFooter = ({ ydoc, disabled, onSuccess, onError}: {
+const FactboxDialogFooter = ({ ydoc, disabled, onSuccess, onError }: {
   ydoc: YDocument<Y.Map<unknown>>
   disabled?: boolean
   onSuccess?: () => void
   onError: (message: string) => void
 }) => {
   const [title] = useYValue<string>(ydoc.ele, 'root.title')
+  const { t } = useTranslation('factbox')
 
   const handleSubmit = (): void => {
     if (disabled) {
@@ -191,7 +193,7 @@ const FactboxDialogFooter = ({ ydoc, disabled, onSuccess, onError}: {
       .then(() => {
         onSuccess?.()
       }).catch((ex) => {
-        onError('Det gick inte att skapa ny faktaruta!')
+        onError(t('errors:messages.couldNotCreateNewFactbox'))
         console.error(ex)
       })
   }
@@ -202,7 +204,7 @@ const FactboxDialogFooter = ({ ydoc, disabled, onSuccess, onError}: {
       disabled={!title || disabled}
       className='whitespace-nowrap'
     >
-      Skapa faktaruta
+      {t('action.createFactbox')}
     </Button>
   )
 }

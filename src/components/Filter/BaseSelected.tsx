@@ -6,7 +6,7 @@ import { CheckIcon } from '@ttab/elephant-ui/icons'
 import { cn } from '@ttab/elephant-ui/utils'
 
 export const BaseSelected = ({ options, filterPage, facets }: {
-  options: { label: string, value: string }[]
+  options: { label?: string, value: string }[]
   facets?: Map<string, number>
   filterPage: string
 }) => {

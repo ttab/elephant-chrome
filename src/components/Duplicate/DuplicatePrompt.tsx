@@ -15,6 +15,7 @@ import { Block, type Document } from '@ttab/elephant-api/newsdoc'
 import * as Y from 'yjs'
 import { format } from 'date-fns'
 import { getDateTimeBoundaries } from '@/shared/datetime'
+import { useTranslation } from 'react-i18next'
 
 export const DuplicatePrompt = ({
   provider,
@@ -30,7 +31,7 @@ export const DuplicatePrompt = ({
   description: string
   primaryLabel: string
   secondaryLabel?: string
-  onPrimary: (duplicateId: string | undefined, duplicatedDocument: Document) => void
+  onPrimary: (duplicateId: string | undefined, duplicatedDocument: Document) => void | Promise<void>
   onSecondary?: (event: MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement> | KeyboardEvent) => void
   provider?: HocuspocusProvider
   duplicateDate: { from: Date, to?: Date | undefined }
@@ -42,6 +43,7 @@ export const DuplicatePrompt = ({
     }
   })
 
+  const { t } = useTranslation()
 
   function mergeDateWithTime(date1ISO: string | undefined, date2ISO: string | undefined) {
     if (!date1ISO || !date2ISO) {
@@ -56,6 +58,7 @@ export const DuplicatePrompt = ({
   const payload = useMemo(() => {
     const documentId = crypto.randomUUID()
     const yDoc = new Y.Doc()
+
 
     if (provider) {
       const newsdoc = fromGroupedNewsDoc(fromYjsNewsDoc(provider.document))
@@ -144,7 +147,7 @@ export const DuplicatePrompt = ({
       <DialogContent
         onOpenAutoFocus={(event) => event.preventDefault()}
       >
-        <DialogTitle>{`Kopiera ${type === 'Planning' ? 'planering' : 'händelse'}`}</DialogTitle>
+        <DialogTitle>{t('shared:copy.copyType', { type: type === 'Planning' ? t('core:documentType.planning') : t('core:documentType.event') })}</DialogTitle>
 
         <DialogDescription>{description}</DialogDescription>
 
@@ -166,11 +169,11 @@ export const DuplicatePrompt = ({
             autoFocus
             disabled={!duplicateId || !duplicatedDocument}
             onClick={() => {
-              onPrimary(duplicateId, duplicatedDocument)
+              void onPrimary(duplicateId, duplicatedDocument)
             }}
             onKeyDown={(event: React.KeyboardEvent<HTMLButtonElement>) => {
               if (event.key === 'Enter') {
-                onPrimary(duplicateId, duplicatedDocument)
+                void onPrimary(duplicateId, duplicatedDocument)
               }
             }}
           >

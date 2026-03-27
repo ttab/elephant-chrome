@@ -77,7 +77,7 @@ vi.mock('@/components/Notes', () => ({
 }))
 
 vi.mock('@/defaults/contentMenuLabels', () => ({
-  contentMenuLabels: {}
+  getContentMenuLabels: vi.fn(() => ({}))
 }))
 
 vi.mock('@ttab/textbit-plugins', () => ({

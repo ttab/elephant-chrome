@@ -14,6 +14,7 @@ import { dateToReadableDateTime } from '@/shared/datetime'
 import { CAUSE_KEYS } from '../../defaults/causekeys'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { getAuthorBySub } from '@/lib/getAuthorBySub'
+import { useTranslation } from 'react-i18next'
 const BASE_URL = import.meta.env.BASE_URL || ''
 
 type Status = { name: string, created: string, creator: string }
@@ -29,6 +30,11 @@ export const Version = ({ documentId, hideDetails = false, textOnly = true }: { 
   const { data: session } = useSession()
   const authors = useAuthors()
   const [lastUpdated, setLastUpdated] = useState('')
+  const { t } = useTranslation('metaSheet')
+
+  const getStatusCreator = (status: DocumentStatus) => {
+    return status.creator === 'internal://scheduler' ? status.meta['scheduled-by'] : status.creator
+  }
 
   const { data: versionStatusHistory, error } = useSWR<DocumentStatus[], Error>(`version/${documentId}`, async (): Promise<Array<DocumentStatus & {
     bylines?: Block[]
@@ -96,7 +102,7 @@ export const Version = ({ documentId, hideDetails = false, textOnly = true }: { 
     const lastStatus = { ...result?.statuses[0], name: 'usable' }
     const createdBy = getAuthorBySub(
       authors,
-      lastStatus?.creator || result?.statuses[0]?.creator
+      getStatusCreator(lastStatus) || result?.statuses[0]?.creator
     )?.name || '???'
 
     setVersion({
@@ -126,7 +132,8 @@ export const Version = ({ documentId, hideDetails = false, textOnly = true }: { 
     }
 
     const getUsable = (v: DocumentStatus): Status | undefined => {
-      const status: Status = { name: '', created: v.created, creator: createdBy(v.creator) }
+      const creator = getStatusCreator(v)
+      const status: Status = { name: '', created: v.created, creator: createdBy(creator) }
 
       if (v.meta && 'cause' in v.meta) {
         if ((CAUSE_KEYS as Record<string, { short: string, long: string }>)[v?.meta?.cause]) {
@@ -135,7 +142,7 @@ export const Version = ({ documentId, hideDetails = false, textOnly = true }: { 
       }
 
       if (v.version === -1n) {
-        status.name = 'Avpublicerad'
+        status.name = t('core:status.unpublished')
       }
 
       return status
@@ -170,7 +177,7 @@ export const Version = ({ documentId, hideDetails = false, textOnly = true }: { 
         </SelectItem>
       )
     })
-  }, [documentId, versionStatusHistory, createdBy, formatDateAndTime])
+  }, [documentId, versionStatusHistory, createdBy, formatDateAndTime, t])
 
   if (!versionStatusHistory?.length) {
     return <></>
@@ -180,8 +187,8 @@ export const Version = ({ documentId, hideDetails = false, textOnly = true }: { 
     console.error('Error fetching version history', error)
     return (
       <Error
-        title='Fel'
-        message='Det uppstod ett fel när dokumenthistoriken hämtades.'
+        title={t('common:misc.error')}
+        message={t('errors:messages.failedToLoadHistory')}
       />
     )
   }
@@ -192,6 +199,7 @@ export const Version = ({ documentId, hideDetails = false, textOnly = true }: { 
         onValueChange={(option) => {
           const current = versionStatusHistory?.find((v) => v.version === BigInt(option))
           setVersion(current)
+
           showModal(
             <PreviewSheet
               id={documentId}
@@ -217,10 +225,10 @@ export const Version = ({ documentId, hideDetails = false, textOnly = true }: { 
         </SelectContent>
       </Select>
 
-      {lastUpdated && <div className='text-sm text-muted-foreground pl-0.5'>{`Senast uppdaterad: ${formatDateAndTime(lastUpdated)}`}</div>}
+      {lastUpdated && <div className='text-sm text-muted-foreground pl-0.5'>{t('misc.lastUpdated', { date: formatDateAndTime(lastUpdated) })}</div>}
 
       {!hideDetails && selectedVersion?.createdBy && (
-        <div className='text-sm text-muted-foreground pl-0.5'>{`Skapad av ${selectedVersion?.createdBy}`}</div>
+        <div className='text-sm text-muted-foreground pl-0.5'>{t('shared:authors.createdBy', { author: selectedVersion?.createdBy })}</div>
       )}
     </div>
   )

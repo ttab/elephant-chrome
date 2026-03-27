@@ -1,0 +1,24 @@
+{
+  "mainMenu": {
+    "approvals": "Dagen",
+    "assignments": "Uppdrag",
+    "events": "Händelser",
+    "factboxes": "Faktarutor",
+    "flash": "Skapa flash",
+    "latest": "Senast utgivet",
+    "logout": "Logga ut",
+    "plannings": "Planeringar",
+    "print": "Print",
+    "search": "Sök",
+    "wires": "Telegram",
+    "quickarticle": "Ny två på två",
+    "title": "Huvudmeny",
+    "actions": {
+      "toggleTheme": "Växla tema"
+    }
+  },
+  "systemMessages": {
+    "reloadWindowTitle": "Du behöver ladda om fönstret",
+    "reloadWindowDescription": "Systemet har uppdaterats med nya eller ändrade funktioner. Ladda om fönstret för att jobba vidare i den nya versionen."
+  }
+}

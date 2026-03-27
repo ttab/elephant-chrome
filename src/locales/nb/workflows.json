@@ -1,0 +1,414 @@
+{
+  "base": {
+    "article": "artikkelen",
+    "flash": "flashen",
+    "draft": {
+      "title": "Utkast",
+      "description": "Du jobber med et utkast av {{label}}",
+      "transitions": {
+        "done": {
+          "title": "Klarmarkere",
+          "description": "Marker {{label}} som ferdig"
+        },
+        "approved": {
+          "title": "Godkjenn",
+          "description": "Godkjenn {{label}} for publisering"
+        },
+        "usable": {
+          "title": "Publiser",
+          "description": "Publiser {{label}}"
+        },
+        "withheld": {
+          "title": "Planlegg publisering",
+          "description": "Angi dato og tid for publisering"
+        }
+      }
+    },
+    "done": {
+      "title": "Klar",
+      "description": "{{label, capitalize}} er ferdig og venter på godkjenning",
+      "transitions": {
+        "approved": {
+          "title": "Godkjenn",
+          "description": "Godkjenn {{label}} for publisering"
+        },
+        "usable": {
+          "title": "Publiser",
+          "description": "Publiser {{label}} direkte"
+        },
+        "withheld": {
+          "title": "Planlegg publisering",
+          "description": "Angi dato og tid for publisering"
+        },
+        "draft": {
+          "title": "Til utkast",
+          "description": "Gjør om {{label}} til et utkast igjen"
+        },
+        "unpublished": {
+          "title": "Avpubliser",
+          "description": "Avbryt og arkiver {{label}}"
+        }
+      }
+    },
+    "approved": {
+      "title": "Godkjent",
+      "description": "{{label, capitalize}} er godkjent for publisering",
+      "transitions": {
+        "usable": {
+          "title": "Publiser",
+          "description": "Publiser {{label}}"
+        },
+        "withheld": {
+          "title": "Planlegg publisering",
+          "description": "Angi dato og tid for publisering"
+        },
+        "draft": {
+          "title": "Til utkast",
+          "description": "Gjør om {{label}} til et utkast igjen"
+        },
+        "unpublished": {
+          "title": "Avpubliser",
+          "description": "Avbryt og arkiver {{label}}"
+        }
+      }
+    },
+    "usable": {
+      "title": "Publisert",
+      "description": "{{label, capitalize}} er publisert",
+      "transitions": {
+        "draft": {
+          "title": "Ny versjon",
+          "description": "Fortsett å jobbe på en ny versjon av {{label}}"
+        },
+        "unpublished": {
+          "title": "Avpubliser",
+          "description": "Avbryt publiseringen og arkiver {{label}}"
+        }
+      }
+    },
+    "withheld": {
+      "title": "Planlagt",
+      "description": "{{label, capitalize}} er planlagt for automatisk publisering",
+      "transitions": {
+        "usable": {
+          "title": "Publiser direkte",
+          "description": "Publiser {{label}} direkte"
+        },
+        "draft": {
+          "title": "Til utkast",
+          "description": "Avbryt planlagt publisering og gjør om til utkast igjen"
+        }
+      }
+    },
+    "unpublished": {
+      "title": "Avpublisert",
+      "description": "{{label, capitalize}} har blitt avpublisert",
+      "transitions": {
+        "draft": {
+          "title": "Ny versjon",
+          "description": "Fortsett å jobbe på en ny versjon av {{label}}"
+        }
+      }
+    }
+  },
+  "core/event": {
+    "draft": {
+      "title": "Utkast",
+      "description": "Du jobber med et utkast av denne hendelsen",
+      "transitions": {
+        "done": {
+          "title": "Bruk internt",
+          "description": "Gjør hendelsen synlig internt"
+        },
+        "usable": {
+          "title": "Publiser eksternt",
+          "description": "Publiser hendelsen eksternt"
+        }
+      }
+    },
+    "done": {
+      "title": "Intern",
+      "description": "Hendelsen er synlig internt",
+      "transitions": {
+        "usable": {
+          "title": "Publiser",
+          "description": "Publiser hendelsen eksternt"
+        },
+        "unpublished": {
+          "title": "Avpubliser",
+          "description": "Avpubliser hendelsen"
+        }
+      }
+    },
+    "usable": {
+      "title": "Publisert",
+      "asSaveCTA": "Upubliserte endringer",
+      "asSaveTitle": "Publiser ny versjon",
+      "description": "Hendelsen er publisert eksternt",
+      "changedDescription": "Hendelsen har blitt endret siden forrige publisering",
+      "updateDescription": "Oppdater den publiserte hendelsen med de nye endringene",
+      "transitions": {
+        "unpublished": {
+          "title": "Avpubliser",
+          "description": "Avpubliser hendelsen eksternt"
+        }
+      }
+    },
+    "unpublished": {
+      "title": "Avpublisert",
+      "description": "Hendelsen har blitt avpublisert",
+      "transitions": {
+        "draft": {
+          "title": "Utkast",
+          "description": "Gjør om hendelsen til et utkast igjen"
+        }
+      }
+    }
+  },
+  "core/planning-item": {
+    "draft": {
+      "title": "Utkast",
+      "description": "Du jobber med et utkast av denne planleggingen",
+      "transitions": {
+        "done": {
+          "title": "Bruk internt",
+          "description": "Gjør planleggingen synlig internt"
+        },
+        "usable": {
+          "title": "Publiser eksternt",
+          "description": "Publiser planleggingen eksternt"
+        }
+      }
+    },
+    "done": {
+      "title": "Intern",
+      "description": "Planleggingen er synlig internt",
+      "transitions": {
+        "usable": {
+          "title": "Publiser",
+          "description": "Publiser planleggingen eksternt"
+        },
+        "unpublished": {
+          "title": "Avpubliser",
+          "description": "Avpubliser planleggingen"
+        }
+      }
+    },
+    "usable": {
+      "title": "Publisert",
+      "asSaveCTA": "Upubliserte endringer",
+      "asSaveTitle": "Publiser endret versjon",
+      "description": "Planleggingen er publisert",
+      "changedDescription": "Planleggingen har blitt endret siden forrige publisering",
+      "updateDescription": "Oppdater den publiserte planleggingen med de nye endringene",
+      "transitions": {
+        "unpublished": {
+          "title": "Avpubliser",
+          "description": "Avpubliser planleggingen eksternt"
+        }
+      }
+    },
+    "unpublished": {
+      "title": "Avpublisert",
+      "description": "Planleggingen har blitt avpublisert",
+      "transitions": {
+        "draft": {
+          "title": "Utkast",
+          "description": "Gjør om planleggingen til et utkast igjen"
+        }
+      }
+    }
+  },
+  "core/factbox": {
+    "draft": {
+      "title": "Utkast",
+      "description": "Du jobber med et utkast av faktaboksen",
+      "transitions": {
+        "usable": {
+          "title": "Publiser",
+          "description": "Publiser faktaboksen for bruk"
+        }
+      }
+    },
+    "usable": {
+      "title": "Brukbar",
+      "asSaveCTA": "Endret",
+      "asSaveTitle": "Publiser ny informasjon",
+      "description": "Faktaboksen er klar til bruk",
+      "transitions": {
+        "draft": {
+          "title": "Til utkast",
+          "description": "Gjør om faktaboksen til et utkast igjen"
+        }
+      }
+    }
+  },
+  "core/editorial-info": {
+    "draft": {
+      "title": "Utkast",
+      "description": "Du jobber med et utkast av denne informasjonen til redaksjonen",
+      "transitions": {
+        "done": {
+          "title": "Klarmarkere",
+          "description": "Marker som ferdig til redaksjonen"
+        },
+        "approved": {
+          "title": "Godkjenn",
+          "description": "Godkjenn for intern bruk i redaksjonen"
+        },
+        "usable": {
+          "title": "Publiser",
+          "description": "Publiser slik at den er synlig eksternt"
+        }
+      }
+    },
+    "done": {
+      "title": "Klar",
+      "description": "Informasjonen er ferdig og venter på godkjenning",
+      "transitions": {
+        "approved": {
+          "title": "Godkjenn",
+          "description": "Godkjenn for intern bruk i redaksjonen"
+        },
+        "usable": {
+          "title": "Publiser",
+          "description": "Publiser slik at den er synlig eksternt"
+        },
+        "draft": {
+          "title": "Til utkast",
+          "description": "Gjør om til et utkast igjen"
+        }
+      }
+    },
+    "approved": {
+      "title": "Intern",
+      "description": "Informasjonen er publisert internt og kan publiseres eksternt",
+      "transitions": {
+        "usable": {
+          "title": "Publiser",
+          "description": "Publiser slik at den er synlig eksternt"
+        },
+        "draft": {
+          "title": "Til utkast",
+          "description": "Gjør om til et utkast igjen"
+        }
+      }
+    },
+    "usable": {
+      "title": "Publisert",
+      "description": "Informasjonen er publisert",
+      "transitions": {
+        "draft": {
+          "title": "Til utkast",
+          "description": "Gjør om til et utkast igjen"
+        },
+        "unpublished": {
+          "title": "Trekk tilbake",
+          "description": "Avbryt publiseringen og arkiver informasjonen"
+        }
+      }
+    }
+  },
+  "tt/print-article": {
+    "draft": {
+      "title": "",
+      "description": "",
+      "transitions": {
+        "needs_proofreading": {
+          "title": "",
+          "description": ""
+        },
+        "print_done": {
+          "title": "",
+          "description": ""
+        },
+        "usable": {
+          "title": "",
+          "description": ""
+        }
+      }
+    },
+    "needs_proofreading": {
+      "title": "",
+      "description": "",
+      "transitions": {
+        "print_done": {
+          "title": "",
+          "description": ""
+        },
+        "usable": {
+          "title": "",
+          "description": ""
+        },
+        "cancelled": {
+          "title": "",
+          "description": ""
+        },
+        "draft": {
+          "title": "",
+          "description": ""
+        }
+      }
+    },
+    "print_done": {
+      "title": "",
+      "description": "",
+      "transitions": {
+        "approved": {
+          "title": "",
+          "description": ""
+        },
+        "usable": {
+          "title": "",
+          "description": ""
+        },
+        "needs_proofreading": {
+          "title": "",
+          "description": ""
+        },
+        "cancelled": {
+          "title": "",
+          "description": ""
+        },
+        "draft": {
+          "title": "",
+          "description": ""
+        }
+      }
+    },
+    "usable": {
+      "title": "",
+      "asSaveCTA": "",
+      "asSaveTitle": "",
+      "description": "",
+      "changedDescription": "",
+      "updateDescription": "",
+      "transitions": {
+        "unpublished": {
+          "title": "",
+          "description": ""
+        }
+      }
+    },
+    "unpublished": {
+      "title": "",
+      "description": "",
+      "transitions": {
+        "draft": {
+          "title": "",
+          "description": ""
+        }
+      }
+    },
+    "cancelled": {
+      "title": "",
+      "description": "",
+      "transitions": {
+        "draft": {
+          "title": "",
+          "description": ""
+        }
+      }
+    }
+  }
+}

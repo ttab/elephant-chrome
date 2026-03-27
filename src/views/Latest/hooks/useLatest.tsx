@@ -5,11 +5,13 @@ import { QueryV1, RangeQueryV1, SortingV1 } from '@ttab/elephant-api/index'
 import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
 import { useRegistry } from '@/hooks/useRegistry'
+import { useTranslation } from 'react-i18next'
 
 export const useLatest = (): HitV1[] => {
   const { repository } = useRegistry()
   const { data: session } = useSession()
   const [versionedData, setVersionedData] = useState<HitV1[]>([])
+  const { t } = useTranslation('shared')
 
   const { data: dataArticles } = useDocuments({
     documentType: 'core/article',
@@ -131,12 +133,12 @@ export const useLatest = (): HitV1[] => {
         )
       } catch (error) {
         console.error(error)
-        toast.error('Kunde inte hämta dokument')
+        toast.error(t('errors:toasts.fetchDocumentFailed'))
       }
     }
 
     void fetchDocuments()
-  }, [data, repository, session?.accessToken])
+  }, [data, repository, session?.accessToken, t])
 
   return versionedData
 }

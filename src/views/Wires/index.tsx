@@ -23,6 +23,7 @@ import { toast } from 'sonner'
 import { useModal } from '@/components/Modal/useModal'
 import { WireCreation } from '@/views'
 import { useSettings } from '@/modules/userSettings'
+import { useTranslation } from 'react-i18next'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { Document } from '@ttab/elephant-api/newsdoc'
 import { RpcError } from '@protobuf-ts/runtime-rpc'
@@ -55,6 +56,7 @@ const EMPTY_STATE = Document.create({
 })
 
 export const Wires = (): JSX.Element => {
+  const { t } = useTranslation('wires')
   const { isActive } = useView()
   const { repository } = useRegistry()
   const { data: session } = useSession()
@@ -70,7 +72,6 @@ export const Wires = (): JSX.Element => {
   const previewRestoredRef = useRef(false)
   const [previewWire, setPreviewWire] = useState<Wire | null>(null)
   const previewDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const [previewReloadCount, setPreviewReloadCount] = useState(0)
   const [focusedWire, setFocusedWire] = useState<Wire | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const { saveFocus, restoreFocus } = useSavedFocus()
@@ -92,6 +93,7 @@ export const Wires = (): JSX.Element => {
 
   const [selectedWires, setSelectedWires] = useState<Wire[]>([])
   const [statusMutations, setStatusMutations] = useState<WireStatus[]>([])
+  const [failedMutationUuids, setFailedMutationUuids] = useState<ReadonlySet<string>>(new Set())
 
   // Fetch wire by ID from URL params to restore preview on load
   const initialWireQuery = useMemo(() => initialId
@@ -166,9 +168,9 @@ export const Wires = (): JSX.Element => {
         console.error('Failed to save wire settings:', error.message, error.meta)
         showModal(
           <Prompt
-            title='Kunde inte spara inställningar'
+            title={t('settings.saveError')}
             description={details || error.message}
-            primaryLabel='Stäng'
+            primaryLabel={t('common:actions.close')}
             onPrimary={hideModal}
           />
         )
@@ -176,15 +178,15 @@ export const Wires = (): JSX.Element => {
         console.error('Failed to save wire settings:', error)
         showModal(
           <Prompt
-            title='Kunde inte spara inställningar'
-            description={error instanceof Error ? error.message : 'Ett okänt fel inträffade'}
-            primaryLabel='Stäng'
+            title={t('settings.saveError')}
+            description={error instanceof Error ? error.message : t('settings.unknownError')}
+            primaryLabel={t('common:actions.close')}
             onPrimary={hideModal}
           />
         )
       }
     }
-  }, [streams, settings?.title, updateSettings, hideModal, showModal])
+  }, [streams, settings?.title, updateSettings, hideModal, showModal, t])
 
   useStreamNavigation({
     isActive,
@@ -281,7 +283,9 @@ export const Wires = (): JSX.Element => {
   const handleToggleWire = useCallback((wire: Wire, isSelected: boolean) => {
     setSelectedWires((prev) => {
       if (isSelected) {
-        return [...prev, wire]
+        return (prev.some((w) => w.id === wire.id))
+          ? prev
+          : [...prev, wire]
       } else {
         return prev.filter((w) => w.id !== wire.id)
       }
@@ -306,22 +310,25 @@ export const Wires = (): JSX.Element => {
     // Execute wire status changes and wait for completion.
     // Using setTimeout for to avoid the progress spinner to blink and disappear too quickly.
     void executeWiresStatuses(repository, session, nextStatuses).then((result) => {
+      const failed = result.filter((r) => !r.statusSet).map((r) => r.uuid)
+
+      if (failed.length) {
+        // Signal rollback before clearing mutations so Stream can restore original fields
+        setFailedMutationUuids(new Set(failed))
+        toast.error(t('toast.statusChangeFailed'))
+      }
+
       setTimeout(() => {
         setStatusMutations([])
-
-        // Force preview to reload if it's showing one of the updated wires
-        if (previewWire && nextStatuses.find((s) => s.uuid === previewWire.id)) {
-          setPreviewReloadCount((n) => n + 1)
-        }
-
+        setFailedMutationUuids(new Set())
         restoreFocus()
       }, 100)
-
-      if (result.find((r) => !r.statusSet)) {
-        toast.error('Någon eller några status-ändringar misslyckades!')
-      }
+    }).catch((error: unknown) => {
+      console.error('Unexpected error in executeWiresStatuses:', error)
+      setStatusMutations([])
+      setFailedMutationUuids(new Set())
     })
-  }, [selectedWires, focusedWire, repository, session, previewWire, saveFocus, restoreFocus])
+  }, [selectedWires, focusedWire, repository, session, previewWire, saveFocus, restoreFocus, t])
 
   // Create a new article based on selected wires
   const onCreate = useCallback(() => {
@@ -399,7 +406,7 @@ export const Wires = (): JSX.Element => {
   return (
     <View.Root ref={viewRef}>
       <ViewHeader.Root className='z-10'>
-        <ViewHeader.Title title='Telegram' name='Wires' />
+        <ViewHeader.Title title={t('title')} name='Wires' />
 
         <ViewHeader.Content>
           <WiresToolbar
@@ -439,10 +446,15 @@ export const Wires = (): JSX.Element => {
                   onFocus={handleOnFocus}
                   selectedWires={selectedWires}
                   statusMutations={statusMutations}
+                  failedMutationUuids={failedMutationUuids}
                   onToggleWire={handleToggleWire}
                   onRemove={handleRemoveStream}
                   onFilterChange={setFilter}
                   onClearFilter={clearFilter}
+                  previewWireId={previewWire?.id}
+                  onPreviewWireUpdate={setPreviewWire}
+                  focusedWireId={focusedWire?.id}
+                  onFocusedWireUpdate={setFocusedWire}
                 />
               ))}
             </div>
@@ -471,7 +483,7 @@ export const Wires = (): JSX.Element => {
                 </Button>
                 <Preview
                   wire={previewWire}
-                  key={previewReloadCount}
+                  key={previewWire.id}
                 />
               </div>
             )}
@@ -493,8 +505,9 @@ export const Wires = (): JSX.Element => {
                 )}
               </div>
               <div className='text-center text-muted-foreground text-xs'>
+                {/* eslint-disable-next-line i18next/no-literal-string */}
                 <span className='bg-muted px-2 py-0.5 rounded-md text-xs font-semibold'>ESC</span>
-                <span> för att avmarkera valda telegram</span>
+                <span>{` ${t('stream.deselectHint')}`}</span>
               </div>
             </div>
           </div>

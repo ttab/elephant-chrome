@@ -1,4 +1,4 @@
-import { AssignmentTypes } from '@/defaults'
+import { getAssignmentTypes } from '@/defaults'
 import { Button, Select, SelectContent, SelectItem, SelectTrigger } from '@ttab/elephant-ui'
 import { cn } from '@ttab/elephant-ui/utils'
 import { Block } from '@ttab/elephant-api/newsdoc'
@@ -8,6 +8,8 @@ import type { FormProps } from '../Form/Root'
 import { useYValue } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import type { JSX } from 'react'
+import { useTranslation } from 'react-i18next'
+import type { TranslationKey } from '@/types/i18next.d'
 
 export const AssignmentType = ({ assignment, editable = false, readOnly = false, className, onChange }: {
   assignment?: Y.Map<unknown>
@@ -17,8 +19,9 @@ export const AssignmentType = ({ assignment, editable = false, readOnly = false,
 } & FormProps): JSX.Element => {
   const [assignmentType, setAssignmentType] = useYValue<Block[]>(assignment, 'meta.core/assignment-type')
   const [, setAssignmentVisibility] = useYValue<string>(assignment, 'data.public')
+  const { t } = useTranslation('shared')
 
-  const selectedOptions = AssignmentTypes.filter((type) => {
+  const selectedOptions = getAssignmentTypes().filter((type) => {
     const value = assignmentType?.map ? assignmentType.map((s) => s.value).sort().join('/') : ''
     return type.value === value
   })
@@ -44,7 +47,7 @@ export const AssignmentType = ({ assignment, editable = false, readOnly = false,
                 className={cn(defaultClassName, className, editable ? 'text-foreground' : 'text-primary')}
               />
             )
-          : selectedOptions[0]?.label}
+          : t(`assignmentTypes.${selectedOptions[0]?.value}` as TranslationKey)}
       </Button>
     )
   }
@@ -93,14 +96,14 @@ export const AssignmentType = ({ assignment, editable = false, readOnly = false,
                 className={cn(defaultClassName, className, editable ? 'text-foreground' : 'text-primary')}
               />
             )
-          : selectedOptions[0]?.label}
+          : t(`assignmentTypes.${selectedOptions[0]?.value}` as TranslationKey)}
       </SelectTrigger>
       <SelectContent>
-        {AssignmentTypes.map((option) => (
+        {getAssignmentTypes().map((option) => (
           <SelectItem value={option.value} key={option.value}>
             <div className='flex flex-row gap-2'>
               {option.icon && <option.icon {...option.iconProps} />}
-              {option.label}
+              {t(`assignmentTypes.${option.value}` as TranslationKey)}
             </div>
           </SelectItem>
         ))}
@@ -109,7 +112,7 @@ export const AssignmentType = ({ assignment, editable = false, readOnly = false,
   )
 }
 
-function getIcon(selectedOptions: DefaultValueOption[], editable: boolean, readOnly = false) {
+function getIcon(selectedOptions: Omit<DefaultValueOption, 'label'>[], editable: boolean, readOnly = false) {
   if (selectedOptions[0]?.value !== 'text') {
     return selectedOptions[0]?.icon
   }

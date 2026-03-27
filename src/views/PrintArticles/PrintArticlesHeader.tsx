@@ -6,6 +6,7 @@ import { useModal } from '@/components/Modal/useModal'
 import { PrintFlows } from './PrintFlows'
 import { useLink } from '@/hooks/useLink'
 import type { JSX } from 'react'
+import { useTranslation } from 'react-i18next'
 
 /**
  * PrintArticlesHeader component.
@@ -22,21 +23,22 @@ import type { JSX } from 'react'
 export const PrintArticlesHeader = (): JSX.Element => {
   const { showModal, hideModal } = useModal()
   const openDictionary = useLink('PrintDictionary')
+  const { t } = useTranslation('print')
 
   return (
     <ViewHeader.Root className='flex flex-row gap-2 items-center justify-between'>
       <div className='flex flex-row gap-4 items-center justify-start'>
-        <ViewHeader.Title title='Print' name='Print' />
+        <ViewHeader.Title title={t('articles.title')} name='Print' />
         <Popover>
           <PopoverTrigger asChild>
-            <Button title='Skapa ny...' size='sm' className='gap-1 px-2 py-0'>
+            <Button title={t('articles.header.createNew')} size='sm' className='gap-1 px-2 py-0'>
               <PlusIcon strokeWidth={1.75} size={16} />
-              Nytt
+              {t('articles.header.new')}
             </Button>
           </PopoverTrigger>
           <PopoverContent className='flex flex-col gap-2'>
             <Button
-              title='Skapa en text i ett flöde'
+              title={t('articles.header.newArticleTooltip')}
               variant='outline'
               onClick={() => {
                 showModal(
@@ -44,10 +46,10 @@ export const PrintArticlesHeader = (): JSX.Element => {
                 )
               }}
             >
-              Ny artikel
+              {t('articles.header.newArticle')}
             </Button>
             <Button
-              title='Öppna dialogruta för att välja ett flöde. Artiklarna för flödet kommer sedan att skapas av backend enligt definitionen i flödet.'
+              title={t('articles.header.newFlowTooltip')}
               variant='outline'
               onClick={() => {
                 showModal(
@@ -55,7 +57,7 @@ export const PrintArticlesHeader = (): JSX.Element => {
                 )
               }}
             >
-              Nytt flöde
+              {t('articles.header.newFlow')}
             </Button>
           </PopoverContent>
         </Popover>
@@ -63,7 +65,7 @@ export const PrintArticlesHeader = (): JSX.Element => {
       </div>
       <div className='flex flex-row gap-2 items-center justify-end'>
         <Button
-          title='Skapa en text i ett flöde'
+          title={t('articles.header.openDictionary')}
           variant='outline'
           size='sm'
           onClick={() => {
