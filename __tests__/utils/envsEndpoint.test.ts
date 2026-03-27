@@ -35,7 +35,8 @@ describe('GET /api/envs', () => {
       faroUrl: 'https://faro.example.com',
       baboonUrl: 'https://baboon.example.com',
       systemLanguage: 'nb-NO',
-      hasPrint: 'true'
+      hasPrint: 'true',
+      environment: ''
     })
   })
 
