@@ -81,7 +81,7 @@ export const Root = ({ children, asDialog = false, className }: PropsWithChildre
   )
 }
 
-function isUnique(value?: string, compareValues?: string[]) {
+export function isUnique(value?: string, compareValues?: string[]) {
   if (compareValues?.length) {
     return compareValues.filter((v) => v === value).length <= 1
   }

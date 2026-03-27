@@ -241,10 +241,7 @@ export const WireViewContent = (props: ViewProps & {
                   key={selectedPlanning?.value}
                   ydoc={ydoc}
                   value={slugline}
-                  compareValues={[
-                    ...(selectedPlanning?.payload?.sluglines || []),
-                    slugline?.toString()
-                  ]}
+                  compareValues={selectedPlanning?.payload?.sluglines || []}
                 />
               )}
 
