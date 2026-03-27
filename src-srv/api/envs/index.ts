@@ -10,7 +10,8 @@ export const GET = (): Promise<unknown> => {
       faroUrl: process.env.FARO_PUBLIC_URL ?? process.env.FARO_URL ?? '',
       baboonUrl: process.env.BABOON_PUBLIC_URL ?? process.env.BABOON_URL ?? '',
       systemLanguage: process.env.SYSTEM_LANGUAGE ?? '',
-      hasPrint: process.env.HAS_PRINT ?? ''
+      hasPrint: process.env.HAS_PRINT ?? '',
+      stageBanner: process.env.STAGE_BANNER ?? ''
     }
   })
 }
