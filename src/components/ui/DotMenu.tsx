@@ -64,14 +64,18 @@ export const DotMenu = ({ trigger = 'horizontal', items }: {
 }): JSX.Element => {
   const triggerRef = useRef<HTMLButtonElement>(null)
   const [align, setAlign] = useState<'start' | 'end'>('start')
+  const [open, setOpen] = useState(false)
 
   return (
-    <DropdownMenu onOpenChange={(open) => {
-      if (open && triggerRef.current) {
-        const spaceRight = window.innerWidth - triggerRef.current.getBoundingClientRect().left
-        setAlign(spaceRight >= MENU_WIDTH ? 'start' : 'end')
-      }
-    }}
+    <DropdownMenu
+      open={open}
+      onOpenChange={(isOpen) => {
+        if (isOpen && triggerRef.current) {
+          const spaceRight = window.innerWidth - triggerRef.current.getBoundingClientRect().left
+          setAlign(spaceRight >= MENU_WIDTH ? 'start' : 'end')
+        }
+        setOpen(isOpen)
+      }}
     >
       <DropdownMenuTrigger asChild>
         <Button
@@ -87,7 +91,7 @@ export const DotMenu = ({ trigger = 'horizontal', items }: {
       </DropdownMenuTrigger>
 
 
-      <DropdownMenuContent align={align} className='w-56'>
+      <DropdownMenuContent align={align} className='w-56' onClickCapture={() => setOpen(false)}>
         {items.map((item) => {
           if (Array.isArray(item.item)) {
             return (

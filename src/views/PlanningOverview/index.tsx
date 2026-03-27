@@ -2,7 +2,6 @@ import { useMemo, useState, type JSX } from 'react'
 import { type ViewMetadata } from '@/types'
 import { ViewHeader, View } from '@/components'
 import { TabsContent } from '@ttab/elephant-ui'
-import { PlanningList } from './PlanningList'
 import { TableProvider } from '@/contexts/TableProvider'
 import { TableCommandMenu } from '@/components/Commands/TableCommand'
 import { Header } from '@/components/Header'
@@ -11,8 +10,10 @@ import { useSections } from '@/hooks/useSections'
 import { useAuthors } from '@/hooks/useAuthors'
 import { Commands } from '@/components/Commands'
 import { useQuery } from '@/hooks/useQuery'
-import type { Planning } from '@/shared/schemas/planning'
 import { useInitFilters } from '@/hooks/useInitFilters'
+import { useSession } from 'next-auth/react'
+import { PlanningList } from './PlanningList'
+import type { PreprocessedPlanningData } from './preprocessor'
 import { useTranslation } from 'react-i18next'
 
 const meta: ViewMetadata = {
@@ -36,26 +37,28 @@ export const Plannings = (): JSX.Element => {
   const [currentTab, setCurrentTab] = useState<string>('list')
   const sections = useSections()
   const authors = useAuthors()
+  const { data: session } = useSession()
+  const user = session?.user.sub
   const { t } = useTranslation()
 
   const columns = useMemo(() =>
-    planningListColumns({ sections, authors }, t), [sections, authors, t])
+    planningListColumns({ sections, authors, user }, t), [sections, authors, user, t])
 
-  const columnFilters = useInitFilters<Planning>({
+  const columnFilters = useInitFilters<PreprocessedPlanningData>({
     path: 'filters.Plannings.current',
     columns
   })
 
   return (
     <View.Root tab={currentTab} onTabChange={setCurrentTab}>
-      <TableProvider<Planning>
+      <TableProvider<PreprocessedPlanningData>
         columns={columns}
         type={meta.name}
         initialState={{
           grouping: ['newsvalue'],
           columnFilters,
           globalFilter: query.query,
-          sorting: [{ id: 'newsvalue', desc: true }]
+          sorting: [{ id: 'newsvalue', desc: true }, { id: 'title', desc: false }]
         }}
       >
         <TableCommandMenu heading='Plannings'>

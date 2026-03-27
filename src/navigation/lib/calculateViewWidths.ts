@@ -29,15 +29,11 @@ function calculateViewColSpans(
   screenDefinitions: ScreenDefinition[],
   content: ContentState[]
 ): Array<{ name: string, colSpan: number }> {
-  let screen = screenDefinitions[screenDefinitions.length - 1]
-  const screens = screenDefinitions.filter((s) => {
-    return s.value > window.innerWidth
-  }).reverse()
-
-  // Find the smallest defined screen size that can handle current screen width
-  if (screens.length) {
-    screen = screens[screens.length - 1]
-  }
+  // Find the largest defined breakpoint that does not exceed the current viewport
+  const screens = screenDefinitions.filter((s) => s.value <= window.innerWidth)
+  const screen = screens.length
+    ? screens[screens.length - 1]
+    : screenDefinitions[0]
 
   // Extracts all current views based from components content as name/wanted minimum width
   const views = content

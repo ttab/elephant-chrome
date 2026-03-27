@@ -8,12 +8,12 @@ import { EventsList } from './EventsList'
 import { Header } from '@/components/Header'
 import { Commands } from '@/components/Commands'
 import { eventTableColumns } from './EventsListColumns'
-import { type Event } from '@/shared/schemas/event'
 import { useSections } from '@/hooks/useSections'
 import { useQuery } from '@/hooks/useQuery'
 import { useOrganisers } from '@/hooks/useOrganisers'
 import { useRegistry } from '@/hooks/useRegistry'
 import { useInitFilters } from '@/hooks/useInitFilters'
+import type { PreprocessedEventData } from './preprocessor'
 import { useTranslation } from 'react-i18next'
 
 const meta: ViewMetadata = {
@@ -44,21 +44,21 @@ export const Events = (): JSX.Element => {
     eventTableColumns({ sections, organisers, locale }, t), [sections, organisers, locale, t])
 
   // Load current filters from user tracker if any
-  const columnFilters = useInitFilters<Event>({
+  const columnFilters = useInitFilters<PreprocessedEventData>({
     path: 'filters.Events.current',
     columns
   })
 
   return (
     <View.Root tab={currentTab} onTabChange={setCurrentTab}>
-      <TableProvider<Event>
+      <TableProvider<PreprocessedEventData>
         type={meta.name}
         columns={columns}
         initialState={{
           grouping: ['newsvalue'],
           columnFilters,
           globalFilter: query.query,
-          sorting: [{ id: 'newsvalue', desc: true }]
+          sorting: [{ id: 'newsvalue', desc: true }, { id: 'startTime', desc: false }]
         }}
       >
         <TableCommandMenu heading='Events'>
@@ -76,7 +76,7 @@ export const Events = (): JSX.Element => {
 
         <View.Content>
           <TabsContent value='list' className='mt-0'>
-            <EventsList />
+            <EventsList columns={columns} />
           </TabsContent>
 
           <TabsContent value='grid'>

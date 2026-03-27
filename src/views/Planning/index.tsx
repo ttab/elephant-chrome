@@ -21,7 +21,8 @@ import { SluglineEditable } from '@/components/DataItem/SluglineEditable'
 import { Button } from '@ttab/elephant-ui'
 import { useSession } from 'next-auth/react'
 import { PlanningHeader } from './components/PlanningHeader'
-import React, { type SetStateAction, useMemo, type JSX } from 'react'
+import React, { type SetStateAction, useMemo, useState, useEffect, type JSX } from 'react'
+import { cn } from '@ttab/elephant-ui/utils'
 import type { NewItem } from '../Event/components/PlanningTable'
 import { RelatedEvents } from './components/RelatedEvents'
 import type { Block, Document } from '@ttab/elephant-api/newsdoc'
@@ -125,7 +126,15 @@ const PlanningViewContent = (props: ViewProps & {
 
     ]
   })
-  const { provider, ele: document, connected } = ydoc
+  const { provider, ele: document, connected, synced } = ydoc
+  const [showSkeleton, setShowSkeleton] = useState(!synced)
+
+  useEffect(() => {
+    if (synced) {
+      const timer = setTimeout(() => setShowSkeleton(false), 250)
+      return () => clearTimeout(timer)
+    }
+  }, [synced])
 
   const { data: session, status } = useSession()
   const [documentStatus] = useWorkflowStatus({ ydoc })
@@ -201,93 +210,105 @@ const PlanningViewContent = (props: ViewProps & {
       />
 
       <View.Content className='max-w-[1000px]'>
-        <Form.Root asDialog={props.asDialog}>
-          <Form.Content>
-            <Form.Title>
-              <TextInput
+        <div className='relative'>
+          <Form.Root asDialog={props.asDialog}>
+            <Form.Content>
+              <Form.Title>
+                <TextInput
+                  ydoc={ydoc}
+                  value={title}
+                  label={t('core:labels.title')}
+                  placeholder={t('planning:title')}
+                  autoFocus={props.asDialog === true}
+                />
+              </Form.Title>
+
+              <TextBox
                 ydoc={ydoc}
-                value={title}
-                label={t('core:labels.title')}
-                placeholder={t('planning:title')}
-                autoFocus={props.asDialog === true}
-              />
-            </Form.Title>
-
-            <TextBox
-              ydoc={ydoc}
-              value={publicDescription}
-              icon={<TextIcon size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />}
-              placeholder={t('planning:description.public')}
-            />
-
-            <TextBox
-              ydoc={ydoc}
-              value={internalDescription}
-              icon={<MessageCircleMoreIcon size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />}
-              placeholder={t('planning:description.internal')}
-            />
-
-            <Form.Group icon={CalendarIcon}>
-              <PlanDate ydoc={ydoc} asDialog={!!props.asDialog} />
-            </Form.Group>
-
-            <Form.Group icon={TagsIcon}>
-              <SluglineEditable
-                ydoc={ydoc}
-                value={slugline}
-                documentStatus={documentStatus?.name}
+                value={publicDescription}
+                icon={<TextIcon size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />}
+                placeholder={t('planning:description.public')}
               />
 
-              <Newsvalue ydoc={ydoc} path='meta.core/newsvalue[0].value' />
-            </Form.Group>
+              <TextBox
+                ydoc={ydoc}
+                value={internalDescription}
+                icon={<MessageCircleMoreIcon size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />}
+                placeholder={t('planning:description.internal')}
+              />
 
-            <Form.Group icon={TagsIcon}>
-              <Section ydoc={ydoc} path='links.core/section[0]' />
-              <Story ydoc={ydoc} path='links.core/story[0]' />
-            </Form.Group>
-          </Form.Content>
+              <Form.Group icon={CalendarIcon}>
+                <PlanDate ydoc={ydoc} asDialog={!!props.asDialog} />
+              </Form.Group>
 
-          <Form.Table>
-            <AssignmentTable
-              ydoc={ydoc}
-              asDialog={props.asDialog}
-              documentId={props.documentId}
-            />
-            <RelatedEvents events={relatedEvents} />
-            {!props.asDialog && <DuplicatesTable documentId={props.documentId} type='core/planning-item' />}
-            {copyGroupId && !props.asDialog && <CopyGroup copyGroupId={copyGroupId} type='core/planning-item' />}
-          </Form.Table>
+              <Form.Group icon={TagsIcon}>
+                <SluglineEditable
+                  ydoc={ydoc}
+                  value={slugline}
+                  documentStatus={documentStatus?.name}
+                />
 
-          <Form.Footer>
-            {!environmentIsSane && (
-              <UserMessage asDialog={!!props.asDialog} className='pb-6'>
-                {t('errors:messages.unwellEnvironment')}
-              </UserMessage>
+                <Newsvalue ydoc={ydoc} path='meta.core/newsvalue[0].value' />
+              </Form.Group>
 
-            )}
+              <Form.Group icon={TagsIcon}>
+                <Section ydoc={ydoc} path='links.core/section[0]' />
+                <Story ydoc={ydoc} path='links.core/story[0]' />
+              </Form.Group>
+            </Form.Content>
 
-            <Form.Submit
-              onSubmit={() => { void handleSubmit({ documentStatus: 'usable' }) }}
-              onSecondarySubmit={() => { void handleSubmit({ documentStatus: 'done' }) }}
-              onTertiarySubmit={() => { void handleSubmit({ documentStatus: undefined }) }}
-              disableOnSubmit
-            >
-              <div className='flex justify-between'>
-                <div className='flex gap-2'>
-                  <Button type='button' variant='secondary' role='tertiary' disabled={!environmentIsSane}>
-                    {t('core:status.draft')}
-                  </Button>
-                  <Button type='button' variant='secondary' role='secondary' disabled={!environmentIsSane}>
-                    {t('core:status.internal')}
+            <Form.Table>
+              <AssignmentTable
+                ydoc={ydoc}
+                asDialog={props.asDialog}
+                documentId={props.documentId}
+              />
+              <RelatedEvents events={relatedEvents} />
+              {!props.asDialog && <DuplicatesTable documentId={props.documentId} type='core/planning-item' />}
+              {copyGroupId && !props.asDialog && <CopyGroup copyGroupId={copyGroupId} type='core/planning-item' />}
+            </Form.Table>
+
+            <Form.Footer>
+              {!environmentIsSane && (
+                <UserMessage asDialog={!!props.asDialog} className='pb-6'>
+                  {t('errors:messages.unwellEnvironment')}
+                </UserMessage>
+              )}
+
+              <Form.Submit
+                onSubmit={() => { void handleSubmit({ documentStatus: 'usable' }) }}
+                onSecondarySubmit={() => { void handleSubmit({ documentStatus: 'done' }) }}
+                onTertiarySubmit={() => { void handleSubmit({ documentStatus: undefined }) }}
+                disableOnSubmit
+              >
+                <div className='flex justify-between'>
+                  <div className='flex gap-2'>
+                    <Button type='button' variant='secondary' role='tertiary' disabled={!environmentIsSane}>
+                      {t('core:status.draft')}
+                    </Button>
+                    <Button type='button' variant='secondary' role='secondary' disabled={!environmentIsSane}>
+                      {t('core:status.internal')}
+                    </Button>
+                  </div>
+                  <Button type='submit' disabled={!environmentIsSane}>
+                    {t('common:actions.publish')}
                   </Button>
                 </div>
-                <Button type='submit' disabled={!environmentIsSane}>
-                  {t('common:actions.publish')}
-                </Button>
-              </div>
-            </Form.Submit>
-          </Form.Footer>
-        </Form.Root>
+              </Form.Submit>
+            </Form.Footer>
+          </Form.Root>
+
+          {showSkeleton && (
+            <div
+              className={cn(
+                'absolute inset-0 bg-background pointer-events-none transition-opacity duration-200',
+                synced ? 'opacity-0' : 'opacity-100'
+              )}
+            >
+              <Form.Skeleton />
+            </div>
+          )}
+        </div>
       </View.Content>
     </View.Root>
   )

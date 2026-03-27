@@ -1,4 +1,3 @@
-import { vi } from 'vitest'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import { articleDocumentTemplate } from '@/shared/templates/articleDocumentTemplate'
 import { getSystemLanguage, setSystemLanguage } from '@/shared/getSystemLanguage'

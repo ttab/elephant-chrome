@@ -16,6 +16,7 @@ import { Workflow } from '@/shared/Workflow'
 import { User } from '@/shared/User'
 import type { LocaleData } from '@/types'
 import { Baboon } from '@/shared/Baboon'
+import { RepositorySocket } from '@/shared/RepositorySocket'
 import { setSystemLanguage } from '@/shared/getSystemLanguage'
 import { initI18n } from '@/lib/i18n'
 import { useTranslation } from 'react-i18next'
@@ -47,6 +48,7 @@ export interface RegistryProviderState {
   spellchecker?: Spellchecker
   user?: User
   baboon?: Baboon
+  repositorySocket?: RepositorySocket
   dispatch: React.Dispatch<Partial<RegistryProviderState>>
   userColor: string
 }
@@ -87,7 +89,7 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
   const [initError, setInitError] = useState<string | null>(null)
 
   useEffect(() => {
-    const initialize = async () => {
+    const initialize = async (): Promise<RepositorySocket | undefined> => {
       try {
         const { urls: server, envs, featureFlags } = await getServerEnvs()
         setSystemLanguage(envs.systemLanguage)
@@ -95,12 +97,19 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
 
         const locale = defaultLocale
 
+        const repositorySocketUrl = new URL(server.repositoryUrl)
+        repositorySocketUrl.protocol = repositorySocketUrl.protocol === 'https:' ? 'wss:' : 'ws:'
+        repositorySocketUrl.pathname = '/websocket'
+
         const repository = new Repository(server.repositoryUrl.href)
         const workflow = new Workflow(server.repositoryUrl.href)
         const index = new Index(server.indexUrl.href)
         const spellchecker = new Spellchecker(server.spellcheckUrl.href)
         const user = new User(server.userUrl.href)
         const baboon = new Baboon(server.baboonUrl.href)
+
+
+        const repositorySocket = new RepositorySocket(repositorySocketUrl.href, repository)
 
         dispatch({
           server,
@@ -111,9 +120,12 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
           index,
           spellchecker,
           user,
-          baboon
+          baboon,
+          repositorySocket
         })
         setIsInitialized(true)
+
+        return repositorySocket
       } catch (ex) {
         const message = ex instanceof Error ? ex.message : 'Unknown error'
         console.error(`Failed initializing RegistryProvider: ${message}`, ex)
@@ -121,7 +133,15 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
       }
     }
 
-    void initialize()
+    let repositorySocket: RepositorySocket | undefined
+
+    void initialize().then((socket) => {
+      repositorySocket = socket
+    })
+
+    return () => {
+      repositorySocket?.disconnect()
+    }
   }, [])
 
   if (initError) {
@@ -154,7 +174,7 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
  * Registry context reducer
  */
 const reducer = (state: RegistryProviderState, action: Partial<RegistryProviderState>): RegistryProviderState => {
-  const { locale, timeZone, featureFlags, server, repository, workflow, index, spellchecker, user, baboon } = action
+  const { locale, timeZone, featureFlags, server, repository, workflow, index, spellchecker, user, baboon, repositorySocket } = action
   const partialState: Partial<RegistryProviderState> = {}
 
   if (typeof locale === 'object') {
@@ -191,6 +211,10 @@ const reducer = (state: RegistryProviderState, action: Partial<RegistryProviderS
 
   if (typeof baboon === 'object') {
     partialState.baboon = baboon
+  }
+
+  if (typeof repositorySocket === 'object') {
+    partialState.repositorySocket = repositorySocket
   }
 
   if (typeof featureFlags === 'object') {

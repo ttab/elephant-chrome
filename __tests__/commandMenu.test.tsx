@@ -4,15 +4,15 @@ import { render, screen } from '../setupTests'
 import { CommandMenu } from '@/components/Commands/Menu'
 import userEvent from '@testing-library/user-event'
 import { planningListColumns } from '@/views/PlanningOverview/PlanningListColumns'
-import { type Planning } from '@/shared/schemas/planning'
 import type { HistoryState } from '@/navigation/hooks/useHistory'
+import type { PreprocessedPlanningData } from '@/views/PlanningOverview/preprocessor'
 import i18n from '@/lib/i18n'
 
 describe('CommandMenu', () => {
   it('should render CommandMenu component', async () => {
     render(
       <NavigationProvider>
-        <TableProvider<Planning>
+        <TableProvider<PreprocessedPlanningData>
           type='Plannings'
           columns={planningListColumns({}, i18n.t)}
         >

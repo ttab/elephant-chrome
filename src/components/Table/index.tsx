@@ -1,3 +1,6 @@
+import type {
+  PropsWithChildren
+} from 'react'
 import {
   type MouseEvent,
   useEffect,
@@ -12,11 +15,8 @@ import {
 
 import {
   Table as _Table,
-  TableBody,
-  TableCell,
-  TableRow
+  TableBody
 } from '@ttab/elephant-ui'
-import { Toolbar } from './Toolbar'
 import {
   useNavigation,
   useView,
@@ -26,223 +26,190 @@ import {
   useOpenDocuments
 } from '@/hooks'
 import { handleLink } from '@/components/Link/lib/handleLink'
-import { NewItems } from './NewItems'
-import { LoadingText } from '../LoadingText'
 import { Row } from './Row'
 import { useModal } from '../Modal/useModal'
 import { GroupedRows } from './GroupedRows'
-import { type View } from '@/types/index'
-import { useTranslation } from 'react-i18next'
-const BASE_URL = import.meta.env.BASE_URL
+import type { TableRowData, NavigationParams } from './types'
+import type { NavigationKey } from '@/hooks/useNavigationKeys'
 
-interface TableProps<TData, TValue> {
+const NAVIGATION_KEYS: NavigationKey[] = ['ArrowUp', 'ArrowDown', 'Enter', 'Escape', ' ']
+
+interface TableProps<TData extends TableRowData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
-  type: 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Factbox' | 'Print' | 'PrintEditor'
   onRowSelected?: (row?: TData) => void
+  resolveNavigation?: (row: TData) => NavigationParams
+  rowAlign?: 'start' | 'center'
 }
 
-function getNextTableIndex(
-  rows: Record<string, RowType<unknown>>,
-  selectedRowIndex: number | undefined,
-  direction: 'ArrowUp' | 'ArrowDown'): number | undefined {
-  const keys = Object.keys(rows)
-    .map(Number)
-    .filter((numKey) => !isNaN(numKey))
-
-  if (keys.length === 0) {
-    return undefined
-  }
-
-  let currentIndex = selectedRowIndex !== undefined ? keys.indexOf(selectedRowIndex) : -1
-
-  if (direction === 'ArrowDown') {
-    if (currentIndex < keys.length - 1) {
-      currentIndex += 1
-    } else {
-      return undefined
-    }
-  } else if (direction === 'ArrowUp') {
-    if (currentIndex > 0) {
-      currentIndex -= 1
-    } else {
-      return undefined
-    }
-  }
-
-  return keys[currentIndex]
-}
-
-export const Table = <TData, TValue>({
+export const Table = <TData extends TableRowData, TValue>({
   columns,
-  type,
   onRowSelected,
-  searchType
-}: TableProps<TData, TValue> & { searchType?: View }): JSX.Element => {
+  resolveNavigation,
+  rowAlign,
+  children
+}: TableProps<TData, TValue> & PropsWithChildren): JSX.Element => {
   const { state, dispatch } = useNavigation()
   const history = useHistory()
   const { viewId: origin } = useView()
-  const { table, loading } = useTable()
+  const { table } = useTable<TData>()
   const openDocuments = useOpenDocuments({ idOnly: true })
   const { hideModal, currentModal } = useModal()
-  const { t } = useTranslation()
 
-  const handleOpen = useCallback((event: MouseEvent<HTMLTableRowElement> | KeyboardEvent, row: RowType<unknown>): void => {
+  const availableRows = table.getRowModel().rows
+  const groupingLength = table.getState().grouping.length
+
+  const { navigableRows, rowIndexMap } = useMemo(() => {
+    const hasGrouping = groupingLength > 0
+    const rows = hasGrouping
+      ? availableRows.flatMap((row) =>
+        row.subRows && row.subRows.length > 0 ? row.subRows : []
+      )
+      : availableRows
+
+    // Create O(1) lookup map: row.id -> index
+    const indexMap = new Map<string, number>()
+    rows.forEach((row, index) => {
+      indexMap.set(row.id, index)
+    })
+
+    return {
+      navigableRows: rows,
+      rowIndexMap: indexMap
+    }
+  }, [availableRows, groupingLength])
+
+  const handleOpen = useCallback((event: MouseEvent<HTMLTableRowElement> | KeyboardEvent, row: RowType<TData>): void => {
     const target = event.target as HTMLElement
     if (target && 'dataset' in target && !target.dataset.rowAction) {
-      if (!onRowSelected) {
+      if (!onRowSelected && !resolveNavigation) {
         return
       }
 
-      const originalRow = row.original as { _id: string | undefined, id: string, fields?: Record<string, string[]> }
-      const id = originalRow._id ?? originalRow.id
-
-      const articleClick = type === 'Search' && searchType === 'Editor'
-
-      let usableVersion
-
-      if (articleClick) {
-        usableVersion = !articleClick ? undefined : originalRow?.fields?.['heads.usable.version']?.[0] as bigint | undefined
+      // Strip __updater metadata before navigation. Ie mark as "read"
+      if ('__updater' in row.original) {
+        delete (row.original as Record<string, unknown>).__updater
       }
+
+      const navParams = resolveNavigation
+        ? resolveNavigation(row.original)
+        : { id: row.original.id }
 
       handleLink({
         event,
         dispatch,
-        viewItem: state.viewRegistry.get(!searchType ? type : searchType),
-        props: { id },
+        viewItem: state.viewRegistry.get(navParams.opensWith || 'Error'),
+        props: { id: navParams.id, version: navParams.version },
         viewId: crypto.randomUUID(),
         origin,
         history,
         keepFocus: (event as KeyboardEvent)?.key === ' ',
-        ...((articleClick && usableVersion) && {
+        ...(navParams.version && {
           readOnly: {
-            version: BigInt(usableVersion)
+            version: BigInt(navParams.version)
           }
         })
       })
     }
-  }, [dispatch, state.viewRegistry, onRowSelected, origin, type, history, searchType])
+  }, [dispatch, state.viewRegistry, onRowSelected, origin, history, resolveNavigation])
 
-  useNavigationKeys({
-    keys: ['ArrowUp', 'ArrowDown', 'Enter', 'Escape', ' '],
-    onNavigation: (event) => {
-      const rows = table.getRowModel().rowsById
-      if (!Object.values(rows)?.length) {
-        return
+  const handleNavigation = useCallback((event: KeyboardEvent): void => {
+    if (!navigableRows?.length) {
+      return
+    }
+
+    const selectedRow = table.getGroupedSelectedRowModel()?.flatRows?.[0]
+
+    if (event.key === 'Enter' && selectedRow) {
+      hideModal()
+      handleOpen(event, selectedRow)
+      return
+    }
+
+    if (event.key === ' ' && selectedRow) {
+      handleOpen(event, selectedRow)
+      return
+    }
+
+    if (event.key === 'Escape') {
+      selectedRow?.toggleSelected(false)
+      return
+    }
+
+    if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+      const currentIndex = selectedRow ? (rowIndexMap.get(selectedRow.id) ?? -1) : -1
+
+      let nextIndex: number | undefined
+
+      if (currentIndex === -1) {
+        // No row selected, select first or last based on direction
+        nextIndex = event.key === 'ArrowDown' ? 0 : navigableRows.length - 1
+      } else if (event.key === 'ArrowDown' && currentIndex < navigableRows.length - 1) {
+        nextIndex = currentIndex + 1
+      } else if (event.key === 'ArrowUp' && currentIndex > 0) {
+        nextIndex = currentIndex - 1
       }
 
-      const selectedRow = table.getGroupedSelectedRowModel()?.flatRows?.[0]
-
-      if (event.key === 'Enter' && selectedRow) {
-        hideModal()
-        handleOpen(event, selectedRow)
-        return
-      }
-
-      if (event.key === ' ' && selectedRow) {
-        handleOpen(event, selectedRow)
-        return
-      }
-
-      if (event.key === 'Escape') {
-        selectedRow?.toggleSelected(false)
-        return
-      }
-
-      if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
-        const nextKey = getNextTableIndex(rows, selectedRow?.index, event.key)
-        if (nextKey !== undefined) {
-          rows[nextKey].toggleSelected(true)
-        }
+      if (nextIndex !== undefined && navigableRows[nextIndex]) {
+        navigableRows[nextIndex].toggleSelected(true)
 
         // Open next row if PreviewSheet is open
-        if (currentModal && nextKey) {
-          handleOpen(event, rows[nextKey])
+        if (currentModal) {
+          handleOpen(event, navigableRows[nextIndex])
         }
-
-        return
       }
+
+      return
     }
+  }, [navigableRows, rowIndexMap, table, handleOpen, hideModal, currentModal])
+
+  useNavigationKeys({
+    keys: NAVIGATION_KEYS,
+    onNavigation: handleNavigation
   })
 
   useEffect(() => {
     if (onRowSelected) {
       const selectedRows = table.getSelectedRowModel()
-      // @ts-expect-error unknown type
       onRowSelected(selectedRows?.rows[0]?.original)
     }
   }, [table, onRowSelected])
 
   const rows = table.getRowModel().rows
-  const rowSelection = table.getState().rowSelection
 
   const TableBodyElement = useMemo(() => {
-    if (loading || !rows?.length) {
-      const isSearchTable = window.location.pathname.includes(`${BASE_URL}/search`)
-      return (
-        <TableRow>
-          <TableCell
-            colSpan={columns.length}
-            className='h-24 text-center'
-          >
-            <LoadingText>
-              {loading
-                ? isSearchTable
-                  ? ''
-                  : t('common:misc.loading')
-                : t('errors:messages.noResultsFound')}
-            </LoadingText>
-          </TableCell>
-        </TableRow>
-      )
-    }
-    const isAssignmentsTable = window.location.pathname.includes(`${BASE_URL}/assignments`)
+    const isGrouped = groupingLength > 0
 
-    return rows.map((row, index) => (
-      table.getState().grouping.length)
+    return rows.map((row) => isGrouped
       ? (
           <GroupedRows<TData, TValue>
-            key={index}
-            type={isAssignmentsTable ? 'Assignments' : type}
+            key={row.id}
             row={row}
             columns={columns}
             handleOpen={handleOpen}
             openDocuments={openDocuments}
+            align={rowAlign}
           />
         )
       : (
           <Row
-            key={index}
-            type={isAssignmentsTable ? 'Assignments' : type}
+            key={row.id}
             row={row}
             handleOpen={handleOpen}
             openDocuments={openDocuments}
+            align={rowAlign}
           />
         )
     )
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rows, columns, loading, handleOpen, table, rowSelection])
+  }, [rows, columns, handleOpen, groupingLength, openDocuments, rowAlign])
 
   return (
     <>
-      {!['Factbox', 'Search'].includes(type) && (
-        <Toolbar />
-      )}
-      {(type === 'Planning' || type === 'Event') && (
-        <NewItems.Root>
-          <NewItems.Table
-            header={t('planning:yourNewType', { type: (type === 'Planning' ? t('event:subheadings.plannings') : t('event:subheadings.events')) })}
-            type={type}
-          />
-        </NewItems.Root>
-      )}
-
-      {(type !== 'Search' || !loading) && (
-        <_Table className='table-auto relative'>
-          <TableBody>
-            {TableBodyElement}
-          </TableBody>
-        </_Table>
-      )}
+      {children}
+      <_Table className='table-fixed relative'>
+        <TableBody>
+          {TableBodyElement}
+        </TableBody>
+      </_Table>
     </>
   )
 }

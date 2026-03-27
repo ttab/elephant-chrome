@@ -86,5 +86,18 @@
       "image": "Bild",
       "graphic": "Grafikk"
     }
+  },
+  "latest": {
+    "label": {
+      "singular": "Publiseringstidspunkt",
+      "plural": "Publiseringstidspunkt"
+    },
+    "columnLabels": {
+      "publishTime": "Publiseringstidspunkt"
+    },
+    "actions": {
+      "openPlanning": "Åpne planlegging",
+      "createPrintArticle": "Opprett printartikkel"
+    }
   }
 }

@@ -17,15 +17,11 @@ import { useTranslation } from 'react-i18next'
  * Options for augmenting or performing the fetch in the `useDocuments` hook.
  *
  * @property {boolean} aggregatePages - Aggregates pages into a single result.
- * @property {boolean} withStatus - Append current status to `document.meta.status` field.
- * @property {boolean} withPlannings - Append `_relatedPlannings` to the result.
  * @property {boolean} setTableData - Set the data in the table context.
  * @property {boolean} subscribe - Subscribe to document changes.
  */
 export interface useDocumentsFetchOptions {
   aggregatePages?: boolean
-  withStatus?: boolean
-  withPlannings?: boolean
   asAssignments?: boolean
   setTableData?: boolean
   subscribe?: boolean
@@ -61,7 +57,7 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
   disabled?: boolean
 }): SWRResponse<T[], Error> => {
   const { data: session } = useSession()
-  const { index, repository } = useRegistry()
+  const { index } = useRegistry()
   const { setData } = useTable<T>()
   const [subscriptions, setSubscriptions] = useState<SubscriptionReference[]>()
   const subscriptionsRef = useRef<SubscriptionReference[] | undefined>(subscriptions)
@@ -91,7 +87,6 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
   const fetcher = useMemo(() => (): Promise<T[]> =>
     fetch<T, F>({
       index,
-      repository,
       session,
       page,
       size,
@@ -102,7 +97,7 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
       options,
       setSubscriptions
     }),
-  [index, repository, session, page, size, documentType, query, fields, sort, options])
+  [index, session, page, size, documentType, query, fields, sort, options])
 
   const { data, error, mutate, isLoading, isValidating } = useSWR<T[], Error>(key, fetcher)
 

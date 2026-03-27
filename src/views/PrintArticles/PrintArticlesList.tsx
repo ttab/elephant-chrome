@@ -8,6 +8,8 @@ import { constructQuery } from '@/hooks/baboon/useDocuments/printArticle'
 import { fields, type PrintArticleFields } from '@/hooks/baboon/lib/printArticles/schema'
 import { SortingV1 } from '@ttab/elephant-api/index'
 import type { JSX } from 'react'
+import { TableSkeleton } from '@/components/Table/Skeleton'
+import { Toolbar } from '@/components/Table/Toolbar'
 
 /**
  * PrintArticleList component.
@@ -31,7 +33,7 @@ export const PrintArticleList = ({ columns }: {
 }): JSX.Element => {
   const [filter] = useQuery(['from', 'printFlow', 'workflowState'])
 
-  useDocuments<PrintArticle, PrintArticleFields>({
+  const { isLoading } = useDocuments<PrintArticle, PrintArticleFields>({
     documentType: 'tt/print-article',
     query: constructQuery(filter),
     size: 1000,
@@ -55,13 +57,21 @@ export const PrintArticleList = ({ columns }: {
     return row
   }, [])
 
+
+  if (isLoading) {
+    return <TableSkeleton columns={columns} />
+  }
+
   return (
-    <>
-      <Table
-        type='PrintEditor'
-        columns={columns}
-        onRowSelected={onRowSelected}
-      />
-    </>
+    <Table
+      columns={columns}
+      onRowSelected={onRowSelected}
+      resolveNavigation={(row) => ({
+        id: row.id,
+        opensWith: 'PrintEditor'
+      })}
+    >
+      <Toolbar />
+    </Table>
   )
 }

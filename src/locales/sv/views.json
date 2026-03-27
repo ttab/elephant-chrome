@@ -86,5 +86,18 @@
       "image": "Bild",
       "graphic": "Grafik"
     }
+  },
+  "latest": {
+    "label": {
+      "singular": "Publiceringstid",
+      "plural": "Publiceringstid"
+    },
+    "columnLabels": {
+      "publishTime": "Publiceringstid"
+    },
+    "actions": {
+      "openPlanning": "Öppna planering",
+      "createPrintArticle": "Skapa printartikel"
+    }
   }
 }

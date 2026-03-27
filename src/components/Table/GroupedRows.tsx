@@ -2,14 +2,14 @@ import React, { type MouseEvent, type JSX } from 'react'
 import { type ColumnDef, type Row as RowType } from '@tanstack/react-table'
 import { GroupedRowsHeader } from './GroupedRowsHeader'
 import { Row } from './Row'
+import type { TableRowData } from './types'
 
-export const GroupedRows = <TData, TValue>({ row, columns, handleOpen, openDocuments, type }: {
-  activeId?: string
-  row: RowType<unknown>
-  type: 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Factbox' | 'Print' | 'PrintEditor'
+export const GroupedRows = <TData extends TableRowData, TValue>({ row, columns, handleOpen, openDocuments, align }: {
+  row: RowType<TData>
   columns: Array<ColumnDef<TData, TValue>>
-  handleOpen: (event: MouseEvent<HTMLTableRowElement> | KeyboardEvent, subRow: RowType<unknown>) => void
+  handleOpen: (event: MouseEvent<HTMLTableRowElement> | KeyboardEvent, subRow: RowType<TData>) => void
   openDocuments: string[]
+  align?: 'start' | 'center'
 }): JSX.Element => {
   if (!row.subRows.length) {
     return <></>
@@ -22,10 +22,10 @@ export const GroupedRows = <TData, TValue>({ row, columns, handleOpen, openDocum
       {row.subRows.map((subRow) => (
         <Row
           key={subRow.id}
-          type={type}
           row={subRow}
           handleOpen={handleOpen}
           openDocuments={openDocuments}
+          align={align}
         />
       ))}
     </React.Fragment>

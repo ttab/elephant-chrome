@@ -86,5 +86,18 @@
       "image": "Image",
       "graphic": "Graphic"
     }
+  },
+  "latest": {
+    "label": {
+      "singular": "Publish time",
+      "plural": "Publish time"
+    },
+    "columnLabels": {
+      "publishTime": "Publish time"
+    },
+    "actions": {
+      "openPlanning": "Open planning",
+      "createPrintArticle": "Create print article"
+    }
   }
 }

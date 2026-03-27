@@ -1,29 +1,21 @@
-import type { AssignmentInterface } from '@/hooks/index/useAssignments'
+import type { PreprocessedApprovalData } from './preprocessor'
 import { useAuthors } from '@/hooks/useAuthors'
 import { useMemo, type JSX } from 'react'
 import { UserIcon, PenIcon, AwardIcon } from 'lucide-react'
 import type { IDBAuthor } from 'src/datastore/types'
 import type { StatusMeta } from '@/types'
-import type { Status, StatusOverviewItem } from '@ttab/elephant-api/repository'
+import type { Status, DocumentMeta } from '@ttab/elephant-api/repository'
 import { getAuthorBySub } from '@/lib/getAuthorBySub'
 import { getDocumentStatuses } from '@/defaults/documentStatuses'
 import { useTranslation } from 'react-i18next'
 import type { TFunction, Namespace } from 'i18next'
 import type { TranslationKey } from '@/types/i18next.d'
 
-export const AuthorNames = ({ assignment }: { assignment: AssignmentInterface }): JSX.Element => {
+export const AuthorNames = ({ item }: { item: PreprocessedApprovalData }): JSX.Element => {
   const authors = useAuthors()
   const { t } = useTranslation()
 
-  // Parse status data only if it exists and changes
-  const statusData = useMemo<StatusOverviewItem | null>(() => {
-    if (!assignment?._statusData) return null
-    try {
-      return JSON.parse(assignment._statusData) as StatusOverviewItem
-    } catch {
-      return null
-    }
-  }, [assignment?._statusData])
+  const statusData = item._deliverable?.meta || null
 
   // Memoize sorted status entries
   const entries = useMemo<[string, Status][]>(() => {
@@ -35,15 +27,13 @@ export const AuthorNames = ({ assignment }: { assignment: AssignmentInterface })
 
   // Get last status update and author
   const lastUpdated = entries[0]?.[1]
-  const lastUpdatedById = useMemo(() => extractId(lastUpdated?.creator), [lastUpdated])
-  const lastStatusUpdateAuthor = useMemo(() =>
-    authors.find((a) => lastUpdatedById && lastUpdatedById === extractId(a?.sub)),
-  [authors, lastUpdatedById])
+  const lastStatusUpdateAuthor = useMemo(() => getAuthorBySub(authors, lastUpdated?.creator),
+    [authors, lastUpdated?.creator])
 
   // Get display and full text for tooltip
   const { display, full } = useMemo(
-    () => getDisplayAndFull(assignment, authors, entries, statusData, t),
-    [assignment, authors, entries, statusData, t]
+    () => getDisplayAndFull(item, authors, entries, statusData, t),
+    [item, authors, entries, statusData, t]
   )
 
   // Optionally append last status setter if not draft/done
@@ -96,14 +86,14 @@ export const AuthorNames = ({ assignment }: { assignment: AssignmentInterface })
 
 // Helper to get display and full tooltip text
 function getDisplayAndFull<Ns extends Namespace>(
-  assignment: AssignmentInterface,
+  item: PreprocessedApprovalData,
   authors: IDBAuthor[],
   entries: [string, Status][],
-  statusData: StatusOverviewItem | null,
+  statusData: DocumentMeta | null,
   t: TFunction<Ns>
 ) {
   // Prefer byline from deliverable document
-  const byline = (assignment?._deliverableDocument?.links ?? [])
+  const byline = (item._deliverable?.document?.links ?? [])
     .filter((l) => l.type === 'core/author')
     .map((author) => author.title)
     .join(', ')
@@ -183,8 +173,7 @@ function getDisplayAndFull<Ns extends Namespace>(
 // Find author who set status Done
 function doneStatusName(doneStatus?: StatusMeta, authors?: IDBAuthor[]): IDBAuthor | undefined {
   if (!doneStatus || !authors) return undefined
-  const creatorId = extractId(doneStatus.creator)
-  return authors.find((a) => creatorId === extractId(a?.sub))
+  return getAuthorBySub(authors, doneStatus?.creator)
 }
 
 // Find author who set a status, then get the author who set the previous status
@@ -195,13 +184,7 @@ function getAuthorAfterSetStatus(
 ) {
   const statusIndex = entries.findIndex((entry) => entry[0] === status)
   const afterStatus = entries[statusIndex - 1]?.[1]
-  const creatorId = extractId(afterStatus?.creator)
-  return (authors || []).find((a) => creatorId && creatorId === extractId(a?.sub))
-}
-
-// Extract ID from URI
-function extractId(uri: string = '') {
-  return uri.slice(uri.lastIndexOf('/'))
+  return getAuthorBySub(authors, afterStatus?.creator)
 }
 
 // Format author name to initials
