@@ -38,6 +38,7 @@ export const StatusMenu = ({ ydoc, onBeforeStatusChange, planningId }: {
   const history = useHistory()
   const { viewId } = useView()
   const { t } = useTranslation()
+  const viewElement = document.getElementById(viewId)
 
   // Read workflow specifications from current type and current status
   const isWorkflow = documentStatus?.type
@@ -209,6 +210,7 @@ export const StatusMenu = ({ ydoc, onBeforeStatusChange, planningId }: {
               setStatus={(...args) => void setStatus(...args)}
               planningId={planningId}
               requireCause={!!documentStatus.checkpoint}
+              anchor={viewElement}
             />
           )}
 
@@ -220,6 +222,7 @@ export const StatusMenu = ({ ydoc, onBeforeStatusChange, planningId }: {
               currentCause={documentStatus.cause}
               requireCause={requireCause}
               unPublishDocument={unPublishDocument}
+              anchor={viewElement}
             />
           )}
         </>

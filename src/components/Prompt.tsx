@@ -1,4 +1,4 @@
-import { useEffect, useState, type PropsWithChildren, type JSX } from 'react'
+import { useEffect, useState, type PropsWithChildren, type JSX, useMemo } from 'react'
 import { useKeydownGlobal } from '@/hooks/useKeydownGlobal'
 import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@ttab/elephant-ui'
 import type { MouseEvent } from 'react'
@@ -16,6 +16,7 @@ interface PromptProps extends PropsWithChildren {
   disablePrimary?: boolean
   primaryVariant?: 'link' | 'secondary' | 'default' | 'destructive' | 'outline' | 'ghost' | 'icon' | null
   currentCause?: { cause: string | undefined, setCause: (value: string) => void }
+  anchor?: HTMLElement | null
 }
 
 export const Prompt = ({
@@ -29,7 +30,8 @@ export const Prompt = ({
   onSecondary,
   onCancel,
   disablePrimary = false,
-  primaryVariant
+  primaryVariant,
+  anchor
 }: PromptProps): JSX.Element => {
   useKeydownGlobal((event) => {
     if (event.key === 'Escape' && secondaryLabel && onSecondary) {
@@ -38,6 +40,15 @@ export const Prompt = ({
   })
 
   const [open, setOpen] = useState<boolean>(true)
+
+  const dialogStyle = useMemo(() => {
+    if (!anchor) return undefined
+    const rect = anchor.getBoundingClientRect()
+    return {
+      left: rect.left + rect.width / 2,
+      top: rect.top + rect.height / 2
+    }
+  }, [anchor])
 
   useEffect(() => {
     return () => {
@@ -49,6 +60,7 @@ export const Prompt = ({
     <Dialog open={open} onOpenChange={setOpen} modal={true}>
       <DialogContent
         className='z-50'
+        style={dialogStyle}
         onPointerDownOutside={() => {
           if (onSecondary) {
             onSecondary()

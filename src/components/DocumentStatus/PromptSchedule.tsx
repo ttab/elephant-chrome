@@ -13,7 +13,7 @@ import { useCollaborationDocument } from '@/hooks/useCollaborationDocument'
 import { useYValue } from '@/modules/yjs/hooks'
 import { LoaderIcon } from 'lucide-react'
 
-export const PromptSchedule = ({ prompt, planningId, setStatus, showPrompt, requireCause = false }: {
+export const PromptSchedule = ({ prompt, planningId, setStatus, showPrompt, requireCause = false, anchor }: {
   prompt: {
     status: string
   } & WorkflowTransition
@@ -23,6 +23,7 @@ export const PromptSchedule = ({ prompt, planningId, setStatus, showPrompt, requ
     status: string
   } & WorkflowTransition) | undefined>>
   requireCause?: boolean
+  anchor?: HTMLElement | null
 }) => {
   const { timeZone } = useRegistry()
   const { loading, document } = useCollaborationDocument({ documentId: planningId })
@@ -52,6 +53,7 @@ export const PromptSchedule = ({ prompt, planningId, setStatus, showPrompt, requ
   return (
     <Prompt
       title={prompt.title}
+      anchor={anchor}
       primaryLabel={prompt.title}
       secondaryLabel={t('common:actions.abort')}
       onPrimary={() => {

@@ -10,7 +10,8 @@ export const PromptDefault = ({
   showPrompt,
   requireCause = false,
   currentCause,
-  unPublishDocument
+  unPublishDocument,
+  anchor
 }: {
   prompt: {
     status: string
@@ -22,6 +23,7 @@ export const PromptDefault = ({
   requireCause?: boolean
   currentCause?: string
   unPublishDocument?: (name: string) => Promise<void>
+  anchor?: HTMLElement | null
 }) => {
   const [cause, setCause] = useState<string | undefined>(currentCause)
   const isUnpublishPrompt = prompt.status === 'unpublished'
@@ -65,6 +67,7 @@ export const PromptDefault = ({
   return (
     <Prompt
       title={prompt.title}
+      anchor={anchor}
       description={prompt.description}
       primaryLabel={prompt.title}
       secondaryLabel={t('actions.abort')}
