@@ -79,3 +79,8 @@
 .dark {
   color-scheme: dark;
 }
+
+/** Focus ring radius around block objects in Textbit */
+:root {
+  --tb-focus-ring-radius: 4px;
+}
