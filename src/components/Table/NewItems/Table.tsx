@@ -53,7 +53,7 @@ export const Table = ({ type, header }: {
 
       if (event.event === 'document'
         && event.type === eventType
-        && expiredDocuments.length
+        && expiredDocuments?.length
       ) {
         setNewDocuments(newDocuments?.filter(({ id }) => !expiredDocuments.some(({ id: expiredId }) => expiredId === id)))
         mutate()
