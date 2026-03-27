@@ -16,7 +16,7 @@ interface ServerEnvs {
   systemLanguage: string
 }
 
-type FeatureFlags = Record<string, boolean>
+type FeatureFlags = Record<string, string | boolean>
 
 interface ServerConfig {
   urls: ServerUrls
@@ -64,7 +64,7 @@ export async function getServerEnvs(): Promise<ServerConfig> {
       },
       featureFlags: {
         hasPrint: data['hasPrint'] ? !!data['hasPrint'] : false,
-        stageBanner: data['stageBanner'] ? !!data['stageBanner'] : false
+        environment: typeof data['environment'] === 'string' ? data['environment'] : ''
       }
     }
   } catch (ex) {

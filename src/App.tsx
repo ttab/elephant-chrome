@@ -8,7 +8,7 @@ import { useFeatureFlags } from './hooks/useFeatureFlags'
 import type { JSX } from 'react'
 
 export const App = (): JSX.Element => {
-  const { stageBanner } = useFeatureFlags(['stageBanner'])
+  const { environment } = useFeatureFlags(['environment'])
 
   return (
     <FaroErrorBoundary fallback={(error) => <ErrorPage error={error} />}>

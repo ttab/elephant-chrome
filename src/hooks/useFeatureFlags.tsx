@@ -12,7 +12,7 @@ export const useFeatureFlags = <T extends keyof AllowedFeatureFlag>(
 
   const resolvedFlags = {} as Pick<AllowedFeatureFlag, T>
   for (const flag of flags) {
-    resolvedFlags[flag] = featureFlags[flag] ?? false
+    resolvedFlags[flag] = featureFlags[flag] as AllowedFeatureFlag[T]
   }
 
   return resolvedFlags

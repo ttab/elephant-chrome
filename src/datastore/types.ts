@@ -67,5 +67,5 @@ export interface SupportedLanguage {
 
 export interface AllowedFeatureFlag {
   hasPrint?: boolean
-  stageBanner?: boolean
+  environment?: string
 }

@@ -11,7 +11,7 @@ export const GET = (): Promise<unknown> => {
       baboonUrl: process.env.BABOON_PUBLIC_URL ?? process.env.BABOON_URL ?? '',
       systemLanguage: process.env.SYSTEM_LANGUAGE ?? '',
       hasPrint: process.env.HAS_PRINT ?? '',
-      stageBanner: process.env.STAGE_BANNER ?? ''
+      environment: process.env.ENVIRONMENT ?? ''
     }
   })
 }
