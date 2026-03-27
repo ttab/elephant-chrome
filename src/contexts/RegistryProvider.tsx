@@ -30,7 +30,6 @@ export interface RegistryProviderState {
   locale: LocaleData
   timeZone: string
   featureFlags: FeatureFlags
-  stageBanner?: string
   server: {
     webSocketUrl: URL
     indexUrl: URL
@@ -107,7 +106,6 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
           server,
           locale,
           featureFlags,
-          stageBanner: envs.stageBanner,
           workflow,
           repository,
           index,
@@ -156,7 +154,7 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
  * Registry context reducer
  */
 const reducer = (state: RegistryProviderState, action: Partial<RegistryProviderState>): RegistryProviderState => {
-  const { locale, timeZone, featureFlags, stageBanner, server, repository, workflow, index, spellchecker, user, baboon } = action
+  const { locale, timeZone, featureFlags, server, repository, workflow, index, spellchecker, user, baboon } = action
   const partialState: Partial<RegistryProviderState> = {}
 
   if (typeof locale === 'object') {
@@ -197,10 +195,6 @@ const reducer = (state: RegistryProviderState, action: Partial<RegistryProviderS
 
   if (typeof featureFlags === 'object') {
     partialState.featureFlags = featureFlags
-  }
-
-  if (typeof stageBanner === 'string') {
-    partialState.stageBanner = stageBanner
   }
 
   return {

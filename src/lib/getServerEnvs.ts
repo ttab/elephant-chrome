@@ -14,7 +14,6 @@ interface ServerUrls {
 
 interface ServerEnvs {
   systemLanguage: string
-  stageBanner?: string
 }
 
 type FeatureFlags = Record<string, boolean>
@@ -61,13 +60,11 @@ export async function getServerEnvs(): Promise<ServerConfig> {
         repositoryEventsUrl: new URL('/sse', urls['repositoryUrl'])
       } as ServerUrls,
       envs: {
-        systemLanguage: data['systemLanguage'],
-        stageBanner: typeof data['stageBanner'] === 'string' && data['stageBanner'] !== ''
-          ? data['stageBanner']
-          : undefined
+        systemLanguage: data['systemLanguage']
       },
       featureFlags: {
-        hasPrint: data['hasPrint'] ? !!data['hasPrint'] : false
+        hasPrint: data['hasPrint'] ? !!data['hasPrint'] : false,
+        stageBanner: data['stageBanner'] ? !!data['stageBanner'] : false
       }
     }
   } catch (ex) {

@@ -3,6 +3,7 @@ import { AppContent } from './AppContent'
 import { ModalProvider } from './components/Modal/ModalProvider'
 import { FaroErrorBoundary } from '@grafana/faro-react'
 import { Error as ErrorPage } from './views'
+import { useFeatureFlags } from './hooks/useFeatureFlags'
 import type { JSX } from 'react'
 
 export const App = (): JSX.Element => (
