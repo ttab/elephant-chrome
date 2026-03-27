@@ -45,8 +45,8 @@ export function structureAssignments(
     const publishSlot = item._preprocessed.publishSlot
     let hour: number | undefined
 
-    if (status === 'withheld' && publish) {
-      // When scheduled, we want it in that particular hour.
+    if ((status === 'withheld' || status === 'usable') && publish) {
+      // When scheduled or auto-published, use the publish time.
       hour = getHours(toZonedTime(parseISO(publish), timeZone))
     } else if (hasUsable && meta?.modified) {
       hour = getHours(toZonedTime(parseISO(meta.modified), timeZone))
@@ -60,7 +60,7 @@ export function structureAssignments(
 
     let assigned = false
     for (const slot of response) {
-      if (typeof hour === 'number' && slot.hours.includes(hour)) {
+      if (Number.isInteger(hour) && slot.hours.includes(hour as number)) {
         slot.items.push(item)
         assigned = true
         break
@@ -80,15 +80,15 @@ export function structureAssignments(
       const bPublish = b._preprocessed.publishTime
 
       if (aMeta && bMeta) {
-        const aWithheld = a._deliverable?.status === 'withheld' && aPublish
-        const bWithheld = b._deliverable?.status === 'withheld' && bPublish
+        const aHasPublish = ['withheld', 'usable'].includes(a._deliverable?.status || '') && aPublish
+        const bHasPublish = ['withheld', 'usable'].includes(b._deliverable?.status || '') && bPublish
 
-        if (aWithheld && bWithheld && aPublish && bPublish) {
+        if (aHasPublish && bHasPublish && aPublish && bPublish) {
           return aPublish.localeCompare(bPublish)
         }
 
-        if (aWithheld) return -1
-        if (bWithheld) return 1
+        if (aHasPublish) return -1
+        if (bHasPublish) return 1
 
         return getTimeValue(aMeta?.modified) > getTimeValue(bMeta.modified) ? -1 : 1
       }
@@ -98,13 +98,13 @@ export function structureAssignments(
       if (aHasSlot && !bHasSlot) return -1
       if (!aHasSlot && bHasSlot) return 1
 
-      const aWithheld = a._deliverable?.status === 'withheld' && aPublish
-      const bWithheld = b._deliverable?.status === 'withheld' && bPublish
-      if (aWithheld && bWithheld && aPublish && bPublish) {
+      const aHasPublish = ['withheld', 'usable'].includes(a._deliverable?.status || '') && aPublish
+      const bHasPublish = ['withheld', 'usable'].includes(b._deliverable?.status || '') && bPublish
+      if (aHasPublish && bHasPublish && aPublish && bPublish) {
         return aPublish.localeCompare(bPublish)
       }
-      if (aWithheld) return -1
-      if (bWithheld) return 1
+      if (aHasPublish) return -1
+      if (bHasPublish) return 1
 
       const aStart = a._preprocessed.startTime
       const bStart = b._preprocessed.startTime

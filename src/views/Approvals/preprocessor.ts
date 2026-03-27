@@ -32,7 +32,6 @@ const enum E {
   AssignmentTitle,
   DeliverableUuids,
   Title,
-  Uuid,
   Start,
   PublishSlot,
   Publish,
@@ -79,8 +78,7 @@ export function preprocessApprovalData(
 ): PreprocessedApprovalData[] {
   return socketData.flatMap((docState) => {
     const { subset } = docState
-    const planningId = fromSubset(subset, E.Uuid)
-      ?? docState.document?.uuid ?? ''
+    const planningId = docState.uuid || docState.document?.uuid || ''
     if (!planningId) return []
 
     const planningTitle = fromSubset(subset, E.Title)
