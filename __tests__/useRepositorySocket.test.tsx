@@ -43,6 +43,7 @@ const baseRegistryValue = {
     faroUrl: new URL('http://localhost'),
     baboonUrl: new URL('http://localhost')
   },
+  featureFlags: {},
   dispatch: vi.fn()
 }
 

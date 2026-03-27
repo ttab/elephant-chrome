@@ -12,6 +12,7 @@ import { useRepositoryEvents } from '@/hooks/useRepositoryEvents'
 import { useCallback, type JSX } from 'react'
 import { useUserTracker } from '@/hooks/useUserTracker'
 import type { NewItem } from './Root'
+import { useTranslation } from 'react-i18next'
 
 const BASE_URL = import.meta.env.BASE_URL || ''
 
@@ -29,6 +30,7 @@ export const Table = ({ type, header }: {
   const openEditingView = useLink(type)
 
   const [newDocuments = [], setNewDocuments] = useUserTracker<NewItem[]>(type)
+  const { t } = useTranslation('shared')
 
   const { data: documents, mutate, error } = useSWR<EleDocumentResponse[], Error>(
     newDocuments?.length ? newDocuments : null,
@@ -81,7 +83,7 @@ export const Table = ({ type, header }: {
     console.warn('Unable to fetch NewItems: ', error)
     return (
       <div>
-        Failed to load:
+        {`${t('errors:messages.loadFailed')}:`}
         {error.message}
       </div>
     )

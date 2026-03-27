@@ -15,7 +15,7 @@ import {
   NavigationIcon,
   CircleCheckIcon
 } from '@ttab/elephant-ui/icons'
-import { Newsvalues, NewsvalueMap, AssignmentTypes, PlanningEventStatuses } from '@/defaults'
+import { Newsvalues, NewsvalueMap, getAssignmentTypes, getPlanningEventStatuses } from '@/defaults'
 import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
 import { SectionBadge } from '@/components/DataItem/SectionBadge'
 import { type IDBAuthor, type IDBSection } from 'src/datastore/types'
@@ -33,13 +33,13 @@ export function planningListColumns({ sections = [], authors = [] }: {
         Filter: ({ column, setSearch }) => (
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
-        options: PlanningEventStatuses,
+        options: getPlanningEventStatuses(),
         name: 'Status',
         columnIcon: CircleCheckIcon,
         className: 'flex-none',
         display: (value: string) => (
           <span>
-            {PlanningEventStatuses.find((status) => status.value === value)?.label}
+            {getPlanningEventStatuses().find((status) => status.value === value)?.label}
           </span>
         )
       },
@@ -176,12 +176,12 @@ export function planningListColumns({ sections = [], authors = [] }: {
         Filter: ({ column, setSearch }) => (
           <FacetedFilter column={column} setSearch={setSearch} facetFn={() => getNestedFacetedUniqueValues(column)} />
         ),
-        options: AssignmentTypes,
+        options: getAssignmentTypes(),
         name: 'Typ',
         columnIcon: CrosshairIcon,
         className: 'flex-none w-[120px] hidden @6xl/view:[display:revert]',
         display: (value: string | string[]) => {
-          const items = AssignmentTypes
+          const items = getAssignmentTypes()
             .filter((type) => value.includes(type.value))
             .map((item) => item.label)
           return (
@@ -195,7 +195,7 @@ export function planningListColumns({ sections = [], authors = [] }: {
       },
       accessorFn: (data) => data.fields['document.meta.core_assignment.meta.core_assignment_type.value']?.values,
       cell: ({ row }) => {
-        const data = AssignmentTypes.filter(
+        const data = getAssignmentTypes().filter(
           (assignmentType) => (row.getValue<string[]>('type') || []).includes(assignmentType.value)
         )
         if (data.length === 0) {

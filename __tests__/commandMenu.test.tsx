@@ -6,6 +6,7 @@ import userEvent from '@testing-library/user-event'
 import { planningListColumns } from '@/views/PlanningOverview/PlanningListColumns'
 import type { HistoryState } from '@/navigation/hooks/useHistory'
 import type { PreprocessedPlanningData } from '@/views/PlanningOverview/preprocessor'
+import i18n from '@/lib/i18n'
 
 describe('CommandMenu', () => {
   it('should render CommandMenu component', async () => {
@@ -13,7 +14,7 @@ describe('CommandMenu', () => {
       <NavigationProvider>
         <TableProvider<PreprocessedPlanningData>
           type='Plannings'
-          columns={planningListColumns({})}
+          columns={planningListColumns({}, i18n.t)}
         >
           <CommandMenu onKeyDown={() => { }} onChange={() => { }}>
             <p>test</p>
@@ -22,7 +23,7 @@ describe('CommandMenu', () => {
       </NavigationProvider>
     )
     await userEvent.keyboard('{Control>}k')
-    expect(screen.getByText('Planning overview')).toBeInTheDocument()
+    expect(screen.getByText('Planeringar')).toBeInTheDocument()
     await userEvent.click(screen.getByRole('option'))
 
     const historyState = history.state as HistoryState

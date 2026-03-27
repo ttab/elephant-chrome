@@ -1,4 +1,5 @@
 import { eventDocumentTemplate } from '@/shared/templates/eventDocumentTemplate'
+import { getSystemLanguage } from '@/shared/getSystemLanguage'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 
 describe('eventDocumentTemplate', () => {
@@ -12,7 +13,7 @@ describe('eventDocumentTemplate', () => {
     expect(doc.uuid).toBe('event-123')
     expect(doc.type).toBe('core/event')
     expect(doc.uri).toBe('core://event/event-123')
-    expect(doc.language).toBe('sv-se')
+    expect(doc.language).toBe(getSystemLanguage())
   })
 
   it('creates core/event meta block with correct date fields', () => {

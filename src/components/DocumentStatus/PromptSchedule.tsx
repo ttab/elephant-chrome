@@ -8,6 +8,7 @@ import { toZonedTime } from 'date-fns-tz'
 import { format } from 'date-fns'
 import { CalendarIcon } from '@ttab/elephant-ui/icons'
 import { PromptCauseField } from './PromptCauseField'
+import { useTranslation } from 'react-i18next'
 
 export const PromptSchedule = ({ publishTime, prompt, setStatus, showPrompt, requireCause = false }: {
   publishTime?: Date
@@ -24,12 +25,13 @@ export const PromptSchedule = ({ publishTime, prompt, setStatus, showPrompt, req
   const initialTime = publishTime ? new Date(publishTime) : new Date()
   const [time, setTime] = useState((initialTime))
   const [cause, setCause] = useState<string | undefined>()
+  const { t } = useTranslation()
 
   return (
     <Prompt
       title={prompt.title}
       primaryLabel={prompt.title}
-      secondaryLabel='Avbryt'
+      secondaryLabel={t('common:actions.abort')}
       onPrimary={() => {
         showPrompt(undefined)
         void setStatus(
@@ -51,7 +53,7 @@ export const PromptSchedule = ({ publishTime, prompt, setStatus, showPrompt, req
         <div className='flex flex-row justify-items-start items-stretch gap-6 flex-wrap pt-2'>
 
           <div className='flex flex-col gap-2'>
-            <Label htmlFor='ScheduledTime'>Ange tid</Label>
+            <Label htmlFor='ScheduledTime'>{t('shared:status_menu.setTime')}</Label>
 
             <TimeInput
               id='ScheduledTime'
@@ -73,7 +75,7 @@ export const PromptSchedule = ({ publishTime, prompt, setStatus, showPrompt, req
           </div>
 
           <div className='flex flex-col gap-2'>
-            <Label htmlFor='ScheduledTime'>Datum i planeringen</Label>
+            <Label htmlFor='ScheduledTime'>{t('shared:status_menu.planningDate')}</Label>
             <span className='border py-2 px-3 h-8 text-sm rounded flex flex-row gap-4 items-center justify-between bg-muted'>
               {format(toZonedTime(time, timeZone), 'yyyy-MM-dd')}
               <CalendarIcon size={14} strokeWidth={1.75} />

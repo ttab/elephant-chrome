@@ -17,6 +17,7 @@ import type { ColumnDef } from '@tanstack/react-table'
 import { toast } from 'sonner'
 import type { View } from '@/types/index'
 import { TableSkeleton } from '@/components/Table/Skeleton'
+import { useTranslation } from 'react-i18next'
 
 const searchTypeToView: Record<SearchKeys, View> = {
   plannings: 'Planning',
@@ -32,7 +33,7 @@ export const SearchResult = ({ searchType, page }: {
   const organisers = useOrganisers()
   const authors = useAuthors()
   const [filter] = useQuery()
-
+  const { t } = useTranslation()
   const { locale, timeZone } = useRegistry()
 
   const searchParams = search[searchType].params(filter)
@@ -44,7 +45,6 @@ export const SearchResult = ({ searchType, page }: {
       setTableData: true
     }
   })
-
   const columns = useMemo(() => {
     return createSearchColumns({
       searchType,
@@ -53,12 +53,12 @@ export const SearchResult = ({ searchType, page }: {
       locale,
       timeZone,
       organisers
-    })
-  }, [locale, timeZone, authors, sections, searchType, organisers])
+    }, t)
+  }, [locale, timeZone, authors, sections, searchType, organisers, t])
 
   if (error) {
     console.error('Error fetching search result items:', error)
-    toast.error('Kunde inte hämta sökresultat')
+    toast.error(t('errors:toasts.getSearchResultsFailed'))
   }
 
   if (isLoading) {

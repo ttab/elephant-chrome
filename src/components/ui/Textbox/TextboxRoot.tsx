@@ -43,6 +43,7 @@ export const TextboxRoot = ({
       onSpellcheck={spellcheck ? onSpellcheck : undefined}
       readOnly={disabled}
       placeholder={placeholder}
+      placeholders='single'
       plugins={[
         LocalizedQuotationMarks(),
         Text({

@@ -15,6 +15,7 @@ import { updateAssignmentTime } from '@/lib/index/updateAssignmentPublishTime'
 import type { YDocument } from '@/modules/yjs/hooks'
 import { useYValue } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
+import { useTranslation } from 'react-i18next'
 import { documentTypeValueFormat } from '@/defaults/documentTypeFormats'
 
 export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: propPlanningId }: {
@@ -29,6 +30,7 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
   const planningId = useDeliverablePlanningId(ydoc.id)
   const [publishTime] = useState<string | null>(null)
   const [workflowStatus] = useWorkflowStatus({ ydoc, documentId: ydoc.id })
+  const { t } = useTranslation('shared')
   const documentType = workflowStatus?.type
 
   const openLatestVersion = useLink('Editor')
@@ -70,7 +72,7 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
     if (['withheld', 'draft'].includes(newStatus)) {
       // We require a valid publish time if scheduling
       if (newStatus === 'withheld' && !(data?.time instanceof Date)) {
-        toast.error('Kunde inte schemalägga artikel! Tid eller datum är felaktigt angivet.')
+        toast.error(t('errors:toasts.couldNotScheduleArticle'))
         return false
       }
 
@@ -78,11 +80,11 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
         ? data.time
         : new Date()
 
-      await updateAssignmentTime(ydoc.id, planningId, newStatus, newTime)
+      await updateAssignmentTime(ydoc.id, planningId, newStatus, newTime, t)
     }
 
     return true
-  }, [planningId, dispatch, ydoc.id, history, state.viewRegistry, viewId])
+  }, [planningId, dispatch, ydoc.id, history, state.viewRegistry, viewId, t])
 
   const isReadOnlyAndUpdated = workflowStatus && workflowStatus?.name !== 'usable' && readOnly
   const isUnpublished = workflowStatus?.name === 'unpublished'
@@ -115,7 +117,7 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
                   onClick={(event) => openSources(event, { id: ydoc.id }, 'last')}
                 >
                   <CableIcon size={15} strokeWidth={1.75} />
-                  Källor
+                  {t('wires:sources.title')}
                 </Button>
               )}
             </div>
@@ -137,7 +139,7 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
                       )
                     }}
                   >
-                    Gå till senaste versionen
+                    {t('editor:goToLatestVersion')}
                   </Button>
                 )}
 

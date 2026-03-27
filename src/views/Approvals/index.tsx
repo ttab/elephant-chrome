@@ -19,6 +19,7 @@ import { timesSlots as Slots } from '@/defaults/assignmentTimeslots'
 import type { Planning } from '@/shared/schemas/planning'
 import { createMetricsDecorator, type MetricsDecorator } from '@/hooks/useRepositorySocket/decorators/metrics'
 import { SocketStatus } from '@/hooks/useRepositorySocket/lib/components/SocketStatus'
+import { useTranslation } from 'react-i18next'
 
 const meta: ViewMetadata = {
   name: 'Approvals',
@@ -38,6 +39,7 @@ const meta: ViewMetadata = {
 
 export const Approvals = (): JSX.Element => {
   const trackedDocuments = useTrackedDocuments()
+  const { t } = useTranslation()
   const { timeZone, repository } = useRegistry()
   const { from, to } = useDateRange()
 
@@ -109,36 +111,40 @@ export const Approvals = (): JSX.Element => {
   [approvalItems]
   )
 
-  const [focusedColumn, setFocusedColumn] = useState<number>()
-  const [focusedCard, setFocusedCard] = useState<number>()
+  // Track focused assignment by ID rather than by (column, card) indices.
+  // Index-based tracking causes focus to jump to a different card when data
+  // updates reorder items in a column; ID-based tracking is stable across updates.
+  const [focusedId, setFocusedId] = useState<string | undefined>()
 
-  // Focus on the first card in the current timeslot on load
+  // Focus on the first card in the current timeslot on initial load
   useEffect(() => {
-    if (typeof focusedColumn !== 'undefined' || typeof focusedCard !== 'undefined') {
+    if (focusedId !== undefined) return
+
+    const currentHour = new Date().getHours()
+    const currentSlotIndex = structuredData.findIndex((col) =>
+      slots.find((s) => s.key === col.key)?.hours.includes(currentHour)
+    )
+
+    if (currentSlotIndex !== -1 && structuredData[currentSlotIndex]?.items.length > 0) {
+      setFocusedId(structuredData[currentSlotIndex].items[0].id)
       return
     }
 
-    // Determine the column for the current timeslot
-    const currentSlot = ((currentHour: number) => {
-      return slots.find((slot) => slot.hours.includes(currentHour))
-    })(new Date().getHours())
-    const currentColumnIndex = slots.findIndex((slot) => slot.key === currentSlot?.key)
-
-    // FIXME: Focus is set but focus ring is not visible when clicking link
-    // in the main menu navigation sheet.
-    if (currentColumnIndex !== -1 && structuredData[currentColumnIndex]?.items.length > 0) {
-      // Current column has cards, focus on first card
-      setFocusedColumn(currentColumnIndex)
-      setFocusedCard(0)
-    } else {
-      // As fallback, find first column with card and focus on first card
-      const firstNonEmptyColumnIndex = structuredData.findIndex((column) => column.items.length > 0)
-      if (firstNonEmptyColumnIndex !== -1) {
-        setFocusedColumn(firstNonEmptyColumnIndex)
-        setFocusedCard(0)
-      }
+    // Fallback: focus first card in first non-empty column
+    const firstNonEmpty = structuredData.find((col) => col.items.length > 0)
+    if (firstNonEmpty?.items.length) {
+      setFocusedId(firstNonEmpty.items[0].id)
     }
-  }, [slots, structuredData, focusedColumn, focusedCard])
+  }, [slots, structuredData, focusedId])
+
+  // When the focused item disappears from data, reset so the initial-focus effect re-runs
+  useEffect(() => {
+    if (focusedId === undefined) return
+    const found = structuredData.some((col) => col.items.some((item) => item.id === focusedId))
+    if (!found) {
+      setFocusedId(undefined)
+    }
+  }, [structuredData, focusedId])
 
   const [currentTab, setCurrentTab] = useState<string>('grid')
   const openEditors = useOpenDocuments({ idOnly: true, name: 'Editor' })
@@ -148,55 +154,68 @@ export const Approvals = (): JSX.Element => {
     stopPropagation: false, // Manually handle when this is needed
     keys: ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'],
     onNavigation: (event) => {
-      if (event.key === 'ArrowLeft' && !focusedColumn) {
-        // No column focused or already at leftmost column, let view navigation handle this
-        return
-      }
+      // Find the current item's position in the structured data grid by ID
+      let currentColN = -1
+      let currentCardN = -1
 
-      if (event.key === 'ArrowRight' && focusedColumn === slots.length - 1) {
-        // At rightmost column, let view navigation handle this
-        return
+      if (focusedId !== undefined) {
+        for (let colN = 0; colN < structuredData.length; colN++) {
+          const cardN = structuredData[colN].items.findIndex((item) => item.id === focusedId)
+          if (cardN !== -1) {
+            currentColN = colN
+            currentCardN = cardN
+            break
+          }
+        }
       }
 
       if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
-        const n = (focusedColumn === undefined)
-          ? (event.key === 'ArrowRight' ? 0 : slots.length - 1)
-          : (focusedColumn + (event.key === 'ArrowRight' ? 1 : -1) + slots.length) % slots.length
-        setFocusedColumn(n)
+        const goRight = event.key === 'ArrowRight'
 
-        if (focusedCard === undefined) {
-          setFocusedCard(0)
-        } else if (focusedCard > structuredData[n].items.length - 1) {
-          setFocusedCard(Math.max(0, structuredData[n].items.length - 1))
+        // At boundary (or nothing focused on the left): let view navigation handle
+        if (!goRight && currentColN <= 0) return
+        if (goRight && currentColN === slots.length - 1) return
+
+        const nextColN = currentColN === -1
+          ? 0
+          : currentColN + (goRight ? 1 : -1)
+
+        const nextCol = structuredData[nextColN]
+        if (!nextCol?.items.length) {
+          event.stopPropagation()
+          return
         }
 
-        // Don't let view navigation handle this
+        const nextCardN = currentCardN === -1 ? 0 : Math.min(currentCardN, nextCol.items.length - 1)
+        setFocusedId(nextCol.items[nextCardN].id)
         event.stopPropagation()
-      } else {
-        const n = focusedColumn || 0
-        const l = structuredData[n].items.length
-        const m = (focusedCard === undefined)
-          ? (event.key === 'ArrowDown' ? 0 : l - 1)
-          : (focusedCard + (event.key === 'ArrowDown' ? 1 : -1) + l) % l
-
-        if (n !== focusedColumn) {
-          setFocusedColumn(n)
-        }
-        setFocusedCard(m)
+        return
       }
+
+      // Up/Down: navigate within the current column
+      const colN = currentColN === -1 ? 0 : currentColN
+      const col = structuredData[colN]
+      if (!col?.items.length) return
+
+      const l = col.items.length
+      const nextCardN = currentCardN === -1
+        ? (event.key === 'ArrowDown' ? 0 : l - 1)
+        : (currentCardN + (event.key === 'ArrowDown' ? 1 : -1) + l) % l
+
+      setFocusedId(col.items[nextCardN].id)
     }
   })
 
   if (error) {
     console.error('Error fetching approvals:', error)
-    return <Error message='Kunde inte hämta dokument för Dagen' error={error} />
+    return <Error message={t('errors:messages.failedFetchingDocument')} error={error} />
   }
 
   return (
     <View.Root tab={currentTab} onTabChange={setCurrentTab}>
       <ViewHeader.Root>
         <ViewHeader.Content>
-          <ViewHeader.Title name='Approvals' title='Dagen' />
+          <ViewHeader.Title name='Approvals' title={t('views:approvals.title')} />
           <Header type='Approvals' />
         </ViewHeader.Content>
         <ViewHeader.Action />
@@ -211,7 +230,7 @@ export const Approvals = (): JSX.Element => {
 
             {isLoading
               ? <ApprovalsSkeleton count={cardCounts[colN]} />
-              : structuredData[colN]?.items.map((item, cardN) => {
+              : structuredData[colN]?.items.map((item) => {
                 const isSelected = ((item._deliverable?.id && openEditors.includes(item._deliverable.id)) || openPlannings.includes(item._preprocessed.planningId))
 
                 return (
@@ -219,7 +238,7 @@ export const Approvals = (): JSX.Element => {
                     key={item.id}
                     item={item}
                     status={StatusSpecifications[item._deliverable?.status || 'draft']}
-                    isFocused={colN === focusedColumn && cardN === focusedCard}
+                    isFocused={focusedId === item.id}
                     isSelected={isSelected}
                     openEditors={openEditors}
                     trackedDocument={trackedDocuments.documents.find((doc) => doc.id === item._deliverable?.id)}

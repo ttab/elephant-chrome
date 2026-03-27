@@ -16,7 +16,7 @@ import {
 } from '@ttab/elephant-ui/icons'
 import type { DotDropdownMenuActionItem } from '@/components/ui/DotMenu'
 import { DotMenu } from '@/components/ui/DotMenu'
-import { Newsvalues, NewsvalueMap, PlanningEventStatuses } from '@/defaults'
+import { Newsvalues, NewsvalueMap, getPlanningEventStatuses } from '@/defaults'
 import { Time } from '@/components/Table/Items/Time'
 import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
 import { Title } from '@/components/Table/Items/Title'
@@ -26,6 +26,7 @@ import { type IDBOrganiser, type IDBSection } from 'src/datastore/types'
 import { FacetedFilter } from '@/components/Commands/FacetedFilter'
 import { Tooltip } from '@ttab/elephant-ui'
 import type { LocaleData } from '@/types/index'
+import i18next from 'i18next'
 
 export function eventTableColumns({ sections = [], organisers = [], locale }: {
   sections?: IDBSection[]
@@ -42,7 +43,7 @@ export function eventTableColumns({ sections = [], organisers = [], locale }: {
         display: (value: string) => {
           const [hour, day] = value.split(' ')
           if (hour === 'undefined') {
-            return <span>Heldag</span>
+            return <span>{i18next.t('core:timeSlots.fullday')}</span>
           }
 
           return (
@@ -68,7 +69,7 @@ export function eventTableColumns({ sections = [], organisers = [], locale }: {
         const isFullDay = (end.getTime() - start.getTime()) / (1000 * 60 * 60) > 12
 
         if (isFullDay) {
-          return 'Heldag'
+          return i18next.t('core:timeSlots.fullday')
         }
 
         return `${start.getHours()} ${start.toLocaleString(locale.code.full, { weekday: 'long', hourCycle: 'h23' })}`
@@ -80,13 +81,13 @@ export function eventTableColumns({ sections = [], organisers = [], locale }: {
         Filter: ({ column, setSearch }) => (
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
-        options: PlanningEventStatuses,
+        options: getPlanningEventStatuses(),
         name: 'Status',
         columnIcon: CircleCheckIcon,
         className: 'flex-none',
         display: (value: string) => (
           <span>
-            {PlanningEventStatuses.find((status) => status.value === value)?.label}
+            {getPlanningEventStatuses().find((status) => status.value === value)?.label}
           </span>
         )
       },

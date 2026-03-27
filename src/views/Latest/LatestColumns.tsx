@@ -21,16 +21,19 @@ import { Link } from '@/components'
 import { CreatePrintArticle } from '@/components/CreatePrintArticle'
 import { useModal } from '@/components/Modal/useModal'
 import { resolveDeliverableNavigation } from '@/lib/resolveDeliverableNavigation'
+import { useTranslation } from 'react-i18next'
+import type { TFunction } from 'i18next'
 
-export function latestColumns({ locale, timeZone }: {
+export function latestColumns({ locale, timeZone, t }: {
   locale: LocaleData
   timeZone: string
+  t: TFunction
 }): ColumnDef<PreprocessedLatestData>[] {
   return [
     {
       id: 'deliverableType',
       meta: {
-        name: 'Typ',
+        name: t('core:labels.type'),
         columnIcon: BriefcaseIcon,
         className: 'flex-none w-10'
       },
@@ -51,7 +54,7 @@ export function latestColumns({ locale, timeZone }: {
     {
       id: 'title',
       meta: {
-        name: 'Titel',
+        name: t('core:labels.title'),
         columnIcon: BriefcaseIcon,
         className: 'flex-1 min-w-0'
       },
@@ -66,7 +69,7 @@ export function latestColumns({ locale, timeZone }: {
     {
       id: 'section',
       meta: {
-        name: 'Sektion',
+        name: t('core:labels.section'),
         columnIcon: ShapesIcon,
         className: 'flex-none w-[145px] hidden @4xl/view:[display:revert]'
       },
@@ -83,7 +86,7 @@ export function latestColumns({ locale, timeZone }: {
     {
       id: 'publishTime',
       meta: {
-        name: 'Publiceringstid',
+        name: t('views:latest.columnLabels.publishTime'),
         columnIcon: Clock3Icon,
         className: 'flex-none tabular-nums w-[100px] text-right'
       },
@@ -103,7 +106,7 @@ export function latestColumns({ locale, timeZone }: {
     {
       id: 'action',
       meta: {
-        name: 'Action',
+        name: t('core:labels.action'),
         columnIcon: NavigationIcon,
         className: 'flex-none p-0'
       },
@@ -116,6 +119,7 @@ function LatestActionMenu({ data }: {
   data: PreprocessedLatestData['_preprocessed']
 }) {
   const { showModal, hideModal } = useModal()
+  const { t } = useTranslation()
   const { deliverableUuid, deliverableType, planningId } = data
   const { view, label } = resolveDeliverableNavigation(deliverableType)
 
@@ -135,7 +139,7 @@ function LatestActionMenu({ data }: {
             )
           },
           {
-            label: 'Öppna planering',
+            label: t('views:latest.actions.openPlanning'),
             disabled: !planningId,
             item: planningId
               ? (
@@ -143,13 +147,13 @@ function LatestActionMenu({ data }: {
                     <div className='pt-1'>
                       <CalendarDaysIcon size={14} strokeWidth={1.5} className='shrink' />
                     </div>
-                    <div className='grow'>Öppna planering</div>
+                    <div className='grow'>{t('views:latest.actions.openPlanning')}</div>
                   </Link>
                 )
               : () => {}
           },
           {
-            label: 'Skapa printartikel',
+            label: t('views:latest.actions.createPrintArticle'),
             icon: LibraryIcon,
             item: () => {
               showModal(

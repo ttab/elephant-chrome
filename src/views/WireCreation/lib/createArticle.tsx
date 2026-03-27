@@ -1,13 +1,17 @@
 import type { Session } from 'next-auth'
-import { getValueByYPath } from '@/shared/yUtils'
+import { getValueByYPath, setValueByYPath } from '@/shared/yUtils'
+import { Block } from '@ttab/elephant-api/newsdoc'
 import type { Wire } from '@/shared/schemas/wire'
 import { toast } from 'sonner'
 import { ToastAction } from '@/components/ToastAction'
 import { CalendarDaysIcon, FileInputIcon } from '@ttab/elephant-ui/icons'
 import { addAssignmentWithDeliverable } from '@/lib/index/addAssignment'
+import { removeAssignmentWithDeliverable } from '@/lib/index/removeAssignment'
 import { convertToISOStringInTimeZone } from '@/shared/datetime'
+import { snapshotDocument } from '@/lib/snapshotDocument'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
+import i18n from '@/lib/i18n'
 
 export async function createArticle({
   ydoc,
@@ -26,7 +30,7 @@ export async function createArticle({
   planningId?: string
   planningTitle?: string
   newsvalue?: string
-  section?: {
+  section: {
     uuid: string
     title: string
   }
@@ -36,9 +40,14 @@ export async function createArticle({
 
   if (!ydoc.connected || status !== 'authenticated' || !ydoc.id) {
     console.error(`Failed adding new wire article ${ydoc.id} to a planning`)
-    toast.error('Kunde inte skapa ny artikel!')
+    toast.error(i18n.t('wires:creation.createError2'))
     return
   }
+
+  // Capture Y.Doc reference synchronously before any await — the provider
+  // may be disconnected by the time async operations complete (dialog closes
+  // and unmounts the component, triggering CollaborationClientRegistry cleanup)
+  const yjsDocument = ydoc.provider?.document
 
   // Create and collect all base data for the assignment
   const dt = new Date()
@@ -68,12 +77,32 @@ export async function createArticle({
     throw new Error('CreateAssignmentError')
   }
 
-  // Create article in repo
-  if (ydoc.isInProgress) {
-    ydoc.setIsInProgress(false)
+  // Set section on the article document. This is the authoritative write — it
+  // covers both cases: new planning (Section component may have already written
+  // it) and existing planning (Section component is not rendered).
+  setValueByYPath(ydoc.ele, 'links.core/section[0]', Block.create({
+    type: 'core/section',
+    rel: 'section',
+    uuid: section.uuid,
+    title: section.title
+  }))
+
+  // Explicitly save article to repository via HTTP — works even if the
+  // Hocuspocus provider has been disconnected (dialog closed before this point)
+  try {
+    await snapshotDocument(ydoc.id, { status: 'draft' }, yjsDocument)
+  } catch (ex) {
+    // Roll back the assignment that was just added to the planning
+    try {
+      await removeAssignmentWithDeliverable(updatedPlanningId, ydoc.id, 'core/article')
+    } catch (rollbackEx) {
+      console.error('Failed to roll back assignment after article snapshot failure', rollbackEx)
+      throw new Error('AssignmentRollbackError')
+    }
+    throw ex
   }
 
-  toast.success(`Artikel skapad`, {
+  toast.success(i18n.t('wires:creation.articleCreated'), {
     duration: 8000,
     classNames: {
       title: 'whitespace-nowrap'
@@ -84,14 +113,15 @@ export async function createArticle({
           documentId={updatedPlanningId}
           withView='Planning'
           Icon={CalendarDaysIcon}
-          label='Öppna planering'
+          label={i18n.t('wires:toast.openPlanning')}
           target='last'
         />
         <ToastAction
           documentId={documentId}
+          planningId={updatedPlanningId}
           withView='Editor'
           Icon={FileInputIcon}
-          label='Öppna artikel'
+          label={i18n.t('wires:toast.openArticle')}
           target='last'
         />
       </div>

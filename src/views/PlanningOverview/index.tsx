@@ -14,6 +14,7 @@ import { useInitFilters } from '@/hooks/useInitFilters'
 import { useSession } from 'next-auth/react'
 import { PlanningList } from './PlanningList'
 import type { PreprocessedPlanningData } from './preprocessor'
+import { useTranslation } from 'react-i18next'
 
 const meta: ViewMetadata = {
   name: 'Plannings',
@@ -38,9 +39,10 @@ export const Plannings = (): JSX.Element => {
   const authors = useAuthors()
   const { data: session } = useSession()
   const user = session?.user.sub
+  const { t } = useTranslation()
 
   const columns = useMemo(() =>
-    planningListColumns({ sections, authors, user }), [sections, authors, user])
+    planningListColumns({ sections, authors, user }, t), [sections, authors, user, t])
 
   const columnFilters = useInitFilters<PreprocessedPlanningData>({
     path: 'filters.Plannings.current',
@@ -65,7 +67,7 @@ export const Plannings = (): JSX.Element => {
 
         <ViewHeader.Root>
           <ViewHeader.Content>
-            <ViewHeader.Title name='Plannings' title='Planeringar' />
+            <ViewHeader.Title name='Plannings' title={t('views:plannings.label.plural')} />
             <Header type='Planning' docType='core/planning-item' />
           </ViewHeader.Content>
 

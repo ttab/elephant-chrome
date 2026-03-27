@@ -1,11 +1,13 @@
-import { type JSX, useMemo, useCallback, useState, useRef, useEffect, memo } from 'react'
+import { type JSX, useMemo, useCallback, useState, useRef, useEffect, useLayoutEffect, memo } from 'react'
 import { fields, type Wire, type WireFields } from '@/shared/schemas/wire'
+import { getWireState } from '@/lib/getWireState'
 import { useDocuments } from '@/hooks/index/useDocuments'
 import { constructQuery } from '../lib/constructQuery'
 import { SortingV1 } from '@ttab/elephant-api/index'
 import { StreamEntry } from './StreamEntry'
 import { XIcon } from '@ttab/elephant-ui/icons'
 import { Button } from '@ttab/elephant-ui'
+import { useTranslation } from 'react-i18next'
 import {
   useReactTable,
   getCoreRowModel,
@@ -15,10 +17,12 @@ import {
 } from '@tanstack/react-table'
 import { FilterValue } from './Filter/FilterValue'
 import { FilterMenu } from './Filter/FilterMenu'
+import type { WireFilter } from '../hooks/useWireViewState'
 import { type WireStream } from '../hooks/useWireViewState'
 import type { WireStatus } from '../lib/setWireStatus'
 import { StreamGroupHeader } from './StreamGroupHeader'
 import { REQUIRE_FILTERS } from '../lib/featureFlags'
+import { getWireStatus } from '@/lib/getWireStatus'
 
 const PAGE_SIZE = 80
 const FILTER_DEBOUNCE_MS = 400
@@ -29,27 +33,46 @@ export const Stream = memo(({
   onPress,
   selectedWires,
   statusMutations,
+  failedMutationUuids,
   onToggleWire,
   onRemove,
   onFilterChange,
-  onClearFilter
+  onClearFilter,
+  previewWireId,
+  onPreviewWireUpdate,
+  focusedWireId,
+  onFocusedWireUpdate
 }: {
   wireStream: WireStream
   onFocus?: (item: Wire, event: React.FocusEvent<HTMLElement>) => void
   onPress?: (item: Wire, event: React.MouseEvent<HTMLElement> | React.KeyboardEvent<HTMLElement>) => void
   selectedWires: Wire[]
   statusMutations: WireStatus[]
+  failedMutationUuids: ReadonlySet<string>
   onToggleWire: (wire: Wire, isSelected: boolean) => void
   onRemove?: (streamId: string, wireIds: string[]) => void
   onFilterChange?: (streamId: string, type: string, values: string[]) => void
   onClearFilter?: (streamId: string, type: string) => void
+  previewWireId?: string
+  onPreviewWireUpdate?: (wire: Wire) => void
+  focusedWireId?: string
+  onFocusedWireUpdate?: (wire: Wire) => void
 }): JSX.Element => {
+  const { t } = useTranslation('wires')
   const [page, setPage] = useState(1)
   const [allData, setAllData] = useState<Wire[]>([])
   const allDataRef = useRef<Wire[]>([])
+  const streamContainerRef = useRef<HTMLDivElement>(null)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const loadingRef = useRef(false)
   const lastToggledWireIdRef = useRef<string | null>(null)
+  const shiftAnchorRef = useRef<string | null>(null)
+  const mutationSnapshotRef = useRef<Map<string, Wire['fields']>>(new Map())
+  // Snapshot of pre-mutation fields kept after a successful mutation so the merge
+  // can detect when server data still reflects the old (pre-mutation) state.
+  const convergeSnapshotRef = useRef<Map<string, Wire['fields']>>(new Map())
+  const statusMutationsRef = useRef<WireStatus[]>(statusMutations)
+  statusMutationsRef.current = statusMutations
 
   const hasFilters = wireStream.filters.length > 0
   const skipFetch = REQUIRE_FILTERS && !hasFilters
@@ -92,9 +115,55 @@ export const Stream = memo(({
     setAllData((prev) => {
       let next: Wire[]
 
-      // First page replaces everything
+      // First page replaces everything, but preserve any status head versions from prev
+      // that are ahead of what the server returned (e.g. OpenSearch hasn't indexed the
+      // status change yet, especially for text-filter streams where the subscription fires
+      // for new wires rather than for the status-field change on the current wire).
       if (page === 1) {
-        next = data
+        const prevById = new Map(prev.map((w) => [w.id, w]))
+        next = data.map((wire) => {
+          const existing = prevById.get(wire.id)
+          if (!existing) return wire
+
+          const snapshot = convergeSnapshotRef.current.get(wire.id)
+          let mergedFields = wire.fields
+          let converged = !!snapshot
+
+          for (const head of ['read', 'saved', 'used', 'flash'] as const) {
+            const prevVer = parseInt(existing.fields[`heads.${head}.version`]?.values[0] ?? '0', 10)
+            const dataVer = parseInt(wire.fields[`heads.${head}.version`]?.values[0] ?? '0', 10)
+
+            if (snapshot) {
+              const snapshotVer = parseInt(snapshot[`heads.${head}.version`]?.values[0] ?? '0', 10)
+              // Server still shows the pre-mutation value for this head — it hasn't
+              // indexed the change yet. Preserve allData's optimistic fields regardless
+              // of version direction (critical for draft toggles where version goes to 0).
+              if (!isNaN(snapshotVer) && !isNaN(dataVer) && dataVer === snapshotVer && prevVer !== dataVer) {
+                mergedFields = {
+                  ...mergedFields,
+                  [`heads.${head}.version`]: existing.fields[`heads.${head}.version`],
+                  [`heads.${head}.created`]: existing.fields[`heads.${head}.created`]
+                }
+                converged = false
+                continue
+              }
+            }
+
+            if (!isNaN(prevVer) && !isNaN(dataVer) && prevVer > dataVer) {
+              mergedFields = {
+                ...mergedFields,
+                [`heads.${head}.version`]: existing.fields[`heads.${head}.version`],
+                [`heads.${head}.created`]: existing.fields[`heads.${head}.created`]
+              }
+            }
+          }
+
+          if (converged) {
+            convergeSnapshotRef.current.delete(wire.id)
+          }
+
+          return mergedFields === wire.fields ? wire : { ...wire, fields: mergedFields }
+        })
       } else if (isLoading) {
         // Don't append paginated data while still loading
         next = prev
@@ -110,6 +179,10 @@ export const Stream = memo(({
         next = Array.from(byId.values())
       }
 
+      const wireStatusFilter = wireStream.filters.find((f) => f.type === 'wireStatus')
+      if (wireStatusFilter?.values.length) {
+        next = filterStatuses(next, wireStatusFilter)
+      }
       allDataRef.current = next
       return next
     })
@@ -117,7 +190,7 @@ export const Stream = memo(({
     if (!isLoading) {
       loadingRef.current = false
     }
-  }, [data, isLoading, page])
+  }, [data, isLoading, page, wireStream.filters])
 
   // Reset to page 1 when debounced filters change.
   // Don't clear allData here — the data effect replaces it on page 1 once the fetch completes,
@@ -125,6 +198,99 @@ export const Stream = memo(({
   useEffect(() => {
     setPage(1)
   }, [debouncedFilters])
+
+  // When mutations arrive, apply optimistic field updates directly to allData so that
+  // page 2+ wires (not covered by the subscription refetch) also show the correct status
+  // immediately after the mutation spinner clears.
+  // useLayoutEffect fires before paint, so both this and the triggered re-render
+  // commit before the browser paints — one visual frame instead of two.
+  useLayoutEffect(() => {
+    if (statusMutations.length) {
+      const snapshot = new Map<string, Wire['fields']>()
+      setAllData((prev) => {
+        const next = prev.map((wire) => {
+          const mutation = statusMutations.find((m) => m.uuid === wire.id)
+          if (!mutation) return wire
+
+          snapshot.set(wire.id, wire.fields)
+
+          const version = String(mutation.version)
+          let updatedFields: Wire['fields']
+
+          if (mutation.name === 'draft') {
+            updatedFields = {
+              ...wire.fields,
+              'heads.read.version': { values: ['0'] },
+              'heads.saved.version': { values: ['0'] },
+              'heads.used.version': { values: ['0'] }
+            }
+          } else {
+            const optimisticCreated = new Date().toISOString()
+            updatedFields = {
+              ...wire.fields,
+              [`heads.${mutation.name}.version`]: { values: [version] },
+              [`heads.${mutation.name}.created`]: { values: [optimisticCreated] }
+            }
+          }
+
+          return { ...wire, fields: updatedFields }
+        })
+        allDataRef.current = next
+        return next
+      })
+      mutationSnapshotRef.current = snapshot
+    } else if (mutationSnapshotRef.current.size > 0) {
+      // Mutations cleared (success path): transfer the pre-mutation snapshot so the
+      // merge effect can detect stale server data that still matches the old state.
+      convergeSnapshotRef.current = new Map([
+        ...convergeSnapshotRef.current,
+        ...mutationSnapshotRef.current
+      ])
+      mutationSnapshotRef.current = new Map()
+    }
+  }, [statusMutations])
+
+  // Rollback fields for wires whose status mutation failed
+  useLayoutEffect(() => {
+    if (!failedMutationUuids.size) return
+
+    const snapshot = mutationSnapshotRef.current
+    setAllData((prev) => {
+      const next = prev.map((wire) => {
+        if (!failedMutationUuids.has(wire.id)) return wire
+        const original = snapshot.get(wire.id)
+        return original ? { ...wire, fields: original } : wire
+      })
+      allDataRef.current = next
+      return next
+    })
+    // Rollback restored originals — no convergence protection needed for these wires
+    for (const uuid of failedMutationUuids) {
+      convergeSnapshotRef.current.delete(uuid)
+    }
+    mutationSnapshotRef.current = new Map()
+  }, [failedMutationUuids])
+
+  // Notify parent when the previewed or focused wire's data changes in allData
+  const lastPreviewWireRef = useRef<Wire | null>(null)
+  const lastFocusedWireRef = useRef<Wire | null>(null)
+  useEffect(() => {
+    if (previewWireId && onPreviewWireUpdate) {
+      const found = allData.find((w) => w.id === previewWireId)
+      if (found && found !== lastPreviewWireRef.current) {
+        lastPreviewWireRef.current = found
+        onPreviewWireUpdate(found)
+      }
+    }
+
+    if (focusedWireId && onFocusedWireUpdate) {
+      const found = allData.find((w) => w.id === focusedWireId)
+      if (found && found !== lastFocusedWireRef.current) {
+        lastFocusedWireRef.current = found
+        onFocusedWireUpdate(found)
+      }
+    }
+  }, [allData, previewWireId, onPreviewWireUpdate, focusedWireId, onFocusedWireUpdate])
 
   // Infinite scroll handler
   useEffect(() => {
@@ -147,6 +313,16 @@ export const Stream = memo(({
     scrollContainer.addEventListener('scroll', handleScroll)
     return () => scrollContainer.removeEventListener('scroll', handleScroll)
   }, [isLoading, data])
+
+  const filterStatuses = (wires: Wire[], wireStatusFilter: WireFilter): Wire[] => {
+    const selectedStatuses = new Set(wireStatusFilter.values)
+
+    return wires.filter((wire) => {
+      const currentStatus = getWireState(wire)
+      const lastStatus = getWireStatus(wire)
+      return selectedStatuses.has(currentStatus.status) || selectedStatuses.has(lastStatus)
+    })
+  }
 
   // Convert selected wires array to TanStack Table format
   const rowSelection = useMemo<RowSelectionState>(() => {
@@ -186,6 +362,83 @@ export const Stream = memo(({
     lastToggledWireIdRef.current = wire.id
   }, [onToggleWire])
 
+  // Shift+Arrow: extend/contract selection (like text selection in an editor)
+  useEffect(() => {
+    const handleShiftNavigation = (e: KeyboardEvent) => {
+      if (!e.shiftKey || (e.key !== 'ArrowUp' && e.key !== 'ArrowDown')) return
+      if (e.ctrlKey || e.metaKey || e.altKey) return
+
+      const container = streamContainerRef.current
+      if (!container || !container.contains(document.activeElement)) return
+
+      const focusedEl = document.activeElement?.closest<HTMLElement>('[data-item-id]')
+      if (!focusedEl) return
+
+      const entryId = focusedEl.getAttribute('data-entry-id')
+      if (!entryId) return
+
+      const items = Array.from(container.querySelectorAll<HTMLElement>('[data-item-id]'))
+      const currentIndex = items.indexOf(focusedEl)
+      if (currentIndex === -1) return
+
+      const nextIndex = e.key === 'ArrowUp' ? currentIndex - 1 : currentIndex + 1
+      if (nextIndex < 0 || nextIndex >= items.length) return
+
+      const nextEl = items[nextIndex]
+      const nextEntryId = nextEl.getAttribute('data-entry-id')
+      if (!nextEntryId) return
+
+      // On the first Shift+Arrow press, set the anchor and mark the starting entry
+      if (!shiftAnchorRef.current) {
+        shiftAnchorRef.current = entryId
+        const currentWire = allDataRef.current.find((w) => w.id === entryId)
+        if (currentWire && getWireState(currentWire).status !== 'used') {
+          onToggleWire(currentWire, true)
+          lastToggledWireIdRef.current = entryId
+        }
+      }
+
+      const anchorIndex = items.findIndex(
+        (el) => el.getAttribute('data-entry-id') === shiftAnchorRef.current
+      )
+
+      // Moving away from anchor extends the selection; moving toward it contracts it
+      const movingAway = anchorIndex === -1
+        || Math.abs(nextIndex - anchorIndex) >= Math.abs(currentIndex - anchorIndex)
+
+      if (movingAway) {
+        const nextWire = allDataRef.current.find((w) => w.id === nextEntryId)
+        if (nextWire && getWireState(nextWire).status !== 'used') {
+          onToggleWire(nextWire, true)
+          lastToggledWireIdRef.current = nextEntryId
+        }
+      } else {
+        const currentWire = allDataRef.current.find((w) => w.id === entryId)
+        if (currentWire) {
+          onToggleWire(currentWire, false)
+          lastToggledWireIdRef.current = nextEntryId
+        }
+      }
+
+      e.preventDefault()
+      nextEl.focus()
+    }
+
+    // Reset the anchor when Shift is released so the next Shift+Arrow starts fresh
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.key === 'Shift') {
+        shiftAnchorRef.current = null
+      }
+    }
+
+    document.addEventListener('keydown', handleShiftNavigation)
+    document.addEventListener('keyup', handleKeyUp)
+    return () => {
+      document.removeEventListener('keydown', handleShiftNavigation)
+      document.removeEventListener('keyup', handleKeyUp)
+    }
+  }, [onToggleWire])
+
   const removeThisWire = useCallback(() => {
     onRemove?.(wireStream.uuid, allDataRef.current.map((w) => w.id))
   }, [onRemove, wireStream.uuid])
@@ -208,7 +461,7 @@ export const Stream = memo(({
             streamId={wireStream.uuid}
             entry={row.original}
             isSelected={row.getIsSelected()}
-            statusMutation={statusMutations.find((m) => m.uuid === row.original.id)}
+            statusMutation={statusMutationsRef.current.find((m) => m.uuid === row.original.id)}
             onToggleSelected={handleToggleSelected}
             onPress={onPress}
             onFocus={onFocus}
@@ -216,7 +469,7 @@ export const Stream = memo(({
         )
       }
     ],
-    [wireStream.uuid, onPress, onFocus, statusMutations, handleToggleSelected]
+    [wireStream.uuid, onPress, onFocus, handleToggleSelected]
   )
 
   const table = useReactTable({
@@ -256,7 +509,7 @@ export const Stream = memo(({
     if (showDateHeader || showTimeHeader) {
       const key = showDateHeader
         ? `date-${currentDate.toDateString()}`
-        : `time-${currentDate.toDateString()}-${currentDate.getHours()}`
+        : `time-${currentDate.toDateString()}-${currentDate.getHours()}-${row.id}`
 
       const isToday = currentDate.toDateString() === new Date().toDateString()
 
@@ -286,6 +539,7 @@ export const Stream = memo(({
 
   return (
     <div
+      ref={streamContainerRef}
       data-stream-id={wireStream.uuid}
       className='flex flex-col h-full snap-start snap-always w-110 shrink-0 border rounded-md overflow-hidden'
     >
@@ -314,7 +568,7 @@ export const Stream = memo(({
       {skipFetch
         ? (
             <div className='flex-1 basis-0 flex items-center justify-center bg-muted'>
-              <p className='text-sm text-muted-foreground'>Lägg till filter för att visa telegram</p>
+              <p className='text-sm text-muted-foreground'>{t('stream.addFilter')}</p>
             </div>
           )
         : (
@@ -337,7 +591,7 @@ export const Stream = memo(({
 
                 {isLoading && page > 1 && (
                   <div className='py-4 text-center text-sm text-muted-foreground'>
-                    Laddar fler...
+                    {t('stream.loadingMore')}
                   </div>
                 )}
               </div>

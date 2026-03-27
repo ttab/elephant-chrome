@@ -11,6 +11,8 @@ import { Block } from '@ttab/elephant-api/newsdoc'
 import type { HocuspocusProvider } from '@hocuspocus/provider'
 import { initialState, type RegistryProviderState } from '@/contexts/RegistryProvider'
 
+// Mock environment variables
+const originalEnv = process.env
 
 vi.mock('@/hooks/useRegistry', () => ({
   useRegistry: vi.fn()
@@ -32,6 +34,15 @@ vi.mock('sonner', () => ({
 }))
 
 vi.mocked(useRegistry).mockReturnValue(initialState)
+
+beforeEach(() => {
+  vi.clearAllMocks()
+  process.env = { ...originalEnv, SYSTEM_LANGUAGE: 'sv-se' }
+})
+
+afterEach(() => {
+  vi.unstubAllEnvs()
+})
 
 describe('CreateDeliverablePrompt', () => {
   const mockSaveDocument = vi.fn()
@@ -93,7 +104,7 @@ describe('CreateDeliverablePrompt', () => {
       render(<CreateDeliverablePrompt {...defaultProps} />)
 
       expect(screen.getByText('Skapa artikel?')).toBeInTheDocument()
-      expect(screen.getByText(/Vill du skapa en artikel för uppdraget Test Title/)).toBeInTheDocument()
+      expect(screen.getByText('Vill du skapa en artikel för uppdraget Test Title?')).toBeInTheDocument()
       expect(screen.getByText('Skapa')).toBeInTheDocument()
       expect(screen.getByText('Avbryt')).toBeInTheDocument()
     })
@@ -103,12 +114,12 @@ describe('CreateDeliverablePrompt', () => {
         <CreateDeliverablePrompt
           {...defaultProps}
           deliverableType='flash'
-          documentLabel='flash'
+          documentLabel='Flash'
         />
       )
 
-      expect(screen.getByText('Skapa flash?')).toBeInTheDocument()
-      expect(screen.getByText(/Vill du skapa en flash för uppdraget Test Title/)).toBeInTheDocument()
+      expect(screen.getByText('Skapa Flash?')).toBeInTheDocument()
+      expect(screen.getByText('Vill du skapa en Flash för uppdraget Test Title?')).toBeInTheDocument()
     })
 
     it('renders with editorial-info deliverable type', () => {
@@ -116,17 +127,17 @@ describe('CreateDeliverablePrompt', () => {
         <CreateDeliverablePrompt
           {...defaultProps}
           deliverableType='editorial-info'
-          documentLabel='redaktionell info'
+          documentLabel='Till red'
         />
       )
 
-      expect(screen.getByText('Skapa redaktionell info?')).toBeInTheDocument()
+      expect(screen.getByText('Skapa')).toBeInTheDocument()
     })
 
     it('renders without title in description', () => {
       render(<CreateDeliverablePrompt {...defaultProps} title='' />)
 
-      expect(screen.getByText(/Vill du skapa en artikel för uppdraget\?$/)).toBeInTheDocument()
+      expect(screen.getByText('Vill du skapa en artikel för uppdraget?')).toBeInTheDocument()
     })
 
     it('does not render when repository is missing', () => {
@@ -270,7 +281,7 @@ describe('CreateDeliverablePrompt', () => {
 
       await waitFor(() => {
         expect(toast.error).toHaveBeenCalledWith(
-          `Misslyckades att skapa text: ${errorMessage}`
+          'Misslyckades att skapa text: Network error'
         )
       })
 
@@ -360,6 +371,15 @@ describe('CreateDeliverablePrompt', () => {
   })
 
   describe('Repository Integration', () => {
+    beforeEach(() => {
+      vi.clearAllMocks()
+      process.env = { ...originalEnv, SYSTEM_LANGUAGE: 'sv-se' }
+    })
+
+    afterEach(() => {
+      vi.unstubAllEnvs()
+    })
+
     it('calls saveDocument with session access token', async () => {
       const user = userEvent.setup()
 

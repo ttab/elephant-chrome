@@ -14,7 +14,7 @@ import {
   NavigationIcon,
   CircleCheckIcon
 } from '@ttab/elephant-ui/icons'
-import { Newsvalues, NewsvalueMap, AssignmentTypes, PlanningEventStatuses } from '@/defaults'
+import { Newsvalues, NewsvalueMap, getAssignmentTypes, getPlanningEventStatuses } from '@/defaults'
 import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
 import { SectionBadge } from '@/components/DataItem/SectionBadge'
 import { type IDBAuthor, type IDBSection } from 'src/datastore/types'
@@ -22,12 +22,14 @@ import { FacetedFilter } from '@/components/Commands/FacetedFilter'
 import { getNestedFacetedUniqueValues } from '@/components/Table/lib/getNestedFacetedUniqueValues'
 import { getStatusFromMeta } from '@/lib/getStatusFromMeta'
 import type { PreprocessedPlanningData } from './preprocessor'
+import type { TFunction, Namespace } from 'i18next'
+import type { TranslationKey } from '@/types/i18next.d'
 
-export function planningListColumns({ sections = [], authors = [], user }: {
+export function planningListColumns<Ns extends Namespace>({ sections = [], authors = [], user }: {
   sections?: IDBSection[]
   authors?: IDBAuthor[]
   user?: string
-}): Array<ColumnDef<PreprocessedPlanningData>> {
+}, t: TFunction<Ns>): Array<ColumnDef<PreprocessedPlanningData>> {
   const sectionOptions = sections.map((_) => ({
     value: _.id,
     label: _.title
@@ -45,15 +47,18 @@ export function planningListColumns({ sections = [], authors = [], user }: {
         Filter: ({ column, setSearch }) => (
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
-        options: PlanningEventStatuses,
-        name: 'Status',
+        options: getPlanningEventStatuses(),
+        name: t('core:labels.status'),
         columnIcon: CircleCheckIcon,
         className: 'flex-none',
-        display: (value: string) => (
-          <span>
-            {PlanningEventStatuses.find((status) => status.value === value)?.label}
-          </span>
-        )
+        display: (value: string) => {
+          const statusLabel = t?.(`core:status.${value}` as TranslationKey)
+          return (
+            <span>
+              {statusLabel}
+            </span>
+          )
+        }
       },
       accessorFn: (data) => {
         if (!data.meta) {
@@ -80,7 +85,7 @@ export function planningListColumns({ sections = [], authors = [], user }: {
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
         options: Newsvalues,
-        name: 'Nyhetsvärde',
+        name: t('core:labels.newsvalue'),
         columnIcon: SignalHighIcon,
         className: 'flex-none hidden @3xl/view:[display:revert]'
       },
@@ -101,7 +106,7 @@ export function planningListColumns({ sections = [], authors = [], user }: {
     {
       id: 'title',
       meta: {
-        name: 'Titel',
+        name: t('core:labels.title'),
         columnIcon: PenIcon,
         className: 'flex-1 min-w-0'
       },
@@ -123,7 +128,7 @@ export function planningListColumns({ sections = [], authors = [], user }: {
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
         quickFilter: true,
-        name: 'Sektion',
+        name: t('core:labels.section'),
         columnIcon: ShapesIcon,
         className: 'flex-none w-[115px] hidden @4xl/view:[display:revert]',
         display: (value: string) => (
@@ -153,26 +158,42 @@ export function planningListColumns({ sections = [], authors = [], user }: {
         Filter: ({ column, setSearch }) => (
           <FacetedFilter column={column} setSearch={setSearch} facetFn={() => getNestedFacetedUniqueValues(column)} />
         ),
-        name: 'Uppdragstagare',
+        name: t('core:labels.assignee'),
         columnIcon: UsersIcon,
-        className: 'flex-none w-[112px] hidden @5xl/view:[display:revert]'
+        className: 'flex-none w-[112px] hidden @5xl/view:[display:revert]',
+        display: (value: string) => {
+          const names = value.split(',').filter(Boolean)
+          return <Assignees assignees={names} tooltip={false} />
+        }
+      },
+      getGroupingValue: (data) => {
+        const assignees = data._preprocessed?.assignees ?? []
+        return assignees
+          .map((uuid) => authors.find((a) => a.id === uuid)?.name ?? '??')
+          .sort((a, b) => a.localeCompare(b))
+          .join(',')
       },
       accessorFn: (data) => data._preprocessed?.assignees || [],
       cell: ({ row }) => {
-        const assigneeIds = row.getValue<string[]>('assignees') || []
-
-        const assignees = assigneeIds.map((assigneeId) => {
-          return authors.find((author) => author.id === assigneeId)?.name || ''
-        })
+        const assignees = (row.getValue<string[]>('assignees') || []).map((assigneeId) =>
+          authors.find((author) => author.id === assigneeId)?.name || '')
+          .sort((a, b) => a.localeCompare(b))
 
         return <Assignees assignees={assignees} />
       },
-      sortingFn: 'alphanumeric',
+      sortingFn: (rowA, rowB, columnId) => {
+        const toKey = (row: typeof rowA) =>
+          (row.getValue<string[]>(columnId) || [])
+            .map((uuid) => authors.find((a) => a.id === uuid)?.name ?? '??')
+            .sort((a, b) => a.localeCompare(b))
+            .join(',')
+        return toKey(rowA).localeCompare(toKey(rowB))
+      },
       filterFn: (row, id, value: string[]) => {
         const assignees = row.getValue<string[]>(id) || []
         return value.some((v) => assignees.includes(v))
       },
-      enableGrouping: false
+      enableGrouping: true
     },
     {
       id: 'type',
@@ -180,14 +201,14 @@ export function planningListColumns({ sections = [], authors = [], user }: {
         Filter: ({ column, setSearch }) => (
           <FacetedFilter column={column} setSearch={setSearch} facetFn={() => getNestedFacetedUniqueValues(column)} />
         ),
-        options: AssignmentTypes,
-        name: 'Typ',
+        options: getAssignmentTypes(),
+        name: t('core:labels.assignmentType') || '',
         columnIcon: CrosshairIcon,
         className: 'flex-none w-[120px] hidden @6xl/view:[display:revert]',
         display: (value: string | string[]) => {
-          const items = AssignmentTypes
+          const items = getAssignmentTypes()
             .filter((type) => value.includes(type.value))
-            .map((item) => item.label)
+            .map((item) => t(`shared:assignmentTypes.${item.value}` as TranslationKey))
           return (
             <div className='flex flex-row gap-2'>
               <span>
@@ -199,9 +220,8 @@ export function planningListColumns({ sections = [], authors = [], user }: {
       },
       accessorFn: (data) => data._preprocessed?.types || [],
       cell: ({ row }) => {
-        const typeValues = row.getValue<string[]>('type') || []
-        const data = AssignmentTypes.filter(
-          (assignmentType) => typeValues.includes(assignmentType.value)
+        const data = getAssignmentTypes().filter(
+          (assignmentType) => (row.getValue<string[]>('type') || []).includes(assignmentType.value)
         )
 
         if (data.length === 0) {
@@ -216,7 +236,7 @@ export function planningListColumns({ sections = [], authors = [], user }: {
     {
       id: 'action',
       meta: {
-        name: 'Action',
+        name: t('core:labels.action'),
         columnIcon: NavigationIcon,
         className: 'flex-none'
       },

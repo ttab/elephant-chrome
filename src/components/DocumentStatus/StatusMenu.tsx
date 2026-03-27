@@ -1,7 +1,7 @@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@ttab/elephant-ui'
 import { useRef, useState, useEffect, useCallback } from 'react'
 import { useWorkflow } from '@/hooks/index/useWorkflow'
-import { StatusSpecifications, WorkflowSpecifications, type WorkflowTransition } from '@/defaults/workflowSpecification'
+import { StatusSpecifications, getWorkflowSpecifications, type WorkflowTransition } from '@/defaults/workflowSpecification'
 import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
 import { StatusOptions } from './StatusOptions'
 import { StatusMenuContext } from './StatusMenuContext'
@@ -17,6 +17,7 @@ import { useHistory, useNavigation, useView } from '@/hooks/index'
 import type { View } from '@/types/index'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
+import { useTranslation } from 'react-i18next'
 
 export const StatusMenu = ({ ydoc, publishTime, onBeforeStatusChange }: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -36,17 +37,18 @@ export const StatusMenu = ({ ydoc, publishTime, onBeforeStatusChange }: {
   const { state, dispatch } = useNavigation()
   const history = useHistory()
   const { viewId } = useView()
+  const { t } = useTranslation()
 
   // Read workflow specifications from current type and current status
   const isWorkflow = documentStatus?.type
-    ? WorkflowSpecifications[documentStatus.type][documentStatus.name].isWorkflow
+    ? getWorkflowSpecifications()[documentStatus.type][documentStatus.name].isWorkflow
     : false
   const isChanged = !isWorkflow ? ydoc.isChanged : false
   const asSave = (documentStatus?.type
-    ? WorkflowSpecifications[documentStatus.type][documentStatus.name].asSave && ydoc.isChanged
+    ? getWorkflowSpecifications()[documentStatus.type][documentStatus.name].asSave && ydoc.isChanged
     : false) || false
   const requireCause = !!documentStatus?.checkpoint && documentStatus.type
-    ? WorkflowSpecifications[documentStatus.type][documentStatus.name].requireCause || false
+    ? getWorkflowSpecifications()[documentStatus.type][documentStatus.name].requireCause || false
     : false
 
 
@@ -56,22 +58,33 @@ export const StatusMenu = ({ ydoc, publishTime, onBeforeStatusChange }: {
     }
   }, [])
 
+  const [isTransitioning, setIsTransitioning] = useState(false)
+
   // Callback function to set status. Will first call onBeforeStatusChange() if
   // provided by props, then proceed to change the status if allowed.
   const setStatus = useCallback(async (newStatus: string, data?: Record<string, unknown>) => {
-    if (onBeforeStatusChange) {
-      if (await onBeforeStatusChange(newStatus, data) !== true) {
-        return
-      }
-    }
+    setIsTransitioning(true)
 
-    await setDocumentStatus(
-      newStatus,
-      (typeof data?.cause === 'string') ? data.cause : undefined
-    )
+    try {
+      if (onBeforeStatusChange) {
+        if (await onBeforeStatusChange(newStatus, data) !== true) {
+          setIsTransitioning(false)
+          return
+        }
+      }
+
+      await setDocumentStatus(
+        newStatus,
+        (typeof data?.cause === 'string') ? data.cause : undefined
+      )
+    } catch (error) {
+      console.error('Failed to change status:', error)
+    } finally {
+      setIsTransitioning(false)
+    }
   }, [onBeforeStatusChange, setDocumentStatus])
 
-  const unPublishDocument = (newStatus?: string) => {
+  const unPublishDocument = async (newStatus?: string) => {
     if (!repository || !session?.accessToken || newStatus !== 'unpublished') {
       return
     }
@@ -83,37 +96,38 @@ export const StatusMenu = ({ ydoc, publishTime, onBeforeStatusChange }: {
       version: -1n
     }
 
-    try {
-      (async () => {
-        await repository?.saveMeta({
-          status,
-          accessToken: session?.accessToken || '',
-          cause: documentStatus?.cause,
-          isWorkflow: documentStatus?.type === 'core/article',
-          currentStatus: documentStatus
-        })
+    setIsTransitioning(true)
 
-        const viewType: Record<string, View> = {
-          'core/article': 'Editor',
-          'core/planning-item': 'Planning',
-          'core/event': 'Event',
-          'core/factbox': 'Factbox',
-          'core/flash': 'Flash',
-          'tt/print-article': 'PrintEditor'
-        }
-        handleLink({
-          dispatch,
-          viewItem: state.viewRegistry.get(viewType[documentStatus?.type || 'Error']),
-          props: { id: ydoc.id },
-          viewId: crypto.randomUUID(),
-          history,
-          origin: viewId,
-          target: 'self'
-        })
-      })().catch((err) => console.error(err))
+    try {
+      await repository.saveMeta({
+        status,
+        accessToken: session.accessToken,
+        cause: documentStatus?.cause,
+        isWorkflow: documentStatus?.type === 'core/article',
+        currentStatus: documentStatus
+      })
+
+      const viewType: Record<string, View> = {
+        'core/article': 'Editor',
+        'core/planning-item': 'Planning',
+        'core/event': 'Event',
+        'core/factbox': 'Factbox',
+        'core/flash': 'Flash',
+        'tt/print-article': 'PrintEditor'
+      }
+      handleLink({
+        dispatch,
+        viewItem: state.viewRegistry.get(viewType[documentStatus?.type || 'Error']),
+        props: { id: ydoc.id },
+        viewId: crypto.randomUUID(),
+        history,
+        origin: viewId,
+        target: 'self'
+      })
     } catch (error) {
-      toast.error('Det gick inte att avpublicera dokumentet')
+      toast.error(t('errors:toasts.unpublishError'))
       console.error('error while unpublishing document:', error)
+      setIsTransitioning(false)
     }
   }
 
@@ -141,6 +155,7 @@ export const StatusMenu = ({ ydoc, publishTime, onBeforeStatusChange }: {
               currentStatusName={currentStatusName}
               currentStatusDef={currentStatusDef}
               asSave={asSave}
+              isTransitioning={isTransitioning}
             />
           </DropdownMenuTrigger>
 
@@ -164,7 +179,7 @@ export const StatusMenu = ({ ydoc, publishTime, onBeforeStatusChange }: {
                   state={{
                     verify: false,
                     isWorkflow: false,
-                    title: workflow[currentStatusName]?.asSaveTitle || 'Publicera ny information',
+                    title: workflow[currentStatusName]?.asSaveTitle || t('shared:status_menu.asSavePlaceholder'),
                     description: workflow[currentStatusName]?.updateDescription || workflow[currentStatusName]?.description
                   }}
                   onSelect={currentStatusName === 'usable' ? showPrompt : () => setStatus('usable')}

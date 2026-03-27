@@ -1,5 +1,6 @@
 import { Block } from '@ttab/elephant-api/newsdoc'
 import { planningDocumentTemplate } from '@/shared/templates/planningDocumentTemplate.js'
+import { getSystemLanguage } from '@/shared/getSystemLanguage'
 import type { TemplatePayload } from '@/shared/templates'
 
 // Mock crypto.randomUUID
@@ -31,7 +32,7 @@ describe('planningDocumentTemplate', () => {
     expect(doc.uuid).toBe('planning-123')
     expect(doc.type).toBe('core/planning-item')
     expect(doc.uri).toBe('core://newscoverage/planning-123')
-    expect(doc.language).toBe('sv-se')
+    expect(doc.language).toBe(getSystemLanguage())
   })
 
   it('sets title from payload when provided', () => {

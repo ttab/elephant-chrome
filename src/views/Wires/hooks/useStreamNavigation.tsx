@@ -218,18 +218,11 @@ export function useStreamNavigation({
         return
       }
 
-      // If focus outside, ArrowDown focuses first item
+      // If focus outside, navigate from last known position (falls back to first item if none)
       if (!focusInCollection) {
-        if (e.key === 'ArrowDown') {
+        if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
           e.preventDefault()
-          const streams = getStreams()
-          if (streams.length > 0) {
-            const items = getStreamItems(streams[0])
-            if (items.length > 0) {
-              const firstId = items[0].getAttribute('data-item-id')
-              if (firstId) focusItem(firstId)
-            }
-          }
+          handleNavigation(e.key === 'ArrowDown' ? 'down' : 'up')
         }
         return
       }

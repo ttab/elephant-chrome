@@ -18,6 +18,7 @@ import { NavigationProvider } from '@/navigation/NavigationProvider'
 import { View } from '../View'
 import { WebSocketProvider } from '@/modules/yjs'
 import { ClientRegistryProvider } from '@/modules/yjs/contexts/ClientRegistryProvider'
+import { useTranslation } from 'react-i18next'
 
 interface InitState {
   faro: boolean | undefined
@@ -28,6 +29,7 @@ interface InitState {
 export const Init = ({ children }: PropsWithChildren): JSX.Element => {
   const { data: session } = useSession()
   const { repository, server: { faroUrl, indexUrl, webSocketUrl } } = useRegistry()
+  const { t } = useTranslation()
   const [isInitialized, setIsInitialized] = useState<InitState>({
     faro: undefined,
     author: undefined,
@@ -54,14 +56,15 @@ export const Init = ({ children }: PropsWithChildren): JSX.Element => {
       initializeAuthor({
         url: indexUrl,
         repository,
-        session
+        session,
+        t
       }).catch((error) => {
         console.error('Failed to initialize author', error)
       }).finally(() => {
         setIsInitialized((prevState) => ({ ...prevState, author: true }))
       })
     }
-  }, [isInitialized.author, indexUrl, session, repository])
+  }, [isInitialized.author, indexUrl, session, repository, t])
 
   if (Object.values(isInitialized).some((value) => value !== true)) {
     return (
@@ -69,7 +72,7 @@ export const Init = ({ children }: PropsWithChildren): JSX.Element => {
         <View.Content>
           <div className='flex items-center justify-center h-screen'>
             <div className='flex flex-col w-1/3'>
-              <LoadingText>Hämtar användardata...</LoadingText>
+              <LoadingText>{t('misc.fetchingUserData')}</LoadingText>
 
               <div className='flex flex-col items-center justify-center gap-2 mt-4'>
                 {Object.entries(isInitialized).map(([key, value]) => {

@@ -1,6 +1,8 @@
 import { Tooltip } from '@ttab/elephant-ui'
 import { cn } from '@ttab/elephant-ui/utils'
-import { HistoryIcon } from './HistoryIcon'
+import { useTranslation } from 'react-i18next'
+import { HistoryIcon, historyColors } from './HistoryIcon'
+import { MoveRightIcon } from '@ttab/elephant-ui/icons'
 
 export const HistoryEntry = ({ version, isCurrent = false, status, isLast, title, time, onSelect, selected = false }: {
   version?: bigint
@@ -12,6 +14,7 @@ export const HistoryEntry = ({ version, isCurrent = false, status, isLast, title
   onSelect: (version: bigint) => void
   selected?: boolean
 }) => {
+  const { t } = useTranslation('wires')
   const isSelectable = !!version && !selected
 
   const handleSelect = (e: React.MouseEvent) => {
@@ -39,19 +42,20 @@ export const HistoryEntry = ({ version, isCurrent = false, status, isLast, title
 
       <div
         className={cn(
-          'py-1 ps-2',
+          'py-1 ps-2 flex items-center gap-1',
           isSelectable ? 'cursor-pointer group-hover:bg-muted/60' : 'cursor-default',
           !title && 'text-muted-foreground',
           selected && 'font-semibold'
         )}
         onMouseDownCapture={handleSelect}
       >
+        {selected && <MoveRightIcon size={12} className='shrink-0 -ml-4' strokeWidth={3} color={historyColors[status ?? 'draft']} />}
         {time}
       </div>
 
       <a
         className={cn(
-          'py-0.5 ps-3 items-center truncate',
+          'py-1 ps-3 items-center truncate',
           isSelectable ? 'cursor-pointer group-hover:bg-muted/60' : 'cursor-default',
           selected && 'font-semibold'
         )}
@@ -62,7 +66,7 @@ export const HistoryEntry = ({ version, isCurrent = false, status, isLast, title
               <Tooltip content={(
                 <div className='flex flex-col gap-2'>
                   <span className='font-semibold'>
-                    Version
+                    {t('preview.version')}
                     {` `}
                     {version}
                   </span>
@@ -82,7 +86,7 @@ export const HistoryEntry = ({ version, isCurrent = false, status, isLast, title
                 selected && ' opacity-70'
               )}
               >
-                <HistoryEntryTitle status={status} />
+                {historyEntryTitle(status, t)}
               </span>
             )}
       </a>
@@ -91,20 +95,20 @@ export const HistoryEntry = ({ version, isCurrent = false, status, isLast, title
 }
 
 
-const HistoryEntryTitle = ({ status }: { status: string | null }): string => {
+const historyEntryTitle = (status: string | null, t: (key: string) => string): string => {
   const statuses: Record<string, string> = {
     draft: '',
-    done: 'Klarmarkerad',
-    saved: 'Sparad',
-    approved: 'Godkänd',
-    read: 'Läst',
-    usable: 'Publicerad',
-    used: 'Använd',
-    withheld: 'Tidspublicerad',
-    cancelled: 'Avbruten',
-    unpublished: 'Avpublicerad',
-    flash: 'Flash',
-    system: 'System'
+    done: t('history.status.done'),
+    saved: t('history.status.saved'),
+    approved: t('history.status.approved'),
+    read: t('history.status.read'),
+    usable: t('history.status.usable'),
+    used: t('history.status.used'),
+    withheld: t('history.status.withheld'),
+    cancelled: t('history.status.cancelled'),
+    unpublished: t('history.status.unpublished'),
+    flash: t('history.status.flash'),
+    system: t('history.status.system')
   }
   return statuses[status ?? ''] || ''
 }
