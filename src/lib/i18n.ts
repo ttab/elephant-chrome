@@ -49,7 +49,8 @@ export async function initI18n(): Promise<typeof i18n> {
     },
     supportedLngs: ['sv', 'nb', 'en'],
     load: 'languageOnly',
-    nonExplicitSupportedLngs: true
+    nonExplicitSupportedLngs: true,
+    showSupportNotice: false
   })
 
   if (!i18n.services.formatter) {
