@@ -1,7 +1,8 @@
-import { useEffect, useState, type PropsWithChildren, type JSX, useMemo } from 'react'
+import { useEffect, useState, type PropsWithChildren, type JSX, useMemo, useLayoutEffect } from 'react'
 import { useKeydownGlobal } from '@/hooks/useKeydownGlobal'
 import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@ttab/elephant-ui'
 import type { MouseEvent } from 'react'
+import { createPortal } from 'react-dom'
 
 
 interface PromptProps extends PropsWithChildren {
@@ -40,15 +41,18 @@ export const Prompt = ({
   })
 
   const [open, setOpen] = useState<boolean>(true)
+  const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null)
 
-  const dialogStyle = useMemo(() => {
-    if (!anchor) return undefined
-    const rect = anchor.getBoundingClientRect()
-    return {
-      left: rect.left + rect.width / 2,
-      top: rect.top + rect.height / 2
+  useLayoutEffect(() => {
+    if (anchor) {
+      setAnchorRect(anchor.getBoundingClientRect())
     }
   }, [anchor])
+
+
+  const dialogStyle = anchorRect
+    ? { left: anchorRect.left + anchorRect.width / 2, top: anchorRect.top + anchorRect.height / 2 }
+    : undefined
 
   useEffect(() => {
     return () => {
@@ -57,74 +61,91 @@ export const Prompt = ({
   }, [])
 
   return (
-    <Dialog open={open} onOpenChange={setOpen} modal={true}>
-      <DialogContent
-        className='z-50'
-        style={dialogStyle}
-        onPointerDownOutside={() => {
-          if (onSecondary) {
-            onSecondary()
-          }
-        }}
-      >
-        <DialogHeader>
-          {!!title && <DialogTitle>{title}</DialogTitle>}
-        </DialogHeader>
+    <>
+      {anchorRect && createPortal(
+        <div
+          style={{
+            position: 'fixed',
+            left: anchorRect.left,
+            top: anchorRect.top,
+            width: anchorRect.width,
+            height: anchorRect.height,
+            zIndex: 49, // behind built-in overlay (z-50)
+            boxShadow: '0 0 0 100vmax rgba(0,0,0,0.6)', // darkens everything outside
+            pointerEvents: 'none'
+          }}
+        />,
+        document.body
+      )}
+      <Dialog open={open} onOpenChange={setOpen} modal={true}>
+        <DialogContent
+          className='z-50'
+          style={dialogStyle}
+          onPointerDownOutside={() => {
+            if (onSecondary) {
+              onSecondary()
+            }
+          }}
+        >
+          <DialogHeader>
+            {!!title && <DialogTitle>{title}</DialogTitle>}
+          </DialogHeader>
 
-        <DialogDescription>
-          {!!description && description}
-        </DialogDescription>
+          <DialogDescription>
+            {!!description && description}
+          </DialogDescription>
 
-        {!!children && <>{children}</>}
+          {!!children && <>{children}</>}
 
-        <DialogFooter className='flex flex-row sm:justify-between justify-between gap-2 pt-4'>
-          <div className='flex items-center'>
-            {!!onCancel && !!cancelLabel && (
+          <DialogFooter className='flex flex-row sm:justify-between justify-between gap-2 pt-4'>
+            <div className='flex items-center'>
+              {!!onCancel && !!cancelLabel && (
+                <Button
+                  variant='outline'
+                  onClick={(event) => {
+                    event.preventDefault()
+                    event.stopPropagation()
+                    onCancel()
+                  }}
+                >
+                  {cancelLabel}
+                </Button>
+              )}
+            </div>
+
+            <div className='flex items-center gap-2'>
+              {!!onSecondary && !!secondaryLabel && (
+                <Button
+                  variant='secondary'
+                  onClick={(event) => {
+                    event.preventDefault()
+                    event.stopPropagation()
+                    onSecondary()
+                  }}
+                >
+                  {secondaryLabel}
+                </Button>
+              )}
+
               <Button
-                variant='outline'
-                onClick={(event) => {
-                  event.preventDefault()
-                  event.stopPropagation()
-                  onCancel()
-                }}
-              >
-                {cancelLabel}
-              </Button>
-            )}
-          </div>
-
-          <div className='flex items-center gap-2'>
-            {!!onSecondary && !!secondaryLabel && (
-              <Button
-                variant='secondary'
-                onClick={(event) => {
-                  event.preventDefault()
-                  event.stopPropagation()
-                  onSecondary()
-                }}
-              >
-                {secondaryLabel}
-              </Button>
-            )}
-
-            <Button
-              variant={primaryVariant}
-              disabled={disablePrimary}
-              autoFocus
-              onClick={(event: MouseEvent<HTMLButtonElement>) => {
-                onPrimary(event)
-              }}
-              onKeyDown={(event: React.KeyboardEvent<HTMLButtonElement>) => {
-                if (event.key === 'Enter') {
+                variant={primaryVariant}
+                disabled={disablePrimary}
+                autoFocus
+                onClick={(event: MouseEvent<HTMLButtonElement>) => {
                   onPrimary(event)
-                }
-              }}
-            >
-              {primaryLabel}
-            </Button>
-          </div>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+                }}
+                onKeyDown={(event: React.KeyboardEvent<HTMLButtonElement>) => {
+                  if (event.key === 'Enter') {
+                    onPrimary(event)
+                  }
+                }}
+              >
+                {primaryLabel}
+              </Button>
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   )
 }
