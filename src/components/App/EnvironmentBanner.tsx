@@ -1,8 +1,7 @@
 import type { JSX } from 'react'
 
-export const EnvironmentBanner = (): JSX.Element => (
-  <div className='fixed top-0 left-0 right-0 z-50 flex items-center justify-center py-0 bg-red-600'>
-    {/* eslint-disable-next-line i18next/no-literal-string */}
+export const EnvironmentBanner = ({ environment }: { environment?: string }): JSX.Element => (
+  <div className={`shrink-0 flex w-full items-center justify-center py-0 ${environment === 'development' ? 'bg-green-600' : 'bg-red-600'}`}>
     <span className='text-[8px] font-bold tracking-widest text-white'>
       {environment === 'development' ? 'DEV' : 'STAGE'}
     </span>
