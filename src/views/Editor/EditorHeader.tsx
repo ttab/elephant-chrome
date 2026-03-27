@@ -1,6 +1,6 @@
 import { useHistory, useLink, useNavigation, useView, useWorkflowStatus } from '@/hooks'
 import { Newsvalue } from '@/components/Newsvalue'
-import { useCallback, useState, type JSX } from 'react'
+import { useCallback, type JSX } from 'react'
 import { MetaSheet } from '@/components/MetaSheet/MetaSheet'
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { AddNote } from '@/components/Notes/AddNote'
@@ -28,7 +28,6 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
   const { state, dispatch } = useNavigation()
   const history = useHistory()
   const planningId = useDeliverableInfo(ydoc.id)?.planningUuid ?? ''
-  const [publishTime] = useState<string | null>(null)
   const [workflowStatus] = useWorkflowStatus({ ydoc, documentId: ydoc.id })
   const { t } = useTranslation('shared')
   const documentType = workflowStatus?.type
@@ -145,8 +144,8 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
 
                 {!!(propPlanningId || planningId) && (!isReadOnlyAndUpdated || isUnpublished) && (
                   <StatusMenu
+                    planningId={propPlanningId || planningId}
                     ydoc={ydoc}
-                    publishTime={publishTime ? new Date(publishTime) : undefined}
                     onBeforeStatusChange={onBeforeStatusChange}
                   />
                 )}
