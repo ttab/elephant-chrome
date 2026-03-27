@@ -1,19 +1,21 @@
 import { type IndexedDBContextInterface } from '../contexts/IndexedDBProvider'
-import { get } from '@/lib/index/get'
+import type { Index } from '@/shared/Index'
+import { QueryV1, RangeQueryV1, type HitV1 } from '@ttab/elephant-api/index'
 
 /**
  * Either fetch all objects from specified object store (which is the
  * same thing as documentType - e.g core/author, core/section). If
  * necessary (or when forced) refresh the object store with data from
- * the index before returnin the objects.
+ * the index before returning the objects.
  */
-export async function fetchOrRefresh<TObject, TIndexItem>(
+export async function fetchOrRefresh<TObject>(
   IDB: IndexedDBContextInterface,
   storeName: string,
-  indexUrl: URL,
+  index: Index,
   accessToken: string,
   force: boolean,
-  transformer: (item: TIndexItem) => TObject
+  fields: string[],
+  transformer: (hit: HitV1) => TObject
 ): Promise<TObject[]> {
   const { lastRefresh } = await IDB.get<{ lastRefresh: Date }>('__meta', storeName) || {}
   const maxRefreshInterval = 1000 * 3600 * 48
@@ -25,10 +27,28 @@ export async function fetchOrRefresh<TObject, TIndexItem>(
           return
         }
 
-        const items = await fetchFromIndex(indexUrl, accessToken, storeName, transformer)
-        if (!Array.isArray(items)) {
-          return []
+        const result = await index.query({
+          accessToken,
+          documentType: storeName,
+          size: 500,
+          fields,
+          query: QueryV1.create({
+            conditions: {
+              oneofKind: 'range',
+              range: RangeQueryV1.create({
+                field: 'heads.usable.version',
+                gte: '1'
+              })
+            }
+          }),
+          options: { aggregatePages: true }
+        })
+
+        if (!result.ok || !Array.isArray(result.hits)) {
+          return
         }
+
+        const items = result.hits.map(transformer)
 
         await IDB.clear(storeName)
 
@@ -45,56 +65,7 @@ export async function fetchOrRefresh<TObject, TIndexItem>(
     )
   }
 
-  // Actually fetch all authors from objectStore
-  const cachedAuthors = await IDB.get<TObject[]>(storeName)
-  return cachedAuthors || []
-}
-
-/**
- * Fetch all items of specified documentType from index, use supplied
- * transformer to transform each item from indexed datastructure to
- * simplified object structure which is later stored in object store.
- */
-async function fetchFromIndex<TObject, TIndexItem>(
-  indexUrl: URL,
-  accessToken: string,
-  documentType: string,
-  transformer: (item: TIndexItem) => TObject
-): Promise<TObject[] | undefined> {
-  let page = 1
-  const size = 500
-  const objs: TObject[] = []
-
-  try {
-    while (true) {
-      const result = await get<TIndexItem>(
-        new URL(indexUrl),
-        accessToken,
-        documentType,
-        {
-          page,
-          size
-        }
-      )
-
-      if (!Array.isArray(result.hits)) {
-        break
-      }
-
-      result.hits.forEach((hit) => {
-        objs.push(transformer(hit))
-      })
-
-      if (result.hits.length < size) {
-        break
-      }
-
-      page++
-    }
-  } catch (ex) {
-    console.warn(ex)
-    return
-  }
-
-  return objs
+  // Fetch all objects from objectStore
+  const cachedObjects = await IDB.get<TObject[]>(storeName)
+  return cachedObjects || []
 }

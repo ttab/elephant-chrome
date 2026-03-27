@@ -4,7 +4,6 @@ import { useSession } from 'next-auth/react'
 import { useIndexedDB } from '../hooks/useIndexedDB'
 import { fetchOrRefresh } from '../lib/fetchOrRefresh'
 import { type IDBSection } from '../types'
-import { type IndexedSection } from '@/lib/index'
 
 interface CoreSectionProviderState {
   objects: IDBSection[]
@@ -18,7 +17,7 @@ export const CoreSectionProvider = ({ children }: {
   children: React.ReactNode
 }): JSX.Element => {
   const documentType = 'core/section'
-  const { server: { indexUrl } } = useRegistry()
+  const { index } = useRegistry()
   const { data } = useSession()
   const [objects, setObjects] = useState<IDBSection[]>([])
   const IDB = useIndexedDB()
@@ -27,29 +26,27 @@ export const CoreSectionProvider = ({ children }: {
    * Get objects from objectStore, else from index and add replace objectStore objects
    */
   const getOrRefreshCache = useCallback(async (force: boolean = false): Promise<void> => {
-    if (!data?.accessToken || !indexUrl || !IDB.isConnected) {
+    if (!data?.accessToken || !index || !IDB.isConnected) {
       return
     }
 
-    const cachedObjects = await fetchOrRefresh<IDBSection, IndexedSection>(
+    const cachedObjects = await fetchOrRefresh<IDBSection>(
       IDB,
       documentType,
-      indexUrl,
+      index,
       data.accessToken,
       force,
-      (item) => {
-        const { _id: id, _source: _ } = item
-        return {
-          id,
-          title: _['document.title'][0].trim()
-        }
-      }
+      ['document.title'],
+      (hit) => ({
+        id: hit.id,
+        title: hit.fields['document.title']?.values?.[0]?.trim() ?? ''
+      })
     )
 
     if (Array.isArray(cachedObjects) && cachedObjects.length) {
       setObjects(cachedObjects)
     }
-  }, [data?.accessToken, indexUrl, IDB])
+  }, [data?.accessToken, index, IDB])
 
 
   /**

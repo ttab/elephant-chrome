@@ -4,7 +4,6 @@ import { useSession } from 'next-auth/react'
 import { useIndexedDB } from '../hooks/useIndexedDB'
 import { fetchOrRefresh } from '../lib/fetchOrRefresh'
 import { type IDBContentSource } from '../types'
-import { type IndexedContentSource } from '@/lib/index'
 
 interface CoreContentSourceProviderState {
   objects: IDBContentSource[]
@@ -18,7 +17,7 @@ export const CoreContentSourceProvider = ({ children }: {
   children: React.ReactNode
 }): JSX.Element => {
   const documentType = 'core/content-source'
-  const { server: { indexUrl } } = useRegistry()
+  const { index } = useRegistry()
   const { data } = useSession()
   const [objects, setObjects] = useState<IDBContentSource[]>([])
   const IDB = useIndexedDB()
@@ -27,30 +26,28 @@ export const CoreContentSourceProvider = ({ children }: {
    * Get objects from objectStore, else from index and add replace objectStore objects
    */
   const getOrRefreshCache = useCallback(async (force: boolean = false): Promise<void> => {
-    if (!data?.accessToken || !indexUrl || !IDB.isConnected) {
+    if (!data?.accessToken || !index || !IDB.isConnected) {
       return
     }
 
-    const cachedObjects = await fetchOrRefresh<IDBContentSource, IndexedContentSource>(
+    const cachedObjects = await fetchOrRefresh<IDBContentSource>(
       IDB,
       documentType,
-      indexUrl,
+      index,
       data.accessToken,
       force,
-      (item) => {
-        const { _id: id, _source: _ } = item
-        return {
-          id,
-          uri: _['document.uri'][0].trim(),
-          title: _['document.title'][0].trim()
-        }
-      }
+      ['document.title', 'document.uri'],
+      (hit) => ({
+        id: hit.id,
+        uri: hit.fields['document.uri']?.values?.[0]?.trim() ?? '',
+        title: hit.fields['document.title']?.values?.[0]?.trim() ?? ''
+      })
     )
 
     if (Array.isArray(cachedObjects) && cachedObjects.length) {
       setObjects(cachedObjects)
     }
-  }, [data?.accessToken, indexUrl, IDB])
+  }, [data?.accessToken, index, IDB])
 
 
   /**

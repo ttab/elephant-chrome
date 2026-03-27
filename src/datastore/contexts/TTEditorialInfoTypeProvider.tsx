@@ -4,7 +4,6 @@ import { useSession } from 'next-auth/react'
 import { useIndexedDB } from '../hooks/useIndexedDB'
 import { fetchOrRefresh } from '../lib/fetchOrRefresh'
 import { type IDBEditorialInfoType } from '../types'
-import { type IndexedEditorialInfoType } from '@/lib/index'
 
 interface TTEditorialInfoTypeProviderState {
   objects: IDBEditorialInfoType[]
@@ -18,7 +17,7 @@ export const TTEditorialInfoTypeProvider = ({ children }: {
   children: React.ReactNode
 }): JSX.Element => {
   const documentType = 'tt/editorial-info-type'
-  const { server: { indexUrl } } = useRegistry()
+  const { index } = useRegistry()
   const { data } = useSession()
   const [objects, setObjects] = useState<IDBEditorialInfoType[]>([])
   const IDB = useIndexedDB()
@@ -27,29 +26,27 @@ export const TTEditorialInfoTypeProvider = ({ children }: {
    * Get objects from objectStore, else from index and add replace objectStore objects
    */
   const getOrRefreshCache = useCallback(async (force: boolean = false): Promise<void> => {
-    if (!data?.accessToken || !indexUrl || !IDB.isConnected) {
+    if (!data?.accessToken || !index || !IDB.isConnected) {
       return
     }
 
-    const cachedObjects = await fetchOrRefresh<IDBEditorialInfoType, IndexedEditorialInfoType>(
+    const cachedObjects = await fetchOrRefresh<IDBEditorialInfoType>(
       IDB,
       documentType,
-      indexUrl,
+      index,
       data.accessToken,
       force,
-      (item) => {
-        const { _id: id, _source: _ } = item
-        return {
-          id,
-          title: _['document.title'][0].trim()
-        }
-      }
+      ['document.title'],
+      (hit) => ({
+        id: hit.id,
+        title: hit.fields['document.title']?.values?.[0]?.trim() ?? ''
+      })
     )
 
     if (Array.isArray(cachedObjects) && cachedObjects.length) {
       setObjects(cachedObjects)
     }
-  }, [data?.accessToken, indexUrl, IDB])
+  }, [data?.accessToken, index, IDB])
 
 
   /**

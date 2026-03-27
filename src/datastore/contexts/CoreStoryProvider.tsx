@@ -4,7 +4,6 @@ import { useSession } from 'next-auth/react'
 import { useIndexedDB } from '../hooks/useIndexedDB'
 import { fetchOrRefresh } from '../lib/fetchOrRefresh'
 import { type IDBStory } from '../types'
-import { type IndexedStory } from '@/lib/index'
 
 interface CoreStoryProviderState {
   objects: IDBStory[]
@@ -14,11 +13,17 @@ export const CoreStoryContext = createContext<CoreStoryProviderState>({
   objects: []
 })
 
+const storyFields = [
+  'document.title',
+  'document.meta.core_definition.role',
+  'document.meta.core_definition.data.text'
+]
+
 export const CoreStoryProvider = ({ children }: {
   children: React.ReactNode
 }): JSX.Element => {
   const documentType = 'core/story'
-  const { server: { indexUrl } } = useRegistry()
+  const { index } = useRegistry()
   const { data } = useSession()
   const [objects, setObjects] = useState<IDBStory[]>([])
   const IDB = useIndexedDB()
@@ -27,45 +32,36 @@ export const CoreStoryProvider = ({ children }: {
    * Get objects from objectStore, else from index and add replace objectStore objects
    */
   const getOrRefreshCache = useCallback(async (force: boolean = false): Promise<void> => {
-    if (!data?.accessToken || !indexUrl || !IDB.isConnected) {
+    if (!data?.accessToken || !index || !IDB.isConnected) {
       return
     }
 
-    const cachedObjects = await fetchOrRefresh<IDBStory, IndexedStory>(
+    const cachedObjects = await fetchOrRefresh<IDBStory>(
       IDB,
       documentType,
-      indexUrl,
+      index,
       data.accessToken,
       force,
-      (item) => {
-        const { _id: id, _source: _ } = item
-        const getRoleText = (roleIndex: number): [string, string] => ([
-          _['document.meta.core_definition.role']?.[roleIndex]?.trim() || '',
-          _['document.meta.core_definition.data.text']?.[roleIndex]?.trim() || ''
-        ])
-        const [role0, text0] = getRoleText(0)
-        const [role1, text1] = getRoleText(1)
+      storyFields,
+      (hit) => {
+        const { id, fields: f } = hit
+        const roles = f['document.meta.core_definition.role']?.values ?? []
+        const texts = f['document.meta.core_definition.data.text']?.values ?? []
 
         const story = {
           id,
-          title: _['document.title'][0].trim(),
+          title: f['document.title']?.values?.[0]?.trim() ?? '',
           shortText: '',
           longText: ''
         }
 
-        if (role0 && text0) {
-          if (role0 === 'short') {
-            story.shortText = text0
-          } else if (role0 === 'long') {
-            story.longText = text0
-          }
-        }
-
-        if (role1 && text1) {
-          if (role1 === 'short') {
-            story.shortText = text1
-          } else if (role1 === 'long') {
-            story.longText = text1
+        for (let i = 0; i < roles.length; i++) {
+          const role = roles[i]?.trim()
+          const text = texts[i]?.trim() ?? ''
+          if (role === 'short') {
+            story.shortText = text
+          } else if (role === 'long') {
+            story.longText = text
           }
         }
 
@@ -76,7 +72,7 @@ export const CoreStoryProvider = ({ children }: {
     if (Array.isArray(cachedObjects) && cachedObjects.length) {
       setObjects(cachedObjects)
     }
-  }, [data?.accessToken, indexUrl, IDB])
+  }, [data?.accessToken, index, IDB])
 
 
   /**

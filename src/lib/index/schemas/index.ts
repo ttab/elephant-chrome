@@ -1,8 +1,0 @@
-export { type IndexedAuthor } from './author'
-export { type IndexedCategory } from './category'
-export { type IndexedStory } from './story'
-export { type IndexedSection } from './section'
-export { type IndexedOrganiser } from './organiser'
-export { type IndexedWireSource } from './wireSource'
-export { type IndexedContentSource } from './contentSource'
-export { type IndexedEditorialInfoType } from './editorialInfoType'
