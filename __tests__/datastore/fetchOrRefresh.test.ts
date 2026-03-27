@@ -84,6 +84,17 @@ describe('fetchOrRefresh', () => {
 
     // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(index.query).toHaveBeenCalledOnce()
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    expect(index.query).toHaveBeenCalledWith(
+      expect.objectContaining({
+        accessToken: 'token-123',
+        documentType: 'core/author',
+        size: 500,
+        fields: ['document.title'],
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        options: expect.objectContaining({ aggregatePages: true })
+      })
+    )
     expect(vi.mocked(IDB.clear)).toHaveBeenCalledWith('core/author')
     expect(vi.mocked(IDB.put)).toHaveBeenCalledTimes(3) // 2 items + 1 meta
     expect(result).toEqual([
@@ -99,6 +110,55 @@ describe('fetchOrRefresh', () => {
       get: vi.fn()
         .mockResolvedValueOnce({ lastRefresh: new Date() }) // fresh cache
         .mockResolvedValueOnce(cached) // final read
+    })
+
+    const result = await fetchOrRefresh(
+      IDB,
+      'core/author',
+      index,
+      'token-123',
+      false,
+      ['document.title'],
+      transformer
+    )
+
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    expect(index.query).not.toHaveBeenCalled()
+    expect(result).toEqual(cached)
+  })
+
+  it('refreshes when cache is older than 48 hours', async () => {
+    const hits = [createMockHit('1', { 'document.title': ['Refreshed'] })]
+    const index = createMockIndex(hits)
+    const expired = new Date(Date.now() - 48 * 3600 * 1000 - 1)
+    const IDB = createMockIDB({
+      get: vi.fn()
+        .mockResolvedValueOnce({ lastRefresh: expired }) // stale cache
+        .mockResolvedValueOnce([{ id: '1', title: 'Refreshed' }])
+    })
+
+    await fetchOrRefresh(
+      IDB,
+      'core/author',
+      index,
+      'token-123',
+      false,
+      ['document.title'],
+      transformer
+    )
+
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    expect(index.query).toHaveBeenCalledOnce()
+  })
+
+  it('does not refresh when cache is just under 48 hours old', async () => {
+    const cached = [{ id: '1', title: 'Still fresh' }]
+    const index = createMockIndex()
+    const almostExpired = new Date(Date.now() - 48 * 3600 * 1000 + 60000)
+    const IDB = createMockIDB({
+      get: vi.fn()
+        .mockResolvedValueOnce({ lastRefresh: almostExpired })
+        .mockResolvedValueOnce(cached)
     })
 
     const result = await fetchOrRefresh(
