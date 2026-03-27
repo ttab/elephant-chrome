@@ -36,7 +36,7 @@ describe('GET /api/envs', () => {
       baboonUrl: 'https://baboon.example.com',
       systemLanguage: 'nb-NO',
       hasPrint: 'true',
-      stageBanner: ''
+      environment: ''
     })
   })
 
