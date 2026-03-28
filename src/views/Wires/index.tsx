@@ -236,18 +236,29 @@ export const Wires = (): JSX.Element => {
     settings.content.forEach(({ uuid, type, meta }) => {
       if (type !== 'core/wire-pane') return
 
-      const sections = meta.filter((meta) => meta.type === 'core/section').map((meta) => meta.uuid)
-      const sources = meta.filter((meta) => meta.type === 'core/source').map((meta) => meta.uri)
-      const texts = meta.filter((meta) => meta.type === 'query').map((meta) => meta.value)
-      const newsvalues = meta.filter((meta) => meta.type === 'core/newsvalue').map((meta) => meta.value)
-      const wireStatuses = meta.filter((meta) => meta.type === 'wireStatus').map((meta) => meta.value)
+      const knownTypes = new Set(['core/section', 'core/source', 'query', 'core/newsvalue', 'wireStatus', 'advancedSearch'])
+      const filters = meta.filter((m) => m.role === 'filter')
+
+      filters.forEach((m) => {
+        if (!knownTypes.has(m.type)) {
+          console.warn(`[Wires] Dropping unknown filter type "${m.type}" from stream ${uuid}`)
+        }
+      })
+
+      const sections = filters.filter((m) => m.type === 'core/section').map((m) => m.uuid)
+      const sources = filters.filter((m) => m.type === 'core/source').map((m) => m.uri)
+      const texts = filters.filter((m) => m.type === 'query').map((m) => m.value)
+      const newsvalues = filters.filter((m) => m.type === 'core/newsvalue').map((m) => m.value)
+      const wireStatuses = filters.filter((m) => m.type === 'wireStatus').map((m) => m.value)
+      const advancedSearch = filters.filter((m) => m.type === 'advancedSearch').map((m) => m.value)
 
       addStream(uuid, {
         'core/section': sections,
         'core/source': sources,
         query: texts,
         'core/newsvalue': newsvalues,
-        wireStatus: wireStatuses
+        wireStatus: wireStatuses,
+        advancedSearch
       })
     })
 
