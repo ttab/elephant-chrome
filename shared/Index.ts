@@ -7,7 +7,9 @@ import {
   QueryV1,
   SortingV1,
   type HitV1,
-  QueryRequestV1
+  type MappingPropertyV1,
+  QueryRequestV1,
+  GetMappingsRequestV1
 } from '@ttab/elephant-api/index'
 import { meta } from './meta'
 import { pagination } from '@/lib/pagination'
@@ -159,6 +161,14 @@ export class Index {
         hits: []
       }
     }
+  }
+
+  async getMappings(documentType: string, accessToken: string): Promise<MappingPropertyV1[]> {
+    const { response } = await this.#client.getMappings(
+      GetMappingsRequestV1.create({ documentType }),
+      meta(accessToken)
+    )
+    return response.properties
   }
 
   async pollSubscription({

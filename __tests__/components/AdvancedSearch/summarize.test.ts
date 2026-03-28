@@ -21,6 +21,9 @@ const t = (key: string, options?: Record<string, string | number>): string => {
     'advancedSearch.fields.subject': 'Subject',
     'advancedSearch.fields.table': 'Table'
   }
+  if (key === 'advancedSearch.badge.boost') {
+    return `Boost: ${options?.boost}x`
+  }
   if (key === 'advancedSearch.badge.fuzzy') {
     return `Fuzzy (~${options?.edits})`
   }
@@ -163,18 +166,73 @@ describe('summarizeState', () => {
       expect(fieldBadge?.label).toBe('Fields: ')
     })
 
+    it('includes date range badge', () => {
+      const state = createDefaultState(articlesFields)
+      state.structured.dateRange = { from: '2026-01-01', to: '2026-03-01' }
+
+      const badges = summarizeState(state, articlesFields, t)
+      expect(badges).toContainEqual({ key: 'dateRange', label: '2026-01-01 – 2026-03-01' })
+    })
+
+    it('includes date range badge with from-only', () => {
+      const state = createDefaultState(articlesFields)
+      state.structured.dateRange = { from: '2026-01-01', to: '' }
+
+      const badges = summarizeState(state, articlesFields, t)
+      const badge = badges.find((b) => b.key === 'dateRange')
+      expect(badge?.label).toBe('2026-01-01 –')
+    })
+
+    it('includes boost badge when > 1', () => {
+      const state = createDefaultState(articlesFields)
+      state.structured.query = 'test'
+      state.structured.boost = 3
+
+      const badges = summarizeState(state, articlesFields, t)
+      expect(badges).toContainEqual({ key: 'boost', label: 'Boost: 3x' })
+    })
+
+    it('does not include boost badge when 1', () => {
+      const state = createDefaultState(articlesFields)
+      state.structured.query = 'test'
+
+      const badges = summarizeState(state, articlesFields, t)
+      expect(badges.find((b) => b.key === 'boost')).toBeUndefined()
+    })
+
+    it('includes field exists badge', () => {
+      const state = createDefaultState(articlesFields)
+      state.structured.query = 'test'
+      state.structured.fieldExists = [{ field: 'document.title' as FieldPath, exists: true }]
+
+      const badges = summarizeState(state, articlesFields, t)
+      expect(badges).toContainEqual({ key: 'fieldExists', label: 'Title' })
+    })
+
+    it('shows negated label for missing fields', () => {
+      const state = createDefaultState(articlesFields)
+      state.structured.query = 'test'
+      state.structured.fieldExists = [{ field: 'document.title' as FieldPath, exists: false }]
+
+      const badges = summarizeState(state, articlesFields, t)
+      expect(badges).toContainEqual({ key: 'fieldExists', label: '¬Title' })
+    })
+
     it('includes all badge types simultaneously', () => {
       const state = createDefaultState(articlesFields)
       state.structured.query = 'test'
+      state.structured.dateRange = { from: '2026-01-01', to: '' }
       state.structured.matchType = 'phrase'
       state.structured.booleanAnd = true
       state.structured.fuzzy = true
       state.structured.fuzzyEdits = 2
+      state.structured.boost = 2
       state.structured.selectedFields = ['document.title' as FieldPath]
+      state.structured.fieldExists = [{ field: 'document.title' as FieldPath, exists: true }]
 
       const badges = summarizeState(state, articlesFields, t)
       const keys = badges.map((b) => b.key)
-      expect(keys).toEqual(['query', 'matchType', 'booleanAnd', 'fuzzy', 'fields'])
+      expect(keys).toEqual(['query', 'dateRange', 'matchType', 'booleanAnd', 'fuzzy', 'boost', 'fields', 'fieldExists'])
     })
   })
 })

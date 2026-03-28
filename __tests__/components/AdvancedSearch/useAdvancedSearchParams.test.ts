@@ -200,6 +200,59 @@ describe('roundtrip', () => {
 
     expect(restored.structured.selectedFields).toEqual(['document.title'])
   })
+
+  it('serializes and deserializes dateRange', () => {
+    const original = createDefaultState(articlesFields)
+    original.structured.dateRange = { from: '2026-01-01', to: '2026-03-01' }
+
+    const params = serializeAdvancedState(original)
+    expect(params.advDateFrom).toBe('2026-01-01')
+    expect(params.advDateTo).toBe('2026-03-01')
+
+    const restored = deserializeAdvancedState(params, articlesFields)
+    expect(restored.structured.dateRange).toEqual({ from: '2026-01-01', to: '2026-03-01' })
+  })
+
+  it('serializes and deserializes boost', () => {
+    const original = createDefaultState(articlesFields)
+    original.structured.query = 'test'
+    original.structured.boost = 3.5
+
+    const params = serializeAdvancedState(original)
+    expect(params.advBoost).toBe('3.5')
+
+    const restored = deserializeAdvancedState(params, articlesFields)
+    expect(restored.structured.boost).toBe(3.5)
+  })
+
+  it('serializes and deserializes fuzzyPrefixLength', () => {
+    const original = createDefaultState(articlesFields)
+    original.structured.query = 'test'
+    original.structured.fuzzy = true
+    original.structured.fuzzyPrefixLength = 3
+
+    const params = serializeAdvancedState(original)
+    expect(params.advFuzzyPrefix).toBe('3')
+
+    const restored = deserializeAdvancedState(params, articlesFields)
+    expect(restored.structured.fuzzyPrefixLength).toBe(3)
+  })
+
+  it('serializes and deserializes fieldExists', () => {
+    const original = createDefaultState(articlesFields)
+    original.structured.fieldExists = [
+      { field: 'document.title' as FieldPath, exists: true },
+      { field: 'document.content' as FieldPath, exists: false }
+    ]
+
+    const params = serializeAdvancedState(original)
+    expect(params.advExists).toBe('document.title')
+    expect(params.advMissing).toBe('document.content')
+
+    const restored = deserializeAdvancedState(params, articlesFields)
+    expect(restored.structured.fieldExists).toContainEqual({ field: 'document.title', exists: true })
+    expect(restored.structured.fieldExists).toContainEqual({ field: 'document.content', exists: false })
+  })
 })
 
 describe('hasAdvancedParams', () => {
@@ -250,5 +303,17 @@ describe('isActiveState', () => {
 
   it('returns false for querySyntax mode with empty raw', () => {
     expect(isActiveState(querySyntaxState(''))).toBe(false)
+  })
+
+  it('returns true for date range only', () => {
+    const state = createDefaultState(articlesFields)
+    state.structured.dateRange = { from: '2026-01-01', to: '' }
+    expect(isActiveState(state)).toBe(true)
+  })
+
+  it('returns true for field exists only', () => {
+    const state = createDefaultState(articlesFields)
+    state.structured.fieldExists = [{ field: 'document.title' as FieldPath, exists: true }]
+    expect(isActiveState(state)).toBe(true)
   })
 })

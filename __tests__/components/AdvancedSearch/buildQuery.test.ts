@@ -202,4 +202,172 @@ describe('buildAdvancedQuery', () => {
       }
     })
   })
+
+  describe('date range', () => {
+    const dateField = 'heads.usable.created'
+
+    it('returns undefined when only date range is set without dateField', () => {
+      const state = createDefaultState(articlesFields)
+      state.structured.dateRange = { from: '2026-01-01', to: '2026-03-01' }
+      expect(buildAdvancedQuery(state, articlesFields)).toBeUndefined()
+    })
+
+    it('builds a range query for date-only search', () => {
+      const state = createDefaultState(articlesFields)
+      state.structured.dateRange = { from: '2026-01-01', to: '2026-03-01' }
+
+      const result = buildAdvancedQuery(state, articlesFields, dateField)
+      expect(result?.conditions.oneofKind).toBe('range')
+
+      if (result?.conditions.oneofKind === 'range') {
+        expect(result.conditions.range.field).toBe(dateField)
+        expect(result.conditions.range.gte).toBe('2026-01-01')
+        expect(result.conditions.range.lte).toBe('2026-03-01')
+      }
+    })
+
+    it('builds range with from-only', () => {
+      const state = createDefaultState(articlesFields)
+      state.structured.dateRange = { from: '2026-01-01', to: '' }
+
+      const result = buildAdvancedQuery(state, articlesFields, dateField)
+      expect(result?.conditions.oneofKind).toBe('range')
+
+      if (result?.conditions.oneofKind === 'range') {
+        expect(result.conditions.range.gte).toBe('2026-01-01')
+        expect(result.conditions.range.lte).toBe('')
+      }
+    })
+
+    it('wraps text + date in bool query', () => {
+      const state = createDefaultState(articlesFields)
+      state.structured.query = 'ukraine'
+      state.structured.dateRange = { from: '2026-01-01', to: '' }
+
+      const result = buildAdvancedQuery(state, articlesFields, dateField)
+      expect(result?.conditions.oneofKind).toBe('bool')
+
+      if (result?.conditions.oneofKind === 'bool') {
+        expect(result.conditions.bool.must).toHaveLength(2)
+        expect(result.conditions.bool.must[0].conditions.oneofKind).toBe('multiMatch')
+        expect(result.conditions.bool.must[1].conditions.oneofKind).toBe('range')
+      }
+    })
+  })
+
+  describe('boost', () => {
+    it('sets boost on multiMatch when > 1', () => {
+      const state = createDefaultState(articlesFields)
+      state.structured.query = 'test'
+      state.structured.boost = 3
+
+      const result = buildAdvancedQuery(state, articlesFields)
+      expect(result?.conditions.oneofKind).toBe('multiMatch')
+
+      if (result?.conditions.oneofKind === 'multiMatch') {
+        expect(result.conditions.multiMatch.boost).toBe(3)
+      }
+    })
+
+    it('does not set boost when 1', () => {
+      const state = createDefaultState(articlesFields)
+      state.structured.query = 'test'
+      state.structured.boost = 1
+
+      const result = buildAdvancedQuery(state, articlesFields)
+      expect(result?.conditions.oneofKind).toBe('multiMatch')
+
+      if (result?.conditions.oneofKind === 'multiMatch') {
+        expect(result.conditions.multiMatch.boost).toBe(0)
+      }
+    })
+  })
+
+  describe('fuzzy prefix length', () => {
+    it('sets prefixLength when fuzzy and prefixLength > 0', () => {
+      const state = createDefaultState(articlesFields)
+      state.structured.query = 'test'
+      state.structured.fuzzy = true
+      state.structured.fuzzyPrefixLength = 2
+
+      const result = buildAdvancedQuery(state, articlesFields)
+      expect(result?.conditions.oneofKind).toBe('multiMatch')
+
+      if (result?.conditions.oneofKind === 'multiMatch') {
+        expect(result.conditions.multiMatch.prefixLength).toBe(BigInt(2))
+      }
+    })
+
+    it('does not set prefixLength when 0', () => {
+      const state = createDefaultState(articlesFields)
+      state.structured.query = 'test'
+      state.structured.fuzzy = true
+      state.structured.fuzzyPrefixLength = 0
+
+      const result = buildAdvancedQuery(state, articlesFields)
+      expect(result?.conditions.oneofKind).toBe('multiMatch')
+
+      if (result?.conditions.oneofKind === 'multiMatch') {
+        expect(result.conditions.multiMatch.prefixLength).toBe(BigInt(0))
+      }
+    })
+  })
+
+  describe('field existence', () => {
+    it('builds exists condition', () => {
+      const state = createDefaultState(articlesFields)
+      state.structured.fieldExists = [{ field: 'document.title' as FieldPath, exists: true }]
+
+      const result = buildAdvancedQuery(state, articlesFields)
+      expect(result?.conditions.oneofKind).toBe('exists')
+
+      if (result?.conditions.oneofKind === 'exists') {
+        expect(result.conditions.exists).toBe('document.title')
+      }
+    })
+
+    it('builds mustNot exists for missing', () => {
+      const state = createDefaultState(articlesFields)
+      state.structured.fieldExists = [{ field: 'document.title' as FieldPath, exists: false }]
+
+      const result = buildAdvancedQuery(state, articlesFields)
+      expect(result?.conditions.oneofKind).toBe('bool')
+
+      if (result?.conditions.oneofKind === 'bool') {
+        expect(result.conditions.bool.mustNot).toHaveLength(1)
+        expect(result.conditions.bool.mustNot[0].conditions.oneofKind).toBe('exists')
+      }
+    })
+
+    it('combines multiple field exists in bool', () => {
+      const state = createDefaultState(articlesFields)
+      state.structured.fieldExists = [
+        { field: 'document.title' as FieldPath, exists: true },
+        { field: 'document.content' as FieldPath, exists: false }
+      ]
+
+      const result = buildAdvancedQuery(state, articlesFields)
+      expect(result?.conditions.oneofKind).toBe('bool')
+
+      if (result?.conditions.oneofKind === 'bool') {
+        expect(result.conditions.bool.must).toHaveLength(2)
+      }
+    })
+  })
+
+  describe('combined conditions', () => {
+    it('wraps text + date + field exists in bool must', () => {
+      const state = createDefaultState(articlesFields)
+      state.structured.query = 'ukraine'
+      state.structured.dateRange = { from: '2026-01-01', to: '' }
+      state.structured.fieldExists = [{ field: 'document.title' as FieldPath, exists: true }]
+
+      const result = buildAdvancedQuery(state, articlesFields, 'heads.usable.created')
+      expect(result?.conditions.oneofKind).toBe('bool')
+
+      if (result?.conditions.oneofKind === 'bool') {
+        expect(result.conditions.bool.must).toHaveLength(3)
+      }
+    })
+  })
 })
