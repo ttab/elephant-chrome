@@ -45,5 +45,51 @@
     "selectTime": "Velg tid",
     "searching": "Søker...",
     "nothingFound": "Ingenting ble funnet"
+  },
+  "advancedSearch": {
+    "title": "Avansert søk",
+    "structured": "Strukturert",
+    "querySyntax": "Spørringssyntaks",
+    "query": "Spørring",
+    "searchIn": "Søk i",
+    "matchType": "Samsvartype",
+    "words": "Ord",
+    "exactPhrase": "Eksakt frase",
+    "requireAllTerms": "Krev alle termer (AND)",
+    "fuzzyMatching": "Fuzzy-samsvar",
+    "fuzzyEdit1": "~1 endring",
+    "fuzzyEdit2": "~2 endringer",
+    "clear": "Tøm",
+    "cancel": "Avbryt",
+    "search": "Søk",
+    "searchTerms": "Søketermer...",
+    "querySyntaxPlaceholder": "title:\"ukraine\" AND content:crisis*",
+    "syntaxReference": "Syntaksreferanse",
+    "syntaxOperators": "Operatorer",
+    "syntaxOperatorsValue": "AND, OR, NOT",
+    "syntaxPhrase": "Frase",
+    "syntaxPhraseValue": "\"eksakt frase\"",
+    "syntaxWildcard": "Jokertegn",
+    "syntaxWildcardValue": "ukrai* , cr?sis",
+    "syntaxFuzzy": "Fuzzy",
+    "syntaxFuzzyValue": "ord~2",
+    "syntaxGrouping": "Gruppering",
+    "syntaxGroupingValue": "(a OR b) AND c",
+    "syntaxFieldSearch": "Feltsøk",
+    "syntaxFieldSearchValue": "felt:verdi",
+    "syntaxAvailableFields": "Tilgjengelige felt",
+    "badge": {
+      "fuzzy": "Fuzzy (~{{edits}})",
+      "fields": "Felt: {{fields}}"
+    },
+    "fields": {
+      "title": "Tittel",
+      "content": "Innhold",
+      "slugline": "Slugline",
+      "description": "Beskrivelse",
+      "assignment": "Oppdrag",
+      "subject": "Emne",
+      "table": "Tabell"
+    }
   }
 }
