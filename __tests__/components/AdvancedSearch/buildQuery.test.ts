@@ -239,6 +239,19 @@ describe('buildAdvancedQuery', () => {
       }
     })
 
+    it('builds range with to-only', () => {
+      const state = createDefaultState(articlesFields)
+      state.structured.dateRange = { from: '', to: '2026-03-01' }
+
+      const result = buildAdvancedQuery(state, articlesFields, dateField)
+      expect(result?.conditions.oneofKind).toBe('range')
+
+      if (result?.conditions.oneofKind === 'range') {
+        expect(result.conditions.range.gte).toBe('')
+        expect(result.conditions.range.lte).toBe('2026-03-01')
+      }
+    })
+
     it('wraps text + date in bool query', () => {
       const state = createDefaultState(articlesFields)
       state.structured.query = 'ukraine'

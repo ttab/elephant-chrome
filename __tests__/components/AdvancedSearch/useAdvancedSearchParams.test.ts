@@ -4,7 +4,7 @@ import {
   hasAdvancedParams,
   clearAdvancedParams
 } from '@/components/AdvancedSearch/hooks/useAdvancedSearchParams'
-import { createDefaultState, isActiveState } from '@/components/AdvancedSearch/lib/defaultState'
+import { createDefaultState, isActiveState, parseAdvancedSearchState, parseAdvancedSearchJson } from '@/components/AdvancedSearch/lib/defaultState'
 import { articlesFields } from '@/components/AdvancedSearch/configs'
 import type { AdvancedSearchState, FieldPath } from '@/components/AdvancedSearch/types'
 
@@ -275,8 +275,14 @@ describe('clearAdvancedParams', () => {
     expect(result.advFields).toBeUndefined()
     expect(result.advMatch).toBeUndefined()
     expect(result.advFuzzy).toBeUndefined()
+    expect(result.advFuzzyPrefix).toBeUndefined()
     expect(result.advAnd).toBeUndefined()
     expect(result.advRaw).toBeUndefined()
+    expect(result.advDateFrom).toBeUndefined()
+    expect(result.advDateTo).toBeUndefined()
+    expect(result.advBoost).toBeUndefined()
+    expect(result.advExists).toBeUndefined()
+    expect(result.advMissing).toBeUndefined()
   })
 })
 
@@ -305,9 +311,15 @@ describe('isActiveState', () => {
     expect(isActiveState(querySyntaxState(''))).toBe(false)
   })
 
-  it('returns true for date range only', () => {
+  it('returns true for from-only date range', () => {
     const state = createDefaultState(articlesFields)
     state.structured.dateRange = { from: '2026-01-01', to: '' }
+    expect(isActiveState(state)).toBe(true)
+  })
+
+  it('returns true for to-only date range', () => {
+    const state = createDefaultState(articlesFields)
+    state.structured.dateRange = { from: '', to: '2026-03-01' }
     expect(isActiveState(state)).toBe(true)
   })
 
@@ -315,5 +327,98 @@ describe('isActiveState', () => {
     const state = createDefaultState(articlesFields)
     state.structured.fieldExists = [{ field: 'document.title' as FieldPath, exists: true }]
     expect(isActiveState(state)).toBe(true)
+  })
+})
+
+describe('parseAdvancedSearchState', () => {
+  it('returns valid state for a full AdvancedSearchState object', () => {
+    const input = createDefaultState(articlesFields)
+    input.structured.query = 'test'
+    const result = parseAdvancedSearchState(input, articlesFields)
+    expect(result).toBeDefined()
+    expect(result?.structured.query).toBe('test')
+  })
+
+  it('returns undefined for null', () => {
+    expect(parseAdvancedSearchState(null)).toBeUndefined()
+  })
+
+  it('returns undefined for primitives', () => {
+    expect(parseAdvancedSearchState('string')).toBeUndefined()
+    expect(parseAdvancedSearchState(42)).toBeUndefined()
+    expect(parseAdvancedSearchState(true)).toBeUndefined()
+  })
+
+  it('returns undefined for arrays', () => {
+    expect(parseAdvancedSearchState([])).toBeUndefined()
+  })
+
+  it('returns undefined when mode is invalid', () => {
+    expect(parseAdvancedSearchState({
+      mode: 'invalid',
+      structured: { query: '' },
+      querySyntax: { raw: '' }
+    })).toBeUndefined()
+  })
+
+  it('returns undefined when structured is missing', () => {
+    expect(parseAdvancedSearchState({
+      mode: 'structured',
+      querySyntax: { raw: '' }
+    })).toBeUndefined()
+  })
+
+  it('returns undefined when structured.query is not a string', () => {
+    expect(parseAdvancedSearchState({
+      mode: 'structured',
+      structured: { query: 123 },
+      querySyntax: { raw: '' }
+    })).toBeUndefined()
+  })
+
+  it('returns undefined when querySyntax.raw is not a string', () => {
+    expect(parseAdvancedSearchState({
+      mode: 'structured',
+      structured: { query: '' },
+      querySyntax: { raw: 42 }
+    })).toBeUndefined()
+  })
+
+  it('merges missing fields with defaults', () => {
+    const minimal = {
+      mode: 'structured',
+      structured: { query: 'test' },
+      querySyntax: { raw: '' }
+    }
+    const result = parseAdvancedSearchState(minimal, articlesFields)
+    expect(result).toBeDefined()
+    expect(result?.structured.matchType).toBe('best_fields')
+    expect(result?.structured.fuzzy).toBe(false)
+    expect(result?.structured.fuzzyEdits).toBe(2)
+    expect(result?.structured.boost).toBe(1)
+    expect(result?.structured.dateRange).toEqual({ from: '', to: '' })
+    expect(result?.structured.fieldExists).toEqual([])
+  })
+})
+
+describe('parseAdvancedSearchJson', () => {
+  it('returns state for valid JSON', () => {
+    const state = createDefaultState(articlesFields)
+    state.structured.query = 'test'
+    const json = JSON.stringify(state)
+    const result = parseAdvancedSearchJson(json, 'test', articlesFields)
+    expect(result?.structured.query).toBe('test')
+  })
+
+  it('returns undefined for invalid JSON', () => {
+    expect(parseAdvancedSearchJson('not json', 'test')).toBeUndefined()
+  })
+
+  it('returns undefined for valid JSON that fails shape validation', () => {
+    expect(parseAdvancedSearchJson('{"foo":"bar"}', 'test')).toBeUndefined()
+  })
+
+  it('returns undefined for JSON array', () => {
+    expect(parseAdvancedSearchJson('[1,2,3]', 'test')).toBeUndefined()
   })
 })
