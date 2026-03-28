@@ -14,17 +14,41 @@ interface FilterPopoverProps {
   streamId: string
   currentFilters: Array<{ type: string, values: string[] }>
   onFilterChange: (type: string, values: string[]) => void
+  editFilterType?: string
+  onEditDone?: () => void
 }
 
 type FilterPage = '' | 'query' | 'section' | 'source' | 'newsvalue' | 'wireStatus'
 
-export const FilterMenu = ({ currentFilters, onFilterChange }: FilterPopoverProps): JSX.Element => {
+const filterTypeToPage: Record<string, FilterPage> = {
+  'core/section': 'section',
+  'core/source': 'source',
+  'core/newsvalue': 'newsvalue',
+  wireStatus: 'wireStatus'
+}
+
+export const FilterMenu = ({ currentFilters, onFilterChange, editFilterType, onEditDone }: FilterPopoverProps): JSX.Element => {
   const { t } = useTranslation('wires')
   const [open, setOpen] = useState(false)
   const [page, setPage] = useState<FilterPage>('')
   const [search, setSearch] = useState<string>('')
   const [queryInput, setQueryInput] = useState<string>('')
   const [advDialogOpen, setAdvDialogOpen] = useState(false)
+
+  useEffect(() => {
+    if (!editFilterType) return
+
+    if (editFilterType === 'advancedSearch') {
+      setAdvDialogOpen(true)
+      onEditDone?.()
+      return
+    }
+
+    const targetPage = filterTypeToPage[editFilterType]
+    setPage(targetPage ?? '')
+    setOpen(true)
+    onEditDone?.()
+  }, [editFilterType, onEditDone])
 
   const advancedState = useMemo((): AdvancedSearchState => {
     const filter = currentFilters.find((f) => f.type === 'advancedSearch')

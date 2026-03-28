@@ -443,6 +443,8 @@ export const Stream = memo(({
     onRemove?.(wireStream.uuid, allDataRef.current.map((w) => w.id))
   }, [onRemove, wireStream.uuid])
 
+  const [editingFilter, setEditingFilter] = useState<string | undefined>()
+
   const handleFilterChange = useCallback((type: string, values: string[]) => {
     onFilterChange?.(wireStream.uuid, type, values)
   }, [onFilterChange, wireStream.uuid])
@@ -549,6 +551,8 @@ export const Stream = memo(({
             streamId={wireStream.uuid}
             currentFilters={wireStream.filters}
             onFilterChange={handleFilterChange}
+            editFilterType={editingFilter}
+            onEditDone={() => setEditingFilter(undefined)}
           />
           {wireStream.filters.map((filter) => (
             <FilterValue
@@ -556,6 +560,7 @@ export const Stream = memo(({
               type={filter.type}
               values={filter.values}
               onClearFilter={handleClearFilter}
+              onEditFilter={setEditingFilter}
             />
           ))}
         </div>
