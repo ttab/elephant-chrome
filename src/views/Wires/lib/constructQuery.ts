@@ -2,7 +2,7 @@ import { QueryV1, BoolQueryV1, TermsQueryV1, MultiMatchQueryV1, RangeQueryV1 } f
 import type { WireFilter } from '../hooks/useWireViewState'
 import { buildAdvancedQuery } from '@/components/AdvancedSearch/lib/buildQuery'
 import { parseAdvancedSearchJson } from '@/components/AdvancedSearch/lib/defaultState'
-import { wiresFields } from '@/components/AdvancedSearch/configs'
+import { wiresFields, dateFields } from '@/components/AdvancedSearch/configs'
 
 /**
  * Constructs a query object based on the provided filter parameters.
@@ -71,7 +71,7 @@ export function constructQuery(filters: WireFilter[]): QueryV1 | undefined {
     } else if (filter.type === 'advancedSearch') {
       const advState = parseAdvancedSearchJson(filter.values[0], 'constructQuery')
       if (advState) {
-        const advQuery = buildAdvancedQuery(advState, wiresFields)
+        const advQuery = buildAdvancedQuery(advState, wiresFields, dateFields.wires)
         if (advQuery) {
           boolConditions.must.push(advQuery)
         }

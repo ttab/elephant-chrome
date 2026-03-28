@@ -59,6 +59,13 @@
     "fuzzyMatching": "Fuzzy matching",
     "fuzzyEdit1": "~1 edit",
     "fuzzyEdit2": "~2 edits",
+    "prefixLength": "Lock first N chars",
+    "boost": "Relevance boost",
+    "dateRange": "Date range",
+    "fieldExists": "Field exists/missing",
+    "exists": "Has",
+    "missing": "Missing",
+    "moreOptions": "More options",
     "clear": "Clear",
     "cancel": "Cancel",
     "search": "Search",
@@ -80,7 +87,8 @@
     "syntaxAvailableFields": "Available fields",
     "badge": {
       "fuzzy": "Fuzzy (~{{edits}})",
-      "fields": "Fields: {{fields}}"
+      "fields": "Fields: {{fields}}",
+      "boost": "Boost: {{boost}}x"
     },
     "fields": {
       "title": "Title",

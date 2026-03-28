@@ -29,3 +29,10 @@ export const wiresFields: SearchFieldConfig[] = [
   field('advancedSearch.fields.content', 'document.content.core_text.data.text', 'content', true),
   field('advancedSearch.fields.table', 'document.content.core_table.data.tbody', 'table', false)
 ]
+
+export const dateFields = {
+  articles: 'heads.usable.created',
+  plannings: 'document.meta.core_planning_item.data.start_date',
+  events: 'document.meta.core_event.data.start',
+  wires: 'document.meta.core_newsitem.data.versioncreated'
+} as const

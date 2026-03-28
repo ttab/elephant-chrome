@@ -25,27 +25,39 @@ export function summarizeState(
     return badges
   }
 
-  const query = state.structured.query.trim()
-  if (!query) {
-    return badges
+  const s = state.structured
+  const query = s.query.trim()
+
+  if (query) {
+    badges.push({ key: 'query', label: query.length > 30 ? `${query.slice(0, 30)}...` : query })
   }
 
-  badges.push({ key: 'query', label: query.length > 30 ? `${query.slice(0, 30)}...` : query })
+  if (s.dateRange.from || s.dateRange.to) {
+    const parts = []
+    if (s.dateRange.from) parts.push(s.dateRange.from)
+    parts.push('–')
+    if (s.dateRange.to) parts.push(s.dateRange.to)
+    badges.push({ key: 'dateRange', label: parts.join(' ') })
+  }
 
-  if (state.structured.matchType === 'phrase') {
+  if (s.matchType === 'phrase') {
     badges.push({ key: 'matchType', label: t('advancedSearch.exactPhrase') })
   }
 
-  if (state.structured.booleanAnd) {
+  if (s.booleanAnd) {
     badges.push({ key: 'booleanAnd', label: t('advancedSearch.requireAllTerms') })
   }
 
-  if (state.structured.fuzzy) {
-    badges.push({ key: 'fuzzy', label: t('advancedSearch.badge.fuzzy', { edits: state.structured.fuzzyEdits }) })
+  if (s.fuzzy) {
+    badges.push({ key: 'fuzzy', label: t('advancedSearch.badge.fuzzy', { edits: s.fuzzyEdits }) })
+  }
+
+  if (s.boost > 1) {
+    badges.push({ key: 'boost', label: t('advancedSearch.badge.boost', { boost: s.boost }) })
   }
 
   const defaultFields = fields.filter((f) => f.defaultSelected).map((f) => f.fieldPath)
-  const selected = state.structured.selectedFields
+  const selected = s.selectedFields
   const isCustomFields = selected.length > 0
     && (selected.length !== defaultFields.length || selected.some((f) => !defaultFields.includes(f)))
 
@@ -56,6 +68,15 @@ export function summarizeState(
       .map((key) => t(key))
       .join(', ')
     badges.push({ key: 'fields', label: t('advancedSearch.badge.fields', { fields: fieldLabels }) })
+  }
+
+  if (s.fieldExists.length > 0) {
+    const labels = s.fieldExists.map((fe) => {
+      const label = fields.find((f) => f.fieldPath === fe.field)?.labelKey
+      const name = label ? t(label) : fe.field
+      return fe.exists ? name : `¬${name}`
+    }).join(', ')
+    badges.push({ key: 'fieldExists', label: labels })
   }
 
   return badges

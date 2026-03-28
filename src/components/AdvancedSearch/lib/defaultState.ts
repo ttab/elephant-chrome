@@ -9,7 +9,11 @@ export function createDefaultState(fields: SearchFieldConfig[]): AdvancedSearchS
       matchType: 'best_fields',
       fuzzy: false,
       fuzzyEdits: 2,
-      booleanAnd: false
+      fuzzyPrefixLength: 0,
+      booleanAnd: false,
+      boost: 1,
+      dateRange: { from: '', to: '' },
+      fieldExists: []
     },
     querySyntax: {
       raw: ''
@@ -21,7 +25,11 @@ export function isActiveState(state: AdvancedSearchState): boolean {
   if (state.mode === 'querySyntax') {
     return state.querySyntax.raw.trim().length > 0
   }
-  return state.structured.query.trim().length > 0
+  const s = state.structured
+  return s.query.trim().length > 0
+    || s.dateRange.from.length > 0
+    || s.dateRange.to.length > 0
+    || s.fieldExists.length > 0
 }
 
 /**

@@ -3,7 +3,7 @@ import type { QueryParams } from '@/hooks/useQuery'
 import type { AdvancedSearchState, FieldPath, SearchFieldConfig } from '../types'
 import { createDefaultState, isActiveState } from '../lib/defaultState'
 
-const ADV_KEYS = ['advMode', 'advQuery', 'advFields', 'advMatch', 'advFuzzy', 'advAnd', 'advRaw'] as const
+const ADV_KEYS = ['advMode', 'advQuery', 'advFields', 'advMatch', 'advFuzzy', 'advFuzzyPrefix', 'advAnd', 'advRaw', 'advDateFrom', 'advDateTo', 'advBoost', 'advExists', 'advMissing'] as const
 
 export function serializeAdvancedState(state: AdvancedSearchState): QueryParams {
   if (!isActiveState(state)) {
@@ -32,10 +32,34 @@ export function serializeAdvancedState(state: AdvancedSearchState): QueryParams 
 
   if (state.structured.fuzzy) {
     params.advFuzzy = String(state.structured.fuzzyEdits)
+    if (state.structured.fuzzyPrefixLength > 0) {
+      params.advFuzzyPrefix = String(state.structured.fuzzyPrefixLength)
+    }
   }
 
   if (state.structured.booleanAnd) {
     params.advAnd = '1'
+  }
+
+  if (state.structured.dateRange.from) {
+    params.advDateFrom = state.structured.dateRange.from
+  }
+
+  if (state.structured.dateRange.to) {
+    params.advDateTo = state.structured.dateRange.to
+  }
+
+  if (state.structured.boost > 1) {
+    params.advBoost = String(state.structured.boost)
+  }
+
+  const existsFields = state.structured.fieldExists.filter((fe) => fe.exists).map((fe) => fe.field)
+  const missingFields = state.structured.fieldExists.filter((fe) => !fe.exists).map((fe) => fe.field)
+  if (existsFields.length > 0) {
+    params.advExists = existsFields.join(',')
+  }
+  if (missingFields.length > 0) {
+    params.advMissing = missingFields.join(',')
   }
 
   return params
@@ -63,6 +87,15 @@ export function deserializeAdvancedState(
   const advFields = Array.isArray(filter.advFields) ? filter.advFields[0] : filter.advFields
   const selectedFields = advFields ? advFields.split(',') as FieldPath[] : fields.filter((f) => f.defaultSelected).map((f) => f.fieldPath)
   const fuzzyStr = Array.isArray(filter.advFuzzy) ? filter.advFuzzy[0] : filter.advFuzzy
+  const fuzzyPrefixStr = Array.isArray(filter.advFuzzyPrefix) ? filter.advFuzzyPrefix[0] : filter.advFuzzyPrefix
+  const boostStr = Array.isArray(filter.advBoost) ? filter.advBoost[0] : filter.advBoost
+  const existsStr = Array.isArray(filter.advExists) ? filter.advExists[0] : filter.advExists
+  const missingStr = Array.isArray(filter.advMissing) ? filter.advMissing[0] : filter.advMissing
+
+  const fieldExists: { field: FieldPath, exists: boolean }[] = [
+    ...(existsStr ? existsStr.split(',').map((f) => ({ field: f as FieldPath, exists: true })) : []),
+    ...(missingStr ? missingStr.split(',').map((f) => ({ field: f as FieldPath, exists: false })) : [])
+  ]
 
   return {
     mode: 'structured',
@@ -72,7 +105,14 @@ export function deserializeAdvancedState(
       matchType: String(filter.advMatch || '') === 'phrase' ? 'phrase' : 'best_fields',
       fuzzy: !!fuzzyStr,
       fuzzyEdits: fuzzyStr === '1' ? 1 : 2,
-      booleanAnd: filter.advAnd === '1'
+      fuzzyPrefixLength: Number(fuzzyPrefixStr) || 0,
+      booleanAnd: filter.advAnd === '1',
+      boost: Number(boostStr) || 1,
+      dateRange: {
+        from: String(filter.advDateFrom || ''),
+        to: String(filter.advDateTo || '')
+      },
+      fieldExists
     },
     querySyntax: { raw: '' }
   }

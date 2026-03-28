@@ -8,13 +8,27 @@ export interface SearchFieldConfig {
   defaultSelected: boolean
 }
 
+export interface DateRangeState {
+  from: string
+  to: string
+}
+
+export interface FieldExistsState {
+  field: FieldPath
+  exists: boolean
+}
+
 export interface StructuredSearchState {
   query: string
   selectedFields: FieldPath[]
   matchType: 'best_fields' | 'phrase'
   fuzzy: boolean
   fuzzyEdits: 1 | 2
+  fuzzyPrefixLength: number
   booleanAnd: boolean
+  boost: number
+  dateRange: DateRangeState
+  fieldExists: FieldExistsState[]
 }
 
 export interface QuerySyntaxState {
@@ -29,7 +43,7 @@ export interface AdvancedSearchState {
   querySyntax: QuerySyntaxState
 }
 
-export type BadgeKey = 'query' | 'matchType' | 'booleanAnd' | 'fuzzy' | 'fields' | 'queryString'
+export type BadgeKey = 'query' | 'matchType' | 'booleanAnd' | 'fuzzy' | 'fields' | 'queryString' | 'dateRange' | 'boost' | 'fieldExists'
 
 export interface AdvancedSearchDialogProps {
   open: boolean

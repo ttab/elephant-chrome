@@ -59,6 +59,13 @@
     "fuzzyMatching": "Fuzzy-samsvar",
     "fuzzyEdit1": "~1 endring",
     "fuzzyEdit2": "~2 endringer",
+    "prefixLength": "Lås første N tegn",
+    "boost": "Relevansøkning",
+    "dateRange": "Datoperiode",
+    "fieldExists": "Felt finnes/mangler",
+    "exists": "Har",
+    "missing": "Mangler",
+    "moreOptions": "Flere alternativer",
     "clear": "Tøm",
     "cancel": "Avbryt",
     "search": "Søk",
@@ -80,7 +87,8 @@
     "syntaxAvailableFields": "Tilgjengelige felt",
     "badge": {
       "fuzzy": "Fuzzy (~{{edits}})",
-      "fields": "Felt: {{fields}}"
+      "fields": "Felt: {{fields}}",
+      "boost": "Boost: {{boost}}x"
     },
     "fields": {
       "title": "Tittel",

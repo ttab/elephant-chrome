@@ -59,6 +59,13 @@
     "fuzzyMatching": "Fuzzy-matchning",
     "fuzzyEdit1": "~1 ändring",
     "fuzzyEdit2": "~2 ändringar",
+    "prefixLength": "Lås första N tecken",
+    "boost": "Relevansökning",
+    "dateRange": "Datumintervall",
+    "fieldExists": "Fält finns/saknas",
+    "exists": "Har",
+    "missing": "Saknas",
+    "moreOptions": "Fler alternativ",
     "clear": "Rensa",
     "cancel": "Avbryt",
     "search": "Sök",
@@ -80,7 +87,8 @@
     "syntaxAvailableFields": "Tillgängliga fält",
     "badge": {
       "fuzzy": "Fuzzy (~{{edits}})",
-      "fields": "Fält: {{fields}}"
+      "fields": "Fält: {{fields}}",
+      "boost": "Boost: {{boost}}x"
     },
     "fields": {
       "title": "Titel",

@@ -10,7 +10,7 @@ import {
 import { fields } from '@/shared/schemas/planning'
 import { buildAdvancedQuery } from '@/components/AdvancedSearch/lib/buildQuery'
 import { deserializeAdvancedState, hasAdvancedParams } from '@/components/AdvancedSearch/hooks/useAdvancedSearchParams'
-import { planningsFields } from '@/components/AdvancedSearch/configs'
+import { planningsFields, dateFields } from '@/components/AdvancedSearch/configs'
 
 /**
  * Constructs a query object based on the provided filter parameters.
@@ -71,7 +71,7 @@ function constructQuery(filter: QueryParams | undefined): QueryV1 | undefined {
   }
 
   if (hasAdvancedParams(filter)) {
-    const advQuery = buildAdvancedQuery(deserializeAdvancedState(filter, planningsFields), planningsFields)
+    const advQuery = buildAdvancedQuery(deserializeAdvancedState(filter, planningsFields), planningsFields, dateFields.plannings)
     if (advQuery) {
       boolConditions.must.push(advQuery)
     }
