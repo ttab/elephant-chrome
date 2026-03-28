@@ -545,8 +545,8 @@ export const Stream = memo(({
       data-stream-id={wireStream.uuid}
       className='flex flex-col h-full snap-start snap-always w-110 shrink-0 border rounded-md overflow-hidden'
     >
-      <div className='flex-none bg-background flex items-center justify-between py-1 px-4 border-b'>
-        <div className='flex gap-2'>
+      <div className='flex-none bg-background flex items-center justify-between py-1 px-4 border-b min-w-0'>
+        <div className='flex gap-2 min-w-0 overflow-x-auto'>
           <FilterMenu
             streamId={wireStream.uuid}
             currentFilters={wireStream.filters}
