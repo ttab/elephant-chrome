@@ -19,7 +19,8 @@ export const AdvancedSearchFilterValue = ({ values }: {
       return summarizeState(state, wiresFields, t).map((b) => b.label)
     }
     return [t('advancedSearch.title')]
-  }, [values, t])
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- only recompute when the serialized state string changes
+  }, [values[0], t])
 
   return (
     <>

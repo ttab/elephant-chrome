@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next'
 import { StructuredMode } from './StructuredMode'
 import { QuerySyntaxMode } from './QuerySyntaxMode'
 import { isActiveState } from './lib/defaultState'
-import type { AdvancedSearchDialogProps, AdvancedSearchState, SearchMode } from './types'
+import type { AdvancedSearchDialogProps, AdvancedSearchState } from './types'
 
 export const AdvancedSearchDialog = ({
   open,
@@ -49,7 +49,7 @@ export const AdvancedSearchDialog = ({
 
   function handleModeChange(value: string) {
     if (value === 'structured' || value === 'querySyntax') {
-      setDraft({ ...draft, mode: value as SearchMode })
+      setDraft({ ...draft, mode: value })
     }
   }
 

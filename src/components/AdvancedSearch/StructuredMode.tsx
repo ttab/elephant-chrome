@@ -12,15 +12,14 @@ interface StructuredModeProps {
 
 export const StructuredMode = ({ state, fields, onChange }: StructuredModeProps): JSX.Element => {
   const { t } = useTranslation()
-  const [showMore, setShowMore] = useState(
-    state.fuzzy || state.boost > 1 || state.fieldExists.length > 0
-  )
+  const hasAdvancedOptions = state.fuzzy || state.boost > 1 || state.fieldExists.length > 0
+  const [showMore, setShowMore] = useState(hasAdvancedOptions)
 
   useEffect(() => {
-    if (state.fuzzy || state.boost > 1 || state.fieldExists.length > 0) {
+    if (hasAdvancedOptions) {
       setShowMore(true)
     }
-  }, [state.fuzzy, state.boost, state.fieldExists.length])
+  }, [hasAdvancedOptions])
 
   function updateField(fieldPath: FieldPath, checked: boolean) {
     const next = checked

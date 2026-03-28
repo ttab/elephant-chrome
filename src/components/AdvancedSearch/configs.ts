@@ -1,3 +1,4 @@
+import type { SearchKeys } from '@/hooks/index/useDocuments/queries/views/search'
 import type { FieldPath, SearchFieldConfig, SyntaxAlias } from './types'
 
 function field(labelKey: string, fieldPath: string, syntaxAlias: string, defaultSelected: boolean): SearchFieldConfig {
@@ -29,6 +30,12 @@ export const wiresFields: SearchFieldConfig[] = [
   field('advancedSearch.fields.content', 'document.content.core_text.data.text', 'content', true),
   field('advancedSearch.fields.table', 'document.content.core_table.data.tbody', 'table', false)
 ]
+
+export const fieldsBySearchType: Record<SearchKeys, SearchFieldConfig[]> = {
+  plannings: planningsFields,
+  events: eventsFields,
+  articles: articlesFields
+}
 
 export const dateFields = {
   articles: 'heads.usable.created',

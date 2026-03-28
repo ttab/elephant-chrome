@@ -15,10 +15,7 @@ interface AdvancedSearchBadgesProps {
 export const AdvancedSearchBadges = ({ state, fields, onEdit, onClear }: AdvancedSearchBadgesProps): JSX.Element => {
   const { t } = useTranslation()
   const badges = summarizeState(state, fields, t)
-  const query = state.mode === 'querySyntax'
-    ? state.querySyntax.raw.trim()
-    : state.structured.query.trim()
-
+  const displayText = badges[0]?.label || t('advancedSearch.title')
   const tooltipLines = badges.length > 0
     ? badges.map((b) => b.label)
     : [t('advancedSearch.title')]
@@ -40,7 +37,7 @@ export const AdvancedSearchBadges = ({ state, fields, onEdit, onClear }: Advance
         >
           <SlidersHorizontalIcon size={14} strokeWidth={1.75} className='shrink-0' />
           <span className='truncate'>
-            {query || t('advancedSearch.title')}
+            {displayText}
           </span>
         </button>
       </Tooltip>

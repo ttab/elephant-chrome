@@ -6,10 +6,8 @@ import { SelectedFilters } from '@/components/Filter/SelectedFilters'
 import { Sort } from '@/components/Sort'
 import type { SearchKeys } from '@/hooks/index/useDocuments/queries/views/search'
 import { useQuery } from '@/hooks/useQuery'
-import { AdvancedSearchBadges, AdvancedSearchDialog } from '@/components/AdvancedSearch'
-import type { AdvancedSearchState } from '@/components/AdvancedSearch'
+import { AdvancedSearchBadges, AdvancedSearchDialog, fieldsBySearchType } from '@/components/AdvancedSearch'
 import { useAdvancedSearchParams } from '@/components/AdvancedSearch/hooks/useAdvancedSearchParams'
-import { fieldsByType } from './SearchBar'
 
 export const Toolbar = ({ type }: { type: SearchKeys }): JSX.Element => {
   const [pages, setPages] = useState<string[]>([])
@@ -17,7 +15,7 @@ export const Toolbar = ({ type }: { type: SearchKeys }): JSX.Element => {
   const [query, setQueryString] = useQuery()
   const [dialogOpen, setDialogOpen] = useState(false)
 
-  const fields = fieldsByType[type]
+  const fields = fieldsBySearchType[type]
   const {
     isAdvancedActive,
     state: advancedState,
@@ -33,10 +31,6 @@ export const Toolbar = ({ type }: { type: SearchKeys }): JSX.Element => {
     setPages,
     search,
     setSearch
-  }
-
-  function handleApply(state: AdvancedSearchState) {
-    applyAdvancedSearch(state)
   }
 
   return (
@@ -62,7 +56,7 @@ export const Toolbar = ({ type }: { type: SearchKeys }): JSX.Element => {
         onOpenChange={setDialogOpen}
         fields={fields}
         state={advancedState}
-        onApply={handleApply}
+        onApply={applyAdvancedSearch}
         onClear={clearAdvancedSearch}
       />
     </div>

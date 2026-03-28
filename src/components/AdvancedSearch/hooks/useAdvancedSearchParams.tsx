@@ -5,6 +5,10 @@ import { createDefaultState, isActiveState } from '../lib/defaultState'
 
 const ADV_KEYS = ['advMode', 'advQuery', 'advFields', 'advMatch', 'advFuzzy', 'advFuzzyPrefix', 'advAnd', 'advRaw', 'advDateFrom', 'advDateTo', 'advBoost', 'advExists', 'advMissing'] as const
 
+function firstString(value: string | string[] | undefined): string | undefined {
+  return Array.isArray(value) ? value[0] : value
+}
+
 export function serializeAdvancedState(state: AdvancedSearchState): QueryParams {
   if (!isActiveState(state)) {
     return {}
@@ -69,7 +73,7 @@ export function deserializeAdvancedState(
   filter: QueryParams,
   fields: SearchFieldConfig[]
 ): AdvancedSearchState {
-  const mode = Array.isArray(filter.advMode) ? filter.advMode[0] : filter.advMode
+  const mode = firstString(filter.advMode)
   if (!mode || (mode !== 'querySyntax' && mode !== 'structured')) {
     return createDefaultState(fields)
   }
@@ -84,13 +88,13 @@ export function deserializeAdvancedState(
     }
   }
 
-  const advFields = Array.isArray(filter.advFields) ? filter.advFields[0] : filter.advFields
+  const advFields = firstString(filter.advFields)
   const selectedFields = advFields ? advFields.split(',') as FieldPath[] : fields.filter((f) => f.defaultSelected).map((f) => f.fieldPath)
-  const fuzzyStr = Array.isArray(filter.advFuzzy) ? filter.advFuzzy[0] : filter.advFuzzy
-  const fuzzyPrefixStr = Array.isArray(filter.advFuzzyPrefix) ? filter.advFuzzyPrefix[0] : filter.advFuzzyPrefix
-  const boostStr = Array.isArray(filter.advBoost) ? filter.advBoost[0] : filter.advBoost
-  const existsStr = Array.isArray(filter.advExists) ? filter.advExists[0] : filter.advExists
-  const missingStr = Array.isArray(filter.advMissing) ? filter.advMissing[0] : filter.advMissing
+  const fuzzyStr = firstString(filter.advFuzzy)
+  const fuzzyPrefixStr = firstString(filter.advFuzzyPrefix)
+  const boostStr = firstString(filter.advBoost)
+  const existsStr = firstString(filter.advExists)
+  const missingStr = firstString(filter.advMissing)
 
   const fieldExists: { field: FieldPath, exists: boolean }[] = [
     ...(existsStr ? existsStr.split(',').map((f) => ({ field: f as FieldPath, exists: true })) : []),
@@ -143,11 +147,7 @@ export function useAdvancedSearchParams(
     [advCacheKey, fields]
   )
 
-  const isAdvancedActive = useMemo(
-    () => hasAdvancedParams(filter),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [advCacheKey]
-  )
+  const isAdvancedActive = !!filter.advMode
 
   const applyAdvancedSearch = useCallback(
     (newState: AdvancedSearchState) => {

@@ -50,13 +50,13 @@ export const FilterMenu = ({ currentFilters, onFilterChange, editFilterType, onE
     onEditDone?.()
   }, [editFilterType, onEditDone])
 
+  const advFilterValue = currentFilters.find((f) => f.type === 'advancedSearch')?.values[0]
   const advancedState = useMemo((): AdvancedSearchState => {
-    const filter = currentFilters.find((f) => f.type === 'advancedSearch')
-    if (filter?.values[0]) {
-      return parseAdvancedSearchJson(filter.values[0], 'FilterMenu', wiresFields) ?? createDefaultState(wiresFields)
+    if (advFilterValue) {
+      return parseAdvancedSearchJson(advFilterValue, 'FilterMenu', wiresFields) ?? createDefaultState(wiresFields)
     }
     return createDefaultState(wiresFields)
-  }, [currentFilters])
+  }, [advFilterValue])
 
   function handleAdvancedApply(state: AdvancedSearchState) {
     onFilterChange('advancedSearch', [JSON.stringify(state)])
