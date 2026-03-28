@@ -1,5 +1,8 @@
 import { QueryV1, BoolQueryV1, TermsQueryV1, MultiMatchQueryV1, RangeQueryV1 } from '@ttab/elephant-api/index'
 import type { WireFilter } from '../hooks/useWireViewState'
+import { buildAdvancedQuery } from '@/components/AdvancedSearch/lib/buildQuery'
+import { parseAdvancedSearchJson } from '@/components/AdvancedSearch/lib/defaultState'
+import { wiresFields } from '@/components/AdvancedSearch/configs'
 
 /**
  * Constructs a query object based on the provided filter parameters.
@@ -65,6 +68,14 @@ export function constructQuery(filters: WireFilter[]): QueryV1 | undefined {
           })
         }
       }))
+    } else if (filter.type === 'advancedSearch') {
+      const advState = parseAdvancedSearchJson(filter.values[0], 'constructQuery')
+      if (advState) {
+        const advQuery = buildAdvancedQuery(advState, wiresFields)
+        if (advQuery) {
+          boolConditions.must.push(advQuery)
+        }
+      }
     } else if (filter.type === 'query') {
       // For query filters, we still need to iterate values since each needs a separate multiMatch
       filter.values.forEach((value) => {

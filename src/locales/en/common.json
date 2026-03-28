@@ -45,5 +45,51 @@
     "selectTime": "Select time",
     "searching": "Searching...",
     "nothingFound": "Nothing found"
+  },
+  "advancedSearch": {
+    "title": "Advanced Search",
+    "structured": "Structured",
+    "querySyntax": "Query syntax",
+    "query": "Query",
+    "searchIn": "Search in",
+    "matchType": "Match type",
+    "words": "Words",
+    "exactPhrase": "Exact phrase",
+    "requireAllTerms": "Require all terms (AND)",
+    "fuzzyMatching": "Fuzzy matching",
+    "fuzzyEdit1": "~1 edit",
+    "fuzzyEdit2": "~2 edits",
+    "clear": "Clear",
+    "cancel": "Cancel",
+    "search": "Search",
+    "searchTerms": "Search terms...",
+    "querySyntaxPlaceholder": "title:\"ukraine\" AND content:crisis*",
+    "syntaxReference": "Syntax reference",
+    "syntaxOperators": "Operators",
+    "syntaxOperatorsValue": "AND, OR, NOT",
+    "syntaxPhrase": "Phrase",
+    "syntaxPhraseValue": "\"exact phrase\"",
+    "syntaxWildcard": "Wildcard",
+    "syntaxWildcardValue": "ukrai* , cr?sis",
+    "syntaxFuzzy": "Fuzzy",
+    "syntaxFuzzyValue": "word~2",
+    "syntaxGrouping": "Grouping",
+    "syntaxGroupingValue": "(a OR b) AND c",
+    "syntaxFieldSearch": "Field search",
+    "syntaxFieldSearchValue": "field:value",
+    "syntaxAvailableFields": "Available fields",
+    "badge": {
+      "fuzzy": "Fuzzy (~{{edits}})",
+      "fields": "Fields: {{fields}}"
+    },
+    "fields": {
+      "title": "Title",
+      "content": "Content",
+      "slugline": "Slugline",
+      "description": "Description",
+      "assignment": "Assignment",
+      "subject": "Subject",
+      "table": "Table"
+    }
   }
 }

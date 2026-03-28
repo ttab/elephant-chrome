@@ -11,6 +11,7 @@ import { CategoryFilterValue } from './Value/CategoryFilterValue'
 import { FromFilterValue } from './Value/FromFilterValue'
 import { AuthorFilterValue } from './Value/AuthorFilterValue'
 import { ATypeFilterValue } from './Value/ATypeFilterValue'
+import { AdvancedSearchFilterValue } from './Value/AdvancedSearchFilterValue'
 
 export const FilterValue = ({ type, values, onClearFilter }: {
   type: string
@@ -63,6 +64,8 @@ const SpecificFilterValue = ({ type, values }: {
       return <AuthorFilterValue values={values} />
     case 'aType':
       return <ATypeFilterValue values={values} />
+    case 'advancedSearch':
+      return <AdvancedSearchFilterValue values={values} />
     default:
       return null
   }

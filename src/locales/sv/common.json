@@ -45,5 +45,51 @@
     "selectTime": "Välj tid",
     "searching": "Söker...",
     "nothingFound": "Ingenting hittades"
+  },
+  "advancedSearch": {
+    "title": "Avancerad sökning",
+    "structured": "Strukturerad",
+    "querySyntax": "Frågesyntax",
+    "query": "Fråga",
+    "searchIn": "Sök i",
+    "matchType": "Matchningstyp",
+    "words": "Ord",
+    "exactPhrase": "Exakt fras",
+    "requireAllTerms": "Kräv alla termer (AND)",
+    "fuzzyMatching": "Fuzzy-matchning",
+    "fuzzyEdit1": "~1 ändring",
+    "fuzzyEdit2": "~2 ändringar",
+    "clear": "Rensa",
+    "cancel": "Avbryt",
+    "search": "Sök",
+    "searchTerms": "Söktermer...",
+    "querySyntaxPlaceholder": "title:\"ukraine\" AND content:crisis*",
+    "syntaxReference": "Syntaxreferens",
+    "syntaxOperators": "Operatorer",
+    "syntaxOperatorsValue": "AND, OR, NOT",
+    "syntaxPhrase": "Fras",
+    "syntaxPhraseValue": "\"exakt fras\"",
+    "syntaxWildcard": "Jokertecken",
+    "syntaxWildcardValue": "ukrai* , cr?sis",
+    "syntaxFuzzy": "Fuzzy",
+    "syntaxFuzzyValue": "ord~2",
+    "syntaxGrouping": "Gruppering",
+    "syntaxGroupingValue": "(a OR b) AND c",
+    "syntaxFieldSearch": "Fältsökning",
+    "syntaxFieldSearchValue": "fält:värde",
+    "syntaxAvailableFields": "Tillgängliga fält",
+    "badge": {
+      "fuzzy": "Fuzzy (~{{edits}})",
+      "fields": "Fält: {{fields}}"
+    },
+    "fields": {
+      "title": "Titel",
+      "content": "Innehåll",
+      "slugline": "Slugline",
+      "description": "Beskrivning",
+      "assignment": "Uppdrag",
+      "subject": "Ämne",
+      "table": "Tabell"
+    }
   }
 }

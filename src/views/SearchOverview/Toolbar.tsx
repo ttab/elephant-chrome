@@ -5,10 +5,25 @@ import type { FilterProps } from '@/components/Filter'
 import { SelectedFilters } from '@/components/Filter/SelectedFilters'
 import { Sort } from '@/components/Sort'
 import type { SearchKeys } from '@/hooks/index/useDocuments/queries/views/search'
+import { useQuery } from '@/hooks/useQuery'
+import { AdvancedSearchBadges, AdvancedSearchDialog } from '@/components/AdvancedSearch'
+import type { AdvancedSearchState } from '@/components/AdvancedSearch'
+import { useAdvancedSearchParams } from '@/components/AdvancedSearch/hooks/useAdvancedSearchParams'
+import { fieldsByType } from './SearchBar'
 
 export const Toolbar = ({ type }: { type: SearchKeys }): JSX.Element => {
   const [pages, setPages] = useState<string[]>([])
   const [search, setSearch] = useState<string | undefined>('')
+  const [query, setQueryString] = useQuery()
+  const [dialogOpen, setDialogOpen] = useState(false)
+
+  const fields = fieldsByType[type]
+  const {
+    isAdvancedActive,
+    state: advancedState,
+    applyAdvancedSearch,
+    clearAdvancedSearch
+  } = useAdvancedSearchParams(query, fields, setQueryString)
 
   const page = pages[pages.length - 1] || ''
 
@@ -20,6 +35,10 @@ export const Toolbar = ({ type }: { type: SearchKeys }): JSX.Element => {
     setSearch
   }
 
+  function handleApply(state: AdvancedSearchState) {
+    applyAdvancedSearch(state)
+  }
+
   return (
     <div className='flex items-center justify-between py-1 px-4 border-b sticky top-0 z-10'>
       <div className='flex flex-1 items-center space-x-2'>
@@ -28,7 +47,24 @@ export const Toolbar = ({ type }: { type: SearchKeys }): JSX.Element => {
         </Filter>
         <Sort />
         <SelectedFilters />
+        {isAdvancedActive && (
+          <AdvancedSearchBadges
+            state={advancedState}
+            fields={fields}
+            onEdit={() => setDialogOpen(true)}
+            onClear={clearAdvancedSearch}
+          />
+        )}
       </div>
+
+      <AdvancedSearchDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        fields={fields}
+        state={advancedState}
+        onApply={handleApply}
+        onClear={clearAdvancedSearch}
+      />
     </div>
   )
 }
