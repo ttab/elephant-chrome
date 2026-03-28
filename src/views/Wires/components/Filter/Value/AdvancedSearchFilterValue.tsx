@@ -14,7 +14,7 @@ export const AdvancedSearchFilterValue = ({ values }: {
     if (!values[0]) {
       return [t('advancedSearch.title')]
     }
-    const state = parseAdvancedSearchJson(values[0], 'AdvancedSearchFilterValue')
+    const state = parseAdvancedSearchJson(values[0], 'AdvancedSearchFilterValue', wiresFields)
     if (state) {
       return summarizeState(state, wiresFields, t).map((b) => b.label)
     }

@@ -163,12 +163,20 @@ export class Index {
     }
   }
 
-  async getMappings(documentType: string, accessToken: string): Promise<MappingPropertyV1[]> {
-    const { response } = await this.#client.getMappings(
-      GetMappingsRequestV1.create({ documentType }),
-      meta(accessToken)
-    )
-    return response.properties
+  async getMappings(documentType: string, accessToken: string): Promise<{ ok: boolean, properties: MappingPropertyV1[], errorMessage?: string }> {
+    try {
+      const { response } = await this.#client.getMappings(
+        GetMappingsRequestV1.create({ documentType }),
+        meta(accessToken)
+      )
+      return { ok: true, properties: response.properties }
+    } catch (err: unknown) {
+      return {
+        ok: false,
+        properties: [],
+        errorMessage: `Unable to get mappings: ${(err as Error)?.message || 'Unknown error'}`
+      }
+    }
   }
 
   async pollSubscription({

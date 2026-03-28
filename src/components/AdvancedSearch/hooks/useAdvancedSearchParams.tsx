@@ -105,9 +105,9 @@ export function deserializeAdvancedState(
       matchType: String(filter.advMatch || '') === 'phrase' ? 'phrase' : 'best_fields',
       fuzzy: !!fuzzyStr,
       fuzzyEdits: fuzzyStr === '1' ? 1 : 2,
-      fuzzyPrefixLength: Number(fuzzyPrefixStr) || 0,
+      fuzzyPrefixLength: Math.max(0, Math.min(5, Number(fuzzyPrefixStr) || 0)),
       booleanAnd: filter.advAnd === '1',
-      boost: Number(boostStr) || 1,
+      boost: Math.max(1, Math.min(10, Number(boostStr) || 1)),
       dateRange: {
         from: String(filter.advDateFrom || ''),
         to: String(filter.advDateTo || '')

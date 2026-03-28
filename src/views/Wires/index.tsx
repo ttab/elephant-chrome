@@ -148,6 +148,7 @@ export const Wires = (): JSX.Element => {
                   case 'wireStatus':
                   case 'query':
                   case 'core/newsvalue':
+                  case 'advancedSearch':
                   default:
                     return { type, value, role: 'filter' }
                 }

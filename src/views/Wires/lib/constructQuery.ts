@@ -69,7 +69,8 @@ export function constructQuery(filters: WireFilter[]): QueryV1 | undefined {
         }
       }))
     } else if (filter.type === 'advancedSearch') {
-      const advState = parseAdvancedSearchJson(filter.values[0], 'constructQuery')
+      if (!filter.values[0]) return
+      const advState = parseAdvancedSearchJson(filter.values[0], 'constructQuery', wiresFields)
       if (advState) {
         const advQuery = buildAdvancedQuery(advState, wiresFields, dateFields.wires)
         if (advQuery) {

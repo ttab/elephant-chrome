@@ -53,7 +53,7 @@ export const FilterMenu = ({ currentFilters, onFilterChange, editFilterType, onE
   const advancedState = useMemo((): AdvancedSearchState => {
     const filter = currentFilters.find((f) => f.type === 'advancedSearch')
     if (filter?.values[0]) {
-      return parseAdvancedSearchJson(filter.values[0], 'FilterMenu') ?? createDefaultState(wiresFields)
+      return parseAdvancedSearchJson(filter.values[0], 'FilterMenu', wiresFields) ?? createDefaultState(wiresFields)
     }
     return createDefaultState(wiresFields)
   }, [currentFilters])

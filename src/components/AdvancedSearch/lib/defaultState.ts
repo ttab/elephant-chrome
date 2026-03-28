@@ -33,10 +33,11 @@ export function isActiveState(state: AdvancedSearchState): boolean {
 }
 
 /**
- * Validates that a parsed JSON value has the minimum shape of AdvancedSearchState.
+ * Validates that a parsed JSON value has the minimum shape of AdvancedSearchState,
+ * then merges with defaults so missing fields get safe values.
  * Use at deserialization boundaries (JSON.parse, URL params) to avoid unsafe `as` casts.
  */
-export function parseAdvancedSearchState(value: unknown): AdvancedSearchState | undefined {
+export function parseAdvancedSearchState(value: unknown, fields?: SearchFieldConfig[]): AdvancedSearchState | undefined {
   if (typeof value !== 'object' || value === null) return undefined
   const obj = value as Record<string, unknown>
   if (obj.mode !== 'structured' && obj.mode !== 'querySyntax') return undefined
@@ -49,14 +50,21 @@ export function parseAdvancedSearchState(value: unknown): AdvancedSearchState | 
   const qs = obj.querySyntax as Record<string, unknown>
   if (typeof qs.raw !== 'string') return undefined
 
-  return value as AdvancedSearchState
+  const defaults = createDefaultState(fields ?? [])
+  const parsed = value as AdvancedSearchState
+
+  return {
+    mode: parsed.mode,
+    structured: { ...defaults.structured, ...parsed.structured },
+    querySyntax: { ...defaults.querySyntax, ...parsed.querySyntax }
+  }
 }
 
 /**
  * Parse a JSON string into a validated AdvancedSearchState.
  * Combines JSON.parse with shape validation; logs on failure.
  */
-export function parseAdvancedSearchJson(value: string, context?: string): AdvancedSearchState | undefined {
+export function parseAdvancedSearchJson(value: string, context?: string, fields?: SearchFieldConfig[]): AdvancedSearchState | undefined {
   let parsed: unknown
   try {
     parsed = JSON.parse(value)
@@ -64,5 +72,5 @@ export function parseAdvancedSearchJson(value: string, context?: string): Advanc
     console.error(`[${context ?? 'parseAdvancedSearchJson'}] Failed to parse JSON:`, err)
     return undefined
   }
-  return parseAdvancedSearchState(parsed)
+  return parseAdvancedSearchState(parsed, fields)
 }

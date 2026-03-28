@@ -1,4 +1,4 @@
-import { useState, type JSX } from 'react'
+import { useEffect, useState, type JSX } from 'react'
 import { Input, Checkbox, Label, ToggleGroup, ToggleGroupItem, Button } from '@ttab/elephant-ui'
 import { ChevronDownIcon, ChevronUpIcon } from '@ttab/elephant-ui/icons'
 import { useTranslation } from 'react-i18next'
@@ -15,6 +15,12 @@ export const StructuredMode = ({ state, fields, onChange }: StructuredModeProps)
   const [showMore, setShowMore] = useState(
     state.fuzzy || state.boost > 1 || state.fieldExists.length > 0
   )
+
+  useEffect(() => {
+    if (state.fuzzy || state.boost > 1 || state.fieldExists.length > 0) {
+      setShowMore(true)
+    }
+  }, [state.fuzzy, state.boost, state.fieldExists.length])
 
   function updateField(fieldPath: FieldPath, checked: boolean) {
     const next = checked
