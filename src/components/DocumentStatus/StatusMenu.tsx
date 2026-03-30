@@ -18,9 +18,11 @@ import type { View } from '@/types/index'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import { useTranslation } from 'react-i18next'
+import type { LucideIcon } from 'lucide-react'
 
-export const StatusMenu = ({ ydoc, onBeforeStatusChange, planningId }: {
+export const StatusMenu = ({ ydoc, onBeforeStatusChange, planningId, typeIcon }: {
   ydoc: YDocument<Y.Map<unknown>>
+  typeIcon?: LucideIcon
   onBeforeStatusChange?: (
     status: string,
     data?: Record<string, unknown>
@@ -211,6 +213,7 @@ export const StatusMenu = ({ ydoc, onBeforeStatusChange, planningId }: {
               planningId={planningId}
               requireCause={!!documentStatus.checkpoint}
               anchor={viewElement}
+              typeIcon={typeIcon}
             />
           )}
 
@@ -223,6 +226,7 @@ export const StatusMenu = ({ ydoc, onBeforeStatusChange, planningId }: {
               requireCause={requireCause}
               unPublishDocument={unPublishDocument}
               anchor={viewElement}
+              typeIcon={typeIcon}
             />
           )}
         </>

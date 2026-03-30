@@ -18,10 +18,12 @@ export const EditorHeader = ({ ydoc, flowName }: {
     containerRef.current = window.document.getElementById(viewId)
   }, [viewId])
 
+  const typeIcon = PenBoxIcon
+
   return (
     <ViewHeader.Root className='@container grid grid-cols-2'>
       <section className='col-span-2 flex flex-row gap-2 justify-between items-center w-full'>
-        <ViewHeader.Title name={flowName || ''} title={flowName || ''} icon={PenBoxIcon} />
+        <ViewHeader.Title name={flowName || ''} title={flowName || ''} icon={typeIcon} />
 
         <ViewHeader.Content className='justify-start w-full'>
           <div className='max-w-[1040px] mx-auto flex flex-row gap-2 justify-between items-center w-full'>
@@ -33,6 +35,7 @@ export const EditorHeader = ({ ydoc, flowName }: {
                   <ViewHeader.RemoteUsers ydoc={ydoc} />
                   <StatusMenu
                     ydoc={ydoc}
+                    typeIcon={typeIcon}
                   />
                 </>
               )}

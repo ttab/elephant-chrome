@@ -3,6 +3,7 @@ import { Prompt } from '../Prompt'
 import { useCallback, useEffect, useState } from 'react'
 import { PromptCauseField } from './PromptCauseField'
 import { useTranslation } from 'react-i18next'
+import type { LucideIcon } from 'lucide-react'
 
 export const PromptDefault = ({
   prompt,
@@ -11,7 +12,8 @@ export const PromptDefault = ({
   requireCause = false,
   currentCause,
   unPublishDocument,
-  anchor
+  anchor,
+  typeIcon
 }: {
   prompt: {
     status: string
@@ -24,10 +26,13 @@ export const PromptDefault = ({
   currentCause?: string
   unPublishDocument?: (name: string) => Promise<void>
   anchor?: HTMLElement | null
+  typeIcon?: LucideIcon
 }) => {
   const [cause, setCause] = useState<string | undefined>(currentCause)
   const isUnpublishPrompt = prompt.status === 'unpublished'
   const { t } = useTranslation('common')
+
+  const title = prompt.title
 
   const showCauseField = isUnpublishPrompt
     ? false
@@ -66,10 +71,10 @@ export const PromptDefault = ({
 
   return (
     <Prompt
-      title={prompt.title}
+      title={prompt.promptTitle || title}
       anchor={anchor}
       description={prompt.description}
-      primaryLabel={prompt.title}
+      primaryLabel={title}
       secondaryLabel={t('actions.abort')}
       onPrimary={handleSubmit}
       onSecondary={() => {
@@ -77,6 +82,7 @@ export const PromptDefault = ({
       }}
       disablePrimary={disablePrimary}
       primaryVariant={isUnpublishPrompt ? 'destructive' : undefined}
+      typeIcon={typeIcon}
     >
       {(showCauseField) && (
         <PromptCauseField

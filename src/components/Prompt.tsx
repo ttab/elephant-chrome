@@ -3,6 +3,7 @@ import { useKeydownGlobal } from '@/hooks/useKeydownGlobal'
 import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@ttab/elephant-ui'
 import type { MouseEvent } from 'react'
 import { createPortal } from 'react-dom'
+import type { LucideIcon } from '@ttab/elephant-ui/icons'
 
 
 interface PromptProps extends PropsWithChildren {
@@ -18,6 +19,7 @@ interface PromptProps extends PropsWithChildren {
   primaryVariant?: 'link' | 'secondary' | 'default' | 'destructive' | 'outline' | 'ghost' | 'icon' | null
   currentCause?: { cause: string | undefined, setCause: (value: string) => void }
   anchor?: HTMLElement | null
+  typeIcon?: LucideIcon
 }
 
 export const Prompt = ({
@@ -32,7 +34,8 @@ export const Prompt = ({
   onCancel,
   disablePrimary = false,
   primaryVariant,
-  anchor
+  anchor,
+  typeIcon: Icon
 }: PromptProps): JSX.Element => {
   useKeydownGlobal((event) => {
     if (event.key === 'Escape' && secondaryLabel && onSecondary) {
@@ -88,7 +91,12 @@ export const Prompt = ({
           }}
         >
           <DialogHeader>
-            {!!title && <DialogTitle>{title}</DialogTitle>}
+            {!!title && (
+              <DialogTitle className='flex items-center gap-2'>
+                {!!Icon && <Icon size={18} strokeWidth={1.75} />}
+                {title}
+              </DialogTitle>
+            )}
           </DialogHeader>
 
           <DialogDescription>

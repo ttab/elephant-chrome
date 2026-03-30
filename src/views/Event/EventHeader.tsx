@@ -11,6 +11,7 @@ import type { EventData } from './components/EventTime'
 import type * as Y from 'yjs'
 import type { YDocument } from '@/modules/yjs/hooks'
 import { useTranslation } from 'react-i18next'
+import { CalendarPlus2Icon } from 'lucide-react'
 
 export const EventHeader = ({
   ydoc,
@@ -31,6 +32,7 @@ export const EventHeader = ({
 }): JSX.Element => {
   const [eventData] = useYValue<EventData | undefined>(ydoc.ele, 'meta.core/event[0].data')
   const { t } = useTranslation()
+  const typeIcon = CalendarPlus2Icon
 
   return (
     <ViewHeader.Root asDialog={asDialog}>
@@ -52,6 +54,7 @@ export const EventHeader = ({
             {!asDialog && ydoc && (
               <StatusMenu
                 ydoc={ydoc}
+                typeIcon={typeIcon}
               />
             )}
 

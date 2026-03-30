@@ -87,6 +87,7 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
 
   const isReadOnlyAndUpdated = workflowStatus && workflowStatus?.name !== 'usable' && readOnly
   const isUnpublished = workflowStatus?.name === 'unpublished'
+  const typeIcon = documentTypeValueFormat?.[documentType || 'core/article']?.icon
 
   return (
     <ViewHeader.Root>
@@ -147,6 +148,7 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
                     planningId={propPlanningId || planningId}
                     ydoc={ydoc}
                     onBeforeStatusChange={onBeforeStatusChange}
+                    typeIcon={typeIcon}
                   />
                 )}
               </>

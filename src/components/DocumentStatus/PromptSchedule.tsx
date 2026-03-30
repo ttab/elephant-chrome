@@ -11,9 +11,9 @@ import { PromptCauseField } from './PromptCauseField'
 import { useTranslation } from 'react-i18next'
 import { useCollaborationDocument } from '@/hooks/useCollaborationDocument'
 import { useYValue } from '@/modules/yjs/hooks'
-import { LoaderIcon } from 'lucide-react'
+import { LoaderIcon, type LucideIcon } from 'lucide-react'
 
-export const PromptSchedule = ({ prompt, planningId, setStatus, showPrompt, requireCause = false, anchor }: {
+export const PromptSchedule = ({ prompt, planningId, setStatus, showPrompt, requireCause = false, anchor, typeIcon }: {
   prompt: {
     status: string
   } & WorkflowTransition
@@ -24,6 +24,7 @@ export const PromptSchedule = ({ prompt, planningId, setStatus, showPrompt, requ
   } & WorkflowTransition) | undefined>>
   requireCause?: boolean
   anchor?: HTMLElement | null
+  typeIcon?: LucideIcon
 }) => {
   const { timeZone } = useRegistry()
   const { loading, document } = useCollaborationDocument({ documentId: planningId })
@@ -70,6 +71,7 @@ export const PromptSchedule = ({ prompt, planningId, setStatus, showPrompt, requ
         showPrompt(undefined)
       }}
       disablePrimary={requireCause && !cause}
+      typeIcon={typeIcon}
     >
       <div className='flex flex-col items-start gap-6'>
         {prompt.description}
