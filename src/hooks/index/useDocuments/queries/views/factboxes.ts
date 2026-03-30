@@ -1,12 +1,9 @@
 import type { QueryParams } from '@/hooks/useQuery'
 import { QueryV1, BoolQueryV1, MultiMatchQueryV1 } from '@ttab/elephant-api/index'
+import { buildAdvancedQuery } from '@/components/AdvancedSearch/lib/buildQuery'
+import { deserializeAdvancedState, hasAdvancedParams } from '@/components/AdvancedSearch/hooks/useAdvancedSearchParams'
+import { factboxFields, dateFields } from '@/components/AdvancedSearch/configs'
 
-/**
- * Constructs a query object based on the provided filter parameters.
- *
- * @param {QueryParams | undefined} filter - The filter parameters to construct the query.
- * @returns {QueryV1 | undefined} - The constructed query object or undefined if no filter is provided.
- */
 export function constructQuery(filter: QueryParams | undefined): QueryV1 | undefined {
   if (!filter) {
     return undefined
@@ -27,13 +24,18 @@ export function constructQuery(filter: QueryParams | undefined): QueryV1 | undef
 
   const boolConditions = query.conditions.bool
 
-  if (filter.query) {
+  if (hasAdvancedParams(filter)) {
+    const advQuery = buildAdvancedQuery(deserializeAdvancedState(filter, factboxFields), factboxFields, dateFields.factboxes)
+    if (advQuery) {
+      boolConditions.must.push(advQuery)
+    }
+  } else if (filter.query) {
     boolConditions.must.push({
       conditions: {
         oneofKind: 'multiMatch',
         multiMatch: MultiMatchQueryV1.create({
           fields: ['document.title', 'document.content.core_text.data.text'],
-          query: filter.query[0],
+          query: filter.query.toString(),
           type: 'phrase_prefix'
         })
       }

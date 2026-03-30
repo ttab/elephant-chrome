@@ -3,7 +3,7 @@ export { AdvancedSearchBadges } from './AdvancedSearchBadges'
 export { buildAdvancedQuery } from './lib/buildQuery'
 export { createDefaultState, isActiveState, parseAdvancedSearchState, parseAdvancedSearchJson } from './lib/defaultState'
 export { summarizeState } from './lib/summarize'
-export { planningsFields, eventsFields, articlesFields, wiresFields, fieldsBySearchType, dateFields } from './configs'
+export { planningsFields, eventsFields, articlesFields, factboxFields, wiresFields, fieldsBySearchType, dateFields } from './configs'
 export type {
   AdvancedSearchState,
   AdvancedSearchDialogProps,

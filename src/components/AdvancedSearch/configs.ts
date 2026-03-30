@@ -25,6 +25,11 @@ export const articlesFields: SearchFieldConfig[] = [
   field('advancedSearch.fields.subject', 'document.rel.subject.title', 'subject', true)
 ]
 
+export const factboxFields: SearchFieldConfig[] = [
+  field('advancedSearch.fields.title', 'document.title', 'title', true),
+  field('advancedSearch.fields.content', 'document.content.core_text.data.text', 'content', true)
+]
+
 export const wiresFields: SearchFieldConfig[] = [
   field('advancedSearch.fields.title', 'document.title', 'title', true),
   field('advancedSearch.fields.content', 'document.content.core_text.data.text', 'content', true),
@@ -41,5 +46,6 @@ export const dateFields = {
   articles: 'heads.usable.created',
   plannings: 'document.meta.core_planning_item.data.start_date',
   events: 'document.meta.core_event.data.start',
-  wires: 'document.meta.core_newsitem.data.versioncreated'
+  wires: 'document.meta.core_newsitem.data.versioncreated',
+  factboxes: 'modified'
 } as const
