@@ -90,10 +90,10 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
   useEffect(() => {
     const initialize = async () => {
       try {
+        await initI18n()
         const { urls: server, envs, featureFlags } = await getServerEnvs()
         setSystemLanguage(envs.systemLanguage)
         setEnvironment(envs.environment)
-        await initI18n()
 
         const locale = defaultLocale
 
