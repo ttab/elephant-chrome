@@ -7,7 +7,8 @@ import { getValueByYPath } from '@/shared/yUtils'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import { BaseEditor } from '@/components/Editor/BaseEditor'
-import { contentMenuLabels } from '@/defaults/contentMenuLabels'
+import { getContentMenuLabels } from '@/defaults/contentMenuLabels'
+import { useTranslation } from 'react-i18next'
 
 export const DialogEditor = ({ ydoc, setTitle, onValidation, validateStateRef, type }: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -17,6 +18,7 @@ export const DialogEditor = ({ ydoc, setTitle, onValidation, validateStateRef, t
   const plugins = [UnorderedList, OrderedList, Bold, Italic, LocalizedQuotationMarks]
   const [content] = getValueByYPath<Y.XmlText>(ydoc.ele, 'content', true)
   const [documentLanguage] = getValueByYPath<string>(ydoc.ele, 'root.language')
+  const { t } = useTranslation('flash')
 
   // Function to handle changes in the editor
   const onChange = useCallback((value: Descendant[]) => {
@@ -33,10 +35,12 @@ export const DialogEditor = ({ ydoc, setTitle, onValidation, validateStateRef, t
     return <></>
   }
 
+  const countCharacters = type === 'flash' ? ['heading-1', 'body'] : ['heading-1']
+
   return (
     <Validation
       ydoc={ydoc}
-      label='Rubrik och innehåll'
+      label={t('common:misc.headingAndContent')}
       path='root.title'
       block='title'
       onValidation={onValidation}
@@ -49,10 +53,10 @@ export const DialogEditor = ({ ydoc, setTitle, onValidation, validateStateRef, t
         plugins={[
           ...plugins.map((initPlugin) => initPlugin()),
           Text({
-            countCharacters: ['heading-1'],
+            countCharacters,
             preventHotkeys: ['heading-1', 'heading-2', 'preamble'],
-            ...contentMenuLabels,
-            titleLabel: type === 'flash' ? 'Flashrubrik' : 'Rubrik'
+            ...getContentMenuLabels(),
+            titleLabel: type === 'flash' ? t('placeholders.flashTitle') : t('editor:contentMenu.title')
           })
         ]}
         className='h-auto min-h-auto rounded-md border'

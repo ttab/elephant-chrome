@@ -162,6 +162,7 @@ export class RepositoryExtension implements Extension {
       }
 
       if (yjsUpdate) {
+        Y.applyUpdate(connection.document, yjsUpdate)
         const document = new Y.Doc()
         Y.applyUpdate(document, yjsUpdate)
         return { document, connection }

@@ -17,7 +17,8 @@ function assertEnvs(): void {
     'PROTOCOL',
     'HOST',
     'PORT',
-    'BASE_URL'
+    'BASE_URL',
+    'SYSTEM_LANGUAGE'
   ]
 
   envs.forEach((env) => {

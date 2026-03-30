@@ -1,7 +1,14 @@
 import type { Session } from 'next-auth'
 import { toast } from 'sonner'
 import type { NTB } from '@/shared/NTB'
-import { PreviewType, SearchRequest, type MediaItem, type Preview as NTBPreview } from '@ttab/elephant-tt-api/ntb'
+import { PreviewType, SearchRequest, type MediaItem } from '@ttab/elephant-tt-api/ntb'
+
+interface NTBPreview {
+  width: number
+  height: number
+  url: string
+  type: PreviewType
+}
 import type { ImageSearchHit, ImageSearchResult } from './types'
 
 function findPreviewByWidth(

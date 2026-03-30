@@ -14,6 +14,7 @@ import { useRegistry } from '@/hooks/useRegistry'
 import { useSession } from 'next-auth/react'
 import type { ImageSearchResult as SearchResult } from './lib/types'
 import { Error } from '../Error'
+import { useTranslation } from 'react-i18next'
 
 export type MediaTypes = 'image' | 'graphic'
 
@@ -47,7 +48,7 @@ const ImageSearchResult = ({ children }: {
 }
 
 export const ImageSearch = (): JSX.Element => {
-  const { server: { imageSearchUrl, imageSearchProvider }, ntb } = useRegistry()
+  const { server: { imageSearchUrl }, envs: { imageSearchProvider }, ntb } = useRegistry()
   const { data: session } = useSession()
   const [mediaType, setMediaType] = useState<MediaTypes>('image')
 
@@ -87,6 +88,7 @@ const ImageSearchContent = ({
 }): JSX.Element => {
   const [queryString, setQueryString] = useState('')
   const SIZE = 10
+  const { t } = useTranslation('views')
 
   const swr = useSWRInfinite<SearchResult, Error>(
     (index) => {
@@ -102,7 +104,7 @@ const ImageSearchContent = ({
       <ViewHeader.Root>
         <ViewHeader.Title
           name='ImageSearch'
-          title='Bilder'
+          title={t('imageSearch.title')}
           icon={ImageIcon}
         />
         <ViewHeader.Content>

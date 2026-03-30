@@ -20,6 +20,10 @@ export function useSavedFocus() {
     const itemId = savedItemIdRef.current
     if (itemId) {
       requestAnimationFrame(() => {
+        // Don't steal focus if the user has already navigated to a different wire entry
+        const currentActiveId = (document.activeElement as HTMLElement | null)?.getAttribute('data-item-id')
+        if (currentActiveId && currentActiveId !== itemId) return
+
         const elementToFocus: HTMLElement | null = document.querySelector(`[data-item-id="${itemId}"]`)
         elementToFocus?.focus()
       })

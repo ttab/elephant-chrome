@@ -19,10 +19,10 @@ export class NTB {
   }
 
   async search(request: SearchRequest, accessToken: string) {
-    return this.#client.search(request, meta(accessToken))
+    return await this.#client.search(request, meta(accessToken))
   }
 
   async getItem(request: GetItemRequest, accessToken: string) {
-    return this.#client.getItem(request, meta(accessToken))
+    return await this.#client.getItem(request, meta(accessToken))
   }
 }

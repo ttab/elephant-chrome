@@ -1,5 +1,5 @@
 export function getInitials(assignee: string | undefined): string {
-  if (!assignee) return '??'
+  if (!assignee || assignee === '??') return '??'
 
   try {
     const regex = /[ ]{2,}/g

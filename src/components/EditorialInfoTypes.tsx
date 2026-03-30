@@ -11,11 +11,13 @@ import type * as Y from 'yjs'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import { useEditorialInfoTypes } from '../hooks/useEditorialInfoType'
 import type { JSX } from 'react'
+import { useTranslation } from 'react-i18next'
 
 export const EditorialInfoTypes = ({ ydoc }: {
   ydoc: YDocument<Y.Map<unknown>>
 }): JSX.Element => {
   const [type, setType] = useYValue<Block | undefined>(ydoc.ele, 'links.core/editorial-info-type[0]')
+  const { t } = useTranslation('metaSheet')
 
   const editorialInfoTypes = useEditorialInfoTypes()
   const onValueChange = (value: string) => {
@@ -40,7 +42,7 @@ export const EditorialInfoTypes = ({ ydoc }: {
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
-        {[{ id: 'empty', title: 'Ingen typ' }, ...editorialInfoTypes]?.map((item) =>
+        {[{ id: 'empty', title: t('misc.noType') }, ...editorialInfoTypes]?.map((item) =>
           <SelectItem key={item.id} value={item.id}>{item.title}</SelectItem>
         )}
       </SelectContent>

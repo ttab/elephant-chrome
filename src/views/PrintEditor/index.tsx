@@ -22,12 +22,10 @@ import {
 } from '@/hooks'
 import type { ViewMetadata, ViewProps } from '@/types'
 import { EditorHeader } from './PrintEditorHeader'
-import { Error as ErrorView } from '../Error'
-
+import { Error, Error as ErrorView } from '../Error'
 import { Notes } from '@/components/Notes'
-
 import { getValueByYPath } from '@/shared/yUtils'
-import { contentMenuLabels } from '@/defaults/contentMenuLabels'
+import { getContentMenuLabels } from '@/defaults/contentMenuLabels'
 import { ScrollArea } from '@ttab/elephant-ui'
 import { Layouts } from './components/Layouts'
 import { useSession } from 'next-auth/react'
@@ -38,6 +36,8 @@ import { ChannelComboBox } from './components/ChannelComboBox'
 import { useYDocument, useYValue, type YDocument } from '@/modules/yjs/hooks'
 import { View } from '@/components/View'
 import { BaseEditor } from '@/components/Editor/BaseEditor'
+import { useTranslation } from 'react-i18next'
+import { useFeatureFlags } from '@/hooks/useFeatureFlags'
 
 const meta: ViewMetadata = {
   name: 'PrintEditor',
@@ -56,16 +56,27 @@ const meta: ViewMetadata = {
 }
 
 // Main Editor Component - Handles document initialization
-const PrintEditor = (props: ViewProps): JSX.Element => {
+const PrintEditor = (props: ViewProps): JSX.Element | null => {
+  const featureFlags = useFeatureFlags(['hasPrint'])
   const [query] = useQuery()
   const documentId = props.id || query.id as string
+  const { t } = useTranslation(['print', 'errors'])
+
+  if (!featureFlags.hasPrint) {
+    return (
+      <Error
+        title={t('errors:messages.errorTitle')}
+        message={t('errors:messages.unknownErrorAdminInfo')}
+      />
+    )
+  }
 
   // Error handling for missing document
   if (!documentId || typeof documentId !== 'string') {
     return (
       <ErrorView
-        title='Artikeldokument saknas'
-        message='Inget artikeldokument är angivet. Navigera tillbaka till översikten och försök igen.'
+        title={t('print:editor.error.missingDocument')}
+        message={t('print:editor.error.missingDocumentMessage')}
       />
     )
   }
@@ -94,6 +105,9 @@ function EditorWrapper(props: ViewProps & {
   const openFactboxEditor = useLink('Factbox')
   const openImageSearch = useLink('ImageSearch')
   const openFactboxes = useLink('Factboxes')
+  const { t, i18n } = useTranslation()
+
+  const activeLanguage = i18n.resolvedLanguage
 
   // Plugin configuration
   const configuredPlugins = useMemo(() => {
@@ -107,7 +121,7 @@ function EditorWrapper(props: ViewProps & {
       PrintText(),
       Text({
         countCharacters: ['heading-1'],
-        ...contentMenuLabels
+        ...getContentMenuLabels()
       }),
       Image({
         consume: ({ input }: { input: TBResource | TBResource[] }) =>
@@ -128,17 +142,23 @@ function EditorWrapper(props: ViewProps & {
         channelComponent: () => ChannelComboBox()
       }),
       TTVisual({
+        captionLabel: t('editor:image.captionLabel'),
+        bylineLabel: t('editor:image.bylineLabel'),
         enableCrop: true
       }),
       Factbox({
+        headerTitle: t('editor:factbox.headerTitle'),
+        modifiedLabel: t('editor:factbox.modifiedLabel'),
+        footerTitle: t('editor:factbox.footerTitle'),
         onEditOriginal: (id: string) => {
           openFactboxEditor(undefined, { id })
         },
         removable: true,
-        ...contentMenuLabels
+        locale: activeLanguage,
+        ...getContentMenuLabels()
       })
     ]
-  }, [openFactboxEditor, data, repository, openFactboxes, openImageSearch])
+  }, [openFactboxEditor, data, repository, openFactboxes, openImageSearch, t, activeLanguage])
 
   if (!content) {
     return <View.Root />
@@ -165,7 +185,7 @@ function EditorContainer({ ydoc }: {
 }): JSX.Element {
   const { stats } = useTextbit()
   const [flowName] = useYValue<string>(ydoc.ele, 'links.tt/print-flow[0].title')
-
+  const { t } = useTranslation('print')
 
   return (
     <>
@@ -193,12 +213,12 @@ function EditorContainer({ ydoc }: {
 
       <View.Footer>
         <div className='flex gap-2'>
-          <strong>Ord:</strong>
-          <span title='Antal ord: artikel (totalt)'>{`${stats.short.words} (${stats.full.words})`}</span>
+          <strong>{t('editor.stats.words')}</strong>
+          <span>{`${stats.short.words} (${stats.full.words})`}</span>
         </div>
         <div className='flex gap-2'>
-          <strong>Tecken:</strong>
-          <span title='Antal tecken: artikel (totalt)'>{`${stats.short.characters} (${stats.full.characters})`}</span>
+          <strong>{t('editor.stats.characters')}</strong>
+          <span>{`${stats.short.characters} (${stats.full.characters})`}</span>
         </div>
       </View.Footer>
     </>

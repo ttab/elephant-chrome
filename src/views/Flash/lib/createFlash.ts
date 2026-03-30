@@ -10,6 +10,7 @@ import type { YXmlText } from 'node_modules/yjs/dist/src/internals'
 import type { TBElement } from '@ttab/textbit'
 import type { QuickArticleData } from '@/shared/types'
 import { Block } from '@ttab/elephant-api/newsdoc'
+import i18Next from 'i18next'
 
 export type CreateFlashDocumentStatus = 'usable' | 'done' | 'approved' | undefined
 export async function createFlash({
@@ -68,12 +69,17 @@ export async function createFlash({
   // Create and collect all base data for the assignment
   const [flashTitle] = getValueByYPath<string>(ydoc.ele, 'root.title')
 
-  const content = yTextToSlateElement((ydoc.ele.get('content') as YXmlText))?.children as TBElement[]
+  const contentYXml = ydoc.ele.get('content') as YXmlText | undefined
+  const content = contentYXml ? (yTextToSlateElement(contentYXml)?.children ?? []) as TBElement[] : []
 
-  const bodyTextNode = content.find((c) => {
+  const bodyTextNode = (content).find((c) => {
+    if (!('properties' in c) || typeof c.properties !== 'object' || c.properties === null) {
+      return false
+    }
+
     const properties = c.properties as { role?: string }
     return !properties.role
-  })?.children[0]
+  })?.children?.[0]
 
   const flashBodyText = bodyTextNode && 'text' in bodyTextNode ? bodyTextNode?.text : ''
 
@@ -128,7 +134,7 @@ export async function createFlash({
               Block.create({
                 type: 'tt/slugline',
                 value: !flashTitle
-                  ? 'två-på-två'
+                  ? i18Next.t('core:documentType.quickArticle')
                   : relatedDocsSlugline || `${flashTitle?.toLocaleLowerCase()?.split(' ').slice(0, 3).join('-').slice(0, 20)}`
               })]
           },

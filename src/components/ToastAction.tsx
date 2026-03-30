@@ -5,11 +5,12 @@ import type { View } from '@/types'
 import { useLink } from '@/hooks/useLink'
 import { Button, Tooltip } from '@ttab/elephant-ui'
 
-export const ToastAction = ({ documentId, withView, Icon, label, target = 'last' }: {
+export const ToastAction = ({ documentId, planningId, withView, Icon, label, target = 'last' }: {
   documentId: string | undefined
+  planningId?: string
   withView: View
-  label?: string
-  Icon?: LucideIcon
+  label: string
+  Icon: LucideIcon
   target?: Target
 }): JSX.Element | null => {
   const openDocument = useLink(withView)
@@ -19,14 +20,16 @@ export const ToastAction = ({ documentId, withView, Icon, label, target = 'last'
   }
 
   return (
-    <Tooltip content={label}>
-      <Button
-        variant='icon'
-        className='text-muted-foreground'
-        onClick={(event) => openDocument(event, { id: documentId }, target)}
-      >
-        {Icon && <Icon size={16} strokeWidth={1.75} />}
-      </Button>
-    </Tooltip>
+    <div className='flex w-full justify-end'>
+      <Tooltip content={label}>
+        <Button
+          variant='icon'
+          className='text-muted-foreground'
+          onClick={(event) => openDocument(event, { id: documentId, planningId }, target)}
+        >
+          {Icon && <Icon size={16} strokeWidth={1.75} />}
+        </Button>
+      </Tooltip>
+    </div>
   )
 }

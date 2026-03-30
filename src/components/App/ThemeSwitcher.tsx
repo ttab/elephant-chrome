@@ -2,15 +2,17 @@ import { Button } from '@ttab/elephant-ui'
 import { SunIcon, MoonIcon } from '@ttab/elephant-ui/icons'
 import { useTheme } from '@/hooks'
 import type { JSX } from 'react'
+import { useTranslation } from 'react-i18next'
 
 export const ThemeSwitcher = (): JSX.Element => {
   const { theme, setTheme } = useTheme()
+  const { t } = useTranslation('app')
 
   return (
     <Button
-      aria-label='Toggle theme'
+      aria-label={t('mainMenu.actions.toggleTheme')}
       variant='ghost'
-      className='w-9 h-9 p-0 flex items-center justify-center'
+      className='md:w-9 md:h-9 p-0 flex items-center justify-center'
       onClick={() => {
         setTheme(theme === 'dark'
           ? 'light'
