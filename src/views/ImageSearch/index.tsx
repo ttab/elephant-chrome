@@ -122,7 +122,7 @@ const ImageSearchContent = ({
           <div className='mx-3 mt-3 flex items-center gap-2.5 rounded-lg border border-red-200 bg-red-50 px-3 py-2.5 dark:border-red-900/50 dark:bg-red-950/30'>
             <TriangleAlertIcon size={16} strokeWidth={1.75} className='shrink-0 text-red-500 dark:text-red-400' />
             <span className='flex-1 text-sm text-red-700 dark:text-red-300'>
-              Bildsökningen misslyckades
+              {t('imageSearch.labels.searchFailed')}
             </span>
             <Button
               variant='outline'
@@ -131,7 +131,7 @@ const ImageSearchContent = ({
               onClick={() => void swr.mutate()}
             >
               <RotateCcwIcon size={13} strokeWidth={1.75} />
-              Försök igen
+              {t('imageSearch.labels.retry')}
             </Button>
           </div>
         )}
@@ -144,7 +144,7 @@ const ImageSearchContent = ({
                 ? (
                     <div className='flex flex-col items-center gap-2 text-muted-foreground'>
                       <SearchIcon size={24} strokeWidth={1.75} />
-                      <span className='text-sm'>Inga resultat</span>
+                      <span className='text-sm'>{t('imageSearch.labels.noResults')}</span>
                     </div>
                   )
                 : <ListEndIcon size='32' color='#9ca3af' strokeWidth='2' />

@@ -3,11 +3,13 @@ import { Preview } from '../Preview'
 import type { ImageSearchHit } from '../lib/types'
 import { Dialog, DialogClose, DialogContent } from '@ttab/elephant-ui'
 import { XIcon } from '@ttab/elephant-ui/icons'
+import { useTranslation } from 'react-i18next'
 
 
 export const Thumbnail = ({ hit }: {
   hit: ImageSearchHit
 }): JSX.Element => {
+  const { t } = useTranslation('views')
   const imageRef = useRef<HTMLImageElement>(null)
   const [isOpen, setIsOpen] = useState<boolean>(false)
 
@@ -75,7 +77,7 @@ export const Thumbnail = ({ hit }: {
       <DialogContent className='z-50 gap-0 p-0 overflow-hidden max-w-3xl'>
         <DialogClose className='absolute right-3 top-3 z-10 rounded-full bg-background/80 backdrop-blur-sm p-1.5 shadow-sm hover:bg-background transition-colors'>
           <XIcon size={16} strokeWidth={1.75} />
-          <span className='sr-only'>Stäng</span>
+          <span className='sr-only'>{t('imageSearch.labels.close')}</span>
         </DialogClose>
         <Preview hit={hit} />
       </DialogContent>

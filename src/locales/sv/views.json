@@ -84,7 +84,11 @@
     "labels": {
       "mediaType": "Medietyp",
       "image": "Bild",
-      "graphic": "Grafik"
+      "graphic": "Grafik",
+      "close": "Stäng",
+      "searchFailed": "Bildsökningen misslyckades",
+      "retry": "Försök igen",
+      "noResults": "Inga resultat"
     }
   }
 }
