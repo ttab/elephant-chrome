@@ -198,7 +198,8 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
         window.removeEventListener('beforeunload', handleBeforeUnload)
       }
     }
-    // Only restart polling if these change
+    // startPolling is intentionally omitted — it reads changing values through refs
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index, options?.subscribe, session, subscriptions])
 
   return { data, error, mutate, isValidating, isLoading }

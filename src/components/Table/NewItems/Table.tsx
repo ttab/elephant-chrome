@@ -51,30 +51,16 @@ export const Table = ({ type, header }: {
   useRepositoryEvents(
     eventType,
     useCallback((event) => {
-      void (async () => {
-        const expiredDocuments = newDocuments?.filter(({ timestamp }) => Date.now() - timestamp > (60000 * 10))
+      const expiredDocuments = newDocuments?.filter(({ timestamp }) => Date.now() - timestamp > (60000 * 10))
 
-        if (event.event === 'document'
-          && event.type === 'core/planning-item'
-          && expiredDocuments.length
-        ) {
-          setNewDocuments(newDocuments?.filter(({ id }) => !expiredDocuments.some(({ id: expiredId }) => expiredId === id)))
-          await mutate()
-        }
-        try {
-          const expiredDocuments = newDocuments?.filter(({ timestamp }) => Date.now() - timestamp > (60000 * 10))
-
-          if (event.event === 'document'
-            && event.type === eventType
-            && expiredDocuments.length
-          ) {
-            setNewDocuments(newDocuments?.filter(({ id }) => !expiredDocuments.some(({ id: expiredId }) => expiredId === id)))
-            await mutate()
-          }
-        } catch (error) {
-          console.error(`Error when mutating ${type} list`, error)
-        }
-      })()
+      if (event.event === 'document'
+        && event.type === eventType
+        && expiredDocuments?.length
+      ) {
+        setNewDocuments(newDocuments?.filter(({ id }) => !expiredDocuments.some(({ id: expiredId }) => expiredId === id)))
+        mutate()
+          .catch((error) => console.error(`Error when mutating ${type} list`, error))
+      }
     }, [newDocuments, setNewDocuments, mutate, eventType, type])
   )
 
