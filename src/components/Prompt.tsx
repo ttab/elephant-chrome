@@ -1,4 +1,4 @@
-import { useEffect, useState, type PropsWithChildren, type JSX, useMemo, useLayoutEffect } from 'react'
+import { useEffect, useState, type PropsWithChildren, type JSX, useLayoutEffect } from 'react'
 import { useKeydownGlobal } from '@/hooks/useKeydownGlobal'
 import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@ttab/elephant-ui'
 import type { MouseEvent } from 'react'
@@ -71,7 +71,7 @@ export const Prompt = ({
             width: anchorRect.width,
             height: anchorRect.height,
             zIndex: 49, // behind built-in overlay (z-50)
-            boxShadow: '0 0 0 100vmax rgba(0,0,0,0.6)', // darkens everything outside
+            boxShadow: '0 0 0 100vmax rgba(0,0,0,0.3)', // darkens everything outside
             pointerEvents: 'none'
           }}
         />,
