@@ -8,19 +8,23 @@
       "transitions": {
         "done": {
           "title": "Klarmarkera",
-          "description": "Markera {{label}} som klar"
+          "description": "Markera {{label}} som klar",
+          "promptTitle": "Klarmarkera {{label}}"
         },
         "approved": {
           "title": "Godkänn",
-          "description": "Godkänn {{label}} för publicering"
+          "description": "Godkänn {{label}} för publicering",
+          "promptTitle": "Godkänn {{label}}"
         },
         "usable": {
           "title": "Publicera",
-          "description": "Publicera {{label}}"
+          "description": "Publicera {{label}}",
+          "promptTitle": "Publicera {{label}}"
         },
         "withheld": {
           "title": "Schemalägg publicering",
-          "description": "Ange datum och tid för publicering"
+          "description": "Ange datum och tid för publicering",
+          "promptTitle": "Schemalägg publicering av {{label}}"
         }
       }
     },
@@ -30,23 +34,28 @@
       "transitions": {
         "approved": {
           "title": "Godkänn",
-          "description": "Godkänn {{label}} för publicering"
+          "description": "Godkänn {{label}} för publicering",
+          "promptTitle": "Godkänn {{label}}"
         },
         "usable": {
           "title": "Publicera",
-          "description": "Publicera {{label}} direkt"
+          "description": "Publicera {{label}} direkt",
+          "promptTitle": "Publicera {{label}}"
         },
         "withheld": {
           "title": "Schemalägg publicering",
-          "description": "Ange datum och tid för publicering"
+          "description": "Ange datum och tid för publicering",
+          "promptTitle": "Schemalägg publicering av {{label}}"
         },
         "draft": {
           "title": "Till utkast",
-          "description": "Gör om {{label}} till ett utkast igen"
+          "description": "Gör om {{label}} till ett utkast igen",
+          "promptTitle": "Gör om {{label}} till ett utkast"
         },
         "unpublished": {
           "title": "Avpublicera",
-          "description": "Avbryt och arkivera {{label}}"
+          "description": "Avbryt och arkivera {{label}}",
+          "promptTitle": "Avpublicera {{label}}"
         }
       }
     },
@@ -56,19 +65,23 @@
       "transitions": {
         "usable": {
           "title": "Publicera",
-          "description": "Publicera {{label}}"
+          "description": "Publicera {{label}}",
+          "promptTitle": "Publicera {{label}}"
         },
         "withheld": {
           "title": "Schemalägg publicering",
-          "description": "Ange datum och tid för publicering"
+          "description": "Ange datum och tid för publicering",
+          "promptTitle": "Schemalägg publicering av {{label}}"
         },
         "draft": {
           "title": "Till utkast",
-          "description": "Gör om {{label}} till ett utkast igen"
+          "description": "Gör om {{label}} till ett utkast igen",
+          "promptTitle": "Gör om {{label}} till ett utkast"
         },
         "unpublished": {
           "title": "Avpublicera",
-          "description": "Avbryt och arkivera {{label}}"
+          "description": "Avbryt och arkivera {{label}}",
+          "promptTitle": "Avpublicera {{label}}"
         }
       }
     },
@@ -78,11 +91,13 @@
       "transitions": {
         "draft": {
           "title": "Ny version",
-          "description": "Fortsätt jobba på en ny version av {{label}}"
+          "description": "Fortsätt jobba på en ny version av {{label}}",
+          "promptTitle": "Skapa ny version av {{label}}"
         },
         "unpublished": {
           "title": "Avpublicera",
-          "description": "Avbryt publiceringen och arkivera {{label}}"
+          "description": "Avbryt publiceringen och arkivera {{label}}",
+          "promptTitle": "Avpublicera {{label}}"
         }
       }
     },
@@ -92,11 +107,13 @@
       "transitions": {
         "usable": {
           "title": "Publicera direkt",
-          "description": "Publicera {{label}} direkt"
+          "description": "Publicera {{label}} direkt",
+          "promptTitle": "Publicera {{label}} direkt"
         },
         "draft": {
           "title": "Till utkast",
-          "description": "Avbryt schemalagd publicering och gör om till utkast igen"
+          "description": "Avbryt schemalagd publicering och gör om till utkast igen",
+          "promptTitle": "Gör om {{label}} till utkast"
         }
       }
     },
@@ -106,7 +123,8 @@
       "transitions": {
         "draft": {
           "title": "Ny version",
-          "description": "Fortsätt jobba på en ny version av {{label}}"
+          "description": "Fortsätt jobba på en ny version av {{label}}",
+          "promptTitle": "Skapa ny version av {{label}}"
         }
       }
     }
@@ -122,7 +140,8 @@
         },
         "usable": {
           "title": "Publicera externt",
-          "description": "Publicera händelsen externt"
+          "description": "Publicera händelsen externt",
+          "promptTitle": "Publicera händelsen externt"
         }
       }
     },
@@ -132,11 +151,13 @@
       "transitions": {
         "usable": {
           "title": "Publicera",
-          "description": "Publicera händelsen externt"
+          "description": "Publicera händelsen externt",
+          "promptTitle": "Publicera händelsen"
         },
         "unpublished": {
           "title": "Avpublicera",
-          "description": "Avpublicera händelsen"
+          "description": "Avpublicera händelsen",
+          "promptTitle": "Avpublicera händelsen"
         }
       }
     },
@@ -150,7 +171,8 @@
       "transitions": {
         "unpublished": {
           "title": "Avpublicera",
-          "description": "Avpublicera händelsen externt"
+          "description": "Avpublicera händelsen externt",
+          "promptTitle": "Avpublicera händelsen"
         }
       }
     },
@@ -160,7 +182,8 @@
       "transitions": {
         "draft": {
           "title": "Utkast",
-          "description": "Gör om händelsen till ett utkast igen"
+          "description": "Gör om händelsen till ett utkast igen",
+          "promptTitle": "Gör om händelsen till ett utkast"
         }
       }
     }
@@ -176,7 +199,8 @@
         },
         "usable": {
           "title": "Publicera externt",
-          "description": "Publicera planeringen externt"
+          "description": "Publicera planeringen externt",
+          "promptTitle": "Publicera planeringen externt"
         }
       }
     },
@@ -186,10 +210,12 @@
       "transitions": {
         "usable": {
           "title": "Publicera",
+          "promptTitle": "Publicera planeringen",
           "description": "Publicera planeringen externt"
         },
         "unpublished": {
           "title": "Avpublicera",
+          "promptTitle": "Avpublicera planeringen",
           "description": "Avpublicera planeringen"
         }
       }
@@ -204,7 +230,8 @@
       "transitions": {
         "unpublished": {
           "title": "Avpublicera",
-          "description": "Avpublicera planeringen externt"
+          "description": "Avpublicera planeringen externt",
+          "promptTitle": "Avpublicera planeringen"
         }
       }
     },
@@ -214,6 +241,7 @@
       "transitions": {
         "draft": {
           "title": "Utkast",
+          "promptTitle": "Gör om planeringen till ett utkast",
           "description": "Gör om planeringen till ett utkast igen"
         }
       }
@@ -226,7 +254,8 @@
       "transitions": {
         "usable": {
           "title": "Publicera",
-          "description": "Publicera faktarutan för användning"
+          "description": "Publicera faktarutan för användning",
+          "promptTitle": "Publicera faktarutan"
         }
       }
     },
@@ -238,6 +267,7 @@
       "transitions": {
         "draft": {
           "title": "Till utkast",
+          "promptTitle": "Gör om faktarutan till utkast",
           "description": "Gör om faktarutan till ett utkast igen"
         }
       }
@@ -250,15 +280,18 @@
       "transitions": {
         "done": {
           "title": "Klarmarkera",
-          "description": "Markera till red som klar"
+          "description": "Markera till red som klar",
+          "promptTitle": "Klarmarkera till red"
         },
         "approved": {
           "title": "Godkänn",
-          "description": "Godkänn till red för intern användning"
+          "description": "Godkänn till red för intern användning",
+          "promptTitle": "Godkänn till red"
         },
         "usable": {
           "title": "Publicera",
-          "description": "Publicera till red externt synlig"
+          "description": "Publicera till red externt synlig",
+          "promptTitle": "Publicera till red"
         }
       }
     },
@@ -268,15 +301,18 @@
       "transitions": {
         "approved": {
           "title": "Godkänn",
-          "description": "Godkänn till red för intern användning"
+          "description": "Godkänn till red för intern användning",
+          "promptTitle": "Godkänn till red"
         },
         "usable": {
           "title": "Publicera",
-          "description": "Publicera till red externt synlig"
+          "description": "Publicera till red externt synlig",
+          "promptTitle": "Publicera till red"
         },
         "draft": {
           "title": "Till utkast",
-          "description": "Gör om till red till ett utkast igen"
+          "description": "Gör om till red till ett utkast igen",
+          "promptTitle": "Gör om till red till ett utkast"
         }
       }
     },
@@ -286,11 +322,13 @@
       "transitions": {
         "usable": {
           "title": "Publicera",
-          "description": "Publicera till red externt synlig"
+          "description": "Publicera till red externt synlig",
+          "promptTitle": "Publicera till red"
         },
         "draft": {
           "title": "Till utkast",
-          "description": "Gör om till red till ett utkast igen"
+          "description": "Gör om till red till ett utkast igen",
+          "promptTitle": "Gör om till red till ett utkast"
         }
       }
     },
@@ -300,11 +338,13 @@
       "transitions": {
         "draft": {
           "title": "Till utkast",
-          "description": "Gör om till red till ett utkast igen"
+          "description": "Gör om till red till ett utkast igen",
+          "promptTitle": "Gör om till red till ett utkast"
         },
         "unpublished": {
           "title": "Dra tillbaka",
-          "description": "Avbryt publiceringen och arkivera till red"
+          "description": "Avbryt publiceringen och arkivera till red",
+          "promptTitle": "Dra tillbaka till red"
         }
       }
     }
@@ -316,15 +356,18 @@
       "transitions": {
         "needs_proofreading": {
           "title": "Begär korrläsning",
-          "description": "Behöver korrläsning av printartikeln"
+          "description": "Behöver korrläsning av printartikeln",
+          "promptTitle": "Begär korrläsning av printartikeln"
         },
         "print_done": {
           "title": "Klarmarkera",
-          "description": "Markera printartikeln som klar"
+          "description": "Markera printartikeln som klar",
+          "promptTitle": "Klarmarkera printartikeln"
         },
         "usable": {
           "title": "Exportera",
-          "description": "Exportera printartikeln"
+          "description": "Exportera printartikeln",
+          "promptTitle": "Exportera printartikeln"
         }
       }
     },
@@ -334,19 +377,23 @@
       "transitions": {
         "print_done": {
           "title": "Klarmarkera",
-          "description": "Markera printartikeln som klar"
+          "description": "Markera printartikeln som klar",
+          "promptTitle": "Klarmarkera printartikeln"
         },
         "usable": {
           "title": "Exportera",
-          "description": "Exportera printartikeln"
+          "description": "Exportera printartikeln",
+          "promptTitle": "Exportera printartikeln"
         },
         "cancelled": {
           "title": "Kasta",
-          "description": "Kasta printartikeln"
+          "description": "Kasta printartikeln",
+          "promptTitle": "Kasta printartikeln"
         },
         "draft": {
           "title": "Till utkast",
-          "description": "Gör om printartikeln till ett utkast igen"
+          "description": "Gör om printartikeln till ett utkast igen",
+          "promptTitle": "Gör om printartikeln till ett utkast"
         }
       }
     },
@@ -356,23 +403,28 @@
       "transitions": {
         "approved": {
           "title": "Godkänn",
-          "description": "Godkänn printartikeln"
+          "description": "Godkänn printartikeln",
+          "promptTitle": "Godkänn printartikeln"
         },
         "usable": {
           "title": "Exportera",
-          "description": "Exportera printartikeln"
+          "description": "Exportera printartikeln",
+          "promptTitle": "Exportera printartikeln"
         },
         "needs_proofreading": {
           "title": "Begär korrläsning",
-          "description": "Behöver korrläsning av printartikeln"
+          "description": "Behöver korrläsning av printartikeln",
+          "promptTitle": "Begär korrläsning av printartikeln"
         },
         "cancelled": {
           "title": "Kasta",
-          "description": "Kasta printartikeln"
+          "description": "Kasta printartikeln",
+          "promptTitle": "Kasta printartikeln"
         },
         "draft": {
           "title": "Till utkast",
-          "description": "Gör om printartikeln till ett utkast igen"
+          "description": "Gör om printartikeln till ett utkast igen",
+          "promptTitle": "Gör om printartikeln till ett utkast"
         }
       }
     },
@@ -386,7 +438,8 @@
       "transitions": {
         "unpublished": {
           "title": "Dra tillbaka",
-          "description": "Avbryt export och arkivera printartikeln"
+          "description": "Avbryt export och arkivera printartikeln",
+          "promptTitle": "Dra tillbaka printartikeln"
         }
       }
     },
@@ -396,7 +449,8 @@
       "transitions": {
         "draft": {
           "title": "Till utkast",
-          "description": "Gör om printartikeln till ett utkast igen"
+          "description": "Gör om printartikeln till ett utkast igen",
+          "promptTitle": "Gör om printartikeln till ett utkast"
         }
       }
     },
@@ -406,7 +460,8 @@
       "transitions": {
         "draft": {
           "title": "Till utkast",
-          "description": "Gör om printartikeln till ett utkast igen"
+          "description": "Gör om printartikeln till ett utkast igen",
+          "promptTitle": "Gör om printartikeln till ett utkast"
         }
       }
     }
