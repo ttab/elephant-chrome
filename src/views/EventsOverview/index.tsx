@@ -7,6 +7,7 @@ import { TableCommandMenu } from '@/components/Commands/TableCommand'
 import { EventsList } from './EventsList'
 import { Header } from '@/components/Header'
 import { Commands } from '@/components/Commands'
+import { SearchLink } from '@/components/AdvancedSearch'
 import { eventTableColumns } from './EventsListColumns'
 import { type Event } from '@/shared/schemas/event'
 import { useSections } from '@/hooks/useSections'
@@ -69,6 +70,7 @@ export const Events = (): JSX.Element => {
           <ViewHeader.Content>
             <ViewHeader.Title name='Events' title={t('views:events.label.plural')} short={t('views:events.label.plural')} />
             <Header type='Event' docType='core/event' />
+            <SearchLink searchType='events' />
           </ViewHeader.Content>
 
           <ViewHeader.Action />

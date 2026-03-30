@@ -1,5 +1,6 @@
 export { AdvancedSearchDialog } from './AdvancedSearchDialog'
 export { AdvancedSearchBadges } from './AdvancedSearchBadges'
+export { SearchLink } from './SearchLink'
 export { buildAdvancedQuery } from './lib/buildQuery'
 export { createDefaultState, isActiveState, parseAdvancedSearchState, parseAdvancedSearchJson } from './lib/defaultState'
 export { summarizeState } from './lib/summarize'
