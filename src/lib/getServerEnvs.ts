@@ -14,7 +14,7 @@ interface ServerUrls {
 
 interface ServerEnvs {
   systemLanguage: string
-  environment?: string
+  environment: string
 }
 
 type FeatureFlags = Record<string, string | boolean>
@@ -53,6 +53,10 @@ export async function getServerEnvs(): Promise<ServerConfig> {
 
     if (!data['systemLanguage'] || typeof data['systemLanguage'] !== 'string') {
       throw new Error('missing \'systemLanguage\' server environment variable')
+    }
+
+    if (!data['environment'] || typeof data['environment'] !== 'string') {
+      throw new Error('missing \'environment\' server environment variable')
     }
 
     return {

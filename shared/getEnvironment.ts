@@ -1,10 +1,6 @@
 let environment = ''
 
-export function setEnvironment(env?: string): void {
-  if (!env) {
-    return
-  }
-
+export function setEnvironment(env: string): void {
   environment = env
 }
 

@@ -15,7 +15,7 @@ export const App = (): JSX.Element => {
 
       <ModalProvider>
         <div className='flex flex-col h-screen'>
-          {(!environment || environment !== 'production') && <EnvironmentBanner environment={typeof environment === 'string' ? environment : undefined} />}
+          {(environment !== 'production') && <EnvironmentBanner environment={environment} />}
           <div className='relative flex flex-1 min-h-0 overflow-hidden'>
             <div className='grid grid-cols-12 flex-1'>
               <AppContent />
