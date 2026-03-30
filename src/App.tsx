@@ -4,11 +4,11 @@ import { EnvironmentBanner } from './components/App/EnvironmentBanner'
 import { ModalProvider } from './components/Modal/ModalProvider'
 import { FaroErrorBoundary } from '@grafana/faro-react'
 import { Error as ErrorPage } from './views'
-import { useFeatureFlags } from './hooks/useFeatureFlags'
+import { getEnvironment } from '@/shared/getEnvironment'
 import type { JSX } from 'react'
 
 export const App = (): JSX.Element => {
-  const { environment } = useFeatureFlags(['environment'])
+  const environment = getEnvironment()
 
   return (
     <FaroErrorBoundary fallback={(error) => <ErrorPage error={error} />}>

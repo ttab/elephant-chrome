@@ -67,5 +67,4 @@ export interface SupportedLanguage {
 
 export interface AllowedFeatureFlag {
   hasPrint?: boolean
-  environment?: string
 }
