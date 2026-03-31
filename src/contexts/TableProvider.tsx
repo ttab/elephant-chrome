@@ -154,7 +154,10 @@ export const TableProvider = <T,>({
     type,
     command,
     grouping
-  }), [table, columnFilters, rowSelection, command, type, sorting, grouping])
+  // data invalidates the memo so context consumers re-render when table
+  // data changes — the table instance itself is a stable reference.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }), [table, data, columnFilters, rowSelection, command, type, sorting, grouping])
 
   return (
     <TableContext.Provider value={value}>

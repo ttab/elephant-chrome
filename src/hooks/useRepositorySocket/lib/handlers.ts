@@ -99,7 +99,9 @@ export const handleRemoved = <TDecoratorData extends object = object>(
   prevData: DocumentStateWithDecorators<TDecoratorData>[],
   update: DocumentRemoved
 ) => {
-  const index = prevData.findIndex((p) => p.document?.uuid === update.documentUuid)
+  const index = prevData.findIndex((p) =>
+    p.document?.uuid === update.documentUuid || p.uuid === update.documentUuid
+  )
   if (index === -1) {
     return prevData
   }
@@ -167,9 +169,35 @@ export const handleDocumentUpdate = <TDecoratorData extends object = object>(
     return prevData
   }
 
+  const updateUuid: string | undefined = update.document?.uuid ?? update.event?.uuid
+
+  // Handle subset-only update (no document, only subset data)
+  if (!update.document && updateUuid && update.subset?.length) {
+    const existingIndex = prevData.findIndex((p) =>
+      p.document?.uuid === updateUuid || p.uuid === updateUuid
+    )
+
+    if (existingIndex >= 0) {
+      const newData = [...prevData]
+      newData[existingIndex] = {
+        ...newData[existingIndex],
+        subset: update.subset,
+        __updater: {
+          sub: update.event?.updaterUri || '??',
+          time: update.event?.timestamp || new Date().toISOString()
+        }
+      }
+      return newData
+    }
+
+    return prevData
+  }
+
   // Handle main document update — extract only DocumentState fields
   if (update.document) {
-    const existingIndex = prevData.findIndex((p) => p.document?.uuid === update.document?.uuid)
+    const existingIndex = prevData.findIndex((p) =>
+      p.document?.uuid === update.document?.uuid || p.uuid === update.document?.uuid
+    )
 
     if (existingIndex >= 0) {
       const newData = [...prevData]

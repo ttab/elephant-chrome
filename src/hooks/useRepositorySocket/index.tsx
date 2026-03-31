@@ -226,11 +226,8 @@ export function useRepositorySocket<TDecoratorData extends DecoratorDataBase = D
         setIsLoading(false)
 
         const unsubscribe = onUpdate((update) => {
-          // Verify both setName and that we're still the active call
           if ('setName' in update && update.setName === setName && callIdRef.current === callId) {
             handleUpdate(update)
-          } else {
-            console.warn('❌ Update rejected - validation failed')
           }
         })
 

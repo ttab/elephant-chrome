@@ -69,6 +69,7 @@ export class RepositorySocket {
     }
 
     this.#shouldReconnect = true
+    this.#reconnectAttempts = 0
 
     this.#connectingPromise = this.#initiateConnect(accessToken)
       .finally(() => { this.#connectingPromise = null })
