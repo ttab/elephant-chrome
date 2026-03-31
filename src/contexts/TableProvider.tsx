@@ -44,6 +44,7 @@ export interface CommandArgs {
 export interface TableProviderState<TData> {
   table: Table<TData>
   setData: Dispatch<SetStateAction<TData[]>>
+  loading: boolean
   command: CommandArgs
   type: View
   filters: ColumnFiltersState
@@ -52,7 +53,8 @@ export interface TableProviderState<TData> {
 
 const initialState = {
   table: {} as Table<unknown>,
-  setData: () => { }
+  setData: () => { },
+  loading: true
 } as unknown as TableProviderState<unknown>
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -151,12 +153,10 @@ export const TableProvider = <T,>({
     sorting: sorting,
     selectedRow: rowSelection,
     setData,
+    loading: data.length === 0,
     type,
     command,
     grouping
-  // data invalidates the memo so context consumers re-render when table
-  // data changes — the table instance itself is a stable reference.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }), [table, data, columnFilters, rowSelection, command, type, sorting, grouping])
 
   return (
