@@ -76,15 +76,15 @@ describe('normalizeUserUri', () => {
     )
   })
 
-  it('normalizes keycloak://user/{uuid} to core://user/{uuid}', () => {
+  it('keeps keycloak://user/{uuid} as-is', () => {
     const uuid = 'cf8eb669-0c0f-432d-8fdf-b479ac2082a1'
     expect(normalizeUserUri(`keycloak://user/${uuid}`)).toBe(
-      `core://user/${uuid}`
+      `keycloak://user/${uuid}`
     )
   })
 
-  it('returns keycloak://user/<original-string> when no ID can be extracted', () => {
-    expect(normalizeUserUri('71f93d76-db76-4e26-b779-14d8c601e4ae')).toBe('keycloak://user/71f93d76-db76-4e26-b779-14d8c601e4ae')
+  it('returns bare string unchanged when no prefix matches', () => {
+    expect(normalizeUserUri('71f93d76-db76-4e26-b779-14d8c601e4ae')).toBe('71f93d76-db76-4e26-b779-14d8c601e4ae')
   })
 
   it('is idempotent', () => {
@@ -94,6 +94,11 @@ describe('normalizeUserUri', () => {
 
   it('is idempotent for keycloak URIs', () => {
     const once = normalizeUserUri('keycloak://user/cf8eb669-0c0f-432d-8fdf-b479ac2082a1')
+    expect(normalizeUserUri(once)).toBe(once)
+  })
+
+  it('is idempotent for bare strings', () => {
+    const once = normalizeUserUri('71f93d76-db76-4e26-b779-14d8c601e4ae')
     expect(normalizeUserUri(once)).toBe(once)
   })
 })
@@ -111,11 +116,11 @@ describe('generateAuthorUUID', () => {
     expect(canonical).toBe(withSub)
   })
 
-  it('returns same UUID for keycloak and core URIs with same ID', () => {
+  it('returns different UUIDs for keycloak and core URIs with same ID', () => {
     const uuid = 'cf8eb669-0c0f-432d-8fdf-b479ac2082a1'
     const fromCore = generateAuthorUUID(`core://user/${uuid}`)
     const fromKeycloak = generateAuthorUUID(`keycloak://user/${uuid}`)
-    expect(fromCore).toBe(fromKeycloak)
+    expect(fromCore).not.toBe(fromKeycloak)
   })
 
   it('returns different UUIDs for different users', () => {

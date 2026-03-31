@@ -24,13 +24,17 @@ export function extractUserIdFromUri(
 }
 
 /**
- * Normalize any user URI format to core://user/{id}.
- * Returns the original string unchanged if no ID can be extracted.
+ * Normalize a user URI by stripping the legacy /sub/ segment.
+ * Preserves the original scheme.
  */
 export function normalizeUserUri(uri: string): string {
+  const prefix = USER_URI_PREFIXES.find((p) => uri.startsWith(p))
+  if (!prefix) return uri
+
   const id = extractUserIdFromUri(uri)
-  if (!id) return `keycloak://user/${uri}`
-  return `core://user/${id}`
+  if (!id) return uri
+
+  return `${prefix}${id}`
 }
 
 /**

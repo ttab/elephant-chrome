@@ -33,6 +33,10 @@ export async function initializeAuthor({ url, session, repository }: {
   let operation: 'create' | 'update' = 'create'
 
   try {
+    if (!extractUserIdFromUri(session.user.sub)) {
+      throw new Error(`Invalid user URI: ${session.user.sub}`)
+    }
+
     const client = new Index(url.href)
     const envRole = url.href.includes('.stage.') ? 'stage' : 'prod'
 
@@ -217,24 +221,21 @@ function createAuthorDoc(session: Session, envRole: 'stage' | 'prod', language: 
   const decodedToken = decodeJwt(session.accessToken) as {
     given_name: string
     family_name: string
-    email: string
   }
 
+  const firstName = decodedToken.given_name
+  const lastName = decodedToken.family_name
 
-  const parsedName = parseNameFromEmail(decodedToken.email)
-  const firstName = decodedToken.given_name || parsedName?.firstName
-  const lastName = decodedToken.family_name || parsedName?.lastName
-
-  const title = session.user.name?.includes('@')
-    ? [firstName, lastName].filter(Boolean).join(' ') || session.user.name
-    : session.user.name
+  if (!firstName || !lastName) {
+    throw new Error('Cannot create author document: token missing given_name or family_name')
+  }
 
   const uuid = generateAuthorUUID(session.user.sub)
   const document = Document.create({
     uuid,
     uri: `core://author/${uuid}`,
     type: 'core/author',
-    title,
+    title: session.user.name,
     meta: [{
       type: 'core/author',
       data: {
@@ -252,22 +253,4 @@ function createAuthorDoc(session: Session, envRole: 'stage' | 'prod', language: 
   })
 
   return appendSub(document, session, envRole)
-}
-
-export function parseNameFromEmail(email: string | undefined): { firstName: string, lastName: string } | undefined {
-  if (!email) return undefined
-  const [localPart] = email.split('@')
-  const parts = localPart.split(/[._]/).filter(Boolean)
-
-  if (parts.length < 2) {
-    return undefined
-  }
-
-  const capitalize = (s: string) =>
-    s.split('-').map((p) => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase()).join('-')
-
-  return {
-    firstName: parts.slice(0, -1).map(capitalize).join(' '),
-    lastName: capitalize(parts[parts.length - 1])
-  }
 }
