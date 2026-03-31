@@ -151,7 +151,7 @@ function EditorWrapper(props: ViewProps & {
 
   return (
     <>
-      {isReady && (
+      {content && (
         <View.Root>
           <BaseEditor.Root
             ydoc={ydoc}
