@@ -7,10 +7,14 @@ import type { StatusMeta } from '@/types'
 import type { Status, StatusOverviewItem } from '@ttab/elephant-api/repository'
 import { getAuthorBySub } from '@/lib/getAuthorBySub'
 import { extractUserIdFromUri } from '@/shared/userUri'
-import { DocumentStatuses } from '@/defaults/documentStatuses'
+import { getDocumentStatuses } from '@/defaults/documentStatuses'
+import { useTranslation } from 'react-i18next'
+import type { TFunction, Namespace } from 'i18next'
+import type { TranslationKey } from '@/types/i18next.d'
 
 export const AuthorNames = ({ assignment }: { assignment: AssignmentInterface }): JSX.Element => {
   const authors = useAuthors()
+  const { t } = useTranslation()
 
   // Parse status data only if it exists and changes
   const statusData = useMemo<StatusOverviewItem | null>(() => {
@@ -43,15 +47,15 @@ export const AuthorNames = ({ assignment }: { assignment: AssignmentInterface })
 
   // Get display and full text for tooltip
   const { display, full } = useMemo(
-    () => getDisplayAndFull(assignment, authors, entries, statusData),
-    [assignment, authors, entries, statusData]
+    () => getDisplayAndFull(assignment, authors, entries, statusData, t),
+    [assignment, authors, entries, statusData, t]
   )
 
   // Optionally append last status setter if not draft/done
   const enhancedDisplay = useMemo(() => {
     if (!lastStatusUpdateAuthor?.name || !lastUpdated || !statusData?.workflowState) return display
 
-    const lastStatus = DocumentStatuses.find(
+    const lastStatus = getDocumentStatuses().find(
       (status) => status.value === statusData.workflowState
     )
     const Icon = lastStatus?.icon ?? AwardIcon
@@ -74,19 +78,19 @@ export const AuthorNames = ({ assignment }: { assignment: AssignmentInterface })
   const enhancedFull = useMemo(() => {
     if (!lastStatusUpdateAuthor?.name || !lastUpdated || !statusData?.workflowState) return full
 
-    const lastStatus = DocumentStatuses.find(
+    const lastStatus = getDocumentStatuses().find(
       (status) => status.value === statusData.workflowState
     )
-    const statusLabel = lastStatus?.label
+
     const statusValue = lastStatus?.value
 
     if (statusValue !== 'draft' && statusValue !== 'done') {
       return full
-        ? `${full}, ${statusLabel} av ${lastStatusUpdateAuthor.name}`
-        : `${statusLabel} av ${lastStatusUpdateAuthor.name}`
+        ? `${full}, ${t(`core:status.${statusValue}` as TranslationKey)} ${t('shared:authors.from', { author: lastStatusUpdateAuthor.name })}`
+        : `${t(`core:status.${statusValue}` as TranslationKey)} ${t('shared:authors.from', { author: lastStatusUpdateAuthor.name })}`
     }
     return full
-  }, [full, lastStatusUpdateAuthor, lastUpdated, statusData])
+  }, [full, lastStatusUpdateAuthor, lastUpdated, statusData, t])
 
   return (
     <div title={enhancedFull}>
@@ -96,11 +100,12 @@ export const AuthorNames = ({ assignment }: { assignment: AssignmentInterface })
 }
 
 // Helper to get display and full tooltip text
-function getDisplayAndFull(
+function getDisplayAndFull<Ns extends Namespace>(
   assignment: AssignmentInterface,
   authors: IDBAuthor[],
   entries: [string, Status][],
-  statusData: StatusOverviewItem | null
+  statusData: StatusOverviewItem | null,
+  t: TFunction<Ns>
 ) {
   // Prefer byline from deliverable document
   const byline = (assignment?._deliverableDocument?.links ?? [])
@@ -116,7 +121,7 @@ function getDisplayAndFull(
           <span>{byline}</span>
         </span>
       ),
-      full: `Byline ${byline}`
+      full: t('shared:authors.byline', { author: byline })
     }
   }
 
@@ -131,7 +136,7 @@ function getDisplayAndFull(
           <span>{authorObj ? authorOutput(authorObj) : '??'}</span>
         </span>
       ),
-      full: `Klar av ${authorObj?.name || '??'}`
+      full: t('shared:authors.doneBy', { author: authorObj?.name || '??' })
     }
   }
 
@@ -145,7 +150,7 @@ function getDisplayAndFull(
           <span>{authorOutput(afterDraftAuthor)}</span>
         </span>
       ),
-      full: `Av ${afterDraftAuthor.name}`
+      full: t('shared:authors.from', { author: afterDraftAuthor.name })
     }
   }
 
@@ -173,7 +178,7 @@ function getDisplayAndFull(
           <span>{creator ? authorOutput(creator) : '??'}</span>
         </span>
       ),
-      full: creator?.name ? `Skapad av ${creator.name}` : ''
+      full: creator?.name ? `${t('shared:authors.createdBy', { author: creator.name })}` : ''
     }
   }
 

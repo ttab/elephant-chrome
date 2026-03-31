@@ -14,6 +14,8 @@ import {
   extractUserIdFromUri,
   generateAuthorUUID
 } from '@/shared/userUri'
+import type { TFunction } from 'i18next'
+import { getSystemLanguage } from '@/shared/getSystemLanguage'
 
 /**
  * Initializes the author by verifying or creating an author document in the repository.
@@ -25,10 +27,11 @@ import {
  * @returns A promise that resolves to true if the initialization is successful.
  * @throws If the author document cannot be created or updated.
  */
-export async function initializeAuthor({ url, session, repository }: {
+export async function initializeAuthor({ url, session, repository, t }: {
   url: URL
   repository: Repository
   session: Session
+  t: TFunction
 }): Promise<true> {
   let operation: 'create' | 'update' = 'create'
 
@@ -102,7 +105,7 @@ export async function initializeAuthor({ url, session, repository }: {
       throw new Error(`Failed to fetch author document: ${authorDoc.errorMessage}`)
     }
 
-    const isValid = verifyAuthorDoc(authorDoc, envRole, session)
+    const isValid = verifyAuthorDoc(authorDoc, envRole, session, t)
     if (isValid) {
       console.info('Author document exist and is valid')
       return true
@@ -111,18 +114,26 @@ export async function initializeAuthor({ url, session, repository }: {
     // Create a new author document if it doesn't exist or is invalid
     const document = isValid === false
       ? (operation = 'update', appendSub(authorDoc.hits[0].document!, session, envRole))
-      : createAuthorDoc(session, envRole, 'sv-se')
+      : createAuthorDoc(session, envRole, getSystemLanguage())
 
     const result = await repository.saveDocument(document, session.accessToken, 'usable')
     if (result?.status.code !== 'OK') {
       throw new Error(`Failed to ${operation} author doc`)
     }
 
-    toast.success(`Författardokument ${operation === 'update' ? 'är uppdaterat' : 'är skapat'}`)
+    if (operation === 'update') {
+      toast.success(t('shared:operations.authorUpdateSuccess'))
+    } else {
+      toast.success(t('shared:operations.authorSaveSuccess'))
+    }
     return true
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
-    toast.error(`Kunde inte ${operation === 'update' ? 'uppdatera' : 'skapa'} författardokument: ${errorMessage}`)
+    if (operation === 'update') {
+      toast.error(t('errors:toasts.authorUpdateFailure', { errorMessage }))
+    } else {
+      toast.error(t('errors:toasts.authorSaveFailure', { errorMessage }))
+    }
     throw new Error(`Failed to initialize author: ${errorMessage}`, { cause: error })
   }
 }
@@ -139,9 +150,9 @@ export async function initializeAuthor({ url, session, repository }: {
  *   but needs updating, or undefined if no document was found.
  * @throws If more than one author document is found.
  */
-function verifyAuthorDoc(document: IndexSearchResult<Author>, envRole: 'stage' | 'prod', session: Session): boolean | undefined {
+function verifyAuthorDoc(document: IndexSearchResult<Author>, envRole: 'stage' | 'prod', session: Session, t: TFunction): boolean | undefined {
   if (document.hits?.length > 1) {
-    toast.error('Flera författardokument hittades, kontakta support')
+    toast.error(t('errors:toasts.multipleAuthors'))
     throw new Error(`More than one author document found for sub: ${session.user.sub} email: ${session.user.email}`)
   }
 

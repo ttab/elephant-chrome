@@ -8,10 +8,13 @@ import { columnFilterToQuery, queryToColumnFilter } from '@/lib/loadFilters'
 import { useTable } from '@/hooks/useTable'
 import type { ColumnFiltersState } from '@tanstack/react-table'
 import { SaveIcon, UserCogIcon } from '@ttab/elephant-ui/icons'
+import { useTranslation } from 'react-i18next'
 
 export const QuickFilter = <TData,>(): JSX.Element => {
   const { table, type } = useTable<TData>()
   const columns = table.getAllColumns()
+  const { t } = useTranslation('shared')
+
   const quickFilterColumn = useMemo(
     () => columns.find((column) => column.columnDef.meta?.quickFilter),
     [columns]
@@ -51,8 +54,8 @@ export const QuickFilter = <TData,>(): JSX.Element => {
 
   const handleSaveUserFilter = useCallback(() => {
     setUserFilters(columnFilterToQuery(columnFilters))
-    toast.success('Ditt filter har sparats')
-  }, [setUserFilters, columnFilters])
+    toast.success(t('operations.savedFilter'))
+  }, [setUserFilters, columnFilters, t])
 
   const currentQuickFilterValue = quickFilterColumn?.getFilterValue()
 
@@ -82,30 +85,30 @@ export const QuickFilter = <TData,>(): JSX.Element => {
 
   const quickFilterMenuItems = useMemo(() =>
     quickFilterOptions.map((option) => ({
-      label: option.label,
+      label: option?.label && option.label,
       item: () => quickFilterColumn?.setFilterValue([option.value])
     })), [quickFilterOptions, quickFilterColumn])
 
   const mobileDropdownItems = useMemo(() => [
     ...quickFilterMenuItems,
     {
-      label: 'Personligt filter',
+      label: t('toolbar.personalFilter'),
       icon: UserCogIcon,
       item: () => savedUserFilters && table.setColumnFilters(savedUserFilters),
       disabled: !savedUserFilters
     },
     {
-      label: 'Spara personligt filter',
+      label: t('toolbar.savePersonalFilter'),
       icon: SaveIcon,
       item: handleSaveUserFilter
     }
-  ], [quickFilterMenuItems, savedUserFilters, table, handleSaveUserFilter])
+  ], [quickFilterMenuItems, savedUserFilters, table, handleSaveUserFilter, t])
 
   const saveFilterMenuItem = useMemo(() => [{
-    label: 'Spara personligt filter',
+    label: t('toolbar.savePersonalFilter'),
     icon: SaveIcon,
     item: handleSaveUserFilter
-  }], [handleSaveUserFilter])
+  }], [handleSaveUserFilter, t])
 
   return (
     <div className='flex flex-row flex-grow flex-wrap items-center'>
@@ -122,7 +125,7 @@ export const QuickFilter = <TData,>(): JSX.Element => {
             <ToggleGroupItem
               key={option.value}
               value={option.value}
-              aria-label={`Toggle ${option.label}`}
+              aria-label={`${t('toolbar.toggleLabel', { label: option.label })}`}
               className='border data-[state=off]:text-muted-foreground'
             >
               {option.label}
@@ -131,7 +134,7 @@ export const QuickFilter = <TData,>(): JSX.Element => {
           <ToggleGroupItem
             value='user'
             disabled={!savedUserFilters}
-            aria-label='Toggle user filter'
+            aria-label={t('toolbar.toggleUserFilter')}
             className='border data-[state=off]:text-muted-foreground'
           >
             <UserCogIcon size={18} strokeWidth={1.75} />

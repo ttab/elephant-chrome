@@ -2,6 +2,7 @@ import type { Repository } from '@/shared/Repository'
 import type { TBResource } from '@ttab/textbit'
 import { getCachedSession } from '@/shared/getCachedSession'
 import { toast } from 'sonner'
+import i18next from 'i18next'
 
 export const consume = async (
   input: TBResource | TBResource[],
@@ -26,7 +27,7 @@ export const consume = async (
   })()
 
   if (!isLikelyImage) {
-    toast.error('Filen verkar inte vara en bild, avbryter uppladdning')
+    toast.error(i18next.t('print:editor.image.errors.notImage'))
     throw new Error('Unsupported file type, expected an image')
   }
 
@@ -57,14 +58,14 @@ export const consume = async (
         const errorName = readerError?.name ?? 'UnknownError'
         const errorMessage = readerError?.message ?? 'Failed to read file as data URL'
         console.error(`ImagePlugin: reader error (${errorName})`, readerError ?? event)
-        cancel(`Bilden kunde inte läsas (${errorName})`, errorMessage)
+        cancel(i18next.t('print:editor.image.errors.readError', { errorName }), errorMessage)
         reader.abort()
         tmpImage.src = ''
       }
 
       tmpImage.onerror = (e) => {
         console.error('ImagePlugin: image load error', e)
-        cancel('Bilden kunde inte tolkas, kontrollera att filen inte är korrupt', 'Image failed to load')
+        cancel(i18next.t('print:editor.image.errors.parseError'), 'Image failed to load')
       }
 
 
@@ -78,7 +79,7 @@ export const consume = async (
             }
 
             if (!reader.result.startsWith('data:image/')) {
-              toast.error('Innehållet identifierades inte som en bild')
+              toast.error(i18next.t('print:editor.image.errors.notImageData'))
               reject(new Error('ImagePlugin: Reader result is not an image data URL'))
               return
             }
@@ -92,11 +93,11 @@ export const consume = async (
 
               const hasDimensions = Boolean(tmpImage.naturalWidth && tmpImage.naturalHeight)
               if (!hasDimensions) {
-                cancel('Bilden saknar giltiga dimensioner', 'ImagePlugin: Image has invalid dimensions')
+                cancel(i18next.t('print:editor.image.errors.noDimensions'), 'ImagePlugin: Image has invalid dimensions')
                 return
               }
 
-              toast.success('Bilduppladdning lyckades!')
+              toast.success(i18next.t('print:editor.image.errors.uploadSuccess'))
               resolve({
                 ...input,
                 type: 'core/image',
@@ -140,7 +141,7 @@ export const consume = async (
             reader.readAsDataURL(input.data as Blob)
           }, 0)
         }).catch((err) => {
-          toast.error(`Något gick fel när bilden laddades upp!: ${err}`)
+          toast.error(i18next.t('print:editor.image.errors.upload', { error: err }))
           console.error('uploadFile error:', err)
           reject(new Error('could not upload file'))
         })

@@ -16,7 +16,7 @@ import {
   BriefcaseBusinessIcon,
   TagIcon
 } from '@ttab/elephant-ui/icons'
-import { useRegistry } from '@/hooks'
+import { useRegistry, useSections } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import type { JSX } from 'react'
 import { Fragment, useRef, useState } from 'react'
@@ -34,6 +34,7 @@ import { useYValue } from '@/modules/yjs/hooks/useYValue'
 import { TextInput } from '@/components/ui/TextInput'
 import type { EleDocumentResponse } from '@/shared/types'
 import { ValidateNow } from '@/components/ValidateNow'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
 export const WireViewContent = (props: ViewProps & {
@@ -46,11 +47,12 @@ export const WireViewContent = (props: ViewProps & {
   const { status, data: session } = useSession()
   const [showVerifyDialog, setShowVerifyDialog] = useState(false)
   const [searchOlder, setSearchOlder] = useState(false)
-  const [selectedPlanning, setSelectedPlanning] = useState<DefaultValueOption & { payload: { slugline?: string, sluglines?: string[], newsvalue?: string } } | undefined>(undefined)
+  const [selectedPlanning, setSelectedPlanning] = useState<DefaultValueOption & { payload: { slugline?: string, sluglines?: string[], newsvalue?: string, sectionUuid: string, sectionTitle: string } } | undefined>(undefined)
   const [title] = useYValue<Y.XmlText>(ydoc.ele, 'root.title', true)
   const documentAwareness = useRef<(value: boolean) => void>(null)
   const planningTitleRef = useRef<HTMLInputElement>(null)
   const { index, locale, timeZone } = useRegistry()
+  const sections = useSections()
   const [section, setSection] = useState<{
     type: string
     rel: string
@@ -58,6 +60,7 @@ export const WireViewContent = (props: ViewProps & {
     title: string
   } | undefined>(undefined)
   const [slugline, setSlugline] = useYValue<Y.XmlText>(ydoc.ele, 'meta.tt/slugline[0].value', true)
+  const { t } = useTranslation('wires')
   const [, setNewsvalue] = useYValue<string | undefined>(ydoc.ele, 'meta.core/newsvalue[0].value')
 
   const handleSubmit = (): void => {
@@ -72,7 +75,7 @@ export const WireViewContent = (props: ViewProps & {
             <div className='flex w-full h-full items-center space-x-2 font-bold'>
               <ViewHeader.Title
                 name='Wires'
-                title='Skapa artikel'
+                title={t('creation.title')}
                 icon={CableIcon}
                 iconColor='#FF6347'
                 asDialog={props.asDialog}
@@ -123,13 +126,13 @@ export const WireViewContent = (props: ViewProps & {
                   modal={props.asDialog}
                   className='min-w-0 w-full truncate justify-start max-w-48'
                   selectedOptions={selectedPlanning ? [selectedPlanning] : []}
-                  placeholder='Välj planering'
+                  placeholder={t('creation.selectPlanning')}
                   onOpenChange={(isOpen: boolean) => {
                     if (documentAwareness?.current) {
                       documentAwareness.current(isOpen)
                     }
                   }}
-                  fetch={(query) => fetch(query, session, index, locale, timeZone, {
+                  fetch={(query) => fetch(query, session, t, index, locale, timeZone, {
                     searchOlder,
                     sluglines: true
                   })}
@@ -141,13 +144,27 @@ export const WireViewContent = (props: ViewProps & {
 
                       if (option.value !== selectedPlanning?.value) {
                         const newsvalue = (option.payload as { newsvalue: string | undefined }).newsvalue
+                        const sectionUuid = (option.payload as { section: string | undefined }).section
+                        const sectionTitle = sections.find((value) => value.id === sectionUuid)?.title
+
+                        if (!sectionUuid || !sectionTitle) {
+                          console.error('Selected planning is missing section data, cannot create article')
+                          toast.error('Vald planering saknar sektion och kan inte användas.', {
+                            duration: Infinity,
+                            closeButton: true
+                          })
+                          return
+                        }
+
                         setSelectedPlanning({
                           value: option.value,
                           label: option.label,
                           payload: {
                             slugline,
                             sluglines,
-                            newsvalue
+                            newsvalue,
+                            sectionUuid,
+                            sectionTitle
                           }
                         })
 
@@ -185,7 +202,7 @@ export const WireViewContent = (props: ViewProps & {
                   defaultChecked={searchOlder}
                   onCheckedChange={(checked: boolean) => { setSearchOlder(checked) }}
                 />
-                <Label htmlFor='SearchOlder' className='text-muted-foreground'>Visa äldre</Label>
+                <Label htmlFor='SearchOlder' className='text-muted-foreground'>{t('creation.showOlder')}</Label>
               </>
             </Form.Group>
 
@@ -202,7 +219,7 @@ export const WireViewContent = (props: ViewProps & {
                 <>
                   <Input
                     className='pt-2 h-7 text-medium placeholder:text-[#5D709F] placeholder-shown:border-[#5D709F]'
-                    placeholder='Planeringstitel'
+                    placeholder={t('creation.planningTitle')}
                     ref={planningTitleRef}
                   />
                 </>
@@ -213,40 +230,36 @@ export const WireViewContent = (props: ViewProps & {
               <TextInput
                 ydoc={ydoc}
                 value={title}
-                label='Titel'
-                placeholder='Uppdragstitel'
+                label={t('creation.articleTitle')}
+                placeholder={t('creation.assignmentTitle')}
               />
             </Form.Group>
 
             <Form.Group icon={TagIcon}>
               {selectedPlanning && (
-                <>
-                  <SluglineEditable
-                    key={selectedPlanning?.value}
-                    ydoc={ydoc}
-                    value={slugline}
-                    compareValues={[
-                      ...(selectedPlanning?.payload?.sluglines || []),
-                      slugline?.toString()
-                    ]}
-                  />
-                </>
+                <SluglineEditable
+                  key={selectedPlanning?.value}
+                  ydoc={ydoc}
+                  value={slugline}
+                  compareValues={[
+                    ...(selectedPlanning?.payload?.sluglines || []),
+                    slugline?.toString()
+                  ]}
+                />
               )}
 
-              {(!selectedPlanning) && (
-                <>
-                  <SluglineEditable
-                    ydoc={ydoc}
-                    value={slugline}
-                  />
-                </>
+              {!selectedPlanning && (
+                <SluglineEditable
+                  ydoc={ydoc}
+                  value={slugline}
+                />
               )}
             </Form.Group>
             <>
               <UserMessage asDialog={!!props?.asDialog}>
                 {!selectedPlanning
-                  ? (<>Väljer du ingen planering kommer en ny planering med tillhörande uppdrag skapas åt dig.</>)
-                  : (<>Denna artikel kommer läggas i ett nytt uppdrag i den valda planeringen</>)}
+                  ? (<>{t('creation.noPlanningHint')}</>)
+                  : (<>{t('creation.withPlanningHint')}</>)}
               </UserMessage>
             </>
 
@@ -255,14 +268,18 @@ export const WireViewContent = (props: ViewProps & {
           {showVerifyDialog
             && (
               <CreatePrompt
-                title='Skapa artikel från telegram'
+                title={t('creation.dialogTitle')}
                 description={!selectedPlanning
-                  ? 'En ny planering med tillhörande uppdrag för denna artikel kommer att skapas åt dig.'
-                  : `Denna artikel kommer att läggas i ett nytt uppdrag i planeringen "${selectedPlanning.label}"`}
-                secondaryLabel='Avbryt'
-                primaryLabel='Skapa'
+                  ? t('creation.dialogNoPlanningDescription')
+                  : t('creation.dialogWithPlanningDescription', { planningLabel: selectedPlanning.label })}
+                secondaryLabel={t('common:actions.abort')}
+                primaryLabel={t('common:actions.create')}
                 onPrimary={() => {
-                  if (!ydoc.connected || !ydoc.id || !session) {
+                  const effectiveSection = selectedPlanning?.value
+                    ? { uuid: selectedPlanning.payload.sectionUuid, title: selectedPlanning.payload.sectionTitle }
+                    : section
+
+                  if (!ydoc.connected || !ydoc.id || !session || !effectiveSection?.uuid) {
                     console.error('Environment is not sane, article cannot be created')
                     return
                   }
@@ -270,7 +287,6 @@ export const WireViewContent = (props: ViewProps & {
                   if (props?.onDialogClose) {
                     props.onDialogClose(ydoc.id)
                   }
-
 
                   createArticle({
                     ydoc,
@@ -280,7 +296,7 @@ export const WireViewContent = (props: ViewProps & {
                     planningTitle: planningTitleRef.current?.value,
                     newsvalue: selectedPlanning?.payload?.newsvalue,
                     wires: props.wires,
-                    section: (!selectedPlanning?.value) ? section || undefined : undefined,
+                    section: effectiveSection,
                     timeZone
                   })
                     .then(() => {
@@ -288,9 +304,15 @@ export const WireViewContent = (props: ViewProps & {
                       props.onDocumentCreated?.()
                     })
                     .catch((ex: unknown) => {
-                      console.log(ex)
-                      if (!(ex instanceof Error) || ex.message !== 'CreateAssignmentError') {
-                        toast.error('Det gick inte att skapa en artikel!')
+                      if (ex instanceof Error && ex.message === 'AssignmentRollbackError') {
+                        toast.error(t('creation.assignmentRollbackError'), {
+                          duration: Infinity,
+                          closeButton: true
+                        })
+                      } else if (ex instanceof Error && ex.message === 'CreateAssignmentError') {
+                        // Toast already shown by addAssignmentWithDeliverable
+                      } else {
+                        toast.error(t('creation.createError'))
                       }
                     })
                 }}
@@ -302,7 +324,7 @@ export const WireViewContent = (props: ViewProps & {
 
           <Form.Footer className='flex justify-between flex-row-reverse'>
             <Form.Submit onSubmit={handleSubmit}>
-              <Button type='submit'>Skapa artikel</Button>
+              <Button type='submit'>{t('creation.title')}</Button>
             </Form.Submit>
           </Form.Footer>
         </Form.Root>

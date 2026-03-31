@@ -1,4 +1,4 @@
-import { QueryV1, BoolQueryV1, TermsQueryV1, MultiMatchQueryV1 } from '@ttab/elephant-api/index'
+import { QueryV1, BoolQueryV1, TermsQueryV1, MultiMatchQueryV1, RangeQueryV1 } from '@ttab/elephant-api/index'
 import type { WireFilter } from '../hooks/useWireViewState'
 
 /**
@@ -46,6 +46,25 @@ export function constructQuery(filters: WireFilter[]): QueryV1 | undefined {
       addCondition('document.rel.section.uuid', filter.values)
     } else if (filter.type === 'core/newsvalue') {
       addCondition('document.meta.core_newsvalue.value', filter.values)
+    } else if (filter.type === 'wireStatus') {
+      const statusConditions = filter.values.map((status) =>
+        QueryV1.create({
+
+          conditions: {
+            oneofKind: 'range',
+            range: RangeQueryV1.create({ field: `heads.${status}.version`, gte: '1' })
+          }
+        }))
+
+      boolConditions.must.push(QueryV1.create({
+        conditions: {
+          oneofKind: 'bool',
+          bool: BoolQueryV1.create({
+            should: statusConditions,
+            minimumShouldMatch: BigInt(1)
+          })
+        }
+      }))
     } else if (filter.type === 'query') {
       // For query filters, we still need to iterate values since each needs a separate multiMatch
       filter.values.forEach((value) => {

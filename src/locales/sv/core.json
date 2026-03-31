@@ -1,0 +1,53 @@
+{
+  "documentType": {
+    "planning": "planering",
+    "event": "händelse",
+    "assignment": "uppdrag",
+    "article": "artikel",
+    "flash": "flash",
+    "quickArticle": "två på två"
+  },
+  "labels": {
+    "newsvalue": "Nyhetsvärde",
+    "section": "Sektion",
+    "assignee": "Uppdragstagare",
+    "assignmentType": "Typ",
+    "title": "Titel",
+    "time": "Tid",
+    "status": "Status",
+    "type": "Typ",
+    "organiser": "Organisatör",
+    "category": "Kategori",
+    "action": "Action",
+    "story": "Story",
+    "showOlder": "Visa äldre"
+  },
+  "status": {
+    "draft": "Utkast",
+    "internal": "Intern",
+    "approved": "Godkänd",
+    "usable": "Publicerad",
+    "unpublished": "Avpublicerad",
+    "done": "Klar",
+    "print_done": "Klar",
+    "needs_proofreading": "Klar för korr",
+    "withheld": "Schemalagd",
+    "cancelled": "Kastad",
+    "changed": "Ändrad",
+    "moved": "flyttad",
+    "todo": "Att göra",
+    "started": "Påbörjad",
+    "public": "Publik",
+    "sent": "Skickad",
+    "typeApproved": "{{type}} godkänd",
+    "typeDone": "{{type}} klar",
+    "typeSaved": "{{type}} sparad"
+  },
+  "timeSlots": {
+    "morning": "Morgon",
+    "forenoon": "Förmiddag",
+    "afternoon": "Eftermiddag",
+    "evening": "Kväll",
+    "fullday": "Heldag"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "title": "Event",
+  "eventDocument": "Event document",
+  "subheadings": {
+    "plannings": "Plannings",
+    "events": "Events"
+  },
+  "createEvent": "Create event",
+  "buttons": {
+    "addPlanning": "Add planning"
+  },
+  "labels": {
+    "markAsCancelled": "Mark as cancelled",
+    "markedAsCancelled": "The event has been marked as cancelled!"
+  },
+  "toasts": {
+    "created": {
+      "success": "Event created"
+    }
+  },
+  "placeholders": {
+    "eventTitle": "Event title",
+    "publicDescription": "Public description",
+    "accreditation": "Accreditation",
+    "addOrganiser": "Add organiser",
+    "addCategory": "Add topic",
+    "addSection": "Add section"
+  },
+  "status": {
+    "planned": "Planned",
+    "notPlanned": "Not planned"
+  },
+  "tooltips": {
+    "createPlanning": "Create planning",
+    "planningCreated": "Has been planned"
+  }
+}
