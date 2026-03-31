@@ -27,7 +27,7 @@ describe('initializeAuthor', () => {
     vi.clearAllMocks()
 
     mockSession = {
-      accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c',
+      accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiZ2l2ZW5fbmFtZSI6IkpvaG4iLCJmYW1pbHlfbmFtZSI6IkRvZSIsImlhdCI6MTUxNjIzOTAyMn0.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c',
       refreshToken: 'mockRefreshToken',
       accessTokenExpires: 1234567890,
       expires: 'mockExpires',
@@ -251,6 +251,64 @@ describe('initializeAuthor', () => {
     )).toBe(true)
   })
 
+  it('should create author document for keycloak://user sub', async () => {
+    mockSession.user.sub = 'keycloak://user/cf8eb669-0c0f-432d-8fdf-b479ac2082a1'
+    setupMocks({ ok: true, hits: [] }, { status: { code: 'OK' } })
+
+    const result = await initializeAuthor({
+      url: mockUrl,
+      session: mockSession,
+      repository: mockRepository
+    })
+
+    const expectedUuid = generateAuthorUUID('keycloak://user/cf8eb669-0c0f-432d-8fdf-b479ac2082a1')
+
+    expect(result).toBe(true)
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    expect(mockRepository.saveDocument).toHaveBeenCalledWith(
+      expect.objectContaining({
+        uuid: expectedUuid,
+        uri: `core://author/${expectedUuid}`
+      }),
+      mockSession.accessToken,
+      expect.any(String)
+    )
+
+    // Stored link should preserve keycloak://user/ scheme
+    const savedDoc = (mockRepository.saveDocument as Mock)
+      .mock.calls[0][0] as { links: Array<Record<string, string>> }
+    const keycloakLinks = savedDoc.links.filter(
+      (l) => l.rel === 'same-as' && l.type === 'tt/keycloak'
+    )
+    expect(keycloakLinks[0].uri).toBe('keycloak://user/cf8eb669-0c0f-432d-8fdf-b479ac2082a1')
+  })
+
+  it('should find and validate existing author doc for keycloak://user sub', async () => {
+    mockSession.user.sub = 'keycloak://user/cf8eb669-0c0f-432d-8fdf-b479ac2082a1'
+    setupMocks({
+      ok: true,
+      hits: [{
+        document: {
+          links: [{
+            rel: 'same-as',
+            type: 'tt/keycloak',
+            uri: 'keycloak://user/cf8eb669-0c0f-432d-8fdf-b479ac2082a1',
+            role: 'prod'
+          }]
+        }
+      }]
+    })
+
+    const result = await initializeAuthor({
+      url: mockUrl,
+      session: mockSession,
+      repository: mockRepository
+    })
+
+    expect(result).toBe(true)
+    expect(toast.success).not.toHaveBeenCalled()
+  })
+
   it('should throw an error if saving the document fails', async () => {
     setupMocks({ ok: true, hits: [] }, { status: { code: 'ERROR' } })
 
@@ -279,6 +337,36 @@ describe('initializeAuthor', () => {
     expect(toast.error).toHaveBeenCalledWith('Flera författardokument hittades, kontakta support')
   })
 
+
+  it('should throw when sub is a bare UUID without scheme prefix', async () => {
+    mockSession.user.sub = '71f93d76-db76-4e26-b779-14d8c601e4ae'
+
+    await expect(
+      initializeAuthor({
+        url: mockUrl,
+        session: mockSession,
+        repository: mockRepository
+      })
+    ).rejects.toThrow('Invalid user URI')
+
+    expect(toast.error).toHaveBeenCalled()
+  })
+
+  it('should throw when token lacks given_name or family_name', async () => {
+    // JWT without given_name/family_name
+    mockSession.accessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c'
+    setupMocks({ ok: true, hits: [] }, { status: { code: 'OK' } })
+
+    await expect(
+      initializeAuthor({
+        url: mockUrl,
+        session: mockSession,
+        repository: mockRepository
+      })
+    ).rejects.toThrow('missing given_name or family_name')
+
+    expect(toast.error).toHaveBeenCalled()
+  })
 
   it('should throw an error when query for authordocs fails', async () => {
     setupMocks({ ok: false, hits: [{}, {}] })

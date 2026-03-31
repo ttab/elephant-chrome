@@ -33,6 +33,10 @@ export async function initializeAuthor({ url, session, repository }: {
   let operation: 'create' | 'update' = 'create'
 
   try {
+    if (!extractUserIdFromUri(session.user.sub)) {
+      throw new Error(`Invalid user URI: ${session.user.sub}`)
+    }
+
     const client = new Index(url.href)
     const envRole = url.href.includes('.stage.') ? 'stage' : 'prod'
 
@@ -64,6 +68,17 @@ export async function initializeAuthor({ url, session, repository }: {
                       term: TermQueryV1.create({
                         field: 'document.rel.same_as.uri',
                         value: `core://user/sub/${userId}`
+                      })
+                    }
+                  }]
+                : []),
+              ...(session.user.sub !== normalizeUserUri(session.user.sub)
+                ? [{
+                    conditions: {
+                      oneofKind: 'term' as const,
+                      term: TermQueryV1.create({
+                        field: 'document.rel.same_as.uri',
+                        value: session.user.sub
                       })
                     }
                   }]
@@ -108,7 +123,7 @@ export async function initializeAuthor({ url, session, repository }: {
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
     toast.error(`Kunde inte ${operation === 'update' ? 'uppdatera' : 'skapa'} författardokument: ${errorMessage}`)
-    throw new Error(`Failed to initialize author: ${errorMessage}`)
+    throw new Error(`Failed to initialize author: ${errorMessage}`, { cause: error })
   }
 }
 
@@ -208,6 +223,13 @@ function createAuthorDoc(session: Session, envRole: 'stage' | 'prod', language: 
     family_name: string
   }
 
+  const firstName = decodedToken.given_name
+  const lastName = decodedToken.family_name
+
+  if (!firstName || !lastName) {
+    throw new Error('Cannot create author document: token missing given_name or family_name')
+  }
+
   const uuid = generateAuthorUUID(session.user.sub)
   const document = Document.create({
     uuid,
@@ -217,8 +239,8 @@ function createAuthorDoc(session: Session, envRole: 'stage' | 'prod', language: 
     meta: [{
       type: 'core/author',
       data: {
-        firstName: decodedToken.given_name,
-        lastName: decodedToken.family_name
+        firstName,
+        lastName
       }
     }, {
       type: 'core/contact-info',
