@@ -6,6 +6,7 @@ import type { IDBAuthor } from 'src/datastore/types'
 import type { StatusMeta } from '@/types'
 import type { Status, StatusOverviewItem } from '@ttab/elephant-api/repository'
 import { getAuthorBySub } from '@/lib/getAuthorBySub'
+import { extractUserIdFromUri } from '@/shared/userUri'
 import { getDocumentStatuses } from '@/defaults/documentStatuses'
 import { useTranslation } from 'react-i18next'
 import type { TFunction, Namespace } from 'i18next'
@@ -35,9 +36,13 @@ export const AuthorNames = ({ assignment }: { assignment: AssignmentInterface })
 
   // Get last status update and author
   const lastUpdated = entries[0]?.[1]
-  const lastUpdatedById = useMemo(() => extractId(lastUpdated?.creator), [lastUpdated])
+  const lastUpdatedById = useMemo(
+    () => extractUserIdFromUri(lastUpdated?.creator ?? ''),
+    [lastUpdated]
+  )
   const lastStatusUpdateAuthor = useMemo(() =>
-    authors.find((a) => lastUpdatedById && lastUpdatedById === extractId(a?.sub)),
+    authors.find((a) =>
+      lastUpdatedById && lastUpdatedById === extractUserIdFromUri(a?.sub)),
   [authors, lastUpdatedById])
 
   // Get display and full text for tooltip
@@ -183,8 +188,10 @@ function getDisplayAndFull<Ns extends Namespace>(
 // Find author who set status Done
 function doneStatusName(doneStatus?: StatusMeta, authors?: IDBAuthor[]): IDBAuthor | undefined {
   if (!doneStatus || !authors) return undefined
-  const creatorId = extractId(doneStatus.creator)
-  return authors.find((a) => creatorId === extractId(a?.sub))
+  const creatorId = extractUserIdFromUri(doneStatus.creator ?? '')
+  return authors.find(
+    (a) => creatorId && creatorId === extractUserIdFromUri(a?.sub)
+  )
 }
 
 // Find author who set a status, then get the author who set the previous status
@@ -195,13 +202,10 @@ function getAuthorAfterSetStatus(
 ) {
   const statusIndex = entries.findIndex((entry) => entry[0] === status)
   const afterStatus = entries[statusIndex - 1]?.[1]
-  const creatorId = extractId(afterStatus?.creator)
-  return (authors || []).find((a) => creatorId && creatorId === extractId(a?.sub))
-}
-
-// Extract ID from URI
-function extractId(uri: string = '') {
-  return uri.slice(uri.lastIndexOf('/'))
+  const creatorId = extractUserIdFromUri(afterStatus?.creator ?? '')
+  return (authors || []).find(
+    (a) => creatorId && creatorId === extractUserIdFromUri(a?.sub)
+  )
 }
 
 // Format author name to initials
