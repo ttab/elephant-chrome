@@ -11,9 +11,6 @@ import { Block } from '@ttab/elephant-api/newsdoc'
 import type { HocuspocusProvider } from '@hocuspocus/provider'
 import { initialState, type RegistryProviderState } from '@/contexts/RegistryProvider'
 
-// Mock environment variables
-const originalEnv = process.env
-
 vi.mock('@/hooks/useRegistry', () => ({
   useRegistry: vi.fn()
 }))
@@ -37,11 +34,7 @@ vi.mocked(useRegistry).mockReturnValue(initialState)
 
 beforeEach(() => {
   vi.clearAllMocks()
-  process.env = { ...originalEnv, SYSTEM_LANGUAGE: 'sv-se' }
-})
-
-afterEach(() => {
-  vi.unstubAllEnvs()
+  process.env.SYSTEM_LANGUAGE = 'sv-se'
 })
 
 describe('CreateDeliverablePrompt', () => {
@@ -373,11 +366,7 @@ describe('CreateDeliverablePrompt', () => {
   describe('Repository Integration', () => {
     beforeEach(() => {
       vi.clearAllMocks()
-      process.env = { ...originalEnv, SYSTEM_LANGUAGE: 'sv-se' }
-    })
-
-    afterEach(() => {
-      vi.unstubAllEnvs()
+      process.env.SYSTEM_LANGUAGE = 'sv-se'
     })
 
     it('calls saveDocument with session access token', async () => {
