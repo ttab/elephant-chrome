@@ -107,6 +107,7 @@ export const imageConsume = async (
                   class: 'block',
                   properties: {
                     title: name,
+                    type: 'core/image',
                     rel: 'image',
                     size,
                     uploadId: uuid,

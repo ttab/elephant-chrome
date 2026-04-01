@@ -26,7 +26,7 @@ function findPreviewByWidth(
   )
 }
 
-function mapNTBItem(item: MediaItem): ImageSearchHit | undefined {
+export function mapNTBItem(item: MediaItem): ImageSearchHit | undefined {
   const thumbnail = findPreviewByWidth(item.previews, 'smallest')
   const preview = findPreviewByWidth(item.previews, 'largest')
 

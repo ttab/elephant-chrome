@@ -71,31 +71,13 @@ describe('Image transformations', () => {
 
   it('reverts image from Slate to NewsDoc', () => {
     const reverted = revertImage(imageSlate)
-    // Remove the author link for comparison as it's auto-generated
-    const revertedWithoutAuthor = {
-      ...reverted,
-      links: reverted.links.filter((l) => l.rel !== 'author')
-    }
-    const expectedWithoutAuthor = {
-      ...imageNewsDoc,
-      links: imageNewsDoc.links.filter((l) => l.rel !== 'author')
-    }
-    expect(sortDocument(revertedWithoutAuthor)).toEqual(sortDocument(expectedWithoutAuthor))
+    expect(sortDocument(reverted)).toEqual(sortDocument(imageNewsDoc))
   })
 
   it('handles round-trip transformation', () => {
     const transformed = transformImage(imageNewsDoc)
     const reverted = revertImage(transformed)
-    // Remove auto-generated author link
-    const revertedWithoutAuthor = {
-      ...reverted,
-      links: reverted.links.filter((l) => l.rel !== 'author')
-    }
-    const expectedWithoutAuthor = {
-      ...imageNewsDoc,
-      links: imageNewsDoc.links.filter((l) => l.rel !== 'author')
-    }
-    expect(sortDocument(revertedWithoutAuthor)).toEqual(sortDocument(expectedWithoutAuthor))
+    expect(sortDocument(reverted)).toEqual(sortDocument(imageNewsDoc))
   })
 
   it('generates UUID when id is missing', () => {
@@ -197,28 +179,8 @@ describe('Image transformations', () => {
     expect(softcropBlock?.data.focus).toBe('45,55')
   })
 
-  it('creates author link when byline text exists', () => {
+  it('does not create author link from byline text', () => {
     const reverted = revertImage(imageSlate)
-    const authorLink = reverted.links.find((l) => l.rel === 'author')
-    expect(authorLink).toBeDefined()
-    expect(authorLink?.type).toBe('core/author')
-    expect(authorLink?.title).toBe('Jane Smith')
-    expect(authorLink?.uuid).toBe('random-uuid')
-  })
-
-  it('does not create author link when byline is empty', () => {
-    const slateWithoutByline = {
-      ...imageSlate,
-      children: [
-        imageSlate.children[0],
-        imageSlate.children[1],
-        {
-          ...imageSlate.children[2],
-          children: [{ text: '' }]
-        }
-      ]
-    } as unknown as TBElement
-    const reverted = revertImage(slateWithoutByline)
     const authorLink = reverted.links.find((l) => l.rel === 'author')
     expect(authorLink).toBeUndefined()
   })
@@ -364,6 +326,7 @@ describe('Image transformations', () => {
     expect(transformed.properties?.url).toBe('https://example.com/ntb/preview.jpg')
     expect(transformed.properties?.credit).toBe('NTB Scanpix')
     expect(transformed.properties?.type).toBe('mediamanager/image')
+    expect(transformed.properties?.rel).toBe('image')
     expect(transformed.children[1].children).toEqual([{ text: 'NTB photo caption' }])
     expect(transformed.children[2].children).toEqual([{ text: 'NTB Photographer' }])
 
@@ -371,8 +334,7 @@ describe('Image transformations', () => {
     const imageLink = reverted.links.find((l) => l.rel === 'image')
     expect(imageLink?.uri).toBe('mediamanager://image/ntb/ntb-456')
     expect(imageLink?.url).toBe('https://example.com/ntb/preview.jpg')
-    // revertImage hardcodes type to 'core/image' regardless of input
-    expect(imageLink?.type).toBe('core/image')
+    expect(imageLink?.type).toBe('mediamanager/image')
     // mediamanager:// URI produces empty uuid since it doesn't match core://image/ split
     expect(imageLink?.uuid).toBe('')
     expect(reverted.data.text).toBe('NTB photo caption')
