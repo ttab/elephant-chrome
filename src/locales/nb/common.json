@@ -85,6 +85,17 @@
     "syntaxFieldSearch": "Feltsøk",
     "syntaxFieldSearchValue": "felt:verdi",
     "syntaxAvailableFields": "Tilgjengelige felt",
+    "hints": {
+      "searchIn": "Velg hvilke dokumentfelt det skal søkes i",
+      "words": "Finner det best samsvarende feltet for søketermene dine",
+      "exactPhrase": "Krever at ordene forekommer i nøyaktig rekkefølge",
+      "requireAllTerms": "Alle søketermer må være til stede (standard er hvilken som helst term)",
+      "fuzzyMatching": "Tillater omtrentlige treff, f.eks. skrivefeil",
+      "fuzzyEdits": "Antall tegnendringer som tillates per ord",
+      "prefixLength": "Antall starttegn som må samsvare nøyaktig før fuzzy-samsvar aktiveres",
+      "boost": "Multiplikator for relevanspoeng — høyere verdier rangerer treff høyere",
+      "fieldExists": "Filtrer dokumenter etter om et felt har innhold eller er tomt"
+    },
     "badge": {
       "fuzzy": "Fuzzy (~{{edits}})",
       "fields": "Felt: {{fields}}",

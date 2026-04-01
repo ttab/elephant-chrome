@@ -2,6 +2,7 @@ import { useEffect, useState, type JSX } from 'react'
 import {
   Button,
   Dialog,
+  DialogClose,
   DialogContent,
   DialogFooter,
   DialogHeader,
@@ -9,10 +10,11 @@ import {
   ToggleGroup,
   ToggleGroupItem
 } from '@ttab/elephant-ui'
+import { XIcon } from '@ttab/elephant-ui/icons'
 import { useTranslation } from 'react-i18next'
 import { StructuredMode } from './StructuredMode'
 import { QuerySyntaxMode } from './QuerySyntaxMode'
-import { isActiveState } from './lib/defaultState'
+import { createDefaultState, isActiveState } from './lib/defaultState'
 import type { AdvancedSearchDialogProps, AdvancedSearchState } from './types'
 
 export const AdvancedSearchDialog = ({
@@ -43,8 +45,7 @@ export const AdvancedSearchDialog = ({
   }
 
   function handleClear() {
-    onClear()
-    onOpenChange(false)
+    setDraft(createDefaultState(fields))
   }
 
   function handleModeChange(value: string) {
@@ -56,8 +57,13 @@ export const AdvancedSearchDialog = ({
   return (
     <Dialog open={open} onOpenChange={onOpenChange} modal>
       <DialogContent className='sm:max-w-md'>
-        <DialogHeader>
+        <DialogHeader className='flex flex-row items-center justify-between space-y-0'>
           <DialogTitle>{t('advancedSearch.title')}</DialogTitle>
+          <DialogClose asChild>
+            <Button variant='ghost' className='w-8 h-8 p-0'>
+              <XIcon size={18} strokeWidth={1.75} />
+            </Button>
+          </DialogClose>
         </DialogHeader>
 
         <div className='flex flex-col gap-4'>
@@ -96,14 +102,9 @@ export const AdvancedSearchDialog = ({
           <Button variant='outline' onClick={handleClear}>
             {t('advancedSearch.clear')}
           </Button>
-          <div className='flex gap-2'>
-            <Button variant='secondary' onClick={() => onOpenChange(false)}>
-              {t('advancedSearch.cancel')}
-            </Button>
-            <Button onClick={handleApply}>
-              {t('advancedSearch.search')}
-            </Button>
-          </div>
+          <Button onClick={handleApply} disabled={!isActiveState(draft) && !isActiveState(state)}>
+            {t('advancedSearch.search')}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

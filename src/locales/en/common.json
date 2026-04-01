@@ -85,6 +85,17 @@
     "syntaxFieldSearch": "Field search",
     "syntaxFieldSearchValue": "field:value",
     "syntaxAvailableFields": "Available fields",
+    "hints": {
+      "searchIn": "Choose which document fields to search in",
+      "words": "Finds the best matching field for your search terms",
+      "exactPhrase": "Requires words to appear in exact order",
+      "requireAllTerms": "All search terms must be present (default is any term)",
+      "fuzzyMatching": "Allows approximate matches, e.g. typos or misspellings",
+      "fuzzyEdits": "Number of character changes allowed per word",
+      "prefixLength": "Number of starting characters that must match exactly before fuzzy kicks in",
+      "boost": "Multiplier for relevance scoring — higher values rank matches higher",
+      "fieldExists": "Filter documents by whether a field has content or is empty"
+    },
     "badge": {
       "fuzzy": "Fuzzy (~{{edits}})",
       "fields": "Fields: {{fields}}",

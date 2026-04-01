@@ -49,8 +49,8 @@
   "advancedSearch": {
     "title": "Avancerad sökning",
     "structured": "Strukturerad",
-    "querySyntax": "Frågesyntax",
-    "query": "Fråga",
+    "querySyntax": "Söksyntax",
+    "query": "Sökning",
     "searchIn": "Sök i",
     "matchType": "Matchningstyp",
     "words": "Ord",
@@ -85,6 +85,17 @@
     "syntaxFieldSearch": "Fältsökning",
     "syntaxFieldSearchValue": "fält:värde",
     "syntaxAvailableFields": "Tillgängliga fält",
+    "hints": {
+      "searchIn": "Välj vilka dokumentfält som ska genomsökas",
+      "words": "Hittar det bäst matchande fältet för dina söktermer",
+      "exactPhrase": "Kräver att orden förekommer i exakt ordning",
+      "requireAllTerms": "Alla söktermer måste finnas med (standard är valfri term)",
+      "fuzzyMatching": "Tillåter ungefärliga matchningar, t.ex. stavfel",
+      "fuzzyEdits": "Antal teckenändringar som tillåts per ord",
+      "prefixLength": "Antal inledande tecken som måste matcha exakt innan fuzzy-matchning aktiveras",
+      "boost": "Multiplikator för relevanspoäng — högre värden rankar matchningar högre",
+      "fieldExists": "Filtrera dokument efter om ett fält har innehåll eller är tomt"
+    },
     "badge": {
       "fuzzy": "Fuzzy (~{{edits}})",
       "fields": "Fält: {{fields}}",

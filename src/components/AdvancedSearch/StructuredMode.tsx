@@ -1,4 +1,4 @@
-import { useEffect, useState, type JSX } from 'react'
+import { Fragment, useEffect, useState, type JSX } from 'react'
 import { Input, Checkbox, Label, ToggleGroup, ToggleGroupItem, Button } from '@ttab/elephant-ui'
 import { ChevronDownIcon, ChevronUpIcon } from '@ttab/elephant-ui/icons'
 import { useTranslation } from 'react-i18next'
@@ -61,7 +61,10 @@ export const StructuredMode = ({ state, fields, onChange }: StructuredModeProps)
 
       {/* Search in fields */}
       <div className='flex flex-col gap-1.5'>
-        <Label className='text-xs font-medium text-muted-foreground'>
+        <Label
+          className='text-xs font-medium text-muted-foreground w-fit'
+          title={t('advancedSearch.hints.searchIn')}
+        >
           {t('advancedSearch.searchIn')}
         </Label>
         <div className='flex flex-wrap gap-3'>
@@ -114,19 +117,32 @@ export const StructuredMode = ({ state, fields, onChange }: StructuredModeProps)
           }}
           className='justify-start'
         >
-          <ToggleGroupItem value='best_fields' className='text-xs'>
+          <ToggleGroupItem
+            value='best_fields'
+            className='text-xs'
+            title={t('advancedSearch.hints.words')}
+          >
             {t('advancedSearch.words')}
           </ToggleGroupItem>
-          <ToggleGroupItem value='phrase' className='text-xs'>
+          <ToggleGroupItem
+            value='phrase'
+            className='text-xs'
+            title={t('advancedSearch.hints.exactPhrase')}
+          >
             {t('advancedSearch.exactPhrase')}
           </ToggleGroupItem>
         </ToggleGroup>
       </div>
 
-      <label className='flex items-center gap-1.5 text-sm'>
+      <label
+        className='flex items-center gap-1.5 text-sm w-fit'
+        title={t('advancedSearch.hints.requireAllTerms')}
+      >
         <Checkbox
           checked={state.booleanAnd}
-          onCheckedChange={(checked) => onChange({ ...state, booleanAnd: checked === true })}
+          onCheckedChange={(checked) => onChange({
+            ...state, booleanAnd: checked === true
+          })}
         />
         {t('advancedSearch.requireAllTerms')}
       </label>
@@ -147,10 +163,15 @@ export const StructuredMode = ({ state, fields, onChange }: StructuredModeProps)
           {/* Fuzzy */}
           <div className='flex flex-col gap-2'>
             <div className='flex items-center gap-3'>
-              <label className='flex items-center gap-1.5 text-sm'>
+              <label
+                className='flex items-center gap-1.5 text-sm w-fit'
+                title={t('advancedSearch.hints.fuzzyMatching')}
+              >
                 <Checkbox
                   checked={state.fuzzy}
-                  onCheckedChange={(checked) => onChange({ ...state, fuzzy: checked === true })}
+                  onCheckedChange={(checked) => onChange({
+                    ...state, fuzzy: checked === true
+                  })}
                 />
                 {t('advancedSearch.fuzzyMatching')}
               </label>
@@ -164,6 +185,7 @@ export const StructuredMode = ({ state, fields, onChange }: StructuredModeProps)
                     }
                   }}
                   className='justify-start'
+                  title={t('advancedSearch.hints.fuzzyEdits')}
                 >
                   <ToggleGroupItem value='1' className='text-xs h-7 px-2'>
                     {t('advancedSearch.fuzzyEdit1')}
@@ -176,7 +198,10 @@ export const StructuredMode = ({ state, fields, onChange }: StructuredModeProps)
             </div>
             {state.fuzzy && (
               <div className='flex items-center gap-2 ml-6'>
-                <Label className='text-xs text-muted-foreground'>
+                <Label
+                  className='text-xs text-muted-foreground'
+                  title={t('advancedSearch.hints.prefixLength')}
+                >
                   {t('advancedSearch.prefixLength')}
                 </Label>
                 <Input
@@ -193,7 +218,10 @@ export const StructuredMode = ({ state, fields, onChange }: StructuredModeProps)
 
           {/* Boost */}
           <div className='flex items-center gap-2'>
-            <Label className='text-xs text-muted-foreground'>
+            <Label
+              className='text-xs text-muted-foreground'
+              title={t('advancedSearch.hints.boost')}
+            >
               {t('advancedSearch.boost')}
             </Label>
             <Input
@@ -209,35 +237,53 @@ export const StructuredMode = ({ state, fields, onChange }: StructuredModeProps)
 
           {/* Field existence */}
           <div className='flex flex-col gap-1.5'>
-            <Label className='text-xs font-medium text-muted-foreground'>
+            <Label
+              className='text-xs font-medium text-muted-foreground w-fit'
+              title={t('advancedSearch.hints.fieldExists')}
+            >
               {t('advancedSearch.fieldExists')}
             </Label>
-            <div className='flex flex-wrap gap-2'>
+            <div className='grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 items-center'>
               {fields.map((field) => {
                 const value = getFieldExistsValue(field.fieldPath)
                 return (
-                  <div key={field.fieldPath} className='flex items-center gap-1'>
-                    <span className='text-xs'>{(t as (k: string) => string)(field.labelKey)}</span>
+                  <Fragment key={field.fieldPath}>
+                    <span className='text-xs font-medium'>
+                      {(t as (k: string) => string)(field.labelKey)}
+                    </span>
                     <ToggleGroup
                       type='single'
                       value={value ?? ''}
                       onValueChange={(v) => {
                         if (v === 'exists' || v === 'missing') {
-                          updateFieldExists(field.fieldPath, v === 'exists')
+                          updateFieldExists(
+                            field.fieldPath, v === 'exists'
+                          )
                         } else {
-                          onChange({ ...state, fieldExists: state.fieldExists.filter((fe) => fe.field !== field.fieldPath) })
+                          onChange({
+                            ...state,
+                            fieldExists: state.fieldExists.filter(
+                              (fe) => fe.field !== field.fieldPath
+                            )
+                          })
                         }
                       }}
                       className='justify-start'
                     >
-                      <ToggleGroupItem value='exists' className='text-[10px] h-6 px-1.5'>
+                      <ToggleGroupItem
+                        value='exists'
+                        className='text-[10px] h-6 px-1.5'
+                      >
                         {t('advancedSearch.exists')}
                       </ToggleGroupItem>
-                      <ToggleGroupItem value='missing' className='text-[10px] h-6 px-1.5'>
+                      <ToggleGroupItem
+                        value='missing'
+                        className='text-[10px] h-6 px-1.5'
+                      >
                         {t('advancedSearch.missing')}
                       </ToggleGroupItem>
                     </ToggleGroup>
-                  </div>
+                  </Fragment>
                 )
               })}
             </div>
