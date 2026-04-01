@@ -22,8 +22,9 @@ import { useTranslation } from 'react-i18next'
 import { DEFAULT_TIMEZONE } from '@/defaults/defaultTimezone'
 import { Collaboration } from '@/defaults'
 import { defaultLocale } from '@/defaults/locale'
+import { setEnvironment } from '@/shared/getEnvironment'
 
-export type FeatureFlags = Record<string, boolean>
+export type FeatureFlags = Record<string, string | boolean>
 
 /** Registry registry provider state interface */
 export interface RegistryProviderState {
@@ -89,9 +90,10 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
   useEffect(() => {
     const initialize = async () => {
       try {
+        await initI18n()
         const { urls: server, envs, featureFlags } = await getServerEnvs()
         setSystemLanguage(envs.systemLanguage)
-        await initI18n()
+        setEnvironment(envs.environment)
 
         const locale = defaultLocale
 
