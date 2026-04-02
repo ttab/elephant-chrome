@@ -68,7 +68,6 @@
     "i18next": "^25.7.4",
     "i18next-browser-languagedetector": "^8.2.1",
     "jose": "^6.2.2",
-    "lucide-react": "^0.575.0",
     "next-auth": "^5.0.0-beta.30",
     "node-html-parser": "^7.1.0",
     "pino": "^10.3.1",
