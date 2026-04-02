@@ -11,7 +11,7 @@ import { PromptCauseField } from './PromptCauseField'
 import { useTranslation } from 'react-i18next'
 import { useCollaborationDocument } from '@/hooks/useCollaborationDocument'
 import { useYValue } from '@/modules/yjs/hooks'
-import { LoaderIcon, type LucideIcon } from 'lucide-react'
+import { LoaderIcon, type LucideIcon } from '@ttab/elephant-ui/icons'
 
 export const PromptSchedule = ({ prompt, planningId, setStatus, showPrompt, requireCause = false, anchor, typeIcon }: {
   prompt: {

@@ -11,7 +11,7 @@ import type { EventData } from './components/EventTime'
 import type * as Y from 'yjs'
 import type { YDocument } from '@/modules/yjs/hooks'
 import { useTranslation } from 'react-i18next'
-import { CalendarPlus2Icon } from 'lucide-react'
+import { CalendarPlus2Icon } from '@ttab/elephant-ui/icons'
 
 export const EventHeader = ({
   ydoc,

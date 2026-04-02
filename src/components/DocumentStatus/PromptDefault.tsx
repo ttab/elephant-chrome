@@ -3,7 +3,7 @@ import { Prompt } from '../Prompt'
 import { useCallback, useEffect, useState } from 'react'
 import { PromptCauseField } from './PromptCauseField'
 import { useTranslation } from 'react-i18next'
-import type { LucideIcon } from 'lucide-react'
+import type { LucideIcon } from '@ttab/elephant-ui/icons'
 
 export const PromptDefault = ({
   prompt,

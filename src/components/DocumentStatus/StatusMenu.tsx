@@ -18,7 +18,7 @@ import type { View } from '@/types/index'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import { useTranslation } from 'react-i18next'
-import type { LucideIcon } from 'lucide-react'
+import type { LucideIcon } from '@ttab/elephant-ui/icons'
 
 export const StatusMenu = ({ ydoc, onBeforeStatusChange, planningId, typeIcon }: {
   ydoc: YDocument<Y.Map<unknown>>
