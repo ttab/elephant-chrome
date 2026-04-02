@@ -18,7 +18,6 @@ export async function createHast({
 }: {
   ydoc: YDocument<Y.Map<unknown>>
   status: string
-  session: unknown
   planningId?: string
   timeZone: string
   documentStatus: CreateHastDocumentStatus

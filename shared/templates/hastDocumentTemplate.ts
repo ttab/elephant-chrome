@@ -1,11 +1,12 @@
 import { Block, Document } from '@ttab/elephant-api/newsdoc'
+import { getSystemLanguage } from '@/shared/getSystemLanguage.js'
 import type { TemplatePayload } from './index.ts'
 
 export function hastDocumentTemplate(id: string, payload?: TemplatePayload): Document {
   return Document.create({
     uuid: id,
     uri: `core://article/${id}`,
-    language: 'sv-se',
+    language: getSystemLanguage(),
     title: payload?.title,
     type: 'core/article',
     content: [

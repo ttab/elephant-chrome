@@ -223,9 +223,9 @@ export const FlashDialog = (props: {
 
   const handleCreationErrors = (ex: Error) => {
     console.error(ex)
+    const docType = t(isHast ? 'flash:hastLabel' : 'core:documentType.flash')
 
     if (ex?.message === 'FlashCreationError' || ex?.message === 'HastCreationError') {
-      const docType = t(isHast ? 'flash:hastLabel' : 'core:documentType.flash')
       toast.error(
         t('errors:messages.documentCreationFailed', { type: docType }),
         {
@@ -241,16 +241,15 @@ export const FlashDialog = (props: {
     }
 
     if (ex?.message === 'CreateAssignmentError') {
-      const docType2 = t(isHast ? 'flash:hastLabel' : 'core:documentType.flash')
       toast.error(
-        t('errors:messages.documentCreatedAssignmentFailed', { type: docType2 }),
+        t('errors:messages.documentCreatedAssignmentFailed', { type: docType }),
         {
           action: (
             <ToastAction
               documentId={ydoc.id}
               withView='Flash'
               Icon={ZapIcon}
-              label={t('common:actions.openType', { type: docType2 })}
+              label={t('common:actions.openType', { type: docType })}
             />
           )
         })
@@ -442,16 +441,10 @@ export const FlashDialog = (props: {
                 </AlertTitle>
                 <AlertDescription>
                   {!selectedPlanning
-                    ? (
-                        <>{t('flash:alertDescription1')}</>
-                      )
-                    : (
-                        <>
-                          {t('flash:alertDescription2', {
-                            documentType: t(isHast ? 'flash:hastLabel' : 'core:documentType.flash')
-                          })}
-                        </>
-                      )}
+                    ? t('flash:alertDescription1')
+                    : t('flash:alertDescription2', {
+                      documentType: t(isHast ? 'flash:hastLabel' : 'core:documentType.flash')
+                    })}
                 </AlertDescription>
               </Alert>
             </>
@@ -484,7 +477,6 @@ export const FlashDialog = (props: {
                       ? createHast({
                         ydoc,
                         status,
-                        session,
                         planningId: selectedPlanning?.value,
                         timeZone,
                         documentStatus: config.documentStatus,

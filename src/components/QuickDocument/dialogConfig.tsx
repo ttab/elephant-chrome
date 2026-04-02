@@ -4,6 +4,16 @@ import type { DefaultValueOption } from '@/types/index'
 import type { CreateFlashDocumentStatus } from '@/views/Flash/lib/createFlash'
 import i18next from 'i18next'
 
+type QuickDocumentType = 'article' | 'flash' | 'hast'
+
+function getDocumentTypeLabel(type: QuickDocumentType): string {
+  switch (type) {
+    case 'article': return i18next.t('core:documentType.article')
+    case 'hast': return i18next.t('flash:hastLabel')
+    case 'flash': return i18next.t('core:documentType.flash')
+  }
+}
+
 export type PromptConfig = {
   visible: boolean
   key: string
@@ -27,7 +37,7 @@ export const promptConfig = ({
   sendPrompt,
   shouldCreateQuickArticle
 }: {
-  type: 'article' | 'flash' | 'hast'
+  type: QuickDocumentType
   selectedPlanning: Omit<DefaultValueOption, 'payload'> & { payload: unknown } | undefined
   setSavePrompt: Dispatch<SetStateAction<boolean>>
   setSendPrompt: Dispatch<SetStateAction<boolean>>
@@ -39,11 +49,7 @@ export const promptConfig = ({
 }): PromptConfig[] => {
   const isFlash = type === 'flash'
   const isHast = type === 'hast'
-  const documentType = type === 'article'
-    ? i18next.t('core:documentType.article')
-    : isHast
-      ? i18next.t('flash:hastLabel')
-      : i18next.t('core:documentType.flash')
+  const documentType = getDocumentTypeLabel(type)
 
   const flashUsableDescription = shouldCreateQuickArticle
     ? i18next.t('flash:promptDescriptions.alsoTypeCreated')
@@ -122,13 +128,9 @@ export const promptConfig = ({
 
 export const getLabel = (
   documentStatus: CreateFlashDocumentStatus,
-  type: 'article' | 'flash' | 'hast'
+  type: QuickDocumentType
 ): string => {
-  const documentType = type === 'article'
-    ? i18next.t('core:documentType.article')
-    : type === 'hast'
-      ? i18next.t('flash:hastLabel')
-      : i18next.t('core:documentType.flash')
+  const documentType = getDocumentTypeLabel(type)
 
   switch (documentStatus) {
     case 'usable': {

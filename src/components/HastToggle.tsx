@@ -28,7 +28,7 @@ function HastSwitch({ checked, onCheckedChange, size = 'default' }: {
         'focus-visible:ring-ring focus-visible:ring-offset-2',
         'focus-visible:ring-offset-background',
         isLg ? 'h-7 w-12' : 'h-6 w-11',
-        checked ? 'bg-input' : 'bg-input'
+        'bg-input'
       )}
     >
       <span
@@ -36,9 +36,7 @@ function HastSwitch({ checked, onCheckedChange, size = 'default' }: {
           'pointer-events-none flex items-center justify-center',
           'rounded-full bg-background shadow-lg ring-0 transition-transform',
           isLg ? 'h-6 w-6' : 'h-5 w-5',
-          isLg
-            ? checked ? 'translate-x-5' : 'translate-x-0'
-            : checked ? 'translate-x-5' : 'translate-x-0'
+          checked ? 'translate-x-5' : 'translate-x-0'
         )}
       >
         <ZapIcon
