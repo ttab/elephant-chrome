@@ -98,7 +98,6 @@ export const StatusMenuLogic = ({ ydoc, propPlanningId, view }: StatusMenuHeader
           ydoc={ydoc}
           planningId={propPlanningId || planningId}
           onBeforeStatusChange={onBeforeStatusChange}
-          typeIcon={viewConfig.icon}
         />
       )}
     </>

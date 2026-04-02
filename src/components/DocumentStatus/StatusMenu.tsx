@@ -18,11 +18,11 @@ import type { View } from '@/types/index'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import { useTranslation } from 'react-i18next'
-import type { LucideIcon } from '@ttab/elephant-ui/icons'
+import { documentTypeValueFormat } from '@/defaults/documentTypeFormats'
 
-export const StatusMenu = ({ ydoc, onBeforeStatusChange, planningId, typeIcon }: {
+
+export const StatusMenu = ({ ydoc, onBeforeStatusChange, planningId }: {
   ydoc: YDocument<Y.Map<unknown>>
-  typeIcon?: LucideIcon
   onBeforeStatusChange?: (
     status: string,
     data?: Record<string, unknown>
@@ -41,6 +41,7 @@ export const StatusMenu = ({ ydoc, onBeforeStatusChange, planningId, typeIcon }:
   const { viewId } = useView()
   const { t } = useTranslation()
   const viewElementRef = useRef<HTMLElement | null>(null)
+  const icon = documentTypeValueFormat[documentStatus?.type || 'core/article'].icon
 
   useEffect(() => {
     viewElementRef.current = document.getElementById(viewId)
@@ -218,7 +219,7 @@ export const StatusMenu = ({ ydoc, onBeforeStatusChange, planningId, typeIcon }:
               planningId={planningId}
               requireCause={!!documentStatus.checkpoint}
               anchor={viewElementRef.current}
-              typeIcon={typeIcon}
+              typeIcon={icon}
             />
           )}
 
@@ -231,7 +232,7 @@ export const StatusMenu = ({ ydoc, onBeforeStatusChange, planningId, typeIcon }:
               requireCause={requireCause}
               unPublishDocument={unPublishDocument}
               anchor={viewElementRef.current}
-              typeIcon={typeIcon}
+              typeIcon={icon}
             />
           )}
         </>

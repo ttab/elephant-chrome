@@ -13,14 +13,13 @@ export const FactboxHeader = ({ ydoc, asDialog, onDialogClose }: {
   onDialogClose?: () => void
 }): JSX.Element => {
   const { t } = useTranslation('factbox')
-  const typeIcon = BookTextIcon
 
   return (
     <ViewHeader.Root asDialog={asDialog}>
       <ViewHeader.Title
         name='Factbox'
         title={t('title')}
-        icon={typeIcon}
+        icon={BookTextIcon}
         asDialog={asDialog}
       />
       <ViewHeader.Content className='justify-start'>
@@ -33,7 +32,6 @@ export const FactboxHeader = ({ ydoc, asDialog, onDialogClose }: {
               <>
                 <StatusMenu
                   ydoc={ydoc}
-                  typeIcon={typeIcon}
                 />
                 <MetaSheet ydoc={ydoc} />
               </>

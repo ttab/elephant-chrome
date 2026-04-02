@@ -23,14 +23,13 @@ export const PlanningHeader = ({ ydoc, asDialog, onDialogClose, session, provide
   const [planningData] = useYValue<PlanningData>(ydoc.ele, 'meta.core/planning-item[0].data')
   const [planningTitle] = useYValue<string>(ydoc.ele, 'root.title')
   const { t } = useTranslation()
-  const typeIcon = GanttChartSquareIcon
 
   return (
     <ViewHeader.Root asDialog={asDialog}>
       <ViewHeader.Title
         name='Plannings'
         title={(!asDialog) ? t('views:plannings.label.singular') : t('common:actions.createNew', { documentType: t('core:documentType.planning') })}
-        icon={typeIcon}
+        icon={GanttChartSquareIcon}
         asDialog={asDialog}
         ydoc={ydoc}
       />
@@ -44,7 +43,6 @@ export const PlanningHeader = ({ ydoc, asDialog, onDialogClose, session, provide
             {!asDialog && ydoc && (
               <StatusMenu
                 ydoc={ydoc}
-                typeIcon={typeIcon}
               />
             )}
 
