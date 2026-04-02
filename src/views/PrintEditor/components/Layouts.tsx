@@ -4,6 +4,7 @@ import { useYValue, type YDocument } from '@/modules/yjs/hooks'
 import type { EleBlock } from '@/shared/types'
 import { LayoutBoxHeader } from './Header'
 import { LayoutBox } from './LayoutBox'
+import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
 
 export const Layouts = ({ ydoc }: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -11,6 +12,7 @@ export const Layouts = ({ ydoc }: {
   const [layouts, setLayouts] = useYValue<EleBlock[]>(ydoc.ele, 'meta.tt/print-article[0].meta.tt/article-layout')
   const [openedLayoutId, setOpenedLayoutId] = useState<string | null>(null)
   const [selected, setSelected] = useState<Array<string>>([])
+  const [documentStatus] = useWorkflowStatus({ ydoc })
 
   if (!layouts) {
     return null // Spinner
@@ -32,7 +34,9 @@ export const Layouts = ({ ydoc }: {
     setLayouts(filteredLayouts)
   }
 
-  return (
+  if (documentStatus?.name === 'unpublished') {
+    return null
+  } else return (
     <aside className='top-0 sticky flex flex-col gap-3 items-end z-50 w-[2.75rem] flex-none self-start @4xl/view:col-span-4 @4xl/view:w-full @4xl/view:items-stretch mr-2.5'>
       <LayoutBoxHeader
         ydoc={ydoc}

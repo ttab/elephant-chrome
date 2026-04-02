@@ -1,4 +1,4 @@
-import { useView } from '@/hooks'
+import { useView, useWorkflowStatus } from '@/hooks'
 import { useEffect, useRef, type JSX } from 'react'
 import { ViewHeader } from '@/components/View'
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
@@ -14,6 +14,8 @@ export const EditorHeader = ({ ydoc, flowName }: {
 }): JSX.Element => {
   const { viewId } = useView()
   const containerRef = useRef<HTMLElement | null>(null)
+  const [documentStatus] = useWorkflowStatus({ ydoc })
+
   useEffect(() => {
     containerRef.current = window.document.getElementById(viewId)
   }, [viewId])
@@ -27,7 +29,7 @@ export const EditorHeader = ({ ydoc, flowName }: {
           <div className='max-w-[1040px] mx-auto flex flex-row gap-2 justify-between items-center w-full'>
             <ArticleTitle ydoc={ydoc} />
             <div className='flex flex-row gap-2 justify-end items-center'>
-              <AddNote ydoc={ydoc} role='internal' />
+              {documentStatus?.name !== 'unpublished' && <AddNote ydoc={ydoc} role='internal' />}
               {!!ydoc.id && (
                 <>
                   <ViewHeader.RemoteUsers ydoc={ydoc} />

@@ -17,7 +17,8 @@ import { FactboxPlugin } from '../../plugins/Factboxes'
 import {
   useQuery,
   useLink,
-  useRegistry
+  useRegistry,
+  useWorkflowStatus
 } from '@/hooks'
 import type { ViewMetadata, ViewProps } from '@/types'
 import { EditorHeader } from './PrintEditorHeader'
@@ -104,6 +105,7 @@ function EditorWrapper(props: ViewProps & {
   const openImageSearch = useLink('ImageSearch')
   const openFactboxes = useLink('Factboxes')
   const { t, i18n } = useTranslation()
+  const [documentStatus] = useWorkflowStatus({ ydoc })
 
   const activeLanguage = i18n.resolvedLanguage
 
@@ -158,6 +160,7 @@ function EditorWrapper(props: ViewProps & {
         content={content}
         plugins={configuredPlugins}
         lang={documentLanguage}
+        readOnly={documentStatus?.name === 'unpublished'}
       >
         <EditorContainer ydoc={ydoc} />
       </BaseEditor.Root>
