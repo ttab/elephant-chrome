@@ -33,6 +33,7 @@ export interface Status {
   checkpoint?: string
   cause?: string
   type?: string
+  usableId?: bigint
 }
 
 export class Repository {

@@ -23,6 +23,11 @@
   },
   "placeholders": {
     "flashTitle": "Flash headline",
-    "sluggForTypes": "Slug for {{type1}} and {{type2}}"
-  }
+    "sluggForTypes": "Slug for {{type1}} and {{type2}}",
+    "hastTitle": "Hast title"
+  },
+  "createHastAlertTitle": "You are creating a new hast",
+  "sendAsHast": "Send as hast",
+  "sendAsHastDescription": "When published, this article will be sent as a hast.",
+  "hastLabel": "hast"
 }

@@ -27,7 +27,7 @@ export const promptConfig = ({
   sendPrompt,
   shouldCreateQuickArticle
 }: {
-  type: 'article' | 'flash'
+  type: 'article' | 'flash' | 'hast'
   selectedPlanning: Omit<DefaultValueOption, 'payload'> & { payload: unknown } | undefined
   setSavePrompt: Dispatch<SetStateAction<boolean>>
   setSendPrompt: Dispatch<SetStateAction<boolean>>
@@ -37,37 +37,64 @@ export const promptConfig = ({
   sendPrompt: boolean
   shouldCreateQuickArticle?: boolean
 }): PromptConfig[] => {
-  const documentType = type === 'article' ? i18next.t('core:documentType.article') : i18next.t('core:documentType.flash')
   const isFlash = type === 'flash'
+  const isHast = type === 'hast'
+  const documentType = type === 'article'
+    ? i18next.t('core:documentType.article')
+    : isHast
+      ? i18next.t('flash:hastLabel')
+      : i18next.t('core:documentType.flash')
 
-  const flashUsableDescription = shouldCreateQuickArticle ? i18next.t('flash:promptDescriptions.alsoTypeCreated') : ''
-  const articleUsableDescription = i18next.t('flash:promptDescriptions.alsoTypeCreatedWithApproved')
+  const flashUsableDescription = shouldCreateQuickArticle
+    ? i18next.t('flash:promptDescriptions.alsoTypeCreated')
+    : ''
+  const articleUsableDescription = i18next.t(
+    'flash:promptDescriptions.alsoTypeCreatedWithApproved'
+  )
 
   return [
     {
       visible: sendPrompt,
       key: 'send',
-      title: isFlash
-        ? i18next.t(`flash:titles.createAndSendType`, { type: documentType })
-        : i18next.t(`flash:titles.approveType`, { type: documentType }),
+      title: isFlash || isHast
+        ? i18next.t('flash:titles.createAndSendType', { type: documentType })
+        : i18next.t('flash:titles.approveType', { type: documentType }),
       description: !selectedPlanning
-        ? i18next.t(`flash:promptDescriptions.newPlanningWillBeCreated`, { type: documentType })
-        : i18next.t(`flash:promptDescriptions.typeWillBeAddedToPlanning`, { type: documentType, planningName: selectedPlanning.label }),
+        ? i18next.t('flash:promptDescriptions.newPlanningWillBeCreated', {
+          type: documentType
+        })
+        : i18next.t('flash:promptDescriptions.typeWillBeAddedToPlanning', {
+          type: documentType,
+          planningName: selectedPlanning.label
+        }),
       secondaryDescription: isFlash
         ? flashUsableDescription
-        : articleUsableDescription,
+        : isHast
+          ? undefined
+          : articleUsableDescription,
       secondaryLabel: i18next.t('common:actions.abort'),
-      primaryLabel: isFlash ? i18next.t('common:actions.publish') : i18next.t('common:actions.approve'),
-      documentStatus: (isFlash ? 'usable' : 'approved') as CreateArticleDocumentStatus,
+      primaryLabel: isFlash || isHast
+        ? i18next.t('common:actions.publish')
+        : i18next.t('common:actions.approve'),
+      documentStatus: (isFlash || isHast
+        ? 'usable'
+        : 'approved') as CreateArticleDocumentStatus,
       setPrompt: setSendPrompt
     },
     {
       visible: donePrompt,
       key: 'done',
-      title: i18next.t(`flash:titles.createAndMarkTypeAsDone`, { type: documentType }),
+      title: i18next.t('flash:titles.createAndMarkTypeAsDone', {
+        type: documentType
+      }),
       description: !selectedPlanning
-        ? i18next.t(`flash:promptDescriptions.newPlanningWillBeCreated`, { type: documentType })
-        : i18next.t(`flash:promptDescriptions.typeWillBeAddedToPlanning`, { type: documentType, planningName: selectedPlanning.label }),
+        ? i18next.t('flash:promptDescriptions.newPlanningWillBeCreated', {
+          type: documentType
+        })
+        : i18next.t('flash:promptDescriptions.typeWillBeAddedToPlanning', {
+          type: documentType,
+          planningName: selectedPlanning.label
+        }),
       secondaryLabel: i18next.t('common:actions.abort'),
       primaryLabel: i18next.t('common:actions.markAsDone'),
       documentStatus: 'done' as CreateArticleDocumentStatus,
@@ -76,10 +103,15 @@ export const promptConfig = ({
     {
       visible: savePrompt,
       key: 'save',
-      title: i18next.t(`common:actions.saveType`, { type: documentType }),
+      title: i18next.t('common:actions.saveType', { type: documentType }),
       description: !selectedPlanning
-        ? i18next.t(`flash:promptDescriptions.newPlanningWillBeCreated`, { type: documentType })
-        : i18next.t(`flash:promptDescriptions.typeWillBeAddedToPlanning`, { type: documentType, planningName: selectedPlanning.label }),
+        ? i18next.t('flash:promptDescriptions.newPlanningWillBeCreated', {
+          type: documentType
+        })
+        : i18next.t('flash:promptDescriptions.typeWillBeAddedToPlanning', {
+          type: documentType,
+          planningName: selectedPlanning.label
+        }),
       secondaryLabel: i18next.t('common:actions.abort'),
       primaryLabel: i18next.t('common:actions.save'),
       documentStatus: undefined,
@@ -88,12 +120,21 @@ export const promptConfig = ({
   ]
 }
 
-export const getLabel = (documentStatus: CreateFlashDocumentStatus, type: 'article' | 'flash'): string => {
-  const documentType = type === 'article' ? i18next.t('core:documentType.article') : i18next.t('core:documentType.flash')
+export const getLabel = (
+  documentStatus: CreateFlashDocumentStatus,
+  type: 'article' | 'flash' | 'hast'
+): string => {
+  const documentType = type === 'article'
+    ? i18next.t('core:documentType.article')
+    : type === 'hast'
+      ? i18next.t('flash:hastLabel')
+      : i18next.t('core:documentType.flash')
 
   switch (documentStatus) {
     case 'usable': {
-      return `${documentType} ${type === 'flash' ? i18next.t('core:status.sent') : i18next.t('core:status.usable')}`
+      return type === 'flash' || type === 'hast'
+        ? i18next.t('core:status.typeSent', { type: documentType })
+        : `${documentType} ${i18next.t('core:status.usable')}`
     }
     case 'approved': {
       return i18next.t('core:status.typeApproved', { type: documentType })

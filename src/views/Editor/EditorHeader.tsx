@@ -17,6 +17,7 @@ import { useYValue } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import { useTranslation } from 'react-i18next'
 import { documentTypeValueFormat } from '@/defaults/documentTypeFormats'
+import { HastToggle } from '@/components/HastToggle'
 
 export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: propPlanningId }: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -108,6 +109,9 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
               {!readOnly && <AddNote ydoc={ydoc} />}
               {!readOnly && documentType !== 'core/editorial-info'
                 && <Newsvalue ydoc={ydoc} path='meta.core/newsvalue[0].value' />}
+              {!readOnly && documentType === 'core/article' && (
+                <HastToggle ele={ydoc.ele} usableId={workflowStatus?.usableId} />
+              )}
               {!!wireBlocks?.length && (
                 <Button
                   variant='ghost'

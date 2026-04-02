@@ -11,8 +11,13 @@ import { PromptCauseField } from './PromptCauseField'
 import { useTranslation } from 'react-i18next'
 import { useCollaborationDocument } from '@/hooks/useCollaborationDocument'
 import { useYValue } from '@/modules/yjs/hooks'
+import { HastToggle } from '@/components/HastToggle'
+import type * as Y from 'yjs'
 
-export const PromptSchedule = ({ prompt, planningId, setStatus, showPrompt, requireCause = false }: {
+export const PromptSchedule = ({
+  prompt, planningId, setStatus, showPrompt, requireCause = false,
+  ele: documentEle, usableId, documentType
+}: {
   prompt: {
     status: string
   } & WorkflowTransition
@@ -22,6 +27,9 @@ export const PromptSchedule = ({ prompt, planningId, setStatus, showPrompt, requ
     status: string
   } & WorkflowTransition) | undefined>>
   requireCause?: boolean
+  ele?: Y.Map<unknown>
+  usableId?: bigint
+  documentType?: string
 }) => {
   const { timeZone } = useRegistry()
   const { loading, document } = useCollaborationDocument({ documentId: planningId })
@@ -116,6 +124,10 @@ export const PromptSchedule = ({ prompt, planningId, setStatus, showPrompt, requ
           )}
 
         </div>
+
+        {documentEle && documentType === 'core/article' && (
+          <HastToggle ele={documentEle} usableId={usableId} variant='full' className='w-full' />
+        )}
       </div>
     </Prompt>
   )
