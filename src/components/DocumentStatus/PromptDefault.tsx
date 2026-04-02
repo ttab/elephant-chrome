@@ -32,8 +32,6 @@ export const PromptDefault = ({
   const isUnpublishPrompt = prompt.status === 'unpublished'
   const { t } = useTranslation('common')
 
-  const title = prompt.title
-
   const showCauseField = isUnpublishPrompt
     ? false
     : requireCause || cause
@@ -71,10 +69,10 @@ export const PromptDefault = ({
 
   return (
     <Prompt
-      title={prompt.promptTitle || title}
+      title={prompt.promptTitle || prompt.title}
       anchor={anchor}
       description={prompt.description}
-      primaryLabel={title}
+      primaryLabel={prompt.title}
       secondaryLabel={t('actions.abort')}
       onPrimary={handleSubmit}
       onSecondary={() => {

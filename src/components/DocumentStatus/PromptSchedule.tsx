@@ -53,7 +53,7 @@ export const PromptSchedule = ({ prompt, planningId, setStatus, showPrompt, requ
 
   return (
     <Prompt
-      title={prompt.title}
+      title={prompt.promptTitle || prompt.title}
       anchor={anchor}
       primaryLabel={prompt.title}
       secondaryLabel={t('common:actions.abort')}
