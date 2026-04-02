@@ -47,9 +47,15 @@ export const Prompt = ({
   const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null)
 
   useLayoutEffect(() => {
-    if (anchor) {
-      setAnchorRect(anchor.getBoundingClientRect())
-    }
+    if (!anchor) return
+
+    const update = () => setAnchorRect(anchor.getBoundingClientRect())
+
+    update()
+    const observer = new ResizeObserver(update)
+    observer.observe(anchor)
+
+    return () => observer.disconnect()
   }, [anchor])
 
 
