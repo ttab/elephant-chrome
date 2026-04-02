@@ -35,6 +35,7 @@ type ErrorHandler = (error: Error) => void
 export interface SocketStatus {
   level: 'info' | 'warning' | 'error'
   message: string
+  params?: Record<string, unknown>
   error?: Error
 }
 
@@ -55,6 +56,8 @@ export class RepositorySocket {
   #connectingPromise: Promise<void> | null = null
   #authenticatingPromise: Promise<void> | null = null
   #statusListeners = new Set<(status: SocketStatus | null) => void>()
+  #offlineHandler: (() => void) | null = null
+  #onlineHandler: (() => void) | null = null
 
   constructor(url: string, repository: Repository) {
     this.#url = url
@@ -91,6 +94,7 @@ export class RepositorySocket {
 
         this.#ws.onopen = () => {
           this.#emitStatus(null)
+          this.#listenForNetworkState()
           settled = true
           this.#authenticated = false
           resolve()
@@ -104,7 +108,7 @@ export class RepositorySocket {
           } catch (error) {
             this.#emitStatus({
               level: 'error',
-              message: 'Kunde inte läsa meddelande från servern.',
+              message: 'socket.parseError',
               error: error instanceof Error
                 ? error
                 : new Error(String(error))
@@ -140,8 +144,8 @@ export class RepositorySocket {
         }
 
         this.#ws.onerror = () => {
-          const error = new Error('Ett fel inträffade i anslutningen.')
-          this.#emitStatus({ level: 'error', message: error.message, error })
+          const error = new Error('WebSocket connection error')
+          this.#emitStatus({ level: 'error', message: 'socket.connectionError', error })
           for (const handler of this.#errorHandlers) {
             handler(error)
           }
@@ -155,7 +159,7 @@ export class RepositorySocket {
         this.#ws.onclose = (event) => {
           // Ignore Going away
           if (event.code !== 1001) {
-            this.#emitStatus({ level: 'warning', message: `Anslutningen stängdes : ${event.code}` })
+            this.#emitStatus({ level: 'warning', message: 'socket.connectionClosed', params: { code: event.code } })
           }
 
           this.#authenticated = false
@@ -199,7 +203,10 @@ export class RepositorySocket {
     const accessToken = this.#accessToken
 
     if (!accessToken) {
-      this.#emitStatus({ level: 'error', message: 'Accesstoken saknas, kan inte ansluta.' })
+      this.#emitStatus({
+        level: 'error',
+        message: 'socket.missingAccessToken'
+      })
       this.#setReconnectTimer(undefined)
       return
     }
@@ -208,9 +215,17 @@ export class RepositorySocket {
       return
     }
 
+    if (!navigator.onLine) {
+      return
+    }
+
     const maxAttempts = 10
     if (this.#reconnectAttempts >= maxAttempts) {
-      this.#emitStatus({ level: 'error', message: `Max antal återanslutningsförsök (${maxAttempts}) nåddes.` })
+      this.#emitStatus({
+        level: 'error',
+        message: 'socket.maxReconnectAttempts',
+        params: { max: maxAttempts }
+      })
       return
     }
 
@@ -233,12 +248,51 @@ export class RepositorySocket {
             listener()
           }
         } catch (error) {
-          this.#emitStatus({ level: 'error', message: 'Kunde inte återansluta.', error: error instanceof Error ? error : new Error(String(error)) })
+          this.#emitStatus({
+            level: 'error',
+            message: 'socket.reconnectFailed',
+            error: error instanceof Error
+              ? error
+              : new Error(String(error))
+          })
           this.#setReconnectTimer(undefined)
           this.#reconnect()
         }
       })()
     }, delay))
+  }
+
+  #listenForNetworkState(): void {
+    if (this.#offlineHandler) return
+
+    this.#offlineHandler = () => {
+      this.#emitStatus({
+        level: 'warning',
+        message: 'socket.networkOffline'
+      })
+    }
+
+    this.#onlineHandler = () => {
+      this.#emitStatus(null)
+      if (this.#shouldReconnect && !this.isConnected) {
+        this.#reconnectAttempts = 0
+        this.#reconnect()
+      }
+    }
+
+    window.addEventListener('offline', this.#offlineHandler)
+    window.addEventListener('online', this.#onlineHandler)
+  }
+
+  #removeNetworkListeners(): void {
+    if (this.#offlineHandler) {
+      window.removeEventListener('offline', this.#offlineHandler)
+      this.#offlineHandler = null
+    }
+    if (this.#onlineHandler) {
+      window.removeEventListener('online', this.#onlineHandler)
+      this.#onlineHandler = null
+    }
   }
 
   #setReconnectTimer(timer: number | undefined): void {
@@ -249,7 +303,7 @@ export class RepositorySocket {
     this.#reconnectTimer = timer
     if (was !== !!timer) {
       this.#emitStatus(timer
-        ? { level: 'info', message: 'Återansluter... ' }
+        ? { level: 'info', message: 'socket.reconnecting' }
         : null
       )
     }
@@ -259,6 +313,7 @@ export class RepositorySocket {
     this.#shouldReconnect = false
     this.#reconnectAttempts = 0
     this.#setReconnectTimer(undefined)
+    this.#removeNetworkListeners()
     this.#rejectPendingHandlers('WebSocket disconnected')
     this.#connectingPromise = null
     this.#authenticatingPromise = null

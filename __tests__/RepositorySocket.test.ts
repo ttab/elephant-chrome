@@ -560,9 +560,9 @@ describe('RepositorySocket', () => {
 
     ws.onerror?.(new Event('error'))
 
-    await expect(connectPromise).rejects.toThrow('Ett fel inträffade i anslutningen.')
+    await expect(connectPromise).rejects.toThrow('WebSocket connection error')
     expect(errorHandler).toHaveBeenCalledWith(expect.any(Error))
-    expect((errorHandler.mock.calls[0][0] as Error).message).toBe('Ett fel inträffade i anslutningen.')
+    expect((errorHandler.mock.calls[0][0] as Error).message).toBe('WebSocket connection error')
   })
 
   it('reconnect handles failed re-authentication gracefully', async () => {
@@ -617,7 +617,7 @@ describe('RepositorySocket', () => {
     expect(statusSpy).toHaveBeenCalledWith(
       expect.objectContaining({
         level: 'error',
-        message: 'Kunde inte återansluta.',
+        message: 'socket.reconnectFailed',
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         error: expect.any(Error)
       })

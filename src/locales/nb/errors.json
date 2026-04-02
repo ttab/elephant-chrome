@@ -67,5 +67,16 @@
     },
     "systemMessages": {
         "connectionFailed": "Kunne ikke koble til meldingstjenesten. Last inn vinduet på nytt."
+    },
+    "socket": {
+        "parseError": "Kunne ikke lese melding fra serveren.",
+        "connectionError": "Det oppstod en tilkoblingsfeil.",
+        "connectionClosed": "Tilkoblingen ble lukket: {{code}}",
+        "missingAccessToken": "Tilgangstoken mangler, kan ikke koble til.",
+        "maxReconnectAttempts": "Maksimalt antall gjentilkoblingsforsøk ({{max}}) nådd.",
+        "reconnectFailed": "Kunne ikke koble til på nytt.",
+        "networkOffline": "Nettverket er nede, venter på tilkobling...",
+        "reconnecting": "Kobler til på nytt...",
+        "notRealtime": "Visningen oppdateres ikke i sanntid."
     }
 }
