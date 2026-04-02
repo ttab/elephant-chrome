@@ -20,6 +20,11 @@
     "noTitle": "Ingen tittel",
     "deselectHint": "for å fjerne merking av valgte telegrammer"
   },
+  "banner": {
+    "offline": "Du er frakoblet — telegrammer gjenopptas ved tilkobling",
+    "streamErrors": "{{count}} strøm kunne ikke oppdateres",
+    "streamErrors_other": "{{count}} strømmer kunne ikke oppdateres"
+  },
   "filter": {
     "freeText": "Fritekst",
     "searchOptions": "Søk alternativ",

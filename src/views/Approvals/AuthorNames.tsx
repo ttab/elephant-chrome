@@ -27,8 +27,10 @@ export const AuthorNames = ({ item }: { item: PreprocessedApprovalData }): JSX.E
 
   // Get last status update and author
   const lastUpdated = entries[0]?.[1]
-  const lastStatusUpdateAuthor = useMemo(() => getAuthorBySub(authors, lastUpdated?.creator),
-    [authors, lastUpdated?.creator])
+  const lastStatusUpdateAuthor = useMemo(
+    () => getAuthorBySub(authors, lastUpdated?.creator),
+    [authors, lastUpdated?.creator]
+  )
 
   // Get display and full text for tooltip
   const { display, full } = useMemo(

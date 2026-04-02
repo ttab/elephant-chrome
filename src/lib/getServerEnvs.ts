@@ -14,9 +14,10 @@ interface ServerUrls {
 
 interface ServerEnvs {
   systemLanguage: string
+  environment: string
 }
 
-type FeatureFlags = Record<string, boolean>
+type FeatureFlags = Record<string, string | boolean>
 
 interface ServerConfig {
   urls: ServerUrls
@@ -54,13 +55,18 @@ export async function getServerEnvs(): Promise<ServerConfig> {
       throw new Error('missing \'systemLanguage\' server environment variable')
     }
 
+    if (!data['environment'] || typeof data['environment'] !== 'string') {
+      throw new Error('missing \'environment\' server environment variable')
+    }
+
     return {
       urls: {
         ...urls,
         repositoryEventsUrl: new URL('/sse', urls['repositoryUrl'])
       } as ServerUrls,
       envs: {
-        systemLanguage: data['systemLanguage']
+        systemLanguage: data['systemLanguage'],
+        environment: typeof data['environment'] === 'string' ? data['environment'] : ''
       },
       featureFlags: {
         hasPrint: data['hasPrint'] ? !!data['hasPrint'] : false
