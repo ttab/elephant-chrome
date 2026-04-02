@@ -40,7 +40,12 @@ export const StatusMenu = ({ ydoc, onBeforeStatusChange, planningId, typeIcon }:
   const history = useHistory()
   const { viewId } = useView()
   const { t } = useTranslation()
-  const viewElement = document.getElementById(viewId)
+  const viewElementRef = useRef<HTMLElement | null>(null)
+
+  useEffect(() => {
+    viewElementRef.current = document.getElementById(viewId)
+  }, [viewId])
+
 
   // Read workflow specifications from current type and current status
   const isWorkflow = documentStatus?.type
@@ -212,7 +217,7 @@ export const StatusMenu = ({ ydoc, onBeforeStatusChange, planningId, typeIcon }:
               setStatus={(...args) => void setStatus(...args)}
               planningId={planningId}
               requireCause={!!documentStatus.checkpoint}
-              anchor={viewElement}
+              anchor={viewElementRef.current}
               typeIcon={typeIcon}
             />
           )}
@@ -225,7 +230,7 @@ export const StatusMenu = ({ ydoc, onBeforeStatusChange, planningId, typeIcon }:
               currentCause={documentStatus.cause}
               requireCause={requireCause}
               unPublishDocument={unPublishDocument}
-              anchor={viewElement}
+              anchor={viewElementRef.current}
               typeIcon={typeIcon}
             />
           )}
