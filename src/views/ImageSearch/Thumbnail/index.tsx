@@ -74,7 +74,7 @@ export const Thumbnail = ({ hit }: {
           }}
         />
       </div>
-      <DialogContent className='z-50 gap-0 p-0 overflow-hidden max-w-3xl'>
+      <DialogContent className='z-50 gap-0 p-0 overflow-hidden w-fit md:w-fit max-w-3xl min-w-80'>
         <DialogClose className='absolute right-3 top-3 z-10 rounded-full bg-background/80 backdrop-blur-sm p-1.5 shadow-sm hover:bg-background transition-colors'>
           <XIcon size={16} strokeWidth={1.75} />
           <span className='sr-only'>{t('imageSearch.labels.close')}</span>

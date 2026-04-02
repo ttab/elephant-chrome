@@ -1,5 +1,6 @@
 import type { ImageSearchHit } from '../lib/types'
 import { DialogDescription, DialogHeader, DialogTitle } from '@ttab/elephant-ui'
+import { ExternalLinkIcon } from '@ttab/elephant-ui/icons'
 import type { JSX } from 'react'
 
 export const Preview = ({ hit }: {
@@ -7,11 +8,19 @@ export const Preview = ({ hit }: {
 }): JSX.Element => {
   return (
     <div className='flex flex-col'>
-      <div className='bg-muted flex items-center justify-center'>
+      <div className='relative bg-muted flex items-center justify-center'>
         <img
           src={hit.previewUrl}
-          className='max-h-[60vh] w-full object-contain'
+          className='max-h-[60vh] max-w-full'
         />
+        <a
+          href={hit.previewUrl}
+          target='_blank'
+          rel='noopener noreferrer'
+          className='absolute right-2 bottom-2 rounded-full bg-background/80 backdrop-blur-sm p-1.5 shadow-sm hover:bg-background transition-colors'
+        >
+          <ExternalLinkIcon size={16} strokeWidth={1.75} />
+        </a>
       </div>
       <div className='p-4 space-y-2'>
         <DialogHeader>
