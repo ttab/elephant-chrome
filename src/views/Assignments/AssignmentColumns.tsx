@@ -139,7 +139,7 @@ export function assignmentColumns<Ns extends Namespace>({ authors = [], locale, 
         data.fields['document.title']?.values?.[0] ?? ''
       ].join(' ').trim(),
       cell: ({ row }) => {
-        const assignmentTitle = row.getValue<string>('title') || ''
+        const assignmentTitle = row.original.fields['document.meta.core_assignment.title'].values[0] || ''
         const planningTitle = row.original.fields['document.title'].values[0] || ''
         const assignees = (row.getValue<string[]>('assignees') || []).map((assigneeId) => {
           return authors.find((author) => author.id === assigneeId)?.name || ''

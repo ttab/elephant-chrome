@@ -2,7 +2,7 @@ import { type ttninjs } from '@ttab/api-client'
 import { DialogDescription, DialogTitle } from '@ttab/elephant-ui'
 import { toast } from 'sonner'
 import { useEffect, useRef, type Dispatch, type JSX, type SetStateAction } from 'react'
-import { XIcon } from 'lucide-react'
+import { XIcon } from '@ttab/elephant-ui/icons'
 import { useTranslation } from 'react-i18next'
 
 const BASE_URL = import.meta.env.BASE_URL || ''

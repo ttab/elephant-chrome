@@ -1,5 +1,5 @@
 import { useCategories } from '@/hooks/useCategories'
-import { TagIcon } from 'lucide-react'
+import { TagIcon } from '@ttab/elephant-ui/icons'
 import { FilterBadge } from '../FilterBadge'
 
 export const CategoryFilterValue = ({ values }: {

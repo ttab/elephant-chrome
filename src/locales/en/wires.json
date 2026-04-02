@@ -20,6 +20,11 @@
     "noTitle": "No title",
     "deselectHint": "to deselect selected wires"
   },
+  "banner": {
+    "offline": "You are offline — wire streams will resume when reconnected",
+    "streamErrors": "{{count}} stream failed to update",
+    "streamErrors_other": "{{count}} wire streams failed to update"
+  },
   "filter": {
     "freeText": "Free text",
     "searchOptions": "Search options",

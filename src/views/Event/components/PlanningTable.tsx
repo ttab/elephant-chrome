@@ -59,33 +59,28 @@ export const PlanningTable = ({ ydoc, asDialog }: {
 
   useRepositoryEvents('core/planning-item', (event) => {
     if (createdDocumentRef.current[0] === event.uuid && event.type === 'core/planning-item' && event.event === 'document') {
-      void (async () => {
-        try {
-          if (Array.isArray(data) && newItem?.title) {
-            const createdId = createdDocumentRef.current[0]
-            // Check if the createdId is already in the data, if so, noop
-            if (typeof createdId === 'string' && data.some((planning) => planning.id === createdId)) {
-              return
-            }
-            await mutate([...data, {
-              source: {},
-              score: 1,
-              sort: [''],
-              fields: {
-                'document.title': {
-                  values: [newItem?.title]
-                },
-                'document.rel.event.uuid': {
-                  values: [ydoc.id]
-                }
-              },
-              id: newItem?.uuid
-            } as PlanningType], { revalidate: false })
-          }
-        } catch (error) {
-          console.warn('Failed to update planning table', error)
+      if (Array.isArray(data) && newItem?.title) {
+        const createdId = createdDocumentRef.current[0]
+        // Check if the createdId is already in the data, if so, noop
+        if (typeof createdId === 'string' && data.some((planning) => planning.id === createdId)) {
+          return
         }
-      })()
+        mutate([...data, {
+          source: {},
+          score: 1,
+          sort: [''],
+          fields: {
+            'document.title': {
+              values: [newItem?.title]
+            },
+            'document.rel.event.uuid': {
+              values: [ydoc.id]
+            }
+          },
+          id: newItem?.uuid
+        } as PlanningType], { revalidate: false })
+          .catch((error) => console.warn('Failed to update planning table', error))
+      }
     }
   })
 

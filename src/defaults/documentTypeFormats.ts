@@ -52,7 +52,7 @@ const assignment: DocumentTypeFormat = {
 const article: DocumentTypeFormat = {
   'core/article': {
     icon: PenBoxIcon,
-    get label() { return i18n.t('quickArticle:title') },
+    get label() { return i18n.t('shared:assignmentTypes.text') },
     key: 'Article',
     color: '#50BEBF',
     readonly: {

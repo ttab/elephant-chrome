@@ -1,5 +1,6 @@
 import { createDatastoreProvider } from '../lib/createDatastoreProvider'
 import { type IDBAuthor } from '../types'
+import { normalizeUserUri } from '@/shared/userUri'
 
 export const { Context: CoreAuthorContext, Provider: CoreAuthorProvider }
   = createDatastoreProvider<IDBAuthor>({
@@ -14,6 +15,10 @@ export const { Context: CoreAuthorContext, Provider: CoreAuthorProvider }
     ],
     transformer: (hit) => {
       const { id, fields: f } = hit
+      const uri = f['document.rel.same_as.uri']?.values
+        ?.find((m: string) => m?.startsWith('core://user/') || m?.startsWith('keycloak://user/'))
+        ?.trim()
+
       return {
         id,
         name: f['document.title']?.values?.[0]?.trim() ?? '',
@@ -21,8 +26,7 @@ export const { Context: CoreAuthorContext, Provider: CoreAuthorProvider }
         lastName: f['document.meta.core_author.data.lastName']?.values?.[0]?.trim() ?? '',
         initials: f['document.meta.core_author.data.initials']?.values?.[0]?.trim() ?? '',
         email: f['document.meta.core_contact_info.data.email']?.values?.[0]?.trim() ?? '',
-        sub: f['document.rel.same_as.uri']?.values
-          ?.find((m: string) => m?.startsWith('core://user/sub'))?.trim() ?? ''
+        sub: uri ? normalizeUserUri(uri) : ''
       }
     }
   })
