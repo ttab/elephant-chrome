@@ -447,6 +447,13 @@ export const Wires = (): JSX.Element => {
         <ViewHeader.Action />
       </ViewHeader.Root>
 
+      <View.Banner>
+        <StreamsBanner
+          isOnline={isOnline}
+          streamErrorCount={streamErrorCount}
+          selectedWires={selectedWires}
+        />
+      </View.Banner>
       <View.Content variant='no-scroll' className='relative'>
         <div
           data-wires-content
@@ -516,11 +523,6 @@ export const Wires = (): JSX.Element => {
             )}
         </div>
 
-        <StreamsBanner
-          isOnline={isOnline}
-          streamErrorCount={streamErrorCount}
-          selectedWires={selectedWires}
-        />
       </View.Content>
     </View.Root>
   )

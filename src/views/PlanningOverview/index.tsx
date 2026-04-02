@@ -14,6 +14,7 @@ import { useInitFilters } from '@/hooks/useInitFilters'
 import { useSession } from 'next-auth/react'
 import { PlanningList } from './PlanningList'
 import type { PreprocessedPlanningData } from './preprocessor'
+import { SocketBanner } from '@/hooks/useRepositorySocket/components/SocketBanner'
 import { useTranslation } from 'react-i18next'
 
 const meta: ViewMetadata = {
@@ -40,7 +41,6 @@ export const Plannings = (): JSX.Element => {
   const { data: session } = useSession()
   const user = session?.user.sub
   const { t } = useTranslation()
-
   const columns = useMemo(() =>
     planningListColumns({ sections, authors, user }, t), [sections, authors, user, t])
 
@@ -73,6 +73,10 @@ export const Plannings = (): JSX.Element => {
 
           <ViewHeader.Action />
         </ViewHeader.Root>
+
+        <View.Banner>
+          <SocketBanner />
+        </View.Banner>
 
         <View.Content>
           <TabsContent value='list' className='mt-0'>

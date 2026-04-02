@@ -14,6 +14,7 @@ import { useOrganisers } from '@/hooks/useOrganisers'
 import { useRegistry } from '@/hooks/useRegistry'
 import { useInitFilters } from '@/hooks/useInitFilters'
 import type { PreprocessedEventData } from './preprocessor'
+import { SocketBanner } from '@/hooks/useRepositorySocket/components/SocketBanner'
 import { useTranslation } from 'react-i18next'
 
 const meta: ViewMetadata = {
@@ -37,7 +38,6 @@ export const Events = (): JSX.Element => {
   const sections = useSections()
   const [query] = useQuery()
   const { t } = useTranslation()
-
   const organisers = useOrganisers()
   const { locale } = useRegistry()
   const columns = useMemo(() =>
@@ -73,6 +73,10 @@ export const Events = (): JSX.Element => {
 
           <ViewHeader.Action />
         </ViewHeader.Root>
+
+        <View.Banner>
+          <SocketBanner />
+        </View.Banner>
 
         <View.Content>
           <TabsContent value='list' className='mt-0'>

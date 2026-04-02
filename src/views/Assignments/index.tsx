@@ -17,6 +17,7 @@ import { useQuery } from '@/hooks/useQuery'
 import { newLocalDate } from '@/shared/datetime'
 import { useSections } from '@/hooks/useSections'
 import { useInitFilters } from '@/hooks/useInitFilters'
+import { SocketBanner } from '@/hooks/useRepositorySocket/components/SocketBanner'
 import { useTranslation } from 'react-i18next'
 
 const meta: ViewMetadata = {
@@ -43,7 +44,6 @@ export const Assignments = (): JSX.Element => {
   const { data: session } = useSession()
   const sections = useSections()
   const { t } = useTranslation()
-
   const assigneeId = useMemo(
     () => getAuthorBySub(authors, session?.user?.sub)?.id,
     [authors, session?.user?.sub]
@@ -91,6 +91,10 @@ export const Assignments = (): JSX.Element => {
 
           <ViewHeader.Action />
         </ViewHeader.Root>
+
+        <View.Banner>
+          <SocketBanner />
+        </View.Banner>
 
         <View.Content>
           <TabsContent value='list' className='mt-0'>

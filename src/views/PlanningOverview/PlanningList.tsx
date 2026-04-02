@@ -8,7 +8,6 @@ import { preprocessPlanningData, PLANNING_SUBSET } from './preprocessor'
 import { Error as ErrorView } from '../Error'
 import { NewItems } from '@/components/Table/NewItems'
 import { Toolbar } from '@/components/Table/Toolbar'
-import { SocketStatus } from '@/hooks/useRepositorySocket/lib/components/SocketStatus'
 import { useTranslation } from 'react-i18next'
 
 export const PlanningList = ({ columns }: {
@@ -17,7 +16,7 @@ export const PlanningList = ({ columns }: {
   const { from, to } = useDateRange()
   const { t } = useTranslation()
 
-  const { error, isLoading, status } = useRepositorySocket({
+  const { error, isLoading } = useRepositorySocket({
     type: 'core/planning-item',
     from,
     to,
@@ -43,7 +42,6 @@ export const PlanningList = ({ columns }: {
         opensWith: 'Planning'
       })}
     >
-      <SocketStatus status={status} />
       <Toolbar />
       <NewItems.Root>
         <NewItems.Table
