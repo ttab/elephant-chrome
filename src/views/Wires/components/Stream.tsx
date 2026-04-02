@@ -7,6 +7,7 @@ import { SortingV1 } from '@ttab/elephant-api/index'
 import { StreamEntry } from './StreamEntry'
 import { XIcon } from '@ttab/elephant-ui/icons'
 import { Button } from '@ttab/elephant-ui'
+import { cn } from '@ttab/elephant-ui/utils'
 import { useTranslation } from 'react-i18next'
 import {
   useReactTable,
@@ -41,7 +42,9 @@ export const Stream = memo(({
   previewWireId,
   onPreviewWireUpdate,
   focusedWireId,
-  onFocusedWireUpdate
+  onFocusedWireUpdate,
+  isOnline,
+  onStreamError
 }: {
   wireStream: WireStream
   onFocus?: (item: Wire, event: React.FocusEvent<HTMLElement>) => void
@@ -57,6 +60,8 @@ export const Stream = memo(({
   onPreviewWireUpdate?: (wire: Wire) => void
   focusedWireId?: string
   onFocusedWireUpdate?: (wire: Wire) => void
+  isOnline: boolean
+  onStreamError?: (streamId: string, hasError: boolean) => void
 }): JSX.Element => {
   const { t } = useTranslation('wires')
   const [page, setPage] = useState(1)
@@ -97,7 +102,7 @@ export const Stream = memo(({
   const sort = useMemo(() => [SortingV1.create({ field: 'modified', desc: true })], [])
   const options = useMemo(() => ({ setTableData: true, subscribe: true }), [])
 
-  const { data, isLoading } = useDocuments<Wire, WireFields>({
+  const { data, isLoading, error } = useDocuments<Wire, WireFields>({
     documentType: 'tt/wire',
     size: PAGE_SIZE,
     query,
@@ -107,6 +112,15 @@ export const Stream = memo(({
     options,
     disabled: skipFetch
   })
+
+  // Report error state changes to parent (cleanup clears on unmount, e.g. stream removal)
+  const hasError = !!error
+  useEffect(() => {
+    onStreamError?.(wireStream.uuid, hasError)
+    return () => {
+      onStreamError?.(wireStream.uuid, false)
+    }
+  }, [hasError, wireStream.uuid, onStreamError])
 
   // Merge new data with existing data and reconcile updates from SWR
   useEffect(() => {
@@ -541,7 +555,10 @@ export const Stream = memo(({
     <div
       ref={streamContainerRef}
       data-stream-id={wireStream.uuid}
-      className='flex flex-col h-full snap-start snap-always w-110 shrink-0 border rounded-md overflow-hidden'
+      className={cn(
+        'flex flex-col h-full snap-start snap-always w-110 shrink-0 border rounded-md overflow-hidden',
+        (!isOnline || !!error) && 'opacity-50 pointer-events-none'
+      )}
     >
       <div className='flex-none bg-background flex items-center justify-between py-1 px-4 border-b'>
         <div className='flex gap-2'>

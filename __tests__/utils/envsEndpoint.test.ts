@@ -1,16 +1,6 @@
 import { GET } from '../../src-srv/api/envs/index'
 
 describe('GET /api/envs', () => {
-  const originalEnv = process.env
-
-  beforeEach(() => {
-    process.env = { ...originalEnv }
-  })
-
-  afterEach(() => {
-    process.env = originalEnv
-  })
-
   it('returns all URLs and systemLanguage from env vars', async () => {
     process.env.INDEX_URL = 'https://index.example.com'
     process.env.WS_URL = 'https://ws.example.com'
@@ -22,6 +12,7 @@ describe('GET /api/envs', () => {
     process.env.BABOON_URL = 'https://baboon.example.com'
     process.env.SYSTEM_LANGUAGE = 'nb-NO'
     process.env.HAS_PRINT = 'true'
+    process.env.ENVIRONMENT = 'test'
 
     const result = await GET() as { payload: Record<string, string> }
 
@@ -35,7 +26,8 @@ describe('GET /api/envs', () => {
       faroUrl: 'https://faro.example.com',
       baboonUrl: 'https://baboon.example.com',
       systemLanguage: 'nb-NO',
-      hasPrint: 'true'
+      hasPrint: 'true',
+      environment: 'test'
     })
   })
 
