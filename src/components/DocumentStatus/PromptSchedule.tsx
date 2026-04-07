@@ -2,7 +2,7 @@ import type { WorkflowTransition } from '@/defaults/workflowSpecification'
 import { Prompt } from '../Prompt'
 import { useRegistry } from '@/hooks/useRegistry'
 import { useEffect, useState } from 'react'
-import { Label } from '@ttab/elephant-ui'
+import { Calendar, Label, Popover, PopoverContent, PopoverTrigger } from '@ttab/elephant-ui'
 import { TimeInput } from '../TimeInput'
 import { toZonedTime } from 'date-fns-tz'
 import { format } from 'date-fns'
@@ -23,13 +23,14 @@ export const PromptSchedule = ({ prompt, planningId, setStatus, showPrompt, requ
   } & WorkflowTransition) | undefined>>
   requireCause?: boolean
 }) => {
-  const { timeZone } = useRegistry()
+  const { timeZone, locale } = useRegistry()
   const { loading, document } = useCollaborationDocument({ documentId: planningId })
   const ele = document ? document.getMap('ele') : undefined
   const [publishDate] = useYValue<Date>(ele, 'meta.core/planning-item[0].data.start_date') as Date[]
   const now = new Date()
   const [time, setTime] = useState(now)
   const [cause, setCause] = useState<string | undefined>()
+  const [calendarOpen, setCalendarOpen] = useState(false)
   const { t } = useTranslation()
 
   useEffect(() => {
@@ -96,16 +97,36 @@ export const PromptSchedule = ({ prompt, planningId, setStatus, showPrompt, requ
           </div>
 
           <div className='flex flex-col gap-2'>
-            <Label htmlFor='ScheduledTime'>{t('shared:status_menu.planningDate')}</Label>
+            <Label>{t('shared:status_menu.setDate')}</Label>
             {loading && planningId
               ? (
                   <LoaderIcon size={14} strokeWidth={1.75} className='animate-spin mx-auto' />
                 )
               : (
-                  <span className='border py-2 px-3 h-8 text-sm rounded flex flex-row gap-4 items-center justify-between bg-muted'>
-                    {format(toZonedTime(time, timeZone), 'yyyy-MM-dd')}
-                    <CalendarIcon size={14} strokeWidth={1.75} />
-                  </span>
+                  <Popover modal={true} open={calendarOpen} onOpenChange={setCalendarOpen}>
+                    <PopoverTrigger asChild>
+                      <span className='border py-2 px-3 h-8 text-sm rounded flex flex-row gap-4 items-center justify-between bg-background cursor-pointer hover:bg-muted'>
+                        {format(toZonedTime(time, timeZone), 'yyyy-MM-dd')}
+                        <CalendarIcon size={14} strokeWidth={1.75} />
+                      </span>
+                    </PopoverTrigger>
+                    <PopoverContent className='w-auto p-0' onEscapeKeyDown={(event) => event?.stopPropagation()}>
+                      <Calendar
+                        mode='single'
+                        locale={locale.module}
+                        selected={time}
+                        defaultMonth={time}
+                        onSelect={(selectedDate) => {
+                          if (selectedDate) {
+                            const updated = new Date(selectedDate)
+                            updated.setHours(time.getHours(), time.getMinutes(), 0, 0)
+                            setTime(updated)
+                          }
+                          setCalendarOpen(false)
+                        }}
+                      />
+                    </PopoverContent>
+                  </Popover>
                 )}
           </div>
 

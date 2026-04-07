@@ -33,6 +33,7 @@
     "pickCause": "Choose cause...",
     "planningDate": "Date in planning",
     "setTime": "Set time",
+    "setDate": "Set date",
     "asSavePlaceholder": "Publish new information",
     "causes": {
       "development_short": "DEV",
