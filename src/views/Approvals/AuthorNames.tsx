@@ -1,7 +1,7 @@
 import type { AssignmentInterface } from '@/hooks/index/useAssignments'
 import { useAuthors } from '@/hooks/useAuthors'
 import { useMemo, type JSX } from 'react'
-import { UserIcon, PenIcon, AwardIcon } from 'lucide-react'
+import { UserIcon, PenIcon, AwardIcon } from '@ttab/elephant-ui/icons'
 import type { IDBAuthor } from 'src/datastore/types'
 import type { StatusMeta } from '@/types'
 import type { Status, StatusOverviewItem } from '@ttab/elephant-api/repository'
