@@ -31,7 +31,7 @@ function HastSwitch({ checked, onCheckedChange, size = 'default' }: {
         'focus-visible:ring-ring focus-visible:ring-offset-2',
         'focus-visible:ring-offset-background',
         isLg ? 'h-7 w-12' : 'h-6 w-11',
-        checked ? 'bg-red-200 dark:bg-red-900/50' : 'bg-input dark:bg-input/50'
+        checked ? 'bg-red-200 dark:bg-red-900/50' : 'bg-input dark:bg-background'
       )}
     >
       <span
@@ -93,7 +93,7 @@ export const HastToggle = ({ ydoc, usableId, className, variant = 'compact' }: {
   if (variant === 'full') {
     return (
       <div className={cn(
-        'flex items-center justify-between gap-4 rounded-md border p-3 mt-4',
+        'flex items-center justify-between gap-4 rounded-md border p-3 mt-4 dark:bg-muted',
         isHast ? 'border-foreground' : 'border-muted-foreground',
         className
       )}
