@@ -63,7 +63,7 @@ export const PrintArticlesHeader = (): JSX.Element => {
         <DateChanger type='Print' />
       </div>
       <div className='flex flex-row gap-2 items-center justify-end'>
-        <DictionaryButton variant='outline' />
+        <DictionaryButton variant='ghost' />
         <ViewHeader.Action>
         </ViewHeader.Action>
       </div>
