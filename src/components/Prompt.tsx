@@ -4,6 +4,7 @@ import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogH
 import type { MouseEvent } from 'react'
 import { createPortal } from 'react-dom'
 import type { LucideIcon } from '@ttab/elephant-ui/icons'
+import { cn } from '@ttab/elephant-ui/utils'
 
 
 interface PromptProps extends PropsWithChildren {
@@ -68,7 +69,6 @@ export const Prompt = ({
       document.body.style.pointerEvents = 'auto'
     }
   }, [])
-
   return (
     <>
       {anchorRect && createPortal(
@@ -79,7 +79,7 @@ export const Prompt = ({
             top: anchorRect.top,
             width: anchorRect.width,
             height: anchorRect.height,
-            zIndex: 49, // behind built-in overlay (z-50)
+            zIndex: 60,
             boxShadow: '0 0 0 100vmax rgba(0,0,0,0.3)', // darkens everything outside
             pointerEvents: 'none'
           }}
@@ -88,8 +88,8 @@ export const Prompt = ({
       )}
       <Dialog open={open} onOpenChange={setOpen} modal={true}>
         <DialogContent
-          className='z-50'
-          style={dialogStyle}
+          className={cn('z-50', 'max-w-lg')}
+          style={{ ...dialogStyle, ...(anchorRect && anchorRect.width < 512 && { maxWidth: anchorRect.width }) }}
           onPointerDownOutside={() => {
             if (onSecondary) {
               onSecondary()
