@@ -1,6 +1,5 @@
 
 import { type ColumnDef } from '@tanstack/react-table'
-import { type Planning } from '@/shared/schemas/planning'
 import { Newsvalue } from '@/components/Table/Items/Newsvalue'
 import { Title } from '@/components/Table/Items/Title'
 import { Assignees } from '@/components/Table/Items/Assignees'
@@ -21,13 +20,26 @@ import { SectionBadge } from '@/components/DataItem/SectionBadge'
 import { type IDBAuthor, type IDBSection } from 'src/datastore/types'
 import { FacetedFilter } from '@/components/Commands/FacetedFilter'
 import { getNestedFacetedUniqueValues } from '@/components/Table/lib/getNestedFacetedUniqueValues'
+import { getStatusFromMeta } from '@/lib/getStatusFromMeta'
+import type { PreprocessedPlanningData } from './preprocessor'
 import type { TFunction, Namespace } from 'i18next'
 import type { TranslationKey } from '@/types/i18next.d'
 
-export function planningListColumns<Ns extends Namespace>({ sections = [], authors = [] }: {
+export function planningListColumns<Ns extends Namespace>({ sections = [], authors = [], user }: {
   sections?: IDBSection[]
   authors?: IDBAuthor[]
-}, t: TFunction<Ns>): Array<ColumnDef<Planning>> {
+  user?: string
+}, t: TFunction<Ns>): Array<ColumnDef<PreprocessedPlanningData>> {
+  const sectionOptions = sections.map((_) => ({
+    value: _.id,
+    label: _.title
+  }))
+
+  const authorOptions = authors.map((a) => ({
+    value: a.id,
+    label: a.name
+  }))
+
   return [
     {
       id: 'documentStatus',
@@ -49,22 +61,16 @@ export function planningListColumns<Ns extends Namespace>({ sections = [], autho
         }
       },
       accessorFn: (data) => {
-        const currentStatus = data?.fields['document.meta.status']?.values[0]
-        const isUnpublished = data?.fields['heads.usable.version']?.values[0] === '-1'
-        if (currentStatus === 'usable' && isUnpublished) {
-          const lastModified = data?.fields['modified']?.values[0]
-          const lastUsableCreated = data?.fields['heads.usable.created']?.values[0]
-
-          if (lastModified > lastUsableCreated) {
-            return 'draft'
-          }
-          return 'unpublished'
+        if (!data.meta) {
+          return 'draft'
         }
-        return currentStatus
+
+        return getStatusFromMeta(data.meta, false).name
       },
       cell: ({ row }) => {
         const status = row.getValue<string>('documentStatus')
-        return <DocumentStatus type='core/planning-item' status={status} />
+        const updated = row.original.__updater && user !== row.original.__updater.sub
+        return <DocumentStatus type='core/planning-item' status={status} updated={updated} />
       },
       filterFn: (row, id, value: string[]) =>
         value.includes(row.getValue(id)),
@@ -83,7 +89,8 @@ export function planningListColumns<Ns extends Namespace>({ sections = [], autho
         columnIcon: SignalHighIcon,
         className: 'flex-none hidden @3xl/view:[display:revert]'
       },
-      accessorFn: (data) => data.fields['document.meta.core_newsvalue.value']?.values[0],
+      accessorFn: (data: PreprocessedPlanningData) =>
+        data._preprocessed?.newsvalue,
       cell: ({ row }) => {
         const value: string = row.getValue('newsvalue') || ''
         const newsvalue = NewsvalueMap[value]
@@ -101,26 +108,22 @@ export function planningListColumns<Ns extends Namespace>({ sections = [], autho
       meta: {
         name: t('core:labels.title'),
         columnIcon: PenIcon,
-        className: 'flex-1 w-[200px]'
+        className: 'flex-1 min-w-0'
       },
-      accessorFn: (data) => data.fields['document.title']?.values[0],
+      accessorFn: (data) =>
+        data._preprocessed?.title ?? data.document?.title,
       cell: ({ row }) => {
-        const slugline = row.original.fields['document.meta.tt_slugline.value']?.values[0]
-        const title = row.getValue('title')
+        const slugline = (row.original)._preprocessed?.slugline
+        const title = row.getValue<string>('title')
 
-        return <Title title={title as string} slugline={slugline} />
+        return <Title title={title} slugline={slugline} />
       },
       enableGrouping: false
     },
     {
       id: 'section',
       meta: {
-        options: sections.map((_) => {
-          return {
-            value: _.id,
-            label: _.title
-          }
-        }),
+        options: sectionOptions,
         Filter: ({ column, setSearch }) => (
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
@@ -135,11 +138,10 @@ export function planningListColumns<Ns extends Namespace>({ sections = [], autho
           </span>
         )
       },
-      accessorFn: (data) => {
-        return data.fields['document.rel.section.uuid']?.values[0]
-      },
+      accessorFn: (data) =>
+        data._preprocessed?.sectionUuid,
       cell: ({ row }) => {
-        const sectionTitle = row.original.fields['document.rel.section.title']?.values[0]
+        const sectionTitle = row.original._preprocessed?.sectionTitle
         return (
           <>
             {sectionTitle && <SectionBadge title={sectionTitle} color='bg-[#BD6E11]' />}
@@ -152,7 +154,7 @@ export function planningListColumns<Ns extends Namespace>({ sections = [], autho
     {
       id: 'assignees',
       meta: {
-        options: authors.map((a) => ({ value: a.id, label: a.name })),
+        options: authorOptions,
         Filter: ({ column, setSearch }) => (
           <FacetedFilter column={column} setSearch={setSearch} facetFn={() => getNestedFacetedUniqueValues(column)} />
         ),
@@ -165,13 +167,13 @@ export function planningListColumns<Ns extends Namespace>({ sections = [], autho
         }
       },
       getGroupingValue: (data) => {
-        const assignees = data.fields['document.meta.core_assignment.rel.assignee.uuid']?.values ?? []
+        const assignees = data._preprocessed?.assignees ?? []
         return assignees
           .map((uuid) => authors.find((a) => a.id === uuid)?.name ?? '??')
           .sort((a, b) => a.localeCompare(b))
           .join(',')
       },
-      accessorFn: (data) => data.fields['document.meta.core_assignment.rel.assignee.uuid']?.values,
+      accessorFn: (data) => data._preprocessed?.assignees || [],
       cell: ({ row }) => {
         const assignees = (row.getValue<string[]>('assignees') || []).map((assigneeId) =>
           authors.find((author) => author.id === assigneeId)?.name || '')
@@ -216,11 +218,12 @@ export function planningListColumns<Ns extends Namespace>({ sections = [], autho
           )
         }
       },
-      accessorFn: (data) => data.fields['document.meta.core_assignment.meta.core_assignment_type.value']?.values,
+      accessorFn: (data) => data._preprocessed?.types || [],
       cell: ({ row }) => {
         const data = getAssignmentTypes().filter(
           (assignmentType) => (row.getValue<string[]>('type') || []).includes(assignmentType.value)
         )
+
         if (data.length === 0) {
           return null
         }
@@ -238,7 +241,7 @@ export function planningListColumns<Ns extends Namespace>({ sections = [], autho
         className: 'flex-none'
       },
       cell: ({ row }) => {
-        const deliverableUuids = row.original.fields['document.meta.core_assignment.rel.deliverable.uuid']?.values || []
+        const deliverableUuids = row.original._preprocessed?.deliverableUuids || []
         const planningId = row.original.id
 
         return <Actions deliverableUuids={deliverableUuids} planningId={planningId} />

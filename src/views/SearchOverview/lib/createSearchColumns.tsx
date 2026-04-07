@@ -1,7 +1,7 @@
 import { parseDate, dateToReadableShort } from '@/shared/datetime'
 import type { LocaleData } from '@/types/index'
-import { eventTableColumns } from '@/views/EventsOverview/EventsListColumns'
-import { planningListColumns } from '@/views/PlanningOverview/PlanningListColumns'
+import { eventTableColumns } from '@/views/SearchOverview/SearchEventsColumns'
+import { planningListColumns } from '@/views/SearchOverview/SearchPlanningColumns'
 import type { IDBAuthor, IDBOrganiser, IDBSection } from 'src/datastore/types'
 import search from '@/hooks/index/useDocuments/queries/views/search'
 import type { SearchKeys } from '@/hooks/index/useDocuments/queries/views/search'
@@ -54,9 +54,9 @@ export const createSearchColumns = (params: SearchColumnsParams, t: TFunction) =
 function getColumns({ searchType, ...params }: SearchColumnsParams, t: TFunction) {
   switch (searchType) {
     case 'plannings':
-      return planningListColumns(params, t)
+      return planningListColumns(params)
     case 'events':
-      return eventTableColumns(params, t)
+      return eventTableColumns(params)
     case 'articles':
       return articleColumns(params, t)
     default:

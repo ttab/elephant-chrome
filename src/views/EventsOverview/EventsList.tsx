@@ -1,65 +1,54 @@
-import { useCallback, useMemo, type JSX } from 'react'
-import { useOrganisers, useQuery, useRegistry, useSections } from '@/hooks'
-import type { EventFields } from '@/shared/schemas/event'
-import { type Event, fields } from '@/shared/schemas/event'
-import { constructQuery } from '@/hooks/index/useDocuments/queries/views/events'
-import { eventTableColumns } from '@/views/EventsOverview/EventsListColumns'
-
+import { type JSX } from 'react'
 import { Table } from '@/components/Table'
-import { useDocuments } from '@/hooks/index/useDocuments'
-import { SortingV1 } from '@ttab/elephant-api/index'
-import { toast } from 'sonner'
-import { getUTCDateRange } from '@/shared/datetime'
+import { useDateRange, useRepositorySocket } from '@/hooks'
+import type { ColumnDef } from '@tanstack/react-table'
+import { TableSkeleton } from '@/components/Table/Skeleton'
+import type { PreprocessedEventData } from './preprocessor'
+import { preprocessEventData, EVENTS_SUBSET } from './preprocessor'
+import { Error as ErrorView } from '../Error'
+import { NewItems } from '@/components/Table/NewItems'
+import { Toolbar } from '@/components/Table/Toolbar'
 import { useTranslation } from 'react-i18next'
 
-export const EventsList = (): JSX.Element => {
-  const sections = useSections()
-  const organisers = useOrganisers()
-  const { locale, timeZone } = useRegistry()
+export const EventsList = ({ columns }: {
+  columns: ColumnDef<PreprocessedEventData>[]
+}): JSX.Element => {
+  const { from, to } = useDateRange()
   const { t } = useTranslation()
-  const [query] = useQuery()
-  const { from, to } = useMemo(() =>
-    getUTCDateRange(query?.from ? new Date(query?.from as string) : new Date(), timeZone), [query, timeZone])
 
-  const { error } = useDocuments<Event, EventFields>({
-    documentType: 'core/event',
-    query: constructQuery({ from, to }),
-    fields,
-    sort: [
-      SortingV1.create({ field: 'document.meta.core_newsvalue.value', desc: true }),
-      SortingV1.create({ field: 'document.meta.core_event.data.start', desc: false })
-    ],
-    options: {
-      aggregatePages: true,
-      setTableData: true,
-      withStatus: true,
-      withPlannings: true,
-      subscribe: true
-    }
-
+  const { error, isLoading } = useRepositorySocket({
+    type: 'core/event',
+    from,
+    to,
+    subset: [...EVENTS_SUBSET],
+    asTable: true,
+    preprocessor: preprocessEventData
   })
 
-  const columns = useMemo(() => eventTableColumns({ sections, organisers, locale }, t), [sections, organisers, locale, t])
-
-  const onRowSelected = useCallback((row?: Event) => {
-    if (row) {
-      console.info(`Selected planning item ${row.id}`)
-    } else {
-      console.info('Deselected row')
-    }
-    return row
-  }, [])
-
   if (error) {
-    console.error('Error fetching event items:', error)
-    toast.error(t('errors:toasts.getEventsFailed'))
+    console.error('Error fetching events:', error)
+    return <ErrorView message={t('errors:toasts.getEventsFailed')} error={error} />
+  }
+
+  if (isLoading) {
+    return <TableSkeleton columns={columns} />
   }
 
   return (
-    <Table
-      type='Event'
+    <Table<PreprocessedEventData, unknown>
       columns={columns}
-      onRowSelected={onRowSelected}
-    />
+      resolveNavigation={(row) => ({
+        id: row.id,
+        opensWith: 'Event'
+      })}
+    >
+      <Toolbar />
+      <NewItems.Root>
+        <NewItems.Table
+          header={t('planning:yourNewType', { type: t('views:events.label.plural') })}
+          type='Event'
+        />
+      </NewItems.Root>
+    </Table>
   )
 }

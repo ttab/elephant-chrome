@@ -43,8 +43,7 @@ export interface CommandArgs {
 
 export interface TableProviderState<TData> {
   table: Table<TData>
-  setData: Dispatch<TData[]>
-  loading: boolean
+  setData: Dispatch<SetStateAction<TData[]>>
   command: CommandArgs
   type: View
   filters: ColumnFiltersState
@@ -69,10 +68,13 @@ export const TableProvider = <T,>({
   type: View
   initialState?: Partial<TableState>
 }>): JSX.Element => {
-  const [data, setData] = useState<T[] | null>(null)
-
+  const [data, setData] = useState<T[]>([])
   const [rowSelection, setRowSelection] = useState({})
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({ startTime: false, modified: false, date: false })
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
+    startTime: false,
+    modified: false,
+    date: false
+  })
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(initialState?.columnFilters || [])
   const [sorting, setSorting] = useState<SortingState>(initialState?.sorting || [])
 
@@ -114,7 +116,7 @@ export const TableProvider = <T,>({
     enableSubRowSelection: true,
     enableSorting: true,
     onRowSelectionChange: useCallback(setRowSelection, [setRowSelection]),
-    onGroupingChange: useCallback(setGrouping, [setGrouping]),
+    onGroupingChange: setGrouping,
     onSortingChange: useCallback(setSorting, [setSorting]),
     onGlobalFilterChange: (updater: Updater<GlobalFilterTableState>) => {
       setQuery({
@@ -149,11 +151,13 @@ export const TableProvider = <T,>({
     sorting: sorting,
     selectedRow: rowSelection,
     setData,
-    loading: data == null,
     type,
     command,
     grouping
-  }), [table, columnFilters, rowSelection, command, data, type, sorting, grouping])
+  // data invalidates the memo so context consumers re-render when table
+  // data changes — the table instance itself is a stable reference.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }), [table, data, columnFilters, rowSelection, command, type, sorting, grouping])
 
   return (
     <TableContext.Provider value={value}>

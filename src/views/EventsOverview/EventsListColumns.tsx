@@ -1,5 +1,4 @@
 import { type ColumnDef } from '@tanstack/react-table'
-import { type Event } from '@/shared/schemas/event'
 import { Newsvalue } from '@/components/Table/Items/Newsvalue'
 import { type MouseEvent } from 'react'
 import {
@@ -8,11 +7,11 @@ import {
   ShapesIcon,
   Clock3Icon,
   NavigationIcon,
-  NotebookPenIcon,
   EditIcon,
   DeleteIcon,
   CircleCheckIcon,
-  BookUserIcon
+  BookUserIcon,
+  NotebookPenIcon
 } from '@ttab/elephant-ui/icons'
 import type { DotDropdownMenuActionItem } from '@/components/ui/DotMenu'
 import { DotMenu } from '@/components/ui/DotMenu'
@@ -20,12 +19,14 @@ import { Newsvalues, NewsvalueMap, getPlanningEventStatuses } from '@/defaults'
 import { Time } from '@/components/Table/Items/Time'
 import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
 import { Title } from '@/components/Table/Items/Title'
-import { Status } from '@/components/Table/Items/Status'
 import { SectionBadge } from '@/components/DataItem/SectionBadge'
 import { type IDBOrganiser, type IDBSection } from 'src/datastore/types'
 import { FacetedFilter } from '@/components/Commands/FacetedFilter'
 import { Tooltip } from '@ttab/elephant-ui'
 import type { LocaleData } from '@/types/index'
+import { getStatusFromMeta } from '@/lib/getStatusFromMeta'
+import type { PreprocessedEventData } from './preprocessor'
+import { Status } from '@/components/Table/Items/Status'
 import type { TFunction, Namespace } from 'i18next'
 import i18next from 'i18next'
 
@@ -33,7 +34,17 @@ export function eventTableColumns<Ns extends Namespace>({ sections = [], organis
   sections?: IDBSection[]
   organisers?: IDBOrganiser[]
   locale: LocaleData
-}, t: TFunction<Ns>): Array<ColumnDef<Event>> {
+}, t: TFunction<Ns>): Array<ColumnDef<PreprocessedEventData>> {
+  const sectionOptions = sections.map((_) => ({
+    value: _.id,
+    label: _.title
+  }))
+
+  const organiserOptions = organisers.map((o) => ({
+    label: o.title,
+    value: o.title
+  }))
+
   return [
     {
       id: 'startTime',
@@ -57,9 +68,9 @@ export function eventTableColumns<Ns extends Namespace>({ sections = [], organis
           )
         }
       },
-      accessorFn: (data) => {
-        const startTime = data?.fields['document.meta.core_event.data.start']?.values?.[0]
-        const endTime = data?.fields['document.meta.core_event.data.end']?.values?.[0]
+      accessorFn: (data: PreprocessedEventData) => {
+        const startTime = data._preprocessed?.eventStart
+        const endTime = data._preprocessed?.eventEnd
 
         if (!startTime || !endTime) {
           return 'N/A'
@@ -93,18 +104,11 @@ export function eventTableColumns<Ns extends Namespace>({ sections = [], organis
         )
       },
       accessorFn: (data) => {
-        const currentStatus = data?.fields['document.meta.status']?.values[0]
-        const isUnpublished = data?.fields['heads.usable.version']?.values[0] === '-1'
-        if (currentStatus === 'usable' && isUnpublished) {
-          const lastModified = data?.fields['modified']?.values[0]
-          const lastUsableCreated = data?.fields['heads.usable.created']?.values[0]
-
-          if (lastModified > lastUsableCreated) {
-            return 'draft'
-          }
-          return 'unpublished'
+        if (!data.meta) {
+          return 'draft'
         }
-        return currentStatus
+
+        return getStatusFromMeta(data.meta, false).name
       },
       cell: ({ row }) => {
         const status = row.getValue<string>('documentStatus')
@@ -123,7 +127,7 @@ export function eventTableColumns<Ns extends Namespace>({ sections = [], organis
         columnIcon: SignalHighIcon,
         className: 'flex-none hidden @3xl/view:[display:revert]'
       },
-      accessorFn: (data) => data?.fields['document.meta.core_newsvalue.value']?.values?.[0] || 'N/A',
+      accessorFn: (data: PreprocessedEventData) => data._preprocessed?.newsvalue,
       cell: ({ row }) => {
         const value: string = row.getValue('newsvalue') || ''
         const newsvalue = NewsvalueMap[value]
@@ -144,16 +148,11 @@ export function eventTableColumns<Ns extends Namespace>({ sections = [], organis
           </span>
         )
       },
-      accessorFn: (data) => data.fields['document.title']?.values[0],
+      accessorFn: (data) => data._preprocessed?.title ?? data.document?.title,
       cell: ({ row }) => {
-        const slugline = row.original.fields['document.meta.tt_slugline.value']?.values[0]
         const title = row.getValue('title')
-        const cancelled = row.original.fields['document.meta.core_event.data.cancelled']?.values[0]
-        if (cancelled) {
-          const isCancelled = cancelled === 'true'
-          return <Title title={title as string} slugline={slugline} cancelled={isCancelled} />
-        }
-        return <Title title={title as string} slugline={slugline} />
+        const cancelled = row.original._preprocessed?.cancelled
+        return <Title title={title as string} cancelled={!!cancelled} />
       },
       enableGrouping: false
     },
@@ -163,7 +162,7 @@ export function eventTableColumns<Ns extends Namespace>({ sections = [], organis
         name: t('views:events.columnLabels.organiser'),
         columnIcon: BookUserIcon,
         className: 'flex-none hidden @4xl/view:[display:revert]',
-        options: organisers.map((o) => ({ label: o.title, value: o.title })),
+        options: organiserOptions,
         display: (value: string) => (
           <span>
             {value === 'undefined' ? t('common:misc.missing') : value}
@@ -173,13 +172,13 @@ export function eventTableColumns<Ns extends Namespace>({ sections = [], organis
           <FacetedFilter column={column} setSearch={setSearch} />
         )
       },
-      accessorFn: (data) => data?.fields['document.rel.organiser.title']?.values[0],
+      accessorFn: (data: PreprocessedEventData) => data._preprocessed?.organiserTitle,
       cell: ({ row }) => {
         const value: string = row?.getValue('organiser') || ''
 
         if (value) {
           return (
-            <Tooltip content={`${t ? t('views:events.tooltips.organiser') : ''}: ${value}`}>
+            <Tooltip content={`${t('views:events.tooltips.organiser')}: ${value}`}>
               <div className='border-slate-200 rounded-md mr-2 p-1 truncate'>{value}</div>
             </Tooltip>
           )
@@ -193,12 +192,7 @@ export function eventTableColumns<Ns extends Namespace>({ sections = [], organis
     {
       id: 'section',
       meta: {
-        options: sections.map((_) => {
-          return {
-            value: _.id,
-            label: _.title
-          }
-        }),
+        options: sectionOptions,
         name: t('views:events.columnLabels.section'),
         columnIcon: ShapesIcon,
         className: 'flex-none w-[115px] hidden @4xl/view:[display:revert]',
@@ -213,19 +207,18 @@ export function eventTableColumns<Ns extends Namespace>({ sections = [], organis
         ),
         quickFilter: true
       },
-      accessorFn: (data) => data.fields['document.rel.section.uuid']?.values[0],
+      accessorFn: (data: PreprocessedEventData) => data._preprocessed?.sectionUuid,
       cell: ({ row }) => {
-        const sectionTitle = row.original.fields['document.rel.section.title']?.values[0]
-        return (
-          <>
-            {sectionTitle && <SectionBadge title={sectionTitle} color='bg-[#BD6E11]' />}
-          </>
-        )
+        const sectionTitle = row.original._preprocessed?.sectionTitle
+        return <SectionBadge title={sectionTitle} color='bg-[#BD6E11]' />
       },
       filterFn: (row, id, value: string[]) =>
         value.includes(row.getValue(id))
     },
     {
+      // TODO: planning_status data (_relatedPlannings) is not yet available
+      // in PreprocessedEventData. Extend the events preprocessor subset to
+      // include related planning information to make this column functional.
       id: 'planning_status',
       meta: {
         Filter: ({ column, setSearch }) => (
@@ -240,13 +233,10 @@ export function eventTableColumns<Ns extends Namespace>({ sections = [], organis
             {value === 'planned' ? t('event:status.planned') : t('event:status.notPlanned')}
           </span>
         )
-
       },
-      accessorFn: (data) => Array.isArray(data?._relatedPlannings)
-        ? 'planned'
-        : 'unplanned',
+      accessorFn: () => 'unplanned',
       cell: ({ row }) => {
-        const _status = row.original._relatedPlannings?.[0]
+        const _status = row.getValue<string>('planning_status')
         return <Status status={_status} />
       },
       filterFn: (row, id, value: string[]) =>
@@ -263,13 +253,11 @@ export function eventTableColumns<Ns extends Namespace>({ sections = [], organis
           <FacetedFilter column={column} setSearch={setSearch} />
         )
       },
-      accessorFn: (data) => {
-        const startTime = data.fields['document.meta.core_event.data.start']?.values[0]
-        const endTime = data.fields['document.meta.core_event.data.end']?.values[0]
-        return [startTime, endTime]
+      accessorFn: (data: PreprocessedEventData) => {
+        return [data._preprocessed?.eventStart, data._preprocessed?.eventEnd]
       },
       cell: ({ row }) => {
-        const [startTime, endTime] = row.getValue<Date[]>('event_time')
+        const [startTime, endTime] = row.getValue<(string | undefined)[]>('event_time')
 
         if (!startTime || !endTime) {
           return <></>

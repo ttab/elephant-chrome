@@ -81,8 +81,7 @@ export const getApplicationMenu = (featureFlags: AllowedFeatureFlag): Applicatio
           name: 'Latest',
           label: i18next.t('app:mainMenu.latest'),
           icon: UtilityPoleIcon,
-          color: '#996633',
-          target: 'sheet'
+          color: '#996633'
         },
         {
           name: 'Factboxes',

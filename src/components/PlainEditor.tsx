@@ -1,16 +1,16 @@
 import type { EleDocument, EleDocumentResponse } from '@/shared/types'
 import { Textbit, type Element } from '@ttab/textbit'
 import useSWR from 'swr'
-import { LoadingText } from './LoadingText'
 import { Bold, Italic, Link, Text, OrderedList, UnorderedList, TTVisual, Factbox, Table } from '@ttab/textbit-plugins'
 import { PreVersion } from './Version/PreVersion'
 import type { Status as DocumentStatuses } from '@ttab/elephant-api/repository'
 import { PreVersionInfo } from './Version/PreVersionInfo'
-import type { JSX } from 'react'
+import { useEffect, type JSX } from 'react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@ttab/elephant-ui/utils'
 import { AlertDescription } from '@ttab/elephant-ui'
 import { MessageCircleMoreIcon } from '@ttab/elephant-ui/icons'
+import { LoadingText } from './LoadingText'
 
 const BASE_URL = import.meta.env.BASE_URL || ''
 
@@ -23,12 +23,22 @@ const fetcher = async (url: string): Promise<EleDocument | undefined> => {
   return result.document
 }
 
-export const Editor = ({ id, version, textOnly = false, direct, versionStatusHistory, disableScroll = false, showNotes = false }: {
+export const Editor = ({
+  id,
+  version,
+  textOnly = false,
+  direct,
+  versionStatusHistory,
+  disableScroll = false,
+  showNotes = false,
+  onLoad
+}: {
   id: string
   textOnly?: boolean
   version?: bigint | undefined
   versionStatusHistory?: DocumentStatuses[]
   direct?: boolean
+  onLoad?: () => void
   disableScroll?: boolean
   showNotes?: boolean
 }): JSX.Element => {
@@ -71,6 +81,12 @@ export const Editor = ({ id, version, textOnly = false, direct, versionStatusHis
     fetcher,
     { revalidateOnFocus: false, revalidateOnReconnect: false }
   )
+
+  useEffect(() => {
+    if (document !== undefined || error) {
+      onLoad?.()
+    }
+  }, [document, error, onLoad])
 
   if (error) {
     return <div>{t('errors:messages.loadFailed')}</div>

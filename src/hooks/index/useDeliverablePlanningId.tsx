@@ -1,6 +1,6 @@
 import { QueryV1, TermQueryV1 } from '@ttab/elephant-api/index'
 import { useDocuments } from './useDocuments'
-import type { Planning, PlanningFields } from '@/shared//schemas/planning'
+import type { Planning, PlanningFields } from '@/shared/schemas/planning'
 
 /**
  * Hook that fetches an assignments planning id. Especially useful when you have an article

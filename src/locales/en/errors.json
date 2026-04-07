@@ -67,5 +67,16 @@
   },
   "systemMessages": {
     "connectionFailed": "Failed to connect to the messaging service, please reload the window."
+  },
+  "socket": {
+    "parseError": "Could not read message from the server.",
+    "connectionError": "A connection error occurred.",
+    "connectionClosed": "Connection closed: {{code}}",
+    "missingAccessToken": "Access token missing, cannot connect.",
+    "maxReconnectAttempts": "Maximum reconnect attempts ({{max}}) reached.",
+    "reconnectFailed": "Could not reconnect.",
+    "networkOffline": "Network is down, waiting for connection...",
+    "reconnecting": "Reconnecting...",
+    "notRealtime": "The view is not updating in real time."
   }
 }

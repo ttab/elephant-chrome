@@ -21,7 +21,8 @@ import { PlanningTable } from './components/PlanningTable'
 import { Error } from '../Error'
 import { Form } from '@/components/Form'
 import { EventTimeMenu } from './components/EventTime'
-import { useMemo, type JSX } from 'react'
+import { useMemo, useState, useEffect, type JSX } from 'react'
+import { cn } from '@ttab/elephant-ui/utils'
 import { EventHeader } from './EventHeader'
 import { DuplicatesTable } from '../../components/DuplicatesTable'
 import { Cancel } from './components/Cancel'
@@ -96,7 +97,16 @@ const EventViewContent = (props: ViewProps & {
   // setNewItem?: Setter
 }): JSX.Element | undefined => {
   const ydoc = useYDocument<Y.Map<unknown>>(props.documentId, { data: props.data })
-  const { provider, ele: document, connected } = ydoc
+  const { provider, ele: document, connected, synced } = ydoc
+  const [showSkeleton, setShowSkeleton] = useState(!synced)
+
+  useEffect(() => {
+    if (synced) {
+      const timer = setTimeout(() => setShowSkeleton(false), 250)
+      return () => clearTimeout(timer)
+    }
+  }, [synced])
+
   const { t } = useTranslation()
 
   const { data, status } = useSession()
@@ -162,84 +172,96 @@ const EventViewContent = (props: ViewProps & {
         status={status}
       />
       <View.Content className='max-w-[1000px] flex-auto'>
-        <Form.Root asDialog={props.asDialog}>
-          <Form.Content>
-            <Form.Title>
-              <TextInput
+        <div className='relative'>
+          <Form.Root asDialog={props.asDialog}>
+            <Form.Content>
+              <Form.Title>
+                <TextInput
+                  ydoc={ydoc}
+                  value={title}
+                  label={t('core:labels.title')}
+                  autoFocus={!!props.asDialog}
+                  placeholder={t('event:placeholders.eventTitle')}
+                />
+              </Form.Title>
+              <TextBox
                 ydoc={ydoc}
-                value={title}
-                label={t('core:labels.title')}
-                autoFocus={!!props.asDialog}
-                placeholder={t('event:placeholders.eventTitle')}
+                value={publicDescription}
+                icon={<TextIcon size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />}
+                placeholder={t('event:placeholders.publicDescription')}
               />
-            </Form.Title>
-            <TextBox
-              ydoc={ydoc}
-              value={publicDescription}
-              icon={<TextIcon size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />}
-              placeholder={t('event:placeholders.publicDescription')}
-            />
-            <TextBox
-              ydoc={ydoc}
-              value={registration}
-              icon={<KeyIcon size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />}
-              placeholder={t('event:placeholders.accreditation')}
-            />
-            <Form.Group icon={CalendarClockIcon}>
-              <EventTimeMenu ydoc={ydoc} />
-              <Newsvalue ydoc={ydoc} path='meta.core/newsvalue[0].value' />
-            </Form.Group>
+              <TextBox
+                ydoc={ydoc}
+                value={registration}
+                icon={<KeyIcon size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />}
+                placeholder={t('event:placeholders.accreditation')}
+              />
+              <Form.Group icon={CalendarClockIcon}>
+                <EventTimeMenu ydoc={ydoc} />
+                <Newsvalue ydoc={ydoc} path='meta.core/newsvalue[0].value' />
+              </Form.Group>
 
-            <Form.Group icon={TagsIcon}>
-              <Section ydoc={ydoc} path='links.core/section[0]' />
-              <Organiser ydoc={ydoc} path='links.core/organiser[0]' />
-            </Form.Group>
+              <Form.Group icon={TagsIcon}>
+                <Section ydoc={ydoc} path='links.core/section[0]' />
+                <Organiser ydoc={ydoc} path='links.core/organiser[0]' />
+              </Form.Group>
 
-            <Form.Group icon={TagsIcon}>
-              <Category ydoc={ydoc} path='links.core/category' />
-              <Story ydoc={ydoc} path='links.core/story[0]' />
-            </Form.Group>
-            {!props.asDialog && (
-              <Cancel cancelled={cancelled} setCancelled={setCancelled} />
-            )}
+              <Form.Group icon={TagsIcon}>
+                <Category ydoc={ydoc} path='links.core/category' />
+                <Story ydoc={ydoc} path='links.core/story[0]' />
+              </Form.Group>
+              {!props.asDialog && (
+                <Cancel cancelled={cancelled} setCancelled={setCancelled} />
+              )}
+            </Form.Content>
 
-          </Form.Content>
+            <Form.Table>
+              <PlanningTable ydoc={ydoc} asDialog={props.asDialog} />
+              {!props.asDialog && <DuplicatesTable documentId={props.documentId} type='core/event' />}
+              {copyGroupId && !props.asDialog && <CopyGroup copyGroupId={copyGroupId} type='core/event' />}
+            </Form.Table>
 
-          <Form.Table>
-            <PlanningTable ydoc={ydoc} asDialog={props.asDialog} />
-            {!props.asDialog && <DuplicatesTable documentId={props.documentId} type='core/event' />}
-            {copyGroupId && !props.asDialog && <CopyGroup copyGroupId={copyGroupId} type='core/event' />}
-          </Form.Table>
+            <Form.Footer>
+              {!environmentIsSane && (
+                <UserMessage asDialog={!!props.asDialog} className='pb-6'>
+                  {t('errors:messages.unwellEnvironment')}
+                </UserMessage>
+              )}
 
-          <Form.Footer>
-            {!environmentIsSane && (
-              <UserMessage asDialog={!!props.asDialog} className='pb-6'>
-                {t('errors:messages.unwellEnvironment')}
-              </UserMessage>
-            )}
-
-            <Form.Submit
-              onSubmit={() => { void handleSubmit({ documentStatus: 'usable' }) }}
-              onSecondarySubmit={() => { void handleSubmit({ documentStatus: 'done' }) }}
-              onTertiarySubmit={() => { void handleSubmit({ documentStatus: undefined }) }}
-              disableOnSubmit
-            >
-              <div className='flex justify-between'>
-                <div className='flex gap-2'>
-                  <Button type='button' variant='secondary' role='tertiary' disabled={!environmentIsSane}>
-                    {t('core:status.draft')}
-                  </Button>
-                  <Button type='button' variant='secondary' role='secondary' disabled={!environmentIsSane}>
-                    {t('core:status.internal')}
+              <Form.Submit
+                onSubmit={() => { void handleSubmit({ documentStatus: 'usable' }) }}
+                onSecondarySubmit={() => { void handleSubmit({ documentStatus: 'done' }) }}
+                onTertiarySubmit={() => { void handleSubmit({ documentStatus: undefined }) }}
+                disableOnSubmit
+              >
+                <div className='flex justify-between'>
+                  <div className='flex gap-2'>
+                    <Button type='button' variant='secondary' role='tertiary' disabled={!environmentIsSane}>
+                      {t('core:status.draft')}
+                    </Button>
+                    <Button type='button' variant='secondary' role='secondary' disabled={!environmentIsSane}>
+                      {t('core:status.internal')}
+                    </Button>
+                  </div>
+                  <Button type='submit' disabled={!environmentIsSane}>
+                    {t('common:actions.publish')}
                   </Button>
                 </div>
-                <Button type='submit' disabled={!environmentIsSane}>
-                  {t('common:actions.publish')}
-                </Button>
-              </div>
-            </Form.Submit>
-          </Form.Footer>
-        </Form.Root>
+              </Form.Submit>
+            </Form.Footer>
+          </Form.Root>
+
+          {showSkeleton && (
+            <div
+              className={cn(
+                'absolute inset-0 bg-background pointer-events-none transition-opacity duration-200',
+                synced ? 'opacity-0' : 'opacity-100'
+              )}
+            >
+              <Form.Skeleton />
+            </div>
+          )}
+        </div>
       </View.Content>
     </View.Root>
   )

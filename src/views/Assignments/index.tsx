@@ -4,6 +4,7 @@ import { TabsContent } from '@ttab/elephant-ui'
 import { TableProvider } from '@/contexts/TableProvider'
 import { TableCommandMenu } from '@/components/Commands/TableCommand'
 import { Header } from '@/components/Header'
+import type { PreprocessedAssignmentData } from './preprocessor'
 import { AssignmentsList } from './AssignmentsList'
 import { assignmentColumns } from './AssignmentColumns'
 import { Commands } from '@/components/Commands'
@@ -15,8 +16,8 @@ import { getAuthorBySub } from '@/lib/getAuthorBySub'
 import { useQuery } from '@/hooks/useQuery'
 import { newLocalDate } from '@/shared/datetime'
 import { useSections } from '@/hooks/useSections'
-import type { Assignment } from '@/shared/schemas/assignments'
 import { useInitFilters } from '@/hooks/useInitFilters'
+import { SocketBanner } from '@/hooks/useRepositorySocket/components/SocketBanner'
 import { useTranslation } from 'react-i18next'
 
 const meta: ViewMetadata = {
@@ -43,7 +44,6 @@ export const Assignments = (): JSX.Element => {
   const { data: session } = useSession()
   const sections = useSections()
   const { t } = useTranslation()
-
   const assigneeId = useMemo(
     () => getAuthorBySub(authors, session?.user?.sub)?.id,
     [authors, session?.user?.sub]
@@ -66,7 +66,7 @@ export const Assignments = (): JSX.Element => {
 
   return (
     <View.Root tab={currentTab} onTabChange={setCurrentTab}>
-      <TableProvider<Assignment>
+      <TableProvider<PreprocessedAssignmentData>
         type={meta.name}
         columns={columns}
         initialState={{
@@ -92,9 +92,13 @@ export const Assignments = (): JSX.Element => {
           <ViewHeader.Action />
         </ViewHeader.Root>
 
+        <View.Banner>
+          <SocketBanner />
+        </View.Banner>
+
         <View.Content>
           <TabsContent value='list' className='mt-0'>
-            <AssignmentsList date={date} columns={columns} />
+            <AssignmentsList columns={columns} />
           </TabsContent>
         </View.Content>
 

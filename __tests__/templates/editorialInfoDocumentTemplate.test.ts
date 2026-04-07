@@ -1,4 +1,3 @@
-import { vi } from 'vitest'
 import { editorialInfoDocumentTemplate } from '@/shared/templates/editorialInfoDocumentTemplate.js'
 import { getSystemLanguage } from '@/shared/getSystemLanguage'
 import type { TemplatePayload } from '@/shared/templates'

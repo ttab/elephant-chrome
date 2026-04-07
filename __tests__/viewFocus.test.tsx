@@ -1,3 +1,4 @@
+import type { Mock } from 'vitest'
 import { type Dispatch } from 'react'
 import { NavigationProvider } from '@/navigation/NavigationProvider'
 import userEvent from '@testing-library/user-event'
@@ -6,7 +7,6 @@ import { render, screen } from '../setupTests'
 import { ViewFocus } from '@/components/View/ViewHeader/ViewFocus'
 import { type NavigationActionType } from '@/types'
 import { initializeNavigationState } from '@/navigation/lib'
-import { type Mock, vi } from 'vitest'
 
 
 vi.mock('@/navigation/hooks/useNavigation', () => ({

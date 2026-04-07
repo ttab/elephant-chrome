@@ -67,5 +67,16 @@
     },
     "systemMessages": {
             "connectionFailed": "Misslyckades att ansluta till meddelandetjänsten, vänligen ladda om fönstret."
+    },
+    "socket": {
+        "parseError": "Kunde inte läsa meddelande från servern.",
+        "connectionError": "Ett fel inträffade i anslutningen.",
+        "connectionClosed": "Anslutningen stängdes: {{code}}",
+        "missingAccessToken": "Accesstoken saknas, kan inte ansluta.",
+        "maxReconnectAttempts": "Max antal återanslutningsförsök ({{max}}) nåddes.",
+        "reconnectFailed": "Kunde inte återansluta.",
+        "networkOffline": "Nätverket är nere, väntar på anslutning...",
+        "reconnecting": "Återansluter...",
+        "notRealtime": "Vyn uppdateras inte i realtid."
     }
 }

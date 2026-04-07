@@ -17,47 +17,41 @@ export const StreamsBanner = ({
   // Priority: offline > stream errors > selected wires
   if (!isOnline) {
     return (
-      <div className='absolute top-1 left-0 right-0 flex justify-center items-center pointer-events-none z-20'>
-        <div className='border bg-background rounded-lg text-sm px-5 py-3 shadow-xl flex items-center gap-2 pointer-events-auto'>
-          <WifiOffIcon size={16} strokeWidth={1.75} className='text-muted-foreground shrink-0' />
-          <span>{t('banner.offline')}</span>
-        </div>
+      <div className='flex items-center gap-2'>
+        <WifiOffIcon size={16} strokeWidth={1.75} className='text-muted-foreground shrink-0' />
+        <span>{t('banner.offline')}</span>
       </div>
     )
   }
 
   if (streamErrorCount > 0) {
     return (
-      <div className='absolute top-1 left-0 right-0 flex justify-center items-center pointer-events-none z-20'>
-        <div className='border bg-background rounded-lg text-sm px-5 py-3 shadow-xl flex items-center gap-2 pointer-events-auto'>
-          <TriangleAlertIcon size={16} strokeWidth={1.75} className='text-muted-foreground shrink-0' />
-          <span>{t('banner.streamErrors', { count: streamErrorCount })}</span>
-        </div>
+      <div className='flex items-center gap-2'>
+        <TriangleAlertIcon size={16} strokeWidth={1.75} className='text-muted-foreground shrink-0' />
+        <span>{t('banner.streamErrors', { count: streamErrorCount })}</span>
       </div>
     )
   }
 
   if (selectedWires.length > 0) {
     return (
-      <div className='absolute top-1 left-0 right-0 flex justify-center items-center pointer-events-none z-20'>
-        <div className='border bg-background rounded-lg text-sm px-5 py-3 shadow-xl flex flex-col items-center gap-1 pointer-events-auto'>
-          <div className='flex flex-row items-center gap-2 justify-items-center text-center'>
-            <div className='overflow-hidden truncate max-w-100 min-w-60'>
-              {`${selectedWires[0].fields['document.title']?.values[0]}`}
-            </div>
+      <div className='flex flex-col items-center gap-1'>
+        <div className='flex flex-row items-center gap-2 justify-items-center text-center'>
+          <div className='overflow-hidden truncate max-w-100 min-w-60'>
+            {`${selectedWires[0].fields['document.title']?.values[0]}`}
+          </div>
 
-            {selectedWires.length > 1 && (
-              <span className='inline-block bg-muted px-2 py-0.5 rounded-md text-xs font-medium'>
-                +
-                {selectedWires.length - 1}
-              </span>
-            )}
-          </div>
-          <div className='text-center text-muted-foreground text-xs'>
-            {/* eslint-disable-next-line i18next/no-literal-string */}
-            <span className='bg-muted px-2 py-0.5 rounded-md text-xs font-semibold'>ESC</span>
-            <span>{` ${t('stream.deselectHint')}`}</span>
-          </div>
+          {selectedWires.length > 1 && (
+            <span className='inline-block bg-muted px-2 py-0.5 rounded-md text-xs font-medium'>
+              +
+              {selectedWires.length - 1}
+            </span>
+          )}
+        </div>
+        <div className='text-center text-muted-foreground text-xs'>
+          {/* eslint-disable-next-line i18next/no-literal-string */}
+          <span className='bg-muted px-2 py-0.5 rounded-md text-xs font-semibold'>ESC</span>
+          <span>{` ${t('stream.deselectHint')}`}</span>
         </div>
       </div>
     )

@@ -1,7 +1,6 @@
 import { createRef } from 'react'
 import { screen, render } from '@testing-library/react'
 import { Awareness } from '@/components/Awareness'
-import { vi } from 'vitest'
 import * as hooks from '@/modules/yjs/hooks'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
