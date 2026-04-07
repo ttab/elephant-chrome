@@ -10,13 +10,14 @@ import { CalendarIcon, LoaderIcon } from '@ttab/elephant-ui/icons'
 import { PromptCauseField } from './PromptCauseField'
 import { useTranslation } from 'react-i18next'
 import { useCollaborationDocument } from '@/hooks/useCollaborationDocument'
+import type { YDocument } from '@/modules/yjs/hooks'
 import { useYValue } from '@/modules/yjs/hooks'
 import { HastToggle } from '@/components/HastToggle'
 import type * as Y from 'yjs'
 
 export const PromptSchedule = ({
   prompt, planningId, setStatus, showPrompt, requireCause = false,
-  ele: documentEle, usableId, documentType
+  ydoc: ydoc, usableId, documentType
 }: {
   prompt: {
     status: string
@@ -27,7 +28,7 @@ export const PromptSchedule = ({
     status: string
   } & WorkflowTransition) | undefined>>
   requireCause?: boolean
-  ele?: Y.Map<unknown>
+  ydoc?: YDocument<Y.Map<unknown>>
   usableId?: bigint
   documentType?: string
 }) => {
@@ -125,8 +126,8 @@ export const PromptSchedule = ({
 
         </div>
 
-        {documentEle && documentType === 'core/article' && (
-          <HastToggle ele={documentEle} usableId={usableId} variant='full' className='w-full' />
+        {ydoc && documentType === 'core/article' && (
+          <HastToggle ydoc={ydoc} usableId={usableId} variant='full' className='w-full' />
         )}
       </div>
     </Prompt>

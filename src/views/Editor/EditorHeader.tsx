@@ -110,7 +110,7 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
               {!readOnly && documentType !== 'core/editorial-info'
                 && <Newsvalue ydoc={ydoc} path='meta.core/newsvalue[0].value' />}
               {!readOnly && documentType === 'core/article' && (
-                <HastToggle ele={ydoc.ele} usableId={workflowStatus?.usableId} />
+                <HastToggle ydoc={ydoc} usableId={workflowStatus?.usableId} />
               )}
               {!!wireBlocks?.length && (
                 <Button

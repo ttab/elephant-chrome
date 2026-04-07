@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { HastToggle } from '@/components/HastToggle'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import type * as Y from 'yjs'
+import type { YDocument } from '@/modules/yjs/hooks'
 
 const mockSetHast = vi.fn()
 let mockHastValue: Block | undefined = undefined
@@ -16,7 +17,10 @@ vi.mock('@/hooks/useRegistry', () => ({
 }))
 
 describe('HastToggle', () => {
-  const mockEle = {} as Y.Map<unknown>
+  const mockYdoc = {
+    id: 'test-doc',
+    ele: {} as Y.Map<unknown>
+  } as YDocument<Y.Map<unknown>>
 
   beforeEach(() => {
     mockHastValue = undefined
@@ -24,7 +28,7 @@ describe('HastToggle', () => {
   })
 
   it('renders unchecked when hast meta is absent', () => {
-    render(<HastToggle ele={mockEle} />)
+    render(<HastToggle ydoc={mockYdoc} />)
 
     const toggle = screen.getByRole('switch')
     expect(toggle).toHaveAttribute('aria-checked', 'false')
@@ -32,7 +36,7 @@ describe('HastToggle', () => {
 
   it('renders checked when hast meta is present', () => {
     mockHastValue = Block.create({ type: 'ntb/hast', value: '1' })
-    render(<HastToggle ele={mockEle} />)
+    render(<HastToggle ydoc={mockYdoc} />)
 
     const toggle = screen.getByRole('switch')
     expect(toggle).toHaveAttribute('aria-checked', 'true')
@@ -40,7 +44,7 @@ describe('HastToggle', () => {
 
   it('sets hast block with incremented usable ID on toggle on', async () => {
     const user = userEvent.setup()
-    render(<HastToggle ele={mockEle} usableId={2n} />)
+    render(<HastToggle ydoc={mockYdoc} usableId={2n} />)
 
     const toggle = screen.getByRole('switch')
     await user.click(toggle)
@@ -55,7 +59,7 @@ describe('HastToggle', () => {
 
   it('sets hast value to 1 when usableId is undefined', async () => {
     const user = userEvent.setup()
-    render(<HastToggle ele={mockEle} />)
+    render(<HastToggle ydoc={mockYdoc} />)
 
     const toggle = screen.getByRole('switch')
     await user.click(toggle)
@@ -71,7 +75,7 @@ describe('HastToggle', () => {
   it('removes hast block on toggle off', async () => {
     mockHastValue = Block.create({ type: 'ntb/hast', value: '1' })
     const user = userEvent.setup()
-    render(<HastToggle ele={mockEle} />)
+    render(<HastToggle ydoc={mockYdoc} />)
 
     const toggle = screen.getByRole('switch')
     await user.click(toggle)
@@ -80,7 +84,7 @@ describe('HastToggle', () => {
   })
 
   it('renders full variant with label and description', () => {
-    render(<HastToggle ele={mockEle} variant='full' />)
+    render(<HastToggle ydoc={mockYdoc} variant='full' />)
 
     expect(screen.getByText('Skicka som HAST')).toBeDefined()
     expect(screen.getByText(/Vid publicering/)).toBeDefined()

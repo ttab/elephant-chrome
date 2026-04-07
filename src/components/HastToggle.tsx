@@ -1,5 +1,6 @@
 import { Label } from '@ttab/elephant-ui'
 import { Block } from '@ttab/elephant-api/newsdoc'
+import type { YDocument } from '@/modules/yjs/hooks'
 import { useYValue } from '@/modules/yjs/hooks'
 import { useRegistry } from '@/hooks/useRegistry'
 import { useTranslation } from 'react-i18next'
@@ -7,6 +8,8 @@ import { ZapIcon } from '@ttab/elephant-ui/icons'
 import type * as Y from 'yjs'
 import type { JSX } from 'react'
 import { cn } from '@ttab/elephant-ui/utils'
+import { snapshotDocument } from '@/lib/snapshotDocument'
+import { toast } from 'sonner'
 
 function HastSwitch({ checked, onCheckedChange, size = 'default' }: {
   checked: boolean
@@ -28,7 +31,7 @@ function HastSwitch({ checked, onCheckedChange, size = 'default' }: {
         'focus-visible:ring-ring focus-visible:ring-offset-2',
         'focus-visible:ring-offset-background',
         isLg ? 'h-7 w-12' : 'h-6 w-11',
-        checked ? 'bg-red-200 dark:bg-red-900/50' : 'bg-input dark:bg-background'
+        checked ? 'bg-red-200 dark:bg-red-900/50' : 'bg-input dark:bg-input/50'
       )}
     >
       <span
@@ -52,15 +55,15 @@ function HastSwitch({ checked, onCheckedChange, size = 'default' }: {
   )
 }
 
-export const HastToggle = ({ ele, usableId, className, variant = 'compact' }: {
-  ele: Y.Map<unknown>
+export const HastToggle = ({ ydoc, usableId, className, variant = 'compact' }: {
+  ydoc: YDocument<Y.Map<unknown>>
   usableId?: bigint
   className?: string
   variant?: 'compact' | 'full'
 }): JSX.Element | null => {
   const { featureFlags } = useRegistry()
   const { t } = useTranslation()
-  const [hast, setHast] = useYValue<Block | undefined>(ele, 'meta.ntb/hast[0]')
+  const [hast, setHast] = useYValue<Block | undefined>(ydoc.ele, 'meta.ntb/hast[0]')
   const isHast = !!hast
 
   if (!featureFlags.hasHast) {
@@ -77,20 +80,29 @@ export const HastToggle = ({ ele, usableId, className, variant = 'compact' }: {
     } else {
       setHast(undefined)
     }
+
+    snapshotDocument(ydoc.id, {}, ydoc.provider?.document)
+      .catch((error) => {
+        toast.error(t('errors:toasts.saveChangeError'))
+        console.error('Error snapshotting document after toggling HAST:', error)
+      })
   }
+
+  const textColor = isHast ? 'text-foreground' : 'text-muted-foreground'
 
   if (variant === 'full') {
     return (
       <div className={cn(
-        'flex items-center justify-between gap-4 rounded-md border p-3',
+        'flex items-center justify-between gap-4 rounded-md border p-3 mt-4',
+        isHast ? 'border-foreground' : 'border-muted-foreground',
         className
       )}
       >
         <div className='space-y-0.5'>
-          <Label className='text-sm text-foreground font-semibold'>
+          <Label className={cn('text-sm font-semibold', textColor)}>
             {t('flash:sendAsHast')}
           </Label>
-          <p className='text-xs text-foreground'>
+          <p className={cn('text-xs', textColor)}>
             {t('flash:sendAsHastDescription')}
           </p>
         </div>
@@ -103,7 +115,7 @@ export const HastToggle = ({ ele, usableId, className, variant = 'compact' }: {
     <div className={cn('flex items-center gap-1.5', className)}>
       <HastSwitch checked={isHast} onCheckedChange={handleToggle} size='lg' />
       <Label
-        className='text-xs text-foreground cursor-pointer'
+        className={cn('text-xs cursor-pointer', textColor)}
         onClick={handleToggle}
       >
         {t('flash:hastLabel')}
