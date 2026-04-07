@@ -15,6 +15,7 @@ export const DictionaryButton = ({ variant }: { variant: 'ghost' | 'outline' }) 
       onClick={() => {
         openDictionary(undefined, {})
       }}
+      className='hover:bg-gray-200 dark:hover:bg-table-focused rounded-md px-1 flex flex-row items-center justify-center gap-1 h-9 p-0 m-0 min-w-9'
     >
       <BookAIcon strokeWidth={1.75} size={18} />
     </Button>
