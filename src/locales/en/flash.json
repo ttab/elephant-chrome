@@ -27,7 +27,7 @@
     "hastTitle": "Hast title"
   },
   "createHastAlertTitle": "You are creating a new hast",
-  "sendAsHast": "Send as hast",
-  "sendAsHastDescription": "When published, this article will be sent as a hast.",
-  "hastLabel": "hast"
+  "sendAsHast": "Send as HAST",
+  "sendAsHastDescription": "When published, this article will be sent as a HAST.",
+  "hastLabel": "HAST"
 }

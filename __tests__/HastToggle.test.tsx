@@ -82,7 +82,7 @@ describe('HastToggle', () => {
   it('renders full variant with label and description', () => {
     render(<HastToggle ele={mockEle} variant='full' />)
 
-    expect(screen.getByText('Skicka som hast')).toBeDefined()
+    expect(screen.getByText('Skicka som HAST')).toBeDefined()
     expect(screen.getByText(/Vid publicering/)).toBeDefined()
     expect(screen.getByRole('switch')).toBeDefined()
   })

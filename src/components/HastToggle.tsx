@@ -28,7 +28,7 @@ function HastSwitch({ checked, onCheckedChange, size = 'default' }: {
         'focus-visible:ring-ring focus-visible:ring-offset-2',
         'focus-visible:ring-offset-background',
         isLg ? 'h-7 w-12' : 'h-6 w-11',
-        'bg-input'
+        checked ? 'bg-red-200 dark:bg-red-900/50' : 'bg-input dark:bg-background'
       )}
     >
       <span

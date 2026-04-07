@@ -26,8 +26,8 @@
     "sluggForTypes": "Slugg för {{type1}} och {{type2}}",
     "hastTitle": "Hastrubrik"
   },
-  "createHastAlertTitle": "Du skapar en ny hast",
-  "sendAsHast": "Skicka som hast",
-  "sendAsHastDescription": "Vid publicering ska denna artikel skickas som en hast.",
-  "hastLabel": "hast"
+  "createHastAlertTitle": "Du skapar en ny HAST",
+  "sendAsHast": "Skicka som HAST",
+  "sendAsHastDescription": "Vid publicering ska denna artikel skickas som en HAST.",
+  "hastLabel": "HAST"
 }
