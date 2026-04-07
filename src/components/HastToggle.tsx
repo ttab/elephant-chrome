@@ -87,10 +87,10 @@ export const HastToggle = ({ ele, usableId, className, variant = 'compact' }: {
       )}
       >
         <div className='space-y-0.5'>
-          <Label className='text-sm font-semibold'>
+          <Label className='text-sm text-foreground font-semibold'>
             {t('flash:sendAsHast')}
           </Label>
-          <p className='text-xs text-muted-foreground'>
+          <p className='text-xs text-foreground'>
             {t('flash:sendAsHastDescription')}
           </p>
         </div>
@@ -103,7 +103,7 @@ export const HastToggle = ({ ele, usableId, className, variant = 'compact' }: {
     <div className={cn('flex items-center gap-1.5', className)}>
       <HastSwitch checked={isHast} onCheckedChange={handleToggle} size='lg' />
       <Label
-        className='text-xs text-muted-foreground cursor-pointer'
+        className='text-xs text-foreground cursor-pointer'
         onClick={handleToggle}
       >
         {t('flash:hastLabel')}

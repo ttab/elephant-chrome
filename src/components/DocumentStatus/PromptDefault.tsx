@@ -83,7 +83,7 @@ export const PromptDefault = ({
       disablePrimary={disablePrimary}
       primaryVariant={isUnpublishPrompt ? 'destructive' : undefined}
     >
-      {ele && documentType === 'core/article' && (
+      {ele && documentType === 'core/article' && prompt.status !== 'unpublished' && (
         <HastToggle ele={ele} usableId={usableId} variant='full' />
       )}
       {(showCauseField) && (
