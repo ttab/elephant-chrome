@@ -12,6 +12,7 @@ describe('GET /api/envs', () => {
     process.env.BABOON_URL = 'https://baboon.example.com'
     process.env.SYSTEM_LANGUAGE = 'nb-NO'
     process.env.HAS_PRINT = 'true'
+    process.env.HAS_HAST = 'true'
     process.env.ENVIRONMENT = 'test'
 
     const result = await GET() as { payload: Record<string, string> }
@@ -27,6 +28,7 @@ describe('GET /api/envs', () => {
       baboonUrl: 'https://baboon.example.com',
       systemLanguage: 'nb-NO',
       hasPrint: 'true',
+      hasHast: 'true',
       environment: 'test'
     })
   })

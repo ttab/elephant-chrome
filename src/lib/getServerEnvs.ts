@@ -69,7 +69,8 @@ export async function getServerEnvs(): Promise<ServerConfig> {
         environment: typeof data['environment'] === 'string' ? data['environment'] : ''
       },
       featureFlags: {
-        hasPrint: data['hasPrint'] ? !!data['hasPrint'] : false
+        hasPrint: data['hasPrint'] ? !!data['hasPrint'] : false,
+        hasHast: data['hasHast'] ? !!data['hasHast'] : false
       }
     }
   } catch (ex) {
