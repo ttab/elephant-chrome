@@ -1,12 +1,12 @@
 import { ViewHeader } from '@/components/View'
 import { Button, Popover, PopoverContent, PopoverTrigger } from '@ttab/elephant-ui'
-import { BookAIcon, PlusIcon } from '@ttab/elephant-ui/icons'
+import { PlusIcon } from '@ttab/elephant-ui/icons'
 import { DateChanger } from '@/components/Header/Datechanger'
 import { useModal } from '@/components/Modal/useModal'
 import { PrintFlows } from './PrintFlows'
-import { useLink } from '@/hooks/useLink'
 import type { JSX } from 'react'
 import { useTranslation } from 'react-i18next'
+import { DictionaryButton } from '../PrintEditor/components/DictionaryButton'
 
 /**
  * PrintArticlesHeader component.
@@ -22,7 +22,6 @@ import { useTranslation } from 'react-i18next'
 
 export const PrintArticlesHeader = (): JSX.Element => {
   const { showModal, hideModal } = useModal()
-  const openDictionary = useLink('PrintDictionary')
   const { t } = useTranslation('print')
 
   return (
@@ -64,16 +63,7 @@ export const PrintArticlesHeader = (): JSX.Element => {
         <DateChanger type='Print' />
       </div>
       <div className='flex flex-row gap-2 items-center justify-end'>
-        <Button
-          title={t('articles.header.openDictionary')}
-          variant='outline'
-          size='sm'
-          onClick={() => {
-            openDictionary(undefined, {})
-          }}
-        >
-          <BookAIcon strokeWidth={1.75} size={18} />
-        </Button>
+        <DictionaryButton variant='ghost' />
         <ViewHeader.Action>
         </ViewHeader.Action>
       </div>
