@@ -17,6 +17,7 @@ import { useYValue } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import { useTranslation } from 'react-i18next'
 import { documentTypeValueFormat } from '@/defaults/documentTypeFormats'
+import { HastToggle } from '@/components/HastToggle'
 
 export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: propPlanningId }: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -104,10 +105,13 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
       <ViewHeader.Content className='justify-start'>
         <div className='max-w-[810px] mx-auto flex flex-row gap-2 justify-between items-center w-full'>
           <div className='flex flex-row gap-1 justify-start items-center @7xl/view:-ml-20'>
-            <div className='hidden flex-row gap-2 justify-start items-center @lg/view:flex'>
+            <div className='hidden flex-row gap-2 justify-start items-center @md/view:flex'>
               {!readOnly && <AddNote ydoc={ydoc} />}
               {!readOnly && documentType !== 'core/editorial-info'
                 && <Newsvalue ydoc={ydoc} path='meta.core/newsvalue[0].value' />}
+              {!readOnly && documentType === 'core/article' && (
+                <HastToggle ydoc={ydoc} usableId={workflowStatus?.usableId} />
+              )}
               {!!wireBlocks?.length && (
                 <Button
                   variant='ghost'

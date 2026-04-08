@@ -218,6 +218,9 @@ export const StatusMenu = ({ ydoc, onBeforeStatusChange, planningId }: {
               setStatus={(...args) => void setStatus(...args)}
               planningId={planningId}
               requireCause={!!documentStatus.checkpoint}
+              ydoc={ydoc}
+              usableId={documentStatus.usableId}
+              documentType={documentStatus.type}
               anchor={viewElementRef.current}
               typeIcon={icon}
             />
@@ -231,6 +234,9 @@ export const StatusMenu = ({ ydoc, onBeforeStatusChange, planningId }: {
               currentCause={documentStatus.cause}
               requireCause={requireCause}
               unPublishDocument={unPublishDocument}
+              ydoc={ydoc}
+              usableId={documentStatus.usableId}
+              documentType={documentStatus.type}
               anchor={viewElementRef.current}
               typeIcon={icon}
             />

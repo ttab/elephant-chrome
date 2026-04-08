@@ -3,6 +3,9 @@ import { Prompt } from '../Prompt'
 import { useCallback, useEffect, useState } from 'react'
 import { PromptCauseField } from './PromptCauseField'
 import { useTranslation } from 'react-i18next'
+import { HastToggle } from '@/components/HastToggle'
+import type * as Y from 'yjs'
+import type { YDocument } from '@/modules/yjs/hooks'
 import type { LucideIcon } from '@ttab/elephant-ui/icons'
 
 export const PromptDefault = ({
@@ -12,6 +15,9 @@ export const PromptDefault = ({
   requireCause = false,
   currentCause,
   unPublishDocument,
+  ydoc,
+  usableId,
+  documentType,
   anchor,
   typeIcon
 }: {
@@ -25,6 +31,9 @@ export const PromptDefault = ({
   requireCause?: boolean
   currentCause?: string
   unPublishDocument?: (name: string) => Promise<void>
+  ydoc?: YDocument<Y.Map<unknown>>
+  usableId?: bigint
+  documentType?: string
   anchor?: HTMLElement | null
   typeIcon?: LucideIcon
 }) => {
@@ -82,6 +91,9 @@ export const PromptDefault = ({
       primaryVariant={isUnpublishPrompt ? 'destructive' : undefined}
       typeIcon={typeIcon}
     >
+      {ydoc && documentType === 'core/article' && prompt.status !== 'unpublished' && (
+        <HastToggle ydoc={ydoc} usableId={usableId} variant='full' />
+      )}
       {(showCauseField) && (
         <PromptCauseField
           onValueChange={setCause}

@@ -23,6 +23,11 @@
   },
   "placeholders": {
     "flashTitle": "HAST-tittel",
-    "sluggForTypes": "Stikkord for {{type1}} og {{type2}}"
-  }
+    "sluggForTypes": "Stikkord for {{type1}} og {{type2}}",
+    "hastTitle": "HAST-tittel"
+  },
+  "createHastAlertTitle": "Du oppretter en ny HAST",
+  "sendAsHast": "Send som HAST",
+  "sendAsHastDescription": "Ved publisering skal denne artikkelen sendes som en HAST.",
+  "hastLabel": "HAST"
 }
