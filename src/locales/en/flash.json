@@ -7,6 +7,7 @@
   "createQuickarticle": "Create quick-article",
   "titles": {
     "newFlashTitle": "Create new flash",
+    "newHastTitle": "Create new HAST",
     "createAndSendType": "Create and send {{type}}",
     "createAndMarkTypeAsDone": "Create and mark {{type}} as done",
     "approveType": "Approve {{type}}",
@@ -24,9 +25,9 @@
   "placeholders": {
     "flashTitle": "Flash headline",
     "sluggForTypes": "Slug for {{type1}} and {{type2}}",
-    "hastTitle": "Hast title"
+    "hastTitle": "HAST title"
   },
-  "createHastAlertTitle": "You are creating a new hast",
+  "createHastAlertTitle": "You are creating a new HAST",
   "sendAsHast": "Send as HAST",
   "sendAsHastDescription": "When published, this article will be sent as a HAST.",
   "hastLabel": "HAST"

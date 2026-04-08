@@ -7,6 +7,7 @@
   "createQuickarticle": "Lag ny hurtigartikkel",
   "titles": {
     "newFlashTitle": "Lag ny HAST",
+    "newHastTitle": "Lag ny HAST",
     "createAndSendType": "Opprett og send {{type}}",
     "createAndMarkTypeAsDone": "Opprett og ferdigmerk {{type}}",
     "approveType": "Godkjenn {{type}}",

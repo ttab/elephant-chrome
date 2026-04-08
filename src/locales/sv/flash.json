@@ -7,6 +7,7 @@
   "createQuickarticle": "Skapa två på två",
   "titles": {
     "newFlashTitle": "Skapa ny flash",
+    "newHastTitle": "Skapa ny HAST",
     "createAndSendType": "Skapa och skicka {{type}}",
     "createAndMarkTypeAsDone": "Skapa och klarmarkera {{type}}",
     "approveType": "Godkänn {{type}}",
@@ -24,7 +25,7 @@
   "placeholders": {
     "flashTitle": "Flashrubrik",
     "sluggForTypes": "Slugg för {{type1}} och {{type2}}",
-    "hastTitle": "Hastrubrik"
+    "hastTitle": "HAST-rubrik"
   },
   "createHastAlertTitle": "Du skapar en ny HAST",
   "sendAsHast": "Skicka som HAST",
