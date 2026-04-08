@@ -3,6 +3,9 @@ import { Prompt } from '../Prompt'
 import { useCallback, useEffect, useState } from 'react'
 import { PromptCauseField } from './PromptCauseField'
 import { useTranslation } from 'react-i18next'
+import { HastToggle } from '@/components/HastToggle'
+import type * as Y from 'yjs'
+import type { YDocument } from '@/modules/yjs/hooks'
 
 export const PromptDefault = ({
   prompt,
@@ -10,7 +13,10 @@ export const PromptDefault = ({
   showPrompt,
   requireCause = false,
   currentCause,
-  unPublishDocument
+  unPublishDocument,
+  ydoc,
+  usableId,
+  documentType
 }: {
   prompt: {
     status: string
@@ -22,6 +28,9 @@ export const PromptDefault = ({
   requireCause?: boolean
   currentCause?: string
   unPublishDocument?: (name: string) => Promise<void>
+  ydoc?: YDocument<Y.Map<unknown>>
+  usableId?: bigint
+  documentType?: string
 }) => {
   const [cause, setCause] = useState<string | undefined>(currentCause)
   const isUnpublishPrompt = prompt.status === 'unpublished'
@@ -75,6 +84,9 @@ export const PromptDefault = ({
       disablePrimary={disablePrimary}
       primaryVariant={isUnpublishPrompt ? 'destructive' : undefined}
     >
+      {ydoc && documentType === 'core/article' && prompt.status !== 'unpublished' && (
+        <HastToggle ydoc={ydoc} usableId={usableId} variant='full' />
+      )}
       {(showCauseField) && (
         <PromptCauseField
           onValueChange={setCause}
