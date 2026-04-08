@@ -74,7 +74,7 @@ const AddButton = ({
       }}
     >
       {withNew && <PlusIcon size={18} strokeWidth={1.75} />}
-      <span className='pl-0.5'>{`${withNew ? t('common:misc.new') : typeLabel(view.type)}`}</span>
+      <span className='pl-0.5'>{`${withNew ? t('common:misc.new') : view.name === 'Flash' && hast ? 'HAST' : typeLabel(view.type)}`}</span>
     </Button>
   )
 }
