@@ -572,12 +572,6 @@ export function getWorkflowSpecifications(): Record<string, WorkflowSpecificatio
         description: 'Printartikeln är klar och väntar på godkännande',
         isWorkflow: true,
         transitions: {
-          approved: {
-            default: true,
-            title: 'Godkänn',
-            promptTitle: 'Godkänn printartikeln',
-            description: 'Godkänn printartikeln'
-          },
           usable: {
             verify: true,
             title: 'Exportera',

@@ -97,6 +97,15 @@ const quickArticle: DocumentTypeFormat = {
   }
 }
 
+const printArticle: DocumentTypeFormat = {
+  'tt/print-article': {
+    icon: NewspaperIcon,
+    get label() { return i18n.t('print:articles.title') },
+    key: 'PrintArticle',
+    color: '#aabbcc'
+  }
+}
+
 
 export const documentTypeValueFormat = {
   ...event,
@@ -104,7 +113,8 @@ export const documentTypeValueFormat = {
   ...article,
   ...editorialInfo,
   ...factbox,
-  ...flash
+  ...flash,
+  ...printArticle
 }
 
 export const addButtonGroupValueFormat = {
