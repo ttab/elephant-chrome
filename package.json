@@ -2,7 +2,7 @@
   "name": "elephant-chrome",
   "private": false,
   "license": "MIT",
-  "version": "1.15.0-beta.2",
+  "version": "1.15.0-beta.3",
   "type": "module",
   "os": [
     "darwin",
