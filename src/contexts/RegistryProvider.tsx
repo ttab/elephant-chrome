@@ -25,7 +25,7 @@ import { Collaboration } from '@/defaults'
 import { defaultLocale } from '@/defaults/locale'
 import { setEnvironment } from '@/shared/getEnvironment'
 
-export type FeatureFlags = Record<string, string | boolean>
+export type FeatureFlags = Record<string, boolean>
 
 /** Registry registry provider state interface */
 export interface RegistryProviderState {
