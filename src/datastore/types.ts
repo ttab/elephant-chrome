@@ -46,13 +46,16 @@ export interface IDBOrganiser {
   streetAddress: string
 }
 
-/** Category structure in indexedDB objectStore */
+/** Wire source structure in indexedDB objectStore */
 export interface IDBWireSource {
+  id: string
   uri: string
   title: string
 }
 
+/** Content source structure in indexedDB objectStore */
 export interface IDBContentSource {
+  id: string
   uri: string
   title: string
 }
