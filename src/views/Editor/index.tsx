@@ -2,7 +2,17 @@ import type { JSX } from 'react'
 import { useMemo } from 'react'
 import { View } from '@/components'
 import { Notes } from '@/components/Notes'
-import { Bold, Italic, Link, Text, TTVisual, Factbox, Table, LocalizedQuotationMarks } from '@ttab/textbit-plugins'
+import {
+  Bold,
+  Italic,
+  Image,
+  Link,
+  Text,
+  TTVisual,
+  Factbox,
+  Table,
+  LocalizedQuotationMarks
+} from '@ttab/textbit-plugins'
 import { ImageSearchPlugin } from '../../plugins/ImageSearch'
 import { FactboxPlugin } from '../../plugins/Factboxes'
 import { Editor as PlainEditor } from '@/components/PlainEditor'
@@ -124,6 +134,11 @@ function EditorWrapper(props: ViewProps & {
         bylineLabel: t('editor:image.bylineLabel'),
         enableCrop: false,
         removable: !preview
+      }),
+      Image({
+        removable: true,
+        enableCrop: false,
+        visibility: () => [false, true, false]
       }),
       Text({
         countCharacters: ['heading-1'],
