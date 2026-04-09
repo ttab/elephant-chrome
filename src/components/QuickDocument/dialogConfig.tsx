@@ -63,7 +63,7 @@ export const promptConfig = ({
       visible: sendPrompt,
       key: 'send',
       title: isFlash || isHast
-        ? i18next.t('flash:titles.createAndSendType', { type: documentType })
+        ? i18next.t('flash:titles.createAndSendType', { type: isFlash ? i18next.t('flash:title') : i18next.t('flash:hastLabel') })
         : i18next.t('flash:titles.approveType', { type: documentType }),
       description: !selectedPlanning
         ? i18next.t('flash:promptDescriptions.newPlanningWillBeCreated', {
