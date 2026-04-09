@@ -52,7 +52,7 @@ export const promptConfig = ({
   const documentType = getDocumentTypeLabel(type)
 
   const flashUsableDescription = shouldCreateQuickArticle
-    ? i18next.t('flash:promptDescriptions.alsoTypeCreated')
+    ? i18next.t('flash:promptDescriptions.alsoTypeCreated', { type: documentType })
     : ''
   const articleUsableDescription = i18next.t(
     'flash:promptDescriptions.alsoTypeCreatedWithApproved'

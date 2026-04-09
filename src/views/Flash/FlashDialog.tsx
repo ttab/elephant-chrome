@@ -437,7 +437,7 @@ export const FlashDialog = (props: {
               <Alert className='bg-red-300/35'>
                 <InfoIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />
                 <AlertTitle>
-                  {t(isHast ? 'flash:createHastAlertTitle' : 'flash:createFlashAlertTitle')}
+                  {t('flash:createAlertTitle', { type: t(isHast ? 'flash:hastLabel' : 'flash:title') })}
                 </AlertTitle>
                 <AlertDescription>
                   {!selectedPlanning
