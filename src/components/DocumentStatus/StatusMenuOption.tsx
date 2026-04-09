@@ -1,7 +1,7 @@
 import type { StatusSpecification, WorkflowTransition } from '@/defaults/workflowSpecification'
 import { DropdownMenuItem } from '@ttab/elephant-ui'
 import { cn } from '@ttab/elephant-ui/utils'
-import { CircleArrowRightIcon } from 'lucide-react'
+import { CircleArrowRightIcon } from '@ttab/elephant-ui/icons'
 
 export const StatusMenuOption = ({ statusDef, state, status, onSelect, hasChanges }: {
   statusDef: StatusSpecification

@@ -3,6 +3,7 @@ import { LoadingText } from '@/components/LoadingText'
 import { SessionProvider as NextSessionProvider, useSession } from 'next-auth/react'
 import { View } from '../components'
 import { Login } from '../views'
+import { useTranslation } from 'react-i18next'
 
 export const SessionProvider = ({ children }: PropsWithChildren) => (
   <NextSessionProvider refetchOnWindowFocus={false} basePath={`${import.meta.env.BASE_URL}/api/auth`} refetchInterval={150}>
@@ -12,6 +13,7 @@ export const SessionProvider = ({ children }: PropsWithChildren) => (
 
 const Session = ({ children }: PropsWithChildren) => {
   const { status, data: session } = useSession()
+  const { t } = useTranslation()
 
   if (status === 'loading') {
     return (
@@ -19,7 +21,7 @@ const Session = ({ children }: PropsWithChildren) => {
         <View.Content>
           <div className='flex items-center justify-center h-screen'>
             <div className='flex-col w-1/3'>
-              <LoadingText>Hämtar session...</LoadingText>
+              <LoadingText>{t('misc.fetchingSession')}</LoadingText>
             </div>
           </div>
         </View.Content>

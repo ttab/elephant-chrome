@@ -5,6 +5,7 @@ import { useSections } from '@/hooks/useSections'
 import { useWireSources } from '@/hooks/useWireSources'
 import { Newsvalues } from '@/defaults/newsvalues'
 import { cn } from '@ttab/elephant-ui/utils'
+import { useTranslation } from 'react-i18next'
 import { FreeTextFilter } from '@/components/Filter/common/FreeTextFilter'
 
 interface FilterPopoverProps {
@@ -16,6 +17,7 @@ interface FilterPopoverProps {
 type FilterPage = '' | 'query' | 'section' | 'source' | 'newsvalue' | 'wireStatus'
 
 export const FilterMenu = ({ currentFilters, onFilterChange }: FilterPopoverProps): JSX.Element => {
+  const { t } = useTranslation('wires')
   const [open, setOpen] = useState(false)
   const [page, setPage] = useState<FilterPage>('')
   const [search, setSearch] = useState<string>('')
@@ -40,11 +42,11 @@ export const FilterMenu = ({ currentFilters, onFilterChange }: FilterPopoverProp
   })), [])
 
   const optionsWireStatus = useMemo(() => [
-    { value: 'read', label: 'Läst' },
-    { value: 'saved', label: 'Sparad' },
-    { value: 'used', label: 'Använd' },
-    { value: 'flash', label: 'Flash' }
-  ], [])
+    { value: 'read', label: t('history.status.read') },
+    { value: 'saved', label: t('history.status.saved') },
+    { value: 'used', label: t('history.status.used') },
+    { value: 'flash', label: t('history.status.flash') }
+  ], [t])
 
   // Get current filter values for the active page
   const getCurrentFilterValues = (filterType: string): Set<string> => {
@@ -207,6 +209,8 @@ export const FilterMenu = ({ currentFilters, onFilterChange }: FilterPopoverProp
 }
 
 const MenuList = ({ onSelect }: { onSelect: (newPage: FilterPage) => void }) => {
+  const { t } = useTranslation(['wires', 'core'])
+
   return (
     <>
       <CommandItem
@@ -214,28 +218,28 @@ const MenuList = ({ onSelect }: { onSelect: (newPage: FilterPage) => void }) => 
         className='flex gap-1 items-center'
       >
         <ShapesIcon size={18} strokeWidth={1.75} />
-        Sektion
+        {t('core:labels.section')}
       </CommandItem>
       <CommandItem
         onSelect={() => onSelect('source')}
         className='flex gap-1 items-center'
       >
         <SquareCodeIcon size={18} strokeWidth={1.75} />
-        Källor
+        {t('wires:filter.sources')}
       </CommandItem>
       <CommandItem
         onSelect={() => onSelect('newsvalue')}
         className='flex gap-1 items-center'
       >
         <SignalHighIcon size={18} strokeWidth={1.75} />
-        Nyhetsvärde
+        {t('wires:filter.newsvalue')}
       </CommandItem>
       <CommandItem
         onSelect={() => onSelect('wireStatus')}
         className='flex gap-1 items-center'
       >
         <CircleCheckIcon size={18} strokeWidth={1.75} />
-        Telegramstatus
+        {t('wires:filter.wireStatus')}
       </CommandItem>
     </>
   )

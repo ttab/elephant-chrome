@@ -2,6 +2,17 @@ import { type Dispatch, type SetStateAction } from 'react'
 import type { CreateArticleDocumentStatus } from '@/views/QuickArticle/lib/createQuickArticle'
 import type { DefaultValueOption } from '@/types/index'
 import type { CreateFlashDocumentStatus } from '@/views/Flash/lib/createFlash'
+import i18next from 'i18next'
+
+type QuickDocumentType = 'article' | 'flash' | 'hast'
+
+function getDocumentTypeLabel(type: QuickDocumentType): string {
+  switch (type) {
+    case 'article': return i18next.t('core:documentType.article')
+    case 'hast': return i18next.t('flash:hastLabel')
+    case 'flash': return i18next.t('core:documentType.flash')
+  }
+}
 
 export type PromptConfig = {
   visible: boolean
@@ -26,7 +37,7 @@ export const promptConfig = ({
   sendPrompt,
   shouldCreateQuickArticle
 }: {
-  type: 'article' | 'flash'
+  type: QuickDocumentType
   selectedPlanning: Omit<DefaultValueOption, 'payload'> & { payload: unknown } | undefined
   setSavePrompt: Dispatch<SetStateAction<boolean>>
   setSendPrompt: Dispatch<SetStateAction<boolean>>
@@ -36,72 +47,105 @@ export const promptConfig = ({
   sendPrompt: boolean
   shouldCreateQuickArticle?: boolean
 }): PromptConfig[] => {
-  const documentType = type === 'article' ? 'artikel' : 'flash'
   const isFlash = type === 'flash'
+  const isHast = type === 'hast'
+  const documentType = getDocumentTypeLabel(type)
 
-  const flashUsableDescription = shouldCreateQuickArticle ? `I samma planering läggs det även till ett nytt textuppdrag med flashinnehållet, med status Klar.` : ''
-  const articleUsableDescription = 'Artikeln kommer att ha status Godkänd. Kom ihåg att uppdatera och publicera planeringen!'
+  const flashUsableDescription = shouldCreateQuickArticle
+    ? i18next.t('flash:promptDescriptions.alsoTypeCreated', { type: documentType })
+    : ''
+  const articleUsableDescription = i18next.t(
+    'flash:promptDescriptions.alsoTypeCreatedWithApproved'
+  )
 
   return [
     {
       visible: sendPrompt,
       key: 'send',
-      title: isFlash
-        ? `Skapa och skicka flash?`
-        : `Godkänn artikel?`,
+      title: isFlash || isHast
+        ? i18next.t('flash:titles.createAndSendType', { type: isFlash ? i18next.t('flash:title') : i18next.t('flash:hastLabel') })
+        : i18next.t('flash:titles.approveType', { type: documentType }),
       description: !selectedPlanning
-        ? `En ny planering med tillhörande uppdrag för denna ${documentType} skapas åt dig.`
-        : `Denna ${documentType} kommer att läggas i ett nytt uppdrag i planeringen "${selectedPlanning.label}".`,
+        ? i18next.t('flash:promptDescriptions.newPlanningWillBeCreated', {
+          type: documentType
+        })
+        : i18next.t('flash:promptDescriptions.typeWillBeAddedToPlanning', {
+          type: documentType,
+          planningName: selectedPlanning.label
+        }),
       secondaryDescription: isFlash
         ? flashUsableDescription
-        : articleUsableDescription,
-      secondaryLabel: 'Avbryt',
-      primaryLabel: isFlash ? 'Publicera' : 'Godkänn',
-      documentStatus: (isFlash ? 'usable' : 'approved') as CreateArticleDocumentStatus,
+        : isHast
+          ? undefined
+          : articleUsableDescription,
+      secondaryLabel: i18next.t('common:actions.abort'),
+      primaryLabel: isFlash || isHast
+        ? i18next.t('common:actions.publish')
+        : i18next.t('common:actions.approve'),
+      documentStatus: (isFlash || isHast
+        ? 'usable'
+        : 'approved') as CreateArticleDocumentStatus,
       setPrompt: setSendPrompt
     },
     {
       visible: donePrompt,
       key: 'done',
-      title: `Skapa och klarmarkera ${documentType}?`,
+      title: i18next.t('flash:titles.createAndMarkTypeAsDone', {
+        type: documentType
+      }),
       description: !selectedPlanning
-        ? `En ny planering med tillhörande uppdrag för denna ${documentType} skapas åt dig.`
-        : `Denna ${documentType} kommer att läggas i ett nytt uppdrag i planeringen "${selectedPlanning.label}", med status Klar.`,
-      secondaryLabel: 'Avbryt',
-      primaryLabel: 'Klarmarkera',
+        ? i18next.t('flash:promptDescriptions.newPlanningWillBeCreated', {
+          type: documentType
+        })
+        : i18next.t('flash:promptDescriptions.typeWillBeAddedToPlanning', {
+          type: documentType,
+          planningName: selectedPlanning.label
+        }),
+      secondaryLabel: i18next.t('common:actions.abort'),
+      primaryLabel: i18next.t('common:actions.markAsDone'),
       documentStatus: 'done' as CreateArticleDocumentStatus,
       setPrompt: setDonePrompt
     },
     {
       visible: savePrompt,
       key: 'save',
-      title: `Spara ${documentType}?`,
+      title: i18next.t('common:actions.saveType', { type: documentType }),
       description: !selectedPlanning
-        ? `En ny planering med tillhörande uppdrag för denna ${documentType} skapas åt dig.`
-        : `Denna ${documentType} kommer att läggas i ett nytt uppdrag i planeringen "${selectedPlanning.label}"`,
-      secondaryLabel: 'Avbryt',
-      primaryLabel: 'Spara',
+        ? i18next.t('flash:promptDescriptions.newPlanningWillBeCreated', {
+          type: documentType
+        })
+        : i18next.t('flash:promptDescriptions.typeWillBeAddedToPlanning', {
+          type: documentType,
+          planningName: selectedPlanning.label
+        }),
+      secondaryLabel: i18next.t('common:actions.abort'),
+      primaryLabel: i18next.t('common:actions.save'),
       documentStatus: undefined,
       setPrompt: setSavePrompt
     }
   ]
 }
 
-export const getLabel = (documentStatus: CreateFlashDocumentStatus, type: 'article' | 'flash'): string => {
-  const documentType = type === 'article' ? 'Artikel' : 'Flash'
+export const getLabel = (
+  documentStatus: CreateFlashDocumentStatus,
+  type: QuickDocumentType
+): string => {
+  const documentType = getDocumentTypeLabel(type)
 
   switch (documentStatus) {
     case 'usable': {
-      return `${documentType} ${type === 'flash' ? 'skickad' : 'publicerad'}`
+      return type === 'flash' || type === 'hast'
+        ? i18next.t('core:status.typeSent', { type: documentType })
+        : `${documentType} ${i18next.t('core:status.usable')}`
     }
     case 'approved': {
-      return `${documentType} godkänd`
+      return i18next.t('core:status.typeApproved', { type: documentType })
     }
     case 'done': {
-      return `${documentType} klar`
+      return i18next.t('core:status.typeDone', { type: documentType })
     }
     default: {
-      return `${documentType} sparad`
+      return i18next.t('core:status.typeSaved', { type: documentType })
     }
   }
 }

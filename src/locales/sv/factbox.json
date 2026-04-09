@@ -1,0 +1,10 @@
+{
+  "title": "Faktaruta",
+  "action": {
+    "createFactbox": "Skapa faktaruta"
+  },
+  "prompts": {
+    "approveBeforeClose": "Vill du godkänna ändringarna innan du stänger?",
+    "savedButNotApproved": "Dina ändringar är sparade men dokumentet är inte satt som godkänt."
+  }
+}

@@ -1,3 +1,5 @@
+import i18n from 'i18next'
+import type { TranslationKey } from '@/types/i18next.d'
 import {
   CircleCheckIcon,
   CircleDotIcon,
@@ -36,151 +38,150 @@ export interface StatusSpecification {
 }
 
 const baseDeliverable = (type: 'article' | 'flash'): WorkflowSpecification => {
-  const typeLabel = type === 'flash' ? 'flashen' : 'artikeln'
-  const typeLabelCap = typeLabel.charAt(0).toUpperCase() + typeLabel.slice(1)
+  const typeLabel = i18n.t(`workflows:base.${type}` as TranslationKey)
 
   return {
     draft: {
-      title: 'Utkast',
-      description: `Du jobbar på ett utkast av ${typeLabel}`,
+      title: i18n.t('workflows:base.draft.title', { label: typeLabel }),
+      description: i18n.t('workflows:base.draft.description', { label: typeLabel }),
       isWorkflow: true,
       requireCause: true,
       transitions: {
         done: {
           default: true,
           verify: true,
-          title: 'Klarmarkera',
-          description: `Markera ${typeLabel} som klar`
+          title: i18n.t('workflows:base.draft.transitions.done.title'),
+          description: i18n.t('workflows:base.draft.transitions.done.description', { label: typeLabel })
         },
         approved: {
           verify: true,
-          title: 'Godkänn',
-          description: `Godkänn ${typeLabel} för publicering`
+          title: i18n.t('workflows:base.draft.transitions.approved.title'),
+          description: i18n.t('workflows:base.draft.transitions.approved.description', { label: typeLabel })
         },
         usable: {
           verify: true,
-          title: 'Publicera',
-          description: `Publicera ${typeLabel}`
+          title: i18n.t('workflows:base.draft.transitions.usable.title'),
+          description: i18n.t('workflows:base.draft.transitions.usable.description', { label: typeLabel })
         },
         withheld: {
           verify: true,
-          title: 'Schemalägg publicering',
-          description: 'Ange datum och tid för publicering'
+          title: i18n.t('workflows:base.draft.transitions.withheld.title'),
+          description: i18n.t('workflows:base.draft.transitions.withheld.description')
         }
       }
     },
     done: {
-      title: 'Klar',
+      title: i18n.t('workflows:base.done.title'),
       requireCause: true,
-      description: `${typeLabelCap} är klar och väntar på godkännande`,
+      description: i18n.t('workflows:base.done.description', { label: typeLabel }),
       isWorkflow: true,
       transitions: {
         approved: {
           default: true,
           verify: true,
-          title: 'Godkänn',
-          description: `Godkänn ${typeLabel} för publicering`
+          title: i18n.t('workflows:base.done.transitions.approved.title'),
+          description: i18n.t('workflows:base.done.transitions.approved.description', { label: typeLabel })
         },
         usable: {
           verify: true,
-          title: 'Publicera',
-          description: `Publicera ${typeLabel} direkt`
+          title: i18n.t('workflows:base.done.transitions.usable.title'),
+          description: i18n.t('workflows:base.done.transitions.usable.description', { label: typeLabel })
         },
         withheld: {
           verify: true,
-          title: 'Schemalägg publicering',
-          description: 'Ange datum och tid för publicering'
+          title: i18n.t('workflows:base.done.transitions.withheld.title'),
+          description: i18n.t('workflows:base.done.transitions.withheld.description')
         },
         draft: {
           verify: true,
-          title: 'Till utkast',
-          description: `Gör om ${typeLabel} till ett utkast igen`
+          title: i18n.t('workflows:base.done.transitions.draft.title'),
+          description: i18n.t('workflows:base.done.transitions.draft.description', { label: typeLabel })
         },
         unpublished: {
           verify: true,
-          title: 'Avpublicera',
-          description: `Avbryt och arkivera ${typeLabel}`
+          title: i18n.t('workflows:base.done.transitions.unpublished.title'),
+          description: i18n.t('workflows:base.done.transitions.unpublished.description', { label: typeLabel })
         }
       }
     },
     approved: {
-      title: 'Godkänd',
-      description: `${typeLabelCap} är godkänd att publicera`,
+      title: i18n.t('workflows:base.approved.title'),
+      description: i18n.t('workflows:base.approved.description', { label: typeLabel }),
       isWorkflow: true,
       requireCause: true,
       transitions: {
         usable: {
           default: true,
           verify: true,
-          title: 'Publicera',
-          description: `Publicera ${typeLabel}`
+          title: i18n.t('workflows:base.approved.transitions.usable.title'),
+          description: i18n.t('workflows:base.approved.transitions.usable.description', { label: typeLabel })
         },
         withheld: {
           verify: true,
-          title: 'Schemalägg publicering',
-          description: 'Ange datum och tid för publicering'
+          title: i18n.t('workflows:base.approved.transitions.withheld.title'),
+          description: i18n.t('workflows:base.approved.transitions.withheld.description')
         },
         draft: {
           verify: true,
-          title: 'Till utkast',
-          description: `Gör om ${typeLabel} till ett utkast igen`
+          title: i18n.t('workflows:base.approved.transitions.draft.title'),
+          description: i18n.t('workflows:base.approved.transitions.draft.description', { label: typeLabel })
         },
         unpublished: {
           verify: true,
-          title: 'Avpublicera',
-          description: `Avbryt och arkivera ${typeLabel}`
+          title: i18n.t('workflows:base.approved.transitions.unpublished.title'),
+          description: i18n.t('workflows:base.approved.transitions.unpublished.description', { label: typeLabel })
         }
       }
     },
     usable: {
-      title: 'Publicerad',
-      description: `${typeLabelCap} är publicerad`,
+      title: i18n.t('workflows:base.usable.title'),
+      description: i18n.t('workflows:base.usable.description', { label: typeLabel }),
       isWorkflow: true,
       requireCause: true,
       transitions: {
         draft: {
           default: true,
           verify: true,
-          title: 'Ny version',
-          description: `Fortsätt jobba på en ny version av ${typeLabel}`
+          title: i18n.t('workflows:base.usable.transitions.draft.title'),
+          description: i18n.t('workflows:base.usable.transitions.draft.description', { label: typeLabel })
         },
         unpublished: {
           verify: true,
-          title: 'Avpublicera',
-          description: `Avbryt publiceringen och arkivera ${typeLabel}`
+          title: i18n.t('workflows:base.usable.transitions.unpublished.title'),
+          description: i18n.t('workflows:base.usable.transitions.unpublished.description', { label: typeLabel })
         }
       }
     },
     withheld: {
-      title: 'Schemalagd',
-      description: `${typeLabelCap} är schemalagd för automatisk publicering`,
+      title: i18n.t('workflows:base.withheld.title'),
+      description: i18n.t('workflows:base.withheld.description', { label: typeLabel }),
       isWorkflow: true,
       requireCause: true,
       transitions: {
         usable: {
           default: true,
           verify: true,
-          title: 'Publicera direkt',
-          description: `Publicera ${typeLabel} direkt`
+          title: i18n.t('workflows:base.withheld.transitions.usable.title'),
+          description: i18n.t('workflows:base.withheld.transitions.usable.description', { label: typeLabel })
         },
         draft: {
           verify: true,
-          title: 'Till utkast',
-          description: `Avbryt schemalagd publicering och gör om till utkast igen`
+          title: i18n.t('workflows:base.withheld.transitions.draft.title'),
+          description: i18n.t('workflows:base.withheld.transitions.draft.description')
         }
       }
     },
     unpublished: {
-      title: 'Avpublicerad',
-      description: `${typeLabelCap} har avpublicerats`,
+      title: i18n.t('workflows:base.unpublished.title'),
+      description: i18n.t('workflows:base.unpublished.description', { label: typeLabel }),
       isWorkflow: true,
       requireCause: true,
       transitions: {
         draft: {
           default: true,
           verify: true,
-          title: 'Ny version',
-          description: `Fortsätt jobba på en ny version av ${typeLabel}`
+          title: i18n.t('workflows:base.unpublished.transitions.draft.title'),
+          description: i18n.t('workflows:base.unpublished.transitions.draft.description', { label: typeLabel })
         }
       }
     }
@@ -259,381 +260,365 @@ export const getStatusSpecifications = (status: string, documentType?: string): 
   }
 }
 
-export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
-  'core/event': {
-    draft: {
-      title: 'Utkast',
-      description: 'Du jobbar på ett utkast av denna händelse',
-      isWorkflow: false,
-      asSave: false,
-      transitions: {
-        done: {
-          default: true,
-          verify: false,
-          title: 'Använd internt',
-          description: 'Gör händelsen internt synlig'
-        },
-        usable: {
-          verify: true,
-          title: 'Publicera externt',
-          description: 'Publicera händelsen externt'
+export function getWorkflowSpecifications(): Record<string, WorkflowSpecification> {
+  return {
+    'core/event': {
+      draft: {
+        title: i18n.t('workflows:core/event.draft.title'),
+        description: i18n.t('workflows:core/event.draft.description'),
+        isWorkflow: false,
+        asSave: false,
+        transitions: {
+          done: {
+            default: true,
+            verify: false,
+            title: i18n.t('workflows:core/event.draft.transitions.done.title'),
+            description: i18n.t('workflows:core/event.draft.transitions.done.description')
+          },
+          usable: {
+            verify: true,
+            title: i18n.t('workflows:core/event.draft.transitions.usable.title'),
+            description: i18n.t('workflows:core/event.draft.transitions.usable.description')
+          }
+        }
+      },
+      done: {
+        title: i18n.t('workflows:core/event.done.title'),
+        description: i18n.t('workflows:core/event.done.description'),
+        isWorkflow: false,
+        transitions: {
+          usable: {
+            verify: true,
+            title: i18n.t('workflows:core/event.done.transitions.usable.title'),
+            description: i18n.t('workflows:core/event.done.transitions.usable.description')
+          },
+          unpublished: {
+            verify: true,
+            title: i18n.t('workflows:core/event.done.transitions.unpublished.title'),
+            description: i18n.t('workflows:core/event.done.transitions.unpublished.description')
+          }
+        }
+      },
+      usable: {
+        title: i18n.t('workflows:core/event.usable.title'),
+        asSaveCTA: i18n.t('workflows:core/event.usable.asSaveCTA'),
+        asSaveTitle: i18n.t('workflows:core/event.usable.asSaveTitle'),
+        description: i18n.t('workflows:core/event.usable.description'),
+        changedDescription: i18n.t('workflows:core/event.usable.changedDescription'),
+        updateDescription: i18n.t('workflows:core/event.usable.updateDescription'),
+        isWorkflow: false,
+        asSave: true,
+        transitions: {
+          unpublished: {
+            verify: true,
+            title: i18n.t('workflows:core/event.usable.transitions.unpublished.title'),
+            description: i18n.t('workflows:core/event.usable.transitions.unpublished.description')
+          }
+        }
+      },
+      unpublished: {
+        title: i18n.t('workflows:core/event.unpublished.title'),
+        description: i18n.t('workflows:core/event.unpublished.description'),
+        isWorkflow: false,
+        transitions: {
+          draft: {
+            verify: true,
+            title: i18n.t('workflows:core/event.unpublished.transitions.draft.title'),
+            description: i18n.t('workflows:core/event.unpublished.transitions.draft.description')
+          }
         }
       }
     },
-    done: {
-      title: 'Intern',
-      description: 'Händelsen är internt synlig',
-      isWorkflow: false,
-      transitions: {
-        usable: {
-          verify: true,
-          title: 'Publicera',
-          description: 'Publicera händelsen externt'
-        },
-        unpublished: {
-          verify: true,
-          title: 'Avpublicera',
-          description: 'Avpublicera händelsen'
+    'core/planning-item': {
+      draft: {
+        title: i18n.t('workflows:core/planning-item.draft.title'),
+        description: i18n.t('workflows:core/planning-item.draft.description'),
+        isWorkflow: false,
+        asSave: false,
+        transitions: {
+          done: {
+            default: true,
+            verify: false,
+            title: i18n.t('workflows:core/planning-item.draft.transitions.done.title'),
+            description: i18n.t('workflows:core/planning-item.draft.transitions.done.description')
+          },
+          usable: {
+            verify: true,
+            title: i18n.t('workflows:core/planning-item.draft.transitions.usable.title'),
+            description: i18n.t('workflows:core/planning-item.draft.transitions.usable.description')
+          }
+        }
+      },
+      done: {
+        title: i18n.t('workflows:core/planning-item.done.title'),
+        description: i18n.t('workflows:core/planning-item.done.description'),
+        isWorkflow: false,
+        transitions: {
+          usable: {
+            title: i18n.t('workflows:core/planning-item.done.transitions.usable.title'),
+            verify: true,
+            description: i18n.t('workflows:core/planning-item.done.transitions.usable.description')
+          },
+          unpublished: {
+            verify: true,
+            title: i18n.t('workflows:core/planning-item.done.transitions.unpublished.title'),
+            description: i18n.t('workflows:core/planning-item.done.transitions.unpublished.description')
+          }
+        }
+      },
+      usable: {
+        title: i18n.t('workflows:core/planning-item.usable.title'),
+        asSaveCTA: i18n.t('workflows:core/planning-item.usable.asSaveCTA'),
+        asSaveTitle: i18n.t('workflows:core/planning-item.usable.asSaveTitle'),
+        description: i18n.t('workflows:core/planning-item.usable.description'),
+        changedDescription: i18n.t('workflows:core/planning-item.usable.changedDescription'),
+        updateDescription: i18n.t('workflows:core/planning-item.usable.updateDescription'),
+        isWorkflow: false,
+        asSave: true,
+        transitions: {
+          unpublished: {
+            verify: true,
+            title: i18n.t('workflows:core/planning-item.usable.transitions.unpublished.title'),
+            description: i18n.t('workflows:core/planning-item.usable.transitions.unpublished.description')
+          }
+        }
+      },
+      unpublished: {
+        title: i18n.t('workflows:core/planning-item.unpublished.title'),
+        description: i18n.t('workflows:core/planning-item.unpublished.description'),
+        isWorkflow: false,
+        transitions: {
+          draft: {
+            verify: true,
+            title: i18n.t('workflows:core/planning-item.unpublished.transitions.draft.title'),
+            description: i18n.t('workflows:core/planning-item.unpublished.transitions.draft.description')
+          }
         }
       }
     },
-    usable: {
-      title: 'Publicerad',
-      asSaveCTA: 'Opublicerade ändringar',
-      asSaveTitle: 'Publicera ny version',
-      description: 'Händelsen är publicerad externt',
-      changedDescription: 'Händelsen har ändrats sedan den senaste publiceringen',
-      updateDescription: 'Uppdatera den publicerade händelsen med de nya ändringarna',
-      isWorkflow: false,
-      asSave: true,
-      transitions: {
-        unpublished: {
-          verify: true,
-          title: 'Avpublicera',
-          description: 'Avpublicera händelsen'
+    'core/article': baseDeliverable('article'),
+    'core/flash': baseDeliverable('flash'),
+    'core/factbox': {
+      draft: {
+        title: i18n.t('workflows:core/factbox.draft.title'),
+        description: i18n.t('workflows:core/factbox.draft.description'),
+        isWorkflow: false,
+        transitions: {
+          usable: {
+            verify: true,
+            title: i18n.t('workflows:core/factbox.draft.transitions.usable.title'),
+            description: i18n.t('workflows:core/factbox.draft.transitions.usable.description')
+          }
+        }
+      },
+      usable: {
+        title: i18n.t('workflows:core/factbox.usable.title'),
+        asSaveCTA: i18n.t('workflows:core/factbox.usable.asSaveCTA'),
+        asSaveTitle: i18n.t('workflows:core/factbox.usable.asSaveTitle'),
+        description: i18n.t('workflows:core/factbox.usable.description'),
+        updateDescription: i18n.t('workflows:core/factbox.usable.updateDescription'),
+        isWorkflow: false,
+        asSave: true,
+        transitions: {
+          draft: {
+            verify: true,
+            title: i18n.t('workflows:core/factbox.usable.transitions.draft.title'),
+            description: i18n.t('workflows:core/factbox.usable.transitions.draft.description')
+          }
         }
       }
     },
-    unpublished: {
-      title: 'Avpublicerad',
-      description: 'Händelsen har avpublicerats',
-      isWorkflow: false,
-      transitions: {
-        draft: {
-          verify: true,
-          title: 'Utkast',
-          description: 'Gör om händelsen till ett utkast igen'
+    'core/editorial-info': {
+      draft: {
+        title: i18n.t('workflows:core/editorial-info.draft.title'),
+        description: i18n.t('workflows:core/editorial-info.draft.description'),
+        isWorkflow: true,
+        transitions: {
+          done: {
+            default: true,
+            title: i18n.t('workflows:core/editorial-info.draft.transitions.done.title'),
+            description: i18n.t('workflows:core/editorial-info.draft.transitions.done.description')
+          },
+          approved: {
+            title: i18n.t('workflows:core/editorial-info.draft.transitions.approved.title'),
+            description: i18n.t('workflows:core/editorial-info.draft.transitions.approved.description')
+          },
+          usable: {
+            verify: true,
+            title: i18n.t('workflows:core/editorial-info.draft.transitions.usable.title'),
+            description: i18n.t('workflows:core/editorial-info.draft.transitions.usable.description')
+          }
         }
-      }
-    }
-  },
-  'core/planning-item': {
-    draft: {
-      title: 'Utkast',
-      description: 'Du jobbar på ett utkast av denna planering',
-      isWorkflow: false,
-      asSave: false,
-      transitions: {
-        done: {
-          default: true,
-          verify: false,
-          title: 'Använd internt',
-          description: 'Gör planeringen internt synlig'
-        },
-        usable: {
-          verify: true,
-          title: 'Publicera externt',
-          description: 'Publicera planeringen externt'
+      },
+      done: {
+        title: i18n.t('workflows:core/editorial-info.done.title'),
+        description: i18n.t('workflows:core/editorial-info.done.description'),
+        isWorkflow: true,
+        transitions: {
+          approved: {
+            default: true,
+            title: i18n.t('workflows:core/editorial-info.done.transitions.approved.title'),
+            description: i18n.t('workflows:core/editorial-info.done.transitions.approved.description')
+          },
+          usable: {
+            verify: true,
+            title: i18n.t('workflows:core/editorial-info.done.transitions.usable.title'),
+            description: i18n.t('workflows:core/editorial-info.done.transitions.usable.description')
+          },
+          draft: {
+            title: i18n.t('workflows:core/editorial-info.done.transitions.draft.title'),
+            description: i18n.t('workflows:core/editorial-info.done.transitions.draft.description')
+          }
         }
-      }
-    },
-    done: {
-      title: 'Intern',
-      description: 'Planeringen är internt synlig',
-      isWorkflow: false,
-      transitions: {
-        usable: {
-          title: 'Publicera',
-          verify: true,
-          description: 'Publicera planeringen externt'
-        },
-        unpublished: {
-          verify: true,
-          title: 'Avpublicera',
-          description: 'Avpublicera planeringen'
+      },
+      approved: {
+        title: i18n.t('workflows:core/editorial-info.approved.title'),
+        description: i18n.t('workflows:core/editorial-info.approved.description'),
+        isWorkflow: true,
+        transitions: {
+          usable: {
+            default: true,
+            verify: true,
+            title: i18n.t('workflows:core/editorial-info.approved.transitions.usable.title'),
+            description: i18n.t('workflows:core/editorial-info.approved.transitions.usable.description')
+          },
+          draft: {
+            title: i18n.t('workflows:core/editorial-info.approved.transitions.draft.title'),
+            description: i18n.t('workflows:core/editorial-info.approved.transitions.draft.description')
+          }
         }
-      }
-    },
-    usable: {
-      title: 'Publicerad',
-      asSaveCTA: 'Opublicerade ändringar',
-      asSaveTitle: 'Publicera ändrad version',
-      description: 'Planeringen är publicerad',
-      changedDescription: 'Planeringen har ändrats sedan den senaste publiceringen',
-      updateDescription: 'Uppdatera den publicerade planeringen med de nya ändringarna',
-      isWorkflow: false,
-      asSave: true,
-      transitions: {
-        unpublished: {
-          verify: true,
-          title: 'Avpublicera',
-          description: 'Avpublicera planeringen'
-        }
-      }
-    },
-    unpublished: {
-      title: 'Avpublicerad',
-      description: 'Planeringen har avpublicerats',
-      isWorkflow: false,
-      transitions: {
-        draft: {
-          verify: true,
-          title: 'Utkast',
-          description: 'Gör om planeringen till ett utkast igen'
-        }
-      }
-    }
-  },
-  'core/article': baseDeliverable('article'),
-  'core/flash': baseDeliverable('flash'),
-  // Factbox workflow needs to be defined
-  'core/factbox': {
-    draft: {
-      title: 'Utkast',
-      description: 'Du jobbar på ett utkast av faktarutan',
-      isWorkflow: false,
-      transitions: {
-        usable: {
-          verify: false,
-          title: 'Godkänn',
-          description: 'Godkänn faktarutan för användning'
-        },
-        unpublished: {
-          verify: false,
-          title: 'Kasta',
-          description: 'Ta bort faktarutan'
+      },
+      usable: {
+        title: i18n.t('workflows:core/editorial-info.usable.title'),
+        description: i18n.t('workflows:core/editorial-info.usable.description'),
+        isWorkflow: true,
+        transitions: {
+          draft: {
+            default: true,
+            title: i18n.t('workflows:core/editorial-info.usable.transitions.draft.title'),
+            description: i18n.t('workflows:core/editorial-info.usable.transitions.draft.description')
+          },
+          unpublished: {
+            title: i18n.t('workflows:core/editorial-info.usable.transitions.unpublished.title'),
+            description: i18n.t('workflows:core/editorial-info.usable.transitions.unpublished.description')
+          }
         }
       }
     },
-    usable: {
-      title: 'Godkänd',
-      asSaveCTA: 'Ändrad',
-      asSaveTitle: 'Uppdatera',
-      updateDescription: 'Godkänn ändringarna',
-      description: 'Faktarutan är godkänd',
-      isWorkflow: false,
-      asSave: true,
-      transitions: {
-        unpublished: {
-          verify: false,
-          title: 'Kasta',
-          description: 'Ta bort faktarutan'
+    'tt/print-article': {
+      draft: {
+        title: 'Utkast',
+        description: 'Du jobbar på ett utkast av printartikeln',
+        isWorkflow: true,
+        transitions: {
+          needs_proofreading: {
+            default: true,
+            title: 'Begär korrläsning',
+            description: 'Behöver korrläsning av printartikeln'
+          },
+          print_done: {
+            title: 'Klarmarkera',
+            description: 'Markera printartikeln som klar'
+          },
+          usable: {
+            verify: true,
+            title: 'Exportera',
+            description: 'Exportera printartikeln'
+          }
         }
-      }
-    },
-    unpublished: {
-      title: 'Kastad',
-      description: 'Faktarutan är inte synlig eller användbar',
-      isWorkflow: false,
-      transitions: {
-        usable: {
-          verify: false,
-          title: 'Godkänn',
-          description: 'Godkänn faktarutan för användning'
+      },
+      needs_proofreading: {
+        title: 'Klar för korr',
+        description: 'Printartikeln behöver korrläsning',
+        isWorkflow: true,
+        transitions: {
+          print_done: {
+            title: 'Klarmarkera',
+            description: 'Markera printartikeln som klar'
+          },
+          usable: {
+            verify: true,
+            title: 'Exportera',
+            description: 'Exportera printartikeln'
+          },
+          cancelled: {
+            verify: true,
+            title: 'Kasta',
+            description: 'Kasta printartikeln'
+          },
+          draft: {
+            verify: true,
+            title: 'Till utkast',
+            description: 'Gör om printartikeln till ett utkast igen'
+          }
         }
-      }
-    }
-  },
-  'core/editorial-info': {
-    draft: {
-      title: 'Utkast',
-      description: 'Du jobbar på ett utkast av detta till red',
-      isWorkflow: true,
-      transitions: {
-        done: {
-          default: true,
-          title: 'Klarmarkera',
-          description: 'Markera till red som klar'
-        },
-        approved: {
-          title: 'Godkänn',
-          description: 'Godkänn till red för intern användning'
-        },
-        usable: {
-          verify: true,
-          title: 'Publicera',
-          description: 'Publicera till red externt synlig'
+      },
+      print_done: {
+        title: 'Klar',
+        description: 'Printartikeln är klar och väntar på godkännande',
+        isWorkflow: true,
+        transitions: {
+          approved: {
+            default: true,
+            title: 'Godkänn',
+            description: 'Godkänn printartikeln'
+          },
+          usable: {
+            verify: true,
+            title: 'Exportera',
+            description: 'Exportera printartikeln'
+          },
+          needs_proofreading: {
+            title: 'Begär korrläsning',
+            description: 'Behöver korrläsning av printartikeln'
+          },
+          cancelled: {
+            title: 'Kasta',
+            description: 'Kasta printartikeln'
+          },
+          draft: {
+            title: 'Till utkast',
+            description: 'Gör om printartikeln till ett utkast igen'
+          }
         }
-      }
-    },
-    done: {
-      title: 'Klar',
-      description: 'Till red är klar och väntar på godkännande',
-      isWorkflow: true,
-      transitions: {
-        approved: {
-          default: true,
-          title: 'Godkänn',
-          description: 'Godkänn till red för intern användning'
-        },
-        usable: {
-          verify: true,
-          title: 'Publicera',
-          description: 'Publicera till red externt synlig'
-        },
-        draft: {
-          title: 'Till utkast',
-          description: 'Gör om till red till ett utkast igen'
+      },
+      usable: {
+        title: 'Exporterad',
+        asSaveCTA: 'Oexporterade ändringar',
+        asSaveTitle: 'Exportera ändrad version',
+        description: 'Printartikeln är exporterad',
+        changedDescription: 'Printartikeln har ändrats sedan den senaste exporten',
+        updateDescription: 'Uppdatera den exporterade printartikeln med de nya ändringarna',
+        isWorkflow: false,
+        asSave: true,
+        transitions: {
+          unpublished: {
+            verify: true,
+            title: 'Dra tillbaka',
+            description: 'Avbryt export och arkivera printartikeln'
+          }
         }
-      }
-    },
-    approved: {
-      title: 'Intern',
-      description: 'Till red är internt publicerad och går att publicera externt',
-      isWorkflow: true,
-      transitions: {
-        usable: {
-          default: true,
-          verify: true,
-          title: 'Publicera',
-          description: 'Publicera till red externt synlig'
-        },
-        draft: {
-          title: 'Till utkast',
-          description: 'Gör om till red till ett utkast igen'
+      },
+      unpublished: {
+        title: 'Inställd',
+        description: 'Printartikeln är avpublicerad',
+        isWorkflow: true,
+        transitions: {
+          draft: {
+            title: 'Till utkast',
+            description: 'Gör om printartikeln till ett utkast igen'
+          }
         }
-      }
-    },
-    usable: {
-      title: 'Publicerad',
-      description: 'Till red är publicerad',
-      isWorkflow: true,
-      transitions: {
-        draft: {
-          default: true,
-          title: 'Till utkast',
-          description: 'Gör om till red till ett utkast igen'
-        },
-        unpublished: {
-          title: 'Dra tillbaka',
-          description: 'Avbryt publiceringen och arkivera till red'
-        }
-      }
-    }
-  },
-  'tt/print-article': {
-    draft: {
-      title: 'Utkast',
-      description: 'Du jobbar på ett utkast av printartikeln',
-      isWorkflow: true,
-      transitions: {
-        needs_proofreading: {
-          default: true,
-          title: 'Begär korrläsning',
-          description: 'Behöver korrläsning av printartikeln'
-        },
-        print_done: {
-          title: 'Klarmarkera',
-          description: 'Markera printartikeln som klar'
-        },
-        usable: {
-          verify: true,
-          title: 'Exportera',
-          description: 'Exportera printartikeln'
-        }
-      }
-    },
-    needs_proofreading: {
-      title: 'Klar för korr',
-      description: 'Printartikeln behöver korrläsning',
-      isWorkflow: true,
-      transitions: {
-        print_done: {
-          title: 'Klarmarkera',
-          description: 'Markera printartikeln som klar'
-        },
-        usable: {
-          verify: true,
-          title: 'Exportera',
-          description: 'Exportera printartikeln'
-        },
-        cancelled: {
-          verify: true,
-          title: 'Kasta',
-          description: 'Kasta printartikeln'
-        },
-        draft: {
-          verify: true,
-          title: 'Till utkast',
-          description: 'Gör om printartikeln till ett utkast igen'
-        }
-      }
-    },
-    print_done: {
-      title: 'Klar',
-      description: 'Printartikeln är klar och väntar på godkännande',
-      isWorkflow: true,
-      transitions: {
-        approved: {
-          default: true,
-          title: 'Godkänn',
-          description: 'Godkänn printartikeln'
-        },
-        usable: {
-          verify: true,
-          title: 'Exportera',
-          description: 'Exportera printartikeln'
-        },
-        needs_proofreading: {
-          title: 'Begär korrläsning',
-          description: 'Behöver korrläsning av printartikeln'
-        },
-        cancelled: {
-          title: 'Kasta',
-          description: 'Kasta printartikeln'
-        },
-        draft: {
-          title: 'Till utkast',
-          description: 'Gör om printartikeln till ett utkast igen'
-        }
-      }
-    },
-    usable: {
-      title: 'Exporterad',
-      asSaveCTA: 'Oexporterade ändringar',
-      asSaveTitle: 'Exportera ändrad version',
-      description: 'Printartikeln är exporterad',
-      changedDescription: 'Printartikeln har ändrats sedan den senaste exporten',
-      updateDescription: 'Uppdatera den exporterade printartikeln med de nya ändringarna',
-      isWorkflow: false,
-      asSave: true,
-      transitions: {
-        unpublished: {
-          verify: true,
-          title: 'Dra tillbaka',
-          description: 'Avbryt export och arkivera printartikeln'
-        }
-      }
-    },
-    unpublished: {
-      title: 'Inställd',
-      description: 'Printartikeln är avpublicerad',
-      isWorkflow: true,
-      transitions: {
-        draft: {
-          title: 'Till utkast',
-          description: 'Gör om printartikeln till ett utkast igen'
-        }
-      }
-    },
-    cancelled: {
-      title: 'Kastad',
-      description: 'Printartikeln är kastad',
-      isWorkflow: true,
-      transitions: {
-        draft: {
-          title: 'Till utkast',
-          description: 'Gör om printartikeln till ett utkast igen'
+      },
+      cancelled: {
+        title: 'Kastad',
+        description: 'Printartikeln är kastad',
+        isWorkflow: true,
+        transitions: {
+          draft: {
+            title: 'Till utkast',
+            description: 'Gör om printartikeln till ett utkast igen'
+          }
         }
       }
     }

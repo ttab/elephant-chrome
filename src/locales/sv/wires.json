@@ -1,0 +1,95 @@
+{
+  "title": "Telegram",
+  "toolbar": {
+    "save": "Spara inställningar för vyn",
+    "saveRequiresFilter": "Alla kolumner måste ha minst ett filter",
+    "addColumn": "Lägg till kolumn",
+    "markSaved": "Markera som sparad",
+    "markSavedDisabled": "Välj telegram för att markera som sparad",
+    "markRead": "Markera som läst",
+    "markReadDisabled": "Välj telegram för att markera som läst",
+    "markUsed": "Markera som använd",
+    "markUsedDisabled": "Välj telegram för att markera som använd",
+    "createArticle": "Skapa artikel med tillhörande planering från telegram",
+    "createArticleDisabled": "Välj telegram för att skapa artikel med tillhörande planering",
+    "createArticleAriaLabel": "Skapa artikel från telegram"
+  },
+  "stream": {
+    "addFilter": "Lägg till filter för att visa telegram",
+    "loadingMore": "Laddar fler...",
+    "noTitle": "Ingen titel",
+    "deselectHint": "för att avmarkera valda telegram"
+  },
+  "banner": {
+    "offline": "Du är offline — laddning av telegram återupptas vid återanslutning",
+    "streamErrors": "{{count}} ström kunde inte uppdateras",
+    "streamErrors_other": "{{count}} strömmar kunde inte uppdateras"
+  },
+  "filter": {
+    "freeText": "Fritext",
+    "searchOptions": "Sök alternativ",
+    "section": "Sektion",
+    "sources": "Källor",
+    "newsvalue": "Nyhetsvärde",
+    "wireStatus": "Telegramstatus",
+    "selected": "valda"
+  },
+  "toast": {
+    "openPlanning": "Öppna planering",
+    "openArticle": "Öppna artikel",
+    "statusChangeFailed": "Någon eller några status-ändringar misslyckades!"
+  },
+  "settings": {
+    "saveError": "Kunde inte spara inställningar",
+    "unknownError": "Ett okänt fel inträffade"
+  },
+  "creation": {
+    "title": "Skapa artikel",
+    "selectPlanning": "Välj planering",
+    "showOlder": "Visa äldre",
+    "planningTitle": "Planeringstitel",
+    "articleTitle": "Titel",
+    "assignmentTitle": "Uppdragstitel",
+    "noPlanningHint": "Väljer du ingen planering kommer en ny planering med tillhörande uppdrag skapas åt dig.",
+    "withPlanningHint": "Denna artikel kommer läggas i ett nytt uppdrag i den valda planeringen",
+    "dialogTitle": "Skapa artikel från telegram",
+    "dialogNoPlanningDescription": "En ny planering med tillhörande uppdrag för denna artikel kommer att skapas åt dig.",
+    "dialogWithPlanningDescription": "Denna artikel kommer att läggas i ett nytt uppdrag i planeringen \"{{planningLabel}}\"",
+    "articleCreated": "Artikel skapad",
+    "createError": "Det gick inte att skapa en artikel!",
+    "createError2": "Kunde inte skapa ny artikel!",
+    "assignmentRollbackError": "Artikeln kunde inte bekräftas som sparad och uppdraget kunde inte tas bort. Kontrollera planeringen manuellt.",
+    "markUsed": "Markera som använd",
+    "createButton": "Skapa artikel"
+  },
+  "sources": {
+    "title": "Källor",
+    "errorTitle": "Artikeldokument saknas",
+    "errorMessage": "Inget artikeldokument är angivet. Navigera tillbaka till översikten och försök igen.",
+    "noWires": "Inga källtelegram",
+    "loadingWire": "Laddar telegram…",
+    "sourceWires": "Källtelegram"
+  },
+  "preview": {
+    "pressRelease": "Pressmeddelande",
+    "statusRead": "Läst",
+    "statusSaved": "Sparad",
+    "statusUsed": "Använd",
+    "version": "Version"
+  },
+  "history": {
+    "status": {
+      "done": "Klarmarkerad",
+      "saved": "Sparad",
+      "approved": "Godkänd",
+      "read": "Läst",
+      "usable": "Publicerad",
+      "used": "Använd",
+      "withheld": "Tidspublicerad",
+      "cancelled": "Avbruten",
+      "unpublished": "Avpublicerad",
+      "flash": "Flash",
+      "system": "System"
+    }
+  }
+}

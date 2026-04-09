@@ -1,6 +1,6 @@
 import { useHistory, useLink, useNavigation, useView, useWorkflowStatus } from '@/hooks'
 import { Newsvalue } from '@/components/Newsvalue'
-import { useCallback, useState, type JSX } from 'react'
+import { useCallback, type JSX } from 'react'
 import { MetaSheet } from '@/components/MetaSheet/MetaSheet'
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { AddNote } from '@/components/Notes/AddNote'
@@ -15,7 +15,9 @@ import { updateAssignmentTime } from '@/lib/index/updateAssignmentPublishTime'
 import type { YDocument } from '@/modules/yjs/hooks'
 import { useYValue } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
+import { useTranslation } from 'react-i18next'
 import { documentTypeValueFormat } from '@/defaults/documentTypeFormats'
+import { HastToggle } from '@/components/HastToggle'
 
 export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: propPlanningId }: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -27,8 +29,8 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
   const { state, dispatch } = useNavigation()
   const history = useHistory()
   const planningId = useDeliverablePlanningId(ydoc.id)
-  const [publishTime] = useState<string | null>(null)
   const [workflowStatus] = useWorkflowStatus({ ydoc, documentId: ydoc.id })
+  const { t } = useTranslation('shared')
   const documentType = workflowStatus?.type
 
   const openLatestVersion = useLink('Editor')
@@ -70,7 +72,7 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
     if (['withheld', 'draft'].includes(newStatus)) {
       // We require a valid publish time if scheduling
       if (newStatus === 'withheld' && !(data?.time instanceof Date)) {
-        toast.error('Kunde inte schemalägga artikel! Tid eller datum är felaktigt angivet.')
+        toast.error(t('errors:toasts.couldNotScheduleArticle'))
         return false
       }
 
@@ -78,11 +80,11 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
         ? data.time
         : new Date()
 
-      await updateAssignmentTime(ydoc.id, planningId, newStatus, newTime)
+      await updateAssignmentTime(ydoc.id, planningId, newStatus, newTime, t)
     }
 
     return true
-  }, [planningId, dispatch, ydoc.id, history, state.viewRegistry, viewId])
+  }, [planningId, dispatch, ydoc.id, history, state.viewRegistry, viewId, t])
 
   const isReadOnlyAndUpdated = workflowStatus && workflowStatus?.name !== 'usable' && readOnly
   const isUnpublished = workflowStatus?.name === 'unpublished'
@@ -103,10 +105,13 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
       <ViewHeader.Content className='justify-start'>
         <div className='max-w-[810px] mx-auto flex flex-row gap-2 justify-between items-center w-full'>
           <div className='flex flex-row gap-1 justify-start items-center @7xl/view:-ml-20'>
-            <div className='hidden flex-row gap-2 justify-start items-center @lg/view:flex'>
+            <div className='hidden flex-row gap-2 justify-start items-center @md/view:flex'>
               {!readOnly && <AddNote ydoc={ydoc} />}
               {!readOnly && documentType !== 'core/editorial-info'
                 && <Newsvalue ydoc={ydoc} path='meta.core/newsvalue[0].value' />}
+              {!readOnly && documentType === 'core/article' && (
+                <HastToggle ydoc={ydoc} usableId={workflowStatus?.usableId} />
+              )}
               {!!wireBlocks?.length && (
                 <Button
                   variant='ghost'
@@ -115,7 +120,7 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
                   onClick={(event) => openSources(event, { id: ydoc.id }, 'last')}
                 >
                   <CableIcon size={15} strokeWidth={1.75} />
-                  Källor
+                  {t('wires:sources.title')}
                 </Button>
               )}
             </div>
@@ -137,14 +142,14 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
                       )
                     }}
                   >
-                    Gå till senaste versionen
+                    {t('editor:goToLatestVersion')}
                   </Button>
                 )}
 
                 {!!(propPlanningId || planningId) && (!isReadOnlyAndUpdated || isUnpublished) && (
                   <StatusMenu
+                    planningId={propPlanningId || planningId}
                     ydoc={ydoc}
-                    publishTime={publishTime ? new Date(publishTime) : undefined}
                     onBeforeStatusChange={onBeforeStatusChange}
                   />
                 )}
