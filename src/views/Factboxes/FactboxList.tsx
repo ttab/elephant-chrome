@@ -13,16 +13,15 @@ import { fields } from '@/shared/schemas/factbox'
 export const FactboxList = ({ columns }: {
   columns: ColumnDef<Factbox, unknown>[]
 }): JSX.Element => {
-  const [{ page }] = useQuery()
-  const [filter] = useQuery(['query'])
+  const [filter] = useQuery()
 
   useDocuments<Factbox, FactboxFields>({
     documentType: 'core/factbox',
     fields,
     query: constructQuery(filter),
     sort: [{ field: 'modified', desc: true }],
-    page: typeof page === 'string'
-      ? parseInt(page)
+    page: typeof filter.page === 'string'
+      ? parseInt(filter.page)
       : undefined,
     options: {
       subscribe: true,

@@ -7,6 +7,7 @@ import { Header } from '@/components/Header'
 import { AssignmentsList } from './AssignmentsList'
 import { assignmentColumns } from './AssignmentColumns'
 import { Commands } from '@/components/Commands'
+import { SearchLink } from '@/components/AdvancedSearch'
 import { useAuthors } from '@/hooks/useAuthors'
 import { useRegistry } from '@/hooks/useRegistry'
 import { useSession } from 'next-auth/react'
@@ -87,6 +88,7 @@ export const Assignments = (): JSX.Element => {
           <ViewHeader.Content>
             <ViewHeader.Title name={meta.name} title={t('views:assignments.title')} />
             <Header type={meta.name} assigneeId={assigneeId} />
+            <SearchLink searchType='articles' />
           </ViewHeader.Content>
 
           <ViewHeader.Action />
