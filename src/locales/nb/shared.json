@@ -34,6 +34,7 @@
     "planningDate": "Dato i planen",
     "setTime": "Skriv inn tid",
     "asSavePlaceholder": "Publiser ny informasjon",
+    "embargoMinTime": "Embargo: kan ikke planlegges før {{time}}",
     "causes": {
       "development_short": "UV",
       "development_long": "Utvikling",

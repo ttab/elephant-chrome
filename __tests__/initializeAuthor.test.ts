@@ -33,6 +33,7 @@ describe('initializeAuthor', () => {
       accessTokenExpires: 1234567890,
       expires: 'mockExpires',
       status: 'authenticated',
+      units: [],
       error: '',
       user: {
         sub: 'core://user/5558',

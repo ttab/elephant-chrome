@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next'
 import { useCollaborationDocument } from '@/hooks/useCollaborationDocument'
 import { useYValue } from '@/modules/yjs/hooks'
 
-export const PromptSchedule = ({ prompt, planningId, setStatus, showPrompt, requireCause = false }: {
+export const PromptSchedule = ({ prompt, planningId, setStatus, showPrompt, requireCause = false, embargoUntil }: {
   prompt: {
     status: string
   } & WorkflowTransition
@@ -22,15 +22,21 @@ export const PromptSchedule = ({ prompt, planningId, setStatus, showPrompt, requ
     status: string
   } & WorkflowTransition) | undefined>>
   requireCause?: boolean
+  embargoUntil?: string
 }) => {
   const { timeZone } = useRegistry()
   const { loading, document } = useCollaborationDocument({ documentId: planningId })
   const ele = document ? document.getMap('ele') : undefined
   const [publishDate] = useYValue<Date>(ele, 'meta.core/planning-item[0].data.start_date') as Date[]
   const now = new Date()
-  const [time, setTime] = useState(now)
+  const embargoDate = embargoUntil ? new Date(embargoUntil) : undefined
+  const embargoIsActive = embargoDate ? embargoDate > now : false
+  const [time, setTime] = useState(embargoIsActive && embargoDate ? embargoDate : now)
   const [cause, setCause] = useState<string | undefined>()
   const { t } = useTranslation()
+
+  // Check if selected time respects embargo
+  const timeViolatesEmbargo = embargoIsActive && embargoDate ? time < embargoDate : false
 
   useEffect(() => {
     if (loading) return
@@ -38,7 +44,13 @@ export const PromptSchedule = ({ prompt, planningId, setStatus, showPrompt, requ
     const formatedPublishDate = publishDate.toLocaleString()
     const formatedNow = now.toLocaleString().slice(0, 10)
 
-    // only set to pulish date if it's in the future, otherwise default to now
+    // If embargo is active, use embargo time as minimum
+    if (embargoIsActive && embargoDate) {
+      setTime(embargoDate)
+      return
+    }
+
+    // only set to publish date if it's in the future, otherwise default to now
     if (publishDate && formatedPublishDate >= formatedNow) {
       const d = new Date(publishDate)
       d.setHours(now.getHours(), now.getMinutes(), 0, 0)
@@ -66,10 +78,18 @@ export const PromptSchedule = ({ prompt, planningId, setStatus, showPrompt, requ
       onSecondary={() => {
         showPrompt(undefined)
       }}
-      disablePrimary={requireCause && !cause}
+      disablePrimary={(requireCause && !cause) || timeViolatesEmbargo}
     >
       <div className='flex flex-col items-start gap-6'>
         {prompt.description}
+
+        {embargoIsActive && embargoDate && (
+          <div className='text-sm text-orange-700 dark:text-orange-400'>
+            {t('shared:status_menu.embargoMinTime', {
+              time: format(toZonedTime(embargoDate, timeZone), 'yyyy-MM-dd HH:mm')
+            })}
+          </div>
+        )}
 
         <div className='flex flex-row justify-items-start items-stretch gap-6 flex-wrap pt-2'>
 

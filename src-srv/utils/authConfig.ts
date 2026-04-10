@@ -1,6 +1,7 @@
 import { type AuthConfig } from '@auth/core'
 import Keycloak from '@auth/express/providers/keycloak'
 import { type JWT } from '@auth/core/jwt'
+import { decodeJwt } from 'jose'
 import type pino from 'pino'
 
 const scopes = [
@@ -71,10 +72,23 @@ export async function createAuthInfo(
             // @ts-expect-error sub exists
             user.sub = account.providerAccountId
           }
+
+          // Extract units from the JWT access token
+          let units: string[] = []
+          if (account.access_token) {
+            try {
+              const decoded = decodeJwt(account.access_token)
+              units = Array.isArray(decoded.units) ? decoded.units as string[] : []
+            } catch {
+              // Token decode failure is non-fatal
+            }
+          }
+
           return {
             accessToken: account.access_token,
             accessTokenExpires: Date.now() + (account.expires_in || 300) * 1000,
             refreshToken: account.refresh_token,
+            units,
             user
           }
         }
@@ -157,11 +171,21 @@ async function refreshAccessToken(
       throw new Error('refresh request error response: invalid token response')
     }
 
+    // Re-extract units from the refreshed access token
+    let units: string[] = (token.units as string[]) || []
+    try {
+      const decoded = decodeJwt(refreshedTokens.access_token)
+      units = Array.isArray(decoded.units) ? decoded.units as string[] : units
+    } catch {
+      // Token decode failure is non-fatal, keep existing units
+    }
+
     return {
       ...token,
       accessToken: refreshedTokens.access_token,
       accessTokenExpires: Date.now() + refreshedTokens.expires_in * 1000,
-      refreshToken: refreshedTokens.refresh_token ?? token.refreshToken
+      refreshToken: refreshedTokens.refresh_token ?? token.refreshToken,
+      units
     }
   } catch (ex) {
     logger.error({

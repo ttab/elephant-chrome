@@ -39,7 +39,8 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
     publishTime,
     section,
     wires,
-    quickArticleData
+    quickArticleData,
+    embargoUntil
   } = req.body as {
     planningId?: string
     planningTitle?: string
@@ -58,6 +59,7 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
     }
     wires?: Wire[]
     quickArticleData?: { title?: string, text?: string, deliverableId: string }
+    embargoUntil?: string
   }
 
   if (!type || !deliverableId || !title || !localDate || !isoDateTime) {
@@ -134,6 +136,10 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
 
     if (publishTime) {
       assignmentData.publish = publishTime
+    }
+
+    if (embargoUntil) {
+      assignmentData.embargo_until = embargoUntil
     }
 
     const [index] = appendAssignment({

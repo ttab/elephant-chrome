@@ -7,7 +7,7 @@ import {
 } from '@/components'
 import type { ViewProps } from '@/types'
 import type { DefaultValueOption } from '@ttab/elephant-ui'
-import { Button, Checkbox, ComboBox, Input, Label } from '@ttab/elephant-ui'
+import { Button, Checkbox, ComboBox, Input, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@ttab/elephant-ui'
 import {
   CircleXIcon,
   TagsIcon,
@@ -16,13 +16,13 @@ import {
   BriefcaseBusinessIcon,
   TagIcon
 } from '@ttab/elephant-ui/icons'
-import { useRegistry, useSections } from '@/hooks'
+import { useRegistry, useSections, useHasUnit } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import type { JSX } from 'react'
-import { Fragment, useRef, useState } from 'react'
+import { Fragment, useMemo, useRef, useState } from 'react'
 import { UserMessage } from '@/components/UserMessage'
 import { Form } from '@/components/Form'
-import { fetch } from '@/lib/index/fetch-plannings-twirp'
+import { fetch as fetchPlannings } from '@/lib/index/fetch-plannings-twirp'
 import { createArticle } from './lib/createArticle'
 import { SluglineEditable } from '@/components/DataItem/SluglineEditable'
 import type * as Y from 'yjs'
@@ -32,10 +32,23 @@ import { toSlateYXmlText } from '@/shared/yUtils'
 import { useYDocument } from '@/modules/yjs/hooks'
 import { useYValue } from '@/modules/yjs/hooks/useYValue'
 import { TextInput } from '@/components/ui/TextInput'
-import type { EleDocumentResponse } from '@/shared/types'
+import type { EleDocument, EleDocumentResponse } from '@/shared/types'
 import { ValidateNow } from '@/components/ValidateNow'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
+import useSWR from 'swr'
+import { ClockIcon } from '@ttab/elephant-ui/icons'
+
+const BASE_URL = import.meta.env.BASE_URL || ''
+
+const wireDocFetcher = async (url: string): Promise<EleDocument | undefined> => {
+  const response = await fetch(url)
+  if (!response.ok) {
+    return undefined
+  }
+  const result = await response.json() as EleDocumentResponse
+  return result.document
+}
 
 export const WireViewContent = (props: ViewProps & {
   documentId: string
@@ -45,6 +58,26 @@ export const WireViewContent = (props: ViewProps & {
   // Create article using supplied data
   const ydoc = useYDocument<Y.Map<unknown>>(props.documentId, { data: props.data })
   const { status, data: session } = useSession()
+
+  // Fetch the first wire document to get embargo and content sources
+  const primaryWireId = props.wires?.[0]?.id
+  const { data: wireDocument } = useSWR<EleDocument | undefined>(
+    primaryWireId ? `${BASE_URL}/api/documents/${primaryWireId}?direct=true` : null,
+    wireDocFetcher,
+    { revalidateOnFocus: false, revalidateOnReconnect: false }
+  )
+
+  const wireData = useMemo(() => {
+    if (!wireDocument) {
+      return { embargoUntil: undefined, contentSources: undefined }
+    }
+
+    const embargoUntil = wireDocument.meta?.['tt/wire']?.[0]?.data?.embargo_until as string | undefined
+    const contentSources = wireDocument.links?.['core/content-source']
+
+    return { embargoUntil, contentSources }
+  }, [wireDocument])
+
   const [showVerifyDialog, setShowVerifyDialog] = useState(false)
   const [searchOlder, setSearchOlder] = useState(false)
   const [selectedPlanning, setSelectedPlanning] = useState<DefaultValueOption & { payload: { slugline?: string, sluglines?: string[], newsvalue?: string, sectionUuid: string, sectionTitle: string } } | undefined>(undefined)
@@ -62,6 +95,9 @@ export const WireViewContent = (props: ViewProps & {
   const [slugline, setSlugline] = useYValue<Y.XmlText>(ydoc.ele, 'meta.tt/slugline[0].value', true)
   const { t } = useTranslation('wires')
   const [, setNewsvalue] = useYValue<string | undefined>(ydoc.ele, 'meta.core/newsvalue[0].value')
+  const isNpkUser = useHasUnit('/redaktionen-npk')
+  const [translationMode, setTranslationMode] = useState<'none' | 'standard' | 'personal'>(isNpkUser ? 'standard' : 'none')
+  const wireHeadline = props.wires?.[0]?.fields['document.title']?.values?.[0] || ''
 
   const handleSubmit = (): void => {
     setShowVerifyDialog(true)
@@ -118,6 +154,18 @@ export const WireViewContent = (props: ViewProps & {
               </div>
             )}
 
+            {!!wireData.embargoUntil && (
+              <Form.Group icon={ClockIcon}>
+                <div className='flex items-center gap-2 text-sm text-orange-700 dark:text-orange-400'>
+                  <span className='font-medium'>
+                    {t('creation.embargo')}
+                    {': '}
+                  </span>
+                  <span>{new Date(wireData.embargoUntil).toLocaleString(locale.code.full)}</span>
+                </div>
+              </Form.Group>
+            )}
+
             <Form.Group icon={GanttChartSquareIcon}>
               <Awareness path='wirePlanningItem' ref={documentAwareness} ydoc={ydoc}>
                 <ComboBox
@@ -132,7 +180,7 @@ export const WireViewContent = (props: ViewProps & {
                       documentAwareness.current(isOpen)
                     }
                   }}
-                  fetch={(query) => fetch(query, session, t, index, locale, timeZone, {
+                  fetch={(query) => fetchPlannings(query, session, t, index, locale, timeZone, {
                     searchOlder,
                     sluglines: true
                   })}
@@ -220,6 +268,7 @@ export const WireViewContent = (props: ViewProps & {
                   <Input
                     className='pt-2 h-7 text-medium placeholder:text-[#5D709F] placeholder-shown:border-[#5D709F]'
                     placeholder={t('creation.planningTitle')}
+                    defaultValue={isNpkUser ? wireHeadline : undefined}
                     ref={planningTitleRef}
                   />
                 </>
@@ -255,6 +304,28 @@ export const WireViewContent = (props: ViewProps & {
                 />
               )}
             </Form.Group>
+
+            {isNpkUser && (
+              <Form.Group icon={CableIcon}>
+                <Label className='text-muted-foreground text-sm'>
+                  {t('creation.translateToNynorsk')}
+                </Label>
+                <Select
+                  value={translationMode}
+                  onValueChange={(value: string) => { setTranslationMode(value as 'none' | 'standard' | 'personal') }}
+                >
+                  <SelectTrigger className='h-7 w-auto min-w-32'>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value='none'>{t('creation.translationNone')}</SelectItem>
+                    <SelectItem value='standard'>{t('creation.translationStandard')}</SelectItem>
+                    <SelectItem value='personal'>{t('creation.translationPersonal')}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </Form.Group>
+            )}
+
             <>
               <UserMessage asDialog={!!props?.asDialog}>
                 {!selectedPlanning
@@ -297,7 +368,11 @@ export const WireViewContent = (props: ViewProps & {
                     newsvalue: selectedPlanning?.payload?.newsvalue,
                     wires: props.wires,
                     section: effectiveSection,
-                    timeZone
+                    timeZone,
+                    embargoUntil: wireData.embargoUntil,
+                    contentSources: wireData.contentSources,
+                    wireContent: wireDocument?.content,
+                    translationMode: translationMode !== 'none' ? translationMode : undefined
                   })
                     .then(() => {
                       setShowVerifyDialog(false)
