@@ -17,6 +17,11 @@ export function hastDocumentTemplate(id: string, payload?: TemplatePayload): Doc
       }),
       Block.create({
         type: 'core/text',
+        data: { text: '' },
+        role: 'preamble'
+      }),
+      Block.create({
+        type: 'core/text',
         data: { text: '' }
       })
     ],
