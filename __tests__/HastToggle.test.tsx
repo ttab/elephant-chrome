@@ -96,7 +96,7 @@ describe('HastToggle', () => {
     )
   })
 
-  it('sets hast value to 0 on toggle off', async () => {
+  it('shows prompt on toggle off and removes from version', async () => {
     mockHastValue = Block.create({ type: 'ntb/hast', value: '2' })
     const user = userEvent.setup()
     render(<HastToggle ydoc={mockYdoc} usableId={1n} />)
@@ -104,9 +104,26 @@ describe('HastToggle', () => {
     const toggle = screen.getByRole('switch')
     await user.click(toggle)
 
+    const versionButton = screen.getByText('Den här versionen')
+    await user.click(versionButton)
+
     expect(mockSetHast).toHaveBeenCalledWith(
       Block.create({ type: 'ntb/hast', value: '0' })
     )
+  })
+
+  it('shows prompt on toggle off and removes from article', async () => {
+    mockHastValue = Block.create({ type: 'ntb/hast', value: '2' })
+    const user = userEvent.setup()
+    render(<HastToggle ydoc={mockYdoc} usableId={1n} />)
+
+    const toggle = screen.getByRole('switch')
+    await user.click(toggle)
+
+    const articleButton = screen.getByText('Hela artikeln')
+    await user.click(articleButton)
+
+    expect(mockSetHast).toHaveBeenCalledWith(undefined)
   })
 
   it('sets hast to next version when toggling on after previous hast was consumed', async () => {

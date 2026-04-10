@@ -6,8 +6,9 @@ import { useRegistry } from '@/hooks/useRegistry'
 import { useTranslation } from 'react-i18next'
 import { ZapIcon } from '@ttab/elephant-ui/icons'
 import type * as Y from 'yjs'
-import type { JSX } from 'react'
+import { useState, type JSX } from 'react'
 import { cn } from '@ttab/elephant-ui/utils'
+import { Prompt } from '@/components/Prompt'
 import { snapshotDocument } from '@/lib/snapshotDocument'
 import { toast } from 'sonner'
 
@@ -65,9 +66,18 @@ export const HastToggle = ({ ydoc, usableId, className, variant = 'compact' }: {
   const { t } = useTranslation()
   const [hast, setHast] = useYValue<Block | undefined>(ydoc.ele, 'meta.ntb/hast[0]')
   const isHast = !!hast && BigInt(hast.value || '0') === (usableId ?? 0n) + 1n
+  const [showPrompt, setShowPrompt] = useState(false)
 
   if (!featureFlags.hasHast) {
     return null
+  }
+
+  function snapshot() {
+    snapshotDocument(ydoc.id, {}, ydoc.provider?.document)
+      .catch((error) => {
+        toast.error(t('errors:toasts.saveChangeError'))
+        console.error('Error snapshotting document after toggling HAST:', error)
+      })
   }
 
   function handleToggle() {
@@ -77,18 +87,25 @@ export const HastToggle = ({ ydoc, usableId, className, variant = 'compact' }: {
         type: 'ntb/hast',
         value: String(nextId)
       }))
+      snapshot()
     } else {
-      setHast(Block.create({
-        type: 'ntb/hast',
-        value: '0'
-      }))
+      setShowPrompt(true)
     }
+  }
 
-    snapshotDocument(ydoc.id, {}, ydoc.provider?.document)
-      .catch((error) => {
-        toast.error(t('errors:toasts.saveChangeError'))
-        console.error('Error snapshotting document after toggling HAST:', error)
-      })
+  function handleRemoveFromVersion() {
+    setHast(Block.create({
+      type: 'ntb/hast',
+      value: '0'
+    }))
+    snapshot()
+    setShowPrompt(false)
+  }
+
+  function handleRemoveFromArticle() {
+    setHast(undefined)
+    snapshot()
+    setShowPrompt(false)
   }
 
   const textColor = isHast ? 'text-foreground' : 'text-muted-foreground'
@@ -115,14 +132,29 @@ export const HastToggle = ({ ydoc, usableId, className, variant = 'compact' }: {
   }
 
   return (
-    <div className={cn('flex items-center gap-1.5', className)}>
-      <HastSwitch checked={isHast} onCheckedChange={handleToggle} size='lg' />
-      <Label
-        className={cn('text-xs cursor-pointer', textColor)}
-        onClick={handleToggle}
-      >
-        {t('flash:hastLabel')}
-      </Label>
-    </div>
+    <>
+      <div className={cn('flex items-center gap-1.5', className)}>
+        <HastSwitch checked={isHast} onCheckedChange={handleToggle} size='lg' />
+        <Label
+          className={cn('text-xs cursor-pointer', textColor)}
+          onClick={handleToggle}
+        >
+          {t('flash:hastLabel')}
+        </Label>
+      </div>
+
+      {showPrompt && (
+        <Prompt
+          title={t('flash:removeHast.title')}
+          description={t('flash:removeHast.description')}
+          primaryLabel={t('flash:removeHast.fromVersion')}
+          secondaryLabel={t('flash:removeHast.fromArticle')}
+          cancelLabel={t('common:actions.abort')}
+          onPrimary={handleRemoveFromVersion}
+          onSecondary={handleRemoveFromArticle}
+          onCancel={() => setShowPrompt(false)}
+        />
+      )}
+    </>
   )
 }

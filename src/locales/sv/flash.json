@@ -30,5 +30,11 @@
   "sendAsHast": "Skicka som HAST",
   "sendAsHastDescription": "Vid publicering ska denna artikel skickas som en HAST.",
   "hastLabel": "HAST",
-  "hastDefaultPreamble": "Texten uppdateras"
+  "hastDefaultPreamble": "Texten uppdateras",
+  "removeHast": {
+    "title": "Ta bort HAST",
+    "description": "Vill du ta bort HAST från den här versionen eller från hela artikeln?",
+    "fromVersion": "Den här versionen",
+    "fromArticle": "Hela artikeln"
+  }
 }
