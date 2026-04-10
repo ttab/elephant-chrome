@@ -28,7 +28,6 @@ export const CreatePrintArticle = ({ id, asDialog, onDialogClose, className }: V
   const { baboon } = useRegistry()
   const { data: session } = useSession()
   const icon = documentTypeValueFormat['tt/print-article'].icon
-  
 
   const { data, error } = useDocuments<PrintFlow, PrintFlowFields>({
     documentType: 'tt/print-flow',
