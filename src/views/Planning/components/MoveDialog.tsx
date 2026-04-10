@@ -8,7 +8,7 @@ import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle
 } from '@ttab/elephant-ui'
 import { dateToReadableDateTime } from '@/shared/datetime'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { dateToReadableDate, dateToReadableTime } from '@/shared/datetime'
 import { getValueByYPath, setValueByYPath, getValueFromPath } from '@/shared/yUtils'
 import type { Block } from '@ttab/elephant-api/newsdoc'
@@ -20,6 +20,8 @@ import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { type YDocument, useYValue } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import { useTranslation } from 'react-i18next'
+import { useSession } from 'next-auth/react'
+import { getAssignmentStatuses } from '@/views/Assignments/lib/getAssignmentStatuses'
 
 export const MoveDialog = ({ ydoc, onClose, newDate }: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -30,9 +32,26 @@ export const MoveDialog = ({ ydoc, onClose, newDate }: {
   const [assignments] = useYValue<EleBlock[]>(ydoc.ele, 'meta.core/assignment', false)
   const [, setStartString] = useYValue<string>(ydoc.ele, 'meta.core/planning-item[0].data.start_date')
   const [, setEndString] = useYValue<string>(ydoc.ele, 'meta.core/planning-item[0].data.end_date')
+  const { repository } = useRegistry()
+  const { data } = useSession()
   // Record of assignment ids and times to change
   const assignmentTimes = useRef<Record<string, TimeDef | undefined>>({})
   const { t } = useTranslation()
+  const [assignmentStatuses, setAssignmentStatuses] = useState<{ id: string | undefined, uuid: string, workflowState: string }[] | undefined>(undefined)
+
+  useEffect(() => {
+    if (!assignments || !repository || !data?.accessToken) {
+      return
+    }
+
+    getAssignmentStatuses(assignments, repository, data?.accessToken).then((statuses) => {
+      setAssignmentStatuses(statuses)
+    }).catch((err) => {
+      onClose()
+      toast.error(t('errors:toasts.fetchAssignmentStatuses'))
+      console.error('Failed to get assignment statuses', err)
+    })
+  }, [assignments, repository, data?.accessToken, t])
 
   return (
     <Dialog open={true}>
@@ -42,56 +61,64 @@ export const MoveDialog = ({ ydoc, onClose, newDate }: {
             {t('planning:move.dateSwitch')}
           </DialogTitle>
 
-          <DialogDescription>
-            {t('planning:move.dateSwitchDescription')}
-            {' '}
-            {newDate}
-            .
-          </DialogDescription>
+          {!!assignmentStatuses && (
+            <>
+              <DialogDescription>
+                {t('planning:move.dateSwitchDescription')}
+                {' '}
+                {newDate}
+                .
+              </DialogDescription>
 
-          <div className='flex flex-col gap-3 py-2 text-left'>
-            {(assignments || []).map((_, n) => {
-              const assignment = getValueFromPath<Y.Map<unknown>>(ydoc.ele, ['meta', 'core/assignment', n], true)
-              const assignmentType = getValueFromPath<string>(assignment, ['meta', 'core/assignment-type', 0, 'value']) || ''
+              <div className='flex flex-col gap-3 py-2 text-left'>
+                {(assignments || []).map((_, n) => {
+                  const assignment = getValueFromPath<Y.Map<unknown>>(ydoc.ele, ['meta', 'core/assignment', n], true)
+                  const assignmentType = getValueFromPath<string>(assignment, ['meta', 'core/assignment-type', 0, 'value']) || ''
+                  const articleStatus = assignmentStatuses?.find((status) => status.id === assignment?.get('id'))?.workflowState
+                  if (assignment && ((assignmentType === 'text' && articleStatus !== 'withheld') || !['picture', 'video', 'text'].includes(assignmentType))) {
+                    return (
+                      <AssignmentListItem
+                        key={assignment.get('id') as string}
+                        assignment={assignment}
+                        newDate={newDate}
+                        onChangeSelected={(id, value) => {
+                          assignmentTimes.current[id] = value
+                        }}
+                        articleStatus={articleStatus}
+                      />
+                    )
+                  }
+                })}
+              </div>
 
-              if (assignment && !['picture', 'video'].includes(assignmentType)) {
-                return (
-                  <AssignmentListItem
-                    key={assignment.get('id') as string}
-                    assignment={assignment}
-                    newDate={newDate}
-                    onChangeSelected={(id, value) => {
-                      assignmentTimes.current[id] = value
-                    }}
-                  />
-                )
-              }
-            })}
-          </div>
+              <DialogDescription>
+                {t('planning:move.dateSwitchAssignments')}
+              </DialogDescription>
 
-          <DialogDescription>
-            {t('planning:move.dateSwitchAssignments')}
-          </DialogDescription>
+              <div className='flex flex-col gap-3 py-2 text-left'>
+                {(assignments || []).map((_, n) => {
+                  const assignment = getValueFromPath<Y.Map<unknown>>(ydoc.ele, ['meta', 'core/assignment', n], true)
+                  const assignmentType = getValueFromPath<string>(assignment, ['meta', 'core/assignment-type', 0, 'value']) || ''
+                  const articleStatus = assignmentStatuses?.find((status) => status.id === assignment?.get('id'))?.workflowState
 
-          <div className='flex flex-col gap-3 py-2 text-left'>
-            {(assignments || []).map((_, n) => {
-              const assignment = getValueFromPath<Y.Map<unknown>>(ydoc.ele, ['meta', 'core/assignment', n], true)
-              const assignmentType = getValueFromPath<string>(assignment, ['meta', 'core/assignment-type', 0, 'value']) || ''
 
-              if (assignment && ['picture', 'video'].includes(assignmentType)) {
-                return (
-                  <AssignmentCheckBox
-                    key={assignment.get('id') as string}
-                    assignment={assignment}
-                    newDate={newDate}
-                    onChangeSelected={(id, value) => {
-                      assignmentTimes.current[id] = value
-                    }}
-                  />
-                )
-              }
-            })}
-          </div>
+                  if (assignment && (['picture', 'video'].includes(assignmentType) || (assignmentType === 'text' && articleStatus === 'withheld'))) {
+                    return (
+                      <AssignmentCheckBox
+                        key={assignment.get('id') as string}
+                        assignment={assignment}
+                        newDate={newDate}
+                        onChangeSelected={(id, value) => {
+                          assignmentTimes.current[id] = value
+                        }}
+                        articleStatus={articleStatus}
+                      />
+                    )
+                  }
+                })}
+              </div>
+            </>
+          )}
         </DialogHeader>
 
         <DialogFooter>
@@ -165,14 +192,15 @@ export const MoveDialog = ({ ydoc, onClose, newDate }: {
   )
 }
 
-function AssignmentListItem({ assignment, newDate, onChangeSelected }: {
+function AssignmentListItem({ assignment, newDate, onChangeSelected, articleStatus }: {
   assignment: Y.Map<unknown>
   newDate: string
   onChangeSelected: (id: string, value?: TimeDef) => void
+  articleStatus?: string
 }) {
   const [id] = useYValue<string>(assignment, 'id', false)
   const [title] = useYValue<string>(assignment, 'title', false)
-  const assignmentTime = useAssignmentTime(assignment, newDate)
+  const assignmentTime = useAssignmentTime(assignment, newDate, articleStatus)
 
   useEffect(() => {
     // Default is to have the assignment selected to change, so callback immediately on load
@@ -205,14 +233,15 @@ function AssignmentListItem({ assignment, newDate, onChangeSelected }: {
   )
 }
 
-function AssignmentCheckBox({ assignment, newDate, onChangeSelected }: {
+function AssignmentCheckBox({ assignment, newDate, onChangeSelected, articleStatus }: {
   assignment: Y.Map<unknown>
   newDate: string
   onChangeSelected: (id: string, value?: TimeDef) => void
+  articleStatus?: string
 }) {
   const [id] = useYValue<string>(assignment, 'id')
   const [title] = useYValue<string>(assignment, 'title')
-  const assignmentTime = useAssignmentTime(assignment, newDate)
+  const assignmentTime = useAssignmentTime(assignment, newDate, articleStatus)
 
   return (
     <Label htmlFor={id} className='grid gap-3 grid-cols-[auto_2rem] items-center border rounded p-3 text-sm hover:bg-accent/50 has-aria-checked:border-blue-600 has-aria-checked:bg-blue-50 dark:has-aria-checked:border-blue-900 dark:has-aria-checked:bg-blue-950'>

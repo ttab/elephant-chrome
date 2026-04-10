@@ -33,6 +33,7 @@
     "pickCause": "Velg en grunn...",
     "planningDate": "Dato i planen",
     "setTime": "Skriv inn tid",
+    "setDate": "Angi dato",
     "asSavePlaceholder": "Publiser ny informasjon",
     "causes": {
       "development_short": "UV",
