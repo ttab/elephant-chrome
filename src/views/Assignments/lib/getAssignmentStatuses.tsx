@@ -5,21 +5,21 @@ export const getAssignmentStatuses = async (assignments: EleBlock[], repository:
   const acceptedStatues = ['usable', 'withheld', 'cancelled', 'draft', 'unpublished', 'approved', 'done']
 
   const assignmentsId = (assignments || []).map((assignment) => {
-    const type = assignment.meta['core/assignment-type'][0].value
+    const type = assignment.meta['core/assignment-type'][0]?.value
 
     switch (type) {
       case 'picture':
-        return { id: assignment.id, uuid: assignment.links['core/picture']?.[0].uuid }
+        return { id: assignment.id, uuid: assignment.links['core/picture']?.[0]?.uuid }
       case 'video':
-        return { id: assignment.id, uuid: assignment.links['core/video']?.[0].uuid }
+        return { id: assignment.id, uuid: assignment.links['core/video']?.[0]?.uuid }
       case 'text':
-        return { id: assignment.id, uuid: assignment.links['core/article']?.[0].uuid }
+        return { id: assignment.id, uuid: assignment.links['core/article']?.[0]?.uuid }
       case 'graphic':
-        return { id: assignment.id, uuid: assignment.links['core/graphic']?.[0].uuid }
+        return { id: assignment.id, uuid: assignment.links['core/graphic']?.[0]?.uuid }
       case 'editorial-info':
-        return { id: assignment.id, uuid: assignment.links['core/editorial-info']?.[0].uuid }
+        return { id: assignment.id, uuid: assignment.links['core/editorial-info']?.[0]?.uuid }
       case 'flash':
-        return { id: assignment.id, uuid: assignment.links['core/flash']?.[0].uuid }
+        return { id: assignment.id, uuid: assignment.links['core/flash']?.[0]?.uuid }
       default:
         return
     }
