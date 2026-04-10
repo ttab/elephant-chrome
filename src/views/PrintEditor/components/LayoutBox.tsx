@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 import { cva } from 'class-variance-authority'
 import { useRegistry } from '@/hooks/useRegistry'
 import { useSession } from 'next-auth/react'
@@ -90,6 +91,7 @@ export const LayoutBox = ({
   selected,
   setSelected
 }: LayoutBoxProps) => {
+  const { t } = useTranslation('print')
   const { baboon } = useRegistry()
   const { data: session } = useSession()
   const openPreview = useLink('PrintPreview')
@@ -134,12 +136,12 @@ export const LayoutBox = ({
   if (!articleLayout) {
     return (
       <LoadingText>
-        Laddar layout
+        {t('editor.layouts.loading')}
       </LoadingText>
     )
   }
 
-  const layoutLabel = linkTitle?.trim()?.length ? linkTitle : 'Layout'
+  const layoutLabel = linkTitle?.trim()?.length ? linkTitle : t('editor.layouts.placeholder1')
   const layoutTone: LayoutStatusTone = status === 'true'
     ? 'approved'
     : status === 'false'
@@ -162,7 +164,7 @@ export const LayoutBox = ({
   const handleRenderArticle = async () => {
     if (!baboon || !session?.accessToken) {
       console.error(`Missing prerequisites: ${!baboon ? 'baboon-client' : 'accessToken'} is missing`)
-      toast.error('Något gick fel när printartikel skulle renderas')
+      toast.error(t('editor.layouts.errors.render'))
       return
     }
 
@@ -181,7 +183,7 @@ export const LayoutBox = ({
         if (lowresPics.length > 0) {
           lowresToastText = (
             <div>
-              <h3 className='font-bold text-gray-500 mt-2'>Bilder (under 130 ppi)</h3>
+              <h3 className='font-bold text-gray-500 mt-2'>{t('editor.layouts.images.lowResTitle')}</h3>
               {lowresPics.map((image, indexLow) => (
                 <div key={indexLow}>
                   {indexLow + 1}
@@ -189,6 +191,7 @@ export const LayoutBox = ({
                   &nbsp;
                   {image.frame}
                   &nbsp;(
+                  {/* eslint-disable-next-line i18next/no-literal-string */}
                   {Math.round(image.ppi)}
                   &nbsp;ppi)
                 </div>
@@ -200,7 +203,7 @@ export const LayoutBox = ({
         if (response?.response?.overflows?.length) {
           overflowToastText = (
             <div>
-              <h3 className='font-bold text-gray-500 mt-2'>Overflows</h3>
+              <h3 className='font-bold text-gray-500 mt-2'>{t('editor.layouts.overflowsTitle')}</h3>
               {response?.response?.overflows?.map((overflow, indexOverflow) => (
                 <div key={indexOverflow}>
                   {indexOverflow + 1}
@@ -216,7 +219,7 @@ export const LayoutBox = ({
         if (response?.response?.underflows?.length) {
           underflowToastText = (
             <div>
-              <h3 className='font-bold text-gray-500 mt-2'>Underflows</h3>
+              <h3 className='font-bold text-gray-500 mt-2'>{t('editor.layouts.underflowsTitle')}</h3>
               {response?.response?.underflows?.map((underflow, indexUnderflow) => (
                 <div key={indexUnderflow}>
                   {indexUnderflow + 1}
@@ -239,7 +242,7 @@ export const LayoutBox = ({
             ),
             duration: 15000,
             cancel: {
-              label: 'Stäng',
+              label: t('editor.layouts.close'),
               onClick: () => null
             }
           })
@@ -250,8 +253,8 @@ export const LayoutBox = ({
       }
     } catch (ex: unknown) {
       openPreview(undefined, { id: 'error' })
-      toast.error('Något gick fel när printartikel skulle renderas', {
-        description: ex instanceof Error ? ex.message : 'Okänt fel'
+      toast.error(t('editor.layouts.errors.render'), {
+        description: ex instanceof Error ? ex.message : t('editor.layouts.errors.renderDescription')
       })
     }
   }
@@ -262,7 +265,7 @@ export const LayoutBox = ({
       openPreview(undefined, {})
       await handleRenderArticle()
     } catch (ex) {
-      toast.error(ex instanceof Error ? ex.message : 'Kunde inte spara artikel innan förhandsgranskning')
+      toast.error(ex instanceof Error ? ex.message : t('editor.layouts.errors.saveBefore'))
     }
   }
 
@@ -284,9 +287,9 @@ export const LayoutBox = ({
         >
           <div
             role='group'
-            aria-label='Layoutkontroller'
+            aria-label={t('editor.layouts.controls')}
             data-state={isPinnedOpen ? 'selected' : undefined}
-            title={isPinnedOpen ? 'Fäll in layoutpanelen' : `Visa ${linkTitle} - ${articleLayout.name}`}
+            title={isPinnedOpen ? t('editor.layouts.togglePanel') : t('editor.layouts.showLayout', { title: linkTitle, name: articleLayout.name })}
             className={cn(
               'flex flex-col items-center justify-center w-[2.75rem] min-w-[2.75rem] rounded border p-2 @4xl/view:hidden font-semibold uppercase transition-all transform',
               'data-[state=selected]:shadow-xl data-[state=selected]:opacity-50 data-[state=selected]:scale-[98%]',
@@ -301,8 +304,8 @@ export const LayoutBox = ({
             <Button
               size='xs'
               variant='icon'
-              aria-label='Förhandsgranska layout'
-              title='Förhandsgranska layout'
+              aria-label={t('editor.layouts.preview')}
+              title={t('editor.layouts.preview')}
               onClick={(event) => {
                 event.stopPropagation()
                 void previewLayout()
@@ -371,10 +374,10 @@ export const LayoutBox = ({
 
       {promptIsOpen && (
         <Prompt
-          title='Radera layouten'
-          description='Är du säker på att du vill radera denna layout?'
-          primaryLabel='Radera'
-          secondaryLabel='Avbryt'
+          title={t('editor.layouts.confirmDelete.title')}
+          description={t('editor.layouts.confirmDelete.description')}
+          primaryLabel={t('editor.layouts.confirmDelete.primary')}
+          secondaryLabel={t('editor.layouts.confirmDelete.cancel')}
           onPrimary={handleConfirmDelete}
           onSecondary={() => {
             setPromptIsOpen(false)

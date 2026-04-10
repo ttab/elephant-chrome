@@ -1,4 +1,5 @@
 import { useCallback, memo, type JSX } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { Wire } from '@/shared/schemas/wire'
 import { cn } from '@ttab/elephant-ui/utils'
 import { cva } from 'class-variance-authority'
@@ -69,6 +70,7 @@ export const StreamEntry = memo(({
   onPress?: (item: Wire, event: React.MouseEvent<HTMLElement> | React.KeyboardEvent<HTMLElement>) => void
 }): JSX.Element => {
   const wireState = getDocumentState(entry)
+  const { t } = useTranslation('wires')
   const lastStatus = getWireStatus(entry)
   // Use the pending mutation's status for optimistic display; fall back to actual wire state.
   // Rollback is automatic: clearing statusMutations (on both success and failure) reverts to
@@ -133,7 +135,7 @@ export const StreamEntry = memo(({
           isSelected || statusMutation ? 'last:pe-8' : 'group-has-[.checkbox-button:hover]:last:pe-8'
         )}
         >
-          {entry.fields['document.title'].values[0] ?? 'No title'}
+          {entry.fields['document.title'].values[0] ?? t('stream.noTitle')}
         </StreamEntryCell>
       </div>
 

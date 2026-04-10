@@ -1,5 +1,5 @@
 import { Button } from '@ttab/elephant-ui'
-import { PlusIcon, ChevronDownIcon } from '@ttab/elephant-ui/icons'
+import { PlusIcon, ChevronDownIcon, type LucideIcon } from '@ttab/elephant-ui/icons'
 import * as Views from '@/views'
 import { getTemplateFromView } from '@/shared/templates/lib/getTemplateFromView'
 import { cn } from '@ttab/elephant-ui/utils'
@@ -18,12 +18,13 @@ import { addButtonGroupValueFormat } from '@/defaults/documentTypeFormats'
 import type { buttonVariants } from '@ttab/elephant-ui'
 import type { VariantProps } from 'class-variance-authority'
 import type { QueryParams } from '@/hooks/useQuery'
-import type { LucideIcon } from 'lucide-react'
 import { useLink } from '@/hooks/useLink'
-import { useRegistry } from '@/hooks/index'
 import { useSession } from 'next-auth/react'
 import { createNewFactbox } from './lib/createNewFactbox'
 import { toast } from 'sonner'
+import { useTranslation } from 'react-i18next'
+import type { TFunction } from 'i18next'
+import { useRegistry } from '@/hooks/index'
 
 const addButtonTypes = ['core/planning-item', 'core/event', 'core/article', 'core/factbox', 'core/flash'] as const
 
@@ -35,13 +36,17 @@ const AddButton = ({
   variant = 'default',
   className,
   view,
-  onClick
+  onClick,
+  hast,
+  t
 }: {
   withNew?: boolean
   variant?: Variant
   className?: string
   view: ButtonView
   onClick: (view: ButtonView) => void
+  hast?: boolean
+  t: TFunction
 }) => {
   const typeLabel = (t?: string) => t ? addButtonGroupValueFormat[t].label : ''
 
@@ -53,7 +58,7 @@ const AddButton = ({
       onClick={() => onClick(view)}
     >
       {withNew && <PlusIcon size={18} strokeWidth={1.75} />}
-      <span className='pl-0.5'>{`${withNew ? 'Ny' : typeLabel(view.type)}`}</span>
+      <span className='pl-0.5'>{`${withNew ? t('common:misc.new') : view.name === 'Flash' && hast ? 'HAST' : typeLabel(view.type)}`}</span>
     </Button>
   )
 }
@@ -63,10 +68,13 @@ export const AddButtonGroup = ({ docType = 'core/planning-item', query }: { type
   const { repository } = useRegistry()
   const openFactboxEditor = useLink('Factbox')
   const { data: session } = useSession()
+  const { t } = useTranslation()
+  const { featureFlags } = useRegistry()
+  const hasHast = !!featureFlags.hasHast
 
   const views: ButtonView[] = addButtonTypes.map((type) => {
     const format = addButtonGroupValueFormat[type]
-    return { name: format.key as View, type, icon: { icon: format.icon, color: format.color } }
+    return { name: format.key as View, type, icon: { icon: format.icon, color: format.color, label: format.label } }
   })
 
   const firstItem = views.find((view) => view.type === docType) as ButtonView
@@ -84,7 +92,7 @@ export const AddButtonGroup = ({ docType = 'core/planning-item', query }: { type
           toast.error((error as Error).message)
         })
     } else if (showModal) {
-      const initialDocument = getTemplateFromView(view.name)(id, { query })
+      const initialDocument = getTemplateFromView(view.name, { useHast: hasHast })(id, { query })
       showModal(
         <ViewDialog
           onDialogClose={hideModal}
@@ -99,6 +107,7 @@ export const AddButtonGroup = ({ docType = 'core/planning-item', query }: { type
   return (
     <ButtonGroup>
       <AddButton
+        t={t}
         withNew
         view={firstItem?.type ? firstItem : views[0]}
         onClick={handleCreate}
@@ -120,6 +129,7 @@ export const AddButtonGroup = ({ docType = 'core/planning-item', query }: { type
             <DropdownMenuItem inset={false} className='py-0 px-1'>
               {ItemIcon?.icon && <ItemIcon.icon strokeWidth={1.75} size={18} color={ItemIcon.color} />}
               <AddButton
+                t={t}
                 variant='ghost'
                 className='px-0'
                 view={firstItem}
@@ -135,8 +145,10 @@ export const AddButtonGroup = ({ docType = 'core/planning-item', query }: { type
               <DropdownMenuItem inset={false} className='py-0 px-1' key={view.name}>
                 {ViewIcon?.icon && <ViewIcon.icon strokeWidth={1.75} size={18} color={ViewIcon.color} />}
                 <AddButton
+                  t={t}
                   variant='ghost'
                   className='px-0'
+                  hast={hasHast}
                   view={view}
                   onClick={handleCreate}
                 />

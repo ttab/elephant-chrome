@@ -2,7 +2,19 @@ import type { JSX } from 'react'
 import { useCallback, useMemo, useState } from 'react'
 import { View } from '@/components'
 import { Notes } from '@/components/Notes'
-import { Bold, Italic, Link, Text, TTVisual, Factbox, Table, LocalizedQuotationMarks, UnorderedList, OrderedList } from '@ttab/textbit-plugins'
+import {
+  Bold,
+  Italic,
+  Image,
+  Link,
+  Text,
+  TTVisual,
+  Factbox,
+  Table,
+  LocalizedQuotationMarks,
+  UnorderedList,
+  OrderedList
+} from '@ttab/textbit-plugins'
 import { ImageSearchPlugin } from '../../plugins/ImageSearch'
 import { FactboxPlugin } from '../../plugins/Factboxes'
 import { Editor as PlainEditor } from '@/components/PlainEditor'
@@ -20,13 +32,14 @@ import { EditorHeader } from './EditorHeader'
 import { Error as ErrorComponent } from '../Error'
 
 import { getValueByYPath } from '@/shared/yUtils'
-import { contentMenuLabels } from '@/defaults/contentMenuLabels'
+import { getContentMenuLabels } from '@/defaults/contentMenuLabels'
 import type { YDocument } from '@/modules/yjs/hooks'
 import { useYDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import { useSession } from 'next-auth/react'
 import { CreatePrompt } from '@/components/CreatePrompt'
 import { saveFactbox } from '@/lib/saveFactbox'
+import { useTranslation } from 'react-i18next'
 
 // Metadata definition
 const meta: ViewMetadata = {
@@ -48,6 +61,7 @@ const meta: ViewMetadata = {
 // Main Editor Component - Handles document initialization
 const Editor = (props: ViewProps): JSX.Element => {
   const [query] = useQuery()
+  const { t } = useTranslation('common')
   const documentId = props.id || query.id as string
   const preview = query.preview === 'true'
 
@@ -57,8 +71,8 @@ const Editor = (props: ViewProps): JSX.Element => {
   if (!documentId || typeof documentId !== 'string') {
     return (
       <ErrorComponent
-        title='Artikeldokument saknas'
-        message='Inget artikeldokument är angivet. Navigera tillbaka till översikten och försök igen.'
+        title={t('errors:messages.articleMissingTitle')}
+        message={t('errors:messages.articleMissingDescription')}
       />
     )
   }
@@ -115,6 +129,9 @@ function EditorWrapper(props: ViewProps & {
   const onSaveFactbox = useCallback((id: string, onSuccess: () => void) => {
     setCreatePrompt({ id, onSuccess })
   }, [])
+  const { t, i18n } = useTranslation()
+
+  const activeLocale = i18n.resolvedLanguage
 
   // Plugin configuration
   const configuredPlugins = useMemo(() => {
@@ -129,25 +146,36 @@ function EditorWrapper(props: ViewProps & {
       OrderedList(),
       UnorderedList(),
       TTVisual({
+        captionLabel: t('editor:image.captionLabel'),
+        bylineLabel: t('editor:image.bylineLabel'),
         enableCrop: false,
         removable: !preview
       }),
+      Image({
+        removable: true,
+        enableCrop: false,
+        visibility: () => [false, true, false]
+      }),
       Text({
         countCharacters: ['heading-1'],
-        ...contentMenuLabels
+        ...getContentMenuLabels()
       }),
       Factbox({
+        headerTitle: t('editor:factbox.headerTitle'),
+        modifiedLabel: t('editor:factbox.modifiedLabel'),
+        footerTitle: t('editor:factbox.footerTitle'),
         onEditOriginal: (id: string) => {
           openFactboxEditor(undefined, { id })
         },
         removable: !preview,
+        locale: activeLocale,
         factboxNewTitle: 'Fakta',
         saveToArchiveLabel: 'Spara till arkivet',
         unsavedLabel: 'Faktarutan har inte sparats till arkivet',
         onSave: onSaveFactbox
       })
     ]
-  }, [openFactboxEditor, openFactboxes, openImageSearch, onSaveFactbox, preview])
+  }, [openFactboxEditor, openFactboxes, openImageSearch, onSaveFactbox, preview, t, activeLocale])
 
   if (!content) {
     return <View.Root />

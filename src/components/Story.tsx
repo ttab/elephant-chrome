@@ -6,6 +6,7 @@ import { useRef, type JSX } from 'react'
 import type { FormProps } from './Form/Root'
 import { type YDocument, useYValue } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
+import { useTranslation } from 'react-i18next'
 
 export const Story = ({ ydoc, path, onChange, asSubject }: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -19,6 +20,7 @@ export const Story = ({ ydoc, path, onChange, asSubject }: {
     }
   })
 
+  const { t } = useTranslation()
   const [story, setStory] = useYValue<Block | undefined>(ydoc.ele, path)
   const setFocused = useRef<(value: boolean, path: string) => void>(() => { })
   const selectedOptions = (allStories || []).filter((s) => s.value === story?.uuid)
@@ -32,7 +34,7 @@ export const Story = ({ ydoc, path, onChange, asSubject }: {
         sortOrder='label'
         options={allStories}
         selectedOptions={selectedOptions}
-        placeholder={story?.title || 'Lägg till story'}
+        placeholder={story?.title || t('planning:story')}
         onOpenChange={(isOpen: boolean) => {
           setFocused.current(true, isOpen ? path : '')
         }}
@@ -48,6 +50,10 @@ export const Story = ({ ydoc, path, onChange, asSubject }: {
               uuid: option.value,
               title: option.label
             }))
+        }}
+        translationStrings={{
+          nothingFound: t('common:misc.nothingFound'),
+          searching: t('common:misc.searching')
         }}
       />
     </Awareness>
