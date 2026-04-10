@@ -78,7 +78,10 @@ export const HastToggle = ({ ydoc, usableId, className, variant = 'compact' }: {
         value: String(nextId)
       }))
     } else {
-      setHast(undefined)
+      setHast(Block.create({
+        type: 'ntb/hast',
+        value: '0'
+      }))
     }
 
     snapshotDocument(ydoc.id, {}, ydoc.provider?.document)

@@ -92,7 +92,13 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
           uuid: deliverableId,
           accessToken: session.accessToken
         })
-        return doc?.document?.meta.some((b) => b.type === 'ntb/hast') ?? false
+        const hastBlock = doc?.document?.meta.find((b) => b.type === 'ntb/hast')
+        const hastValue = Number(hastBlock?.value || '0')
+        if (hastValue === 0) {
+          return false
+        }
+        const usableId = Number(articleStatus?.meta?.heads?.['usable']?.id || '0')
+        return hastValue === usableId + 1 || hastValue === usableId
       }
       return false
     }
