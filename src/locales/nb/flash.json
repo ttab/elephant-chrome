@@ -29,5 +29,6 @@
   },
   "sendAsHast": "Send som HAST",
   "sendAsHastDescription": "Ved publisering skal denne artikkelen sendes som en HAST.",
-  "hastLabel": "HAST"
+  "hastLabel": "HAST",
+  "hastDefaultPreamble": "Saken oppdateres"
 }

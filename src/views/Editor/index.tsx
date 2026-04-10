@@ -111,6 +111,7 @@ function EditorWrapper(props: ViewProps & {
     visibility: !preview
   })
   const [documentLanguage] = getValueByYPath<string>(ydoc.ele, 'root.language')
+  const [hast] = getValueByYPath<string>(ydoc.ele, 'meta.ntb/hast[0]')
   const [content] = getValueByYPath<Y.XmlText>(ydoc.ele, 'content', true)
   const openFactboxEditor = useLink('Factbox')
   const openImageSearch = useLink('ImageSearch')
@@ -141,7 +142,7 @@ function EditorWrapper(props: ViewProps & {
         visibility: () => [false, true, false]
       }),
       Text({
-        countCharacters: ['heading-1'],
+        countCharacters: hast ? ['heading-1', 'preamble'] : ['heading-1'],
         ...getContentMenuLabels()
       }),
       Factbox({
@@ -155,7 +156,7 @@ function EditorWrapper(props: ViewProps & {
         locale: activeLocale
       })
     ]
-  }, [openFactboxEditor, openFactboxes, openImageSearch, t, activeLocale, preview])
+  }, [openFactboxEditor, openFactboxes, openImageSearch, t, activeLocale, preview, hast])
 
   if (!content) {
     return <View.Root />

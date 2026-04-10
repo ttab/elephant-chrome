@@ -29,5 +29,6 @@
   },
   "sendAsHast": "Send as HAST",
   "sendAsHastDescription": "When published, this article will be sent as a HAST.",
-  "hastLabel": "HAST"
+  "hastLabel": "HAST",
+  "hastDefaultPreamble": "The story is updated"
 }
