@@ -6,7 +6,7 @@ import { Label } from '@ttab/elephant-ui'
 import { TimeInput } from '../TimeInput'
 import { toZonedTime } from 'date-fns-tz'
 import { format } from 'date-fns'
-import { CalendarIcon, LoaderIcon } from '@ttab/elephant-ui/icons'
+import { CalendarIcon, LoaderIcon, type LucideIcon } from '@ttab/elephant-ui/icons'
 import { PromptCauseField } from './PromptCauseField'
 import { useTranslation } from 'react-i18next'
 import { useCollaborationDocument } from '@/hooks/useCollaborationDocument'
@@ -16,7 +16,7 @@ import { HastToggle } from '@/components/HastToggle'
 import type * as Y from 'yjs'
 
 export const PromptSchedule = ({
-  prompt, planningId, setStatus, showPrompt, requireCause = false,
+  prompt, planningId, setStatus, showPrompt, requireCause = false, anchor, typeIcon,
   ydoc: ydoc, usableId, documentType
 }: {
   prompt: {
@@ -31,6 +31,8 @@ export const PromptSchedule = ({
   ydoc?: YDocument<Y.Map<unknown>>
   usableId?: bigint
   documentType?: string
+  anchor?: HTMLElement | null
+  typeIcon?: LucideIcon
 }) => {
   const { timeZone } = useRegistry()
   const { loading, document } = useCollaborationDocument({ documentId: planningId })
@@ -59,7 +61,8 @@ export const PromptSchedule = ({
 
   return (
     <Prompt
-      title={prompt.title}
+      title={prompt.promptTitle || prompt.title}
+      anchor={anchor}
       primaryLabel={prompt.title}
       secondaryLabel={t('common:actions.abort')}
       onPrimary={() => {
@@ -76,6 +79,7 @@ export const PromptSchedule = ({
         showPrompt(undefined)
       }}
       disablePrimary={requireCause && !cause}
+      typeIcon={typeIcon}
     >
       <div className='flex flex-col items-start gap-6'>
         {prompt.description}

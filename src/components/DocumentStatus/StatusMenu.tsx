@@ -18,6 +18,8 @@ import type { View } from '@/types/index'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import { useTranslation } from 'react-i18next'
+import { documentTypeValueFormat } from '@/defaults/documentTypeFormats'
+
 
 export const StatusMenu = ({ ydoc, onBeforeStatusChange, planningId }: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -38,6 +40,13 @@ export const StatusMenu = ({ ydoc, onBeforeStatusChange, planningId }: {
   const history = useHistory()
   const { viewId } = useView()
   const { t } = useTranslation()
+  const viewElementRef = useRef<HTMLElement | null>(null)
+  const icon = documentTypeValueFormat[documentStatus?.type || 'core/article'].icon
+
+  useEffect(() => {
+    viewElementRef.current = document.getElementById(viewId)
+  }, [viewId])
+
 
   // Read workflow specifications from current type and current status
   const isWorkflow = documentStatus?.type
@@ -212,6 +221,8 @@ export const StatusMenu = ({ ydoc, onBeforeStatusChange, planningId }: {
               ydoc={ydoc}
               usableId={documentStatus.usableId}
               documentType={documentStatus.type}
+              anchor={viewElementRef.current}
+              typeIcon={icon}
             />
           )}
 
@@ -226,6 +237,8 @@ export const StatusMenu = ({ ydoc, onBeforeStatusChange, planningId }: {
               ydoc={ydoc}
               usableId={documentStatus.usableId}
               documentType={documentStatus.type}
+              anchor={viewElementRef.current}
+              typeIcon={icon}
             />
           )}
         </>

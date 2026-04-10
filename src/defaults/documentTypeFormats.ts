@@ -9,7 +9,8 @@ import {
   PenBoxIcon,
   PenOffIcon,
   ZapIcon,
-  type LucideIcon
+  type LucideIcon,
+  LibraryIcon
 } from '@ttab/elephant-ui/icons'
 
 type DocumentTypeFormat = Record<string, {
@@ -97,6 +98,15 @@ const quickArticle: DocumentTypeFormat = {
   }
 }
 
+const printArticle: DocumentTypeFormat = {
+  'tt/print-article': {
+    icon: LibraryIcon,
+    get label() { return i18n.t('print:articles.title') },
+    key: 'PrintArticle',
+    color: '#aabbcc'
+  }
+}
+
 
 export const documentTypeValueFormat = {
   ...event,
@@ -104,7 +114,8 @@ export const documentTypeValueFormat = {
   ...article,
   ...editorialInfo,
   ...factbox,
-  ...flash
+  ...flash,
+  ...printArticle
 }
 
 export const addButtonGroupValueFormat = {

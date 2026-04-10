@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { HastToggle } from '@/components/HastToggle'
 import type * as Y from 'yjs'
 import type { YDocument } from '@/modules/yjs/hooks'
+import type { LucideIcon } from '@ttab/elephant-ui/icons'
 
 export const PromptDefault = ({
   prompt,
@@ -16,7 +17,9 @@ export const PromptDefault = ({
   unPublishDocument,
   ydoc,
   usableId,
-  documentType
+  documentType,
+  anchor,
+  typeIcon
 }: {
   prompt: {
     status: string
@@ -31,6 +34,8 @@ export const PromptDefault = ({
   ydoc?: YDocument<Y.Map<unknown>>
   usableId?: bigint
   documentType?: string
+  anchor?: HTMLElement | null
+  typeIcon?: LucideIcon
 }) => {
   const [cause, setCause] = useState<string | undefined>(currentCause)
   const isUnpublishPrompt = prompt.status === 'unpublished'
@@ -73,7 +78,8 @@ export const PromptDefault = ({
 
   return (
     <Prompt
-      title={prompt.title}
+      title={prompt.promptTitle || prompt.title}
+      anchor={anchor}
       description={prompt.description}
       primaryLabel={prompt.title}
       secondaryLabel={t('actions.abort')}
@@ -83,6 +89,7 @@ export const PromptDefault = ({
       }}
       disablePrimary={disablePrimary}
       primaryVariant={isUnpublishPrompt ? 'destructive' : undefined}
+      typeIcon={typeIcon}
     >
       {ydoc && documentType === 'core/article' && prompt.status !== 'unpublished' && (
         <HastToggle ydoc={ydoc} usableId={usableId} variant='full' />
