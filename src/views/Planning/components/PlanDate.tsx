@@ -7,7 +7,7 @@ import type * as Y from 'yjs'
 import { useState, type JSX } from 'react'
 import { MoveDialog } from './MoveDialog'
 
-export const PlanDate = ({ ydoc, asDialog}: {
+export const PlanDate = ({ ydoc, asDialog }: {
   ydoc: YDocument<Y.Map<unknown>>
   asDialog: boolean
 }): JSX.Element => {

@@ -12,11 +12,13 @@ function assertEnvs(): void {
     'REDIS_URL',
     'INDEX_URL',
     'WS_URL',
-    'CONTENT_API_URL',
+    'IMAGE_SEARCH_URL',
+    'IMAGE_SEARCH_PROVIDER',
     'PROTOCOL',
     'HOST',
     'PORT',
-    'BASE_URL'
+    'BASE_URL',
+    'SYSTEM_LANGUAGE'
   ]
 
   envs.forEach((env) => {

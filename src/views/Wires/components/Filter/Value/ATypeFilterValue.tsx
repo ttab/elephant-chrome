@@ -1,11 +1,11 @@
 import { CrosshairIcon } from '@ttab/elephant-ui/icons'
-import { AssignmentTypes } from '@/defaults/assignmentTypes'
+import { getAssignmentTypes } from '@/defaults/assignmentTypes'
 import { FilterBadge } from '../FilterBadge'
 
 export const ATypeFilterValue = ({ values }: {
   values: string[]
 }) => {
-  const labels = AssignmentTypes.filter((v) => values.includes(v.value)).map((v) => v.label)
+  const labels = getAssignmentTypes().filter((v) => values.includes(v.value)).map((v) => v.label)
 
   return (
     <>

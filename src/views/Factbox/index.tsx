@@ -8,7 +8,7 @@ import { Form, UserMessage, View } from '@/components'
 import { FactboxHeader } from './FactboxHeader'
 import { Error as ErrorView } from '@/views/Error'
 import { useEffect, useMemo, useState, type JSX } from 'react'
-import { contentMenuLabels } from '@/defaults/contentMenuLabels'
+import { getContentMenuLabels } from '@/defaults/contentMenuLabels'
 import { useYDocument, useYValue } from '@/modules/yjs/hooks'
 import { getTemplateFromView } from '@/shared/templates/lib/getTemplateFromView'
 import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
@@ -21,6 +21,7 @@ import { DocumentHistory } from '@/components/DocumentHistory/DocumentHistory'
 import { type DocumentState, getDocumentState } from '@/lib/getDocumentState'
 import { Editor as PlainEditor } from '@/components/PlainEditor'
 
+import { useTranslation } from 'react-i18next'
 
 const meta: ViewMetadata = {
   name: 'Factbox',
@@ -41,6 +42,8 @@ const meta: ViewMetadata = {
 const Factbox = (props: ViewProps & { document?: Document }): JSX.Element => {
   const [query] = useQuery()
   const documentId = props.id || query.id
+  const { t } = useTranslation('common')
+
   // Factbox should be responsible for creating new as well as editing
   const data = useMemo(() => {
     if (!props.document || !documentId || typeof documentId !== 'string') {
@@ -60,8 +63,8 @@ const Factbox = (props: ViewProps & { document?: Document }): JSX.Element => {
   if (!documentId || typeof documentId !== 'string') {
     return (
       <ErrorView
-        title='Artikeldokument saknas'
-        message='Inget artikeldokument är angivet. Navigera tillbaka till översikten och försök igen.'
+        title={t('errors:messages.articleMissingTitle')}
+        message={t('errors:messages.articleMissingDescription')}
       />
     )
   }
@@ -99,6 +102,7 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
   }, [repository, session?.accessToken, props.documentId])
 
 
+  const { t } = useTranslation('core')
   const configuredPlugins = useMemo(() => {
     return [
       UnorderedList(),
@@ -106,7 +110,7 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
       Bold(),
       Italic(),
       LocalizedQuotationMarks(),
-      Text({ ...contentMenuLabels })
+      Text({ ...getContentMenuLabels() })
     ]
   }, [])
 
@@ -165,8 +169,8 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
                           className={cn(
                             !props.asDialog ? 'ms-[13px]' : 'ms-6 me-5'
                           )}
-                          label='Rubrik'
-                          placeholder='Rubrik'
+                          label={t('labels.title')}
+                          placeholder={t('labels.title')}
                           autoFocus='end'
                         />
                       </Form.Title>
@@ -182,8 +186,7 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
                     <div className='mx-12'>
                       {!environmentIsSane && (
                         <UserMessage asDialog={!!props?.asDialog} variant='destructive'>
-                          Du är utloggad eller har tappat kontakt med systemet.
-                          Vänligen försök logga in igen.
+                          {t('errors:messages.unwellEnvironment')}
                         </UserMessage>
                       )}
                     </div>

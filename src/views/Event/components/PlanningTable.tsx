@@ -15,6 +15,7 @@ import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import { getTemplateFromView } from '@/shared/templates/lib/getTemplateFromView'
 import { Block, type Document } from '@ttab/elephant-api/newsdoc'
+import { useTranslation } from 'react-i18next'
 
 export type NewItem = { title: string, uuid: string } | undefined
 type PlanningTableFields = ['document.title', 'document.rel.event.uuid']
@@ -26,6 +27,7 @@ export const PlanningTable = ({ ydoc, asDialog }: {
   const { hideModal } = useModal()
   const [newItem, setNewItem] = useState<NewItem>()
   const [nestedDialogOpen, setNestedOpen] = useState<boolean>(false)
+  const { t } = useTranslation()
 
   useEffect(() => {
     return () => {
@@ -57,38 +59,33 @@ export const PlanningTable = ({ ydoc, asDialog }: {
 
   useRepositoryEvents('core/planning-item', (event) => {
     if (createdDocumentRef.current[0] === event.uuid && event.type === 'core/planning-item' && event.event === 'document') {
-      void (async () => {
-        try {
-          if (Array.isArray(data) && newItem?.title) {
-            const createdId = createdDocumentRef.current[0]
-            // Check if the createdId is already in the data, if so, noop
-            if (typeof createdId === 'string' && data.some((planning) => planning.id === createdId)) {
-              return
-            }
-            await mutate([...data, {
-              source: {},
-              score: 1,
-              sort: [''],
-              fields: {
-                'document.title': {
-                  values: [newItem?.title]
-                },
-                'document.rel.event.uuid': {
-                  values: [ydoc.id]
-                }
-              },
-              id: newItem?.uuid
-            } as PlanningType], { revalidate: false })
-          }
-        } catch (error) {
-          console.warn('Failed to update planning table', error)
+      if (Array.isArray(data) && newItem?.title) {
+        const createdId = createdDocumentRef.current[0]
+        // Check if the createdId is already in the data, if so, noop
+        if (typeof createdId === 'string' && data.some((planning) => planning.id === createdId)) {
+          return
         }
-      })()
+        mutate([...data, {
+          source: {},
+          score: 1,
+          sort: [''],
+          fields: {
+            'document.title': {
+              values: [newItem?.title]
+            },
+            'document.rel.event.uuid': {
+              values: [ydoc.id]
+            }
+          },
+          id: newItem?.uuid
+        } as PlanningType], { revalidate: false })
+          .catch((error) => console.warn('Failed to update planning table', error))
+      }
     }
   })
 
   if (!data) {
-    return <>Loading...</>
+    return <>{t('common:misc.loading')}</>
   }
 
   if (error) {
@@ -117,7 +114,7 @@ export const PlanningTable = ({ ydoc, asDialog }: {
                   'core/event': [Block.create({
                     type: 'core/event',
                     uuid: ydoc.id,
-                    title: eventData?.title || 'Titel saknas',
+                    title: eventData?.title || t('common:misc.titleMissing'),
                     rel: 'event'
                   })]
                 }
@@ -138,7 +135,7 @@ export const PlanningTable = ({ ydoc, asDialog }: {
                 className='text-white dark:text-black absolute inset-0 m-auto'
               />
             </div>
-            Lägg till planering
+            {t('event:buttons.addPlanning')}
           </Button>
         </DialogTrigger>
         <DialogContent className='gap-0 p-0'>
@@ -159,7 +156,7 @@ export const PlanningTable = ({ ydoc, asDialog }: {
             <Separator />
             <div className='flex gap-2 items-center'>
               <GanttChartSquareIcon color='#FF971E' strokeWidth={1.75} size={18} className='text-muted-foreground' />
-              <div className='text-muted-foreground py-2'>Planeringar</div>
+              <div className='text-muted-foreground py-2'>{t('event:subheadings.plannings')}</div>
             </div>
             {data?.map((planning) => (
               <Link key={planning.id} to='Planning' props={{ id: planning.id }} target='last'>

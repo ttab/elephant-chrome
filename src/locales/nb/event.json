@@ -1,0 +1,37 @@
+{
+  "title": "Hendelse",
+  "eventDocument": "Hendelsesdokument",
+  "subheadings": {
+    "plannings": "Planlegginger",
+    "events": "Hendelser"
+  },
+  "createEvent": "Opprett hendelse",
+  "buttons": {
+    "addPlanning": "Legg til planlegging"
+  },
+  "labels": {
+    "markAsCancelled": "Merk som avlyst",
+    "markedAsCancelled": "Hendelsen er merket som avlyst!"
+  },
+  "toasts": {
+    "created": {
+      "success": "Hendelse skapt"
+    }
+  },
+  "placeholders": {
+    "eventTitle": "Tittel på hendelse",
+    "publicDescription": "Beskrivelse",
+    "accreditation": "Akkreditering",
+    "addOrganiser": "Legg til arrangør",
+    "addCategory": "Legg til emne",
+    "addSection": "Legg til kategori"
+  },
+  "status": {
+    "planned": "Planlagt",
+    "notPlanned": "Ikke planlagt"
+  },
+  "tooltips": {
+    "createPlanning": "Skape planlegging",
+    "planningCreated": "Har blitt planlagt"
+  }
+}
