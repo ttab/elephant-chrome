@@ -1,4 +1,4 @@
-import { CalendarIcon, LibraryIcon, TagIcon } from '@ttab/elephant-ui/icons'
+import { CalendarIcon, TagIcon } from '@ttab/elephant-ui/icons'
 import { Form } from '../Form'
 import { View, ViewHeader } from '../View'
 import type { ViewProps } from '@/types/index'
@@ -16,6 +16,7 @@ import { fields } from '@/shared/schemas/printFlow'
 import type { PrintFlow, PrintFlowFields } from '@/shared/schemas/printFlow'
 import { addDays } from 'date-fns'
 import { ToastAction } from '@/components/ToastAction'
+import { documentTypeValueFormat } from '@/defaults/documentTypeFormats'
 
 
 export const CreatePrintArticle = ({ id, asDialog, onDialogClose, className }: ViewProps) => {
@@ -26,6 +27,8 @@ export const CreatePrintArticle = ({ id, asDialog, onDialogClose, className }: V
   const [dateString, setDateString] = useState<string>(initDate.toISOString().split('T')[0])
   const { baboon } = useRegistry()
   const { data: session } = useSession()
+  const icon = documentTypeValueFormat['tt/print-article'].icon
+  
 
   const { data, error } = useDocuments<PrintFlow, PrintFlowFields>({
     documentType: 'tt/print-flow',
@@ -81,7 +84,7 @@ export const CreatePrintArticle = ({ id, asDialog, onDialogClose, className }: V
               documentId={response.response.uuid}
               withView='PrintEditor'
               label={t('create.actions.open')}
-              Icon={LibraryIcon}
+              Icon={icon}
             />
           )
         })
@@ -105,7 +108,7 @@ export const CreatePrintArticle = ({ id, asDialog, onDialogClose, className }: V
               <ViewHeader.Title
                 name='Assignment'
                 title={t('create.title')}
-                icon={LibraryIcon}
+                icon={icon}
                 iconColor='#006bb3'
                 asDialog={asDialog}
               />
