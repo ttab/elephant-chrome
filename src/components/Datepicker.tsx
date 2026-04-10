@@ -13,7 +13,6 @@ import { cva } from 'class-variance-authority'
 import { format, isSameDay } from 'date-fns'
 import { type ViewProps } from '../types'
 import { newLocalDate } from '@/shared/datetime'
-import { useTranslation } from 'react-i18next'
 
 export const DatePicker = ({ date, changeDate, setDate, resetToday, forceYear = false, disabled = false, asDialog }: {
   date: Date
@@ -28,7 +27,6 @@ export const DatePicker = ({ date, changeDate, setDate, resetToday, forceYear = 
   const [open, setOpen] = useState<boolean>(false)
 
   const [query, setQuery] = useQuery()
-  const { t } = useTranslation('shared')
   const today = newLocalDate(timeZone)
   const selectedIsToday = isSameDay(date, today)
 
@@ -113,7 +111,7 @@ export const DatePicker = ({ date, changeDate, setDate, resetToday, forceYear = 
                     setQuery({ ...query, from: undefined })
                   }}
                 >
-                  {t('toolbar.navigateToday')}
+                  Gå till idag
                 </Button>
               )}
           mode='single'

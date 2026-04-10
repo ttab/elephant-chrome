@@ -8,7 +8,6 @@ import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import type { JSX } from 'react'
 import { useState } from 'react'
-import { useTranslation } from 'react-i18next'
 
 /**
  * Deliverable document creation dialog, responsible for creating articles and flashes in the repository.
@@ -26,7 +25,6 @@ export function CreateDeliverablePrompt({ ydoc, deliverableType, payload, onClos
   const { repository } = useRegistry()
   const { data: session } = useSession()
   const [isCreating, setIsCreating] = useState(false)
-  const { t } = useTranslation()
 
   if (!ydoc.provider?.document || !session?.accessToken || !repository) {
     console.error('CreateDeliverablePrompt: Missing required dependencies', {
@@ -34,14 +32,14 @@ export function CreateDeliverablePrompt({ ydoc, deliverableType, payload, onClos
       hasAccessToken: !!session?.accessToken,
       hasRepository: !!repository
     })
-    toast.error(t('errors:messages.createDeliverableError'))
+    toast.error('Kan inte skapa leverabel')
     return <></>
   }
 
   const onCreateDocument = async () => {
     // Validate payload contains required fields
     if (!payload.meta?.['core/newsvalue'] || !payload.links?.['core/section']) {
-      throw new Error(t('errors:toasts.missingMetadata'))
+      throw new Error('Saknar nyhetsvärde eller sektion')
     }
 
     const id = crypto.randomUUID()
@@ -56,13 +54,10 @@ export function CreateDeliverablePrompt({ ydoc, deliverableType, payload, onClos
 
   return (
     <Prompt
-      title={`${t('common:actions.create')} ${documentLabel}?`}
-      description={t('planning:prompts.createPrompt', {
-        documentLabel,
-        title: title ? ' ' + title : ''
-      })}
-      secondaryLabel={t('common:actions.abort')}
-      primaryLabel={t('common:actions.create')}
+      title={`Skapa ${documentLabel}?`}
+      description={`Vill du skapa en ${documentLabel} för uppdraget${title ? ' ' + title : ''}?`}
+      secondaryLabel='Avbryt'
+      primaryLabel='Skapa'
       onPrimary={() => {
         if (isCreating) {
           return
@@ -74,9 +69,9 @@ export function CreateDeliverablePrompt({ ydoc, deliverableType, payload, onClos
             onClose(id)
           })
           .catch((ex) => {
-            const errorMessage = ex instanceof Error ? ex.message : t('errors:messages.unknown')
+            const errorMessage = ex instanceof Error ? ex.message : 'Okänt fel'
             console.error('Failed to create deliverable:', errorMessage, ex)
-            toast.error(t('errors:toasts.creationFailed', { error: errorMessage }))
+            toast.error(`Misslyckades att skapa text: ${errorMessage}`)
             setIsCreating(false)
           })
       }}

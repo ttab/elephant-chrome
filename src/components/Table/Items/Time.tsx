@@ -1,10 +1,8 @@
 import { useRegistry } from '@/hooks/useRegistry'
 import { useMemo, type JSX } from 'react'
-import { useTranslation } from 'react-i18next'
 
 export const Time = ({ startTime, endTime }: { startTime?: Date | undefined, endTime?: Date | undefined }): JSX.Element => {
   const { locale, timeZone } = useRegistry()
-  const { t } = useTranslation('core')
 
   return useMemo(() => {
     if (!startTime || !endTime) {
@@ -33,7 +31,7 @@ export const Time = ({ startTime, endTime }: { startTime?: Date | undefined, end
       formattedTime = formattedStartTime
     } else {
       if (timeDifference >= 12) {
-        formattedTime = t('timeSlots.fullday')
+        formattedTime = 'Heldag'
       }
 
       if (timeDifference < 12) {
@@ -44,5 +42,5 @@ export const Time = ({ startTime, endTime }: { startTime?: Date | undefined, end
     return (
       <div className='font-medium text-sm'>{formattedTime}</div>
     )
-  }, [locale, timeZone, startTime, endTime, t])
+  }, [locale, timeZone, startTime, endTime])
 }

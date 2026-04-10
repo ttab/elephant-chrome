@@ -1,12 +1,10 @@
 import { WifiOffIcon, type LucideIcon } from '@ttab/elephant-ui/icons'
 import { cva } from 'class-variance-authority'
 import { useEffect, useRef, useState, type PropsWithChildren, type JSX } from 'react'
-import { getApplicationMenu } from '@/defaults/applicationMenuItems'
+import { applicationMenu } from '@/defaults/applicationMenuItems'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import { useQuery } from '@/hooks/useQuery'
-import { useTranslation } from 'react-i18next'
-import { useFeatureFlags } from '@/hooks/useFeatureFlags'
 
 export const Title = ({
   name,
@@ -32,8 +30,6 @@ export const Title = ({
   const [isSynced, setIsSynced] = useState(true)
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
   const timeout2Ref = useRef<NodeJS.Timeout | null>(null)
-  const { t } = useTranslation()
-  const featureFlags = useFeatureFlags()
 
   useEffect(() => {
     if (timeoutRef.current) {
@@ -67,7 +63,7 @@ export const Title = ({
     variants: {
       asDialog: {
         true: '',
-        false: 'hidden @lg/view:block'
+        false: 'hidden @md/view:block'
       }
     }
   })
@@ -81,15 +77,15 @@ export const Title = ({
     setQuery({ preview: undefined })
   }
 
-  const { icon: ViewIcon, color } = getApplicationMenu(featureFlags).groups
+  const { icon: ViewIcon, color } = applicationMenu.groups
     .flatMap((g) => g.items)
     .find((i) => i.name === name) || {}
 
   const displayTitle = preview && title
-    ? `${title} - ${t('planning:preview')}`
+    ? `${title} - Förhandsvisning`
     : title
   const displayShortTitle = preview && shortTitle
-    ? `${shortTitle} - ${t('planning:preview')}`
+    ? `${shortTitle} - Förhandsvisning`
     : shortTitle
 
   return (

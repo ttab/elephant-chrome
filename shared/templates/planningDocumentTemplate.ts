@@ -3,7 +3,6 @@ import type { TemplatePayload } from './index.js'
 import { getUserTimeZone } from '../../src/lib/getUserTimeZone.js'
 import { getUTCDateRange, parseDate } from '@/shared/datetime.js'
 import { DEFAULT_TIMEZONE } from '../../src/defaults/defaultTimezone.js'
-import { getSystemLanguage } from '@/shared/getSystemLanguage.js'
 
 /**
  * Create a template structure for a planning document
@@ -38,7 +37,7 @@ export function planningDocumentTemplate(documentId: string, payload?: TemplateP
     type: 'core/planning-item',
     uri: `core://newscoverage/${documentId}`,
     ...(payload?.title && { title: payload.title }),
-    language: getSystemLanguage(),
+    language: 'sv-se',
     meta: [
       ...payload?.meta?.['core/planning-item'] || [Block.create({
         type: 'core/planning-item',

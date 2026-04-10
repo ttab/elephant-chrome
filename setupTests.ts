@@ -1,13 +1,6 @@
 import '@testing-library/jest-dom'
 import { TextEncoder, TextDecoder } from 'util'
-import { setSystemLanguage } from './shared/getSystemLanguage'
-import { initI18n } from './src/lib/i18n'
 export * from '@testing-library/react'
-
-const TESTING_LANGUAGE = 'sv-se'
-
-setSystemLanguage(TESTING_LANGUAGE)
-await initI18n()
 
 /**
  * Global test setup file for Vitest
@@ -28,18 +21,17 @@ const BASE_URL = import.meta.env.BASE_URL
 
 function mockUrl(url: string): unknown {
   switch (url) {
-    case `${BASE_URL}/api/envs`:
+    case `${BASE_URL}/api/urls`:
       return {
         indexUrl: 'https://example.com/index',
         webSocketUrl: 'https://example.com/websocket',
+        repositoryEventsUrl: 'https://example.com/repository-events',
         repositoryUrl: 'https://example.com/repository',
-        imageSearchUrl: 'https://example.com/image-search',
-        imageSearchProvider: 'tt',
+        contentApiUrl: 'https://example.com/content-api',
         spellcheckUrl: 'https://example.com/index',
         userUrl: 'https://example.com/user',
         faroUrl: 'https://example.com/faro',
-        baboonUrl: 'https://example.com/baboon',
-        systemLanguage: TESTING_LANGUAGE
+        baboonUrl: 'https://example.com/baboon'
       }
 
     case `${BASE_URL}/api/auth/session`:

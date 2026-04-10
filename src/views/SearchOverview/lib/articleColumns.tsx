@@ -7,16 +7,14 @@ import { NewsvalueMap } from '@/defaults/newsvalueMap'
 import { Newsvalues } from '@/defaults/newsvalues'
 import type { Article } from '@/shared/schemas/article'
 import type { Column, ColumnDef } from '@tanstack/react-table'
-import { getDocumentStatuses } from '@/defaults/documentStatuses'
+import { DocumentStatuses } from '@/defaults/documentStatuses'
 import { CircleCheckIcon, PenIcon, ShapesIcon, SignalHighIcon } from '@ttab/elephant-ui/icons'
 import type { Dispatch, SetStateAction } from 'react'
 import type { IDBSection } from 'src/datastore/types'
-import type { TFunction } from 'i18next'
-import type { TranslationKey } from '@/types/i18next.d'
 
 export function articleColumns({ sections = [] }: {
   sections?: IDBSection[]
-}, t: TFunction): Array<ColumnDef<Article>> {
+}): Array<ColumnDef<Article>> {
   return [
     {
       id: 'documentStatus',
@@ -24,15 +22,16 @@ export function articleColumns({ sections = [] }: {
         Filter: ({ column, setSearch }) => (
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
-        options: getDocumentStatuses(),
-        name: t('core:labels.status'),
+        options: DocumentStatuses,
+        name: 'Status',
         columnIcon: CircleCheckIcon,
         className: 'flex-none',
-        display: (value: string) => {
-          const statusLabel = t(`core:status.${value}` as TranslationKey)
-
-          return <span>{statusLabel}</span>
-        }
+        display: (value: string) => (
+          <span>
+            {DocumentStatuses
+              .find((status) => status.value === value)?.label}
+          </span>
+        )
       },
       accessorFn: (data) => data?.fields['document.meta.status']?.values[0],
       cell: ({ row }) => {
@@ -52,7 +51,7 @@ export function articleColumns({ sections = [] }: {
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
         options: Newsvalues,
-        name: t('core:labels.newsvalue'),
+        name: 'Nyhetsvärde',
         columnIcon: SignalHighIcon,
         className: 'flex-none hidden @3xl/view:[display:revert]'
       },
@@ -72,7 +71,7 @@ export function articleColumns({ sections = [] }: {
     {
       id: 'title',
       meta: {
-        name: t('core:labels.title'),
+        name: 'Titel',
         columnIcon: PenIcon,
         className: 'flex-1 w-[200px]'
       },
@@ -97,7 +96,7 @@ export function articleColumns({ sections = [] }: {
         Filter: ({ column, setSearch }: { column: Column<Article>, setSearch: Dispatch<SetStateAction<string | undefined>> }) => (
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
-        name: t('core:labels.section'),
+        name: 'Sektion',
         columnIcon: ShapesIcon,
         className: 'flex-none w-[135px] hidden @4xl/view:[display:revert]'
       },

@@ -7,10 +7,9 @@ import { useQuery } from '@/hooks/useQuery'
 import type { FilterProps } from '@/components/Filter'
 import { useSections } from '@/hooks/useSections'
 import { CircleCheckIcon, ShapesIcon } from '@ttab/elephant-ui/icons'
-import { getDocumentStatuses } from '@/defaults/documentStatuses'
+import { DocumentStatuses } from '@/defaults/documentStatuses'
 import { useUserTracker } from '@/hooks/useUserTracker'
 import { type JSX } from 'react'
-import { useTranslation } from 'react-i18next'
 
 export const Commands = (props: {
   facets?: Facets
@@ -18,7 +17,7 @@ export const Commands = (props: {
   if (props.page === undefined || props.pages === undefined || props.setPages === undefined || props.setSearch === undefined) {
     throw new Error('No props passed to Command component')
   }
-  const { t } = useTranslation()
+
   const [filters, setFilters] = useQuery(['status', 'section'])
   const [, setCurrentFilters] = useUserTracker<QueryParams | undefined>(`filters.Approvals.current`)
   const hasFilter = Object.values(filters).some((value) => value?.length)
@@ -39,8 +38,8 @@ export const Commands = (props: {
     <CommandList>
       <OptionsFilter
         {...props}
-        options={getDocumentStatuses()}
-        label={t('core:labels.status')}
+        options={DocumentStatuses}
+        label='Status'
         filterPage='status'
         Icon={CircleCheckIcon}
         facets={props.facets?.section}
@@ -48,7 +47,7 @@ export const Commands = (props: {
       <OptionsFilter
         {...props}
         options={optionsSections}
-        label={t('core:labels.section')}
+        label='Sektion'
         filterPage='section'
         Icon={ShapesIcon}
         facets={props.facets?.section}

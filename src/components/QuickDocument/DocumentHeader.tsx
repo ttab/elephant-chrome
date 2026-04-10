@@ -3,8 +3,7 @@ import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import { StatusMenuLogic } from './StatusMenu' // Import the logic component
 import type { DocumentView } from './types'
-import { getViewMap } from './types'
-import { useRegistry } from '@/hooks/useRegistry'
+import { ViewMap } from './types'
 
 export const DocumentHeader = ({
   ydoc,
@@ -23,8 +22,7 @@ export const DocumentHeader = ({
   planningId?: string | null
   view: DocumentView
 }) => {
-  const { featureFlags } = useRegistry()
-  const config = getViewMap(featureFlags.hasHast)[view]
+  const config = ViewMap[view]
   const HeaderIcon = (readOnly && config.readOnlyIcon) ? config.readOnlyIcon : config.icon
   const TitleIcon = config.icon
 

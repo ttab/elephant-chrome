@@ -8,7 +8,7 @@ const factBoxActions = ['core/text/set-body',
   'core/unordered-list/add-unordered-list'
 ]
 
-export const ContentMenu = ({ editorType }: { editorType?: string }): JSX.Element => {
+export const ContentMenu = ({ editorType}: { editorType?: string }): JSX.Element => {
   const { actions } = usePluginRegistry()
   const textActions = actions.filter((action) => action.plugin.class === 'text')
   const blockActions = actions.filter((action) => action.plugin.class === 'block')

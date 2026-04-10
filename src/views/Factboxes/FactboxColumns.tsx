@@ -5,7 +5,6 @@ import type { LocaleData } from '@/types/index'
 import type { ColumnDef, Row } from '@tanstack/react-table'
 import { BoxesIcon } from '@ttab/elephant-ui/icons'
 import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
-import type { TFunction, Namespace } from 'i18next'
 
 interface FactboxData {
   title: string
@@ -15,7 +14,7 @@ interface FactboxData {
   version: string
 }
 
-export function factboxColumns<Ns extends Namespace>({ locale, timeZone, t }: { locale: LocaleData, timeZone: string, t: TFunction<Ns> }): Array<ColumnDef<Factbox>> {
+export function factboxColumns({ locale, timeZone }: { locale: LocaleData, timeZone: string }): Array<ColumnDef<Factbox>> {
   const handleDragStart = (event: React.DragEvent<HTMLDivElement>, row: Row<Factbox>) => {
     const factboxData: FactboxData = {
       title: row.getValue<string>('title'),
@@ -66,7 +65,7 @@ export function factboxColumns<Ns extends Namespace>({ locale, timeZone, t }: { 
     {
       id: 'title',
       meta: {
-        name: t('core:labels.title'),
+        name: 'Titel',
         columnIcon: BoxesIcon,
         className: 'flex-none'
       },
@@ -86,7 +85,7 @@ export function factboxColumns<Ns extends Namespace>({ locale, timeZone, t }: { 
     {
       id: 'description',
       meta: {
-        name: t('factboxes.columnLabels.description'),
+        name: 'Beskrivning',
         columnIcon: BoxesIcon,
         className: 'flex-1 w-[200px]'
       },
@@ -107,7 +106,7 @@ export function factboxColumns<Ns extends Namespace>({ locale, timeZone, t }: { 
     {
       id: 'edited',
       meta: {
-        name: t('factboxes.columnLabels.lastChanged'),
+        name: 'Senast ändrad',
         columnIcon: BoxesIcon,
         className: 'flex-none'
       },
@@ -118,7 +117,7 @@ export function factboxColumns<Ns extends Namespace>({ locale, timeZone, t }: { 
         return (
           <div className='truncate space-x-2 justify-start items-center'>
             <span className='font-thin text-xs text-muted-foreground'>
-              {t('core:status.changed')}
+              Ändrad
             </span>
             <span className='font-thin text-sm'>
               {readableDateTime}

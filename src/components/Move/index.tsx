@@ -27,7 +27,6 @@ import { createPayload } from '@/shared/templates/lib/createPayload'
 import { DatePicker } from '../Datepicker'
 import { currentDateInUTC, parseDate } from '@/shared/datetime'
 import type { YDocument } from '@/modules/yjs/hooks'
-import { useTranslation } from 'react-i18next'
 
 export const Move = ({ ydoc, ...props }: ViewProps & {
   ydoc: YDocument<Y.Map<unknown>>
@@ -43,7 +42,6 @@ export const Move = ({ ydoc, ...props }: ViewProps & {
   const [showVerifyDialog, setShowVerifyDialog] = useState(false)
   const [planningDateString, setPlanningDateString] = useState<string | undefined>()
   const [searchOlder, setSearchOlder] = useState(false)
-  const { t } = useTranslation()
 
   const { data: session } = useSession()
   const { index, locale, timeZone } = useRegistry()
@@ -94,13 +92,13 @@ export const Move = ({ ydoc, ...props }: ViewProps & {
       )
 
       if (originalAssignmentIndex < 0) {
-        toast.error(t('errors:toasts.assignmentMoveError'))
+        toast.error('Uppdraget kunde inte flyttas')
         return
       }
 
       const originalAssignment = getValueByYPath<Block>(yRootOriginal, `meta.core/assignment[${originalAssignmentIndex}]`)?.[0]
       if (!originalAssignment) {
-        toast.error(t('errors:toasts.assignmentMoveError'))
+        toast.error('Uppdraget kunde inte flyttas')
         return
       }
 
@@ -123,7 +121,7 @@ export const Move = ({ ydoc, ...props }: ViewProps & {
       const newAssignmentIndex = newAssignmentArray.length
 
       if (!setValueByYPath(newEle, `meta.core/assignment[${newAssignmentIndex}]`, toYStructure(updatedAssignment))) {
-        toast.error(t('errors:toasts.assignmentMoveError'))
+        toast.error('Uppdraget kunde inte flyttas')
         return
       }
 
@@ -132,7 +130,7 @@ export const Move = ({ ydoc, ...props }: ViewProps & {
       deleteByYPath(yRootOriginal, `meta.core/assignment[${originalAssignmentIndex}]`)
 
       const newPlanningUUID = getValueByYPath<string>(newEle, 'root.uuid')?.[0]
-      toast.success(t('planning:move.assignmentMoveSuccess'), {
+      toast.success('Uppdraget har flyttats', {
         classNames: {
           title: 'whitespace-nowrap'
         },
@@ -140,7 +138,7 @@ export const Move = ({ ydoc, ...props }: ViewProps & {
           <ToastAction
             documentId={newPlanningUUID}
             withView='Planning'
-            label={t('planning:actions.openPlanning')}
+            label='Öppna planering'
             Icon={CalendarDaysIcon}
           />
         )
@@ -150,7 +148,7 @@ export const Move = ({ ydoc, ...props }: ViewProps & {
       props.onDialogClose?.()
     } catch (error) {
       console.error('Error moving assignment', error)
-      toast.error(t('errors:toasts.assignmentMoveError'))
+      toast.error('Uppdraget kunde inte flyttas')
     }
   }
 
@@ -162,7 +160,7 @@ export const Move = ({ ydoc, ...props }: ViewProps & {
             <div className='flex w-full h-full items-center space-x-2 font-bold'>
               <ViewHeader.Title
                 name='Assignment'
-                title={t('planning:move.moveAssignment')}
+                title='Flytta uppdrag'
                 icon={ArrowRightLeftIcon}
                 iconColor='#006bb3'
                 asDialog={props.asDialog}
@@ -195,9 +193,9 @@ export const Move = ({ ydoc, ...props }: ViewProps & {
                 size='xs'
                 className='min-w-0 w-full truncate justify-start max-w-48'
                 selectedOptions={selectedPlanning ? [selectedPlanning] : []}
-                placeholder={t('planning:move.pickPlanning')}
+                placeholder='Välj planering'
                 modal={props.asDialog}
-                fetch={(query) => fetch(query, session, t, index, locale, timeZone, {
+                fetch={(query) => fetch(query, session, index, locale, timeZone, {
                   searchOlder
                 })
                   .then((data) =>
@@ -205,10 +203,6 @@ export const Move = ({ ydoc, ...props }: ViewProps & {
                   )}
                 minSearchChars={2}
                 onSelect={handleSelectPlanning}
-                translationStrings={{
-                  nothingFound: t('common:misc.nothingFound'),
-                  searching: t('common:misc.searching')
-                }}
               >
               </ComboBox>
 
@@ -231,21 +225,21 @@ export const Move = ({ ydoc, ...props }: ViewProps & {
                   defaultChecked={searchOlder}
                   onCheckedChange={(checked: boolean) => { setSearchOlder(checked) }}
                 />
-                <Label htmlFor='SearchOlder' className='text-muted-foreground'>{t('planning:move.showOlder')}</Label>
+                <Label htmlFor='SearchOlder' className='text-muted-foreground'>Visa äldre</Label>
               </>
             </Form.Group>
             <UserMessage asDialog={!!props?.asDialog}>
               {!selectedPlanning
                 ? (
                     <div className='flex flex-col gap-4'>
-                      {t('planning:move.assignmentCreateInfo')}
+                      Väljer du ingen planering kommer en ny planering med detta uppdrag att skapas åt dig på valt datum.
                       <Form.Group icon={CalendarIcon}>
                         <DatePicker date={date} setDate={(value) => setPlanningDateString(value)} />
                       </Form.Group>
                     </div>
                   )
                 : (
-                    <>{t('planning:move.assignmentAddInfo')}</>
+                    <>Detta uppdrag kommer läggas i den valda planeringen</>
                   )}
             </UserMessage>
           </Form.Content>
@@ -254,8 +248,8 @@ export const Move = ({ ydoc, ...props }: ViewProps & {
             showVerifyDialog
             && (
               <MovePrompt
-                title={t('planning:move.moveAssignment')}
-                description={t('planning:move.moveAssignmentConfirm')}
+                title='Flytta uppdrag'
+                description='Är du säker på att du vill flytta uppdraget?'
                 selectedPlanning={selectedPlanning}
                 payload={{
                   ...payload,
@@ -278,8 +272,8 @@ export const Move = ({ ydoc, ...props }: ViewProps & {
                 onSecondary={() => {
                   setShowVerifyDialog(false)
                 }}
-                primaryLabel={t('planning:move.label')}
-                secondaryLabel={t('common:actions.abort')}
+                primaryLabel='Flytta'
+                secondaryLabel='Avbryt'
               />
             )
           }
@@ -289,8 +283,8 @@ export const Move = ({ ydoc, ...props }: ViewProps & {
               onReset={() => props.onDialogClose?.()}
             >
               <div className='flex gap-2 justify-end'>
-                <Button type='reset'>{t('common:actions.abort')}</Button>
-                <Button type='submit'>{t('planning:move.moveAssignment')}</Button>
+                <Button type='reset'>Avbryt</Button>
+                <Button type='submit'>Flytta uppdrag</Button>
               </div>
             </Form.Submit>
           </Form.Footer>

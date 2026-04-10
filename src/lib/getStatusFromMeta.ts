@@ -6,7 +6,6 @@ interface Status {
   creator: string
   cause?: string
   checkpoint?: string
-  usableId?: bigint
 }
 
 /**
@@ -18,15 +17,13 @@ export function getStatusFromMeta(meta: DocumentMeta | StatusOverviewItem, isWor
   const isMeta = isMetaData(meta)
   const heads = meta.heads
   const version = isMeta ? meta.currentVersion : meta.version
-  const usableId = heads?.['usable']?.id
 
   // If there are no heads it's always implicitly a 'draft'
   if (!heads || Object.keys(heads).length === 0) {
     return {
       name: 'draft',
       version,
-      creator: isMeta ? meta.creatorUri : '',
-      usableId
+      creator: isMeta ? meta.creatorUri : ''
     }
   }
 
@@ -63,8 +60,7 @@ export function getStatusFromMeta(meta: DocumentMeta | StatusOverviewItem, isWor
       version,
       creator: entry.creator,
       cause: entry.meta?.cause,
-      checkpoint: meta.workflowCheckpoint,
-      usableId
+      checkpoint: meta.workflowCheckpoint
     }
   }
 
@@ -74,8 +70,7 @@ export function getStatusFromMeta(meta: DocumentMeta | StatusOverviewItem, isWor
     version,
     creator: entry.creator,
     cause: entry.meta?.cause,
-    checkpoint: meta.workflowCheckpoint,
-    usableId
+    checkpoint: meta.workflowCheckpoint
   }
 }
 

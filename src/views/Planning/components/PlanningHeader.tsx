@@ -9,7 +9,6 @@ import type { Session } from 'next-auth'
 import type { HocuspocusProvider } from '@hocuspocus/provider'
 import { useYValue, type YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
-import { useTranslation } from 'react-i18next'
 
 export const PlanningHeader = ({ ydoc, asDialog, onDialogClose, session, provider, status }: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -22,13 +21,12 @@ export const PlanningHeader = ({ ydoc, asDialog, onDialogClose, session, provide
 }): JSX.Element => {
   const [planningData] = useYValue<PlanningData>(ydoc.ele, 'meta.core/planning-item[0].data')
   const [planningTitle] = useYValue<string>(ydoc.ele, 'root.title')
-  const { t } = useTranslation()
 
   return (
     <ViewHeader.Root asDialog={asDialog}>
       <ViewHeader.Title
         name='Plannings'
-        title={(!asDialog) ? t('views:plannings.label.singular') : t('common:actions.createNew', { documentType: t('core:documentType.planning') })}
+        title={(!asDialog) ? 'Planering' : 'Skapa ny planering'}
         icon={GanttChartSquareIcon}
         asDialog={asDialog}
         ydoc={ydoc}

@@ -13,7 +13,6 @@ import { Commands } from '@/components/Commands'
 import { useQuery } from '@/hooks/useQuery'
 import type { Planning } from '@/shared/schemas/planning'
 import { useInitFilters } from '@/hooks/useInitFilters'
-import { useTranslation } from 'react-i18next'
 
 const meta: ViewMetadata = {
   name: 'Plannings',
@@ -36,10 +35,9 @@ export const Plannings = (): JSX.Element => {
   const [currentTab, setCurrentTab] = useState<string>('list')
   const sections = useSections()
   const authors = useAuthors()
-  const { t } = useTranslation()
 
   const columns = useMemo(() =>
-    planningListColumns({ sections, authors }, t), [sections, authors, t])
+    planningListColumns({ sections, authors }), [sections, authors])
 
   const columnFilters = useInitFilters<Planning>({
     path: 'filters.Plannings.current',
@@ -64,7 +62,7 @@ export const Plannings = (): JSX.Element => {
 
         <ViewHeader.Root>
           <ViewHeader.Content>
-            <ViewHeader.Title name='Plannings' title={t('views:plannings.label.plural')} />
+            <ViewHeader.Title name='Plannings' title='Planeringar' />
             <Header type='Planning' docType='core/planning-item' />
           </ViewHeader.Content>
 

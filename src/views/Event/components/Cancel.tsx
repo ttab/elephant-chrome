@@ -1,13 +1,11 @@
 import type { FormProps } from '@/components/Form/Root'
 import { Checkbox, Label } from '@ttab/elephant-ui'
 import { useMemo } from 'react'
-import { useTranslation } from 'react-i18next'
 
 export const Cancel = ({ cancelled, setCancelled, onChange }: {
   cancelled: string | undefined
   setCancelled: (arg: string) => void
 } & FormProps) => {
-  const { t } = useTranslation()
   const isCancelled = typeof cancelled === 'string' ? cancelled === 'true' ? true : false : cancelled
   return useMemo(() => (
     <div className='flex items-center gap-2'>
@@ -25,7 +23,7 @@ export const Cancel = ({ cancelled, setCancelled, onChange }: {
           }
         }}
       />
-      <Label htmlFor='cancelled'>{!isCancelled ? t('event:labels.markAsCancelled') : t('event:labels.markedAsCancelled')}</Label>
+      <Label htmlFor='cancelled'>{!isCancelled ? 'Markera som inställd' : 'Evenemanget är markerat som inställt!'}</Label>
     </div>
-  ), [isCancelled, setCancelled, onChange, t])
+  ), [isCancelled, setCancelled, onChange])
 }

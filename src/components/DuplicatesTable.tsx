@@ -8,14 +8,12 @@ import type { HitV1 } from '@ttab/elephant-api/index'
 import { BoolQueryV1, QueryV1, SortingV1, TermsQueryV1 } from '@ttab/elephant-api/index'
 import { format } from 'date-fns'
 import { duplicateFields, type DuplicateFields } from '@/lib/getSharedFields'
-import { useTranslation } from 'react-i18next'
 
 export const DuplicatesTable = ({ documentId, type }: {
   documentId: string
   type: 'core/event' | 'core/planning-item'
 } & FormProps): JSX.Element => {
   const createdDocumentIdRef = useRef<string | undefined>(null)
-  const { t } = useTranslation()
 
   const { data, mutate, error, isLoading } = useDocuments<HitV1, DuplicateFields>({
     documentType: type,
@@ -46,13 +44,18 @@ export const DuplicatesTable = ({ documentId, type }: {
 
   useRepositoryEvents(type, (event) => {
     if (createdDocumentIdRef.current === event.uuid && event.type === 'document') {
-      mutate()
-        .catch((error) => console.warn('Failed to update event item', error))
+      void (async () => {
+        try {
+          await mutate()
+        } catch (error) {
+          console.warn('Failed to update event item', error)
+        }
+      })()
     }
   })
 
   if (isLoading) {
-    return <>{t('common:misc.loading')}</>
+    return <>Loading...</>
   }
 
   if (error) {
@@ -65,7 +68,7 @@ export const DuplicatesTable = ({ documentId, type }: {
 
   return (
     <div className='pl-6 border-t'>
-      <div className='text-sm font-bold pt-2'>{t('shared:copy.copiedTo')}</div>
+      <div className='text-sm font-bold pt-2'>Kopierad till</div>
       {data?.map((duplicate) => {
         let start, end
         const title = duplicate.fields['document.title']?.values[0]

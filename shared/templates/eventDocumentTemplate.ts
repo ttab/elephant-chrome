@@ -3,7 +3,6 @@ import { fromZonedTime } from 'date-fns-tz'
 import type { TemplatePayload } from './index.js'
 import { newLocalDate } from '@/shared/datetime.js'
 import { DEFAULT_TIMEZONE } from '../../src/defaults/defaultTimezone.js'
-import { getSystemLanguage } from '@/shared/getSystemLanguage.js'
 
 /**
  * Create a template structure for a event document
@@ -34,7 +33,7 @@ export function eventDocumentTemplate(id: string, payload?: TemplatePayload): Do
     uuid: id,
     type: 'core/event',
     uri: `core://event/${id}`,
-    language: getSystemLanguage(),
+    language: 'sv-se',
     meta: [
       Block.create({
         type: 'core/event',

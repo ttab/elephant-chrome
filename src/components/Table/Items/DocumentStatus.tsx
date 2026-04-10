@@ -1,9 +1,7 @@
 import { isVisualAssignmentType } from '@/defaults/assignmentTypes'
-import { getStatusSpecifications, getWorkflowSpecifications } from '@/defaults/workflowSpecification'
+import { getStatusSpecifications, WorkflowSpecifications } from '@/defaults/workflowSpecification'
 import type { JSX } from 'react'
 import { selectableStatuses } from '@/views/Planning/components/AssignmentStatus'
-import { useTranslation } from 'react-i18next'
-import type { TranslationKey } from '@/types/i18next.d'
 
 export const DocumentStatus = ({ type, status, isChanged }: {
   type: string
@@ -11,17 +9,16 @@ export const DocumentStatus = ({ type, status, isChanged }: {
   isChanged?: boolean
 }): JSX.Element => {
   const visualStatus = selectableStatuses.find((s) => s.value === status)
-  const { t } = useTranslation()
 
   const getStatusLabel = () => {
     if (isVisualAssignmentType(type)) {
-      return t(`core:status.${visualStatus?.value}` as TranslationKey) || null
+      return visualStatus?.label || null
     }
     if (type === 'core/factbox') {
-      return getWorkflowSpecifications()[type]?.[status]?.title || null
+      return WorkflowSpecifications[type]?.[status]?.title || null
     }
 
-    return getWorkflowSpecifications()['core/article']?.[status]?.title || null
+    return WorkflowSpecifications['core/article']?.[status]?.title || null
   }
 
   const label = getStatusLabel()

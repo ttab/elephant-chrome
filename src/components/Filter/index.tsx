@@ -22,7 +22,6 @@ export const Filter = ({ pages, setPages, setSearch, children, search }:
   const onOpenChange = useMemo(
     () => handleOpenChange({ setOpen, setSearch, setPages }),
     [setOpen, setSearch, setPages])
-
   return (
     <Popover open={open} onOpenChange={onOpenChange} modal>
       <PopoverTrigger asChild>

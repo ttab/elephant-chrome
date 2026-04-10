@@ -12,7 +12,6 @@ import { type YDocument, useYPath, useYValue } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import { useSession } from 'next-auth/react'
 import { TextInput } from '@/components/ui/TextInput'
-import { useTranslation } from 'react-i18next'
 
 export const Assignment = ({ ydoc, assignment, onAbort, onClose }: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -22,7 +21,7 @@ export const Assignment = ({ ydoc, assignment, onAbort, onClose }: {
   className?: string
 } & FormProps): JSX.Element => {
   const { data: session } = useSession()
-  const { t } = useTranslation()
+
   const path = useYPath(assignment, true)
   const [articleId] = useYValue<string>(assignment, `links.core/article[0].uuid`)
   const [flashId] = useYValue<string>(assignment, `links.core/flash[0].uuid`)
@@ -66,15 +65,15 @@ export const Assignment = ({ ydoc, assignment, onAbort, onClose }: {
               ydoc={ydoc}
               rootMap={!assignmentInProgress ? ydoc.ele : ydoc.ctx}
               value={title}
-              label={t('core:labels.title')}
-              placeholder={t('planning:assignment.title')}
+              label='Titel'
+              placeholder='Uppdragstitel'
               autoFocus={true}
             />
           </Form.Title>
           <TextBox
             ydoc={ydoc}
             value={description}
-            placeholder={t('planning:description.internal')}
+            placeholder='Internt meddelande'
             icon={(
               <MessageCircleMoreIcon
                 size={18}
@@ -106,7 +105,7 @@ export const Assignment = ({ ydoc, assignment, onAbort, onClose }: {
               ydoc={ydoc}
               rootMap={!assignmentInProgress ? ydoc.ele : ydoc.ctx}
               path={`${path}.links.core/author`}
-              placeholder={t('planning:assignment.actions.addAssignee')}
+              placeholder='Lägg till uppdragstagare'
             />
             <AssignmentTime assignment={assignment} />
 
@@ -126,11 +125,11 @@ export const Assignment = ({ ydoc, assignment, onAbort, onClose }: {
             <div className='flex gap-2 justify-end pt-4'>
               {!!assignmentInProgress && !!onAbort && (
                 <Button type='reset' variant='ghost'>
-                  {t('common:actions.abort')}
+                  Avbryt
                 </Button>
               )}
               <Button type='submit' variant='outline' className='whitespace-nowrap'>
-                {assignmentInProgress ? t('common:actions.add') : t('common:actions.close')}
+                {assignmentInProgress ? 'Lägg till' : 'Stäng'}
               </Button>
             </div>
           </Form.Submit>

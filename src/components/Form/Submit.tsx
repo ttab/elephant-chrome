@@ -3,7 +3,6 @@ import React, { useState, type JSX } from 'react'
 import { type FormProps } from './Root'
 import { toast } from 'sonner'
 import { LoaderIcon } from '@ttab/elephant-ui/icons'
-import { useTranslation } from 'react-i18next'
 
 const isPromise = (value: unknown): value is Promise<unknown> =>
   typeof value === 'object' && value !== null && typeof (value as Promise<unknown>).then === 'function'
@@ -31,8 +30,6 @@ export const Submit = ({
   disableOnSubmit?: boolean
 }): JSX.Element | null => {
   const [isSubmitting, setIsSubmitting] = useState<ButtonHTMLAttributes<HTMLButtonElement>['type'] | null>(null)
-  const { t } = useTranslation()
-
   const runSubmitHandler = (
     action: (() => unknown) | undefined,
     warningLabel: string
@@ -162,7 +159,7 @@ export const Submit = ({
       if (child.props && typeof child.props === 'object' && 'type' in child.props) {
         if (childProps.type === 'button' && !childProps.role) {
           console.error('Button without role, please add a role to the button')
-          toast.error(t('errors:toasts.sendDataError'))
+          toast.error('Kunde inte skicka data')
         }
 
         switch (childProps.type) {

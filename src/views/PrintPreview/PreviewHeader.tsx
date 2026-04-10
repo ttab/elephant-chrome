@@ -1,7 +1,6 @@
 import { ViewHeader } from '@/components/View'
 import { EyeIcon } from '@ttab/elephant-ui/icons'
 import { type JSX } from 'react'
-import { useTranslation } from 'react-i18next'
 
 /**
  * PreviewHeader component.
@@ -20,10 +19,9 @@ import { useTranslation } from 'react-i18next'
 
 
 export const PreviewHeader = (): JSX.Element => {
-  const { t } = useTranslation('print')
   return (
     <ViewHeader.Root className='flex flex-row justify-between items-center'>
-      <ViewHeader.Title name='PrintPreview' title={t('preview.title')} icon={EyeIcon} />
+      <ViewHeader.Title name='Förhandsvisning' title='Förhandsvisning' icon={EyeIcon} />
       <ViewHeader.Action>
       </ViewHeader.Action>
     </ViewHeader.Root>

@@ -11,13 +11,12 @@ import { useAuthors } from '@/hooks/useAuthors'
 import { useRegistry } from '@/hooks/useRegistry'
 import { useSession } from 'next-auth/react'
 import { type ViewMetadata } from '@/types'
-import { getAuthorBySub } from '@/lib/getAuthorBySub'
+import { type IDBAuthor } from 'src/datastore/types'
 import { useQuery } from '@/hooks/useQuery'
 import { newLocalDate } from '@/shared/datetime'
 import { useSections } from '@/hooks/useSections'
 import type { Assignment } from '@/shared/schemas/assignments'
 import { useInitFilters } from '@/hooks/useInitFilters'
-import { useTranslation } from 'react-i18next'
 
 const meta: ViewMetadata = {
   name: 'Assignments',
@@ -42,12 +41,16 @@ export const Assignments = (): JSX.Element => {
   const { locale, timeZone } = useRegistry()
   const { data: session } = useSession()
   const sections = useSections()
-  const { t } = useTranslation()
 
-  const assigneeId = useMemo(
-    () => getAuthorBySub(authors, session?.user?.sub)?.id,
-    [authors, session?.user?.sub]
-  )
+  const assigneeId = useMemo(() => {
+    const userSub = session?.user?.sub
+    const subId = userSub?.slice(userSub?.lastIndexOf('/') + 1)
+    const author = authors?.find((a: IDBAuthor) => {
+      return a.sub.slice(a?.sub.lastIndexOf('/') + 1) === subId
+    })
+
+    return author?.id
+  }, [authors, session?.user?.sub])
 
   const date = useMemo(() => {
     return (typeof query.from === 'string')
@@ -57,7 +60,7 @@ export const Assignments = (): JSX.Element => {
 
 
   const columns = useMemo(() =>
-    assignmentColumns({ authors, locale, timeZone, sections, currentDate: date, t }), [authors, locale, timeZone, sections, date, t])
+    assignmentColumns({ authors, locale, timeZone, sections, currentDate: date }), [authors, locale, timeZone, sections, date])
 
   const columnFilters = useInitFilters({
     path: 'filters.Assignments.current',
@@ -85,7 +88,7 @@ export const Assignments = (): JSX.Element => {
 
         <ViewHeader.Root>
           <ViewHeader.Content>
-            <ViewHeader.Title name={meta.name} title={t('views:assignments.title')} />
+            <ViewHeader.Title name={meta.name} title='Uppdrag' />
             <Header type={meta.name} assigneeId={assigneeId} />
           </ViewHeader.Content>
 

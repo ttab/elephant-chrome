@@ -2,23 +2,21 @@ import { DotMenu, type DotDropdownMenuActionItem } from '@/components/ui/DotMenu
 import { Link } from '@/components'
 import { useMemo } from 'react'
 import type { JSX } from 'react'
-import { useTranslation } from 'react-i18next'
 
 export const Actions = ({ deliverableUuids, planningId }: { deliverableUuids: string[], planningId: string }): JSX.Element => {
-  const { t } = useTranslation('planning')
   return useMemo(() => {
     const items: DotDropdownMenuActionItem[] = [
       {
-        label: t('actions.open'),
+        label: 'Open',
         item: (
           <Link to='Planning' props={{ id: planningId }}>
-            {t('actions.open')}
+            Open
           </Link>
         )
       },
       {
-        label: t('actions.assignments'),
-        emptyLabel: t('actions.noDeliverables'),
+        label: 'Assignments',
+        emptyLabel: 'No deliverables',
         item: deliverableUuids.map((uuid) => ({
           label: uuid,
           item: (
@@ -31,5 +29,5 @@ export const Actions = ({ deliverableUuids, planningId }: { deliverableUuids: st
     ]
 
     return <DotMenu items={items} />
-  }, [deliverableUuids, planningId, t])
+  }, [deliverableUuids, planningId])
 }

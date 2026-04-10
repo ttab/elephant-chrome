@@ -6,14 +6,12 @@ import { Validation } from './Validation'
 import type { FormProps } from './Form/Root'
 import type * as Y from 'yjs'
 import { useYValue, type YDocument } from '@/modules/yjs/hooks'
-import { useTranslation } from 'react-i18next'
 
 export const Newsvalue = ({ ydoc, path, onValidation, validateStateRef, onChange }: {
   ydoc: YDocument<Y.Map<unknown>>
   path: string
 } & FormProps): JSX.Element => {
   const [newsvalue, setNewsvalue] = useYValue<string | undefined>(ydoc.ele, path)
-  const { t } = useTranslation()
   const setFocused = useRef<(value: boolean, path: string) => void>(() => { })
   const selectedOptions = Newsvalues.filter((type) => type.value === newsvalue)
 
@@ -23,7 +21,7 @@ export const Newsvalue = ({ ydoc, path, onValidation, validateStateRef, onChange
     <Awareness ref={setFocused} ydoc={ydoc} path={path}>
       <Validation
         ydoc={ydoc}
-        label={t('core:labels.newsvalue')}
+        label='Nyhetsvärde'
         path={path}
         block='core/newsvalue[0]'
         onValidation={onValidation}
@@ -36,7 +34,7 @@ export const Newsvalue = ({ ydoc, path, onValidation, validateStateRef, onChange
           variant='outline'
           options={Newsvalues}
           selectedOptions={selectedOptions}
-          placeholder={`${t('common:actions.add')} ${t('core:labels.newsvalue').toLocaleLowerCase()}`}
+          placeholder='Lägg till nyhetsvärde'
           validation={!!onValidation}
           onOpenChange={(isOpen: boolean) => {
             setFocused.current(true, isOpen ? path : '')
@@ -48,10 +46,6 @@ export const Newsvalue = ({ ydoc, path, onValidation, validateStateRef, onChange
             } else {
               setNewsvalue(option.value)
             }
-          }}
-          translationStrings={{
-            nothingFound: t('common:misc.nothingFound'),
-            searching: t('common:misc.searching')
           }}
         >
 

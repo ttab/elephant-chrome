@@ -12,7 +12,6 @@ import { useRepositoryEvents } from '@/hooks/useRepositoryEvents'
 import { useCallback, type JSX } from 'react'
 import { useUserTracker } from '@/hooks/useUserTracker'
 import type { NewItem } from './Root'
-import { useTranslation } from 'react-i18next'
 
 const BASE_URL = import.meta.env.BASE_URL || ''
 
@@ -30,7 +29,6 @@ export const Table = ({ type, header }: {
   const openEditingView = useLink(type)
 
   const [newDocuments = [], setNewDocuments] = useUserTracker<NewItem[]>(type)
-  const { t } = useTranslation('shared')
 
   const { data: documents, mutate, error } = useSWR<EleDocumentResponse[], Error>(
     newDocuments?.length ? newDocuments : null,
@@ -51,16 +49,30 @@ export const Table = ({ type, header }: {
   useRepositoryEvents(
     eventType,
     useCallback((event) => {
-      const expiredDocuments = newDocuments?.filter(({ timestamp }) => Date.now() - timestamp > (60000 * 10))
+      void (async () => {
+        const expiredDocuments = newDocuments?.filter(({ timestamp }) => Date.now() - timestamp > (60000 * 10))
 
-      if (event.event === 'document'
-        && event.type === eventType
-        && expiredDocuments?.length
-      ) {
-        setNewDocuments(newDocuments?.filter(({ id }) => !expiredDocuments.some(({ id: expiredId }) => expiredId === id)))
-        mutate()
-          .catch((error) => console.error(`Error when mutating ${type} list`, error))
-      }
+        if (event.event === 'document'
+          && event.type === 'core/planning-item'
+          && expiredDocuments.length
+        ) {
+          setNewDocuments(newDocuments?.filter(({ id }) => !expiredDocuments.some(({ id: expiredId }) => expiredId === id)))
+          await mutate()
+        }
+        try {
+          const expiredDocuments = newDocuments?.filter(({ timestamp }) => Date.now() - timestamp > (60000 * 10))
+
+          if (event.event === 'document'
+            && event.type === eventType
+            && expiredDocuments.length
+          ) {
+            setNewDocuments(newDocuments?.filter(({ id }) => !expiredDocuments.some(({ id: expiredId }) => expiredId === id)))
+            await mutate()
+          }
+        } catch (error) {
+          console.error(`Error when mutating ${type} list`, error)
+        }
+      })()
     }, [newDocuments, setNewDocuments, mutate, eventType, type])
   )
 
@@ -69,7 +81,7 @@ export const Table = ({ type, header }: {
     console.warn('Unable to fetch NewItems: ', error)
     return (
       <div>
-        {`${t('errors:messages.loadFailed')}:`}
+        Failed to load:
         {error.message}
       </div>
     )

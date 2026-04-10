@@ -17,7 +17,6 @@ export const transformImage = (element: Block): TBElement => {
     width: data.width,
     height: data.height,
     uploadId: links[0].uri.split('/').at(-1) || '',
-    url: links[0].url,
     ...transformSoftcrop(meta) || {}
   }
 
@@ -51,7 +50,7 @@ export function revertImage(element: TBElement): Block {
   const { id, properties, children } = element
   const textNode = (children as TBElement[])?.find((c) => c.type === 'core/image/text')
   const bylineNode = (children as TBElement[])?.find((c) => c.type === 'core/image/byline')
-  const imageId = toString(properties?.uri).split('core://image/')[1]
+  const imageId = (properties?.uri as string).split('core://image/')[1]
 
 
   const captionText = serializeText(textNode)
@@ -59,13 +58,21 @@ export function revertImage(element: TBElement): Block {
 
   const links = [
     {
-      type: toString(properties?.type),
-      rel: toString(properties?.rel),
+      type: 'core/image',
+      rel: 'image',
       uri: toString(properties?.uri),
-      uuid: imageId,
-      url: toString(properties?.url) || toString(properties?.href)
+      uuid: imageId
     }
   ]
+
+  if (bylineText.text.length > 0) {
+    links.push(Block.create({
+      rel: 'author',
+      type: 'core/author',
+      title: toString(bylineText.text),
+      uuid: crypto.randomUUID()
+    }))
+  }
 
   const html_caption = toString(captionText.html_caption)
   const text = toString(captionText.text)

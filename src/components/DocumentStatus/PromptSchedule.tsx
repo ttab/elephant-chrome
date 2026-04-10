@@ -1,67 +1,35 @@
 import type { WorkflowTransition } from '@/defaults/workflowSpecification'
 import { Prompt } from '../Prompt'
 import { useRegistry } from '@/hooks/useRegistry'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Label } from '@ttab/elephant-ui'
 import { TimeInput } from '../TimeInput'
 import { toZonedTime } from 'date-fns-tz'
 import { format } from 'date-fns'
-import { CalendarIcon, LoaderIcon } from '@ttab/elephant-ui/icons'
+import { CalendarIcon } from '@ttab/elephant-ui/icons'
 import { PromptCauseField } from './PromptCauseField'
-import { useTranslation } from 'react-i18next'
-import { useCollaborationDocument } from '@/hooks/useCollaborationDocument'
-import type { YDocument } from '@/modules/yjs/hooks'
-import { useYValue } from '@/modules/yjs/hooks'
-import { HastToggle } from '@/components/HastToggle'
-import type * as Y from 'yjs'
 
-export const PromptSchedule = ({
-  prompt, planningId, setStatus, showPrompt, requireCause = false,
-  ydoc: ydoc, usableId, documentType
-}: {
+export const PromptSchedule = ({ publishTime, prompt, setStatus, showPrompt, requireCause = false }: {
+  publishTime?: Date
   prompt: {
     status: string
   } & WorkflowTransition
-  planningId: string
   setStatus: (status: string, data: Record<string, unknown>) => void
   showPrompt: React.Dispatch<React.SetStateAction<({
     status: string
   } & WorkflowTransition) | undefined>>
   requireCause?: boolean
-  ydoc?: YDocument<Y.Map<unknown>>
-  usableId?: bigint
-  documentType?: string
 }) => {
   const { timeZone } = useRegistry()
-  const { loading, document } = useCollaborationDocument({ documentId: planningId })
-  const ele = document ? document.getMap('ele') : undefined
-  const [publishDate] = useYValue<Date>(ele, 'meta.core/planning-item[0].data.start_date') as Date[]
-  const now = new Date()
-  const [time, setTime] = useState(now)
+  const initialTime = publishTime ? new Date(publishTime) : new Date()
+  const [time, setTime] = useState((initialTime))
   const [cause, setCause] = useState<string | undefined>()
-  const { t } = useTranslation()
-
-  useEffect(() => {
-    if (loading) return
-
-    const formatedPublishDate = publishDate.toLocaleString()
-    const formatedNow = now.toLocaleString().slice(0, 10)
-
-    // only set to pulish date if it's in the future, otherwise default to now
-    if (publishDate && formatedPublishDate >= formatedNow) {
-      const d = new Date(publishDate)
-      d.setHours(now.getHours(), now.getMinutes(), 0, 0)
-      setTime(d)
-    }
-    // should only run when loading changes
-    // eslint-disable-next-line
-  }, [loading])
 
   return (
     <Prompt
       title={prompt.title}
       primaryLabel={prompt.title}
-      secondaryLabel={t('common:actions.abort')}
+      secondaryLabel='Avbryt'
       onPrimary={() => {
         showPrompt(undefined)
         void setStatus(
@@ -83,7 +51,7 @@ export const PromptSchedule = ({
         <div className='flex flex-row justify-items-start items-stretch gap-6 flex-wrap pt-2'>
 
           <div className='flex flex-col gap-2'>
-            <Label htmlFor='ScheduledTime'>{t('shared:status_menu.setTime')}</Label>
+            <Label htmlFor='ScheduledTime'>Ange tid</Label>
 
             <TimeInput
               id='ScheduledTime'
@@ -105,17 +73,11 @@ export const PromptSchedule = ({
           </div>
 
           <div className='flex flex-col gap-2'>
-            <Label htmlFor='ScheduledTime'>{t('shared:status_menu.planningDate')}</Label>
-            {loading && planningId
-              ? (
-                  <LoaderIcon size={14} strokeWidth={1.75} className='animate-spin mx-auto' />
-                )
-              : (
-                  <span className='border py-2 px-3 h-8 text-sm rounded flex flex-row gap-4 items-center justify-between bg-muted'>
-                    {format(toZonedTime(time, timeZone), 'yyyy-MM-dd')}
-                    <CalendarIcon size={14} strokeWidth={1.75} />
-                  </span>
-                )}
+            <Label htmlFor='ScheduledTime'>Datum i planeringen</Label>
+            <span className='border py-2 px-3 h-8 text-sm rounded flex flex-row gap-4 items-center justify-between bg-muted'>
+              {format(toZonedTime(time, timeZone), 'yyyy-MM-dd')}
+              <CalendarIcon size={14} strokeWidth={1.75} />
+            </span>
           </div>
 
           {requireCause && (
@@ -125,10 +87,6 @@ export const PromptSchedule = ({
           )}
 
         </div>
-
-        {ydoc && documentType === 'core/article' && (
-          <HastToggle ydoc={ydoc} usableId={usableId} variant='full' className='w-full' />
-        )}
       </div>
     </Prompt>
   )

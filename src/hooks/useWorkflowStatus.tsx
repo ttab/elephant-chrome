@@ -8,11 +8,9 @@ import type { Repository, Status } from '@/shared/Repository'
 import { snapshotDocument } from '@/lib/snapshotDocument'
 import { getStatusFromMeta } from '@/lib/getStatusFromMeta'
 import type { Session } from 'next-auth'
-import { getWorkflowSpecifications } from '@/defaults/workflowSpecification'
+import { WorkflowSpecifications } from '@/defaults/workflowSpecification'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
-import { useTranslation } from 'react-i18next'
-import type { TFunction, Namespace } from 'i18next'
 
 export const useWorkflowStatus = ({ ydoc, documentId: docId }: {
   ydoc?: YDocument<Y.Map<unknown>>
@@ -24,7 +22,6 @@ export const useWorkflowStatus = ({ ydoc, documentId: docId }: {
 ] => {
   const { repository } = useRegistry()
   const { data: session } = useSession()
-  const { t } = useTranslation('shared')
 
   const documentId = docId || ydoc?.id
 
@@ -55,7 +52,7 @@ export const useWorkflowStatus = ({ ydoc, documentId: docId }: {
       try {
         const isWorkflow = meta.type === 'tt/wire'
           ? false
-          : !!getWorkflowSpecifications()[meta.type][state]?.isWorkflow
+          : !!WorkflowSpecifications[meta.type][state]?.isWorkflow
 
         return {
           uuid: documentId,
@@ -70,7 +67,7 @@ export const useWorkflowStatus = ({ ydoc, documentId: docId }: {
 
   if (error) {
     console.error('Unable to get documentStatus', error)
-    toast.error(t('errors:toasts.fetchStatusFailed'))
+    toast.error('Ett fel uppstod när aktuell status skulle hämtas. Försök ladda om sidan.')
   }
 
   // Listen to repository events and revalidate if the current document is affected
@@ -102,14 +99,14 @@ export const useWorkflowStatus = ({ ydoc, documentId: docId }: {
       const uuid = typeof newStatus === 'object' ? newStatus.uuid : documentId
 
       if (!session || !uuid) {
-        toast.error(t('errors:toasts.couldNotChangeStatusReloadBrowser'))
+        toast.error('Ett fel har uppstått, aktuell status kunde inte ändras! Ladda om webbläsaren och försök igen.')
         return
       }
 
       try {
         // Handle wire status updates
         if (asWire && typeof newStatus === 'object' && repository) {
-          await setWireStatus(newStatus, repository, session, t)
+          await setWireStatus(newStatus, repository, session)
 
           return
         }
@@ -126,16 +123,16 @@ export const useWorkflowStatus = ({ ydoc, documentId: docId }: {
         // Revalidate after the mutation completes
         await globalMutate([CACHE_KEY])
       } catch (ex) {
-        toast.error(ex instanceof Error ? ex.message : t('errors:toasts.couldNotChangeStatus'))
+        toast.error(ex instanceof Error ? ex.message : 'Ett fel uppstod när aktuell status skulle ändras')
       }
     },
-    [session, documentId, ydoc?.provider?.document, repository, CACHE_KEY, t]
+    [session, documentId, ydoc?.provider?.document, repository, CACHE_KEY]
   )
 
   return [documentStatus, setDocumentStatus, mutate]
 }
 
-async function setWireStatus<Ns extends Namespace>(newStatus: Status, repository: Repository, session: Session, t: TFunction<Ns>) {
+async function setWireStatus(newStatus: Status, repository: Repository, session: Session) {
   try {
     if (!repository || !session.accessToken) {
       throw new Error('Repository or session access token is not available')
@@ -148,6 +145,6 @@ async function setWireStatus<Ns extends Namespace>(newStatus: Status, repository
     })
   } catch (error) {
     console.error('Failed to set wire status', error)
-    toast.error(t('errors:toasts.couldNotSaveStatus'))
+    toast.error('Ett fel uppstod när aktuell status skulle sparas')
   }
 }

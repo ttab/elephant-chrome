@@ -13,8 +13,6 @@ import {
   NewspaperIcon
 } from '@ttab/elephant-ui/icons'
 import type { ViewProps, View } from '../types'
-import type { AllowedFeatureFlag } from 'src/datastore/types'
-import i18next from 'i18next'
 
 /**
  * Defines a menu item in the main application menu.
@@ -42,51 +40,51 @@ export interface ApplicationMenuItem {
   props?: ViewProps
 }
 
-export const getApplicationMenu = (featureFlags: AllowedFeatureFlag): ApplicationMenu => ({
+export const applicationMenu: ApplicationMenu = {
   groups: [
     {
       name: 'views',
       items: [
         {
           name: 'Plannings',
-          label: i18next.t('app:mainMenu.plannings'),
+          label: 'Planeringar',
           icon: CalendarDaysIcon,
           color: '#FF971E'
         },
         {
           name: 'Approvals',
-          label: i18next.t('app:mainMenu.approvals'),
+          label: 'Dagen',
           icon: EarthIcon,
           color: '#5E9F5D'
         },
         {
           name: 'Events',
-          label: i18next.t('app:mainMenu.events'),
+          label: 'Händelser',
           icon: CalendarPlus2Icon,
           color: '#D802FD'
         },
         {
           name: 'Assignments',
-          label: i18next.t('app:mainMenu.assignments'),
+          label: 'Uppdrag',
           icon: BriefcaseBusinessIcon,
           color: '#006bb3'
         },
         {
           name: 'Wires',
-          label: i18next.t('app:mainMenu.wires'),
+          label: 'Telegram',
           icon: CableIcon,
           color: '#FF6347'
         },
         {
           name: 'Latest',
-          label: i18next.t('app:mainMenu.latest'),
+          label: 'Senast utgivet',
           icon: UtilityPoleIcon,
           color: '#996633',
           target: 'sheet'
         },
         {
           name: 'Factboxes',
-          label: i18next.t('app:mainMenu.factboxes'),
+          label: 'Faktarutor',
           icon: BoxesIcon,
           color: '#99c5c4'
         }
@@ -97,38 +95,36 @@ export const getApplicationMenu = (featureFlags: AllowedFeatureFlag): Applicatio
       items: [
         {
           name: 'Flash',
-          label: i18next.t('app:mainMenu.flash', { type: featureFlags.hasHast ? i18next.t('flash:hastLabel') : i18next.t('flash:title') }),
+          label: 'Skapa flash',
           icon: ZapIcon,
           color: '#FF5150',
           target: 'dialog'
         },
         {
           name: 'Search',
-          label: i18next.t('app:mainMenu.search'),
+          label: 'Sök',
           icon: SearchIcon,
           color: '#F06F21'
         },
         {
           name: 'QuickArticle',
-          label: i18next.t('app:mainMenu.quickarticle'),
+          label: 'Skapa två på två',
           icon: NewspaperIcon,
           color: '#aabbcc',
           target: 'dialog'
         }
       ]
     },
-    ...(featureFlags.hasPrint
-      ? [{
+    {
+      name: 'Print',
+      items: [
+        {
           name: 'Print',
-          items: [
-            {
-              name: 'Print' as View,
-              label: i18next.t('app:mainMenu.print'),
-              icon: LibraryIcon,
-              color: '#006bb3'
-            }
-          ]
-        }]
-      : [])
+          label: 'Print',
+          icon: LibraryIcon,
+          color: '#006bb3'
+        }
+      ]
+    }
   ]
-})
+}

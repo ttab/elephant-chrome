@@ -7,7 +7,6 @@ import { PreVersion } from './Version/PreVersion'
 import type { Status as DocumentStatuses } from '@ttab/elephant-api/repository'
 import { PreVersionInfo } from './Version/PreVersionInfo'
 import type { JSX } from 'react'
-import { useTranslation } from 'react-i18next'
 import { cn } from '@ttab/elephant-ui/utils'
 import { AlertDescription } from '@ttab/elephant-ui'
 import { MessageCircleMoreIcon } from '@ttab/elephant-ui/icons'
@@ -33,10 +32,6 @@ export const Editor = ({ id, version, textOnly = false, direct, versionStatusHis
   showNotes?: boolean
   showTitle?: boolean
 }): JSX.Element => {
-  const { t, i18n } = useTranslation('editor')
-
-  const activeLocale = i18n.resolvedLanguage
-
   const searchParams = new URLSearchParams()
   if (typeof version !== 'undefined') {
     searchParams.set('version', version.toString())
@@ -53,16 +48,10 @@ export const Editor = ({ id, version, textOnly = false, direct, versionStatusHis
     return [
       ...basePlugins.map((initPlugin) => initPlugin()),
       TTVisual({
-        captionLabel: t('image.captionLabel'),
-        bylineLabel: t('image.bylineLabel'),
         removable: false
       }),
       Factbox({
-        headerTitle: t('factbox.headerTitle'),
-        modifiedLabel: t('factbox.modifiedLabel'),
-        footerTitle: t('factbox.footerTitle'),
-        removable: false,
-        locale: activeLocale
+        removable: false
       })
     ]
   }
@@ -74,13 +63,13 @@ export const Editor = ({ id, version, textOnly = false, direct, versionStatusHis
   )
 
   if (error) {
-    return <div>{t('errors:messages.loadFailed')}</div>
+    return <div>Failed to load</div>
   }
 
   if (!document) {
     return (
       <LoadingText>
-        {t('common:misc.loading')}
+        Laddar...
       </LoadingText>
     )
   }

@@ -9,14 +9,11 @@ import type { PrintFlow, PrintFlowFields } from '@/shared/schemas/printFlow'
 import { fields } from '@/shared/schemas/printFlow'
 import { toast } from 'sonner'
 import type { JSX } from 'react'
-import { useTranslation } from 'react-i18next'
 
 export const Commands = (props: FilterProps): JSX.Element => {
   if (props.page === undefined || props.pages === undefined || props.setPages === undefined || props.setSearch === undefined) {
     throw new Error('No props passed to Command component')
   }
-
-  const { t } = useTranslation('print')
 
   const { data, error } = useDocuments<PrintFlow, PrintFlowFields>({
     documentType: 'tt/print-flow',
@@ -24,7 +21,7 @@ export const Commands = (props: FilterProps): JSX.Element => {
   })
 
   if (error) {
-    toast.error(t('articles.errors.fetchFlows'))
+    toast.error('Kunde inte hämta printflöden')
     console.error('Could not fetch PrintFlows:', error)
   }
   const [filters, setFilters] = useQuery(['status', 'section'])
@@ -38,27 +35,27 @@ export const Commands = (props: FilterProps): JSX.Element => {
   const optionsStatuses = [
     {
       value: 'draft',
-      label: t('articles.status.draft')
+      label: 'Utkast'
     },
     {
       value: 'needs_proofreading',
-      label: t('articles.status.needsProofreading')
+      label: 'Klar för korr'
     },
     {
       value: 'print_done',
-      label: t('articles.status.done')
+      label: 'Klar'
     },
     {
       value: 'usable',
-      label: t('articles.status.exported')
+      label: 'Exporterad'
     },
     {
       value: 'unpublished',
-      label: t('articles.status.suspended')
+      label: 'Inställd'
     },
     {
       value: 'cancelled',
-      label: t('articles.status.cancelled')
+      label: 'Kastad'
     }
   ]
   const optionsPrintFlows = data?.map((hit) => ({
@@ -71,14 +68,14 @@ export const Commands = (props: FilterProps): JSX.Element => {
       <OptionsFilter
         {...props}
         options={optionsPrintFlows}
-        label={t('articles.columns.flow')}
+        label='Flöde'
         filterPage='printFlow'
         Icon={TagIcon}
       />
       <OptionsFilter
         {...props}
         options={optionsStatuses}
-        label={t('articles.columns.status')}
+        label='Status'
         filterPage='workflowState'
         Icon={CircleCheckIcon}
       />

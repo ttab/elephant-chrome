@@ -1,7 +1,7 @@
 import type { TBResource } from '@ttab/textbit'
 import type { Repository } from '@/shared/Repository'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { imageConsume as consume } from '@/views/PrintEditor/lib/imageConsume'
+import { consume } from '@/views/PrintEditor/ImagePlugin/lib/consume'
 
 const originalFileReader = globalThis.FileReader
 const originalImage = globalThis.Image

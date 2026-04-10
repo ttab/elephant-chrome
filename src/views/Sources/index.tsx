@@ -1,7 +1,6 @@
 import type { ViewMetadata, ViewProps } from '@/types/index'
 import { View, ViewHeader } from '@/components/View'
 import { useMemo, useState, type JSX } from 'react'
-import { useTranslation } from 'react-i18next'
 import type * as Y from 'yjs'
 import { QueryV1, BoolQueryV1, TermsQueryV1 } from '@ttab/elephant-api/index'
 import { fields as wireFields, type Wire as WireDoc, type WireFields } from '@/shared/schemas/wire'
@@ -31,15 +30,14 @@ const meta: ViewMetadata = {
 }
 
 export const Sources = ({ id }: ViewProps): JSX.Element => {
-  const { t } = useTranslation('wires')
   const [query] = useQuery()
   const documentId = id || query.id
 
   if (!documentId || typeof documentId !== 'string') {
     return (
       <Error
-        title={t('sources.errorTitle')}
-        message={t('sources.errorMessage')}
+        title='Artikeldokument saknas'
+        message='Inget artikeldokument är angivet. Navigera tillbaka till översikten och försök igen.'
       />
     )
   }
@@ -48,7 +46,6 @@ export const Sources = ({ id }: ViewProps): JSX.Element => {
 }
 
 const SourcesContent = ({ documentId }: { documentId: string }): JSX.Element => {
-  const { t } = useTranslation('wires')
   const ydoc = useYDocument<Y.Map<unknown>>(documentId)
   const [wireBlocks] = useYValue<Block[]>(ydoc.ele, 'links.tt/wire')
   const [selectedWireId, setSelectedWireId] = useState<string | undefined>(undefined)
@@ -97,7 +94,7 @@ const SourcesContent = ({ documentId }: { documentId: string }): JSX.Element => 
       <ViewHeader.Root>
         <ViewHeader.Title
           name='Sources'
-          title={t('sources.title')}
+          title='Källor'
           icon={CableIcon}
           iconColor='#FF6347'
         />
@@ -109,7 +106,7 @@ const SourcesContent = ({ documentId }: { documentId: string }): JSX.Element => 
         {!wireBlocks || wireBlocks.length === 0
           ? (
               <p className='px-4 py-6 text-sm text-muted-foreground'>
-                {t('sources.noWires')}
+                Inga källtelegram
               </p>
             )
           : (
@@ -129,7 +126,7 @@ const SourcesContent = ({ documentId }: { documentId: string }): JSX.Element => 
                   {selectedWireId && !selectedWire
                     ? (
                         <p className='px-4 py-6 text-sm text-muted-foreground text-center'>
-                          {t('sources.loadingWire')}
+                          Laddar telegram…
                         </p>
                       )
                     : selectedWire

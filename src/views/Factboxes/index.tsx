@@ -10,7 +10,6 @@ import { factboxColumns } from './FactboxColumns'
 import type { Factbox } from '@/shared/schemas/factbox'
 import { FactboxList } from './FactboxList'
 import { useRegistry } from '@/hooks/useRegistry'
-import { useTranslation } from 'react-i18next'
 
 const meta: ViewMetadata = {
   name: 'Factboxes',
@@ -31,10 +30,9 @@ const meta: ViewMetadata = {
 export const Factboxes = (): JSX.Element => {
   const [currentTab, setCurrentTab] = useState<string>('list')
   const { locale, timeZone } = useRegistry()
-  const { t } = useTranslation('views')
 
   const columns = useMemo(() =>
-    factboxColumns({ locale, timeZone, t }), [locale, timeZone, t])
+    factboxColumns({ locale, timeZone }), [locale, timeZone])
 
   return (
     <View.Root tab={currentTab} onTabChange={setCurrentTab}>
@@ -48,7 +46,7 @@ export const Factboxes = (): JSX.Element => {
 
         <ViewHeader.Root>
           <ViewHeader.Content>
-            <ViewHeader.Title name='Factboxes' title={t('factboxes.title')} />
+            <ViewHeader.Title name='Factboxes' title='Faktarutor' />
             <Header type='Factbox' docType='core/factbox' />
           </ViewHeader.Content>
 

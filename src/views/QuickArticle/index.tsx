@@ -6,7 +6,6 @@ import { getTemplateFromView } from '@/shared/templates/lib/getTemplateFromView'
 import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
 import type { Document } from '@ttab/elephant-api/newsdoc'
 import { QuickArticleDialog } from './QuickArticleDialog'
-import { useTranslation } from 'react-i18next'
 
 const meta: ViewMetadata = {
   name: 'QuickArticle',
@@ -28,7 +27,6 @@ export const QuickArticle = (props: ViewProps & {
   document?: Document
 }): JSX.Element => {
   const [query] = useQuery()
-  const { t } = useTranslation('quickArticle')
 
   const persistentDocumentId = useRef<string>('')
   if (!persistentDocumentId.current) {
@@ -56,8 +54,8 @@ export const QuickArticle = (props: ViewProps & {
   if ((!props.asDialog && !documentId) || typeof documentId !== 'string') {
     return (
       <Error
-        title={t('errors:messages.documentTypeMissing', { documentType: t('quickArticle:title') })}
-        message={t('errors:messages.articleMissingDescription')}
+        title='Dokument saknas'
+        message='Inget artikeldokument är angivet. Navigera tillbaka till översikten och försök igen.'
       />
     )
   }

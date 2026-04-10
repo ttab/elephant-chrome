@@ -1,28 +1,37 @@
 import { useRef, type JSX, useState } from 'react'
 import { Preview } from '../Preview'
-import type { ImageSearchHit } from '../lib/types'
-import { Dialog, DialogClose, DialogContent } from '@ttab/elephant-ui'
-import { XIcon } from '@ttab/elephant-ui/icons'
-import { useTranslation } from 'react-i18next'
+import { type ttninjs } from '@ttab/api-client'
+import { Dialog, DialogContent, DialogDescription } from '@ttab/elephant-ui'
+import { findRenditionByUsageAndVariant } from '../lib/find-rendition'
+import type { renditions } from '../lib/find-rendition'
 
+
+const BASE_URL = import.meta.env.BASE_URL || ''
 
 export const Thumbnail = ({ hit }: {
-  hit: ImageSearchHit
+  hit: ttninjs
 }): JSX.Element => {
-  const { t } = useTranslation('views')
   const imageRef = useRef<HTMLImageElement>(null)
   const [isOpen, setIsOpen] = useState<boolean>(false)
+  const renditions = hit.renditions as renditions
+  const thumbnail = findRenditionByUsageAndVariant(renditions, 'Thumbnail', 'Normal')
+  const preview = findRenditionByUsageAndVariant(renditions, 'Preview', 'Normal')
+  const hires = findRenditionByUsageAndVariant(renditions, 'Hires', 'Normal')
+
+  const id = new URL(preview.href).pathname.split('/').filter(Boolean).pop()
+  const mediaType = hit.type === 'graphic' ? 'graphics' : 'images'
+  const proxyUrl = `${BASE_URL}/api/${mediaType}/${id}`
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={isOpen}>
       <div
-        className='flex place-content-center bg-gray-200 dark:bg-table-focused min-h-[144px] rounded-sm overflow-hidden cursor-pointer'
-        onClick={() => setIsOpen(true)}
+        className='flex place-content-center bg-gray-200 dark:bg-table-focused min-h-[144px] cursor-pointer'
+        onClick={() => setIsOpen((prev) => !prev)}
       >
         <img
           ref={imageRef}
-          src={hit.thumbnailUrl}
-          title={hit.description}
+          src={thumbnail.href}
+          title={hit?.description_text}
           className='max-h-[176px] object-contain m-width-auto'
           onDragStartCapture={(e) => {
             e.stopPropagation()
@@ -33,30 +42,26 @@ export const Thumbnail = ({ hit }: {
 
             // Create cloned element to force as drag image
             const el = imageRef.current
-            const clone = el.cloneNode(true) as HTMLImageElement
-            clone.dataset.dragClone = ''
+            const clone = el.cloneNode(true) as HTMLDivElement
             const { left, top } = el.getBoundingClientRect()
 
             clone.style.width = `${el.offsetWidth}px`
             clone.style.height = `${el.offsetHeight}px`
-            clone.style.background = `url('${hit.thumbnailUrl}')`
+            clone.style.background = `url('${thumbnail.href}')`
 
             el.style.opacity = '0.5'
             e.dataTransfer.clearData()
 
             const image = {
-              uri: hit.uri,
-              rel: hit.linkRel,
-              type: hit.linkType,
-              byline: hit.byline,
-              text: hit.description,
-              href: hit.originalUrl,
-              proxy: hit.previewUrl,
-              width: hit.hiresWidth,
-              height: hit.hiresHeight
+              byline: hit.byline ?? '',
+              text: hit.description_text,
+              href: preview.href,
+              proxy: proxyUrl,
+              width: hires.width,
+              height: hires.height
             }
 
-            e.dataTransfer.setData(hit.dragMimeType, JSON.stringify(image))
+            e.dataTransfer.setData('tt/visual', JSON.stringify(image))
             e.dataTransfer.setDragImage(
               clone,
               (e.clientX - left) * 0.2,
@@ -69,17 +74,12 @@ export const Thumbnail = ({ hit }: {
             if (el) {
               el.style.opacity = '1'
             }
-            document.querySelectorAll('img[data-drag-clone]')
-              .forEach((clone) => clone.remove())
           }}
         />
       </div>
-      <DialogContent className='z-50 gap-0 p-0 overflow-hidden w-fit md:w-fit max-w-3xl min-w-80'>
-        <DialogClose className='absolute right-3 top-3 z-10 rounded-full bg-background/80 backdrop-blur-sm p-1.5 shadow-sm hover:bg-background transition-colors'>
-          <XIcon size={16} strokeWidth={1.75} />
-          <span className='sr-only'>{t('imageSearch.labels.close')}</span>
-        </DialogClose>
-        <Preview hit={hit} />
+      <DialogContent className='z-50'>
+        <DialogDescription />
+        <Preview ttninjs={hit} setOpen={setIsOpen} />
       </DialogContent>
     </Dialog>
   )

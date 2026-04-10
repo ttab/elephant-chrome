@@ -1,7 +1,6 @@
 import { vi } from 'vitest'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import { articleDocumentTemplate } from '@/shared/templates/articleDocumentTemplate'
-import { getSystemLanguage, setSystemLanguage } from '@/shared/getSystemLanguage'
 import type { TemplatePayload } from '@/shared/templates'
 
 describe('articleDocumentTemplate', () => {
@@ -14,15 +13,7 @@ describe('articleDocumentTemplate', () => {
     expect(doc.uuid).toBe('abc123')
     expect(doc.type).toBe('core/article')
     expect(doc.uri).toBe('core://article/abc123')
-    expect(doc.language).toBe(getSystemLanguage())
-  })
-
-  it('uses the current system language', () => {
-    const original = getSystemLanguage()
-    setSystemLanguage('nb-NO')
-    const doc = articleDocumentTemplate('id')
-    expect(doc.language).toBe('nb-NO')
-    setSystemLanguage(original)
+    expect(doc.language).toBe('sv-se')
   })
 
   it('removes core/description from meta', () => {

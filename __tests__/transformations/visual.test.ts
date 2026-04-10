@@ -7,9 +7,16 @@ import { sortDocument } from '../utils/sortDocument'
 vi.spyOn(globalThis.crypto, 'randomUUID')
   .mockImplementation(() => 'random-uuid')
 
+// Mock environment variables
+const originalEnv = process.env
+
 beforeEach(() => {
   vi.resetModules()
-  process.env.BASE_URL = '/elephant'
+  process.env = { ...originalEnv, BASE_URL: '/elephant' }
+})
+
+afterEach(() => {
+  process.env = originalEnv
 })
 
 const visualNewsDoc = Block.create({

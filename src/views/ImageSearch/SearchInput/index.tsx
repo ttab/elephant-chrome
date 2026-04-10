@@ -2,17 +2,14 @@ import { SearchInput } from '@/components/SearchInput'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@ttab/elephant-ui'
 import React, { useState, type Dispatch, type SetStateAction, type JSX } from 'react'
 import type { MediaTypes } from '..'
-import { useTranslation } from 'react-i18next'
 
-export const ImageSearchInput = ({ setQueryString, setMediaType, isNtb }: {
+export const ImageSearchInput = ({ setQueryString, setMediaType }: {
   setQueryString: Dispatch<SetStateAction<string>>
   setMediaType: Dispatch<SetStateAction<MediaTypes>>
-  isNtb: boolean
 }): JSX.Element => {
   const [query, setQuery] = useState('')
-  const { t } = useTranslation()
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault()
     setQueryString(query)
   }
@@ -20,25 +17,24 @@ export const ImageSearchInput = ({ setQueryString, setMediaType, isNtb }: {
   return (
     <form
       onSubmit={handleSubmit}
-      className='flex w-full items-center gap-2'
+      className='self-center w-full p-2 pl-0 gap-1 flex flex-row'
     >
       <SearchInput
-        className='w-full text-sm'
-        placeholder={t('views:search.placeholders.search')}
+        className='p-2 w-full text-sm border-none focus:border-none'
+        type='text'
+        placeholder='Sök'
         name='imagesearch'
         onChange={(e) => setQuery(e.currentTarget.value)}
       />
-      {!isNtb && (
-        <Select onValueChange={(option) => setMediaType(option as MediaTypes)}>
-          <SelectTrigger className='w-fit shrink-0'>
-            <SelectValue placeholder={t('views:imageSearch.labels.mediaType')} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value='image'>{t('views:imageSearch.labels.image')}</SelectItem>
-            <SelectItem value='graphic'>{t('views:imageSearch.labels.graphic')}</SelectItem>
-          </SelectContent>
-        </Select>
-      )}
+      <Select onValueChange={(option) => setMediaType(option as MediaTypes)}>
+        <SelectTrigger className='w-fit'>
+          <SelectValue placeholder='Bild' />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value='image'>Bild</SelectItem>
+          <SelectItem value='graphic'>Grafik</SelectItem>
+        </SelectContent>
+      </Select>
     </form>
   )
 }

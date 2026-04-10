@@ -20,9 +20,6 @@ import { useInitFilters } from '@/hooks/useInitFilters'
 import { useDocuments } from '@/hooks/index/useDocuments'
 import type { PrintFlow, PrintFlowFields } from '@/shared/schemas/printFlow'
 import { fields } from '@/shared/schemas/printFlow'
-import { Error } from '../Error'
-import { useTranslation } from 'react-i18next'
-import { useFeatureFlags } from '@/hooks/useFeatureFlags'
 
 /**
  * Metadata for the PrintArticles view.
@@ -57,10 +54,8 @@ const meta: ViewMetadata = {
  * @returns The rendered PrintArticles component.
  */
 
-export const Print = (): JSX.Element | null => {
-  const featureFlags = useFeatureFlags(['hasPrint'])
+export const Print = (): JSX.Element => {
   const [query] = useQuery()
-  const { t } = useTranslation(['errors', 'common'])
 
   const { data } = useDocuments<PrintFlow, PrintFlowFields>({
     documentType: 'tt/print-flow',
@@ -78,16 +73,6 @@ export const Print = (): JSX.Element | null => {
   })
 
   const [openCreateFlow, setOpenCreateFlow] = useState(false)
-
-  if (!featureFlags.hasPrint) {
-    return (
-      <Error
-        title={t('errors:messages.errorTitle')}
-        message={t('errors:messages.unknownErrorAdminInfo')}
-      />
-    )
-  }
-
   return (
     <View.Root>
       <PrintArticlesHeader />
@@ -107,12 +92,12 @@ export const Print = (): JSX.Element | null => {
       <Dialog open={openCreateFlow}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{t('print:articles.flowDialog.title')}</DialogTitle>
+            <DialogTitle>Lista över flöden</DialogTitle>
           </DialogHeader>
           <PrintFlows action='createFlow' />
           <DialogFooter>
             <Button variant='outline' onClick={() => setOpenCreateFlow(false)}>
-              {t('common:actions.abort')}
+              Avbryt
             </Button>
           </DialogFooter>
         </DialogContent>

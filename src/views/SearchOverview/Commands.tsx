@@ -12,19 +12,18 @@ import {
 } from '@ttab/elephant-ui/icons'
 import { useCategories, useOrganisers, useSections, useQuery, useAuthors } from '@/hooks'
 import { Newsvalues } from '@/defaults/newsvalues'
-import { getAssignmentTypes } from '@/defaults/assignmentTypes'
+import { AssignmentTypes } from '@/defaults/assignmentTypes'
 import type { FilterProps } from '@/components/Filter'
 import { DatePicker } from '@/components/Datepicker'
 import { useMemo, type JSX } from 'react'
 import type { SearchKeys } from '@/hooks/index/useDocuments/queries/views/search'
 import { parseDate } from '@/shared/datetime'
-import { useTranslation } from 'react-i18next'
 
 export const Commands = (props: FilterProps & { type: SearchKeys }): JSX.Element => {
   if (props.page === undefined || props.pages === undefined || props.setPages === undefined || props.setSearch === undefined) {
     throw new Error('No props passed to Command component')
   }
-  const { t } = useTranslation('core')
+
   const { type } = props
 
   const [filters, setFilters] = useQuery(['section', 'organiser', 'category', 'from', 'author', 'aType', 'newsvalue'])
@@ -68,22 +67,22 @@ export const Commands = (props: FilterProps & { type: SearchKeys }): JSX.Element
       <OptionsFilter
         {...props}
         options={sections}
-        label={t('labels.section')}
+        label='Sektion'
         filterPage='section'
         Icon={ShapesIcon}
       />
       <OptionsFilter
         {...props}
         options={Newsvalues}
-        label={t('labels.newsvalue')}
+        label='Nyhetsvärde'
         filterPage='newsvalue'
         Icon={SignalHighIcon}
       />
       {type !== 'articles' && type !== 'events' && (
         <OptionsFilter
           {...props}
-          options={getAssignmentTypes()}
-          label={t('labels.type')}
+          options={AssignmentTypes}
+          label='Typ'
           filterPage='aType'
           Icon={CrosshairIcon}
         />
@@ -93,14 +92,14 @@ export const Commands = (props: FilterProps & { type: SearchKeys }): JSX.Element
           <OptionsFilter
             {...props}
             options={organisers}
-            label={t('labels.organiser')}
+            label='Organisatör'
             filterPage='organiser'
             Icon={BookUserIcon}
           />
           <OptionsFilter
             {...props}
             options={categories}
-            label={t('labels.category')}
+            label='Kategori'
             filterPage='category'
             Icon={TagIcon}
           />
@@ -110,14 +109,14 @@ export const Commands = (props: FilterProps & { type: SearchKeys }): JSX.Element
         <OptionsFilter
           {...props}
           options={authors}
-          label={t('labels.assignee')}
+          label='Uppdragstagare'
           filterPage='author'
           Icon={UsersIcon}
         />
       )}
       <div className='flex gap-1 w-full items-center px-2 my-1'>
         <CalendarIcon size={18} strokeWidth={1.75} />
-        <div className='text-xs'>{t('common:misc.from')}</div>
+        <div className='text-xs'>Från</div>
         <DatePicker
           date={currentDate}
           setDate={(d: string) => {

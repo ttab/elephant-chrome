@@ -3,7 +3,6 @@ import { Link } from '@/components/index'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { Popover, PopoverContent, PopoverTrigger } from '@ttab/elephant-ui'
 import { CableIcon } from '@ttab/elephant-ui/icons'
-import { useTranslation } from 'react-i18next'
 
 const WireList = ({ wires, onNavigate }: { wires: Block[], onNavigate?: () => void }) => (
   <div className='flex flex-col gap-0.5'>
@@ -27,7 +26,6 @@ export const RelatedWires = ({ wires = [], inline = false, onNavigate }: {
   inline?: boolean
   onNavigate?: () => void
 }) => {
-  const { t } = useTranslation('wires')
   const [open, setOpen] = useState(false)
 
   if (!wires?.length) {
@@ -51,7 +49,7 @@ export const RelatedWires = ({ wires = [], inline = false, onNavigate }: {
       >
         <div className='flex w-fit items-center gap-1.5 px-2 py-1 text-xs text-muted-foreground cursor-default select-none'>
           <CableIcon size={13} strokeWidth={1.75} />
-          <span>{wires.length === 1 ? t('sources.sourceWires') : `${t('sources.sourceWires')} (${wires.length})`}</span>
+          <span>{wires.length === 1 ? 'Källtelegram' : `Källtelegram (${wires.length})`}</span>
         </div>
       </PopoverTrigger>
 

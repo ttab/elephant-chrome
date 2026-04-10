@@ -1,20 +1,15 @@
 import type { AssignmentInterface } from '@/hooks/index/useAssignments'
 import { useAuthors } from '@/hooks/useAuthors'
 import { useMemo, type JSX } from 'react'
-import { UserIcon, PenIcon, AwardIcon } from '@ttab/elephant-ui/icons'
+import { UserIcon, PenIcon, AwardIcon } from 'lucide-react'
 import type { IDBAuthor } from 'src/datastore/types'
 import type { StatusMeta } from '@/types'
 import type { Status, StatusOverviewItem } from '@ttab/elephant-api/repository'
 import { getAuthorBySub } from '@/lib/getAuthorBySub'
-import { extractUserIdFromUri } from '@/shared/userUri'
-import { getDocumentStatuses } from '@/defaults/documentStatuses'
-import { useTranslation } from 'react-i18next'
-import type { TFunction, Namespace } from 'i18next'
-import type { TranslationKey } from '@/types/i18next.d'
+import { DocumentStatuses } from '@/defaults/documentStatuses'
 
 export const AuthorNames = ({ assignment }: { assignment: AssignmentInterface }): JSX.Element => {
   const authors = useAuthors()
-  const { t } = useTranslation()
 
   // Parse status data only if it exists and changes
   const statusData = useMemo<StatusOverviewItem | null>(() => {
@@ -36,26 +31,22 @@ export const AuthorNames = ({ assignment }: { assignment: AssignmentInterface })
 
   // Get last status update and author
   const lastUpdated = entries[0]?.[1]
-  const lastUpdatedById = useMemo(
-    () => extractUserIdFromUri(lastUpdated?.creator ?? ''),
-    [lastUpdated]
-  )
+  const lastUpdatedById = useMemo(() => extractId(lastUpdated?.creator), [lastUpdated])
   const lastStatusUpdateAuthor = useMemo(() =>
-    authors.find((a) =>
-      lastUpdatedById && lastUpdatedById === extractUserIdFromUri(a?.sub)),
+    authors.find((a) => lastUpdatedById && lastUpdatedById === extractId(a?.sub)),
   [authors, lastUpdatedById])
 
   // Get display and full text for tooltip
   const { display, full } = useMemo(
-    () => getDisplayAndFull(assignment, authors, entries, statusData, t),
-    [assignment, authors, entries, statusData, t]
+    () => getDisplayAndFull(assignment, authors, entries, statusData),
+    [assignment, authors, entries, statusData]
   )
 
   // Optionally append last status setter if not draft/done
   const enhancedDisplay = useMemo(() => {
     if (!lastStatusUpdateAuthor?.name || !lastUpdated || !statusData?.workflowState) return display
 
-    const lastStatus = getDocumentStatuses().find(
+    const lastStatus = DocumentStatuses.find(
       (status) => status.value === statusData.workflowState
     )
     const Icon = lastStatus?.icon ?? AwardIcon
@@ -78,19 +69,19 @@ export const AuthorNames = ({ assignment }: { assignment: AssignmentInterface })
   const enhancedFull = useMemo(() => {
     if (!lastStatusUpdateAuthor?.name || !lastUpdated || !statusData?.workflowState) return full
 
-    const lastStatus = getDocumentStatuses().find(
+    const lastStatus = DocumentStatuses.find(
       (status) => status.value === statusData.workflowState
     )
-
+    const statusLabel = lastStatus?.label
     const statusValue = lastStatus?.value
 
     if (statusValue !== 'draft' && statusValue !== 'done') {
       return full
-        ? `${full}, ${t(`core:status.${statusValue}` as TranslationKey)} ${t('shared:authors.from', { author: lastStatusUpdateAuthor.name })}`
-        : `${t(`core:status.${statusValue}` as TranslationKey)} ${t('shared:authors.from', { author: lastStatusUpdateAuthor.name })}`
+        ? `${full}, ${statusLabel} av ${lastStatusUpdateAuthor.name}`
+        : `${statusLabel} av ${lastStatusUpdateAuthor.name}`
     }
     return full
-  }, [full, lastStatusUpdateAuthor, lastUpdated, statusData, t])
+  }, [full, lastStatusUpdateAuthor, lastUpdated, statusData])
 
   return (
     <div title={enhancedFull}>
@@ -100,12 +91,11 @@ export const AuthorNames = ({ assignment }: { assignment: AssignmentInterface })
 }
 
 // Helper to get display and full tooltip text
-function getDisplayAndFull<Ns extends Namespace>(
+function getDisplayAndFull(
   assignment: AssignmentInterface,
   authors: IDBAuthor[],
   entries: [string, Status][],
-  statusData: StatusOverviewItem | null,
-  t: TFunction<Ns>
+  statusData: StatusOverviewItem | null
 ) {
   // Prefer byline from deliverable document
   const byline = (assignment?._deliverableDocument?.links ?? [])
@@ -121,7 +111,7 @@ function getDisplayAndFull<Ns extends Namespace>(
           <span>{byline}</span>
         </span>
       ),
-      full: t('shared:authors.byline', { author: byline })
+      full: `Byline ${byline}`
     }
   }
 
@@ -136,7 +126,7 @@ function getDisplayAndFull<Ns extends Namespace>(
           <span>{authorObj ? authorOutput(authorObj) : '??'}</span>
         </span>
       ),
-      full: t('shared:authors.doneBy', { author: authorObj?.name || '??' })
+      full: `Klar av ${authorObj?.name || '??'}`
     }
   }
 
@@ -150,7 +140,7 @@ function getDisplayAndFull<Ns extends Namespace>(
           <span>{authorOutput(afterDraftAuthor)}</span>
         </span>
       ),
-      full: t('shared:authors.from', { author: afterDraftAuthor.name })
+      full: `Av ${afterDraftAuthor.name}`
     }
   }
 
@@ -178,7 +168,7 @@ function getDisplayAndFull<Ns extends Namespace>(
           <span>{creator ? authorOutput(creator) : '??'}</span>
         </span>
       ),
-      full: creator?.name ? `${t('shared:authors.createdBy', { author: creator.name })}` : ''
+      full: creator?.name ? `Skapad av ${creator.name}` : ''
     }
   }
 
@@ -188,10 +178,8 @@ function getDisplayAndFull<Ns extends Namespace>(
 // Find author who set status Done
 function doneStatusName(doneStatus?: StatusMeta, authors?: IDBAuthor[]): IDBAuthor | undefined {
   if (!doneStatus || !authors) return undefined
-  const creatorId = extractUserIdFromUri(doneStatus.creator ?? '')
-  return authors.find(
-    (a) => creatorId && creatorId === extractUserIdFromUri(a?.sub)
-  )
+  const creatorId = extractId(doneStatus.creator)
+  return authors.find((a) => creatorId === extractId(a?.sub))
 }
 
 // Find author who set a status, then get the author who set the previous status
@@ -202,10 +190,13 @@ function getAuthorAfterSetStatus(
 ) {
   const statusIndex = entries.findIndex((entry) => entry[0] === status)
   const afterStatus = entries[statusIndex - 1]?.[1]
-  const creatorId = extractUserIdFromUri(afterStatus?.creator ?? '')
-  return (authors || []).find(
-    (a) => creatorId && creatorId === extractUserIdFromUri(a?.sub)
-  )
+  const creatorId = extractId(afterStatus?.creator)
+  return (authors || []).find((a) => creatorId && creatorId === extractId(a?.sub))
+}
+
+// Extract ID from URI
+function extractId(uri: string = '') {
+  return uri.slice(uri.lastIndexOf('/'))
 }
 
 // Format author name to initials

@@ -1,11 +1,11 @@
 import { CircleCheckIcon } from '@ttab/elephant-ui/icons'
-import { getDocumentStatuses } from '@/defaults/documentStatuses'
+import { DocumentStatuses } from '@/defaults/documentStatuses'
 import { FilterBadge } from '../FilterBadge'
 
 export const StatusFilterValue = ({ values }: {
   values: string[]
 }) => {
-  const labels = getDocumentStatuses().filter((v) => values.includes(v.value)).map((v) => v.label)
+  const labels = DocumentStatuses.filter((v) => values.includes(v.value)).map((v) => v.label)
 
   return (
     <>

@@ -9,8 +9,6 @@ import { Prompt } from '@/components/Prompt'
 import type { YDocument } from '@/modules/yjs/hooks'
 import { useYValue } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
-import { useTranslation } from 'react-i18next'
-import type { TranslationKey } from '@/types/i18next.d'
 
 const Note = ({ ydoc, noteIndex, handleRemove }: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -21,7 +19,6 @@ const Note = ({ ydoc, noteIndex, handleRemove }: {
   const [value] = useYValue<Y.XmlText>(ydoc.ele, `meta.core/note[${noteIndex}].data.text`, true)
   const [showVerifyRemove, setShowVerifyDialog] = useState(false)
   const [showVerifyChange, setShowVerifyChange] = useState(false)
-  const { t } = useTranslation(['views', 'metaSheet'])
 
   const iconProps = {
     strokeWidth: 1.75,
@@ -30,8 +27,8 @@ const Note = ({ ydoc, noteIndex, handleRemove }: {
 
 
   const roles: DefaultValueOption[] = [
-    { value: 'public', label: t('metaSheet:dropDownMenuItems.infoToCustomer'), icon: TextIcon, iconProps },
-    { value: 'internal', label: t('metaSheet:dropDownMenuItems.internalNote'), icon: MessageCircleMoreIcon, iconProps }
+    { value: 'public', label: 'Info till kund', icon: TextIcon, iconProps },
+    { value: 'internal', label: 'Intern info', icon: MessageCircleMoreIcon, iconProps }
   ]
 
   const selectedOptions = roles.filter((r) => r.value === role)
@@ -53,7 +50,7 @@ const Note = ({ ydoc, noteIndex, handleRemove }: {
             key={role}
             ydoc={ydoc}
             value={value}
-            placeholder={t(`editor:addRoleInfo.${role === 'public' ? 'editorial' : 'internal'}` as TranslationKey)}
+            placeholder={`Lägg till ${role === 'public' ? 'redaktionell' : 'intern'} info`}
             className='font-thin text-sm whitespace-pre-wrap break-words'
             singleLine={true}
           />
@@ -66,10 +63,10 @@ const Note = ({ ydoc, noteIndex, handleRemove }: {
 
       {showVerifyRemove && (
         <Prompt
-          title={`${t('common:actions.remove')}?`}
-          description={t('editor:removeInfoConfirm')}
-          secondaryLabel={t('common:actions.abort')}
-          primaryLabel={t('common:actions.remove')}
+          title='Ta bort?'
+          description='Är du säker på att du vill ta bort info?'
+          secondaryLabel='Avbryt'
+          primaryLabel='Ta bort'
           onPrimary={() => {
             setShowVerifyDialog(false)
             handleRemove()
@@ -83,10 +80,10 @@ const Note = ({ ydoc, noteIndex, handleRemove }: {
 
       {showVerifyChange && (
         <Prompt
-          title={`${t('editor:changeType')}?`}
-          description={t('editor:changeTypeConfirm')}
-          secondaryLabel={t('common:actions.abort')}
-          primaryLabel={t('editor:changeType')}
+          title='Ändra typ?'
+          description='Är du säker på att du vill ändra typ av info?'
+          secondaryLabel='Avbryt'
+          primaryLabel='Ändra typ'
           onPrimary={() => {
             setShowVerifyChange(false)
             setRole(role === 'public' ? 'internal' : 'public')

@@ -7,7 +7,6 @@ import { type FormProps } from '../Form/Root'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { useYPath, useYValue, type YDocument } from '@/modules/yjs/hooks'
 import { useSession } from 'next-auth/react'
-import { useTranslation } from 'react-i18next'
 
 export const SluglineEditable = ({ ydoc, rootMap, value, documentStatus, onValidation, validateStateRef, compareValues, disabled }: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -23,7 +22,6 @@ export const SluglineEditable = ({ ydoc, rootMap, value, documentStatus, onValid
   const [assignments] = useYValue<Block[]>(ydoc.ele, ['meta', 'core/assignment'])
   const { data: session } = useSession()
   const [inProgressAssignment] = useYValue<Block>(ydoc.ctx, `core/assignment.${session?.user.sub || ''}`)
-  const { t } = useTranslation()
 
   // Get all current sluglines from assignments for validation purposes
   // or use provided compareValues
@@ -83,7 +81,7 @@ export const SluglineEditable = ({ ydoc, rootMap, value, documentStatus, onValid
                 ydoc={ydoc}
                 value={value}
                 disabled={disabled}
-                placeholder={t('planning:slugline')}
+                placeholder='Lägg till slugg'
                 singleLine={true}
                 className='h-6 font-normal text-sm whitespace-nowrap mb-1'
                 spellcheck={false}
