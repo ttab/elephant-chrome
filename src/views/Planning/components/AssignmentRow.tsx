@@ -82,23 +82,32 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
 
   const deliverableId = articleId || flashId
 
-  const { data: isHast, mutate: mutateHast } = useSWR(
+  const { data: hastState, mutate: mutateHast } = useSWR(
     featureFlags.hasHast && deliverableId
       ? ['deliverable-hast', deliverableId]
       : null,
-    async () => {
+    async (): Promise<'active' | 'inactive' | false> => {
       if (deliverableId && session?.accessToken) {
-        const doc = await repository?.getDocument({
-          uuid: deliverableId,
-          accessToken: session.accessToken
-        })
+        const [doc, meta] = await Promise.all([
+          repository?.getDocument({
+            uuid: deliverableId,
+            accessToken: session.accessToken
+          }),
+          repository?.getMeta({
+            uuid: deliverableId,
+            accessToken: session.accessToken
+          })
+        ])
         const hastBlock = doc?.document?.meta.find((b) => b.type === 'ntb/hast')
-        const hastValue = Number(hastBlock?.value || '0')
-        if (hastValue === 0) {
+        if (!hastBlock) {
           return false
         }
-        const usableId = Number(articleStatus?.meta?.heads?.['usable']?.id || '0')
-        return hastValue === usableId + 1 || hastValue === usableId
+        const hastValue = Number(hastBlock.value || '0')
+        if (hastValue === 0) {
+          return 'inactive'
+        }
+        const usableId = Number(meta?.meta?.heads?.['usable']?.id || '0')
+        return hastValue === usableId + 1 ? 'active' : 'inactive'
       }
       return false
     }
@@ -415,7 +424,13 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
             path={`meta.core/assignment[${index}].data.status`}
             workflowState={workflowState}
           />
-          {isHast && <ZapIcon strokeWidth={1.75} size={14} className='text-red-500' />}
+          {hastState && (
+            <ZapIcon
+              strokeWidth={1.75}
+              size={14}
+              className={hastState === 'active' ? 'text-red-500' : 'text-muted-foreground'}
+            />
+          )}
           <span className='leading-relaxed group-hover/assrow:underline'>{title}</span>
         </div>
         <div className='flex items-center gap-2'>
