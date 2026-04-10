@@ -39,11 +39,13 @@ describe('hastDocumentTemplate', () => {
   it('creates content with heading and body text blocks', () => {
     const doc = hastDocumentTemplate('test-id')
 
-    expect(doc.content).toHaveLength(2)
+    expect(doc.content).toHaveLength(3)
     expect(doc.content[0].type).toBe('core/text')
     expect(doc.content[0].role).toBe('heading-1')
     expect(doc.content[1].type).toBe('core/text')
-    expect(doc.content[1].role).toBe('')
+    expect(doc.content[1].role).toBe('preamble')
+    expect(doc.content[2].type).toBe('core/text')
+    expect(doc.content[2].role).toBe('')
   })
 
   it('includes section links from payload', () => {

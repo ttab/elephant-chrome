@@ -1,5 +1,6 @@
 import {
   Awareness,
+  Newsvalue,
   Section,
   View
 } from '@/components'
@@ -368,6 +369,7 @@ export const FlashDialog = (props: {
             {!selectedPlanning && props.asDialog && (
               <Form.Group icon={TagsIcon}>
                 <Section ydoc={ydoc} path='links.core/section[0]' onSelect={setSection} />
+                {isHast && <Newsvalue ydoc={ydoc} path='meta.core/newsvalue[0].value' />}
               </Form.Group>
             )}
             {!isHast && (
