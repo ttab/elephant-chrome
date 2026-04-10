@@ -80,14 +80,20 @@ export const HastToggle = ({ ydoc, usableId, className, variant = 'compact' }: {
       })
   }
 
+  function toggleOn() {
+    const nextId = (usableId ?? 0n) + 1n
+    setHast(Block.create({
+      type: 'ntb/hast',
+      value: String(nextId)
+    }))
+    snapshot()
+  }
+
   function handleToggle() {
     if (!isHast) {
-      const nextId = (usableId ?? 0n) + 1n
-      setHast(Block.create({
-        type: 'ntb/hast',
-        value: String(nextId)
-      }))
-      snapshot()
+      toggleOn()
+    } else if (variant === 'full') {
+      handleRemoveFromVersion()
     } else {
       setShowPrompt(true)
     }

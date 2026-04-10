@@ -14,7 +14,6 @@ import {
   LibraryIcon,
   MoveRightIcon,
   PenIcon,
-  ZapIcon,
   type LucideProps
 } from '@ttab/elephant-ui/icons'
 import { type MouseEvent, useMemo, useState, useCallback, useEffect, useRef, type JSX } from 'react'
@@ -37,6 +36,7 @@ import { useRegistry } from '@/hooks/useRegistry'
 import { useSession } from 'next-auth/react'
 import { getDeliverableType } from '@/shared/templates/lib/getDeliverableType'
 import { isVisualAssignmentType } from '@/defaults/assignmentTypes'
+import { HastIndicator } from '@/components/HastIndicator'
 import { CreatePrintArticle } from '@/components/CreatePrintArticle'
 import { snapshotDocument } from '@/lib/snapshotDocument'
 import { getTimeSlotTypes } from '@/defaults/assignmentTimeConstants'
@@ -81,37 +81,6 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
   })
 
   const deliverableId = articleId || flashId
-
-  const { data: hastState, mutate: mutateHast } = useSWR(
-    featureFlags.hasHast && deliverableId
-      ? ['deliverable-hast', deliverableId]
-      : null,
-    async (): Promise<'active' | 'inactive' | false> => {
-      if (deliverableId && session?.accessToken) {
-        const [doc, meta] = await Promise.all([
-          repository?.getDocument({
-            uuid: deliverableId,
-            accessToken: session.accessToken
-          }),
-          repository?.getMeta({
-            uuid: deliverableId,
-            accessToken: session.accessToken
-          })
-        ])
-        const hastBlock = doc?.document?.meta.find((b) => b.type === 'ntb/hast')
-        if (!hastBlock) {
-          return false
-        }
-        const hastValue = Number(hastBlock.value || '0')
-        if (hastValue === 0) {
-          return 'inactive'
-        }
-        const usableId = Number(meta?.meta?.heads?.['usable']?.id || '0')
-        return hastValue === usableId + 1 ? 'active' : 'inactive'
-      }
-      return false
-    }
-  )
 
   const [editorialInfoId] = useYValue<string>(assignment, 'links.core/editorial-info[0].uuid')
   const [assignmentType] = useYValue<string>(assignment, 'meta.core/assignment-type[0].value')
@@ -329,13 +298,8 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
     'core/flash',
     'core/editorial-info'
   ], (event) => {
-    if (event.uuid === documentId) {
-      if (event.event === 'status') {
-        void mutate()
-      }
-      if (event.event === 'document') {
-        void mutateHast()
-      }
+    if (event.uuid === documentId && event.event === 'status') {
+      void mutate()
     }
   })
 
@@ -424,13 +388,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
             path={`meta.core/assignment[${index}].data.status`}
             workflowState={workflowState}
           />
-          {hastState && (
-            <ZapIcon
-              strokeWidth={1.75}
-              size={14}
-              className={hastState === 'active' ? 'text-red-500' : 'text-muted-foreground'}
-            />
-          )}
+          <HastIndicator documentId={deliverableId} />
           <span className='leading-relaxed group-hover/assrow:underline'>{title}</span>
         </div>
         <div className='flex items-center gap-2'>
