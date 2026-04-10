@@ -66,7 +66,6 @@ export async function createHast({
     type: 'text',
     deliverableId: ydoc.id,
     title: hastTitle || 'Ny hast',
-    slugline: 'hast',
     priority: 5,
     publicVisibility: true,
     localDate,
