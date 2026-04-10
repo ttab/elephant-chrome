@@ -41,7 +41,8 @@
     "sent": "Skickad",
     "typeApproved": "{{type}} godkänd",
     "typeDone": "{{type}} klar",
-    "typeSaved": "{{type}} sparad"
+    "typeSaved": "{{type}} sparad",
+    "typeSent": "{{type}} skickad"
   },
   "timeSlots": {
     "morning": "Morgon",

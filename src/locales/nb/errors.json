@@ -28,7 +28,9 @@
     "createDeliverableError": "Kan ikke opprette leveransen",
     "changeStatusError": "Statusen kunne ikke endres. Oppgavens publiseringstidspunkt kunne ikke endres i den lenkede planleggingen.",
     "loadFailed": "Kunne ikke laste",
-    "noDeliverables": "Ingen leveranser"
+    "noDeliverables": "Ingen leveranser",
+    "documentCreationFailed": "{{type}} kunne ikke opprettes.",
+    "documentCreatedAssignmentFailed": "{{type}} har blitt opprettet. Dessverre mislyktes det å koble den til en planlegging."
   },
   "toasts": {
     "couldNotCreateNewEvent": "Kunne ikke opprette ny hendelse!",

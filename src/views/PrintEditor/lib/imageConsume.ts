@@ -4,7 +4,7 @@ import { getCachedSession } from '@/shared/getCachedSession'
 import { toast } from 'sonner'
 import i18next from 'i18next'
 
-export const consume = async (
+export const imageConsume = async (
   input: TBResource | TBResource[],
   repository: Repository
 ): Promise<TBResource | undefined> => {
@@ -107,6 +107,7 @@ export const consume = async (
                   class: 'block',
                   properties: {
                     title: name,
+                    type: 'core/image',
                     rel: 'image',
                     size,
                     uploadId: uuid,

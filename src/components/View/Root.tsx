@@ -29,7 +29,7 @@ export const Root = forwardRef<HTMLDivElement, ViewRootProps>(
       variants: {
         asDialog: {
           true: '',
-          false: 'h-full'
+          false: 'h-screen'
         }
       }
     })

@@ -5,15 +5,16 @@ interface ServerUrls {
   indexUrl: URL
   repositoryUrl: URL
   repositoryEventsUrl: URL
-  contentApiUrl: URL
   spellcheckUrl: URL
   userUrl: URL
   faroUrl: URL
   baboonUrl: URL
+  imageSearchUrl: URL
 }
 
 interface ServerEnvs {
   systemLanguage: string
+  imageSearchProvider: string
   environment: string
 }
 
@@ -35,7 +36,7 @@ export async function getServerEnvs(): Promise<ServerConfig> {
   try {
     const data = await response.json() as Record<string, unknown>
     const urlAttributes = [
-      'webSocketUrl', 'indexUrl', 'repositoryUrl', 'contentApiUrl',
+      'webSocketUrl', 'indexUrl', 'repositoryUrl', 'imageSearchUrl',
       'spellcheckUrl', 'userUrl', 'faroUrl', 'baboonUrl'
     ]
 
@@ -66,10 +67,12 @@ export async function getServerEnvs(): Promise<ServerConfig> {
       } as ServerUrls,
       envs: {
         systemLanguage: data['systemLanguage'],
+        imageSearchProvider: typeof data.imageSearchProvider === 'string' ? data.imageSearchProvider : '',
         environment: typeof data['environment'] === 'string' ? data['environment'] : ''
       },
       featureFlags: {
-        hasPrint: data['hasPrint'] ? !!data['hasPrint'] : false
+        hasPrint: data['hasPrint'] ? !!data['hasPrint'] : false,
+        hasHast: data['hasHast'] ? !!data['hasHast'] : false
       }
     }
   } catch (ex) {

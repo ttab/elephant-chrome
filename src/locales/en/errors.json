@@ -28,7 +28,9 @@
     "createDeliverableError": "Cannot create deliverable",
     "changeStatusError": "Could not change the status. The assignment's publishing time could not be changed in the linked planning.",
     "loadFailed": "Could not load",
-    "noDeliverables": "No deliverables"
+    "noDeliverables": "No deliverables",
+    "documentCreationFailed": "{{type}} could not be created.",
+    "documentCreatedAssignmentFailed": "{{type}} has been created. Unfortunately it could not be linked to a planning."
   },
   "toasts": {
     "couldNotCreateNewEvent": "Could not create new event!",
