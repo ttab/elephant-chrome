@@ -6,6 +6,9 @@ import { type ViewProps, type ViewMetadata } from '@/types'
 import { PreviewHeader } from './PreviewHeader'
 import { useEffect, useState, type JSX } from 'react'
 import { FrownIcon, SettingsIcon } from '@ttab/elephant-ui/icons'
+import { useTranslation } from 'react-i18next'
+import { Error } from '../Error'
+import { useFeatureFlags } from '@/hooks/useFeatureFlags'
 
 /**
  * PrintPreview component.
@@ -40,8 +43,10 @@ const meta: ViewMetadata = {
 }
 
 // Main Editor Component - Handles document initialization
-const PrintPreview = (props: ViewProps): JSX.Element => {
+const PrintPreview = (props: ViewProps): JSX.Element | null => {
+  const featureFlags = useFeatureFlags(['hasPrint'])
   const [height, setHeight] = useState(0)
+
   useEffect(() => {
     setHeight(window.innerHeight - 75)
     window.addEventListener('resize', () => {
@@ -51,6 +56,18 @@ const PrintPreview = (props: ViewProps): JSX.Element => {
       window.removeEventListener('resize', () => {})
     }
   }, [])
+
+  const { t } = useTranslation(['print', 'errors'])
+
+  if (!featureFlags.hasPrint) {
+    return (
+      <Error
+        title={t('errors:messages.errorTitle')}
+        message={t('errors:messages.unknownErrorAdminInfo')}
+      />
+    )
+  }
+
   if (props?.id === 'error') {
     return (
       <>
@@ -58,7 +75,7 @@ const PrintPreview = (props: ViewProps): JSX.Element => {
         <main className='flex flex-col items-center justify-center h-full'>
           <section className='flex flex-row items-center justify-center gap-4 text-red-500'>
             <FrownIcon strokeWidth={1.75} size={24} color='red' />
-            <p className='text-red-500'>Fel vid renderingen av artikeln</p>
+            <p className='text-red-500'>{t('print:preview.error')}</p>
           </section>
         </main>
       </>

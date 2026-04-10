@@ -26,7 +26,8 @@ INDEX_URL="https://...se:443"
 WS_URL=https:// ...
 
 # Image resource
-CONTENT_API_URL=https:// ...
+IMAGE_SEARCH_URL=https:// ...
+IMAGE_SEARCH_PROVIDER=
 IMAGE_BASE_URL=https:// ...
 
 # Spelling backend
@@ -45,3 +46,6 @@ BASE_URL=/elephant
 FARO_URL=
 FARO_NAME=
 PYROSCOPE_URL=
+
+SYSTEM_LANGUAGE=
+

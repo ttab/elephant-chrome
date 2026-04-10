@@ -2,7 +2,7 @@ import './print.css'
 import { View, ViewHeader } from '@/components/View'
 import { type ViewMetadata } from '@/types/index'
 import { useCallback, useRef, useState, useMemo, type JSX, useEffect } from 'react'
-import { useRegistry, useView, useNavigationKeys, useNavigationKeysWithRef, useQuery } from '@/hooks'
+import { useRegistry, useView, useNavigationKeys, useNavigationKeysWithRef, useQuery, useIsOnline } from '@/hooks'
 import { useDocuments } from '@/hooks/index/useDocuments'
 import { QueryV1, BoolQueryV1, TermsQueryV1 } from '@ttab/elephant-api/index'
 import { fields as wireFields, type WireFields } from '@/shared/schemas/wire'
@@ -10,6 +10,7 @@ import { Button } from '@ttab/elephant-ui'
 import { XIcon } from '@ttab/elephant-ui/icons'
 import { cn } from '@ttab/elephant-ui/utils'
 import { Stream } from './components/Stream'
+import { StreamsBanner } from './components/StreamsBanner'
 import { useStreamNavigation } from './hooks/useStreamNavigation'
 import { useSavedFocus } from './hooks/useSavedFocus'
 import type { Wire } from '@/shared/schemas/wire'
@@ -23,6 +24,7 @@ import { toast } from 'sonner'
 import { useModal } from '@/components/Modal/useModal'
 import { WireCreation } from '@/views'
 import { useSettings } from '@/modules/userSettings'
+import { useTranslation } from 'react-i18next'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { Document } from '@ttab/elephant-api/newsdoc'
 import { RpcError } from '@protobuf-ts/runtime-rpc'
@@ -55,6 +57,7 @@ const EMPTY_STATE = Document.create({
 })
 
 export const Wires = (): JSX.Element => {
+  const { t } = useTranslation('wires')
   const { isActive } = useView()
   const { repository } = useRegistry()
   const { data: session } = useSession()
@@ -88,6 +91,30 @@ export const Wires = (): JSX.Element => {
       return v !== null ? true : v
     })
   })
+
+  const isOnline = useIsOnline()
+  const [streamErrors, setStreamErrors] = useState<Map<string, boolean>>(new Map())
+
+  const handleStreamError = useCallback((streamId: string, hasError: boolean) => {
+    setStreamErrors((prev) => {
+      if (prev.get(streamId) === hasError) return prev
+      const next = new Map(prev)
+      if (hasError) {
+        next.set(streamId, true)
+      } else {
+        next.delete(streamId)
+      }
+      return next
+    })
+  }, [])
+
+  const streamErrorCount = useMemo(() => {
+    let count = 0
+    for (const hasError of streamErrors.values()) {
+      if (hasError) count++
+    }
+    return count
+  }, [streamErrors])
 
   const [selectedWires, setSelectedWires] = useState<Wire[]>([])
   const [statusMutations, setStatusMutations] = useState<WireStatus[]>([])
@@ -166,9 +193,9 @@ export const Wires = (): JSX.Element => {
         console.error('Failed to save wire settings:', error.message, error.meta)
         showModal(
           <Prompt
-            title='Kunde inte spara inställningar'
+            title={t('settings.saveError')}
             description={details || error.message}
-            primaryLabel='Stäng'
+            primaryLabel={t('common:actions.close')}
             onPrimary={hideModal}
           />
         )
@@ -176,15 +203,15 @@ export const Wires = (): JSX.Element => {
         console.error('Failed to save wire settings:', error)
         showModal(
           <Prompt
-            title='Kunde inte spara inställningar'
-            description={error instanceof Error ? error.message : 'Ett okänt fel inträffade'}
-            primaryLabel='Stäng'
+            title={t('settings.saveError')}
+            description={error instanceof Error ? error.message : t('settings.unknownError')}
+            primaryLabel={t('common:actions.close')}
             onPrimary={hideModal}
           />
         )
       }
     }
-  }, [streams, settings?.title, updateSettings, hideModal, showModal])
+  }, [streams, settings?.title, updateSettings, hideModal, showModal, t])
 
   useStreamNavigation({
     isActive,
@@ -313,7 +340,7 @@ export const Wires = (): JSX.Element => {
       if (failed.length) {
         // Signal rollback before clearing mutations so Stream can restore original fields
         setFailedMutationUuids(new Set(failed))
-        toast.error('Någon eller några status-ändringar misslyckades!')
+        toast.error(t('toast.statusChangeFailed'))
       }
 
       setTimeout(() => {
@@ -326,7 +353,7 @@ export const Wires = (): JSX.Element => {
       setStatusMutations([])
       setFailedMutationUuids(new Set())
     })
-  }, [selectedWires, focusedWire, repository, session, previewWire, saveFocus, restoreFocus])
+  }, [selectedWires, focusedWire, repository, session, previewWire, saveFocus, restoreFocus, t])
 
   // Create a new article based on selected wires
   const onCreate = useCallback(() => {
@@ -404,7 +431,7 @@ export const Wires = (): JSX.Element => {
   return (
     <View.Root ref={viewRef}>
       <ViewHeader.Root className='z-10'>
-        <ViewHeader.Title title='Telegram' name='Wires' />
+        <ViewHeader.Title title={t('title')} name='Wires' />
 
         <ViewHeader.Content>
           <WiresToolbar
@@ -453,6 +480,8 @@ export const Wires = (): JSX.Element => {
                   onPreviewWireUpdate={setPreviewWire}
                   focusedWireId={focusedWire?.id}
                   onFocusedWireUpdate={setFocusedWire}
+                  isOnline={isOnline}
+                  onStreamError={handleStreamError}
                 />
               ))}
             </div>
@@ -487,28 +516,11 @@ export const Wires = (): JSX.Element => {
             )}
         </div>
 
-        {selectedWires.length > 0 && (
-          <div className='absolute top-1 left-0 right-0 flex justify-center items-center pointer-events-none z-20'>
-            <div className='border bg-background rounded-lg text-sm px-5 py-3 shadow-xl flex flex-col items-center gap-1 pointer-events-auto'>
-              <div className='flex flex-row items-center gap-2 justify-items-center text-center'>
-                <div className='overflow-hidden truncate max-w-100 min-w-60'>
-                  {`${selectedWires[0].fields['document.title']?.values[0]}`}
-                </div>
-
-                {selectedWires.length > 1 && (
-                  <span className='inline-block bg-muted px-2 py-0.5 rounded-md text-xs font-medium'>
-                    +
-                    {selectedWires.length - 1}
-                  </span>
-                )}
-              </div>
-              <div className='text-center text-muted-foreground text-xs'>
-                <span className='bg-muted px-2 py-0.5 rounded-md text-xs font-semibold'>ESC</span>
-                <span> för att avmarkera valda telegram</span>
-              </div>
-            </div>
-          </div>
-        )}
+        <StreamsBanner
+          isOnline={isOnline}
+          streamErrorCount={streamErrorCount}
+          selectedWires={selectedWires}
+        />
       </View.Content>
     </View.Root>
   )

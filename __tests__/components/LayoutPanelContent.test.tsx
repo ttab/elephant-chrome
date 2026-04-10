@@ -55,7 +55,6 @@ vi.mock('@/views/PrintEditor/components/Additionals', () => ({
   )
 }))
 
-
 describe('LayoutPanelContent', () => {
   const mockDoc = new Y.Doc()
   const mockEle = mockDoc.getMap('ele')
@@ -88,6 +87,10 @@ describe('LayoutPanelContent', () => {
     vi.clearAllMocks()
     capturedOnLayoutSlotChange = undefined
     vi.mocked(useYValue).mockReturnValue([undefined, vi.fn()])
+    // Reset to known state — setupTests sets 'sv-se' globally,
+    // so we re-set it per test for isolation
+    vi.clearAllMocks()
+    process.env.SYSTEM_LANGUAGE = 'sv-se'
   })
 
   it('renders all main elements', () => {
