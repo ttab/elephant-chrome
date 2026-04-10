@@ -34,12 +34,36 @@ describe('HastToggle', () => {
     expect(toggle).toHaveAttribute('aria-checked', 'false')
   })
 
-  it('renders checked when hast meta is present', () => {
+  it('renders checked when hast targets a future version', () => {
     mockHastValue = Block.create({ type: 'ntb/hast', value: '1' })
-    render(<HastToggle ydoc={mockYdoc} />)
+    render(<HastToggle ydoc={mockYdoc} usableId={0n} />)
 
     const toggle = screen.getByRole('switch')
     expect(toggle).toHaveAttribute('aria-checked', 'true')
+  })
+
+  it('renders unchecked when hast targets the current version (already published)', () => {
+    mockHastValue = Block.create({ type: 'ntb/hast', value: '1' })
+    render(<HastToggle ydoc={mockYdoc} usableId={1n} />)
+
+    const toggle = screen.getByRole('switch')
+    expect(toggle).toHaveAttribute('aria-checked', 'false')
+  })
+
+  it('renders unchecked when hast targets a past version', () => {
+    mockHastValue = Block.create({ type: 'ntb/hast', value: '1' })
+    render(<HastToggle ydoc={mockYdoc} usableId={3n} />)
+
+    const toggle = screen.getByRole('switch')
+    expect(toggle).toHaveAttribute('aria-checked', 'false')
+  })
+
+  it('renders unchecked when hast value is far ahead of usableId', () => {
+    mockHastValue = Block.create({ type: 'ntb/hast', value: '100' })
+    render(<HastToggle ydoc={mockYdoc} usableId={2n} />)
+
+    const toggle = screen.getByRole('switch')
+    expect(toggle).toHaveAttribute('aria-checked', 'false')
   })
 
   it('sets hast block with incremented usable ID on toggle on', async () => {
@@ -73,14 +97,27 @@ describe('HastToggle', () => {
   })
 
   it('removes hast block on toggle off', async () => {
-    mockHastValue = Block.create({ type: 'ntb/hast', value: '1' })
+    mockHastValue = Block.create({ type: 'ntb/hast', value: '2' })
     const user = userEvent.setup()
-    render(<HastToggle ydoc={mockYdoc} />)
+    render(<HastToggle ydoc={mockYdoc} usableId={1n} />)
 
     const toggle = screen.getByRole('switch')
     await user.click(toggle)
 
     expect(mockSetHast).toHaveBeenCalledWith(undefined)
+  })
+
+  it('sets hast to next version when toggling on after previous hast was consumed', async () => {
+    mockHastValue = Block.create({ type: 'ntb/hast', value: '1' })
+    const user = userEvent.setup()
+    render(<HastToggle ydoc={mockYdoc} usableId={1n} />)
+
+    const toggle = screen.getByRole('switch')
+    await user.click(toggle)
+
+    expect(mockSetHast).toHaveBeenCalledWith(
+      Block.create({ type: 'ntb/hast', value: '2' })
+    )
   })
 
   it('renders full variant with label and description', () => {

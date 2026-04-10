@@ -64,7 +64,7 @@ export const HastToggle = ({ ydoc, usableId, className, variant = 'compact' }: {
   const { featureFlags } = useRegistry()
   const { t } = useTranslation()
   const [hast, setHast] = useYValue<Block | undefined>(ydoc.ele, 'meta.ntb/hast[0]')
-  const isHast = !!hast
+  const isHast = !!hast && BigInt(hast.value || '0') === (usableId ?? 0n) + 1n
 
   if (!featureFlags.hasHast) {
     return null
