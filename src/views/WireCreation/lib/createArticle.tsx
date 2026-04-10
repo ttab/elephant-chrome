@@ -76,11 +76,6 @@ export async function createArticle({
     title: section.title
   }))
 
-  // Store embargo on the article's wire link for editor access
-  if (embargoUntil) {
-    setValueByYPath(ydoc.ele, 'links.tt/wire[0].data.embargo_until', embargoUntil)
-  }
-
   // Replace default content sources with wire-provided ones
   if (contentSources?.length) {
     setValueByYPath(ydoc.ele, 'links.core/content-source', contentSources.map((source) =>

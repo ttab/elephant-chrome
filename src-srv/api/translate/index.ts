@@ -49,6 +49,5 @@ export const POST: RouteHandler = async (req: Request, { res }) => {
   }
 
   const result = await response.json() as Record<string, unknown>
-  console.log('[translate] twirp response:', JSON.stringify(result))
   return { payload: result }
 }

@@ -174,7 +174,7 @@ async function refreshAccessToken(
     // Re-extract units from the refreshed access token
     let units: string[] = (token.units as string[]) || []
     try {
-      const decoded = decodeJwt(refreshedTokens.access_token)
+      const decoded = decodeJwt(refreshedTokens.access_token as string)
       units = Array.isArray(decoded.units) ? decoded.units as string[] : units
     } catch {
       // Token decode failure is non-fatal, keep existing units
