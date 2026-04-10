@@ -1,5 +1,5 @@
 import { Prompt } from '@/components/Prompt'
-import { getWorkflowSpecifications } from '@/defaults/workflowSpecification'
+import { WorkflowSpecifications } from '@/defaults/workflowSpecification'
 import { useNavigationKeys } from '@/hooks/useNavigationKeys'
 import { type YDocument } from '@/modules/yjs/hooks'
 import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
@@ -10,7 +10,6 @@ import { useState, type JSX } from 'react'
 import type * as Y from 'yjs'
 import { snapshotDocument } from '@/lib/snapshotDocument'
 import { toast } from 'sonner'
-import { useTranslation } from 'react-i18next'
 
 export const ViewDialogClose = ({ ydoc, onClick, Icon = XIcon, asDialog }: {
   ydoc?: YDocument<Y.Map<unknown>>
@@ -24,9 +23,8 @@ export const ViewDialogClose = ({ ydoc, onClick, Icon = XIcon, asDialog }: {
   const documentType = root?.get('type')
 
 
-  const { t } = useTranslation('shared')
   const asSave = (documentStatus?.type
-    ? getWorkflowSpecifications()[documentStatus.type][documentStatus.name].asSave && ydoc?.isChanged
+    ? WorkflowSpecifications[documentStatus.type][documentStatus.name].asSave && ydoc?.isChanged
     : false) || false
 
   const handleClose = () => {
@@ -60,8 +58,8 @@ export const ViewDialogClose = ({ ydoc, onClick, Icon = XIcon, asDialog }: {
       </Button>
       {showVerifyDialog && (
         <Prompt
-          title={documentType === 'core/factbox' ? t('factbox:prompts.approveBeforeClose') : t('prompts.publishBeforeClose')}
-          description={documentType === 'core/factbox' ? t('factbox:prompts.savedButNotApproved') : t('prompts.savedButNotPublished')}
+          title={documentType === 'core/factbox' ? 'Vill du godkänna ändringarna innan du stänger?' : 'Vill du publicera ändringarna innan du stänger?'}
+          description={documentType === 'core/factbox' ? 'Dina ändringar är sparade men dokumentet är inte satt som godkänt.' : 'Dina ändringar är sparade men inte publicerade.'}
           onPrimary={() => {
             if (ydoc) {
               snapshotDocument(ydoc?.id, {
@@ -73,19 +71,19 @@ export const ViewDialogClose = ({ ydoc, onClick, Icon = XIcon, asDialog }: {
                 })
                 .catch((error) => {
                   setShowVerifyDialog(false)
-                  toast.error(t('errors:toasts.savedDocumentFailed'))
+                  toast.error('Kunde inte spara dokumentet')
                   console.error('Could not snapshot document before closing view.', error)
                 })
             }
           }}
-          primaryLabel={t('common:actions.yes')}
+          primaryLabel='Ja'
           onSecondary={() => {
             setShowVerifyDialog(false)
             onClick()
           }}
-          secondaryLabel={t('common:actions.no')}
+          secondaryLabel='Nej'
           onCancel={() => setShowVerifyDialog(false)}
-          cancelLabel={t('common:actions.abort')}
+          cancelLabel='Avbryt'
         />
       )}
     </>

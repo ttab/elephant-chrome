@@ -19,7 +19,6 @@ import { toast } from 'sonner'
 import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { type YDocument, useYValue } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
-import { useTranslation } from 'react-i18next'
 
 export const MoveDialog = ({ ydoc, onClose, newDate }: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -32,18 +31,17 @@ export const MoveDialog = ({ ydoc, onClose, newDate }: {
   const [, setEndString] = useYValue<string>(ydoc.ele, 'meta.core/planning-item[0].data.end_date')
   // Record of assignment ids and times to change
   const assignmentTimes = useRef<Record<string, TimeDef | undefined>>({})
-  const { t } = useTranslation()
 
   return (
     <Dialog open={true}>
       <DialogContent className='focus-visible:outline-none'>
         <DialogHeader>
           <DialogTitle>
-            {t('planning:move.dateSwitch')}
+            Byt datum på planering
           </DialogTitle>
 
           <DialogDescription>
-            {t('planning:move.dateSwitchDescription')}
+            Planeringen och alla dess textuppdrag byter datum till
             {' '}
             {newDate}
             .
@@ -70,7 +68,7 @@ export const MoveDialog = ({ ydoc, onClose, newDate }: {
           </div>
 
           <DialogDescription>
-            {t('planning:move.dateSwitchAssignments')}
+            Välj nedan om även bild- och videouppdrag ska byta datum.
           </DialogDescription>
 
           <div className='flex flex-col gap-3 py-2 text-left'>
@@ -99,7 +97,7 @@ export const MoveDialog = ({ ydoc, onClose, newDate }: {
             variant='secondary'
             onClick={onClose}
           >
-            {t('common:actions.abort')}
+            Avbryt
           </Button>
 
           <Button
@@ -152,12 +150,12 @@ export const MoveDialog = ({ ydoc, onClose, newDate }: {
                   onClose()
                 }).catch((err) => {
                   console.error(err)
-                  toast.error(t('errors:toasts.snapshotError'))
+                  toast.error('Planeringen har ändrats lokalt men gick inte att spara.')
                 })
               }
             }}
           >
-            {t('planning:move.label')}
+            Flytta
           </Button>
         </DialogFooter>
       </DialogContent>

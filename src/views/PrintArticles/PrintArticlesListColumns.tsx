@@ -1,11 +1,10 @@
 import { type ColumnDef } from '@tanstack/react-table'
 import { CircleCheckIcon, PenIcon, TvIcon } from '@ttab/elephant-ui/icons'
 import type { PrintArticle } from '@/hooks/baboon/lib/printArticles'
-import { getPrintArticleStatuses } from '@/defaults/documentStatuses'
+import { PrintArticleStatuses } from '@/defaults/documentStatuses'
 import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
 import { FacetedFilter } from '@/components/Commands/FacetedFilter'
 import type { PrintFlow } from '@/shared/schemas/printFlow'
-import i18next from 'i18next'
 
 /**
  * Generates column definitions for the Print Articles list.
@@ -29,13 +28,13 @@ export function printArticlesListColumns({ printFlows = [] }: {
         Filter: ({ column, setSearch }) => (
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
-        options: getPrintArticleStatuses(),
-        name: i18next.t('print:articles.columns.status'),
+        options: PrintArticleStatuses,
+        name: 'Status',
         columnIcon: CircleCheckIcon,
         className: 'flex-none w-16',
         display: (value: string) => (
           <span>
-            {getPrintArticleStatuses()
+            {PrintArticleStatuses
               .find((status) => status.value === value)?.label || 'draft'}
           </span>
         )
@@ -62,7 +61,7 @@ export function printArticlesListColumns({ printFlows = [] }: {
         Filter: ({ column, setSearch }) => (
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
-        name: i18next.t('print:articles.columns.flow'),
+        name: 'Flöde',
         columnIcon: PenIcon,
         className: 'flex-1 w-[200px] hidden',
         display: (value: string) => (
@@ -82,7 +81,7 @@ export function printArticlesListColumns({ printFlows = [] }: {
       id: 'document.title',
       enableGrouping: false,
       meta: {
-        name: i18next.t('print:articles.columns.title'),
+        name: 'Titel',
         columnIcon: PenIcon,
         className: 'flex-1'
       },
@@ -96,7 +95,7 @@ export function printArticlesListColumns({ printFlows = [] }: {
       id: 'headline',
       enableGrouping: false,
       meta: {
-        name: i18next.t('print:articles.columns.headline'),
+        name: 'Rubrik',
         columnIcon: PenIcon,
         className: 'flex-1'
       },
@@ -126,7 +125,7 @@ export function printArticlesListColumns({ printFlows = [] }: {
       id: 'tvTitle',
       enableGrouping: false,
       meta: {
-        name: i18next.t('print:articles.columns.article'),
+        name: 'Artikel',
         columnIcon: PenIcon,
         className: 'flex-1 w-8'
       },

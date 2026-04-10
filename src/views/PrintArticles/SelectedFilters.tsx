@@ -7,12 +7,11 @@ import {
   XIcon
 } from '@ttab/elephant-ui/icons'
 import { type DefaultValueOption } from '@/types/index'
-import { getPrintArticleStatuses } from '@/defaults/documentStatuses'
+import { PrintArticleStatuses } from '@/defaults/documentStatuses'
 import { useQuery } from '@/hooks/useQuery'
 import { useDocuments } from '@/hooks/index/useDocuments'
 import { type PrintFlow, type PrintFlowFields, fields } from '@/shared/schemas/printFlow'
 import { toast } from 'sonner'
-import { useTranslation } from 'react-i18next'
 
 interface SelectedBase {
   value: unknown
@@ -29,7 +28,6 @@ const SelectedBadge = ({ value, options }: SelectedBase & {
           className='rounded-sm px-1 font-normal'
         >
           {value.length}
-          {/* eslint-disable-next-line i18next/no-literal-string */}
           {' '}
           selected
         </Badge>
@@ -52,7 +50,6 @@ const SelectedBadge = ({ value, options }: SelectedBase & {
 }
 
 const SelectedButton = ({ type, value }: { value: string | string[] | undefined, type: string }): JSX.Element => {
-  const { t } = useTranslation('print')
   const [filters, setFilters] = useQuery(['workflowState', 'printFlow'])
 
   const { data, error } = useDocuments<PrintFlow, PrintFlowFields>({
@@ -61,7 +58,7 @@ const SelectedButton = ({ type, value }: { value: string | string[] | undefined,
   })
 
   if (error) {
-    toast.error(t('articles.errors.fetchFlows'))
+    toast.error('Kunde inte hämta printflöden')
     console.error('Could not fetch PrintFlows:', error)
   }
 
@@ -75,7 +72,7 @@ const SelectedButton = ({ type, value }: { value: string | string[] | undefined,
       case 'workflowState': {
         return {
           Icon: CircleCheckIcon,
-          options: getPrintArticleStatuses()
+          options: PrintArticleStatuses
         }
       }
       case 'printFlow': {

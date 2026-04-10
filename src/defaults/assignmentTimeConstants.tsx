@@ -9,7 +9,7 @@ import {
   Clock1Icon
 } from '@ttab/elephant-ui/icons'
 import { type AssignmentValueOption } from '../components/AssignmentTime/types'
-import i18n from 'i18next'
+
 
 const iconProps = {
   size: 18,
@@ -18,16 +18,16 @@ const iconProps = {
 }
 
 // FIXME: These constants should be merged with ./assignmentTimeslots.ts
-export const getTimeSlotTypes = (): AssignmentValueOption[] => [
+export const timeSlotTypes: AssignmentValueOption[] = [
   {
-    label: i18n.t('core:timeSlots.fullday'),
+    label: 'Heldag',
     value: 'fullday',
     icon: CalendarFoldIcon,
     iconProps,
     slots: []
   },
   {
-    label: i18n.t('core:timeSlots.morning'),
+    label: 'Morgon',
     value: 'morning',
     icon: Clock5Icon,
     iconProps,
@@ -35,7 +35,7 @@ export const getTimeSlotTypes = (): AssignmentValueOption[] => [
     median: '5'
   },
   {
-    label: i18n.t('core:timeSlots.forenoon'),
+    label: 'Förmiddag',
     value: 'forenoon',
     icon: Clock10Icon,
     iconProps,
@@ -43,7 +43,7 @@ export const getTimeSlotTypes = (): AssignmentValueOption[] => [
     median: '10'
   },
   {
-    label: i18n.t('core:timeSlots.afternoon'),
+    label: 'Eftermiddag',
     value: 'afternoon',
     icon: Clock2Icon,
     iconProps,
@@ -51,7 +51,7 @@ export const getTimeSlotTypes = (): AssignmentValueOption[] => [
     median: '16'
   },
   {
-    label: i18n.t('core:timeSlots.evening'),
+    label: 'Kväll',
     value: 'evening',
     icon: Clock6Icon,
     iconProps,
@@ -60,21 +60,21 @@ export const getTimeSlotTypes = (): AssignmentValueOption[] => [
   }
 ]
 
-export const getTimePickTypes = (): AssignmentValueOption[] => [
+export const timePickTypes: AssignmentValueOption[] = [
   {
-    label: i18n.t('common:misc.selectTime'),
+    label: 'Välj tid',
     value: 'endexecution',
     icon: CalendarClockIcon,
     iconProps
   },
   {
-    label: i18n.t('common:misc.selectTime'),
+    label: 'Välj tid',
     value: 'start-end-execution',
     icon: ClockFadingIcon,
     iconProps
   },
   {
-    label: i18n.t('common:misc.selectTime'),
+    label: 'Välj tid',
     value: 'start-end-execution',
     icon: Clock1Icon,
     iconProps

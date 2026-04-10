@@ -10,13 +10,12 @@ import { useDocuments } from '@/hooks/index/useDocuments'
 import { SortingV1 } from '@ttab/elephant-api/index'
 import { toast } from 'sonner'
 import { getUTCDateRange } from '@/shared/datetime'
-import { useTranslation } from 'react-i18next'
 
 export const EventsList = (): JSX.Element => {
   const sections = useSections()
   const organisers = useOrganisers()
   const { locale, timeZone } = useRegistry()
-  const { t } = useTranslation()
+
   const [query] = useQuery()
   const { from, to } = useMemo(() =>
     getUTCDateRange(query?.from ? new Date(query?.from as string) : new Date(), timeZone), [query, timeZone])
@@ -39,7 +38,7 @@ export const EventsList = (): JSX.Element => {
 
   })
 
-  const columns = useMemo(() => eventTableColumns({ sections, organisers, locale }, t), [sections, organisers, locale, t])
+  const columns = useMemo(() => eventTableColumns({ sections, organisers, locale }), [sections, organisers, locale])
 
   const onRowSelected = useCallback((row?: Event) => {
     if (row) {
@@ -52,7 +51,7 @@ export const EventsList = (): JSX.Element => {
 
   if (error) {
     console.error('Error fetching event items:', error)
-    toast.error(t('errors:toasts.getEventsFailed'))
+    toast.error('Kunde inte hämta händelser')
   }
 
   return (

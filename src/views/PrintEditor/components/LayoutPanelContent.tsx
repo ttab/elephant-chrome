@@ -1,5 +1,4 @@
 import { forwardRef, useCallback, type HTMLAttributes } from 'react'
-import { useTranslation } from 'react-i18next'
 import { cn } from '@ttab/elephant-ui/utils'
 import { Button, Checkbox, Input } from '@ttab/elephant-ui'
 import { EyeIcon, Trash2Icon } from '@ttab/elephant-ui/icons'
@@ -37,7 +36,6 @@ export const LayoutPanelContent = forwardRef<HTMLDivElement, LayoutPanelContentP
   onRequestDelete,
   ...props
 }, ref) => {
-  const { t } = useTranslation('print')
   const { data: layout } = useLayouts(layoutUuid)
 
   const [, setArticleAdditionals] = useYValue<Block[]>(
@@ -69,7 +67,7 @@ export const LayoutPanelContent = forwardRef<HTMLDivElement, LayoutPanelContentP
       {...props}
     >
       <header className='col-span-12 row-span-1 gap-2 flex items-center justify-between'>
-        <div className='flex items-center gap-2' title={t('editor.layouts.preview')}>
+        <div className='flex items-center gap-2' title='Förhandsgranska'>
           <Button
             variant='ghost'
             className='group/render px-2 py-0 flex gap-2 justify-start hover:bg-approved-background/50'
@@ -98,7 +96,7 @@ export const LayoutPanelContent = forwardRef<HTMLDivElement, LayoutPanelContentP
         <Input
           type='text'
           readOnly
-          placeholder={t('editor.layouts.placeholder2')}
+          placeholder='Namn'
           value={linkTitle}
         />
       </div>

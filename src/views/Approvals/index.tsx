@@ -11,7 +11,6 @@ import { ApprovalsCard } from './ApprovalsCard'
 import { Toolbar } from './Toolbar.tsx'
 import { getStatusSpecifications } from '@/defaults/workflowSpecification'
 import { useTrackedDocuments } from '@/hooks/useTrackedDocuments.tsx'
-import { useTranslation } from 'react-i18next'
 
 const meta: ViewMetadata = {
   name: 'Approvals',
@@ -37,7 +36,7 @@ export const Approvals = (): JSX.Element => {
 
 export const ApprovalsView = (): JSX.Element => {
   const trackedDocuments = useTrackedDocuments()
-  const { t } = useTranslation()
+
   const { timeZone } = useRegistry()
 
   const slots = Object.keys(Slots).map((key) => {
@@ -162,7 +161,7 @@ export const ApprovalsView = (): JSX.Element => {
     <View.Root tab={currentTab} onTabChange={setCurrentTab}>
       <ViewHeader.Root>
         <ViewHeader.Content>
-          <ViewHeader.Title name='Approvals' title={t('views:approvals.title')} />
+          <ViewHeader.Title name='Approvals' title='Dagen' />
           <Header type='Approvals' />
         </ViewHeader.Content>
         <ViewHeader.Action />

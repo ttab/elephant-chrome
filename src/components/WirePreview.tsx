@@ -7,12 +7,10 @@ import { getWireStatus } from '@/lib/getWireStatus'
 import { DocumentHistory } from './DocumentHistory/DocumentHistory'
 import { useState, useEffect } from 'react'
 import { getDocumentState } from '@/lib/getDocumentState'
-import { useTranslation } from 'react-i18next'
 
 export const WirePreview = ({ wire }: {
   wire: Wire
 }) => {
-  const { t } = useTranslation('wires')
   const data = {
     source: wire?.fields['document.rel.source.uri']?.values[0]
       ?.replace('wires://source/', ''),
@@ -49,33 +47,33 @@ export const WirePreview = ({ wire }: {
 
           {data?.role === 'pressrelease' && (
             <Badge className='h-6 bg-gray-400 pointer-events-none'>
-              {t('preview.pressRelease')}
+              Pressmeddelande
             </Badge>
           )}
 
           {data?.newsvalue === '6' && (
             <Badge variant='destructive' className='h-6 pointer-events-none'>
-              {t('history.status.flash')}
+              Flash
             </Badge>
           )}
 
           {data?.status && data.status === 'read' && (
             <Badge className='h-6 pe-2 bg-approved-background text-foreground border border-approved pointer-events-none'>
-              <span className='me-2'>{t('preview.statusRead')}</span>
+              <span className='me-2'>Läst</span>
               <EyeIcon size={12} fill='oklch(96.62% 0.0108 149.86)' />
             </Badge>
           )}
 
           {data?.status && data.status === 'saved' && (
             <Badge className='h-6 pe-2 bg-done-background text-foreground border border-done pointer-events-none'>
-              <span className='me-2'>{t('preview.statusSaved')}</span>
+              <span className='me-2'>Sparad</span>
               <FolderIcon size={12} fill='oklch(98.51% 0.0264 99.9)' />
             </Badge>
           )}
 
           {data?.status && data.status === 'used' && (
             <Badge className='h-6 pe-2 bg-usable-background text-foreground border border-usable pointer-events-none'>
-              <span className='me-2'>{t('preview.statusUsed')}</span>
+              <span className='me-2'>Använd</span>
               <CheckIcon size={12} fill='oklch(95.05% 0.022 263.19)' />
             </Badge>
           )}

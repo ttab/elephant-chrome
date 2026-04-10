@@ -1,6 +1,5 @@
 import { Block, Document } from '@ttab/elephant-api/newsdoc'
 import type { TemplatePayload } from './index.js'
-import { getSystemLanguage } from '@/shared/getSystemLanguage.js'
 
 /**
  * Generates a document template for an article.
@@ -23,7 +22,7 @@ export function articleDocumentTemplate(id: string, payload?: TemplatePayload): 
     uuid: id,
     type: 'core/article',
     uri: `core://article/${id}`,
-    language: getSystemLanguage(),
+    language: 'sv-se',
     title: payload?.title,
     content: [
       Block.create({

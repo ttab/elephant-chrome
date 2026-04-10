@@ -1,12 +1,11 @@
 import { ViewHeader } from '@/components/View'
 import { Button, Popover, PopoverContent, PopoverTrigger } from '@ttab/elephant-ui'
-import { PlusIcon } from '@ttab/elephant-ui/icons'
+import { BookAIcon, PlusIcon } from '@ttab/elephant-ui/icons'
 import { DateChanger } from '@/components/Header/Datechanger'
 import { useModal } from '@/components/Modal/useModal'
 import { PrintFlows } from './PrintFlows'
+import { useLink } from '@/hooks/useLink'
 import type { JSX } from 'react'
-import { useTranslation } from 'react-i18next'
-import { DictionaryButton } from '../PrintEditor/components/DictionaryButton'
 
 /**
  * PrintArticlesHeader component.
@@ -22,22 +21,22 @@ import { DictionaryButton } from '../PrintEditor/components/DictionaryButton'
 
 export const PrintArticlesHeader = (): JSX.Element => {
   const { showModal, hideModal } = useModal()
-  const { t } = useTranslation('print')
+  const openDictionary = useLink('PrintDictionary')
 
   return (
     <ViewHeader.Root className='flex flex-row gap-2 items-center justify-between'>
       <div className='flex flex-row gap-4 items-center justify-start'>
-        <ViewHeader.Title title={t('articles.title')} name='Print' />
+        <ViewHeader.Title title='Print' name='Print' />
         <Popover>
           <PopoverTrigger asChild>
-            <Button title={t('articles.header.createNew')} size='sm' className='gap-1 px-2 py-0'>
+            <Button title='Skapa ny...' size='sm' className='gap-1 px-2 py-0'>
               <PlusIcon strokeWidth={1.75} size={16} />
-              {t('articles.header.new')}
+              Nytt
             </Button>
           </PopoverTrigger>
           <PopoverContent className='flex flex-col gap-2'>
             <Button
-              title={t('articles.header.newArticleTooltip')}
+              title='Skapa en text i ett flöde'
               variant='outline'
               onClick={() => {
                 showModal(
@@ -45,10 +44,10 @@ export const PrintArticlesHeader = (): JSX.Element => {
                 )
               }}
             >
-              {t('articles.header.newArticle')}
+              Ny artikel
             </Button>
             <Button
-              title={t('articles.header.newFlowTooltip')}
+              title='Öppna dialogruta för att välja ett flöde. Artiklarna för flödet kommer sedan att skapas av backend enligt definitionen i flödet.'
               variant='outline'
               onClick={() => {
                 showModal(
@@ -56,14 +55,23 @@ export const PrintArticlesHeader = (): JSX.Element => {
                 )
               }}
             >
-              {t('articles.header.newFlow')}
+              Nytt flöde
             </Button>
           </PopoverContent>
         </Popover>
         <DateChanger type='Print' />
       </div>
       <div className='flex flex-row gap-2 items-center justify-end'>
-        <DictionaryButton variant='ghost' />
+        <Button
+          title='Skapa en text i ett flöde'
+          variant='outline'
+          size='sm'
+          onClick={() => {
+            openDictionary(undefined, {})
+          }}
+        >
+          <BookAIcon strokeWidth={1.75} size={18} />
+        </Button>
         <ViewHeader.Action>
         </ViewHeader.Action>
       </div>

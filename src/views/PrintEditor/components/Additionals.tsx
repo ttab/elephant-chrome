@@ -1,19 +1,17 @@
 import type { JSX } from 'react'
 import { useMemo, useCallback } from 'react'
-import { useTranslation } from 'react-i18next'
 import { useYValue } from '@/modules/yjs/hooks/useYValue'
 import type { YDocument } from '@/modules/yjs/hooks/useYDocument'
 import { Label, Checkbox } from '@ttab/elephant-ui'
 import type * as Y from 'yjs'
 import { Block, type Document } from '@ttab/elephant-api/newsdoc'
-import { LoaderIcon } from '@ttab/elephant-ui/icons'
+import { LoaderIcon } from 'lucide-react'
 
-export const Additionals = ({ ydoc, basePath, layout }: {
+export const Additionals = ({ ydoc, basePath, layout}: {
   ydoc: YDocument<Y.Map<unknown>>
   basePath: string
   layout?: Document
 }): JSX.Element | null => {
-  const { t } = useTranslation('print')
   const [articleAdditionals, setArticleAdditionals] = useYValue<Block[]>(
     ydoc.ele,
     `${basePath}.meta.tt/print-features[0].content.tt/print-feature`
@@ -48,7 +46,7 @@ export const Additionals = ({ ydoc, basePath, layout }: {
 
   return (
     <div className='col-span-12 row-span-1 flex flex-col gap-2 mt-1'>
-      <Label htmlFor='additionals'>{t('editor.additionals')}</Label>
+      <Label htmlFor='additionals'>Tillägg</Label>
       <div id='additionals' className='grid grid-cols-2 gap-2'>
         {items.map((item) => (
           <Label key={item.name} className='flex items-center gap-2'>

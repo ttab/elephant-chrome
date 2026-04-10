@@ -1,15 +1,14 @@
-import { useState, useEffect, useCallback, type MouseEvent, type JSX, useMemo } from 'react'
+import { useState, useEffect, useCallback, type MouseEvent, type JSX } from 'react'
 import {
   Command,
   CommandItem,
   Button
 } from '@ttab/elephant-ui'
-import { getTimePickTypes } from '../../defaults/assignmentTimeConstants'
+import { timePickTypes } from '../../defaults/assignmentTimeConstants'
 import { type AssignmentData } from './types'
 import { TimeInput } from '../TimeInput'
 import { useYValue } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
-import { useTranslation } from 'react-i18next'
 
 export const TimeSelectItem = ({ handleOnSelect, assignment, handleParentOpenChange }: {
   handleOnSelect: ({ value, selectValue }: { value: string, selectValue: string }) => void
@@ -17,13 +16,10 @@ export const TimeSelectItem = ({ handleOnSelect, assignment, handleParentOpenCha
   assignment: Y.Map<unknown>
   handleParentOpenChange: (open: boolean) => void
 }): JSX.Element => {
-  const timePickTypes = useMemo(() => getTimePickTypes(), [])
   const [open, setOpen] = useState(false)
   const [endTime, setEndTime] = useState('')
   const [data] = useYValue<AssignmentData>(assignment, `data`)
   const [valid, setValid] = useState(false)
-  const { t } = useTranslation()
-
 
   useEffect(() => {
     if (data?.end) {
@@ -47,7 +43,7 @@ export const TimeSelectItem = ({ handleOnSelect, assignment, handleParentOpenCha
       setOpen(false)
       handleParentOpenChange(false)
     }
-  }, [valid, endTime, handleOnSelect, handleParentOpenChange, timePickTypes])
+  }, [valid, endTime, handleOnSelect, handleParentOpenChange])
 
   const timePickType = data?.end && data?.start ? timePickTypes.find((t) => t.value === 'start-end-execution') : timePickTypes[0]
 
@@ -68,7 +64,7 @@ export const TimeSelectItem = ({ handleOnSelect, assignment, handleParentOpenCha
       key={timePickTypes[0].label}
       value={timePickTypes[0].label}
       onSelect={(item) => {
-        if (item === t('planning:assignment.chooseTime')) {
+        if (item === 'Välj tid') {
           setOpen(!open)
         } else {
           handleParentOpenChange(false)
@@ -102,7 +98,7 @@ export const TimeSelectItem = ({ handleOnSelect, assignment, handleParentOpenCha
                 }
               }}
             >
-              {t('common:actions.abort')}
+              Avbryt
             </Button>
 
             <Button
@@ -111,7 +107,7 @@ export const TimeSelectItem = ({ handleOnSelect, assignment, handleParentOpenCha
               onKeyDown={handleConfirm}
               disabled={!valid}
             >
-              {t('common:actions.confirm')}
+              Klar
             </Button>
           </div>
         </div>

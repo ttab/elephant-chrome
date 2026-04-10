@@ -1,5 +1,5 @@
-export { getAssignmentTypes } from './assignmentTypes'
+export { AssignmentTypes } from './assignmentTypes'
 export { Newsvalues } from './newsvalues'
 export { NewsvalueMap } from './newsvalueMap'
 export { Collaboration } from './collaboration'
-export { getDocumentStatuses, getPlanningEventStatuses } from './documentStatuses'
+export { DocumentStatuses, PlanningEventStatuses } from './documentStatuses'

@@ -1,7 +1,6 @@
 import type { LinkHandlerFunction } from '@/hooks/useLink'
 import { TextSearchIcon } from '@ttab/elephant-ui/icons'
 import type { TBPluginInitFunction } from '@ttab/textbit'
-import i18next from 'i18next'
 
 type FactboxPluginOptions = {
   openFactboxes: LinkHandlerFunction
@@ -20,7 +19,7 @@ export const FactboxPlugin: TBPluginInitFunction<FactboxPluginOptions> = (option
     actions: [
       {
         name: 'core/factbox/search',
-        title: i18next.t('editor:contentMenu.factboxes'),
+        title: 'Faktarutor',
         tool: () => <TextSearchIcon style={{ width: '1em', height: '1em' }} />,
         handler: () => {
           openFactboxes?.(undefined, {})

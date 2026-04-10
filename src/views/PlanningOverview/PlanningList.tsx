@@ -11,14 +11,12 @@ import { useQuery } from '@/hooks/useQuery'
 import { getUTCDateRange } from '../../../shared/datetime.js'
 import { toast } from 'sonner'
 import { useRegistry } from '@/hooks/useRegistry'
-import { useTranslation } from 'react-i18next'
 
 export const PlanningList = ({ columns }: {
   columns: ColumnDef<Planning>[]
 }): JSX.Element => {
   const [query] = useQuery()
   const { timeZone } = useRegistry()
-  const { t } = useTranslation('views')
   const { from, to } = useMemo(() =>
     getUTCDateRange(query?.from ? new Date(query?.from as string) : new Date(), timeZone), [query, timeZone])
 
@@ -50,7 +48,7 @@ export const PlanningList = ({ columns }: {
 
   if (error) {
     console.error('Error fetching planning items:', error)
-    toast.error(t('errors:toasts.getPlanningsFailed'))
+    toast.error('Kunde inte hämta planeringar')
   }
 
 

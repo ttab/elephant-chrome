@@ -1,11 +1,8 @@
 import { Badge } from '@ttab/elephant-ui'
-import { useTranslation } from 'react-i18next'
 
 export const FilterBadge = ({ labels }: {
   labels: string[]
 }) => {
-  const { t } = useTranslation()
-
   if (!Array.isArray(labels) || !labels.length) {
     return
   }
@@ -15,7 +12,7 @@ export const FilterBadge = ({ labels }: {
       <Badge variant='secondary' className='rounded-sm px-1 font-normal'>
         {labels.length}
         {' '}
-        {t('misc.selected')}
+        selected
       </Badge>
     )
   }

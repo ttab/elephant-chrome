@@ -7,13 +7,11 @@ import { useRef, type JSX } from 'react'
 import type { FormProps } from './Form/Root'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
-import { useTranslation } from 'react-i18next'
 
 export const Category = ({ ydoc, path, asDialog, onChange }: {
   ydoc: YDocument<Y.Map<unknown>>
   path: string
 } & FormProps): JSX.Element => {
-  const { t } = useTranslation('event')
   const allCategories = useCategories().map((_) => {
     return {
       value: _.id,
@@ -36,7 +34,7 @@ export const Category = ({ ydoc, path, asDialog, onChange }: {
         modal={asDialog}
         options={allCategories}
         selectedOptions={selectedOptions}
-        placeholder={t('event:placeholders.addCategory')}
+        placeholder='Lägg till ämne'
         onOpenChange={(isOpen: boolean) => {
           if (setFocused?.current) {
             setFocused.current(true, (isOpen) ? path : '')
@@ -56,10 +54,6 @@ export const Category = ({ ydoc, path, asDialog, onChange }: {
               title: option.label
             })])
           }
-        }}
-        translationStrings={{
-          nothingFound: t('common:misc.nothingFound'),
-          searching: t('common:misc.searching')
         }}
       />
     </Awareness>

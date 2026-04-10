@@ -14,7 +14,6 @@ import { dateToReadableDateTime } from '@/shared/datetime'
 import { CAUSE_KEYS } from '../../defaults/causekeys'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { getAuthorBySub } from '@/lib/getAuthorBySub'
-import { useTranslation } from 'react-i18next'
 const BASE_URL = import.meta.env.BASE_URL || ''
 
 type Status = { name: string, created: string, creator: string }
@@ -30,7 +29,6 @@ export const Version = ({ documentId, hideDetails = false, textOnly = true }: { 
   const { data: session } = useSession()
   const authors = useAuthors()
   const [lastUpdated, setLastUpdated] = useState('')
-  const { t } = useTranslation('metaSheet')
 
   const getStatusCreator = (status: DocumentStatus) => {
     return status.creator === 'internal://scheduler' ? status.meta['scheduled-by'] : status.creator
@@ -142,7 +140,7 @@ export const Version = ({ documentId, hideDetails = false, textOnly = true }: { 
       }
 
       if (v.version === -1n) {
-        status.name = t('core:status.unpublished')
+        status.name = 'Avpublicerad'
       }
 
       return status
@@ -177,7 +175,7 @@ export const Version = ({ documentId, hideDetails = false, textOnly = true }: { 
         </SelectItem>
       )
     })
-  }, [documentId, versionStatusHistory, createdBy, formatDateAndTime, t])
+  }, [documentId, versionStatusHistory, createdBy, formatDateAndTime])
 
   if (!versionStatusHistory?.length) {
     return <></>
@@ -187,8 +185,8 @@ export const Version = ({ documentId, hideDetails = false, textOnly = true }: { 
     console.error('Error fetching version history', error)
     return (
       <Error
-        title={t('common:misc.error')}
-        message={t('errors:messages.failedToLoadHistory')}
+        title='Fel'
+        message='Det uppstod ett fel när dokumenthistoriken hämtades.'
       />
     )
   }
@@ -225,10 +223,10 @@ export const Version = ({ documentId, hideDetails = false, textOnly = true }: { 
         </SelectContent>
       </Select>
 
-      {lastUpdated && <div className='text-sm text-muted-foreground pl-0.5'>{t('misc.lastUpdated', { date: formatDateAndTime(lastUpdated) })}</div>}
+      {lastUpdated && <div className='text-sm text-muted-foreground pl-0.5'>{`Senast uppdaterad: ${formatDateAndTime(lastUpdated)}`}</div>}
 
       {!hideDetails && selectedVersion?.createdBy && (
-        <div className='text-sm text-muted-foreground pl-0.5'>{t('shared:authors.createdBy', { author: selectedVersion?.createdBy })}</div>
+        <div className='text-sm text-muted-foreground pl-0.5'>{`Skapad av ${selectedVersion?.createdBy}`}</div>
       )}
     </div>
   )

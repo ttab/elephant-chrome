@@ -24,7 +24,7 @@ export interface DotMenuSubItem {
 }
 
 export interface DotDropdownMenuActionItem {
-  label?: string
+  label: string
   icon?: LucideIcon
   item: DotMenuSubItem[] | ((event: MouseEvent<HTMLDivElement>) => void) | React.ReactNode
   disabled?: boolean

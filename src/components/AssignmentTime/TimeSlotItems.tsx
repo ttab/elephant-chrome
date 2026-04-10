@@ -1,18 +1,14 @@
 import { CommandItem } from '@ttab/elephant-ui'
 import type { JSX } from 'react'
-import { getTimeSlotTypes } from '../../defaults/assignmentTimeConstants'
+import { timeSlotTypes as slotTypes } from '../../defaults/assignmentTimeConstants'
 import type { AssignmentValueOption } from './types'
-import type { TFunction } from 'i18next'
-import type { TranslationKey } from '@/types/i18next.d'
 
-export const TimeSlotItems = ({ handleOnSelect, handleParentOpenChange, assignmentType, t }: {
+export const TimeSlotItems = ({ handleOnSelect, handleParentOpenChange, assignmentType }: {
   handleOnSelect: ({ value, selectValue }: { value: string, selectValue: string }) => void
   handleParentOpenChange: (open: boolean) => void
   assignmentType?: string
-  t: TFunction
 }): JSX.Element[] => {
   const timeSlotTypes = (assignmentType?: string) => {
-    const slotTypes = getTimeSlotTypes()
     if (!assignmentType) {
       return slotTypes
     }
@@ -33,10 +29,10 @@ export const TimeSlotItems = ({ handleOnSelect, handleParentOpenChange, assignme
     }
 
     return (
-      <CommandItem key={slot.label} value={t(`core:timeSlots.${slot.value}` as TranslationKey)} onSelect={onSelect}>
+      <CommandItem key={slot.label} value={slot.label} onSelect={onSelect}>
         <div className='flex flex-row space-x-2 items-center'>
           {slot?.icon && <slot.icon {...slot.iconProps} />}
-          <div>{t(`core:timeSlots.${slot.value}` as TranslationKey)}</div>
+          <div>{slot.label}</div>
         </div>
       </CommandItem>
     )

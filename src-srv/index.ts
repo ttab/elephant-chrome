@@ -21,7 +21,6 @@ import { createAuthInfo } from './utils/authConfig.js'
 import logger from './lib/logger.js'
 import { pinoHttp } from 'pino-http'
 import assertEnvs from './lib/assertEnvs.js'
-import { setSystemLanguage } from '@/shared/getSystemLanguage.js'
 import { authSessionMiddleware } from './utils/authSession.js'
 
 import Pyroscope from '@pyroscope/nodejs'
@@ -52,7 +51,6 @@ const PYROSCOPE_URL = process.env.PYROSCOPE_URL || ''
  */
 export async function runServer(): Promise<string> {
   assertEnvs()
-  setSystemLanguage(process.env.SYSTEM_LANGUAGE ?? '')
 
   const { apiDir, distDir } = getPaths()
   const { app } = expressWebsockets(express())
@@ -144,7 +142,7 @@ export async function runServer(): Promise<string> {
   })
 
 
-  process.on('uncaughtException', (ex: Error) => {
+  process.on('unhandledException', (ex: Error) => {
     logger.fatal({ err: ex }, 'Unhandled exception')
 
     collaborationServer.close().then(() => {

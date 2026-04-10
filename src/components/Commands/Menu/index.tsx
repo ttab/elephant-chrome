@@ -25,7 +25,6 @@ import { DebouncedCommandInput } from './DebouncedCommandInput'
 import { handleLink } from '@/components/Link/lib/handleLink'
 import { useHistory, useNavigation, useTable, useView } from '@/hooks'
 import { type CommandArgs } from '@/contexts/TableProvider'
-import { useTranslation } from 'react-i18next'
 
 interface CommandMenuProps {
   onKeyDown: (event: React.KeyboardEvent<HTMLDivElement>, setOpen: Dispatch<boolean>, args: CommandArgs) => void
@@ -38,7 +37,6 @@ export const CommandMenu = ({ children, onKeyDown, onChange }: CommandMenuProps)
   const [open, setOpen] = useState(false)
   const history = useHistory()
   const { viewId } = useView()
-  const { t } = useTranslation('views')
 
   const { command } = useTable()
   const { search, setSearch, pages, setPages, page } = command
@@ -93,7 +91,7 @@ export const CommandMenu = ({ children, onKeyDown, onChange }: CommandMenuProps)
                 }))}
               >
                 <GanttChartIcon size={18} strokeWidth={1.75} className='mr-2' />
-                <span>{t('plannings.label.plural')}</span>
+                <span>Planning overview</span>
               </CommandItem>
             </CommandGroup>
           )}

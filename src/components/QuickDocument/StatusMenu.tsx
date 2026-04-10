@@ -1,7 +1,7 @@
 // src/components/DocumentHeader/StatusMenuLogic.tsx
 
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import { toast } from 'sonner'
 import { useDeliverablePlanningId } from '@/hooks/index/useDeliverablePlanningId'
 import { updateAssignmentTime } from '@/lib/index/updateAssignmentPublishTime'
@@ -11,8 +11,7 @@ import { useHistory, useNavigation, useWorkflowStatus } from '@/hooks/index'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import type { DocumentView } from './types'
-import { getViewMap } from './types' // Import the configuration map
-import { useTranslation } from 'react-i18next'
+import { ViewMap } from './types' // Import the configuration map
 
 interface StatusMenuHeaderProps {
   ydoc: YDocument<Y.Map<unknown>>
@@ -21,13 +20,13 @@ interface StatusMenuHeaderProps {
 }
 
 export const StatusMenuLogic = ({ ydoc, propPlanningId, view }: StatusMenuHeaderProps) => {
-  const viewConfig = getViewMap()[view] // Get view-specific configuration
+  const viewConfig = ViewMap[view] // Get view-specific configuration
   const planningId = useDeliverablePlanningId(ydoc.id || '')
+  const [publishTime] = useState<string | null>(null)
   const { viewId } = useView()
   const { state, dispatch } = useNavigation()
   const history = useHistory()
   const [workflowStatus] = useWorkflowStatus({ ydoc })
-  const { t } = useTranslation()
 
   const onBeforeStatusChange = useCallback(async (newStatus: string, data?: Record<string, unknown>) => {
     if (!planningId) {
@@ -75,7 +74,7 @@ export const StatusMenuLogic = ({ ydoc, propPlanningId, view }: StatusMenuHeader
 
     // We require a valid publish time if scheduling
     if (!(data?.time instanceof Date)) {
-      toast.error(t('errors:messages.scheduleArticleFailed'))
+      toast.error('Kunde inte schemalägga artikel! Tid eller datum är felaktigt angivet.')
       return false
     }
 
@@ -84,11 +83,11 @@ export const StatusMenuLogic = ({ ydoc, propPlanningId, view }: StatusMenuHeader
       : new Date()
 
     if (ydoc.id) {
-      await updateAssignmentTime(ydoc.id, planningId, newStatus, newPublishTime, t)
+      await updateAssignmentTime(ydoc.id, planningId, newStatus, newPublishTime)
     }
 
     return true
-  }, [planningId, ydoc.id, dispatch, history, state.viewRegistry, viewId, workflowStatus, viewConfig.statusErrorText, viewConfig.linkTarget, t])
+  }, [planningId, ydoc.id, dispatch, history, state.viewRegistry, viewId, workflowStatus, viewConfig.statusErrorText, viewConfig.linkTarget])
 
   return (
     <>
@@ -96,7 +95,7 @@ export const StatusMenuLogic = ({ ydoc, propPlanningId, view }: StatusMenuHeader
       {!!(propPlanningId || planningId) && ydoc.id && (
         <StatusMenu
           ydoc={ydoc}
-          planningId={propPlanningId || planningId}
+          publishTime={publishTime ? new Date(publishTime) : undefined}
           onBeforeStatusChange={onBeforeStatusChange}
         />
       )}

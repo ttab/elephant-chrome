@@ -5,13 +5,11 @@ import { toast } from 'sonner'
 import type { Message } from '@ttab/elephant-api/user'
 import type { User } from '@/shared/User'
 import { AbortError } from '@/shared/types/errors'
-import { useTranslation } from 'react-i18next'
-import type { TFunction, Namespace } from 'i18next'
 
 export const UserMessagesReceiver = ({ children }: React.PropsWithChildren) => {
   const { user } = useRegistry()
   const { data } = useSession()
-  const { t } = useTranslation('errors')
+
 
   /**
    * Start polling messages on first load
@@ -28,7 +26,7 @@ export const UserMessagesReceiver = ({ children }: React.PropsWithChildren) => {
       let lastId = -1
 
       while (isActive) {
-        lastId = await execPolling(data.accessToken, user, lastId, abortController, t)
+        lastId = await execPolling(data.accessToken, user, lastId, abortController)
       }
     }
 
@@ -59,7 +57,7 @@ export const UserMessagesReceiver = ({ children }: React.PropsWithChildren) => {
         window.removeEventListener('beforeunload', handleBeforeUnload)
       }
     }
-  }, [data?.accessToken, user, t])
+  }, [data?.accessToken, user])
 
   return (
     <>
@@ -68,12 +66,12 @@ export const UserMessagesReceiver = ({ children }: React.PropsWithChildren) => {
   )
 }
 
-async function execPolling<Ns extends Namespace>(accessToken: string, user: User, lastId: number, abortController: AbortController, t: TFunction<Ns>): Promise<number> {
+async function execPolling(accessToken: string, user: User, lastId: number, abortController: AbortController): Promise<number> {
   try {
     const res = await user.pollMessages(lastId, accessToken, abortController.signal)
 
     res.messages.forEach((msg) => {
-      displayMessageToast(msg, t)
+      displayMessageToast(msg)
     })
 
     return Number(res.lastId)
@@ -81,12 +79,12 @@ async function execPolling<Ns extends Namespace>(accessToken: string, user: User
     if (ex instanceof AbortError) {
       throw ex
     }
-    toast.error(t('systemMessages.connectionFailed'))
+    toast.error('Misslyckades att ansluta till meddelandetjänsten, vänligen ladda om fönstret.')
     throw ex
   }
 }
 
-const displayMessageToast = <Ns extends Namespace>(message: Message, t: TFunction<Ns>) => {
+const displayMessageToast = (message: Message) => {
   const msg = { ...message, id: Number(message.id) }
 
   const desc = [
@@ -107,13 +105,13 @@ const displayMessageToast = <Ns extends Namespace>(message: Message, t: TFunctio
   }
 
   toast.error(
-    t('messages.someError'),
+    'Något gick fel',
     {
       description: desc.join(' '),
       duration: Infinity,
       closeButton: true,
       action: {
-        label: t('messages.copyError'),
+        label: 'Kopiera felmeddelande',
         onClick: () => void navigator.clipboard.writeText(JSON.stringify(msg, null, 2))
       }
     }

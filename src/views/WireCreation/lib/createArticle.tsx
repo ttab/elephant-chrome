@@ -1,6 +1,5 @@
 import type { Session } from 'next-auth'
-import { getValueByYPath, setValueByYPath } from '@/shared/yUtils'
-import { Block } from '@ttab/elephant-api/newsdoc'
+import { getValueByYPath } from '@/shared/yUtils'
 import type { Wire } from '@/shared/schemas/wire'
 import { toast } from 'sonner'
 import { ToastAction } from '@/components/ToastAction'
@@ -11,7 +10,6 @@ import { convertToISOStringInTimeZone } from '@/shared/datetime'
 import { snapshotDocument } from '@/lib/snapshotDocument'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
-import i18n from '@/lib/i18n'
 
 export async function createArticle({
   ydoc,
@@ -30,7 +28,7 @@ export async function createArticle({
   planningId?: string
   planningTitle?: string
   newsvalue?: string
-  section: {
+  section?: {
     uuid: string
     title: string
   }
@@ -40,7 +38,7 @@ export async function createArticle({
 
   if (!ydoc.connected || status !== 'authenticated' || !ydoc.id) {
     console.error(`Failed adding new wire article ${ydoc.id} to a planning`)
-    toast.error(i18n.t('wires:creation.createError2'))
+    toast.error('Kunde inte skapa ny artikel!')
     return
   }
 
@@ -77,16 +75,6 @@ export async function createArticle({
     throw new Error('CreateAssignmentError')
   }
 
-  // Set section on the article document. This is the authoritative write — it
-  // covers both cases: new planning (Section component may have already written
-  // it) and existing planning (Section component is not rendered).
-  setValueByYPath(ydoc.ele, 'links.core/section[0]', Block.create({
-    type: 'core/section',
-    rel: 'section',
-    uuid: section.uuid,
-    title: section.title
-  }))
-
   // Explicitly save article to repository via HTTP — works even if the
   // Hocuspocus provider has been disconnected (dialog closed before this point)
   try {
@@ -102,7 +90,7 @@ export async function createArticle({
     throw ex
   }
 
-  toast.success(i18n.t('wires:creation.articleCreated'), {
+  toast.success(`Artikel skapad`, {
     duration: 8000,
     classNames: {
       title: 'whitespace-nowrap'
@@ -113,7 +101,7 @@ export async function createArticle({
           documentId={updatedPlanningId}
           withView='Planning'
           Icon={CalendarDaysIcon}
-          label={i18n.t('wires:toast.openPlanning')}
+          label='Öppna planering'
           target='last'
         />
         <ToastAction
@@ -121,7 +109,7 @@ export async function createArticle({
           planningId={updatedPlanningId}
           withView='Editor'
           Icon={FileInputIcon}
-          label={i18n.t('wires:toast.openArticle')}
+          label='Öppna artikel'
           target='last'
         />
       </div>

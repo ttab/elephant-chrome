@@ -16,7 +16,7 @@ import {
 } from '@ttab/elephant-ui/icons'
 import type { DotDropdownMenuActionItem } from '@/components/ui/DotMenu'
 import { DotMenu } from '@/components/ui/DotMenu'
-import { Newsvalues, NewsvalueMap, getPlanningEventStatuses } from '@/defaults'
+import { Newsvalues, NewsvalueMap, PlanningEventStatuses } from '@/defaults'
 import { Time } from '@/components/Table/Items/Time'
 import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
 import { Title } from '@/components/Table/Items/Title'
@@ -26,25 +26,23 @@ import { type IDBOrganiser, type IDBSection } from 'src/datastore/types'
 import { FacetedFilter } from '@/components/Commands/FacetedFilter'
 import { Tooltip } from '@ttab/elephant-ui'
 import type { LocaleData } from '@/types/index'
-import type { TFunction, Namespace } from 'i18next'
-import i18next from 'i18next'
 
-export function eventTableColumns<Ns extends Namespace>({ sections = [], organisers = [], locale }: {
+export function eventTableColumns({ sections = [], organisers = [], locale }: {
   sections?: IDBSection[]
   organisers?: IDBOrganiser[]
   locale: LocaleData
-}, t: TFunction<Ns>): Array<ColumnDef<Event>> {
+}): Array<ColumnDef<Event>> {
   return [
     {
       id: 'startTime',
       meta: {
-        name: t('views:events.columnLabels.startTime'),
+        name: 'Starttid',
         columnIcon: SignalHighIcon,
         className: 'hidden',
         display: (value: string) => {
           const [hour, day] = value.split(' ')
           if (hour === 'undefined') {
-            return <span>{t('core:timeSlots.fullday')}</span>
+            return <span>Heldag</span>
           }
 
           return (
@@ -70,7 +68,7 @@ export function eventTableColumns<Ns extends Namespace>({ sections = [], organis
         const isFullDay = (end.getTime() - start.getTime()) / (1000 * 60 * 60) > 12
 
         if (isFullDay) {
-          return t('core:timeSlots.fullday')
+          return 'Heldag'
         }
 
         return `${start.getHours()} ${start.toLocaleString(locale.code.full, { weekday: 'long', hourCycle: 'h23' })}`
@@ -82,13 +80,13 @@ export function eventTableColumns<Ns extends Namespace>({ sections = [], organis
         Filter: ({ column, setSearch }) => (
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
-        options: getPlanningEventStatuses(),
-        name: t('views:events.columnLabels.status'),
+        options: PlanningEventStatuses,
+        name: 'Status',
         columnIcon: CircleCheckIcon,
         className: 'flex-none',
         display: (value: string) => (
           <span>
-            {getPlanningEventStatuses().find((status) => status.value === value)?.label}
+            {PlanningEventStatuses.find((status) => status.value === value)?.label}
           </span>
         )
       },
@@ -119,7 +117,7 @@ export function eventTableColumns<Ns extends Namespace>({ sections = [], organis
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
         options: Newsvalues,
-        name: t('core:labels.newsvalue'),
+        name: 'Nyhetsvärde',
         columnIcon: SignalHighIcon,
         className: 'flex-none hidden @3xl/view:[display:revert]'
       },
@@ -134,7 +132,7 @@ export function eventTableColumns<Ns extends Namespace>({ sections = [], organis
     {
       id: 'title',
       meta: {
-        name: t('core:labels.title'),
+        name: 'Titel',
         columnIcon: PenIcon,
         className: 'flex-1 w-[200px]',
         display: (value: string) => (
@@ -160,13 +158,13 @@ export function eventTableColumns<Ns extends Namespace>({ sections = [], organis
     {
       id: 'organiser',
       meta: {
-        name: t('views:events.columnLabels.organiser'),
+        name: 'Organisatör',
         columnIcon: BookUserIcon,
         className: 'flex-none hidden @4xl/view:[display:revert]',
         options: organisers.map((o) => ({ label: o.title, value: o.title })),
         display: (value: string) => (
           <span>
-            {value === 'undefined' ? t('common:misc.missing') : value}
+            {value === 'undefined' ? 'saknas' : value}
           </span>
         ),
         Filter: ({ column, setSearch }) => (
@@ -179,7 +177,7 @@ export function eventTableColumns<Ns extends Namespace>({ sections = [], organis
 
         if (value) {
           return (
-            <Tooltip content={`${t ? t('views:events.tooltips.organiser') : ''}: ${value}`}>
+            <Tooltip content={`Organisatör: ${value}`}>
               <div className='border-slate-200 rounded-md mr-2 p-1 truncate'>{value}</div>
             </Tooltip>
           )
@@ -199,7 +197,7 @@ export function eventTableColumns<Ns extends Namespace>({ sections = [], organis
             label: _.title
           }
         }),
-        name: t('views:events.columnLabels.section'),
+        name: 'Sektion',
         columnIcon: ShapesIcon,
         className: 'flex-none w-[115px] hidden @4xl/view:[display:revert]',
         display: (value: string) => (
@@ -231,13 +229,13 @@ export function eventTableColumns<Ns extends Namespace>({ sections = [], organis
         Filter: ({ column, setSearch }) => (
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
-        options: [{ label: t('event:status.planned'), value: 'planned' }, { label: t('event:status.notPlanned'), value: 'unplanned' }],
-        name: t('views:events.columnLabels.planningStatus'),
+        options: [{ label: 'Planerad', value: 'planned' }, { label: 'Ej planerad', value: 'unplanned' }],
+        name: 'Planeringsstatus',
         columnIcon: NotebookPenIcon,
         className: 'flex-none w-[112px] hidden @5xl/view:[display:revert]',
         display: (value: string) => (
           <span>
-            {value === 'planned' ? t('event:status.planned') : t('event:status.notPlanned')}
+            {value === 'planned' ? 'Planerad' : 'Ej planerad'}
           </span>
         )
 
@@ -256,7 +254,7 @@ export function eventTableColumns<Ns extends Namespace>({ sections = [], organis
     {
       id: 'event_time',
       meta: {
-        name: t('core:labels.time'),
+        name: 'Tid',
         columnIcon: Clock3Icon,
         className: 'flex-none w-[112px] hidden @5xl/view:[display:revert]',
         Filter: ({ column, setSearch }) => (
@@ -282,7 +280,7 @@ export function eventTableColumns<Ns extends Namespace>({ sections = [], organis
     {
       id: 'action',
       meta: {
-        name: t('views:events.columnLabels.action'),
+        name: 'Action',
         columnIcon: NavigationIcon,
         className: 'flex-none'
       },
@@ -296,7 +294,7 @@ export function eventTableColumns<Ns extends Namespace>({ sections = [], organis
 
 const menuItems: DotDropdownMenuActionItem[] = [
   {
-    label: i18next.t('common:actions.edit'),
+    label: 'Redigera',
     icon: EditIcon,
     item: (event: MouseEvent<HTMLDivElement>) => {
       event.preventDefault()
@@ -304,12 +302,12 @@ const menuItems: DotDropdownMenuActionItem[] = [
     }
   },
   {
-    label: i18next.t('common:actions.remove'),
+    label: 'Ta bort',
     icon: DeleteIcon,
     item: (event: MouseEvent<HTMLDivElement>) => {
       event.preventDefault()
       event.stopPropagation()
-      confirm(i18next.t('common:actions.remove'))
+      confirm('Ta bort')
     }
   }
 ]

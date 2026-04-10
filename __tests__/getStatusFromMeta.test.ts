@@ -231,9 +231,7 @@ describe('getStatusInfo', () => {
       name: 'done',
       version: BigInt(3),
       creator: 'core://user/e475867c-9b16-4a24-9855-54dafe4b1be5',
-      cause: 'correction',
-      checkpoint: undefined,
-      usableId: '3'
+      cause: 'correction'
     }
 
     // isWorkflow doesn't affect the outcome
@@ -276,9 +274,7 @@ describe('getStatusInfo', () => {
       name: 'done',
       version: BigInt(14),
       creator: 'core://user/e475867c-9b16-4a24-9855-54dafe4b1be5',
-      cause: 'correction',
-      checkpoint: undefined,
-      usableId: '2'
+      cause: 'correction'
     }
 
     expect(getStatusFromMeta(meta, false)).toEqual(expected)

@@ -5,7 +5,6 @@ import { addAssignmentWithDeliverable } from '@/lib/index/addAssignment'
 import { snapshotDocument } from '@/lib/snapshotDocument'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
-import i18next from 'i18next'
 
 export type CreateArticleDocumentStatus = 'usable' | 'done' | 'approved' | undefined
 
@@ -72,7 +71,7 @@ export async function createQuickArticle({
     type: 'text',
     deliverableId: ydoc.id,
     slugline,
-    title: title || i18next.t('common:actions.createNew', { documentType: i18next.t('core:documentType.quickArticle') }),
+    title: title || 'Ny två på två',
     priority: Number(newsvalue),
     publicVisibility: true,
     localDate,

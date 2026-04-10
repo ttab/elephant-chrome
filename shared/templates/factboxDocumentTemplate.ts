@@ -1,4 +1,3 @@
-import { getSystemLanguage } from '../getSystemLanguage.js'
 import { Block, Document } from '@ttab/elephant-api/newsdoc'
 import type { TemplatePayload } from './index.js'
 
@@ -13,8 +12,8 @@ export function factboxDocumentTemplate(id: string, payload?: TemplatePayload): 
     uuid: id,
     type: 'core/factbox',
     uri: `core://factbox/${id}`,
+    language: 'sv-se',
     title: payload?.title ?? '',
-    language: getSystemLanguage(),
     content: [
       Block.create({
         type: 'core/text',

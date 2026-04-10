@@ -19,7 +19,6 @@ import { ReadOnly } from './ReadOnly'
 import { EditorialInfoTypes } from '@/components/EditorialInfoTypes'
 import { ContentSource } from '@/components/ContentSource'
 import type * as Y from 'yjs'
-import { useTranslation } from 'react-i18next'
 
 export function MetaSheet({ ydoc, readOnly, readOnlyVersion }: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -29,7 +28,6 @@ export function MetaSheet({ ydoc, readOnly, readOnlyVersion }: {
   const [documentType] = useYValue<string | undefined>(ydoc.ele, 'root.type')
   const [slugline] = useYValue<string | undefined>(ydoc.ele, 'meta.tt/slugline[0].value')
   const [isOpen, setIsOpen] = useState(false)
-  const { t } = useTranslation('metaSheet')
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -53,7 +51,7 @@ export function MetaSheet({ ydoc, readOnly, readOnlyVersion }: {
                 <PanelRightCloseIcon size={18} strokeWidth={1.75} />
               </SheetClose>
               <span className=' font-semibold'>
-                {t('title')}
+                Metadata
               </span>
             </SheetTitle>
           </SheetHeader>
@@ -64,29 +62,29 @@ export function MetaSheet({ ydoc, readOnly, readOnlyVersion }: {
 
                   {documentType === 'core/article' && (
                     <>
-                      <Label htmlFor='properties' className='text-xs text-muted-foreground -mb-3'>{t('labels.properties')}</Label>
+                      <Label htmlFor='properties' className='text-xs text-muted-foreground -mb-3'>Egenskaper</Label>
                       <div className='flex flex-row gap-3' id='properties'>
                         <Newsvalue ydoc={ydoc} path='meta.core/newsvalue[0].value' />
                         <SluglineButton value={slugline} />
                       </div>
 
-                      <Label htmlFor='tags' className='text-xs text-muted-foreground -mb-3'>{t('labels.tags')}</Label>
+                      <Label htmlFor='tags' className='text-xs text-muted-foreground -mb-3'>Etiketter</Label>
                       <div className='flex flex-row gap-3' id='tags'>
                         <Story ydoc={ydoc} path='links.core/story[0]' asSubject />
                         <Section ydoc={ydoc} path='links.core/section[0]' />
                       </div>
 
-                      <Label htmlFor='byline' className='text-xs text-muted-foreground -mb-3'>{t('labels.byline')}</Label>
+                      <Label htmlFor='byline' className='text-xs text-muted-foreground -mb-3'>Byline</Label>
                       <div id='byline'>
                         <Byline ydoc={ydoc} path='links.core/author' />
                       </div>
 
-                      <Label htmlFor='actions' className='text-xs text-muted-foreground -mb-3'>{t('labels.actions')}</Label>
+                      <Label htmlFor='actions' className='text-xs text-muted-foreground -mb-3'>Åtgärder</Label>
                       <div className='flex flex-row gap-3' id='actions'>
-                        <AddNote ydoc={ydoc} text={t('actions.addNote')} />
+                        <AddNote ydoc={ydoc} text='Lägg till notering' />
                       </div>
 
-                      <Label htmlFor='content-source'>{t('labels.otherSources')}</Label>
+                      <Label htmlFor='content-source'>Källor andra än TT</Label>
                       <div id='content-source'>
                         <ContentSource ydoc={ydoc} path='links.core/content-source' />
                       </div>
@@ -94,14 +92,14 @@ export function MetaSheet({ ydoc, readOnly, readOnlyVersion }: {
                     </>
                   )}
 
-                  <Label htmlFor='version' className='text-xs text-muted-foreground -mb-3'>{t('labels.versions')}</Label>
+                  <Label htmlFor='version' className='text-xs text-muted-foreground -mb-3'>Versioner</Label>
                   <div id='version'>
                     <Version documentId={ydoc.id} textOnly={false} />
                   </div>
 
                   {documentType === 'core/editorial-info' && (
                     <>
-                      <Label htmlFor='editorial-info-type'>{t('labels.editorialInfoType')}</Label>
+                      <Label htmlFor='editorial-info-type'>Redaktionell info, typ</Label>
                       <div id='editorial-info-type'>
                         <EditorialInfoTypes ydoc={ydoc} />
                       </div>

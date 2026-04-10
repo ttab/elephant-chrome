@@ -8,7 +8,6 @@ import { Commands } from '@/components/Commands'
 import { Sort } from '../Sort'
 import { useMemo, useCallback, type JSX } from 'react'
 import { QuickFilter } from './QuickFilter'
-import { useTranslation } from 'react-i18next'
 import { useQuery } from '@/hooks/useQuery'
 
 export const Toolbar = <TData,>(): JSX.Element => {
@@ -19,9 +18,6 @@ export const Toolbar = <TData,>(): JSX.Element => {
     columnFilters: ColumnFiltersState
     globalFilter: string
   }
-
-  const { t } = useTranslation()
-
   const isFiltered = useMemo(() => columnFilters.length > 0 || !!globalFilter,
     [columnFilters, globalFilter])
 
@@ -51,7 +47,7 @@ export const Toolbar = <TData,>(): JSX.Element => {
           onClick={handleResetFilters}
           className='h-8 px-2 lg:px-3'
         >
-          {t('shared:toolbar.clearFilters')}
+          Rensa
           <XIcon size={18} strokeWidth={1.75} className='ml-2' />
         </Button>
       )}

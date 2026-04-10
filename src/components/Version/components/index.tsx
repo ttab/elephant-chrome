@@ -3,7 +3,7 @@
  */
 import { AssigneeAvatars } from '@/components/DataItem/AssigneeAvatars'
 import { TimeDisplay } from '@/components/DataItem/TimeDisplay'
-import { getAssignmentTypes } from '@/defaults/assignmentTypes'
+import { AssignmentTypes } from '@/defaults/assignmentTypes'
 import { useRegistry } from '@/hooks/useRegistry'
 import { Button } from '@ttab/elephant-ui'
 import {
@@ -142,7 +142,7 @@ export const Assignments = ({ assignments, getDescriptions, getSlugline }: {
   return assignments?.length > 0 && (
     <div className='flex-row gap-2 pb-2'>
       {assignments.map((a: EleBlock) => {
-        const IconType = getAssignmentTypes().find((type) => type.value === assignmentType(a))?.icon
+        const IconType = AssignmentTypes.find((type) => type.value === assignmentType(a))?.icon
         const assignmentSlugline = getSlugline(a.meta['tt/slugline']?.[0])
         const assignmentPublish = a.data.publish
 

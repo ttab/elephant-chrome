@@ -5,20 +5,17 @@ import { BookTextIcon } from '@ttab/elephant-ui/icons'
 import { MetaSheet } from '@/components/MetaSheet/MetaSheet'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
-import { useTranslation } from 'react-i18next'
 
 export const FactboxHeader = ({ ydoc, onDialogClose, asDialog }: {
   ydoc: YDocument<Y.Map<unknown>>
   asDialog: boolean
   onDialogClose?: () => void
 }): JSX.Element => {
-  const { t } = useTranslation('factbox')
-
   return (
     <ViewHeader.Root asDialog={asDialog}>
       <ViewHeader.Title
         name='Factbox'
-        title={t('title')}
+        title='Faktaruta'
         icon={BookTextIcon}
         asDialog={asDialog}
       />

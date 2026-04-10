@@ -10,7 +10,6 @@ import { useSession } from 'next-auth/react'
 import type { HocuspocusProvider } from '@hocuspocus/provider'
 import { toast } from 'sonner'
 import { snapshotDocument } from '@/lib/snapshotDocument'
-import { useTranslation } from 'react-i18next'
 
 export const MovePrompt = ({
   title,
@@ -36,7 +35,6 @@ export const MovePrompt = ({
 }): JSX.Element => {
   const { data: session, status } = useSession()
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const { t } = useTranslation('core')
   useKeydownGlobal((event) => {
     if (event.key === 'Escape' && secondaryLabel && onSecondary) {
       onSecondary()
@@ -53,11 +51,11 @@ export const MovePrompt = ({
     const [documentId, initialDocument] = createDocument({
       template: Templates.planning,
       inProgress: true,
-      payload: { ...payload, title: `${payload?.title} - ${t('status.moved')}` }
+      payload: { ...payload, title: `${payload?.title} - (flyttad)` }
     })
 
     return { documentId, initialDocument }
-  }, [selectedPlanning, payload, t])
+  }, [selectedPlanning, payload])
 
   const { document: planning, documentId: planningId, provider } = useCollaborationDocument(collaborationPayload)
 
@@ -67,13 +65,13 @@ export const MovePrompt = ({
     setIsSubmitting(true)
 
     if (status !== 'authenticated' || !session || !provider?.synced) {
-      toast.error(t('errors:toasts.assignmentMoveErrorNotLoggedIn'))
+      toast.error('Uppdraget kunde inte flyttas. Du är inte inloggad.')
       setIsSubmitting(false)
       return
     }
 
     if (!planning) {
-      toast.error(t('errors:toasts.assignmentMoveErrorTryAgain'))
+      toast.error('Uppdraget kunde inte flyttas. Var god försök igen.')
       onSecondary?.()
       setIsSubmitting(false)
       return
@@ -85,7 +83,7 @@ export const MovePrompt = ({
         onPrimary(planning)
       })
       .catch((ex: unknown) => {
-        toast.error(ex instanceof Error ? ex.message : t('errors:toasts.couldNotSaveAfterMove'))
+        toast.error(ex instanceof Error ? ex.message : 'Kunde inte spara efter flytt')
         setIsSubmitting(false)
       })
       .finally(() => {

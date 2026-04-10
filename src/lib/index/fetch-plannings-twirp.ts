@@ -6,12 +6,10 @@ import { toast } from 'sonner'
 import type { LocaleData } from '@/types/index'
 import { dateInTimestampOrShortMonthDayYear } from '../../../shared/datetime'
 import { UTCDate } from '@date-fns/utc'
-import type { TFunction, Namespace } from 'i18next'
 
-export const fetch = async <Ns extends Namespace>(
+export const fetch = async (
   query: string,
   session: Session | null,
-  t: TFunction<Ns>,
   index?: Index,
   locale?: LocaleData,
   timeZone?: string,
@@ -86,7 +84,7 @@ export const fetch = async <Ns extends Namespace>(
   })
 
   if (!ok) {
-    toast.error(t('errors:toasts.getPlanningsFailed'))
+    toast.error('Kunde inte hämta planeringar')
     console.error(errorMessage || 'Unknown error while searching for planning items')
     return []
   }

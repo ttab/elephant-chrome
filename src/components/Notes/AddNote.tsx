@@ -6,7 +6,6 @@ import { MessageSquarePlusIcon } from '@ttab/elephant-ui/icons'
 import { cn } from '@ttab/elephant-ui/utils'
 import type * as Y from 'yjs'
 import type { JSX } from 'react'
-import { useTranslation } from 'react-i18next'
 
 type NoteRole = 'internal' | 'public'
 
@@ -16,7 +15,7 @@ export const AddNote = ({ ydoc, text = '', role }: {
   role?: NoteRole
 }): JSX.Element => {
   const [notes, setNotes] = useYValue<Block[] | undefined>(ydoc.ele, 'meta.core/note')
-  const { t } = useTranslation('metaSheet')
+
   const handleClick = (role: NoteRole) => {
     const newNote = Block.create({
       type: 'core/note',
@@ -59,10 +58,10 @@ export const AddNote = ({ ydoc, text = '', role }: {
 
       <DropdownMenuContent>
         <DropdownMenuItem onClick={() => handleClick('internal')}>
-          {t('dropDownMenuItems.internalNote')}
+          Intern notering
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => handleClick('public')}>
-          {t('dropDownMenuItems.infoToCustomer')}
+          Info till kund
         </DropdownMenuItem>
       </DropdownMenuContent>
 

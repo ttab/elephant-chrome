@@ -2,7 +2,6 @@ import { DebouncedCommandInput } from '@/components/Commands/Menu/DebouncedComma
 import { CommandItem } from '@ttab/elephant-ui'
 import { cn } from '@ttab/elephant-ui/utils'
 import { useState, type JSX } from 'react'
-import { useTranslation } from 'react-i18next'
 
 interface FreeTextFilterProps {
   value: string
@@ -13,7 +12,6 @@ interface FreeTextFilterProps {
 
 export const FreeTextFilter = ({ value, onChange, filterType, autoFocus = true }: FreeTextFilterProps): JSX.Element => {
   const [selected, setSelected] = useState(true)
-  const { t } = useTranslation('shared')
   return (
     <CommandItem
       forceMount={true}
@@ -34,7 +32,7 @@ export const FreeTextFilter = ({ value, onChange, filterType, autoFocus = true }
       <DebouncedCommandInput
         value={value}
         onChange={(v) => onChange(v ?? '')}
-        placeholder={filterType === 'freetext' ? t('toolbar.freeText') : t('toolbar.altSearch')}
+        placeholder={filterType === 'freetext' ? 'Fritext' : 'Sök alternativ'}
         className='h-9'
         autoFocus={autoFocus}
         readOnly={filterType === 'freetext' && !selected ? true : false}

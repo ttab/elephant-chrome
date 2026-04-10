@@ -15,19 +15,17 @@ import {
   NavigationIcon,
   CircleCheckIcon
 } from '@ttab/elephant-ui/icons'
-import { Newsvalues, NewsvalueMap, getAssignmentTypes, getPlanningEventStatuses } from '@/defaults'
+import { Newsvalues, NewsvalueMap, AssignmentTypes, PlanningEventStatuses } from '@/defaults'
 import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
 import { SectionBadge } from '@/components/DataItem/SectionBadge'
 import { type IDBAuthor, type IDBSection } from 'src/datastore/types'
 import { FacetedFilter } from '@/components/Commands/FacetedFilter'
 import { getNestedFacetedUniqueValues } from '@/components/Table/lib/getNestedFacetedUniqueValues'
-import type { TFunction, Namespace } from 'i18next'
-import type { TranslationKey } from '@/types/i18next.d'
 
-export function planningListColumns<Ns extends Namespace>({ sections = [], authors = [] }: {
+export function planningListColumns({ sections = [], authors = [] }: {
   sections?: IDBSection[]
   authors?: IDBAuthor[]
-}, t: TFunction<Ns>): Array<ColumnDef<Planning>> {
+}): Array<ColumnDef<Planning>> {
   return [
     {
       id: 'documentStatus',
@@ -35,18 +33,15 @@ export function planningListColumns<Ns extends Namespace>({ sections = [], autho
         Filter: ({ column, setSearch }) => (
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
-        options: getPlanningEventStatuses(),
-        name: t('core:labels.status'),
+        options: PlanningEventStatuses,
+        name: 'Status',
         columnIcon: CircleCheckIcon,
         className: 'flex-none',
-        display: (value: string) => {
-          const statusLabel = t?.(`core:status.${value}` as TranslationKey)
-          return (
-            <span>
-              {statusLabel}
-            </span>
-          )
-        }
+        display: (value: string) => (
+          <span>
+            {PlanningEventStatuses.find((status) => status.value === value)?.label}
+          </span>
+        )
       },
       accessorFn: (data) => {
         const currentStatus = data?.fields['document.meta.status']?.values[0]
@@ -79,7 +74,7 @@ export function planningListColumns<Ns extends Namespace>({ sections = [], autho
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
         options: Newsvalues,
-        name: t('core:labels.newsvalue'),
+        name: 'Nyhetsvärde',
         columnIcon: SignalHighIcon,
         className: 'flex-none hidden @3xl/view:[display:revert]'
       },
@@ -99,7 +94,7 @@ export function planningListColumns<Ns extends Namespace>({ sections = [], autho
     {
       id: 'title',
       meta: {
-        name: t('core:labels.title'),
+        name: 'Titel',
         columnIcon: PenIcon,
         className: 'flex-1 w-[200px]'
       },
@@ -125,7 +120,7 @@ export function planningListColumns<Ns extends Namespace>({ sections = [], autho
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
         quickFilter: true,
-        name: t('core:labels.section'),
+        name: 'Sektion',
         columnIcon: ShapesIcon,
         className: 'flex-none w-[115px] hidden @4xl/view:[display:revert]',
         display: (value: string) => (
@@ -156,7 +151,7 @@ export function planningListColumns<Ns extends Namespace>({ sections = [], autho
         Filter: ({ column, setSearch }) => (
           <FacetedFilter column={column} setSearch={setSearch} facetFn={() => getNestedFacetedUniqueValues(column)} />
         ),
-        name: t('core:labels.assignee'),
+        name: 'Uppdragstagare',
         columnIcon: UsersIcon,
         className: 'flex-none w-[112px] hidden @5xl/view:[display:revert]',
         display: (value: string) => {
@@ -199,14 +194,14 @@ export function planningListColumns<Ns extends Namespace>({ sections = [], autho
         Filter: ({ column, setSearch }) => (
           <FacetedFilter column={column} setSearch={setSearch} facetFn={() => getNestedFacetedUniqueValues(column)} />
         ),
-        options: getAssignmentTypes(),
-        name: t('core:labels.assignmentType') || '',
+        options: AssignmentTypes,
+        name: 'Typ',
         columnIcon: CrosshairIcon,
         className: 'flex-none w-[120px] hidden @6xl/view:[display:revert]',
         display: (value: string | string[]) => {
-          const items = getAssignmentTypes()
+          const items = AssignmentTypes
             .filter((type) => value.includes(type.value))
-            .map((item) => t(`shared:assignmentTypes.${item.value}` as TranslationKey))
+            .map((item) => item.label)
           return (
             <div className='flex flex-row gap-2'>
               <span>
@@ -218,7 +213,7 @@ export function planningListColumns<Ns extends Namespace>({ sections = [], autho
       },
       accessorFn: (data) => data.fields['document.meta.core_assignment.meta.core_assignment_type.value']?.values,
       cell: ({ row }) => {
-        const data = getAssignmentTypes().filter(
+        const data = AssignmentTypes.filter(
           (assignmentType) => (row.getValue<string[]>('type') || []).includes(assignmentType.value)
         )
         if (data.length === 0) {
@@ -233,7 +228,7 @@ export function planningListColumns<Ns extends Namespace>({ sections = [], autho
     {
       id: 'action',
       meta: {
-        name: t('core:labels.action'),
+        name: 'Action',
         columnIcon: NavigationIcon,
         className: 'flex-none'
       },

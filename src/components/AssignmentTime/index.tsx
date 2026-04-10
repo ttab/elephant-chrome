@@ -3,30 +3,24 @@ import { Block } from '@ttab/elephant-api/newsdoc'
 import { TimeDeliveryMenu } from './TimeDeliveryMenu'
 import { type AssignmentData } from './types'
 import { ExecutionTimeMenu } from './ExecutionTimeMenu'
-import { getTimeSlotTypes, getTimePickTypes } from '../../defaults/assignmentTimeConstants'
+import { timeSlotTypes, timePickTypes } from '../../defaults/assignmentTimeConstants'
 import type { FormProps } from '../Form/Root'
 import { useYValue } from '@/modules/yjs/hooks'
 import { deriveExecutionDates, getTimeSlot, getMedianSlot, getMidnightISOString, makeLocalString } from './utils'
 import type * as Y from 'yjs'
 import type { JSX } from 'react'
-import { useTranslation } from 'react-i18next'
-import type { TranslationKey } from '@/types/i18next.d'
 
 export const AssignmentTime = ({ assignment, onChange }: {
   assignment: Y.Map<unknown>
 } & FormProps): JSX.Element => {
   const [assignmentType] = useYValue<string>(assignment, `meta.core/assignment-type[0].value`)
   const [data, setData] = useYValue<AssignmentData>(assignment, `data`)
-  const { t } = useTranslation('core')
-
   const { full_day: fullDay, end, start, publish_slot: publishSlot, end_date: endDate, start_date: startDate } = data || {}
   let selectedLabel = ''
-  const timeSlotTypes = getTimeSlotTypes()
-  const timePickTypes = getTimePickTypes()
 
   const selectedOption = timeSlotTypes.concat(timePickTypes).find((option) => {
     if (fullDay === 'true' && option.value === 'fullday') {
-      selectedLabel = t('timeSlots.fullday')
+      selectedLabel = option.label
       return true
     }
     if (assignmentType === 'text' && start && end && start !== end) {
@@ -56,7 +50,7 @@ export const AssignmentTime = ({ assignment, onChange }: {
       const ts = getTimeSlot(publishSlot, timeSlotTypes)
 
       if (ts && ts.value === option.value) {
-        selectedLabel = t(`core:timeSlots.${option.value}` as TranslationKey)
+        selectedLabel = option.label
         return true
       }
     }

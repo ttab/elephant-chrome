@@ -22,7 +22,6 @@ import { createDebounceMap } from '@/shared/leadingDebounce.js'
 import type { Redis } from '../../utils/Redis.js'
 import logger from '../../lib/logger.js'
 import createHash from '@/shared/createHash.js'
-import { extractUserIdFromUri } from '@/shared/userUri.js'
 
 interface RepositoryExtensionConfiguration {
   repository: RepositoryWrapper
@@ -163,7 +162,6 @@ export class RepositoryExtension implements Extension {
       }
 
       if (yjsUpdate) {
-        Y.applyUpdate(connection.document, yjsUpdate)
         const document = new Y.Doc()
         Y.applyUpdate(document, yjsUpdate)
         return { document, connection }
@@ -300,7 +298,7 @@ export class RepositoryExtension implements Extension {
       throw new Error('Hocuspocus is not yet finished configuring')
     }
 
-    const userId = extractUserIdFromUri(context.user.sub) ?? context.user.sub
+    const userId = context.user.sub.replace('core://user/', '')
     const connection = await this.#hp.openDirectConnection(userId, {
       ...context,
       agent: 'server'

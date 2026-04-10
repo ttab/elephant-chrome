@@ -3,11 +3,11 @@ import type { LocaleData } from '@/types/index'
 import { eventTableColumns } from '@/views/EventsOverview/EventsListColumns'
 import { planningListColumns } from '@/views/PlanningOverview/PlanningListColumns'
 import type { IDBAuthor, IDBOrganiser, IDBSection } from 'src/datastore/types'
+
 import search from '@/hooks/index/useDocuments/queries/views/search'
 import type { SearchKeys } from '@/hooks/index/useDocuments/queries/views/search'
 import { articleColumns } from './articleColumns'
 import { CalendarIcon } from '@ttab/elephant-ui/icons'
-import type { TFunction } from 'i18next'
 
 interface SearchColumnsParams {
   searchType: SearchKeys
@@ -17,13 +17,13 @@ interface SearchColumnsParams {
   locale: LocaleData
   timeZone: string
 }
-export const createSearchColumns = (params: SearchColumnsParams, t: TFunction) => {
+export const createSearchColumns = (params: SearchColumnsParams) => {
   return [
     {
       id: 'date',
       enableGrouping: true,
       meta: {
-        name: t('views:search.columnLabels.date'),
+        name: 'Datum',
         columnIcon: CalendarIcon,
         className: 'flex-none w-[100px]',
         display: (value: string) => {
@@ -47,18 +47,18 @@ export const createSearchColumns = (params: SearchColumnsParams, t: TFunction) =
         return startTime.split('T')[0]
       }
     },
-    ...getColumns(params, t)
+    ...getColumns(params)
   ]
 }
 
-function getColumns({ searchType, ...params }: SearchColumnsParams, t: TFunction) {
+function getColumns({ searchType, ...params }: SearchColumnsParams) {
   switch (searchType) {
     case 'plannings':
-      return planningListColumns(params, t)
+      return planningListColumns(params)
     case 'events':
-      return eventTableColumns(params, t)
+      return eventTableColumns(params)
     case 'articles':
-      return articleColumns(params, t)
+      return articleColumns(params)
     default:
       throw new Error(`Unknown search type`)
   }

@@ -1,6 +1,5 @@
 import { Tooltip } from '@ttab/elephant-ui'
 import { cn } from '@ttab/elephant-ui/utils'
-import { useTranslation } from 'react-i18next'
 import { HistoryIcon, historyColors } from './HistoryIcon'
 import { MoveRightIcon } from '@ttab/elephant-ui/icons'
 
@@ -14,7 +13,6 @@ export const HistoryEntry = ({ version, isCurrent = false, status, isLast, title
   onSelect: (version: bigint) => void
   selected?: boolean
 }) => {
-  const { t } = useTranslation('wires')
   const isSelectable = !!version && !selected
 
   const handleSelect = (e: React.MouseEvent) => {
@@ -66,7 +64,7 @@ export const HistoryEntry = ({ version, isCurrent = false, status, isLast, title
               <Tooltip content={(
                 <div className='flex flex-col gap-2'>
                   <span className='font-semibold'>
-                    {t('preview.version')}
+                    Version
                     {` `}
                     {version}
                   </span>
@@ -86,7 +84,7 @@ export const HistoryEntry = ({ version, isCurrent = false, status, isLast, title
                 selected && ' opacity-70'
               )}
               >
-                {historyEntryTitle(status, t)}
+                <HistoryEntryTitle status={status} />
               </span>
             )}
       </a>
@@ -95,20 +93,20 @@ export const HistoryEntry = ({ version, isCurrent = false, status, isLast, title
 }
 
 
-const historyEntryTitle = (status: string | null, t: (key: string) => string): string => {
+const HistoryEntryTitle = ({ status }: { status: string | null }): string => {
   const statuses: Record<string, string> = {
     draft: '',
-    done: t('history.status.done'),
-    saved: t('history.status.saved'),
-    approved: t('history.status.approved'),
-    read: t('history.status.read'),
-    usable: t('history.status.usable'),
-    used: t('history.status.used'),
-    withheld: t('history.status.withheld'),
-    cancelled: t('history.status.cancelled'),
-    unpublished: t('history.status.unpublished'),
-    flash: t('history.status.flash'),
-    system: t('history.status.system')
+    done: 'Klarmarkerad',
+    saved: 'Sparad',
+    approved: 'Godkänd',
+    read: 'Läst',
+    usable: 'Publicerad',
+    used: 'Använd',
+    withheld: 'Tidspublicerad',
+    cancelled: 'Avbruten',
+    unpublished: 'Avpublicerad',
+    flash: 'Flash',
+    system: 'System'
   }
   return statuses[status ?? ''] || ''
 }

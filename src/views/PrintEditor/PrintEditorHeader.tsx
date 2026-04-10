@@ -7,7 +7,6 @@ import { AddNote } from '@/components/Notes/AddNote'
 import { ArticleTitle } from './components/ArticleTitle'
 import type * as Y from 'yjs'
 import type { YDocument } from '@/modules/yjs/hooks'
-import { DictionaryButton } from './components/DictionaryButton'
 
 export const EditorHeader = ({ ydoc, flowName }: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -15,7 +14,6 @@ export const EditorHeader = ({ ydoc, flowName }: {
 }): JSX.Element => {
   const { viewId } = useView()
   const containerRef = useRef<HTMLElement | null>(null)
-
   useEffect(() => {
     containerRef.current = window.document.getElementById(viewId)
   }, [viewId])
@@ -30,7 +28,6 @@ export const EditorHeader = ({ ydoc, flowName }: {
             <ArticleTitle ydoc={ydoc} />
             <div className='flex flex-row gap-2 justify-end items-center'>
               <AddNote ydoc={ydoc} role='internal' />
-              <DictionaryButton variant='ghost' />
               {!!ydoc.id && (
                 <>
                   <ViewHeader.RemoteUsers ydoc={ydoc} />

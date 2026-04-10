@@ -5,7 +5,6 @@ import { toast } from 'sonner'
 import type { EleBlockGroup, EleDocumentResponse } from '@/shared/types'
 import type { ReactNode } from 'react'
 import { useEditorialInfoTypes } from '@/hooks/useEditorialInfoType'
-import { useTranslation } from 'react-i18next'
 
 const BASE_URL = import.meta.env.BASE_URL || ''
 type FetcherResult = {
@@ -38,14 +37,13 @@ const InfoBlock = ({ labelId, text, children }: { labelId: string, text: string,
 
 export const ReadOnly = ({ documentId, version }: { documentId: string, version: bigint | undefined }) => {
   const editorialInfoTypes = useEditorialInfoTypes()
-  const { t } = useTranslation('metaSheet')
   const fetcher = async (params: string[]): Promise<FetcherResult> => {
     const [url] = params
     const response = await fetch(url)
 
     if (!response.ok) {
       console.error(`Fetch metadata error for ${documentId}:`, error)
-      toast.error(t('errors:messages.failedToLoadMetaData'))
+      toast.error('Ett fel uppstod vid hämtning av metadata')
       throw new Error('Readonly: Network response was not ok')
     }
 
@@ -82,22 +80,22 @@ export const ReadOnly = ({ documentId, version }: { documentId: string, version:
 
   return (
     <div className='flex flex-col gap-6 px-5 py-4 border-t'>
-      <InfoBlock text={t('labels.properties')} labelId='properties'>
-        <ValueBlock label={t('core:labels.newsvalue')} value={newsvalue} />
-        <ValueBlock label={t('labels.byline')} value={authors} />
+      <InfoBlock text='Egenskaper' labelId='properties'>
+        <ValueBlock label='Nyhetsvärde' value={newsvalue} />
+        <ValueBlock label='Byline' value={authors} />
       </InfoBlock>
-      <InfoBlock text={t('labels.tags')} labelId='tags'>
-        <ValueBlock label={t('labels.slugline')} value={slugline} />
-        <ValueBlock label={t('core:labels.section')} value={section} />
-        <ValueBlock label={t('core:labels.category')} value={category} />
-        <ValueBlock label={t('core:labels.story')} value={story} />
+      <InfoBlock text='Etiketter' labelId='tags'>
+        <ValueBlock label='Slugg' value={slugline} />
+        <ValueBlock label='Sektion' value={section} />
+        <ValueBlock label='Kategori' value={category} />
+        <ValueBlock label='Story' value={story} />
       </InfoBlock>
-      <InfoBlock text={t('labels.version')} labelId='version'>
+      <InfoBlock text='Version' labelId=''>
         <Version documentId={documentId} textOnly={false} />
       </InfoBlock>
-      <InfoBlock text={t('labels.extraInformation')} labelId='extraInformation'>
-        <ValueBlock label={t('labels.source')} value={(contentSource || []).map((cs) => cs.title).join('-')} />
-        <ValueBlock label={t('labels.editorialInfoType')} value={editorialInfoTypeTitle} />
+      <InfoBlock text='Extra information' labelId=''>
+        <ValueBlock label='Källa' value={(contentSource || []).map((cs) => cs.title).join('-')} />
+        <ValueBlock label='Redaktionell info, typ' value={editorialInfoTypeTitle} />
       </InfoBlock>
     </div>
   )

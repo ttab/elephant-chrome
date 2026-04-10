@@ -5,12 +5,10 @@ import { toSlateYXmlText } from '@/shared/yUtils'
 import { useRef, type JSX } from 'react'
 import { toast } from 'sonner'
 import * as Y from 'yjs'
-import { useTranslation } from 'react-i18next'
 
 export const ArticleTitle = ({ ydoc }: {
   ydoc: YDocument<Y.Map<unknown>>
 }): JSX.Element | null => {
-  const { t } = useTranslation('print')
   const [value] = useYValue<Y.XmlText>(ydoc.ele, 'root.title', true)
   const isDirtyRef = useRef(false)
 
@@ -32,15 +30,15 @@ export const ArticleTitle = ({ ydoc }: {
           singleLine
           ydoc={ydoc}
           value={value}
-          placeholder={t('editor.articleTitle.placeholder')}
+          placeholder='Printartikelnamn'
           onChange={() => isDirtyRef.current = true}
           onBlur={() => {
             if (isDirtyRef.current) {
               snapshotDocument(ydoc.id, undefined, ydoc.provider?.document)
                 .then(() => {
-                  toast.success(t('editor.articleTitle.updateSuccess'))
+                  toast.success('Titel uppdaterad')
                 }).catch((error) => {
-                  toast.error(t('editor.articleTitle.updateError'))
+                  toast.error('Kunde inte uppdatera titel')
                   console.error('Error updating title:', error)
                 })
 

@@ -5,7 +5,7 @@ import {
   type WorkflowSpecification,
   type StatusSpecification,
   getStatusSpecifications,
-  getWorkflowSpecifications
+  WorkflowSpecifications
 } from '@/defaults/workflowSpecification'
 
 interface DocumentWorkflow {
@@ -40,7 +40,7 @@ export const useWorkflow = (type?: string): DocumentWorkflow => {
         return acc
       }, { draft: getStatusSpecifications('draft') } as Record<string, StatusSpecification>)
       setWorkflow({
-        workflow: getWorkflowSpecifications()[type] || null,
+        workflow: WorkflowSpecifications[type] || null,
         statuses
       })
     }).catch((err: Error) => {

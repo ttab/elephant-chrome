@@ -1,18 +1,15 @@
-import { showTranslatedText } from '@/lib/showTranslatedText'
 import type { JSX } from 'react'
-import { useTranslation } from 'react-i18next'
 
 export const TimeSlot = ({ label, slots }: {
   label: string
   slots: number[]
 }): JSX.Element => {
   const { startTime, endTime } = getTimeRange(slots)
-  const { t } = useTranslation()
 
   return (
     <>
       <div className='w-full flex flex-col p-2 pb-1'>
-        <span className='text-sm'>{showTranslatedText(label, t)}</span>
+        <span className='text-sm'>{label}</span>
 
         <div className='flex flex-row gap-1 text-xs text-gray-400'>
           {(startTime) && <time dateTime={startTime}>{startTime}</time>}

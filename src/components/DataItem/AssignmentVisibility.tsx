@@ -5,7 +5,6 @@ import { useCallback, useMemo, type JSX } from 'react'
 import type { FormProps } from '../Form/Root'
 import { type YDocument, useYValue } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
-import { useTranslation } from 'react-i18next'
 
 export const AssignmentVisibility = ({ ydoc, path, editable, disabled, className = '', onChange }: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -15,7 +14,6 @@ export const AssignmentVisibility = ({ ydoc, path, editable, disabled, className
   className?: string
 } & FormProps): JSX.Element => {
   const [visibilityStatus, setAssignmentVisibility] = useYValue<string>(ydoc.ele, path)
-  const { t } = useTranslation()
 
   const onValueChange = useCallback(
     (value: string) => {
@@ -56,13 +54,13 @@ export const AssignmentVisibility = ({ ydoc, path, editable, disabled, className
           <SelectItem key='true' value='true'>
             <span className='flex flex-row gap-2'>
               <GlobeIcon size={18} strokeWidth={1.75} />
-              {t('core:status.public')}
+              Publik
             </span>
           </SelectItem>
           <SelectItem key='false' value='false'>
             <span className='flex flex-row gap-2'>
               <BuildingIcon size={18} strokeWidth={1.75} />
-              {t('core:status.internal')}
+              Internt
             </span>
           </SelectItem>
         </SelectContent>
