@@ -117,7 +117,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
   const [planningId] = getValueByYPath<string | undefined>(ydoc.ele, 'root.uuid')
 
   const documentId = articleId || flashId || editorialInfoId
-  const isDocument = assignmentType === 'flash' || assignmentType === 'text' || assignmentType === 'editorial-info'
+  const isDocument = assignmentType === 'flash' || assignmentType === 'text' || assignmentType === 'editorial-info' || assignmentType === 'timeless'
   const documentLabel = assignmentType
     ? t(`shared:assignmentTypes.${assignmentType}` as TranslationKey)
     : t('common:misc.unknown')
@@ -311,6 +311,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
 
   useRepositoryEvents([
     'core/article',
+    'core/article#timeless',
     'core/flash',
     'core/editorial-info'
   ], (event) => {

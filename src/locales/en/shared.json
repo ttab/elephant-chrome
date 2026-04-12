@@ -15,7 +15,8 @@
     "graphic": "Graphic",
     "picture": "Picture",
     "video": "Video",
-    "picture/video": "Picture/Video"
+    "picture/video": "Picture/Video",
+    "timeless": "Timeless article"
   },
   "toolbar": {
     "clearFilters": "Clear",

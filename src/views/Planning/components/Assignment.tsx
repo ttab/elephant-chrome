@@ -84,7 +84,7 @@ export const Assignment = ({ ydoc, assignment, onAbort, onClose }: {
             )}
           />
 
-          {(assignmentType === 'text' || assignmentType === 'editorial-info')
+          {(assignmentType === 'text' || assignmentType === 'editorial-info' || assignmentType === 'timeless')
             && (
               <Form.Group icon={TagsIcon}>
                 <SluglineEditable

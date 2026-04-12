@@ -410,5 +410,117 @@
         }
       }
     }
+  },
+  "core/article#timeless": {
+    "article": "artikeln",
+    "flash": "flashen",
+    "draft": {
+      "title": "Utkast",
+      "description": "Du jobbar på ett utkast av {{label}}",
+      "transitions": {
+        "done": {
+          "title": "Klarmarkera",
+          "description": "Markera {{label}} som klar"
+        },
+        "approved": {
+          "title": "Godkänn",
+          "description": "Godkänn {{label}} för publicering"
+        },
+        "usable": {
+          "title": "Publicera",
+          "description": "Publicera {{label}}"
+        },
+        "withheld": {
+          "title": "Schemalägg publicering",
+          "description": "Ange datum och tid för publicering"
+        }
+      }
+    },
+    "done": {
+      "title": "Klar",
+      "description": "{{label, capitalize}} är klar och väntar på godkännande",
+      "transitions": {
+        "approved": {
+          "title": "Godkänn",
+          "description": "Godkänn {{label}} för publicering"
+        },
+        "usable": {
+          "title": "Publicera",
+          "description": "Publicera {{label}} direkt"
+        },
+        "withheld": {
+          "title": "Schemalägg publicering",
+          "description": "Ange datum och tid för publicering"
+        },
+        "draft": {
+          "title": "Till utkast",
+          "description": "Gör om {{label}} till ett utkast igen"
+        },
+        "unpublished": {
+          "title": "Avpublicera",
+          "description": "Avbryt och arkivera {{label}}"
+        }
+      }
+    },
+    "approved": {
+      "title": "Godkänd",
+      "description": "{{label, capitalize}} är godkänd att publicera",
+      "transitions": {
+        "usable": {
+          "title": "Publicera",
+          "description": "Publicera {{label}}"
+        },
+        "withheld": {
+          "title": "Schemalägg publicering",
+          "description": "Ange datum och tid för publicering"
+        },
+        "draft": {
+          "title": "Till utkast",
+          "description": "Gör om {{label}} till ett utkast igen"
+        },
+        "unpublished": {
+          "title": "Avpublicera",
+          "description": "Avbryt och arkivera {{label}}"
+        }
+      }
+    },
+    "usable": {
+      "title": "Publicerad",
+      "description": "{{label, capitalize}} är publicerad",
+      "transitions": {
+        "draft": {
+          "title": "Ny version",
+          "description": "Fortsätt jobba på en ny version av {{label}}"
+        },
+        "unpublished": {
+          "title": "Avpublicera",
+          "description": "Avbryt publiceringen och arkivera {{label}}"
+        }
+      }
+    },
+    "withheld": {
+      "title": "Schemalagd",
+      "description": "{{label, capitalize}} är schemalagd för automatisk publicering",
+      "transitions": {
+        "usable": {
+          "title": "Publicera direkt",
+          "description": "Publicera {{label}} direkt"
+        },
+        "draft": {
+          "title": "Till utkast",
+          "description": "Avbryt schemalagd publicering och gör om till utkast igen"
+        }
+      }
+    },
+    "unpublished": {
+      "title": "Avpublicerad",
+      "description": "{{label, capitalize}} har avpublicerats",
+      "transitions": {
+        "draft": {
+          "title": "Ny version",
+          "description": "Fortsätt jobba på en ny version av {{label}}"
+        }
+      }
+    }
   }
 }

@@ -364,6 +364,7 @@ export function getWorkflowSpecifications(): Record<string, WorkflowSpecificatio
       }
     },
     'core/article': baseDeliverable('article'),
+    'core/article#timeless': baseDeliverable('article'),
     'core/flash': baseDeliverable('flash'),
     'core/factbox': {
       draft: {

@@ -18,6 +18,8 @@ import { Version } from '@/components/Version'
 import { ReadOnly } from './ReadOnly'
 import { EditorialInfoTypes } from '@/components/EditorialInfoTypes'
 import { ContentSource } from '@/components/ContentSource'
+import { TimelessCategory } from '@/components/TimelessCategory'
+import { isArticleType } from '@/lib/isArticleType'
 import type * as Y from 'yjs'
 import { useTranslation } from 'react-i18next'
 
@@ -62,13 +64,22 @@ export function MetaSheet({ ydoc, readOnly, readOnlyVersion }: {
             : (
                 <div className='flex flex-col gap-6 px-5 py-4 border-t'>
 
-                  {documentType === 'core/article' && (
+                  {isArticleType(documentType) && (
                     <>
                       <Label htmlFor='properties' className='text-xs text-muted-foreground -mb-3'>{t('labels.properties')}</Label>
                       <div className='flex flex-row gap-3' id='properties'>
                         <Newsvalue ydoc={ydoc} path='meta.core/newsvalue[0].value' />
                         <SluglineButton value={slugline} />
                       </div>
+
+                      {documentType === 'core/article#timeless' && (
+                        <>
+                          <Label htmlFor='timeless-category' className='text-xs text-muted-foreground -mb-3'>{t('labels.category')}</Label>
+                          <div id='timeless-category'>
+                            <TimelessCategory ydoc={ydoc} path='links.core/timeless-category' />
+                          </div>
+                        </>
+                      )}
 
                       <Label htmlFor='tags' className='text-xs text-muted-foreground -mb-3'>{t('labels.tags')}</Label>
                       <div className='flex flex-row gap-3' id='tags'>

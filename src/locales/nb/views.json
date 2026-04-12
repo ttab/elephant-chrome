@@ -79,6 +79,16 @@
     "rememberMe": "Husk meg neste gang",
     "loggingIn": "Logger inn..."
   },
+  "timeless": {
+    "title": "Tidløse artikler",
+    "columnLabels": {
+      "category": "Kategori",
+      "lastChanged": "Sist endret"
+    },
+    "placeholders": {
+      "addCategory": "Legg til kategori"
+    }
+  },
   "imageSearch": {
     "title": "Bilder",
     "labels": {

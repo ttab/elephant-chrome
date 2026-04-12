@@ -15,7 +15,7 @@ import { useTranslation } from 'react-i18next'
  */
 export function CreateDeliverablePrompt({ ydoc, deliverableType, payload, onClose, title, documentLabel }: {
   ydoc: YDocument<Y.Map<unknown>>
-  deliverableType: 'article' | 'flash' | 'editorial-info'
+  deliverableType: 'article' | 'flash' | 'editorial-info' | 'timeless'
   payload: TemplatePayload
   title: string
   documentLabel: string

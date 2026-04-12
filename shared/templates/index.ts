@@ -9,6 +9,7 @@ export { eventDocumentTemplate as event } from './eventDocumentTemplate.js'
 export { editorialInfoDocumentTemplate as editorialInfo } from './editorialInfoDocumentTemplate.js'
 export { quickArticleDocumentTemplate as quickArticle } from './quickArticleDocumentTemplate.js'
 export { hastDocumentTemplate as hast } from './hastDocumentTemplate.js'
+export { timelessArticleDocumentTemplate as timeless } from './timelessArticleDocumentTemplate.js'
 
 export interface TemplatePayload {
   query?: Record<string, string | string[] | undefined>
@@ -27,5 +28,6 @@ export interface TemplatePayload {
     'core/story'?: Block[]
     'tt/wire'?: Block[]
     'core/event'?: Block[]
+    'core/timeless-category'?: Block[]
   }
 }

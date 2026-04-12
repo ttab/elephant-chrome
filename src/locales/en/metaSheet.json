@@ -11,7 +11,8 @@
     "versions": "Versions",
     "version": "Version",
     "editorialInfoType": "Editorial info, type",
-    "slugline": "Slug"
+    "slugline": "Slug",
+    "category": "Category"
   },
   "actions": {
     "addNote": "Add note"

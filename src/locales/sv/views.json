@@ -79,6 +79,16 @@
     "rememberMe": "Kom ihåg mig nästa gång",
     "loggingIn": "Loggar in..."
   },
+  "timeless": {
+    "title": "Tidlösa artiklar",
+    "columnLabels": {
+      "category": "Kategori",
+      "lastChanged": "Senast ändrad"
+    },
+    "placeholders": {
+      "addCategory": "Lägg till kategori"
+    }
+  },
   "imageSearch": {
     "title": "Bilder",
     "labels": {

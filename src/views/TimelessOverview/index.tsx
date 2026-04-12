@@ -1,0 +1,69 @@
+import { useMemo, useState, type JSX } from 'react'
+import { type ViewMetadata } from '@/types'
+import { ViewHeader, View } from '@/components'
+import { TabsContent } from '@ttab/elephant-ui'
+import { TableProvider } from '@/contexts/TableProvider'
+import { TableCommandMenu } from '@/components/Commands/TableCommand'
+import { Commands } from '@/components/Commands'
+import { createTimelessColumns } from './lib/createTimelessColumns'
+import type { Article } from '@/shared/schemas/article'
+import { TimelessResult } from './TimelessResult'
+import { useRegistry } from '@/hooks/useRegistry'
+import { useTranslation } from 'react-i18next'
+
+const meta: ViewMetadata = {
+  name: 'Timeless',
+  path: `${import.meta.env.BASE_URL}/timeless`,
+  widths: {
+    sm: 12,
+    md: 12,
+    lg: 6,
+    xl: 6,
+    '2xl': 6,
+    hd: 6,
+    fhd: 4,
+    qhd: 3,
+    uhd: 2
+  }
+}
+
+export const Timeless = (): JSX.Element => {
+  const [currentTab, setCurrentTab] = useState<string>('list')
+  const { locale, timeZone } = useRegistry()
+  const { t } = useTranslation('views')
+
+  const columns = useMemo(() =>
+    createTimelessColumns({ locale, timeZone, t }), [locale, timeZone, t])
+
+  return (
+    <View.Root tab={currentTab} onTabChange={setCurrentTab}>
+      <TableProvider<Article>
+        columns={columns}
+        type={meta.name}
+      >
+        <TableCommandMenu heading='Timeless'>
+          <Commands />
+        </TableCommandMenu>
+
+        <ViewHeader.Root>
+          <ViewHeader.Content>
+            <ViewHeader.Title
+              name='Timeless'
+              title={t('timeless.title')}
+            />
+          </ViewHeader.Content>
+
+          <ViewHeader.Action />
+        </ViewHeader.Root>
+
+        <View.Content>
+          <TabsContent value='list' className='mt-0'>
+            <TimelessResult columns={columns} />
+          </TabsContent>
+        </View.Content>
+      </TableProvider>
+    </View.Root>
+  )
+}
+
+Timeless.meta = meta

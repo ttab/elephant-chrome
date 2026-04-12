@@ -79,6 +79,16 @@
     "rememberMe": "Remember me next time",
     "loggingIn": "Logging in..."
   },
+  "timeless": {
+    "title": "Timeless articles",
+    "columnLabels": {
+      "category": "Category",
+      "lastChanged": "Last changed"
+    },
+    "placeholders": {
+      "addCategory": "Add category"
+    }
+  },
   "imageSearch": {
     "title": "Images",
     "labels": {

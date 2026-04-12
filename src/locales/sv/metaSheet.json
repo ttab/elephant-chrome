@@ -11,7 +11,8 @@
     "versions": "Versioner",
     "version": "Version",
     "editorialInfoType": "Redaktionell info, typ",
-    "slugline": "Slugg"
+    "slugline": "Slugg",
+    "category": "Kategori"
   },
   "actions": {
     "addNote": "Lägg till notering"
