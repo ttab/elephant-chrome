@@ -1,5 +1,6 @@
 import type { JSX } from 'react'
 import { useMemo } from 'react'
+import type { Block } from '@ttab/elephant-api/newsdoc'
 import { View } from '@/components'
 import { Notes } from '@/components/Notes'
 import {
@@ -111,7 +112,7 @@ function EditorWrapper(props: ViewProps & {
     visibility: !preview
   })
   const [documentLanguage] = getValueByYPath<string>(ydoc.ele, 'root.language')
-  const [hast] = getValueByYPath<string>(ydoc.ele, 'meta.ntb/hast[0]')
+  const [hast] = getValueByYPath<Block | undefined>(ydoc.ele, 'meta.ntb/hast[0]')
   const [content] = getValueByYPath<Y.XmlText>(ydoc.ele, 'content', true)
   const openFactboxEditor = useLink('Factbox')
   const openImageSearch = useLink('ImageSearch')

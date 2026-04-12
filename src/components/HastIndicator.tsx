@@ -9,6 +9,12 @@ import type { JSX } from 'react'
 
 type HastState = 'active' | 'inactive' | false
 
+/**
+ * Determines hast display state based on version targeting.
+ * - 'active': hast targets next version (hastValue === usableId + 1) or
+ *   document is currently usable and hast targets current version
+ * - 'inactive': hast disabled (value=0) or targeting a consumed/past version
+ */
 function getHastState(
   hastValue: number,
   usableId: number,
@@ -29,7 +35,8 @@ function getHastState(
 /**
  * Fetches hast state for a document and renders a zap icon.
  * Red when hast targets the next version, muted when hast exists
- * but is consumed or disabled, hidden when no hast block.
+ * but is consumed or disabled (value=0), orange on fetch error,
+ * hidden when no hast block or session unavailable.
  */
 export const HastIndicator = ({ documentId, size = 14 }: {
   documentId?: string
@@ -39,9 +46,9 @@ export const HastIndicator = ({ documentId, size = 14 }: {
   const { repository } = useRegistry()
   const { data: session } = useSession()
 
-  const { data: hastState, mutate } = useSWR(
-    featureFlags.hasHast && documentId
-      ? ['hast-indicator', documentId]
+  const { data: hastState, error, mutate } = useSWR(
+    featureFlags.hasHast && documentId && session?.accessToken
+      ? ['hast-indicator', documentId, session.accessToken]
       : null,
     async (): Promise<HastState> => {
       if (!documentId || !session?.accessToken || !repository) {
@@ -63,16 +70,36 @@ export const HastIndicator = ({ documentId, size = 14 }: {
       }
       const hastValue = Number(hastBlock.value || '0')
       const usableId = Number(meta?.meta?.heads?.['usable']?.id || '0')
+      if (Number.isNaN(hastValue) || Number.isNaN(usableId)) {
+        console.warn('HastIndicator: Invalid numeric values', {
+          documentId,
+          hastValue: hastBlock.value,
+          usableId: meta?.meta?.heads?.['usable']?.id
+        })
+        return 'inactive'
+      }
       const isUsable = meta?.meta?.workflowState === 'usable'
       return getHastState(hastValue, usableId, isUsable)
     }
   )
 
-  useRepositoryEvents(['core/article'], (event) => {
+  useRepositoryEvents(['core/article', 'core/flash'], (event) => {
     if (event.uuid === documentId) {
       void mutate()
     }
   })
+
+  if (error) {
+    console.error('HastIndicator: Failed to fetch hast state', { documentId, error })
+    return (
+      <ZapIcon
+        strokeWidth={1.75}
+        size={size}
+        className='text-orange-400 opacity-50'
+        aria-label='Failed to load hast status'
+      />
+    )
+  }
 
   if (!hastState) {
     return null

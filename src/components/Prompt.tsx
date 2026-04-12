@@ -31,13 +31,16 @@ export const Prompt = ({
   disablePrimary = false,
   primaryVariant
 }: PromptProps): JSX.Element => {
-  useKeydownGlobal((event) => {
-    if (event.key === 'Escape' && secondaryLabel && onSecondary) {
-      onSecondary()
-    }
-  })
+  const dismiss = onCancel ?? onSecondary
 
   const [open, setOpen] = useState<boolean>(true)
+
+  useKeydownGlobal((event) => {
+    if (event.key === 'Escape' && dismiss) {
+      setOpen(false)
+      dismiss()
+    }
+  })
 
   useEffect(() => {
     return () => {
@@ -50,9 +53,7 @@ export const Prompt = ({
       <DialogContent
         className='z-50'
         onPointerDownOutside={() => {
-          if (onSecondary) {
-            onSecondary()
-          }
+          dismiss?.()
         }}
       >
         <DialogHeader>

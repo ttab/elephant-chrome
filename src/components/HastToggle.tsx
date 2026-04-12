@@ -65,7 +65,22 @@ export const HastToggle = ({ ydoc, usableId, className, variant = 'compact' }: {
   const { featureFlags } = useRegistry()
   const { t } = useTranslation()
   const [hast, setHast] = useYValue<Block | undefined>(ydoc.ele, 'meta.ntb/hast[0]')
-  const isHast = !!hast && BigInt(hast.value || '0') === (usableId ?? 0n) + 1n
+  const hastValue = (() => {
+    try {
+      return BigInt(hast?.value || '0')
+    } catch (ex) {
+      console.warn('HastToggle: Failed to parse hast value', {
+        documentId: ydoc.id,
+        value: hast?.value,
+        error: ex
+      })
+      return 0n
+    }
+  })()
+  // Toggle is "on" only when targeting next version. Unlike HastIndicator.getHastState
+  // which also shows active for current usable version, this simpler check works for
+  // the toggle because we only enable it for unpublished versions.
+  const isHast = !!hast && hastValue === (usableId ?? 0n) + 1n
   const [showPrompt, setShowPrompt] = useState(false)
 
   if (!featureFlags.hasHast) {
@@ -81,12 +96,17 @@ export const HastToggle = ({ ydoc, usableId, className, variant = 'compact' }: {
   }
 
   function toggleOn() {
-    const nextId = (usableId ?? 0n) + 1n
-    setHast(Block.create({
-      type: 'ntb/hast',
-      value: String(nextId)
-    }))
-    snapshot()
+    try {
+      const nextId = (usableId ?? 0n) + 1n
+      setHast(Block.create({
+        type: 'ntb/hast',
+        value: String(nextId)
+      }))
+      snapshot()
+    } catch (error) {
+      toast.error(t('errors:toasts.saveChangeError'))
+      console.error('Error toggling HAST on:', error)
+    }
   }
 
   function handleToggle() {
@@ -99,19 +119,32 @@ export const HastToggle = ({ ydoc, usableId, className, variant = 'compact' }: {
     }
   }
 
+  // Sets hast value to '0' - block remains but is disabled for this version.
+  // Can be re-enabled for future versions.
   function handleRemoveFromVersion() {
-    setHast(Block.create({
-      type: 'ntb/hast',
-      value: '0'
-    }))
-    snapshot()
-    setShowPrompt(false)
+    try {
+      setHast(Block.create({
+        type: 'ntb/hast',
+        value: '0'
+      }))
+      snapshot()
+      setShowPrompt(false)
+    } catch (error) {
+      toast.error(t('errors:toasts.saveChangeError'))
+      console.error('Error removing HAST from version:', error)
+    }
   }
 
+  // Removes hast block entirely - no hast on any future versions unless re-added.
   function handleRemoveFromArticle() {
-    setHast(undefined)
-    snapshot()
-    setShowPrompt(false)
+    try {
+      setHast(undefined)
+      snapshot()
+      setShowPrompt(false)
+    } catch (error) {
+      toast.error(t('errors:toasts.saveChangeError'))
+      console.error('Error removing HAST from article:', error)
+    }
   }
 
   const textColor = isHast ? 'text-foreground' : 'text-muted-foreground'

@@ -1,19 +1,28 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { HastToggle } from '@/components/HastToggle'
 import { Block } from '@ttab/elephant-api/newsdoc'
+import { toast } from 'sonner'
 import type * as Y from 'yjs'
 import type { YDocument } from '@/modules/yjs/hooks'
 
 const mockSetHast = vi.fn()
+const mockSnapshotDocument = vi.fn()
 let mockHastValue: Block | undefined = undefined
+let mockHasHastFlag = true
+
+vi.mock('sonner')
+
+vi.mock('@/lib/snapshotDocument', () => ({
+  snapshotDocument: (...args: unknown[]) => mockSnapshotDocument(...args)
+}))
 
 vi.mock('@/modules/yjs/hooks', () => ({
   useYValue: () => [mockHastValue, mockSetHast]
 }))
 
 vi.mock('@/hooks/useRegistry', () => ({
-  useRegistry: () => ({ featureFlags: { hasHast: true } })
+  useRegistry: () => ({ featureFlags: { hasHast: mockHasHastFlag } })
 }))
 
 describe('HastToggle', () => {
@@ -24,7 +33,11 @@ describe('HastToggle', () => {
 
   beforeEach(() => {
     mockHastValue = undefined
+    mockHasHastFlag = true
     mockSetHast.mockClear()
+    mockSnapshotDocument.mockClear()
+    mockSnapshotDocument.mockResolvedValue(undefined)
+    vi.mocked(toast.error).mockClear()
   })
 
   it('renders unchecked when hast meta is absent', () => {
@@ -145,5 +158,83 @@ describe('HastToggle', () => {
     expect(screen.getByText('Skicka som HAST')).toBeDefined()
     expect(screen.getByText(/Vid publicering/)).toBeDefined()
     expect(screen.getByRole('switch')).toBeDefined()
+  })
+
+  it('calls snapshotDocument after toggling on', async () => {
+    const user = userEvent.setup()
+    render(<HastToggle ydoc={mockYdoc} usableId={2n} />)
+
+    await user.click(screen.getByRole('switch'))
+
+    expect(mockSnapshotDocument).toHaveBeenCalledWith(
+      'test-doc',
+      {},
+      undefined
+    )
+  })
+
+  it('calls snapshotDocument after removing from version', async () => {
+    mockHastValue = Block.create({ type: 'ntb/hast', value: '2' })
+    const user = userEvent.setup()
+    render(<HastToggle ydoc={mockYdoc} usableId={1n} />)
+
+    await user.click(screen.getByRole('switch'))
+    await user.click(screen.getByText('Den här versionen'))
+
+    expect(mockSnapshotDocument).toHaveBeenCalled()
+  })
+
+  it('shows error toast when snapshot fails', async () => {
+    mockSnapshotDocument.mockRejectedValue(new Error('Network error'))
+    const user = userEvent.setup()
+    render(<HastToggle ydoc={mockYdoc} usableId={2n} />)
+
+    await user.click(screen.getByRole('switch'))
+
+    await waitFor(() => {
+      expect(toast.error).toHaveBeenCalled()
+    })
+  })
+
+  it('closes prompt without changes when cancel clicked', async () => {
+    mockHastValue = Block.create({ type: 'ntb/hast', value: '2' })
+    const user = userEvent.setup()
+    render(<HastToggle ydoc={mockYdoc} usableId={1n} />)
+
+    await user.click(screen.getByRole('switch'))
+    expect(screen.getByText('Den här versionen')).toBeDefined()
+
+    await user.click(screen.getByText('Avbryt'))
+
+    expect(screen.queryByText('Den här versionen')).toBeNull()
+    expect(mockSetHast).not.toHaveBeenCalled()
+  })
+
+  it('removes from version directly without prompt in full variant', async () => {
+    mockHastValue = Block.create({ type: 'ntb/hast', value: '2' })
+    const user = userEvent.setup()
+    render(<HastToggle ydoc={mockYdoc} usableId={1n} variant='full' />)
+
+    await user.click(screen.getByRole('switch'))
+
+    expect(screen.queryByText('Den här versionen')).toBeNull()
+    expect(mockSetHast).toHaveBeenCalledWith(
+      Block.create({ type: 'ntb/hast', value: '0' })
+    )
+  })
+
+  it('renders nothing when hasHast feature flag is false', () => {
+    mockHasHastFlag = false
+    const { container } = render(<HastToggle ydoc={mockYdoc} />)
+
+    expect(container.firstChild).toBeNull()
+  })
+
+  it('handles invalid hast value gracefully', () => {
+    mockHastValue = Block.create({ type: 'ntb/hast', value: 'not-a-number' })
+    render(<HastToggle ydoc={mockYdoc} usableId={1n} />)
+
+    const toggle = screen.getByRole('switch')
+    expect(toggle).toHaveAttribute('aria-checked', 'false')
   })
 })
