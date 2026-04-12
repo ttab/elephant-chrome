@@ -1,4 +1,5 @@
 import { Block, Document } from '@ttab/elephant-api/newsdoc'
+import i18n from 'i18next'
 import { getSystemLanguage } from '@/shared/getSystemLanguage.js'
 import type { TemplatePayload } from './index.ts'
 
@@ -17,7 +18,7 @@ export function hastDocumentTemplate(id: string, payload?: TemplatePayload): Doc
       }),
       Block.create({
         type: 'core/text',
-        data: { text: '' },
+        data: { text: i18n.t('flash:hastDefaultPreamble') },
         role: 'preamble'
       }),
       Block.create({
@@ -27,7 +28,6 @@ export function hastDocumentTemplate(id: string, payload?: TemplatePayload): Doc
     ],
     meta: [
       Block.create({ type: 'core/newsvalue', value: '5' }),
-      Block.create({ type: 'tt/slugline', value: 'hast' }),
       Block.create({ type: 'ntb/hast', value: '1' })
     ],
     links: [

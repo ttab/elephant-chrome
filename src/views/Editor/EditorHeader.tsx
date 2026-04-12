@@ -18,6 +18,7 @@ import type * as Y from 'yjs'
 import { useTranslation } from 'react-i18next'
 import { documentTypeValueFormat } from '@/defaults/documentTypeFormats'
 import { HastToggle } from '@/components/HastToggle'
+import { HastIndicator } from '@/components/HastIndicator'
 
 export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: propPlanningId }: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -112,6 +113,7 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
               {!readOnly && documentType === 'core/article' && (
                 <HastToggle ydoc={ydoc} usableId={workflowStatus?.usableId} />
               )}
+              {readOnly && <HastIndicator documentId={ydoc.id} size={18} />}
               {!!wireBlocks?.length && (
                 <Button
                   variant='ghost'
