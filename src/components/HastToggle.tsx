@@ -11,6 +11,7 @@ import { cn } from '@ttab/elephant-ui/utils'
 import { Prompt } from '@/components/Prompt'
 import { snapshotDocument } from '@/lib/snapshotDocument'
 import { toast } from 'sonner'
+import { mutate } from 'swr'
 
 function HastSwitch({ checked, onCheckedChange, size = 'default' }: {
   checked: boolean
@@ -87,12 +88,17 @@ export const HastToggle = ({ ydoc, usableId, className, variant = 'compact' }: {
     return null
   }
 
-  function snapshot() {
-    snapshotDocument(ydoc.id, {}, ydoc.provider?.document)
-      .catch((error) => {
-        toast.error(t('errors:toasts.saveChangeError'))
-        console.error('Error snapshotting document after toggling HAST:', error)
-      })
+  async function snapshot() {
+    try {
+      await snapshotDocument(ydoc.id, {}, ydoc.provider?.document)
+      // Invalidate all HastIndicator caches for this document
+      void mutate(
+        (key) => Array.isArray(key) && key[0] === 'hast-indicator' && key[1] === ydoc.id
+      )
+    } catch (error) {
+      toast.error(t('errors:toasts.saveChangeError'))
+      console.error('Error snapshotting document after toggling HAST:', error)
+    }
   }
 
   function toggleOn() {
@@ -102,7 +108,7 @@ export const HastToggle = ({ ydoc, usableId, className, variant = 'compact' }: {
         type: 'ntb/hast',
         value: String(nextId)
       }))
-      snapshot()
+      void snapshot()
     } catch (error) {
       toast.error(t('errors:toasts.saveChangeError'))
       console.error('Error toggling HAST on:', error)
@@ -127,7 +133,7 @@ export const HastToggle = ({ ydoc, usableId, className, variant = 'compact' }: {
         type: 'ntb/hast',
         value: '0'
       }))
-      snapshot()
+      void snapshot()
       setShowPrompt(false)
     } catch (error) {
       toast.error(t('errors:toasts.saveChangeError'))
@@ -139,7 +145,7 @@ export const HastToggle = ({ ydoc, usableId, className, variant = 'compact' }: {
   function handleRemoveFromArticle() {
     try {
       setHast(undefined)
-      snapshot()
+      void snapshot()
       setShowPrompt(false)
     } catch (error) {
       toast.error(t('errors:toasts.saveChangeError'))
