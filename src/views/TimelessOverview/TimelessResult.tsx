@@ -1,18 +1,18 @@
-import type { JSX } from 'react'
+import { useCallback, type JSX } from 'react'
 import { useQuery } from '@/hooks'
 import { Table } from '@/components/Table'
 import type { ColumnDef } from '@tanstack/react-table'
-import type { Article, ArticleFields } from '@/shared/schemas/article'
+import type { TimelessArticle, TimelessArticleFields } from '@/shared/schemas/timelessArticle'
 import { Toolbar } from './Toolbar'
 import { useDocuments } from '@/hooks/index/useDocuments'
 import { timelessParams } from '@/hooks/index/useDocuments/queries/views/timeless'
 
 export const TimelessResult = ({ columns }: {
-  columns: ColumnDef<Article, unknown>[]
+  columns: ColumnDef<TimelessArticle, unknown>[]
 }): JSX.Element => {
   const [filter] = useQuery()
 
-  useDocuments<Article, ArticleFields>({
+  useDocuments<TimelessArticle, TimelessArticleFields>({
     ...timelessParams(filter),
     page: typeof filter.page === 'string' ? parseInt(filter.page) : undefined,
     options: {
@@ -21,13 +21,21 @@ export const TimelessResult = ({ columns }: {
     }
   })
 
+  const onRowSelected = useCallback((row?: TimelessArticle) => {
+    if (row) {
+      console.info(`Selected timeless article ${row.id}`)
+    }
+    return row
+  }, [])
+
   return (
     <>
       <Toolbar />
       <Table
         type='Timeless'
         searchType='Editor'
-        columns={columns as ColumnDef<Article>[]}
+        columns={columns as ColumnDef<TimelessArticle>[]}
+        onRowSelected={onRowSelected}
       />
     </>
   )

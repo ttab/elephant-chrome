@@ -364,7 +364,32 @@ export function getWorkflowSpecifications(): Record<string, WorkflowSpecificatio
       }
     },
     'core/article': baseDeliverable('article'),
-    'core/article#timeless': baseDeliverable('article'),
+    'core/article#timeless': {
+      draft: {
+        title: i18n.t('workflows:base.draft.title', { label: i18n.t('workflows:base.article') }),
+        description: i18n.t('workflows:base.draft.description', { label: i18n.t('workflows:base.article') }),
+        isWorkflow: true,
+        transitions: {
+          done: {
+            default: true,
+            title: i18n.t('workflows:base.draft.transitions.done.title'),
+            description: i18n.t('workflows:base.draft.transitions.done.description', { label: i18n.t('workflows:base.article') })
+          }
+        }
+      },
+      done: {
+        title: i18n.t('workflows:base.done.title'),
+        description: i18n.t('workflows:base.done.description', { label: i18n.t('workflows:base.article') }),
+        isWorkflow: true,
+        transitions: {
+          draft: {
+            default: true,
+            title: i18n.t('workflows:base.done.transitions.draft.title'),
+            description: i18n.t('workflows:base.done.transitions.draft.description', { label: i18n.t('workflows:base.article') })
+          }
+        }
+      }
+    },
     'core/flash': baseDeliverable('flash'),
     'core/factbox': {
       draft: {

@@ -1,16 +1,16 @@
 import { Title } from '@/components/Table/Items/Title'
-import type { Article } from '@/shared/schemas/article'
+import type { TimelessArticle } from '@/shared/schemas/timelessArticle'
 import { dateToReadableDateTime } from '@/shared/datetime'
 import type { LocaleData } from '@/types/index'
 import type { ColumnDef } from '@tanstack/react-table'
-import { BookmarkIcon, PenBoxIcon, TagIcon } from '@ttab/elephant-ui/icons'
+import { BookmarkIcon, CalendarIcon, PenBoxIcon } from '@ttab/elephant-ui/icons'
 import type { TFunction, Namespace } from 'i18next'
 
 export function createTimelessColumns<Ns extends Namespace>({ locale, timeZone, t }: {
   locale: LocaleData
   timeZone: string
   t: TFunction<Ns>
-}): Array<ColumnDef<Article>> {
+}): Array<ColumnDef<TimelessArticle>> {
   return [
     {
       id: 'title',
@@ -31,7 +31,7 @@ export function createTimelessColumns<Ns extends Namespace>({ locale, timeZone, 
         columnIcon: BookmarkIcon,
         className: 'flex-none w-[150px]'
       },
-      accessorFn: (data) => data.fields['document.rel.subject.title' as keyof typeof data.fields]?.values[0],
+      accessorFn: (data) => data.fields['document.rel.subject.title']?.values[0],
       cell: ({ row }) => {
         const category = row.getValue<string>('category')
         return (
@@ -42,30 +42,13 @@ export function createTimelessColumns<Ns extends Namespace>({ locale, timeZone, 
       }
     },
     {
-      id: 'section',
-      meta: {
-        name: t('core:labels.section'),
-        columnIcon: TagIcon,
-        className: 'flex-none w-[120px]'
-      },
-      accessorFn: (data) => data.fields['document.rel.section.title']?.values[0],
-      cell: ({ row }) => {
-        const section = row.getValue<string>('section')
-        return (
-          <span className='font-thin text-sm text-muted-foreground truncate'>
-            {section || '-'}
-          </span>
-        )
-      }
-    },
-    {
       id: 'date',
       meta: {
         name: t('views:timeless.columnLabels.lastChanged'),
-        columnIcon: PenBoxIcon,
+        columnIcon: CalendarIcon,
         className: 'flex-none'
       },
-      accessorFn: (data) => data.fields['heads.usable.created']?.values[0],
+      accessorFn: (data) => data.fields['modified']?.values[0],
       cell: ({ row }) => {
         const date = row.getValue<string>('date')
         const readable = date

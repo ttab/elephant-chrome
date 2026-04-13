@@ -1,7 +1,7 @@
 import { Prompt } from '@/components'
 import type { TemplatePayload } from '@/shared/templates/'
 import { useSession } from 'next-auth/react'
-import { useRegistry } from '@/hooks/useRegistry'
+import { useRegistry, useTimelessCategories } from '@/hooks'
 import { toast } from 'sonner'
 import { getTemplateFromDeliverable } from '@/shared/templates/lib/getTemplateFromDeliverable'
 import type { YDocument } from '@/modules/yjs/hooks'
@@ -9,6 +9,8 @@ import type * as Y from 'yjs'
 import type { JSX } from 'react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Block } from '@ttab/elephant-api/newsdoc'
+import { Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@ttab/elephant-ui'
 
 /**
  * Deliverable document creation dialog, responsible for creating articles and flashes in the repository.
@@ -27,6 +29,11 @@ export function CreateDeliverablePrompt({ ydoc, deliverableType, payload, onClos
   const { data: session } = useSession()
   const [isCreating, setIsCreating] = useState(false)
   const { t } = useTranslation()
+  const [selectedCategory, setSelectedCategory] = useState<Block | undefined>()
+  const allCategories = useTimelessCategories().map((cat) => ({
+    value: cat.id,
+    label: cat.title
+  }))
 
   if (!ydoc.provider?.document || !session?.accessToken || !repository) {
     console.error('CreateDeliverablePrompt: Missing required dependencies', {
@@ -45,14 +52,23 @@ export function CreateDeliverablePrompt({ ydoc, deliverableType, payload, onClos
     }
 
     // Timeless articles require a category
-    if (deliverableType === 'timeless' && !payload.links?.['core/timeless-category']?.length) {
+    if (deliverableType === 'timeless' && !selectedCategory) {
       throw new Error(t('errors:toasts.missingTimelessCategory'))
+    }
+
+    // Add timeless category to payload if selected
+    const finalPayload = { ...payload }
+    if (deliverableType === 'timeless' && selectedCategory) {
+      finalPayload.links = {
+        ...finalPayload.links,
+        'core/timeless-category': [selectedCategory]
+      }
     }
 
     const id = crypto.randomUUID()
     const template = getTemplateFromDeliverable(deliverableType)
     await repository.saveDocument(
-      template(id, payload),
+      template(id, finalPayload),
       session.accessToken
     )
 
@@ -68,6 +84,7 @@ export function CreateDeliverablePrompt({ ydoc, deliverableType, payload, onClos
       })}
       secondaryLabel={t('common:actions.abort')}
       primaryLabel={t('common:actions.create')}
+      disablePrimary={deliverableType === 'timeless' && !selectedCategory}
       onPrimary={() => {
         if (isCreating) {
           return
@@ -88,6 +105,39 @@ export function CreateDeliverablePrompt({ ydoc, deliverableType, payload, onClos
       onSecondary={() => {
         onClose()
       }}
-    />
+    >
+      {deliverableType === 'timeless' && (
+        <div className='flex flex-col gap-2'>
+          <Label className='text-sm text-muted-foreground'>
+            {t('views:timeless.columnLabels.category')}
+          </Label>
+          <Select
+            value={selectedCategory?.uuid}
+            onValueChange={(value) => {
+              const cat = allCategories.find((c) => c.value === value)
+              if (cat) {
+                setSelectedCategory(Block.create({
+                  type: 'core/timeless-category',
+                  rel: 'subject',
+                  uuid: cat.value,
+                  title: cat.label
+                }))
+              }
+            }}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder={t('views:timeless.placeholders.addCategory')} />
+            </SelectTrigger>
+            <SelectContent>
+              {allCategories.map((cat) => (
+                <SelectItem key={cat.value} value={cat.value}>
+                  {cat.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
+    </Prompt>
   )
 }

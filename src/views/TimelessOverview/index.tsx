@@ -6,7 +6,7 @@ import { TableProvider } from '@/contexts/TableProvider'
 import { TableCommandMenu } from '@/components/Commands/TableCommand'
 import { Commands } from '@/components/Commands'
 import { createTimelessColumns } from './lib/createTimelessColumns'
-import type { Article } from '@/shared/schemas/article'
+import type { TimelessArticle } from '@/shared/schemas/timelessArticle'
 import { TimelessResult } from './TimelessResult'
 import { useRegistry } from '@/hooks/useRegistry'
 import { useTranslation } from 'react-i18next'
@@ -37,7 +37,7 @@ export const Timeless = (): JSX.Element => {
 
   return (
     <View.Root tab={currentTab} onTabChange={setCurrentTab}>
-      <TableProvider<Article>
+      <TableProvider<TimelessArticle>
         columns={columns}
         type={meta.name}
       >

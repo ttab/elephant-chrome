@@ -7,7 +7,7 @@ import {
   MultiMatchQueryV1,
   SortingV1
 } from '@ttab/elephant-api/index'
-import { fields } from '@/shared/schemas/article'
+import { fields } from '@/shared/schemas/timelessArticle'
 
 function constructQuery(filter: QueryParams | undefined): QueryV1 | undefined {
   if (!filter) {
@@ -62,14 +62,6 @@ function constructQuery(filter: QueryParams | undefined): QueryV1 | undefined {
     addCondition('document.rel.subject.uuid', filter.category)
   }
 
-  if (filter.section) {
-    addCondition('document.rel.section.uuid', filter.section)
-  }
-
-  if (filter.newsvalue) {
-    addCondition('document.meta.core_newsvalue.value', filter.newsvalue)
-  }
-
   if (filter.query) {
     boolConditions.must.push({
       conditions: {
@@ -77,9 +69,8 @@ function constructQuery(filter: QueryParams | undefined): QueryV1 | undefined {
         multiMatch: MultiMatchQueryV1.create({
           fields: [
             'document.title',
-            'document.content.core_text.data.text',
-            'document.meta.tt_slugline.value',
-            'document.rel.subject.title'
+            'document.rel.subject.title',
+            'text'
           ],
           query: filter.query.toString(),
           type: 'phrase_prefix'
@@ -105,6 +96,7 @@ export const timelessParams = (filter: QueryParams) => ({
   fields,
   query: constructQuery(filter),
   sort: [
-    SortingV1.create({ field: 'heads.usable.created', desc: true })
+    SortingV1.create({ field: 'modified', desc: true }),
+    SortingV1.create({ field: 'document.title.sort', desc: false })
   ]
 })
