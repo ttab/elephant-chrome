@@ -68,7 +68,7 @@ export function createDocument<T>({
 export function appendAssignment(options: {
   document: Y.Doc
   assignee?: IDBAuthor | null | undefined
-  type: 'text' | 'flash' | 'graphic' | 'picture' | 'video' | 'picture/video'
+  type: 'text' | 'flash' | 'graphic' | 'picture' | 'video' | 'picture/video' | 'timeless'
   slugLine?: string
   title?: string
   wires?: Wire[]
@@ -101,7 +101,7 @@ export function createNewAssignment({
 }: {
   document: Y.Doc
   assignee?: IDBAuthor | null | undefined
-  type: 'text' | 'flash' | 'graphic' | 'picture' | 'video' | 'picture/video'
+  type: 'text' | 'flash' | 'graphic' | 'picture' | 'video' | 'picture/video' | 'timeless'
   slugLine?: string
   title?: string
   wires?: Wire[]

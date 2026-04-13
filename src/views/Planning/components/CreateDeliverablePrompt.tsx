@@ -44,6 +44,11 @@ export function CreateDeliverablePrompt({ ydoc, deliverableType, payload, onClos
       throw new Error(t('errors:toasts.missingMetadata'))
     }
 
+    // Timeless articles require a category
+    if (deliverableType === 'timeless' && !payload.links?.['core/timeless-category']?.length) {
+      throw new Error(t('errors:toasts.missingTimelessCategory'))
+    }
+
     const id = crypto.randomUUID()
     const template = getTemplateFromDeliverable(deliverableType)
     await repository.saveDocument(

@@ -5,6 +5,7 @@ import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { AssignmentTime } from '@/components/AssignmentTime'
 import { Assignees } from '@/components/Assignees'
 import { SluglineEditable } from '@/components/DataItem/SluglineEditable'
+import { AssignmentTimelessCategory } from '@/components/AssignmentTimelessCategory'
 import { Form } from '@/components/Form'
 import { type FormProps } from '@/components/Form/Root'
 import { useEffect, useRef, type JSX } from 'react'
@@ -93,6 +94,13 @@ export const Assignment = ({ ydoc, assignment, onAbort, onClose }: {
                   disabled={!!documentId}
                   value={slugline}
                 />
+                {assignmentType === 'timeless' && (
+                  <AssignmentTimelessCategory
+                    ydoc={ydoc}
+                    assignment={assignment}
+                    disabled={!!documentId}
+                  />
+                )}
               </Form.Group>
             )}
 

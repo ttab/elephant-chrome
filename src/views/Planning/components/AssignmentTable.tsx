@@ -92,7 +92,7 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId }: {
     if (!assignment) return
 
     const [assignmentType] = getValueByYPath<string>(assignment, ['meta', 'core/assignment-type', 0, 'value'])
-    if (assignmentType && !['text', 'editorial-info'].includes(assignmentType)) {
+    if (assignmentType && !['text', 'editorial-info', 'timeless'].includes(assignmentType)) {
       deleteByYPath(assignment, ['meta', 'tt/slugline'])
     }
 

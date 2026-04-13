@@ -54,5 +54,14 @@ export function createPayload(document: Y.Doc, index?: number, payloadType: stri
     tplPayload.meta['core/description'] = ungroup({ 'core/description': description })
   }
 
+  // Add timeless-category from assignment for timeless deliverables
+  if (payloadType === 'timeless' && currentAssignment && tplPayload.links) {
+    const assignmentLinks = currentAssignment.get('links') as Y.Map<Y.Array<unknown>>
+    const timelessCategory = assignmentLinks?.get('core/timeless-category')?.toJSON() || []
+    if (timelessCategory.length > 0) {
+      tplPayload.links['core/timeless-category'] = ungroup({ 'core/timeless-category': timelessCategory })
+    }
+  }
+
   return tplPayload
 }
