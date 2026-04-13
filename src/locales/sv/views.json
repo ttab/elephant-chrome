@@ -58,6 +58,10 @@
     "columnLabels": {
       "description": "Beskrivning",
       "lastChanged": "Senast ändrad"
+    },
+    "origin": {
+      "original": "Original",
+      "inArticle": "I artikel"
     }
   },
   "search": {

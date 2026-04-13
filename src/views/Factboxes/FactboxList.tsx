@@ -26,7 +26,8 @@ export const FactboxList = ({ columns }: {
       : undefined,
     options: {
       subscribe: true,
-      setTableData: true
+      setTableData: true,
+      withArticleFactboxes: true
     }
   })
 

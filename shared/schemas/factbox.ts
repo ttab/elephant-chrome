@@ -14,7 +14,8 @@ export const _fields = [
   'document.uri',
   'document.url',
   'text',
-  'heads.usable.version'
+  'heads.usable.version',
+  '_document_origin'
 ] as const
 
 /**

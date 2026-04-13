@@ -3,8 +3,7 @@ import type { Factbox } from '@/shared/schemas/factbox'
 import { dateToReadableDateTime } from '@/shared/datetime'
 import type { LocaleData } from '@/types/index'
 import type { ColumnDef, Row } from '@tanstack/react-table'
-import { BoxesIcon } from '@ttab/elephant-ui/icons'
-import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
+import { BoxesIcon, CircleCheckIcon } from '@ttab/elephant-ui/icons'
 import type { TFunction, Namespace } from 'i18next'
 
 interface FactboxData {
@@ -37,29 +36,27 @@ export function factboxColumns<Ns extends Namespace>({ locale, timeZone, t }: { 
 
   return [
     {
-      id: 'documentStatus',
+      id: 'documentOrigin',
       meta: {
-        name: 'Status',
+        name: 'Origin',
         columnIcon: BoxesIcon,
         className: 'flex-none',
         options: [
-          { value: 'usable', label: 'Användbara' },
-          { value: 'draft', label: 'Utkast' },
-          { value: 'unpublished', label: 'Kastade' }
+          { label: t('factboxes.origin.inArticle'), value: 'core/article' },
+          { label: t('factboxes.origin.original'), value: 'core/factbox' }
         ],
         quickFilter: true
       },
-      accessorFn: (data) => {
-        return data.fields['heads.usable.version']?.values[0] ? data.fields['heads.usable.version'].values[0] === '-1' ? 'unpublished' : 'usable' : 'draft'
-      },
+      accessorFn: (data) => data.fields['_document_origin']?.values[0] ?? 'core/factbox',
       cell: ({ row }) => {
-        const status = row.getValue<string>('documentStatus')
-        const usableVersion = row.original.fields['heads.usable.version']?.values[0]
-        const currentVersion = row.original.fields['current_version']?.values[0]
-        const isChanged = usableVersion && usableVersion !== '-1' ? usableVersion !== currentVersion : false
-
+        const origin = row.getValue<string>('documentOrigin')
+        const Icon = origin === 'core/article' ? CircleCheckIcon : BoxesIcon
         return (
-          <DocumentStatus status={status} isChanged={isChanged} type='core/factbox' />
+          <div className='flex items-center relative' title={origin === 'core/article' ? t('factboxes.origin.inArticle') : t('factboxes.origin.original')}>
+
+            <Icon strokeWidth={1.75} className={origin === 'core/article' ? 'text-white rounded-full dark:text-black bg-usable fill-usable' : ''} />
+
+          </div>
         )
       }
     },

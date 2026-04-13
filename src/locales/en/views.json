@@ -58,6 +58,10 @@
     "columnLabels": {
       "description": "Description",
       "lastChanged": "Last changed"
+    },
+    "origin": {
+      "original": "Original",
+      "inArticle": "In article"
     }
   },
   "search": {
