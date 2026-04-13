@@ -17,17 +17,19 @@ export const NynorskSection = (): JSX.Element => {
 
   const dirty = value !== (preferences.nynorskPrefs ?? '')
 
-  const handleSave = async () => {
+  const handleSave = (): void => {
     setSaving(true)
-    try {
-      await updateNynorskPrefs(value)
-      toast.success(t('settings.saved'))
-    } catch (err) {
-      console.error('Failed to save nynorsk preferences', err)
-      toast.error(t('settings.saveError'))
-    } finally {
-      setSaving(false)
-    }
+    updateNynorskPrefs(value)
+      .then(() => {
+        toast.success(t('settings.saved'))
+      })
+      .catch((err: unknown) => {
+        console.error('Failed to save nynorsk preferences', err)
+        toast.error(t('settings.saveError'))
+      })
+      .finally(() => {
+        setSaving(false)
+      })
   }
 
   return (
