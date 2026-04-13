@@ -11,6 +11,7 @@ import {
   CircleCheckIcon
 } from '@ttab/elephant-ui/icons'
 import { Newsvalues } from '@/defaults/newsvalues'
+import { HastIndicator } from '@/components/HastIndicator'
 import { FacetedFilter } from '@/components/Commands/FacetedFilter'
 import { getAssignmentTypes, isVisualAssignmentType } from '@/defaults/assignmentTypes'
 import { Type } from '@/components/Table/Items/Type'
@@ -141,13 +142,18 @@ export function assignmentColumns<Ns extends Namespace>({ authors = [], locale, 
       cell: ({ row }) => {
         const assignmentTitle = row.original.fields['document.meta.core_assignment.title'].values[0] || ''
         const planningTitle = row.original.fields['document.title'].values[0] || ''
+        const deliverableId = row.original
+          .fields['document.meta.core_assignment.rel.deliverable.uuid']?.values[0]
         const assignees = (row.getValue<string[]>('assignees') || []).map((assigneeId) => {
           return authors.find((author) => author.id === assigneeId)?.name || ''
         })
 
         return (
           <>
-            <AssignmentTitles planningTitle={planningTitle} assignmentTitle={assignmentTitle} />
+            <div className='flex items-center gap-2'>
+              <HastIndicator documentId={deliverableId} />
+              <AssignmentTitles planningTitle={planningTitle} assignmentTitle={assignmentTitle} />
+            </div>
             <div className='display:revert @5xl/view:[display:none] pt-2'>
               <Assignees assignees={assignees} />
             </div>
