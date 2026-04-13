@@ -179,7 +179,7 @@ export const HastToggle = ({ ydoc, usableId, className, variant = 'compact' }: {
   return (
     <>
       <div className={cn('flex items-center gap-1.5', className)}>
-        <HastSwitch checked={isHast} onCheckedChange={handleToggle} size='lg' />
+        <HastSwitch checked={isHast} onCheckedChange={handleToggle} />
         <Label
           className={cn('text-xs cursor-pointer', textColor)}
           onClick={handleToggle}
