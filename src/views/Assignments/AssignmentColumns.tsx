@@ -8,9 +8,11 @@ import {
   SignalHighIcon,
   UsersIcon,
   ShapesIcon,
-  CircleCheckIcon
+  CircleCheckIcon,
+  ZapIcon
 } from '@ttab/elephant-ui/icons'
 import { Newsvalues } from '@/defaults/newsvalues'
+import { Button } from '@ttab/elephant-ui'
 import { HastIndicator } from '@/components/HastIndicator'
 import { FacetedFilter } from '@/components/Commands/FacetedFilter'
 import { getAssignmentTypes, isVisualAssignmentType } from '@/defaults/assignmentTypes'
@@ -142,18 +144,13 @@ export function assignmentColumns<Ns extends Namespace>({ authors = [], locale, 
       cell: ({ row }) => {
         const assignmentTitle = row.original.fields['document.meta.core_assignment.title'].values[0] || ''
         const planningTitle = row.original.fields['document.title'].values[0] || ''
-        const deliverableId = row.original
-          .fields['document.meta.core_assignment.rel.deliverable.uuid']?.values[0]
         const assignees = (row.getValue<string[]>('assignees') || []).map((assigneeId) => {
           return authors.find((author) => author.id === assigneeId)?.name || ''
         })
 
         return (
           <>
-            <div className='flex items-center gap-2'>
-              <HastIndicator documentId={deliverableId} />
-              <AssignmentTitles planningTitle={planningTitle} assignmentTitle={assignmentTitle} />
-            </div>
+            <AssignmentTitles planningTitle={planningTitle} assignmentTitle={assignmentTitle} />
             <div className='display:revert @5xl/view:[display:none] pt-2'>
               <Assignees assignees={assignees} />
             </div>
@@ -348,6 +345,25 @@ export function assignmentColumns<Ns extends Namespace>({ authors = [], locale, 
       },
       filterFn: (row, id, value: string[]) =>
         value.some((v: string) => row.getValue<string[] | undefined>(id)?.includes(v))
+    },
+    {
+      id: 'hast',
+      meta: {
+        name: 'Hast',
+        columnIcon: ZapIcon,
+        className: 'box-content w-8 sm:w-8 pr-1 sm:pr-4'
+      },
+      cell: ({ row }) => {
+        const deliverableId = row.original
+          .fields['document.meta.core_assignment.rel.deliverable.uuid']?.values[0]
+        return (
+          <div className='flex items-center'>
+            <Button size='xs' variant='icon' className='p-0'>
+              <HastIndicator documentId={deliverableId} size={18} />
+            </Button>
+          </div>
+        )
+      }
     },
     {
       id: 'action',
