@@ -1,7 +1,9 @@
 import { Button, SheetClose } from '@ttab/elephant-ui'
 import { cn } from '@ttab/elephant-ui/utils'
+import { SettingsIcon } from '@ttab/elephant-ui/icons'
 import type { Session } from 'next-auth'
 import { Avatar } from '../Avatar'
+import { Link } from '@/components'
 import { signOut } from 'next-auth/react'
 import type { JSX } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -30,21 +32,33 @@ export const UserInfo = ({ user, data }: {
         <div className='text-xs opacity-60'></div>
       </div>
 
-      <SheetClose asChild>
-        <Button
-          variant='outline'
-          onClick={(event) => {
-            event.preventDefault()
+      <div className='flex gap-2'>
+        <SheetClose asChild>
+          <Link
+            to='UserPreferences'
+            className='inline-flex items-center gap-2 rounded-md border bg-background px-3 h-9 text-sm hover:bg-accent'
+          >
+            <SettingsIcon strokeWidth={1.75} size={16} />
+            {t('app:settings.settingsButton')}
+          </Link>
+        </SheetClose>
 
-            signOut({ redirectTo: `${BASE_URL}/api/signout`, redirect: true })
-              .catch((error) => console.error(error))
-            localStorage.removeItem('trustGoogle')
-          }}
-          className='gap-4'
-        >
-          {t('app:mainMenu.logout')}
-        </Button>
-      </SheetClose>
+        <SheetClose asChild>
+          <Button
+            variant='outline'
+            onClick={(event) => {
+              event.preventDefault()
+
+              signOut({ redirectTo: `${BASE_URL}/api/signout`, redirect: true })
+                .catch((error) => console.error(error))
+              localStorage.removeItem('trustGoogle')
+            }}
+            className='gap-4'
+          >
+            {t('app:mainMenu.logout')}
+          </Button>
+        </SheetClose>
+      </div>
     </div>
   )
 }

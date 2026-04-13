@@ -28,7 +28,8 @@ export async function createArticle({
   embargoUntil,
   contentSources,
   wireContent,
-  translationMode
+  translationMode,
+  personalPrefs
 }: {
   ydoc: YDocument<Y.Map<unknown>>
   status: string
@@ -46,6 +47,7 @@ export async function createArticle({
   contentSources?: EleBlock[]
   wireContent?: TBElement[]
   translationMode?: 'standard' | 'personal'
+  personalPrefs?: string
 }): Promise<void> {
   const [documentId] = getValueByYPath<string>(ydoc.ele, 'root.uuid')
 
@@ -101,7 +103,7 @@ export async function createArticle({
   // the provider disconnects, so we use the captured yjsDocument reference.
   if (wireContent && translationMode) {
     try {
-      const translatedContent = await translateWireContent(wireContent, translationMode)
+      const translatedContent = await translateWireContent(wireContent, translationMode, personalPrefs)
       if (yjsDocument) {
         yjsDocument.getMap('ele').set('content', translatedContent)
       }

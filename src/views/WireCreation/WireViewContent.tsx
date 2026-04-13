@@ -16,7 +16,7 @@ import {
   BriefcaseBusinessIcon,
   TagIcon
 } from '@ttab/elephant-ui/icons'
-import { useRegistry, useSections, useHasUnit } from '@/hooks'
+import { useRegistry, useSections, useHasUnit, useUserPreferences } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import type { JSX } from 'react'
 import { Fragment, useMemo, useRef, useState } from 'react'
@@ -96,6 +96,7 @@ export const WireViewContent = (props: ViewProps & {
   const { t } = useTranslation('wires')
   const [, setNewsvalue] = useYValue<string | undefined>(ydoc.ele, 'meta.core/newsvalue[0].value')
   const isNpkUser = useHasUnit('/redaktionen-npk')
+  const { preferences } = useUserPreferences()
   const [translationMode, setTranslationMode] = useState<'none' | 'standard' | 'personal'>(isNpkUser ? 'standard' : 'none')
   const wireHeadline = props.wires?.[0]?.fields['document.title']?.values?.[0] || ''
 
@@ -372,7 +373,8 @@ export const WireViewContent = (props: ViewProps & {
                     embargoUntil: wireData.embargoUntil,
                     contentSources: wireData.contentSources,
                     wireContent: wireDocument?.content,
-                    translationMode: translationMode !== 'none' ? translationMode : undefined
+                    translationMode: translationMode !== 'none' ? translationMode : undefined,
+                    personalPrefs: preferences.nynorskPrefs
                   })
                     .then(() => {
                       setShowVerifyDialog(false)
