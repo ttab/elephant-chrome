@@ -77,7 +77,10 @@ export async function createHast({
 
   // After publishing, immediately create a new draft version
   if (documentStatus === 'usable') {
-    await snapshotDocument(ydoc.id, { status: 'draft' }, ydoc.provider?.document)
+    await snapshotDocument(ydoc.id, {
+      status: 'draft',
+      cause: 'development'
+    }, ydoc.provider?.document)
       .catch((ex) => {
         console.error('Failed creating draft after hast publish', ex)
         throw new Error('DraftCreationError')
