@@ -41,7 +41,8 @@
     "sent": "Sent",
     "typeApproved": "{{type}} approved",
     "typeDone": "{{type}} done",
-    "typeSaved": "{{type}} saved"
+    "typeSaved": "{{type}} saved",
+    "typeSent": "{{type}} sent"
   },
   "timeSlots": {
     "morning": "Morning",

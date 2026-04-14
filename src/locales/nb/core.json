@@ -4,7 +4,7 @@
     "event": "hendelse",
     "assignment": "oppdrag",
     "article": "artikkel",
-    "flash": "HAST",
+    "flash": "Flash",
     "quickArticle": "hurtigartikkel"
   },
   "labels": {
@@ -41,7 +41,8 @@
     "sent": "Sendt",
     "typeApproved": "{{type}} godkjent",
     "typeDone": "{{type}} ferdig",
-    "typeSaved": "{{type}} lagret"
+    "typeSaved": "{{type}} lagret",
+    "typeSent": "{{type}} sendt"
   },
   "timeSlots": {
     "morning": "Natt",

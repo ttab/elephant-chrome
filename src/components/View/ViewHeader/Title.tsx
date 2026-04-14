@@ -67,7 +67,7 @@ export const Title = ({
     variants: {
       asDialog: {
         true: '',
-        false: 'hidden @md/view:block'
+        false: 'hidden @lg/view:block'
       }
     }
   })

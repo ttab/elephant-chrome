@@ -84,7 +84,11 @@
     "labels": {
       "mediaType": "Media type",
       "image": "Image",
-      "graphic": "Graphic"
+      "graphic": "Graphic",
+      "close": "Close",
+      "searchFailed": "Image search failed",
+      "retry": "Try again",
+      "noResults": "No results"
     }
   }
 }

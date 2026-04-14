@@ -4,7 +4,7 @@
     "assignments": "Assignments",
     "events": "Events",
     "factboxes": "Factboxes",
-    "flash": "Create flash",
+    "flash": "Create {{type}}",
     "latest": "Latest",
     "logout": "Log out",
     "plannings": "Plannings",

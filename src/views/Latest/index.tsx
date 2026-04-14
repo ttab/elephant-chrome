@@ -10,7 +10,7 @@ import { DotMenu } from '@/components/ui/DotMenu'
 import { Link } from '@/components'
 import { PenIcon, CalendarDaysIcon, LibraryIcon } from '@ttab/elephant-ui/icons'
 import type { HitV1 } from '@ttab/elephant-api/index'
-import { useDeliverablePlanningId } from '@/hooks/index/useDeliverablePlanningId'
+import { useDeliverableInfo } from '@/hooks/useDeliverableInfo'
 import { useLatest } from './hooks/useLatest'
 import { SluglineButton } from '@/components/DataItem/Slugline'
 import { SectionBadge } from '@/components/DataItem/SectionBadge'
@@ -129,7 +129,7 @@ const Content = ({ documents, locale }: {
 }
 
 const Menu = ({ articleId }: { articleId: string }): JSX.Element => {
-  const planningId = useDeliverablePlanningId(articleId)
+  const planningId = useDeliverableInfo(articleId)?.planningUuid ?? ''
   const { t } = useTranslation('common')
   const { showModal, hideModal } = useModal()
   const featureFlags = useFeatureFlags(['hasPrint'])

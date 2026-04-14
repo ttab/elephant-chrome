@@ -8,6 +8,7 @@ export { planningDocumentTemplate as planning } from './planningDocumentTemplate
 export { eventDocumentTemplate as event } from './eventDocumentTemplate.js'
 export { editorialInfoDocumentTemplate as editorialInfo } from './editorialInfoDocumentTemplate.js'
 export { quickArticleDocumentTemplate as quickArticle } from './quickArticleDocumentTemplate.js'
+export { hastDocumentTemplate as hast } from './hastDocumentTemplate.js'
 
 export interface TemplatePayload {
   query?: Record<string, string | string[] | undefined>
@@ -19,6 +20,7 @@ export interface TemplatePayload {
     'core/planning-item'?: Block[]
     'core/description'?: Block[]
     'core/event'?: Block[]
+    'ntb/hast'?: Block[]
   }
   links?: {
     'core/section'?: Block[]

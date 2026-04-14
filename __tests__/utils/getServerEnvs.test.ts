@@ -5,7 +5,7 @@ const validPayload = {
   indexUrl: 'https://index.example.com',
   webSocketUrl: 'https://ws.example.com',
   repositoryUrl: 'https://repo.example.com',
-  contentApiUrl: 'https://content.example.com',
+  imageSearchUrl: 'https://content.example.com',
   spellcheckUrl: 'https://spell.example.com',
   userUrl: 'https://user.example.com',
   faroUrl: 'https://faro.example.com',
@@ -35,7 +35,7 @@ describe('getServerEnvs', () => {
     expect(urls.indexUrl.href).toBe('https://index.example.com/')
     expect(urls.repositoryUrl.href).toBe('https://repo.example.com/')
     expect(urls.webSocketUrl.href).toBe('https://ws.example.com/')
-    expect(urls.contentApiUrl.href).toBe('https://content.example.com/')
+    expect(urls.imageSearchUrl.href).toBe('https://content.example.com/')
     expect(urls.spellcheckUrl.href).toBe('https://spell.example.com/')
     expect(urls.userUrl.href).toBe('https://user.example.com/')
     expect(urls.faroUrl.href).toBe('https://faro.example.com/')

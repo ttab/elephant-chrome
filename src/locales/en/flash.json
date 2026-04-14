@@ -1,12 +1,13 @@
 {
   "title": "Flash",
   "flashDocument": "Flash document",
-  "createFlashAlertTitle": "You are creating a new flash",
+  "createAlertTitle": "You are creating a new {{type}}",
   "alertDescription1": "If you do not choose a planning, a new planning with an associated assignment will be created for you.",
   "alertDescription2": "This {{documentType}} will be added to a new assignment in the selected planning.",
   "createQuickarticle": "Create quick-article",
   "titles": {
     "newFlashTitle": "Create new flash",
+    "newHastTitle": "Create new HAST",
     "createAndSendType": "Create and send {{type}}",
     "createAndMarkTypeAsDone": "Create and mark {{type}} as done",
     "approveType": "Approve {{type}}",
@@ -15,7 +16,7 @@
   "promptDescriptions": {
     "newPlanningWillBeCreated": "A new planning with an associated assignment for this {{type}} will be created for you.",
     "typeWillBeAddedToPlanning": "This {{type}} will be added to a new assignment in the planning \"{{planningName}}\".",
-    "alsoTypeCreated": "In the same planning, a text assignment with the flash content will also be added.",
+    "alsoTypeCreated": "In the same planning, a text assignment with the {{type}} content will also be added.",
     "alsoTypeCreatedWithApproved": "A new, internal planning with an associated assignment for this article will be created for you. The article will have the status Approved. Remember to update and publish the planning!"
   },
   "operations": {
@@ -23,6 +24,10 @@
   },
   "placeholders": {
     "flashTitle": "Flash headline",
-    "sluggForTypes": "Slug for {{type1}} and {{type2}}"
-  }
+    "sluggForTypes": "Slug for {{type1}} and {{type2}}",
+    "hastTitle": "HAST title"
+  },
+  "sendAsHast": "Send as HAST",
+  "sendAsHastDescription": "When published, this article will be sent as a HAST.",
+  "hastLabel": "HAST"
 }

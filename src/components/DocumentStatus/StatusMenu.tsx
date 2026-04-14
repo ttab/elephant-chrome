@@ -211,6 +211,9 @@ export const StatusMenu = ({ ydoc, onBeforeStatusChange, planningId, embargoUnti
               planningId={planningId}
               requireCause={!!documentStatus.checkpoint}
               embargoUntil={embargoUntil}
+              ydoc={ydoc}
+              usableId={documentStatus.usableId}
+              documentType={documentStatus.type}
             />
           )}
 
@@ -222,6 +225,9 @@ export const StatusMenu = ({ ydoc, onBeforeStatusChange, planningId, embargoUnti
               currentCause={documentStatus.cause}
               requireCause={requireCause}
               unPublishDocument={unPublishDocument}
+              ydoc={ydoc}
+              usableId={documentStatus.usableId}
+              documentType={documentStatus.type}
             />
           )}
         </>

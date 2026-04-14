@@ -4,7 +4,7 @@
     "assignments": "Uppdrag",
     "events": "Händelser",
     "factboxes": "Faktarutor",
-    "flash": "Skapa flash",
+    "flash": "Skapa {{type}}",
     "latest": "Senast utgivet",
     "logout": "Logga ut",
     "plannings": "Planeringar",
