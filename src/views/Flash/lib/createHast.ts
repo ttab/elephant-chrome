@@ -66,7 +66,6 @@ export async function createHast({
     type: 'text',
     deliverableId: ydoc.id,
     title: hastTitle || 'Ny hast',
-    slugline: 'hast',
     priority: 5,
     publicVisibility: true,
     localDate,
@@ -75,6 +74,15 @@ export async function createHast({
   })
 
   await snapshotPromise
+
+  // After publishing, immediately create a new draft version
+  if (documentStatus === 'usable') {
+    await snapshotDocument(ydoc.id, { status: 'draft' }, ydoc.provider?.document)
+      .catch((ex) => {
+        console.error('Failed creating draft after hast publish', ex)
+        throw new Error('DraftCreationError')
+      })
+  }
 
   if (!updatedPlanningId) {
     throw new Error('CreateAssignmentError')
