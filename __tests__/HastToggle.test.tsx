@@ -109,34 +109,17 @@ describe('HastToggle', () => {
     )
   })
 
-  it('shows prompt on toggle off and removes from version', async () => {
+  it('removes from version directly on toggle off', async () => {
     mockHastValue = Block.create({ type: 'ntb/hast', value: '2' })
     const user = userEvent.setup()
     render(<HastToggle ydoc={mockYdoc} usableId={1n} />)
 
     const toggle = screen.getByRole('switch')
     await user.click(toggle)
-
-    const versionButton = screen.getByText('Den här versionen')
-    await user.click(versionButton)
 
     expect(mockSetHast).toHaveBeenCalledWith(
       Block.create({ type: 'ntb/hast', value: '0' })
     )
-  })
-
-  it('shows prompt on toggle off and removes from article', async () => {
-    mockHastValue = Block.create({ type: 'ntb/hast', value: '2' })
-    const user = userEvent.setup()
-    render(<HastToggle ydoc={mockYdoc} usableId={1n} />)
-
-    const toggle = screen.getByRole('switch')
-    await user.click(toggle)
-
-    const articleButton = screen.getByText('Hela artikeln')
-    await user.click(articleButton)
-
-    expect(mockSetHast).toHaveBeenCalledWith(undefined)
   })
 
   it('sets hast to next version when toggling on after previous hast was consumed', async () => {
@@ -179,7 +162,6 @@ describe('HastToggle', () => {
     render(<HastToggle ydoc={mockYdoc} usableId={1n} />)
 
     await user.click(screen.getByRole('switch'))
-    await user.click(screen.getByText('Den här versionen'))
 
     expect(mockSnapshotDocument).toHaveBeenCalled()
   })
@@ -196,21 +178,7 @@ describe('HastToggle', () => {
     })
   })
 
-  it('closes prompt without changes when cancel clicked', async () => {
-    mockHastValue = Block.create({ type: 'ntb/hast', value: '2' })
-    const user = userEvent.setup()
-    render(<HastToggle ydoc={mockYdoc} usableId={1n} />)
-
-    await user.click(screen.getByRole('switch'))
-    expect(screen.getByText('Den här versionen')).toBeDefined()
-
-    await user.click(screen.getByText('Avbryt'))
-
-    expect(screen.queryByText('Den här versionen')).toBeNull()
-    expect(mockSetHast).not.toHaveBeenCalled()
-  })
-
-  it('removes from version directly without prompt in full variant', async () => {
+  it('removes from version directly in full variant', async () => {
     mockHastValue = Block.create({ type: 'ntb/hast', value: '2' })
     const user = userEvent.setup()
     render(<HastToggle ydoc={mockYdoc} usableId={1n} variant='full' />)

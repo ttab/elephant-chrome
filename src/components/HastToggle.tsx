@@ -6,9 +6,8 @@ import { useRegistry } from '@/hooks/useRegistry'
 import { useTranslation } from 'react-i18next'
 import { ZapIcon } from '@ttab/elephant-ui/icons'
 import type * as Y from 'yjs'
-import { useState, type JSX } from 'react'
+import { type JSX } from 'react'
 import { cn } from '@ttab/elephant-ui/utils'
-import { Prompt } from '@/components/Prompt'
 import { snapshotDocument } from '@/lib/snapshotDocument'
 import { toast } from 'sonner'
 import { mutate } from 'swr'
@@ -82,7 +81,6 @@ export const HastToggle = ({ ydoc, usableId, className, variant = 'compact' }: {
   // which also shows active for current usable version, this simpler check works for
   // the toggle because we only enable it for unpublished versions.
   const isHast = !!hast && hastValue === (usableId ?? 0n) + 1n
-  const [showPrompt, setShowPrompt] = useState(false)
 
   if (!featureFlags.hasHast) {
     return null
@@ -118,10 +116,8 @@ export const HastToggle = ({ ydoc, usableId, className, variant = 'compact' }: {
   function handleToggle() {
     if (!isHast) {
       toggleOn()
-    } else if (variant === 'full') {
-      handleRemoveFromVersion()
     } else {
-      setShowPrompt(true)
+      handleRemoveFromVersion()
     }
   }
 
@@ -134,22 +130,9 @@ export const HastToggle = ({ ydoc, usableId, className, variant = 'compact' }: {
         value: '0'
       }))
       void snapshot()
-      setShowPrompt(false)
     } catch (error) {
       toast.error(t('errors:toasts.saveChangeError'))
       console.error('Error removing HAST from version:', error)
-    }
-  }
-
-  // Removes hast block entirely - no hast on any future versions unless re-added.
-  function handleRemoveFromArticle() {
-    try {
-      setHast(undefined)
-      void snapshot()
-      setShowPrompt(false)
-    } catch (error) {
-      toast.error(t('errors:toasts.saveChangeError'))
-      console.error('Error removing HAST from article:', error)
     }
   }
 
@@ -177,29 +160,14 @@ export const HastToggle = ({ ydoc, usableId, className, variant = 'compact' }: {
   }
 
   return (
-    <>
-      <div className={cn('flex items-center gap-1.5', className)}>
-        <HastSwitch checked={isHast} onCheckedChange={handleToggle} />
-        <Label
-          className={cn('text-xs cursor-pointer', textColor)}
-          onClick={handleToggle}
-        >
-          {t('flash:hastLabel')}
-        </Label>
-      </div>
-
-      {showPrompt && (
-        <Prompt
-          title={t('flash:removeHast.title')}
-          description={t('flash:removeHast.description')}
-          primaryLabel={t('flash:removeHast.fromVersion')}
-          secondaryLabel={t('flash:removeHast.fromArticle')}
-          cancelLabel={t('common:actions.abort')}
-          onPrimary={handleRemoveFromVersion}
-          onSecondary={handleRemoveFromArticle}
-          onCancel={() => setShowPrompt(false)}
-        />
-      )}
-    </>
+    <div className={cn('flex items-center gap-1.5', className)}>
+      <HastSwitch checked={isHast} onCheckedChange={handleToggle} />
+      <Label
+        className={cn('text-xs cursor-pointer', textColor)}
+        onClick={handleToggle}
+      >
+        {t('flash:hastLabel')}
+      </Label>
+    </div>
   )
 }
