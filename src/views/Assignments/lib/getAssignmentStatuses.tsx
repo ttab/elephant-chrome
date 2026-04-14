@@ -1,8 +1,9 @@
+import { StatusSpecifications } from '@/defaults/workflowSpecification'
 import type { Repository } from '@/shared/Repository'
 import type { EleBlock } from '@/shared/types'
 
 export const getAssignmentStatuses = async (assignments: EleBlock[], repository: Repository, accessToken: string) => {
-  const acceptedStatues = ['usable', 'withheld', 'cancelled', 'draft', 'unpublished', 'approved', 'done']
+  const acceptedStatues = Object.keys(StatusSpecifications)
 
   const assignmentsId = (assignments || []).map((assignment) => {
     const type = assignment.meta['core/assignment-type'][0]?.value
@@ -40,5 +41,6 @@ export const getAssignmentStatuses = async (assignments: EleBlock[], repository:
     })
   } catch (error) {
     console.log(error)
+    throw error
   }
 }
