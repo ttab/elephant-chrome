@@ -102,9 +102,11 @@ export async function translateWireContent(
       ...(mode === 'personal' && personalPrefs ? { prefs: parsePersonalPrefs(personalPrefs) } : {})
     })
 
-    if (result.texts?.values?.length === texts.length) {
-      replaceTexts(cloned, result.texts.values)
+    if (result.texts?.values?.length !== texts.length) {
+      throw new Error(`Translation returned ${result.texts?.values?.length ?? 0} texts, expected ${texts.length}`)
     }
+
+    replaceTexts(cloned, result.texts.values)
   }
 
   const yContent = new Y.XmlText()
