@@ -33,7 +33,10 @@ vi.mock('@/hooks/useWorkflowStatus', () => ({
 
 let repositoryEventCallback: ((event: { uuid?: string, event?: string }) => void) | null = null
 vi.mock('@/hooks/useRepositoryEvents', () => ({
-  useRepositoryEvents: vi.fn((_eventTypes, callback) => {
+  useRepositoryEvents: vi.fn((
+    _eventTypes: string[],
+    callback: (event: { uuid?: string, event?: string }) => void
+  ) => {
     repositoryEventCallback = callback
   })
 }))

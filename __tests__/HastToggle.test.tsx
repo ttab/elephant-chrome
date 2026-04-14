@@ -14,7 +14,7 @@ let mockHasHastFlag = true
 vi.mock('sonner')
 
 vi.mock('@/lib/snapshotDocument', () => ({
-  snapshotDocument: (...args: unknown[]) => mockSnapshotDocument(...args)
+  snapshotDocument: (...args: unknown[]) => mockSnapshotDocument(...args) as unknown
 }))
 
 vi.mock('@/modules/yjs/hooks', () => ({
