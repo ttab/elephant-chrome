@@ -66,6 +66,7 @@ export const CreatePrintArticle = ({ id, asDialog, onDialogClose, className }: V
     try {
       const response = await baboon.createPrintArticle({
         sourceUuid: id,
+        sourceVersion: 0n,
         flowUuid: printFlow,
         date: dateString,
         article: articleName

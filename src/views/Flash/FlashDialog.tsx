@@ -1,11 +1,13 @@
 import {
   Awareness,
+  Newsvalue,
   Section,
   View
 } from '@/components'
 import type { DefaultValueOption, ViewProps } from '@/types'
 import { Alert, AlertDescription, AlertTitle, Button, Checkbox, ComboBox, Label } from '@ttab/elephant-ui'
 import { CircleXIcon, TagsIcon, GanttChartSquareIcon, NewspaperIcon, ZapIcon, InfoIcon, TriangleAlertIcon } from '@ttab/elephant-ui/icons'
+import { Newsvalues } from '@/defaults'
 import { useRegistry, useSections } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import type { Dispatch, SetStateAction } from 'react'
@@ -14,6 +16,7 @@ import { Form } from '@/components/Form'
 import { fetch } from '@/lib/index/fetch-plannings-twirp'
 import type { CreateFlashDocumentStatus } from './lib/createFlash'
 import { createFlash } from './lib/createFlash'
+import { createHast } from './lib/createHast'
 import { CreatePrompt } from '@/components/CreatePrompt'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import { toast } from 'sonner'
@@ -44,7 +47,9 @@ type PromptConfig = {
 export const FlashDialog = (props: {
   documentId: string
   data?: EleDocumentResponse
+  mode?: 'flash' | 'hast'
 } & ViewProps): JSX.Element => {
+  const isHast = props.mode === 'hast'
   const ydoc = useYDocument<Y.Map<unknown>>(props.documentId, { data: props.data })
 
   const { status, data: session } = useSession()
@@ -52,12 +57,11 @@ export const FlashDialog = (props: {
   const [sendPrompt, setSendPrompt] = useState(false)
   const [savePrompt, setSavePrompt] = useState(false)
   const [donePrompt, setDonePrompt] = useState(false)
-  // const [selectedPlanning, setSelectedPlanning] = useState<Omit<DefaultValueOption, 'payload'> & { payload: unknown, label: string } | undefined>(undefined)
-  const [selectedPlanning, setSelectedPlanning] = useState<Omit<DefaultValueOption, 'payload'> & { payload: { slugline: string }, label: string } | undefined>(undefined)
+  const [selectedPlanning, setSelectedPlanning] = useState<Omit<DefaultValueOption, 'payload'> & { payload: { slugline: string } } | undefined>(undefined)
   const [, setTitle] = useYValue<string | undefined>(ydoc.ele, 'root.title')
   const { index, locale, timeZone, repository } = useRegistry()
   const [searchOlder, setSearchOlder] = useState(false)
-  const [shouldCreateQuickArticle, setShouldCreateQuickArticle] = useState(true)
+  const [shouldCreateQuickArticle, setShouldCreateQuickArticle] = useState(!isHast)
   const [section, setSection] = useState<{
     type: string
     rel: string
@@ -107,7 +111,7 @@ export const FlashDialog = (props: {
   const createAndSaveQuickArticle = (data: {
     documentStatus: CreateFlashDocumentStatus
     updatedPlanningId: string
-    quickArticleData: QuickArticleData | undefined
+    quickArticleData?: QuickArticleData | undefined
   }, startDate: string | undefined) => {
     const { quickArticleData } = data
 
@@ -169,10 +173,9 @@ export const FlashDialog = (props: {
   const handleCreationSuccess = (data: {
     documentStatus: CreateFlashDocumentStatus
     updatedPlanningId: string
-    quickArticleData: QuickArticleData | undefined
+    quickArticleData?: QuickArticleData | undefined
   } | undefined, config: PromptConfig, startDate: string | undefined) => {
-    // After flash has been successfully created, we celebrate with a toast
-    toast.success(getLabel(data?.documentStatus, 'flash'), {
+    toast.success(getLabel(data?.documentStatus, isHast ? 'hast' : 'flash'), {
       classNames: {
         title: 'whitespace-nowrap'
       },
@@ -180,10 +183,12 @@ export const FlashDialog = (props: {
         <ToastAction
           key='open-flash-1'
           documentId={ydoc.id}
-          withView='Flash'
+          withView={isHast ? 'Editor' : 'Flash'}
           target='last'
           Icon={ZapIcon}
-          label={t('common:actions.openType', { type: t('core:documentType.flash') })}
+          label={t('common:actions.openType', {
+            type: t(isHast ? 'flash:hastLabel' : 'core:documentType.flash')
+          })}
         />
       )
     })
@@ -197,7 +202,7 @@ export const FlashDialog = (props: {
   }
 
   const configs = useMemo(() => promptConfig({
-    type: 'flash',
+    type: isHast ? 'hast' : 'flash',
     savePrompt,
     sendPrompt,
     donePrompt,
@@ -207,6 +212,7 @@ export const FlashDialog = (props: {
     selectedPlanning,
     shouldCreateQuickArticle
   }), [
+    isHast,
     donePrompt,
     savePrompt,
     sendPrompt,
@@ -219,31 +225,36 @@ export const FlashDialog = (props: {
 
   const handleCreationErrors = (ex: Error) => {
     console.error(ex)
+    const docType = t(isHast ? 'flash:hastLabel' : 'core:documentType.flash')
 
-    if (ex?.message === 'FlashCreationError') {
-      toast.error(t('errors:messages.flashCreationFailed'), {
-        action: (
-          <ToastAction
-            documentId={ydoc.id}
-            withView='Flash'
-            Icon={ZapIcon}
-            label='Öppna flash'
-          />
-        )
-      })
+    if (ex?.message === 'FlashCreationError' || ex?.message === 'HastCreationError') {
+      toast.error(
+        t('errors:messages.documentCreationFailed', { type: docType }),
+        {
+          action: (
+            <ToastAction
+              documentId={ydoc.id}
+              withView='Flash'
+              Icon={ZapIcon}
+              label={t('common:actions.openType', { type: docType })}
+            />
+          )
+        })
     }
 
     if (ex?.message === 'CreateAssignmentError') {
-      toast.error(t('errors:messages.createAssignmentError'), {
-        action: (
-          <ToastAction
-            documentId={ydoc.id}
-            withView='Flash'
-            Icon={ZapIcon}
-            label='Öppna flash'
-          />
-        )
-      })
+      toast.error(
+        t('errors:messages.documentCreatedAssignmentFailed', { type: docType }),
+        {
+          action: (
+            <ToastAction
+              documentId={ydoc.id}
+              withView='Flash'
+              Icon={ZapIcon}
+              label={t('common:actions.openType', { type: docType })}
+            />
+          )
+        })
     }
   }
 
@@ -359,28 +370,36 @@ export const FlashDialog = (props: {
             {!selectedPlanning && props.asDialog && (
               <Form.Group icon={TagsIcon}>
                 <Section ydoc={ydoc} path='links.core/section[0]' onSelect={setSection} />
+                {isHast && (
+                  <Newsvalue
+                    ydoc={ydoc}
+                    path='meta.core/newsvalue[0].value'
+                    options={Newsvalues.filter((nv) => Number(nv.value) >= 4)}
+                  />
+                )}
               </Form.Group>
             )}
-            <Form.Group icon={NewspaperIcon}>
-
-              <div className='flex gap-2 items-center'>
-                <Checkbox
-                  id='createQuickArticle'
-                  defaultChecked={shouldCreateQuickArticle}
-                  onCheckedChange={(checked: boolean) => {
-                    setShouldCreateQuickArticle(checked)
-                    if (!checked) {
-                      setSlugline('')
-                      if (selectedPlanning?.payload?.slugline !== relatedDocsSlugline) {
-                        setInvalidSlug(false)
+            {!isHast && (
+              <Form.Group icon={NewspaperIcon}>
+                <div className='flex gap-2 items-center'>
+                  <Checkbox
+                    id='createQuickArticle'
+                    defaultChecked={shouldCreateQuickArticle}
+                    onCheckedChange={(checked: boolean) => {
+                      setShouldCreateQuickArticle(checked)
+                      if (!checked) {
+                        setSlugline('')
+                        if (selectedPlanning?.payload?.slugline !== relatedDocsSlugline) {
+                          setInvalidSlug(false)
+                        }
                       }
-                    }
-                  }}
-                />
-                <Label htmlFor='createQuickArticle' className='text-muted-foreground'>{t('flash:createQuickarticle')}</Label>
-              </div>
-            </Form.Group>
-            {shouldCreateQuickArticle && (
+                    }}
+                  />
+                  <Label htmlFor='createQuickArticle' className='text-muted-foreground'>{t('flash:createQuickarticle')}</Label>
+                </div>
+              </Form.Group>
+            )}
+            {!isHast && shouldCreateQuickArticle && (
               <Form.Group icon={TagsIcon}>
                 <div className='w-1/2 relative'>
                   {invalidSlug && (
@@ -426,16 +445,20 @@ export const FlashDialog = (props: {
             <>
               <Alert className='bg-red-300/35'>
                 <InfoIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />
-                <AlertTitle>{t('flash:createFlashAlertTitle')}</AlertTitle>
+                <AlertTitle>
+                  {t('flash:createAlertTitle', { type: t(isHast ? 'flash:hastLabel' : 'flash:title') })}
+                </AlertTitle>
                 <AlertDescription>
                   {!selectedPlanning
-                    ? (<>{t('flash:alertDescription1')}</>)
-                    : (<>{t('flash:alertDescription2', { documentType: t('core:documentType.flash') })}</>)}
+                    ? t('flash:alertDescription1')
+                    : t('flash:alertDescription2', {
+                      documentType: t(isHast ? 'flash:hastLabel' : 'core:documentType.flash')
+                    })}
                 </AlertDescription>
               </Alert>
             </>
 
-            <DialogEditor ydoc={ydoc} setTitle={setTitle} type='flash' />
+            <DialogEditor ydoc={ydoc} setTitle={setTitle} type={isHast ? 'hast' : 'flash'} />
 
           </Form.Content>
 
@@ -459,19 +482,31 @@ export const FlashDialog = (props: {
                       startDate?: string
                     }
 
-                    createFlash({
-                      ydoc,
-                      status,
-                      session,
-                      planningId: selectedPlanning?.value,
-                      timeZone,
-                      documentStatus: config.documentStatus,
-                      startDate,
-                      section: (!selectedPlanning?.value) ? section || undefined : undefined,
-                      planningSection: section,
-                      relatedDocsSlugline,
-                      shouldCreateQuickArticle
-                    })
+                    const createPromise = isHast
+                      ? createHast({
+                        ydoc,
+                        status,
+                        planningId: selectedPlanning?.value,
+                        timeZone,
+                        documentStatus: config.documentStatus,
+                        startDate,
+                        section: (!selectedPlanning?.value) ? section || undefined : undefined
+                      })
+                      : createFlash({
+                        ydoc,
+                        status,
+                        session,
+                        planningId: selectedPlanning?.value,
+                        timeZone,
+                        documentStatus: config.documentStatus,
+                        startDate,
+                        section: (!selectedPlanning?.value) ? section || undefined : undefined,
+                        planningSection: section,
+                        relatedDocsSlugline,
+                        shouldCreateQuickArticle
+                      })
+
+                    createPromise
                       .then((data) => {
                         if (props?.onDialogClose) {
                           props.onDialogClose()

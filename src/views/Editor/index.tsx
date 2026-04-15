@@ -1,8 +1,19 @@
 import type { JSX } from 'react'
 import { useMemo } from 'react'
+import type { Block } from '@ttab/elephant-api/newsdoc'
 import { View } from '@/components'
 import { Notes } from '@/components/Notes'
-import { Bold, Italic, Link, Text, TTVisual, Factbox, Table, LocalizedQuotationMarks } from '@ttab/textbit-plugins'
+import {
+  Bold,
+  Italic,
+  Image,
+  Link,
+  Text,
+  TTVisual,
+  Factbox,
+  Table,
+  LocalizedQuotationMarks
+} from '@ttab/textbit-plugins'
 import { ImageSearchPlugin } from '../../plugins/ImageSearch'
 import { FactboxPlugin } from '../../plugins/Factboxes'
 import { Editor as PlainEditor } from '@/components/PlainEditor'
@@ -101,6 +112,7 @@ function EditorWrapper(props: ViewProps & {
     visibility: !preview
   })
   const [documentLanguage] = getValueByYPath<string>(ydoc.ele, 'root.language')
+  const [hast] = getValueByYPath<Block | undefined>(ydoc.ele, 'meta.ntb/hast[0]')
   const [content] = getValueByYPath<Y.XmlText>(ydoc.ele, 'content', true)
   const openFactboxEditor = useLink('Factbox')
   const openImageSearch = useLink('ImageSearch')
@@ -125,8 +137,13 @@ function EditorWrapper(props: ViewProps & {
         enableCrop: false,
         removable: !preview
       }),
+      Image({
+        removable: true,
+        enableCrop: false,
+        visibility: () => [false, true, false]
+      }),
       Text({
-        countCharacters: ['heading-1'],
+        countCharacters: hast ? ['heading-1', 'preamble'] : ['heading-1'],
         ...getContentMenuLabels()
       }),
       Factbox({
@@ -140,7 +157,7 @@ function EditorWrapper(props: ViewProps & {
         locale: activeLocale
       })
     ]
-  }, [openFactboxEditor, openFactboxes, openImageSearch, t, activeLocale, preview])
+  }, [openFactboxEditor, openFactboxes, openImageSearch, t, activeLocale, preview, hast])
 
   if (!content) {
     return <View.Root />

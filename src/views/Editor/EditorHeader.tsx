@@ -9,7 +9,7 @@ import { CableIcon } from '@ttab/elephant-ui/icons'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { toast } from 'sonner'
 import { handleLink } from '@/components/Link/lib/handleLink'
-import { useDeliverablePlanningId } from '@/hooks/index/useDeliverablePlanningId'
+import { useDeliverableInfo } from '@/hooks/useDeliverableInfo'
 import { Button } from '@ttab/elephant-ui'
 import { updateAssignmentTime } from '@/lib/index/updateAssignmentPublishTime'
 import type { YDocument } from '@/modules/yjs/hooks'
@@ -17,6 +17,8 @@ import { useYValue } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import { useTranslation } from 'react-i18next'
 import { documentTypeValueFormat } from '@/defaults/documentTypeFormats'
+import { HastToggle } from '@/components/HastToggle'
+import { HastIndicator } from '@/components/HastIndicator'
 
 export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: propPlanningId }: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -27,7 +29,7 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
   const { viewId } = useView()
   const { state, dispatch } = useNavigation()
   const history = useHistory()
-  const planningId = useDeliverablePlanningId(ydoc.id)
+  const planningId = useDeliverableInfo(ydoc.id)?.planningUuid ?? ''
   const [workflowStatus] = useWorkflowStatus({ ydoc, documentId: ydoc.id })
   const { t } = useTranslation('shared')
   const documentType = workflowStatus?.type
@@ -104,10 +106,14 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
       <ViewHeader.Content className='justify-start'>
         <div className='max-w-[810px] mx-auto flex flex-row gap-2 justify-between items-center w-full'>
           <div className='flex flex-row gap-1 justify-start items-center @7xl/view:-ml-20'>
-            <div className='hidden flex-row gap-2 justify-start items-center @lg/view:flex'>
+            <div className='hidden flex-row gap-2 justify-start items-center @md/view:flex'>
               {!readOnly && <AddNote ydoc={ydoc} />}
               {!readOnly && documentType !== 'core/editorial-info'
                 && <Newsvalue ydoc={ydoc} path='meta.core/newsvalue[0].value' />}
+              {!readOnly && documentType === 'core/article' && (
+                <HastToggle ydoc={ydoc} usableId={workflowStatus?.usableId} />
+              )}
+              {readOnly && <HastIndicator documentId={ydoc.id} size={18} />}
               {!!wireBlocks?.length && (
                 <Button
                   variant='ghost'

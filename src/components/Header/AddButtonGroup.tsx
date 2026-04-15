@@ -1,5 +1,5 @@
 import { Button } from '@ttab/elephant-ui'
-import { PlusIcon, ChevronDownIcon } from '@ttab/elephant-ui/icons'
+import { PlusIcon, ChevronDownIcon, type LucideIcon } from '@ttab/elephant-ui/icons'
 import { type ReactNode } from 'react'
 import * as Views from '@/views'
 import { getTemplateFromView } from '@/shared/templates/lib/getTemplateFromView'
@@ -19,9 +19,9 @@ import { addButtonGroupValueFormat } from '@/defaults/documentTypeFormats'
 import type { buttonVariants } from '@ttab/elephant-ui'
 import type { VariantProps } from 'class-variance-authority'
 import type { QueryParams } from '@/hooks/useQuery'
-import type { LucideIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import type { TFunction } from 'i18next'
+import { useRegistry } from '@/hooks/index'
 
 const addButtonTypes = ['core/planning-item', 'core/event', 'core/article', 'core/factbox', 'core/flash'] as const
 
@@ -34,6 +34,7 @@ const AddButton = ({
   className,
   showModal,
   hideModal,
+  hast,
   view,
   query,
   t
@@ -44,6 +45,7 @@ const AddButton = ({
   className?: string
   showModal?: (content: ReactNode, type?: 'dialog') => void
   hideModal?: () => void
+  hast?: boolean
   view: ButtonView
   t: TFunction
 }) => {
@@ -57,7 +59,7 @@ const AddButton = ({
       className={!withNew ? '' : cn('h-8 pr-4', className)}
       onClick={() => {
         const id = crypto.randomUUID()
-        const initialDocument = getTemplateFromView(view.name)(id, { query })
+        const initialDocument = getTemplateFromView(view.name, { useHast: hast })(id, { query })
 
         if (showModal) {
           showModal(
@@ -72,7 +74,7 @@ const AddButton = ({
       }}
     >
       {withNew && <PlusIcon size={18} strokeWidth={1.75} />}
-      <span className='pl-0.5'>{`${withNew ? t('common:misc.new') : typeLabel(view.type)}`}</span>
+      <span className='pl-0.5'>{`${withNew ? t('common:misc.new') : view.name === 'Flash' && hast ? 'HAST' : typeLabel(view.type)}`}</span>
     </Button>
   )
 }
@@ -80,6 +82,8 @@ const AddButton = ({
 export const AddButtonGroup = ({ docType = 'core/planning-item', query }: { type: View, query: QueryParams, docType?: string }) => {
   const { showModal, hideModal } = useModal()
   const { t } = useTranslation()
+  const { featureFlags } = useRegistry()
+  const hasHast = !!featureFlags.hasHast
 
   const views: ButtonView[] = addButtonTypes.map((type) => {
     const format = addButtonGroupValueFormat[type]
@@ -140,6 +144,7 @@ export const AddButtonGroup = ({ docType = 'core/planning-item', query }: { type
                   className='px-0'
                   showModal={showModal}
                   hideModal={hideModal}
+                  hast={hasHast}
                   view={view}
                   query={query}
                 />

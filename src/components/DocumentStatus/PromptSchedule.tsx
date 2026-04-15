@@ -6,14 +6,19 @@ import { Label } from '@ttab/elephant-ui'
 import { TimeInput } from '../TimeInput'
 import { toZonedTime } from 'date-fns-tz'
 import { format } from 'date-fns'
-import { CalendarIcon } from '@ttab/elephant-ui/icons'
+import { CalendarIcon, LoaderIcon } from '@ttab/elephant-ui/icons'
 import { PromptCauseField } from './PromptCauseField'
 import { useTranslation } from 'react-i18next'
 import { useCollaborationDocument } from '@/hooks/useCollaborationDocument'
+import type { YDocument } from '@/modules/yjs/hooks'
 import { useYValue } from '@/modules/yjs/hooks'
-import { LoaderIcon } from 'lucide-react'
+import { HastToggle } from '@/components/HastToggle'
+import type * as Y from 'yjs'
 
-export const PromptSchedule = ({ prompt, planningId, setStatus, showPrompt, requireCause = false }: {
+export const PromptSchedule = ({
+  prompt, planningId, setStatus, showPrompt, requireCause = false,
+  ydoc: ydoc, usableId, documentType
+}: {
   prompt: {
     status: string
   } & WorkflowTransition
@@ -23,6 +28,9 @@ export const PromptSchedule = ({ prompt, planningId, setStatus, showPrompt, requ
     status: string
   } & WorkflowTransition) | undefined>>
   requireCause?: boolean
+  ydoc?: YDocument<Y.Map<unknown>>
+  usableId?: bigint
+  documentType?: string
 }) => {
   const { timeZone } = useRegistry()
   const { loading, document } = useCollaborationDocument({ documentId: planningId })
@@ -117,6 +125,10 @@ export const PromptSchedule = ({ prompt, planningId, setStatus, showPrompt, requ
           )}
 
         </div>
+
+        {ydoc && documentType === 'core/article' && (
+          <HastToggle ydoc={ydoc} usableId={usableId} variant='full' className='w-full' />
+        )}
       </div>
     </Prompt>
   )

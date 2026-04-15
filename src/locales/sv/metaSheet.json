@@ -1,31 +1,37 @@
 {
-    "title": "Metadata",
-    "labels": {
-        "properties": "Egenskaper",
-        "tags": "Etiketter",
-        "byline": "Byline",
-        "actions": "Åtgärder",
-        "otherSources": "Externa källor",
-        "source": "Källa",
-        "extraInformation": "Extra information",
-        "versions": "Versioner",
-        "version": "Version",
-        "editorialInfoType": "Redaktionell info, typ",
-        "slugline": "Slugg"
-    },
-    "actions": {
-        "addNote": "Lägg till notering"
-    },
-    "placeholders": {
-        "addByline": "Lägg till byline",
-        "addSource": "Lägg till källa"
-    },
-    "dropDownMenuItems": {
-        "internalNote": "Intern notering",
-        "infoToCustomer": "Info till kund"
-    },
-    "misc": {
-        "lastUpdated": "Senast uppdaterad: {{date}}",
-        "noType": "Ingen typ"
-    }
+  "title": "Metadata",
+  "labels": {
+    "properties": "Egenskaper",
+    "tags": "Etiketter",
+    "byline": "Byline",
+    "actions": "Åtgärder",
+    "otherSources": "Externa källor",
+    "source": "Källa",
+    "extraInformation": "Extra information",
+    "versions": "Versioner",
+    "version": "Version",
+    "editorialInfoType": "Redaktionell info, typ",
+    "slugline": "Slugg"
+  },
+  "actions": {
+    "addNote": "Lägg till notering",
+    "removeHastFromArticle": "Ta bort HAST från artikeln"
+  },
+  "removeHastPrompt": {
+    "title": "Ta bort HAST från artikeln",
+    "description": "Detta tar bort HAST och gör det till en vanlig artikel. Framtida versioner skickas inte som HAST om du inte aktiverar det igen.",
+    "confirm": "Ta bort"
+  },
+  "placeholders": {
+    "addByline": "Lägg till byline",
+    "addSource": "Lägg till källa"
+  },
+  "dropDownMenuItems": {
+    "internalNote": "Intern notering",
+    "infoToCustomer": "Info till kund"
+  },
+  "misc": {
+    "lastUpdated": "Senast uppdaterad: {{date}}",
+    "noType": "Ingen typ"
+  }
 }

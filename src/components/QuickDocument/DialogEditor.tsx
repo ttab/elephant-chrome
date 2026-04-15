@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next'
 export const DialogEditor = ({ ydoc, setTitle, onValidation, validateStateRef, type }: {
   ydoc: YDocument<Y.Map<unknown>>
   setTitle: (value: string | undefined) => void
-  type: 'article' | 'flash'
+  type: 'article' | 'flash' | 'hast'
 } & FormProps): JSX.Element => {
   const plugins = [UnorderedList, OrderedList, Bold, Italic, LocalizedQuotationMarks]
   const [content] = getValueByYPath<Y.XmlText>(ydoc.ele, 'content', true)
@@ -35,7 +35,9 @@ export const DialogEditor = ({ ydoc, setTitle, onValidation, validateStateRef, t
     return <></>
   }
 
-  const countCharacters = type === 'flash' ? ['heading-1', 'body'] : ['heading-1']
+  const countCharacters = type === 'flash' || type === 'hast'
+    ? ['heading-1', 'preamble', 'body']
+    : ['heading-1']
 
   return (
     <Validation
@@ -56,7 +58,11 @@ export const DialogEditor = ({ ydoc, setTitle, onValidation, validateStateRef, t
             countCharacters,
             preventHotkeys: ['heading-1', 'heading-2', 'preamble'],
             ...getContentMenuLabels(),
-            titleLabel: type === 'flash' ? t('placeholders.flashTitle') : t('editor:contentMenu.title')
+            titleLabel: type === 'flash'
+              ? t('placeholders.flashTitle')
+              : type === 'hast'
+                ? t('placeholders.hastTitle')
+                : t('editor:contentMenu.title')
           })
         ]}
         className='h-auto min-h-auto rounded-md border'

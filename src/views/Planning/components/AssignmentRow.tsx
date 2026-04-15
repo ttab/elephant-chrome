@@ -36,6 +36,7 @@ import { useRegistry } from '@/hooks/useRegistry'
 import { useSession } from 'next-auth/react'
 import { getDeliverableType } from '@/shared/templates/lib/getDeliverableType'
 import { isVisualAssignmentType } from '@/defaults/assignmentTypes'
+import { HastIndicator } from '@/components/HastIndicator'
 import { CreatePrintArticle } from '@/components/CreatePrintArticle'
 import { snapshotDocument } from '@/lib/snapshotDocument'
 import { getTimeSlotTypes } from '@/defaults/assignmentTimeConstants'
@@ -63,6 +64,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
   const { repository } = useRegistry()
   const { data: session } = useSession()
   const { t } = useTranslation()
+  const featureFlags = useFeatureFlags(['hasPrint', 'hasHast'])
 
   const base = `meta.core/assignment[${index}]`
   const [assignment] = useYValue<Y.Map<unknown>>(ydoc.ele, base, true)
@@ -77,6 +79,8 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
       return await repository?.getMeta({ uuid: id, accessToken: session.accessToken })
     }
   })
+
+  const deliverableId = articleId || flashId
 
   const [editorialInfoId] = useYValue<string>(assignment, 'links.core/editorial-info[0].uuid')
   const [assignmentType] = useYValue<string>(assignment, 'meta.core/assignment-type[0].value')
@@ -104,7 +108,6 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
 
   const openDocument = assignmentType === 'flash' ? openFlash : openArticle
   const { showModal, hideModal } = useModal()
-  const featureFlags = useFeatureFlags(['hasPrint'])
 
   const assignmentTime = useMemo(() => {
     if (typeof assignmentType !== 'string') {
@@ -295,7 +298,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
     'core/flash',
     'core/editorial-info'
   ], (event) => {
-    if (event.event === 'status' && event.uuid === documentId) {
+    if (event.uuid === documentId && event.event === 'status') {
       void mutate()
     }
   })
@@ -385,6 +388,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
             path={`meta.core/assignment[${index}].data.status`}
             workflowState={workflowState}
           />
+          <HastIndicator documentId={deliverableId} />
           <span className='leading-relaxed group-hover/assrow:underline'>{title}</span>
         </div>
         <div className='flex items-center gap-2'>
