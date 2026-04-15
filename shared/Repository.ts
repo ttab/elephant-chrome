@@ -33,7 +33,7 @@ function buildAcl(accessToken: string): Array<{ uri: string, permissions: string
     const decoded = decodeJwt(accessToken)
     const units = Array.isArray(decoded.units) ? decoded.units as string[] : []
 
-    if (units.includes('core://unit/redaktionen-npk')) {
+    if (units.includes('/redaktionen-npk')) {
       return [{ uri: 'core://unit/redaktionen-npk', permissions: ['r', 'w'] }]
     }
   } catch {
