@@ -6,6 +6,7 @@ import type { FieldValuesV1, HitV1 } from '@ttab/elephant-api/index'
  */
 export const _fields = [
   'document.title',
+  'workflow_state',
   'document.rel.subject.uuid',
   'document.rel.subject.title',
   'created',

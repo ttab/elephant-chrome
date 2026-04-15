@@ -1,6 +1,7 @@
 import { useCallback, type JSX } from 'react'
 import { useQuery } from '@/hooks'
 import { Table } from '@/components/Table'
+import { Pagination } from '@/components/Table/Pagination'
 import type { ColumnDef } from '@tanstack/react-table'
 import type { TimelessArticle, TimelessArticleFields } from '@/shared/schemas/timelessArticle'
 import { Toolbar } from './Toolbar'
@@ -37,6 +38,7 @@ export const TimelessResult = ({ columns }: {
         columns={columns as ColumnDef<TimelessArticle>[]}
         onRowSelected={onRowSelected}
       />
+      <Pagination />
     </>
   )
 }

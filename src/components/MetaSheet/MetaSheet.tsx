@@ -1,6 +1,7 @@
 import { Story, Section, Byline, Newsvalue } from '@/components'
 import { SluglineButton } from '@/components/DataItem/Slugline'
 import {
+  Button,
   Label,
   Sheet,
   SheetClose,
@@ -11,7 +12,7 @@ import {
   SheetTrigger
 } from '@ttab/elephant-ui'
 import { useYValue, type YDocument } from '@/modules/yjs/hooks'
-import { PanelRightCloseIcon, PanelRightOpenIcon } from '@ttab/elephant-ui/icons'
+import { PanelRightCloseIcon, PanelRightOpenIcon, RefreshCwIcon } from '@ttab/elephant-ui/icons'
 import { useState, type JSX } from 'react'
 import { AddNote } from '@/components/Notes/AddNote'
 import { Version } from '@/components/Version'
@@ -20,6 +21,7 @@ import { EditorialInfoTypes } from '@/components/EditorialInfoTypes'
 import { ContentSource } from '@/components/ContentSource'
 import { TimelessCategory } from '@/components/TimelessCategory'
 import { isArticleType } from '@/lib/isArticleType'
+import { useConvertArticleType } from '@/hooks/useConvertArticleType'
 import type * as Y from 'yjs'
 import { useTranslation } from 'react-i18next'
 
@@ -32,6 +34,7 @@ export function MetaSheet({ ydoc, readOnly, readOnlyVersion }: {
   const [slugline] = useYValue<string | undefined>(ydoc.ele, 'meta.tt/slugline[0].value')
   const [isOpen, setIsOpen] = useState(false)
   const { t } = useTranslation('metaSheet')
+  const { convert, isConverting } = useConvertArticleType()
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -93,8 +96,30 @@ export function MetaSheet({ ydoc, readOnly, readOnlyVersion }: {
                       </div>
 
                       <Label htmlFor='actions' className='text-xs text-muted-foreground -mb-3'>{t('labels.actions')}</Label>
-                      <div className='flex flex-row gap-3' id='actions'>
+                      <div className='flex flex-col gap-2' id='actions'>
                         <AddNote ydoc={ydoc} text={t('actions.addNote')} />
+                        {documentType === 'core/article#timeless' && (
+                          <Button
+                            variant='outline'
+                            size='sm'
+                            disabled={isConverting}
+                            onClick={() => void convert(ydoc.id, 'core/article')}
+                          >
+                            <RefreshCwIcon size={14} strokeWidth={1.75} className={isConverting ? 'animate-spin' : ''} />
+                            {t('actions.convertToArticle')}
+                          </Button>
+                        )}
+                        {documentType === 'core/article' && (
+                          <Button
+                            variant='outline'
+                            size='sm'
+                            disabled={isConverting}
+                            onClick={() => void convert(ydoc.id, 'core/article#timeless')}
+                          >
+                            <RefreshCwIcon size={14} strokeWidth={1.75} className={isConverting ? 'animate-spin' : ''} />
+                            {t('actions.convertToTimeless')}
+                          </Button>
+                        )}
                       </div>
 
                       <Label htmlFor='content-source'>{t('labels.otherSources')}</Label>

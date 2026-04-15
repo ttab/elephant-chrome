@@ -14,7 +14,8 @@ import type {
   GetMetricsResponse,
   AttachmentDetails,
   StatusUpdate,
-  GetHistoryResponse
+  GetHistoryResponse,
+  ValidationResult
 } from '@ttab/elephant-api/repository'
 import { Block, Document } from '@ttab/elephant-api/newsdoc'
 import type { RpcError, FinishedUnaryCall } from '@protobuf-ts/runtime-rpc'
@@ -524,5 +525,27 @@ export class Repository {
     }
 
     return attachments[0]
+  }
+
+  /**
+   * Prune a document to remove invalid parts while preserving what remains valid.
+   * Useful for document type conversion (e.g., article to timeless-article).
+   */
+  async pruneDocument(document: Document, accessToken: string): Promise<{
+    document: Document
+    errors: ValidationResult[]
+  }> {
+    try {
+      const { response } = await this.#client.prune({ document }, meta(accessToken))
+      if (!response.document) {
+        throw new Error('Prune API returned empty document')
+      }
+      return {
+        document: response.document,
+        errors: response.errors ?? []
+      }
+    } catch (err: unknown) {
+      throw new Error(`Unable to prune document: ${(err as Error)?.message || 'Unknown error'}`)
+    }
   }
 }

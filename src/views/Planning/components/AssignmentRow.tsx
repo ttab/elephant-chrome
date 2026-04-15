@@ -14,6 +14,7 @@ import {
   LibraryIcon,
   MoveRightIcon,
   PenIcon,
+  RefreshCwIcon,
   ZapIcon,
   type LucideProps
 } from '@ttab/elephant-ui/icons'
@@ -49,6 +50,7 @@ import { useTranslation } from 'react-i18next'
 import type { TranslationKey } from '@/types/i18next.d'
 import { RelatedWires } from './RelatedWires'
 import { useFeatureFlags } from '@/hooks/useFeatureFlags'
+import { useConvertArticleType } from '@/hooks/useConvertArticleType'
 
 export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDialog }: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -65,6 +67,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
   const { data: session } = useSession()
   const { t } = useTranslation()
   const featureFlags = useFeatureFlags(['hasPrint', 'hasHast'])
+  const { convert: convertArticleType, isConverting } = useConvertArticleType()
 
   const base = `meta.core/assignment[${index}]`
   const [assignment] = useYValue<Y.Map<unknown>>(ydoc.ele, base, true)
@@ -302,6 +305,26 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
                 onDialogClose={hideModal}
               />
             )
+          }
+        }]
+      : []),
+    ...(assignmentType === 'timeless' && documentId
+      ? [{
+          label: t('planning:assignment.convertToArticle'),
+          disabled: isConverting,
+          icon: RefreshCwIcon,
+          item: () => {
+            void convertArticleType(documentId, 'core/article')
+          }
+        }]
+      : []),
+    ...(assignmentType === 'text' && documentId
+      ? [{
+          label: t('planning:assignment.convertToTimeless'),
+          disabled: isConverting,
+          icon: RefreshCwIcon,
+          item: () => {
+            void convertArticleType(documentId, 'core/article#timeless')
           }
         }]
       : [])

@@ -15,7 +15,9 @@
     "category": "Kategori"
   },
   "actions": {
-    "addNote": "Legg til beskjed"
+    "addNote": "Legg til beskjed",
+    "convertToArticle": "Konverter til artikkel",
+    "convertToTimeless": "Konverter til tidløs"
   },
   "placeholders": {
     "addByline": "Legg til byline",

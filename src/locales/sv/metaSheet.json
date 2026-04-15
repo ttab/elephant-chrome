@@ -15,7 +15,9 @@
     "category": "Kategori"
   },
   "actions": {
-    "addNote": "Lägg till notering"
+    "addNote": "Lägg till notering",
+    "convertToArticle": "Konvertera till artikel",
+    "convertToTimeless": "Konvertera till tidlös"
   },
   "placeholders": {
     "addByline": "Lägg till byline",

@@ -83,7 +83,17 @@
     "title": "Timeless articles",
     "columnLabels": {
       "category": "Category",
-      "lastChanged": "Last changed"
+      "created": "Created",
+      "lastChanged": "Last changed",
+      "actions": "Actions"
+    },
+    "toolbar": {
+      "allCategories": "All categories"
+    },
+    "actions": {
+      "new": "New timeless",
+      "openNewTab": "Open in new tab",
+      "convertToArticle": "Convert to article"
     },
     "placeholders": {
       "addCategory": "Add category"

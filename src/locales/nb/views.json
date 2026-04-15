@@ -83,7 +83,17 @@
     "title": "Tidløse artikler",
     "columnLabels": {
       "category": "Kategori",
-      "lastChanged": "Sist endret"
+      "created": "Opprettet",
+      "lastChanged": "Sist endret",
+      "actions": "Handlinger"
+    },
+    "toolbar": {
+      "allCategories": "Alle kategorier"
+    },
+    "actions": {
+      "new": "Ny tidløs",
+      "openNewTab": "Åpne i ny fane",
+      "convertToArticle": "Konverter til artikkel"
     },
     "placeholders": {
       "addCategory": "Legg til kategori"

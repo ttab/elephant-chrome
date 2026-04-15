@@ -1,6 +1,7 @@
 import { useMemo, useState, type JSX } from 'react'
 import { type ViewMetadata } from '@/types'
 import { ViewHeader, View } from '@/components'
+import { Header } from '@/components/Header'
 import { TabsContent } from '@ttab/elephant-ui'
 import { TableProvider } from '@/contexts/TableProvider'
 import { TableCommandMenu } from '@/components/Commands/TableCommand'
@@ -51,6 +52,7 @@ export const Timeless = (): JSX.Element => {
               name='Timeless'
               title={t('timeless.title')}
             />
+            <Header type='Timeless' docType='core/article#timeless' />
           </ViewHeader.Content>
 
           <ViewHeader.Action />

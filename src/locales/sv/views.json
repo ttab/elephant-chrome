@@ -83,7 +83,17 @@
     "title": "Tidlösa artiklar",
     "columnLabels": {
       "category": "Kategori",
-      "lastChanged": "Senast ändrad"
+      "created": "Skapad",
+      "lastChanged": "Senast ändrad",
+      "actions": "Åtgärder"
+    },
+    "toolbar": {
+      "allCategories": "Alla kategorier"
+    },
+    "actions": {
+      "new": "Ny tidlös",
+      "openNewTab": "Öppna i ny flik",
+      "convertToArticle": "Konvertera till artikel"
     },
     "placeholders": {
       "addCategory": "Lägg till kategori"

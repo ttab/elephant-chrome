@@ -1,10 +1,20 @@
 import { Title } from '@/components/Table/Items/Title'
+import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
 import type { TimelessArticle } from '@/shared/schemas/timelessArticle'
 import { dateToReadableDateTime } from '@/shared/datetime'
 import type { LocaleData } from '@/types/index'
 import type { ColumnDef } from '@tanstack/react-table'
-import { BookmarkIcon, CalendarIcon, PenBoxIcon } from '@ttab/elephant-ui/icons'
+import { Badge } from '@ttab/elephant-ui'
+import {
+  BookmarkIcon,
+  CalendarIcon,
+  CalendarPlusIcon,
+  CircleCheckIcon,
+  MoreVerticalIcon,
+  PenBoxIcon
+} from '@ttab/elephant-ui/icons'
 import type { TFunction, Namespace } from 'i18next'
+import { TimelessRowActions } from './TimelessRowActions'
 
 export function createTimelessColumns<Ns extends Namespace>({ locale, timeZone, t }: {
   locale: LocaleData
@@ -12,6 +22,22 @@ export function createTimelessColumns<Ns extends Namespace>({ locale, timeZone, 
   t: TFunction<Ns>
 }): Array<ColumnDef<TimelessArticle>> {
   return [
+    {
+      id: 'status',
+      meta: {
+        name: t('core:labels.status'),
+        columnIcon: CircleCheckIcon,
+        className: 'flex-none'
+      },
+      accessorFn: (data) => data.fields['workflow_state']?.values[0],
+      cell: ({ row }) => {
+        const status = row.getValue<string>('status')
+        if (!status) {
+          return <span className='text-muted-foreground'>-</span>
+        }
+        return <DocumentStatus type='core/article' status={status} />
+      }
+    },
     {
       id: 'title',
       meta: {
@@ -34,23 +60,29 @@ export function createTimelessColumns<Ns extends Namespace>({ locale, timeZone, 
       accessorFn: (data) => data.fields['document.rel.subject.title']?.values[0],
       cell: ({ row }) => {
         const category = row.getValue<string>('category')
+        if (!category) {
+          return <span className='text-muted-foreground'>-</span>
+        }
         return (
-          <span className='font-thin text-sm text-muted-foreground truncate'>
-            {category || '-'}
-          </span>
+          <Badge variant='outline' className='rounded-md bg-background h-7' data-row-action>
+            <div className='hidden @5xl/view:[display:revert] h-2 w-2 rounded-full mr-2 bg-[#7C6F9C]' data-row-action />
+            <span className='text-muted-foreground text-sm font-normal whitespace-nowrap' data-row-action>
+              {category}
+            </span>
+          </Badge>
         )
       }
     },
     {
-      id: 'date',
+      id: 'created',
       meta: {
-        name: t('views:timeless.columnLabels.lastChanged'),
-        columnIcon: CalendarIcon,
-        className: 'flex-none'
+        name: t('views:timeless.columnLabels.created'),
+        columnIcon: CalendarPlusIcon,
+        className: 'flex-none hidden @4xl/view:[display:revert]'
       },
-      accessorFn: (data) => data.fields['modified']?.values[0],
+      accessorFn: (data) => data.fields['created']?.values[0],
       cell: ({ row }) => {
-        const date = row.getValue<string>('date')
+        const date = row.getValue<string>('created')
         const readable = date
           ? dateToReadableDateTime(new Date(date), locale.code.full, timeZone, true)
           : '-'
@@ -59,6 +91,38 @@ export function createTimelessColumns<Ns extends Namespace>({ locale, timeZone, 
             {readable}
           </span>
         )
+      }
+    },
+    {
+      id: 'modified',
+      meta: {
+        name: t('views:timeless.columnLabels.lastChanged'),
+        columnIcon: CalendarIcon,
+        className: 'flex-none'
+      },
+      accessorFn: (data) => data.fields['modified']?.values[0],
+      cell: ({ row }) => {
+        const date = row.getValue<string>('modified')
+        const readable = date
+          ? dateToReadableDateTime(new Date(date), locale.code.full, timeZone, true)
+          : '-'
+        return (
+          <span className='font-thin text-sm text-muted-foreground'>
+            {readable}
+          </span>
+        )
+      }
+    },
+    {
+      id: 'actions',
+      meta: {
+        name: t('views:timeless.columnLabels.actions'),
+        columnIcon: MoreVerticalIcon,
+        className: 'flex-none w-[50px]'
+      },
+      cell: ({ row }) => {
+        const documentId = row.original.id
+        return <TimelessRowActions documentId={documentId} />
       }
     }
   ]

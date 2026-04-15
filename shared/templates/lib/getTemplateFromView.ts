@@ -17,7 +17,7 @@ export function getTemplateFromView(
       return options?.useHast ? Templates.hast : Templates.flash
     case 'QuickArticle':
       return Templates.quickArticle
-    case 'Timeless':
+    case 'TimelessArticle':
       return Templates.timeless
     default:
       throw new Error(`No template for ${type}`)

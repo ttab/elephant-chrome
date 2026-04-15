@@ -15,7 +15,9 @@
     "category": "Category"
   },
   "actions": {
-    "addNote": "Add note"
+    "addNote": "Add note",
+    "convertToArticle": "Convert to article",
+    "convertToTimeless": "Convert to timeless"
   },
   "placeholders": {
     "addByline": "Add byline",
