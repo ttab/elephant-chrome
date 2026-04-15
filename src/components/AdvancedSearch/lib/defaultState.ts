@@ -3,12 +3,13 @@ import type { AdvancedSearchState, SearchFieldConfig } from '../types'
 export function createDefaultState(fields: SearchFieldConfig[]): AdvancedSearchState {
   return {
     mode: 'structured',
+    name: '',
     structured: {
       query: '',
       selectedFields: fields.filter((f) => f.defaultSelected).map((f) => f.fieldPath),
       matchType: 'best_fields',
       fuzzy: false,
-      fuzzyEdits: 2,
+      fuzzyEdits: 'auto',
       fuzzyPrefixLength: 0,
       booleanAnd: false,
       boost: 1,
@@ -55,6 +56,7 @@ export function parseAdvancedSearchState(value: unknown, fields?: SearchFieldCon
 
   return {
     mode: parsed.mode,
+    name: typeof parsed.name === 'string' ? parsed.name : defaults.name,
     structured: { ...defaults.structured, ...parsed.structured },
     querySyntax: { ...defaults.querySyntax, ...parsed.querySyntax }
   }

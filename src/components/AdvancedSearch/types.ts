@@ -23,7 +23,7 @@ export interface StructuredSearchState {
   selectedFields: FieldPath[]
   matchType: 'best_fields' | 'phrase'
   fuzzy: boolean
-  fuzzyEdits: 1 | 2
+  fuzzyEdits: 'auto' | 1 | 2
   fuzzyPrefixLength: number
   booleanAnd: boolean
   boost: number
@@ -39,6 +39,7 @@ export type SearchMode = 'structured' | 'querySyntax'
 
 export interface AdvancedSearchState {
   mode: SearchMode
+  name: string
   structured: StructuredSearchState
   querySyntax: QuerySyntaxState
 }

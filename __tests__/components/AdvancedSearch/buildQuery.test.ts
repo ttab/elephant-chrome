@@ -6,6 +6,7 @@ import type { AdvancedSearchState, FieldPath, SearchFieldConfig } from '@/compon
 function querySyntaxState(raw: string, fields: SearchFieldConfig[] = articlesFields): AdvancedSearchState {
   return {
     mode: 'querySyntax',
+    name: '',
     structured: createDefaultState(fields).structured,
     querySyntax: { raw }
   }
@@ -116,7 +117,7 @@ describe('buildAdvancedQuery', () => {
       }
     })
 
-    it('defaults fuzzy edits to 2', () => {
+    it('defaults to fuzzy auto mode', () => {
       const state = createDefaultState(articlesFields)
       state.structured.query = 'fuzzy search'
       state.structured.fuzzy = true
@@ -125,7 +126,24 @@ describe('buildAdvancedQuery', () => {
       expect(result?.conditions.oneofKind).toBe('multiMatch')
 
       if (result?.conditions.oneofKind === 'multiMatch') {
+        expect(result.conditions.multiMatch.fuzziness?.auto).toBeDefined()
+        expect(result.conditions.multiMatch.fuzziness?.auto?.low).toBe(BigInt(0))
+        expect(result.conditions.multiMatch.fuzziness?.auto?.high).toBe(BigInt(0))
+      }
+    })
+
+    it('uses edits when explicitly set to number', () => {
+      const state = createDefaultState(articlesFields)
+      state.structured.query = 'fuzzy search'
+      state.structured.fuzzy = true
+      state.structured.fuzzyEdits = 2
+
+      const result = buildAdvancedQuery(state, articlesFields)
+      expect(result?.conditions.oneofKind).toBe('multiMatch')
+
+      if (result?.conditions.oneofKind === 'multiMatch') {
         expect(result.conditions.multiMatch.fuzziness?.edits).toBe(BigInt(2))
+        expect(result.conditions.multiMatch.fuzziness?.auto).toBeUndefined()
       }
     })
   })

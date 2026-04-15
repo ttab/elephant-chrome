@@ -3,7 +3,8 @@ import {
   BoolQueryV1,
   MultiMatchQueryV1,
   RangeQueryV1,
-  Fuzziness
+  Fuzziness,
+  FuzzinessAuto
 } from '@ttab/elephant-api/index'
 import type { AdvancedSearchState, SearchFieldConfig } from '../types'
 
@@ -63,9 +64,15 @@ export function buildAdvancedQuery(
     })
 
     if (s.fuzzy) {
-      multiMatch.fuzziness = Fuzziness.create({
-        edits: BigInt(s.fuzzyEdits)
-      })
+      if (s.fuzzyEdits === 'auto') {
+        multiMatch.fuzziness = Fuzziness.create({
+          auto: FuzzinessAuto.create({ low: BigInt(0), high: BigInt(0) })
+        })
+      } else {
+        multiMatch.fuzziness = Fuzziness.create({
+          edits: BigInt(s.fuzzyEdits)
+        })
+      }
       if (s.fuzzyPrefixLength > 0) {
         multiMatch.prefixLength = BigInt(s.fuzzyPrefixLength)
       }

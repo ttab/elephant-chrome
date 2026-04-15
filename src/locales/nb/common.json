@@ -57,6 +57,7 @@
     "exactPhrase": "Eksakt frase",
     "requireAllTerms": "Krev alle termer (AND)",
     "fuzzyMatching": "Fuzzy-samsvar",
+    "fuzzyAuto": "Auto",
     "fuzzyEdit1": "~1 endring",
     "fuzzyEdit2": "~2 endringer",
     "prefixLength": "Lås første N tegn",
@@ -70,6 +71,7 @@
     "cancel": "Avbryt",
     "search": "Søk",
     "searchTerms": "Søketermer...",
+    "namePlaceholder": "Gi søket et navn (valgfritt)",
     "querySyntaxPlaceholder": "title:\"ukraine\" AND content:crisis*",
     "syntaxReference": "Syntaksreferanse",
     "syntaxOperators": "Operatorer",
@@ -98,6 +100,7 @@
     },
     "badge": {
       "fuzzy": "Fuzzy (~{{edits}})",
+      "fuzzyAuto": "Fuzzy (auto)",
       "fields": "Felt: {{fields}}",
       "boost": "Boost: {{boost}}x"
     },

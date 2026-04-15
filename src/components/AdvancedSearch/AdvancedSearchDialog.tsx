@@ -7,6 +7,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  Input,
   ToggleGroup,
   ToggleGroupItem
 } from '@ttab/elephant-ui'
@@ -96,6 +97,15 @@ export const AdvancedSearchDialog = ({
                   onChange={(querySyntax) => setDraft({ ...draft, querySyntax })}
                 />
               )}
+
+          <div className='pt-2 border-t'>
+            <Input
+              value={draft.name}
+              onChange={(e) => setDraft({ ...draft, name: e.target.value })}
+              placeholder={t('advancedSearch.namePlaceholder')}
+              className='text-sm'
+            />
+          </div>
         </div>
 
         <DialogFooter className='flex flex-row sm:justify-between justify-between gap-2 pt-4'>

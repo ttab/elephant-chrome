@@ -57,6 +57,7 @@
     "exactPhrase": "Exact phrase",
     "requireAllTerms": "Require all terms (AND)",
     "fuzzyMatching": "Fuzzy matching",
+    "fuzzyAuto": "Auto",
     "fuzzyEdit1": "~1 edit",
     "fuzzyEdit2": "~2 edits",
     "prefixLength": "Lock first N chars",
@@ -70,6 +71,7 @@
     "cancel": "Cancel",
     "search": "Search",
     "searchTerms": "Search terms...",
+    "namePlaceholder": "Name this search (optional)",
     "querySyntaxPlaceholder": "title:\"ukraine\" AND content:crisis*",
     "syntaxReference": "Syntax reference",
     "syntaxOperators": "Operators",
@@ -98,6 +100,7 @@
     },
     "badge": {
       "fuzzy": "Fuzzy (~{{edits}})",
+      "fuzzyAuto": "Fuzzy (auto)",
       "fields": "Fields: {{fields}}",
       "boost": "Boost: {{boost}}x"
     },

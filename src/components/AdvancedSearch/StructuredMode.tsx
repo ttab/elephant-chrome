@@ -180,13 +180,18 @@ export const StructuredMode = ({ state, fields, onChange }: StructuredModeProps)
                   type='single'
                   value={String(state.fuzzyEdits)}
                   onValueChange={(value) => {
-                    if (value === '1' || value === '2') {
+                    if (value === 'auto') {
+                      onChange({ ...state, fuzzyEdits: 'auto' })
+                    } else if (value === '1' || value === '2') {
                       onChange({ ...state, fuzzyEdits: Number(value) as 1 | 2 })
                     }
                   }}
                   className='justify-start'
                   title={t('advancedSearch.hints.fuzzyEdits')}
                 >
+                  <ToggleGroupItem value='auto' className='text-xs h-7 px-2'>
+                    {t('advancedSearch.fuzzyAuto')}
+                  </ToggleGroupItem>
                   <ToggleGroupItem value='1' className='text-xs h-7 px-2'>
                     {t('advancedSearch.fuzzyEdit1')}
                   </ToggleGroupItem>

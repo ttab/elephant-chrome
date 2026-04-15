@@ -11,6 +11,7 @@ import type { AdvancedSearchState, FieldPath } from '@/components/AdvancedSearch
 function querySyntaxState(raw: string): AdvancedSearchState {
   return {
     mode: 'querySyntax',
+    name: '',
     structured: createDefaultState(articlesFields).structured,
     querySyntax: { raw }
   }
@@ -133,7 +134,7 @@ describe('deserializeAdvancedState', () => {
 
     expect(result.structured.matchType).toBe('best_fields')
     expect(result.structured.fuzzy).toBe(false)
-    expect(result.structured.fuzzyEdits).toBe(2)
+    expect(result.structured.fuzzyEdits).toBe('auto')
     expect(result.structured.booleanAnd).toBe(false)
     expect(result.structured.selectedFields).toEqual(
       articlesFields.filter((f) => f.defaultSelected).map((f) => f.fieldPath)
@@ -148,7 +149,7 @@ describe('deserializeAdvancedState', () => {
     expect(result.structured.query).toBe('')
   })
 
-  it('treats invalid advFuzzy as edits=2', () => {
+  it('treats invalid advFuzzy as auto', () => {
     const result = deserializeAdvancedState({
       advMode: 'structured',
       advQuery: 'test',
@@ -156,7 +157,7 @@ describe('deserializeAdvancedState', () => {
     }, articlesFields)
 
     expect(result.structured.fuzzy).toBe(true)
-    expect(result.structured.fuzzyEdits).toBe(2)
+    expect(result.structured.fuzzyEdits).toBe('auto')
   })
 })
 
@@ -394,7 +395,7 @@ describe('parseAdvancedSearchState', () => {
     expect(result).toBeDefined()
     expect(result?.structured.matchType).toBe('best_fields')
     expect(result?.structured.fuzzy).toBe(false)
-    expect(result?.structured.fuzzyEdits).toBe(2)
+    expect(result?.structured.fuzzyEdits).toBe('auto')
     expect(result?.structured.boost).toBe(1)
     expect(result?.structured.dateRange).toEqual({ from: '', to: '' })
     expect(result?.structured.fieldExists).toEqual([])

@@ -7,12 +7,38 @@ export interface SearchBadge {
   label: string
 }
 
+/**
+ * Get detailed badges (ignoring name) for tooltip display
+ */
+export function summarizeStateDetails(
+  state: AdvancedSearchState,
+  fields: SearchFieldConfig[],
+  t: TranslateFunction
+): SearchBadge[] {
+  return summarizeStateInternal(state, fields, t, false)
+}
+
 export function summarizeState(
   state: AdvancedSearchState,
   fields: SearchFieldConfig[],
   t: TranslateFunction
 ): SearchBadge[] {
+  return summarizeStateInternal(state, fields, t, true)
+}
+
+function summarizeStateInternal(
+  state: AdvancedSearchState,
+  fields: SearchFieldConfig[],
+  t: TranslateFunction,
+  respectName: boolean
+): SearchBadge[] {
   const badges: SearchBadge[] = []
+
+  // If a name is set and we respect it, return it as the only badge
+  if (respectName && state.name.trim()) {
+    badges.push({ key: 'query', label: state.name.trim() })
+    return badges
+  }
 
   if (state.mode === 'querySyntax') {
     const raw = state.querySyntax.raw.trim()
@@ -49,7 +75,10 @@ export function summarizeState(
   }
 
   if (s.fuzzy) {
-    badges.push({ key: 'fuzzy', label: t('advancedSearch.badge.fuzzy', { edits: s.fuzzyEdits }) })
+    const label = s.fuzzyEdits === 'auto'
+      ? t('advancedSearch.badge.fuzzyAuto')
+      : t('advancedSearch.badge.fuzzy', { edits: s.fuzzyEdits })
+    badges.push({ key: 'fuzzy', label })
   }
 
   if (s.boost > 1) {

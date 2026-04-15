@@ -1,4 +1,4 @@
-import { summarizeState } from '@/components/AdvancedSearch/lib/summarize'
+import { summarizeState, summarizeStateDetails } from '@/components/AdvancedSearch/lib/summarize'
 import { createDefaultState } from '@/components/AdvancedSearch/lib/defaultState'
 import { articlesFields } from '@/components/AdvancedSearch/configs'
 import type { AdvancedSearchState, FieldPath, SearchFieldConfig } from '@/components/AdvancedSearch/types'
@@ -6,6 +6,7 @@ import type { AdvancedSearchState, FieldPath, SearchFieldConfig } from '@/compon
 function querySyntaxState(raw: string, fields: SearchFieldConfig[] = articlesFields): AdvancedSearchState {
   return {
     mode: 'querySyntax',
+    name: '',
     structured: createDefaultState(fields).structured,
     querySyntax: { raw }
   }
@@ -15,6 +16,7 @@ const t = (key: string, options?: Record<string, string | number>): string => {
   const map: Record<string, string> = {
     'advancedSearch.exactPhrase': 'Exact phrase',
     'advancedSearch.requireAllTerms': 'Require all terms (AND)',
+    'advancedSearch.badge.fuzzyAuto': 'Fuzzy (auto)',
     'advancedSearch.fields.title': 'Title',
     'advancedSearch.fields.content': 'Content',
     'advancedSearch.fields.slugline': 'Slugline',
@@ -233,6 +235,69 @@ describe('summarizeState', () => {
       const badges = summarizeState(state, articlesFields, t)
       const keys = badges.map((b) => b.key)
       expect(keys).toEqual(['query', 'dateRange', 'matchType', 'booleanAnd', 'fuzzy', 'boost', 'fields', 'fieldExists'])
+    })
+  })
+
+  describe('named search', () => {
+    it('returns only name when set', () => {
+      const state = createDefaultState(articlesFields)
+      state.name = 'My Ukraine Search'
+      state.structured.query = 'ukraine crisis'
+      state.structured.fuzzy = true
+
+      const badges = summarizeState(state, articlesFields, t)
+      expect(badges).toHaveLength(1)
+      expect(badges[0]).toEqual({ key: 'query', label: 'My Ukraine Search' })
+    })
+
+    it('trims whitespace from name', () => {
+      const state = createDefaultState(articlesFields)
+      state.name = '  My Search  '
+      state.structured.query = 'test'
+
+      const badges = summarizeState(state, articlesFields, t)
+      expect(badges[0].label).toBe('My Search')
+    })
+
+    it('ignores empty name', () => {
+      const state = createDefaultState(articlesFields)
+      state.name = ''
+      state.structured.query = 'ukraine'
+
+      const badges = summarizeState(state, articlesFields, t)
+      expect(badges[0].label).toBe('ukraine')
+    })
+
+    it('ignores whitespace-only name', () => {
+      const state = createDefaultState(articlesFields)
+      state.name = '   '
+      state.structured.query = 'ukraine'
+
+      const badges = summarizeState(state, articlesFields, t)
+      expect(badges[0].label).toBe('ukraine')
+    })
+  })
+
+  describe('summarizeStateDetails', () => {
+    it('returns query details even when name is set', () => {
+      const state = createDefaultState(articlesFields)
+      state.name = 'My Ukraine Search'
+      state.structured.query = 'ukraine crisis'
+      state.structured.fuzzy = true
+
+      const badges = summarizeStateDetails(state, articlesFields, t)
+      expect(badges.length).toBeGreaterThan(1)
+      expect(badges[0]).toEqual({ key: 'query', label: 'ukraine crisis' })
+      expect(badges).toContainEqual({ key: 'fuzzy', label: 'Fuzzy (auto)' })
+    })
+
+    it('returns raw query in querySyntax mode even when name is set', () => {
+      const state = querySyntaxState('title:ukraine AND content:crisis')
+      state.name = 'Ukraine Query'
+
+      const badges = summarizeStateDetails(state, articlesFields, t)
+      expect(badges).toHaveLength(1)
+      expect(badges[0]).toEqual({ key: 'queryString', label: 'title:ukraine AND content:crisis' })
     })
   })
 })

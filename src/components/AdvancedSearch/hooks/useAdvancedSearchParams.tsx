@@ -3,7 +3,7 @@ import type { QueryParams } from '@/hooks/useQuery'
 import type { AdvancedSearchState, FieldPath, SearchFieldConfig } from '../types'
 import { createDefaultState, isActiveState } from '../lib/defaultState'
 
-const ADV_KEYS = ['advMode', 'advQuery', 'advFields', 'advMatch', 'advFuzzy', 'advFuzzyPrefix', 'advAnd', 'advRaw', 'advDateFrom', 'advDateTo', 'advBoost', 'advExists', 'advMissing'] as const
+const ADV_KEYS = ['advMode', 'advName', 'advQuery', 'advFields', 'advMatch', 'advFuzzy', 'advFuzzyPrefix', 'advAnd', 'advRaw', 'advDateFrom', 'advDateTo', 'advBoost', 'advExists', 'advMissing'] as const
 
 function firstString(value: string | string[] | undefined): string | undefined {
   return Array.isArray(value) ? value[0] : value
@@ -15,15 +15,23 @@ export function serializeAdvancedState(state: AdvancedSearchState): QueryParams 
   }
 
   if (state.mode === 'querySyntax') {
-    return {
+    const params: QueryParams = {
       advMode: 'querySyntax',
       advRaw: state.querySyntax.raw
     }
+    if (state.name) {
+      params.advName = state.name
+    }
+    return params
   }
 
   const params: QueryParams = {
     advMode: 'structured',
     advQuery: state.structured.query
+  }
+
+  if (state.name) {
+    params.advName = state.name
   }
 
   if (state.structured.selectedFields.length > 0) {
@@ -78,9 +86,12 @@ export function deserializeAdvancedState(
     return createDefaultState(fields)
   }
 
+  const name = String(filter.advName || '')
+
   if (mode === 'querySyntax') {
     return {
       mode: 'querySyntax',
+      name,
       structured: createDefaultState(fields).structured,
       querySyntax: {
         raw: String(filter.advRaw || '')
@@ -101,14 +112,17 @@ export function deserializeAdvancedState(
     ...(missingStr ? missingStr.split(',').map((f) => ({ field: f as FieldPath, exists: false })) : [])
   ]
 
+  const fuzzyEdits = fuzzyStr === '1' ? 1 : fuzzyStr === '2' ? 2 : 'auto'
+
   return {
     mode: 'structured',
+    name,
     structured: {
       query: String(filter.advQuery || ''),
       selectedFields,
       matchType: String(filter.advMatch || '') === 'phrase' ? 'phrase' : 'best_fields',
       fuzzy: !!fuzzyStr,
-      fuzzyEdits: fuzzyStr === '1' ? 1 : 2,
+      fuzzyEdits,
       fuzzyPrefixLength: Math.max(0, Math.min(5, Number(fuzzyPrefixStr) || 0)),
       booleanAnd: filter.advAnd === '1',
       boost: Math.max(1, Math.min(10, Number(boostStr) || 1)),
