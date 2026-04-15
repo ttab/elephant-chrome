@@ -4,7 +4,7 @@ import { BookAIcon, CheckIcon, PencilIcon, PlusIcon, TrashIcon } from '@ttab/ele
 import { cn } from '@ttab/elephant-ui/utils'
 import { useRegistry } from '@/hooks/useRegistry'
 import { useSession } from 'next-auth/react'
-import { useEffect, useState, type JSX } from 'react'
+import { useCallback, useEffect, useState, type JSX } from 'react'
 import { toast } from 'sonner'
 import { type Hypenation } from '@ttab/elephant-tt-api/baboon'
 import { Button, ScrollArea } from '@ttab/elephant-ui'
@@ -33,14 +33,20 @@ const HypenationItem = ({ isNew, setIsNew, word, hypenated, ignore, handleListHy
           primaryLabel={t('dictionary.confirmDelete.primary')}
           secondaryLabel={t('dictionary.confirmDelete.cancel')}
           onPrimary={() => {
-            (async () => {
-              await baboon?.removeHypenation({
-                language: 'sv',
-                word: _word
-              }, session?.accessToken || '')
-              handleListHyphenations()
-            })().catch(console.error)
-            setPromptIsOpen(false)
+            baboon?.removeHypenation({
+              language: 'sv',
+              word: _word
+            }, session?.accessToken || '')
+              .then(() => {
+                handleListHyphenations()
+              })
+              .catch((error) => {
+                console.error('Failed to remove hyphenation:', error)
+                toast.error('Kunde inte radera avstavningen')
+              })
+              .finally(() => {
+                setPromptIsOpen(false)
+              })
           }}
           onSecondary={() => {
             setPromptIsOpen(false)
@@ -75,24 +81,30 @@ const HypenationItem = ({ isNew, setIsNew, word, hypenated, ignore, handleListHy
                 <Button
                   size='sm'
                   onClick={(e) => {
-                    e.stopPropagation();
-                    (async () => {
-                      if (defaultWord.trim() !== '') {
-                        await baboon?.removeHypenation({
-                          language: 'sv',
-                          word: defaultWord
-                        }, session?.accessToken || '')
-                      }
-                      await baboon?.setHypenation({
+                    e.stopPropagation()
+                    const remove = defaultWord.trim() !== ''
+                      ? baboon?.removeHypenation({
+                        language: 'sv',
+                        word: defaultWord
+                      }, session?.accessToken || '')
+                      : Promise.resolve()
+
+                    remove
+                      ?.then(() => baboon?.setHypenation({
                         language: 'sv',
                         word: _word,
                         hypenated: _hypenated,
                         ignore: _ignore
-                      }, session?.accessToken || '')
-                      handleListHyphenations()
-                      setEditMode(false)
-                      setIsNew(false)
-                    })().catch(console.error)
+                      }, session?.accessToken || ''))
+                      .then(() => {
+                        handleListHyphenations()
+                        setEditMode(false)
+                        setIsNew(false)
+                      })
+                      .catch((error) => {
+                        console.error('Failed to save hyphenation:', error)
+                        toast.error('Kunde inte spara avstavningen')
+                      })
                   }}
                 >
                   {t('dictionary.save')}
@@ -153,8 +165,9 @@ const Dictionary = ({ className }: ViewProps): JSX.Element => {
   const [hyphenations, setHyphenations] = useState<Hypenation[]>([])
   const [isNew, setIsNew] = useState(false)
   const [query] = useQuery(['page'])
+  const currentPage = query?.page?.[0]
 
-  const handleListHyphenations = async () => {
+  const handleListHyphenations = useCallback(async () => {
     if (!session?.accessToken) {
       toast.error(t('dictionary.errors.noToken'))
       return
@@ -164,12 +177,12 @@ const Dictionary = ({ className }: ViewProps): JSX.Element => {
       toast.error(t('dictionary.errors.fetchDictionary'))
       return
     }
-    const hyphenations = await baboon?.listHypenations({
+    const hyphenations = await baboon.listHypenations({
       language: 'sv',
-      page: BigInt(parseInt(query?.page?.[0] || '1') - 1)
-    }, session?.accessToken)
+      page: BigInt(parseInt(currentPage || '1') - 1)
+    }, session.accessToken)
     setHyphenations(hyphenations?.response?.items || [])
-  }
+  }, [baboon, session?.accessToken, currentPage])
 
   useEffect(() => {
     handleListHyphenations()
@@ -177,7 +190,7 @@ const Dictionary = ({ className }: ViewProps): JSX.Element => {
         console.error('Error listing hyphenations:', ex)
         toast.error(t('dictionary.errors.listHyphenations'))
       })
-  }, [query?.page?.[0]])
+  }, [handleListHyphenations])
 
   return (
     <View.Root className={cn(className, 'min-h-[900px]')}>
