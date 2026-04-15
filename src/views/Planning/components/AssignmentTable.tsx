@@ -35,6 +35,7 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId }: {
   const [planningSlugLine] = useYValue<string | undefined>(ydoc.ele, 'meta.tt/slugline[0].value')
   const [selectedId, setSelectedId] = useState<string | undefined>(undefined)
   const [newAssignment] = useYValue<EleBlock>(ydoc.ctx, `core/assignment.${session?.user.sub || ''}`)
+  const [planningDate] = useYValue<string | undefined>(ydoc.ele, 'meta.core/planning-item[0].data.start_date')
   const [focusedRowIndex, setFocusedRowIndex] = useState<number | undefined>()
   const author = useActiveAuthor({ full: false })
   const authors = useAuthors()
@@ -234,6 +235,7 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId }: {
                       onSelect={!newAssignment
                         ? () => setSelectedId(assignment.id)
                         : undefined}
+                      planningDate={planningDate}
                     />
                   )}
             </div>

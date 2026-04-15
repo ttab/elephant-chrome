@@ -12,8 +12,9 @@ import type { JSX } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { TranslationKey } from '@/types/i18next.d'
 
-export const AssignmentTime = ({ assignment, onChange }: {
+export const AssignmentTime = ({ assignment, onChange, planningDate }: {
   assignment: Y.Map<unknown>
+  planningDate?: string
 } & FormProps): JSX.Element => {
   const [assignmentType] = useYValue<string>(assignment, `meta.core/assignment-type[0].value`)
   const [data, setData] = useYValue<AssignmentData>(assignment, `data`)

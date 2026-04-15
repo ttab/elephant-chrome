@@ -50,12 +50,13 @@ import type { TranslationKey } from '@/types/i18next.d'
 import { RelatedWires } from './RelatedWires'
 import { useFeatureFlags } from '@/hooks/useFeatureFlags'
 
-export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDialog }: {
+export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDialog, planningDate }: {
   ydoc: YDocument<Y.Map<unknown>>
   index: number
   onSelect?: () => void
   isFocused?: boolean
   asDialog?: boolean
+  planningDate?: string
 }): JSX.Element => {
   const openArticle = useLink('Editor')
   const openFlash = useLink('Flash')
@@ -123,9 +124,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
     : t('common:misc.unknown')
 
   const publishDate = publishTime ? new Date(publishTime).toISOString().split('T')[0] : null
-  const startDate = startTime ? new Date(startTime).toISOString().split('T')[0] : null
-  const publishDateInFuture = publishDate && startDate && publishDate > startDate
-
+  const publishDateInFuture = planningDate && publishDate && planningDate < publishDate
   const openDocument = assignmentType === 'flash' ? openFlash : openArticle
   const { showModal, hideModal } = useModal()
   const workflowState = articleStatus?.meta?.workflowState
@@ -135,7 +134,6 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
       return undefined
     }
     const endAndStartAreNotEqual = endTime && startTime && endTime !== startTime
-
     if (isVisualAssignmentType(assignmentType) && startTime) {
       if (endAndStartAreNotEqual) {
         return {
@@ -151,7 +149,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
         type: assignmentType
       }
     }
-    if (publishTime && publishDateInFuture && workflowState === 'withheld') {
+    if (publishTime && workflowState === 'withheld' && publishDateInFuture) {
       return {
         time: [new Date(publishDate).toLocaleDateString(undefined, { day: 'numeric', month: 'short' }), new Date(publishTime)],
         tooltip: t('planning:assignment.publishTime'),
@@ -184,7 +182,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
         type: assignmentType
       }
     }
-  }, [publishTime, assignmentType, startTime, endTime, publishSlot, t, publishDateInFuture, publishDate, workflowState])
+  }, [publishTime, assignmentType, startTime, endTime, publishSlot, t, publishDate, workflowState, publishDateInFuture])
 
   const TimeIcon = useMemo(() => {
     const timeIcons: Record<string, React.FC<LucideProps>> = {
