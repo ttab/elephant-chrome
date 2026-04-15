@@ -1,6 +1,7 @@
 import { Hocuspocus } from '@hocuspocus/server'
 import { Logger } from '@hocuspocus/extension-logger'
 import { Redis as PubsubExtension } from '@hocuspocus/extension-redis'
+import { Redis as IORedis } from 'ioredis'
 
 import type { Redis } from '../utils/Redis.js'
 import type { Repository } from '@/shared/Repository.js'
@@ -61,12 +62,28 @@ export class CollaborationServer {
     })
 
     const {
-      host: redisHost,
+      hostname: redisHost,
       port: redisPort,
       username: redisUsername,
       password: redisPassword,
       protocol: redisProtocol
     } = new URL(configuration.redisUrl)
+
+    const createRedisClient = () => {
+      const client = new IORedis({
+        host: redisHost,
+        port: parseInt(redisPort, 10),
+        username: redisUsername || undefined,
+        password: redisPassword || undefined,
+        ...(redisProtocol === 'rediss:' ? { tls: { rejectUnauthorized: true } } : {})
+      })
+
+      client.on('error', (err: Error) => {
+        logger.error({ err, host: redisHost, port: redisPort }, 'Hocuspocus Redis pubsub error')
+      })
+
+      return client
+    }
 
     this.server = new Hocuspocus({
       name: crypto.randomUUID(), // We need a server instance id to be able to acquire locks
@@ -85,11 +102,7 @@ export class CollaborationServer {
           prefix: 'elc::hp',
           host: redisHost,
           port: parseInt(redisPort, 10),
-          options: {
-            username: redisUsername,
-            password: redisPassword,
-            ...(redisProtocol === 'rediss:' ? { tls: { rejectUnauthorized: true } } : {})
-          }
+          createClient: createRedisClient
         }),
         this.#openDocuments,
         new CacheExtension({
