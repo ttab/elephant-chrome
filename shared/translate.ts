@@ -23,7 +23,8 @@ export async function translate(request: TranslateRequest): Promise<TranslateRes
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify(request)
+    body: JSON.stringify(request),
+    signal: AbortSignal.timeout(120_000)
   })
 
   if (!response.ok) {
