@@ -5,6 +5,7 @@ import { Avatar } from '../Avatar'
 import { signOut } from 'next-auth/react'
 import type { JSX } from 'react'
 import { useTranslation } from 'react-i18next'
+import { LogOutIcon } from '@ttab/elephant-ui/icons'
 
 const BASE_URL = import.meta.env.BASE_URL
 const hasUserDoc = (obj: object | undefined) => obj && Object.keys(obj).length > 0
@@ -43,6 +44,7 @@ export const UserInfo = ({ user, data }: {
           className='gap-4'
         >
           {t('app:mainMenu.logout')}
+          <LogOutIcon strokeWidth={1.75} size={16} />
         </Button>
       </SheetClose>
     </div>
