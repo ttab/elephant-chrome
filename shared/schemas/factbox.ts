@@ -15,7 +15,8 @@ export const _fields = [
   'document.url',
   'text',
   'heads.usable.version',
-  '_document_origin'
+  '_document_origin',
+  'workflow_state'
 ] as const
 
 /**

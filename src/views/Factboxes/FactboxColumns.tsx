@@ -1,9 +1,12 @@
 import { Title } from '@/components/Table/Items/Title'
+import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
+import { FacetedFilter } from '@/components/Commands/FacetedFilter'
 import type { Factbox } from '@/shared/schemas/factbox'
 import { dateToReadableDateTime } from '@/shared/datetime'
 import type { LocaleData } from '@/types/index'
+import type { TranslationKey } from '@/types/i18next.d'
 import type { ColumnDef, Row } from '@tanstack/react-table'
-import { BoxesIcon, CircleCheckIcon } from '@ttab/elephant-ui/icons'
+import { BoxesIcon, CircleCheckIcon, NewspaperIcon } from '@ttab/elephant-ui/icons'
 import type { TFunction, Namespace } from 'i18next'
 
 interface FactboxData {
@@ -36,29 +39,39 @@ export function factboxColumns<Ns extends Namespace>({ locale, timeZone, t }: { 
 
   return [
     {
-      id: 'documentOrigin',
+      id: 'documentStatus',
       meta: {
-        name: 'Origin',
-        columnIcon: BoxesIcon,
+        Filter: ({ column, setSearch }) => (
+          <FacetedFilter column={column} setSearch={setSearch} />
+        ),
+        name: t('core:labels.status'),
+        columnIcon: CircleCheckIcon,
         className: 'flex-none',
-        options: [
-          { label: t('factboxes.origin.inArticle'), value: 'core/article' },
-          { label: t('factboxes.origin.original'), value: 'core/factbox' }
-        ],
-        quickFilter: true
+        display: (value: string) => (
+          <span>{t(`core:status.${value}` as TranslationKey)}</span>
+        )
       },
-      accessorFn: (data) => data.fields['_document_origin']?.values[0] ?? 'core/factbox',
       cell: ({ row }) => {
-        const origin = row.getValue<string>('documentOrigin')
-        const Icon = origin === 'core/article' ? CircleCheckIcon : BoxesIcon
+        const currentStatus = row.original.fields['workflow_state']?.values[0]
+        const origin = row.original.fields['_document_origin']?.values[0] ?? 'core/factbox'
+        const OriginIcon = origin === 'core/article' ? NewspaperIcon : BoxesIcon
         return (
-          <div className='flex items-center relative' title={origin === 'core/article' ? t('factboxes.origin.inArticle') : t('factboxes.origin.original')}>
-
-            <Icon strokeWidth={1.75} className={origin === 'core/article' ? 'text-white rounded-full dark:text-black bg-usable fill-usable' : ''} />
-
+          <div className='relative w-fit'>
+            {
+              origin === 'core/article'
+                ? (
+                    <div title={t('workflows:base.usable.title')}>
+                      <CircleCheckIcon strokeWidth={1.75} className='text-white rounded-full dark:text-blackbg-usable fill-usable' />
+                    </div>
+                  )
+                : (
+                    <DocumentStatus type='core/factbox' status={currentStatus} />
+                  )
+            }
           </div>
         )
-      }
+      },
+      filterFn: (row, id, value: string[]) => value.includes(row.getValue(id))
     },
     {
       id: 'title',
@@ -100,6 +113,31 @@ export function factboxColumns<Ns extends Namespace>({ locale, timeZone, t }: { 
         )
       },
       enableGlobalFilter: true
+    },
+    {
+      id: 'documentOrigin',
+      meta: {
+        name: 'Origin',
+        columnIcon: BoxesIcon,
+        className: 'flex-none',
+        options: [
+          { label: t('factboxes.origin.inArticle'), value: 'core/article' },
+          { label: t('factboxes.origin.original'), value: 'core/factbox' }
+        ],
+        quickFilter: true
+      },
+      accessorFn: (data) => data.fields['_document_origin']?.values[0] ?? 'core/factbox',
+      cell: ({ row }) => {
+        const origin = row.getValue<string>('documentOrigin')
+        const Icon = origin === 'core/article' ? NewspaperIcon : BoxesIcon
+        return (
+          <div className='flex items-center relative' title={origin === 'core/article' ? t('factboxes.origin.inArticle') : t('factboxes.origin.original')}>
+
+            <Icon strokeWidth={1} size={16} />
+
+          </div>
+        )
+      }
     },
     {
       id: 'edited',
