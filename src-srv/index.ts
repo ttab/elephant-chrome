@@ -145,31 +145,33 @@ export async function runServer(): Promise<string> {
 
 
   process.on('uncaughtException', (ex: Error) => {
-    logger.fatal({ err: ex }, 'Unhandled exception')
+    logger.fatal({ err: ex }, 'Uncaught exception')
 
-    collaborationServer.close().then(() => {
-      process.exit(1)
-    }).catch((ex) => logger.fatal(ex))
-
-    setTimeout(() => {
+    const forceExit = setTimeout(() => {
       process.abort()
-    }, 1000).unref()
+    }, 1000)
 
-    process.exit(1)
+    collaborationServer.close()
+      .catch((err) => logger.fatal({ err }, 'Failed to close collaboration server'))
+      .finally(() => {
+        clearTimeout(forceExit)
+        process.exit(1)
+      })
   })
 
   process.on('unhandledRejection', (ex: Error) => {
     logger.fatal({ err: ex }, 'Unhandled rejection')
 
-    collaborationServer.close().then(() => {
-      process.exit(1)
-    }).catch((ex) => logger.fatal(ex))
-
-    setTimeout(() => {
+    const forceExit = setTimeout(() => {
       process.abort()
-    }, 1000).unref()
+    }, 1000)
 
-    process.exit(1)
+    collaborationServer.close()
+      .catch((err) => logger.fatal({ err }, 'Failed to close collaboration server'))
+      .finally(() => {
+        clearTimeout(forceExit)
+        process.exit(1)
+      })
   })
 
   // Run the Pyroscope profiler in push mode
