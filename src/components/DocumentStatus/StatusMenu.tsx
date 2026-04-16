@@ -228,6 +228,7 @@ export const StatusMenu = ({ ydoc, onBeforeStatusChange, planningId, embargoUnti
               ydoc={ydoc}
               usableId={documentStatus.usableId}
               documentType={documentStatus.type}
+              embargoUntil={embargoUntil}
             />
           )}
         </>
