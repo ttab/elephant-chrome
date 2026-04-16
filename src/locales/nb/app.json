@@ -17,6 +17,28 @@
       "toggleTheme": "Vexle tema"
     }
   },
+  "settings": {
+    "title": "Innstillinger",
+    "description": "Personlige innstillinger for brukerkontoen din.",
+    "saved": "Innstillinger lagret",
+    "saveError": "Kunne ikke lagre innstillinger",
+    "settingsButton": "Innstillinger",
+    "cancel": "Avbryt",
+    "save": "Lagre",
+    "loading": "Laster...",
+    "nynorskPrefs": {
+      "title": "Nynorsk-oversettelse",
+      "description": "Personlige preferanser for nynorsk-oversettelse. Kommaseparerte regelnøkler.",
+      "placeholder": "regel1,regel2,regel3"
+    },
+    "wireStreams": {
+      "title": "Kolonner",
+      "description": "Dine lagrede kolonner i byråvisningen. Redigeres i byråvisningen.",
+      "empty": "Ingen lagrede kolonner.",
+      "untitled": "Uten tittel",
+      "noFilters": "Ingen filtre"
+    }
+  },
   "systemMessages": {
     "reloadWindowTitle": "Du må laste inn vinduet på nytt.",
     "reloadWindowDescription": "Systemet har blitt oppdatert med nye eller endrede funksjoner. Laste inn vinduet på nytt for å fortsette å jobbe i den nye versjonen."

@@ -60,7 +60,13 @@
     "createError2": "Kunne ikke opprette ny artikkel!",
     "assignmentRollbackError": "Artikkelen kunne ikke bekreftes som lagret, og oppgaven kunne ikke slettes. Vennligst sjekk planleggingen manuelt.",
     "markUsed": "Merk som brukt",
-    "createButton": "Opprett artikkel"
+    "createButton": "Opprett artikkel",
+    "embargo": "Embargo til",
+    "translateToNynorsk": "Oversettelse",
+    "translationNone": "Ingen",
+    "translationStandard": "Standard",
+    "translationPersonal": "Personlige preferanser",
+    "translationError": "Oversettelse mislyktes. Artikkelen ble opprettet uten oversettelse."
   },
   "sources": {
     "title": "Kilder",

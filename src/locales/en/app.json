@@ -17,6 +17,28 @@
       "toggleTheme": "Toggle theme"
     }
   },
+  "settings": {
+    "title": "Settings",
+    "description": "Personal settings for your user account.",
+    "saved": "Settings saved",
+    "saveError": "Failed to save settings",
+    "settingsButton": "Settings",
+    "cancel": "Cancel",
+    "save": "Save",
+    "loading": "Loading...",
+    "nynorskPrefs": {
+      "title": "Nynorsk translation",
+      "description": "Personal preferences for Nynorsk translation. Comma-separated rule keys.",
+      "placeholder": "rule1,rule2,rule3"
+    },
+    "wireStreams": {
+      "title": "Columns",
+      "description": "Your saved columns in the wires view. Edit them in the wires view.",
+      "empty": "No saved columns.",
+      "untitled": "Untitled",
+      "noFilters": "No filters"
+    }
+  },
   "systemMessages": {
     "reloadWindowTitle": "You need to reload the window",
     "reloadWindowDescription": "The system has been updated with new or changed features. Reload the window to continue working in the new version."

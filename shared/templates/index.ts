@@ -27,5 +27,6 @@ export interface TemplatePayload {
     'core/story'?: Block[]
     'tt/wire'?: Block[]
     'core/event'?: Block[]
+    'core/content-source'?: Block[]
   }
 }

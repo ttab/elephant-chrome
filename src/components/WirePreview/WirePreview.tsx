@@ -95,7 +95,7 @@ export const WirePreview = ({ wire }: {
       <Editor
         id={wire.id}
         version={wireVersion}
-        textOnly={true}
+        textOnly={false}
         direct
         disableScroll={true}
         showNotes={true}

@@ -19,13 +19,14 @@ import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import { useTranslation } from 'react-i18next'
 
-export const StatusMenu = ({ ydoc, onBeforeStatusChange, planningId }: {
+export const StatusMenu = ({ ydoc, onBeforeStatusChange, planningId, embargoUntil }: {
   ydoc: YDocument<Y.Map<unknown>>
   onBeforeStatusChange?: (
     status: string,
     data?: Record<string, unknown>
   ) => Promise<boolean>
   planningId?: string
+  embargoUntil?: string
 }) => {
   const [documentStatus, setDocumentStatus] = useWorkflowStatus({ ydoc })
   const containerRef = useRef<HTMLDivElement>(null)
@@ -209,6 +210,7 @@ export const StatusMenu = ({ ydoc, onBeforeStatusChange, planningId }: {
               setStatus={(...args) => void setStatus(...args)}
               planningId={planningId}
               requireCause={!!documentStatus.checkpoint}
+              embargoUntil={embargoUntil}
               ydoc={ydoc}
               usableId={documentStatus.usableId}
               documentType={documentStatus.type}
@@ -226,6 +228,7 @@ export const StatusMenu = ({ ydoc, onBeforeStatusChange, planningId }: {
               ydoc={ydoc}
               usableId={documentStatus.usableId}
               documentType={documentStatus.type}
+              embargoUntil={embargoUntil}
             />
           )}
         </>

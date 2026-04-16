@@ -17,8 +17,19 @@ import { useYValue } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import { useTranslation } from 'react-i18next'
 import { documentTypeValueFormat } from '@/defaults/documentTypeFormats'
+import useSWR from 'swr'
+import type { EleDocument, EleDocumentResponse } from '@/shared/types'
 import { HastToggle } from '@/components/HastToggle'
 import { HastIndicator } from '@/components/HastIndicator'
+
+const BASE_URL = import.meta.env.BASE_URL || ''
+
+const wireDocFetcher = async (url: string): Promise<EleDocument | undefined> => {
+  const response = await fetch(url)
+  if (!response.ok) return undefined
+  const result = await response.json() as EleDocumentResponse
+  return result.document
+}
 
 export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: propPlanningId }: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -37,6 +48,16 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
   const openLatestVersion = useLink('Editor')
   const openSources = useLink('Sources')
   const [wireBlocks] = useYValue<Block[]>(ydoc.ele, 'links.tt/wire')
+
+  // Fetch embargo from the original wire document (schema doesn't allow
+  // storing embargo_until on the article's wire link data)
+  const primaryWireId = wireBlocks?.[0]?.uuid
+  const { data: wireDocument } = useSWR<EleDocument | undefined>(
+    primaryWireId ? `${BASE_URL}/api/documents/${primaryWireId}?direct=true` : null,
+    wireDocFetcher,
+    { revalidateOnFocus: false, revalidateOnReconnect: false }
+  )
+  const embargoUntil = wireDocument?.meta?.['tt/wire']?.[0]?.data?.embargo_until
 
   // FIXME: We must have a way to retrieve the publish time defined in the planning.
   // FIXME: When yjs opening of related planning have been fixed this should be readded/remade.
@@ -57,6 +78,17 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
 
   // Callback to set correct withheld time to the assignment
   const onBeforeStatusChange = useCallback(async (newStatus: string, data?: Record<string, unknown>) => {
+    // Prevent direct publish if embargo is still active
+    if (newStatus === 'usable' && embargoUntil) {
+      const embargoDate = new Date(embargoUntil)
+      if (embargoDate > new Date()) {
+        toast.error(t('editor:embargoActive', {
+          time: embargoDate.toLocaleString()
+        }))
+        return false
+      }
+    }
+
     if (newStatus === 'draft') {
       handleLink({
         dispatch,
@@ -85,7 +117,7 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
     }
 
     return true
-  }, [planningId, dispatch, ydoc.id, history, state.viewRegistry, viewId, t])
+  }, [planningId, dispatch, ydoc.id, history, state.viewRegistry, viewId, t, embargoUntil])
 
   const isReadOnlyAndUpdated = workflowStatus && workflowStatus?.name !== 'usable' && readOnly
   const isUnpublished = workflowStatus?.name === 'unpublished'
@@ -153,6 +185,7 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
                     planningId={propPlanningId || planningId}
                     ydoc={ydoc}
                     onBeforeStatusChange={onBeforeStatusChange}
+                    embargoUntil={embargoUntil}
                   />
                 )}
               </>

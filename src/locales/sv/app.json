@@ -17,6 +17,28 @@
       "toggleTheme": "Växla tema"
     }
   },
+  "settings": {
+    "title": "Inställningar",
+    "description": "Personliga inställningar för din användare.",
+    "saved": "Inställningar sparade",
+    "saveError": "Kunde inte spara inställningar",
+    "settingsButton": "Inställningar",
+    "cancel": "Avbryt",
+    "save": "Spara",
+    "loading": "Laddar...",
+    "nynorskPrefs": {
+      "title": "Nynorsk-översättning",
+      "description": "Personliga preferenser för nynorsk-översättning. Kommaseparerade regelnycklar.",
+      "placeholder": "regel1,regel2,regel3"
+    },
+    "wireStreams": {
+      "title": "Kolumner",
+      "description": "Dina sparade kolumner i telegramvyn. Ändras i telegramvyn.",
+      "empty": "Inga sparade kolumner.",
+      "untitled": "Ingen titel",
+      "noFilters": "Inga filter"
+    }
+  },
   "systemMessages": {
     "reloadWindowTitle": "Du behöver ladda om fönstret",
     "reloadWindowDescription": "Systemet har uppdaterats med nya eller ändrade funktioner. Ladda om fönstret för att jobba vidare i den nya versionen."
