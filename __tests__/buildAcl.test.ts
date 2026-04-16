@@ -38,7 +38,8 @@ const minimalDocument = {
 }
 
 function getAclFromLastCall(): Array<{ uri: string, permissions: string[] }> {
-  return mockUpdate.mock.calls[0][0].acl
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  return mockUpdate.mock.calls[0][0].acl as Array<{ uri: string, permissions: string[] }>
 }
 
 describe('Repository.saveDocument ACL', () => {
