@@ -18,6 +18,7 @@ import { Version } from '@/components/Version'
 import { ReadOnly } from './ReadOnly'
 import { EditorialInfoTypes } from '@/components/EditorialInfoTypes'
 import { ContentSource } from '@/components/ContentSource'
+import { RemoveHastFromArticle } from '@/components/RemoveHastFromArticle'
 import type * as Y from 'yjs'
 import { useTranslation } from 'react-i18next'
 
@@ -82,8 +83,9 @@ export function MetaSheet({ ydoc, readOnly, readOnlyVersion }: {
                       </div>
 
                       <Label htmlFor='actions' className='text-xs text-muted-foreground -mb-3'>{t('labels.actions')}</Label>
-                      <div className='flex flex-row gap-3' id='actions'>
+                      <div className='flex flex-col gap-2' id='actions'>
                         <AddNote ydoc={ydoc} text={t('actions.addNote')} />
+                        <RemoveHastFromArticle ydoc={ydoc} />
                       </div>
 
                       <Label htmlFor='content-source'>{t('labels.otherSources')}</Label>
