@@ -58,8 +58,8 @@ export class Spellchecker {
 
     const language = documentLanguage.toLowerCase().replace('_', '-')
 
-    if (!supportedLanguages.includes(documentLanguage)) {
-      console.warn(documentLanguage, 'not supported, no spellchecking')
+    if (!supportedLanguages.includes(language)) {
+      console.warn(language, 'not supported, no spellchecking')
       return []
     }
 

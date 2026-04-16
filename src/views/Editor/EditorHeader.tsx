@@ -20,6 +20,7 @@ import { documentTypeValueFormat } from '@/defaults/documentTypeFormats'
 import useSWR from 'swr'
 import type { EleDocument, EleDocumentResponse } from '@/shared/types'
 import { HastToggle } from '@/components/HastToggle'
+import { HastIndicator } from '@/components/HastIndicator'
 
 const BASE_URL = import.meta.env.BASE_URL || ''
 
@@ -144,6 +145,7 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
               {!readOnly && documentType === 'core/article' && (
                 <HastToggle ydoc={ydoc} usableId={workflowStatus?.usableId} />
               )}
+              {readOnly && <HastIndicator documentId={ydoc.id} size={18} />}
               {!!wireBlocks?.length && (
                 <Button
                   variant='ghost'

@@ -6,10 +6,11 @@ import { useRegistry } from '@/hooks/useRegistry'
 import { useTranslation } from 'react-i18next'
 import { ZapIcon } from '@ttab/elephant-ui/icons'
 import type * as Y from 'yjs'
-import type { JSX } from 'react'
+import { type JSX } from 'react'
 import { cn } from '@ttab/elephant-ui/utils'
 import { snapshotDocument } from '@/lib/snapshotDocument'
 import { toast } from 'sonner'
+import { mutate } from 'swr'
 
 function HastSwitch({ checked, onCheckedChange, size = 'default' }: {
   checked: boolean
@@ -64,28 +65,75 @@ export const HastToggle = ({ ydoc, usableId, className, variant = 'compact' }: {
   const { featureFlags } = useRegistry()
   const { t } = useTranslation()
   const [hast, setHast] = useYValue<Block | undefined>(ydoc.ele, 'meta.ntb/hast[0]')
-  const isHast = !!hast
+  const hastValue = (() => {
+    try {
+      return BigInt(hast?.value || '0')
+    } catch (ex) {
+      console.warn('HastToggle: Failed to parse hast value', {
+        documentId: ydoc.id,
+        value: hast?.value,
+        error: ex
+      })
+      return 0n
+    }
+  })()
+  // Toggle is "on" only when targeting next version. Unlike HastIndicator.getHastState
+  // which also shows active for current usable version, this simpler check works for
+  // the toggle because we only enable it for unpublished versions.
+  const isHast = !!hast && hastValue === (usableId ?? 0n) + 1n
 
   if (!featureFlags.hasHast) {
     return null
   }
 
-  function handleToggle() {
-    if (!isHast) {
+  async function snapshot() {
+    try {
+      await snapshotDocument(ydoc.id, {}, ydoc.provider?.document)
+      // Invalidate all HastIndicator caches for this document
+      void mutate(
+        (key) => Array.isArray(key) && key[0] === 'hast-indicator' && key[1] === ydoc.id
+      )
+    } catch (error) {
+      toast.error(t('errors:toasts.saveChangeError'))
+      console.error('Error snapshotting document after toggling HAST:', error)
+    }
+  }
+
+  function toggleOn() {
+    try {
       const nextId = (usableId ?? 0n) + 1n
       setHast(Block.create({
         type: 'ntb/hast',
         value: String(nextId)
       }))
-    } else {
-      setHast(undefined)
+      void snapshot()
+    } catch (error) {
+      toast.error(t('errors:toasts.saveChangeError'))
+      console.error('Error toggling HAST on:', error)
     }
+  }
 
-    snapshotDocument(ydoc.id, {}, ydoc.provider?.document)
-      .catch((error) => {
-        toast.error(t('errors:toasts.saveChangeError'))
-        console.error('Error snapshotting document after toggling HAST:', error)
-      })
+  function handleToggle() {
+    if (!isHast) {
+      toggleOn()
+    } else {
+      handleRemoveFromVersion()
+    }
+  }
+
+  // Sets hast value to '0' - block remains but is disabled for this version.
+  // Can be re-enabled for future versions.
+  function handleRemoveFromVersion() {
+    try {
+      setHast(Block.create({
+        type: 'ntb/hast',
+        value: '0'
+      }))
+      void snapshot()
+    } catch (error) {
+      toast.error(t('errors:toasts.saveChangeError'))
+      console.error('Error removing HAST from version:', error)
+    }
   }
 
   const textColor = isHast ? 'text-foreground' : 'text-muted-foreground'
@@ -113,7 +161,7 @@ export const HastToggle = ({ ydoc, usableId, className, variant = 'compact' }: {
 
   return (
     <div className={cn('flex items-center gap-1.5', className)}>
-      <HastSwitch checked={isHast} onCheckedChange={handleToggle} size='lg' />
+      <HastSwitch checked={isHast} onCheckedChange={handleToggle} />
       <Label
         className={cn('text-xs cursor-pointer', textColor)}
         onClick={handleToggle}

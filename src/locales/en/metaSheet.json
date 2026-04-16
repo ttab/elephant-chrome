@@ -14,7 +14,13 @@
     "slugline": "Slug"
   },
   "actions": {
-    "addNote": "Add note"
+    "addNote": "Add note",
+    "removeHastFromArticle": "Remove HAST from article"
+  },
+  "removeHastPrompt": {
+    "title": "Remove HAST from article",
+    "description": "This removes HAST and makes it a normal article. Future versions will not be sent as HAST unless you enable it again.",
+    "confirm": "Remove"
   },
   "placeholders": {
     "addByline": "Add byline",
