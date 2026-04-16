@@ -46,6 +46,6 @@ export const dateFields = {
   articles: 'heads.usable.created',
   plannings: 'document.meta.core_planning_item.data.start_date',
   events: 'document.meta.core_event.data.start',
-  wires: 'document.meta.core_newsitem.data.versioncreated',
+  wires: 'modified',
   factboxes: 'modified'
 } as const

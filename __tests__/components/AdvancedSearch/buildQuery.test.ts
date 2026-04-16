@@ -240,7 +240,8 @@ describe('buildAdvancedQuery', () => {
       if (result?.conditions.oneofKind === 'range') {
         expect(result.conditions.range.field).toBe(dateField)
         expect(result.conditions.range.gte).toBe('2026-01-01')
-        expect(result.conditions.range.lte).toBe('2026-03-01')
+        // Uses lt with next day to include entire end date
+        expect(result.conditions.range.lt).toBe('2026-03-02')
       }
     })
 
@@ -253,7 +254,7 @@ describe('buildAdvancedQuery', () => {
 
       if (result?.conditions.oneofKind === 'range') {
         expect(result.conditions.range.gte).toBe('2026-01-01')
-        expect(result.conditions.range.lte).toBe('')
+        expect(result.conditions.range.lt).toBe('')
       }
     })
 
@@ -266,7 +267,8 @@ describe('buildAdvancedQuery', () => {
 
       if (result?.conditions.oneofKind === 'range') {
         expect(result.conditions.range.gte).toBe('')
-        expect(result.conditions.range.lte).toBe('2026-03-01')
+        // Uses lt with next day to include entire end date
+        expect(result.conditions.range.lt).toBe('2026-03-02')
       }
     })
 

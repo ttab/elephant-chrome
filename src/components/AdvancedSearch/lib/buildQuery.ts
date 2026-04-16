@@ -6,6 +6,7 @@ import {
   Fuzziness,
   FuzzinessAuto
 } from '@ttab/elephant-api/index'
+import { addDays, format } from 'date-fns'
 import type { AdvancedSearchState, SearchFieldConfig } from '../types'
 
 function escapeRegExp(str: string): string {
@@ -83,14 +84,15 @@ export function buildAdvancedQuery(
     }))
   }
 
-  // Date range
+  // Date range - use lt with next day to include entire end date for both
+  // date-only fields (YYYY-MM-DD) and timestamp fields (ISO format)
   if (dateField && (s.dateRange.from || s.dateRange.to)) {
     const range = RangeQueryV1.create({ field: dateField })
     if (s.dateRange.from) {
       range.gte = s.dateRange.from
     }
     if (s.dateRange.to) {
-      range.lte = s.dateRange.to
+      range.lt = format(addDays(s.dateRange.to, 1), 'yyyy-MM-dd')
     }
     conditions.push(QueryV1.create({
       conditions: { oneofKind: 'range', range }
