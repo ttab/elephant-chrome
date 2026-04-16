@@ -137,6 +137,13 @@ export async function createArticle({
   // Hocuspocus provider has been disconnected (dialog closed before this point)
   try {
     await snapshotDocument(ydoc.id, { status: 'draft' }, yjsDocument)
+
+    // Remove the IndexedDB database created during the wire creation dialog.
+    // Without this, when the Editor opens the article (e.g. via the toast),
+    // CollaborationClient loads the stale IndexedDB state (which includes the
+    // creation dialog's Y.Doc mutations) before HP syncs — causing slate-yjs
+    // errors. Deleting it forces the Editor to load fresh from the HP server.
+    indexedDB.deleteDatabase(ydoc.id)
   } catch (ex) {
     // Roll back the assignment that was just added to the planning
     try {
