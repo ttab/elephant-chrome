@@ -39,7 +39,7 @@
     "@grafana/faro-core": "$@grafana/faro-react"
   },
   "dependencies": {
-    "@auth/express": "^0.9.0",
+    "@auth/express": "^0.12.2",
     "@date-fns/utc": "^2.1.1",
     "@grafana/faro-react": "^2.3.1",
     "@hocuspocus/extension-logger": "^3.4.4",
@@ -68,7 +68,7 @@
     "i18next": "^26.0.4",
     "i18next-browser-languagedetector": "^8.2.1",
     "jose": "^6.2.2",
-    "next-auth": "^5.0.0-beta.30",
+    "next-auth": "^5.0.0-beta.31",
     "node-html-parser": "^7.1.0",
     "pino": "^10.3.1",
     "pino-http": "^11.0.0",
@@ -89,7 +89,7 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@auth/core": "^0.38.0",
+    "@auth/core": "^0.41.2",
     "@protobuf-ts/runtime-rpc": "^2.11.1",
     "@tailwindcss/vite": "^4.2.2",
     "@testing-library/jest-dom": "^6.9.1",

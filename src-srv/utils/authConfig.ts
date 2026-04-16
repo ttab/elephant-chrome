@@ -68,7 +68,6 @@ export async function createAuthInfo(
         // First time user is logging in
         if (account && user) {
           if (account.access_token) {
-            // @ts-expect-error sub exists
             user.sub = account.providerAccountId
           }
           return {
