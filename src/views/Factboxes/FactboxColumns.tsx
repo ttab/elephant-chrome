@@ -54,7 +54,6 @@ export function factboxColumns<Ns extends Namespace>({ locale, timeZone, t }: { 
       cell: ({ row }) => {
         const currentStatus = row.original.fields['workflow_state']?.values[0]
         const origin = row.original.fields['_document_origin']?.values[0] ?? 'core/factbox'
-        const OriginIcon = origin === 'core/article' ? NewspaperIcon : BoxesIcon
         return (
           <div className='relative w-fit'>
             {
