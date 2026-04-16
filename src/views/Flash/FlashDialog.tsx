@@ -1,11 +1,13 @@
 import {
   Awareness,
+  Newsvalue,
   Section,
   View
 } from '@/components'
 import type { DefaultValueOption, ViewProps } from '@/types'
 import { Alert, AlertDescription, AlertTitle, Button, Checkbox, ComboBox, Label } from '@ttab/elephant-ui'
 import { CircleXIcon, TagsIcon, GanttChartSquareIcon, NewspaperIcon, ZapIcon, InfoIcon, TriangleAlertIcon } from '@ttab/elephant-ui/icons'
+import { Newsvalues } from '@/defaults'
 import { useRegistry, useSections } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import type { Dispatch, SetStateAction } from 'react'
@@ -368,6 +370,13 @@ export const FlashDialog = (props: {
             {!selectedPlanning && props.asDialog && (
               <Form.Group icon={TagsIcon}>
                 <Section ydoc={ydoc} path='links.core/section[0]' onSelect={setSection} />
+                {isHast && (
+                  <Newsvalue
+                    ydoc={ydoc}
+                    path='meta.core/newsvalue[0].value'
+                    options={Newsvalues.filter((nv) => Number(nv.value) >= 4)}
+                  />
+                )}
               </Form.Group>
             )}
             {!isHast && (
@@ -437,7 +446,7 @@ export const FlashDialog = (props: {
               <Alert className='bg-red-300/35'>
                 <InfoIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />
                 <AlertTitle>
-                  {t(isHast ? 'flash:createHastAlertTitle' : 'flash:createFlashAlertTitle')}
+                  {t('flash:createAlertTitle', { type: t(isHast ? 'flash:hastLabel' : 'flash:title') })}
                 </AlertTitle>
                 <AlertDescription>
                   {!selectedPlanning

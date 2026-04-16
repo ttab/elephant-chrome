@@ -10,7 +10,7 @@ import { useYDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import { BaseEditor } from '@/components/Editor/BaseEditor'
 import { getContentMenuLabels } from '@/defaults/contentMenuLabels'
-import { useDeliverablePlanningId } from '@/hooks/index/useDeliverablePlanningId'
+import { useDeliverableInfo } from '@/hooks/useDeliverableInfo'
 
 export const FlashView = (props: ViewProps & {
   documentId: string
@@ -26,7 +26,7 @@ export const FlashView = (props: ViewProps & {
     visibility: !preview
   })
 
-  const planningId = useDeliverablePlanningId(ydoc.id || '')
+  const planningId = useDeliverableInfo(ydoc.id || '')?.planningUuid ?? ''
 
   if (!props.id || !ydoc.provider?.isSynced) {
     return <></>

@@ -91,7 +91,7 @@ export const PromptDefault = ({
       primaryVariant={isUnpublishPrompt ? 'destructive' : undefined}
       typeIcon={typeIcon}
     >
-      {ydoc && documentType === 'core/article' && prompt.status !== 'unpublished' && (
+      {ydoc?.ele && documentType === 'core/article' && prompt.status !== 'unpublished' && prompt.status !== 'draft' && (
         <HastToggle ydoc={ydoc} usableId={usableId} variant='full' />
       )}
       {(showCauseField) && (

@@ -38,13 +38,16 @@ export const Prompt = ({
   anchor,
   typeIcon: Icon
 }: PromptProps): JSX.Element => {
-  useKeydownGlobal((event) => {
-    if (event.key === 'Escape' && secondaryLabel && onSecondary) {
-      onSecondary()
-    }
-  })
+  const dismiss = onCancel ?? onSecondary
 
   const [open, setOpen] = useState<boolean>(true)
+
+  useKeydownGlobal((event) => {
+    if (event.key === 'Escape' && dismiss) {
+      setOpen(false)
+      dismiss()
+    }
+  })
   const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null)
 
   useLayoutEffect(() => {

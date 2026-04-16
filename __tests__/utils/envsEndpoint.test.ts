@@ -6,7 +6,8 @@ describe('GET /api/envs', () => {
     process.env.WS_URL = 'https://ws.example.com'
     process.env.REPOSITORY_URL = 'https://repo.example.com'
     process.env.USER_URL = 'https://user.example.com'
-    process.env.CONTENT_API_URL = 'https://content.example.com'
+    process.env.IMAGE_SEARCH_URL = 'https://imagesearch.example.com'
+    process.env.IMAGE_SEARCH_PROVIDER = 'ntb'
     process.env.SPELLCHECK_URL = 'https://spell.example.com'
     process.env.FARO_URL = 'https://faro.example.com'
     process.env.BABOON_URL = 'https://baboon.example.com'
@@ -22,7 +23,8 @@ describe('GET /api/envs', () => {
       webSocketUrl: 'https://ws.example.com',
       repositoryUrl: 'https://repo.example.com',
       userUrl: 'https://user.example.com',
-      contentApiUrl: 'https://content.example.com',
+      imageSearchUrl: 'https://imagesearch.example.com',
+      imageSearchProvider: 'ntb',
       spellcheckUrl: 'https://spell.example.com',
       faroUrl: 'https://faro.example.com',
       baboonUrl: 'https://baboon.example.com',
@@ -40,7 +42,7 @@ describe('GET /api/envs', () => {
     process.env.REPOSITORY_URL = 'https://repo.example.com'
     process.env.REPOSITORY_PUBLIC_URL = 'https://repo-public.example.com'
     process.env.USER_URL = 'https://user.example.com'
-    process.env.CONTENT_API_URL = 'https://content.example.com'
+    process.env.IMAGE_SEARCH_URL = 'https://content.example.com'
     process.env.SPELLCHECK_URL = 'https://spell.example.com'
     process.env.FARO_URL = 'https://faro.example.com'
     process.env.BABOON_URL = 'https://baboon.example.com'

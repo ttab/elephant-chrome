@@ -4,7 +4,7 @@
     "assignments": "Oppdrag",
     "events": "Hendelser",
     "factboxes": "Faktabokser",
-    "flash": "Ny HAST",
+    "flash": "Ny {{type}}",
     "latest": "Sist publisert",
     "logout": "Logg ut",
     "plannings": "Planer",

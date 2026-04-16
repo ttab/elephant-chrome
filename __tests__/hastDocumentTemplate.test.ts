@@ -20,12 +20,12 @@ describe('hastDocumentTemplate', () => {
     expect(newsvalue?.value).toBe('5')
   })
 
-  it('sets default slugline to hast', () => {
+  it('sets default preamble text from i18n', () => {
     const doc = hastDocumentTemplate('test-id')
-    const slugline = doc.meta.find((m) => m.type === 'tt/slugline')
+    const preamble = doc.content.find((c) => c.role === 'preamble')
 
-    expect(slugline).toBeDefined()
-    expect(slugline?.value).toBe('hast')
+    expect(preamble).toBeDefined()
+    expect(preamble?.data?.text).toBe('Texten uppdateras')
   })
 
   it('includes ntb/hast meta block', () => {
@@ -39,11 +39,13 @@ describe('hastDocumentTemplate', () => {
   it('creates content with heading and body text blocks', () => {
     const doc = hastDocumentTemplate('test-id')
 
-    expect(doc.content).toHaveLength(2)
+    expect(doc.content).toHaveLength(3)
     expect(doc.content[0].type).toBe('core/text')
     expect(doc.content[0].role).toBe('heading-1')
     expect(doc.content[1].type).toBe('core/text')
-    expect(doc.content[1].role).toBe('')
+    expect(doc.content[1].role).toBe('preamble')
+    expect(doc.content[2].type).toBe('core/text')
+    expect(doc.content[2].role).toBe('')
   })
 
   it('includes section links from payload', () => {

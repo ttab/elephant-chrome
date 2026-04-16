@@ -52,7 +52,7 @@ export const promptConfig = ({
   const documentType = getDocumentTypeLabel(type)
 
   const flashUsableDescription = shouldCreateQuickArticle
-    ? i18next.t('flash:promptDescriptions.alsoTypeCreated')
+    ? i18next.t('flash:promptDescriptions.alsoTypeCreated', { type: documentType })
     : ''
   const articleUsableDescription = i18next.t(
     'flash:promptDescriptions.alsoTypeCreatedWithApproved'
@@ -63,7 +63,7 @@ export const promptConfig = ({
       visible: sendPrompt,
       key: 'send',
       title: isFlash || isHast
-        ? i18next.t('flash:titles.createAndSendType', { type: documentType })
+        ? i18next.t('flash:titles.createAndSendType', { type: isFlash ? i18next.t('flash:title') : i18next.t('flash:hastLabel') })
         : i18next.t('flash:titles.approveType', { type: documentType }),
       description: !selectedPlanning
         ? i18next.t('flash:promptDescriptions.newPlanningWillBeCreated', {

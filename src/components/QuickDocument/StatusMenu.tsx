@@ -3,7 +3,7 @@
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { useCallback } from 'react'
 import { toast } from 'sonner'
-import { useDeliverablePlanningId } from '@/hooks/index/useDeliverablePlanningId'
+import { useDeliverableInfo } from '@/hooks/useDeliverableInfo'
 import { updateAssignmentTime } from '@/lib/index/updateAssignmentPublishTime'
 import { handleLink } from '@/components/Link/lib/handleLink'
 import { useView } from '@/hooks/useView'
@@ -22,7 +22,7 @@ interface StatusMenuHeaderProps {
 
 export const StatusMenuLogic = ({ ydoc, propPlanningId, view }: StatusMenuHeaderProps) => {
   const viewConfig = getViewMap()[view] // Get view-specific configuration
-  const planningId = useDeliverablePlanningId(ydoc.id || '')
+  const planningId = useDeliverableInfo(ydoc.id || '')?.planningUuid ?? ''
   const { viewId } = useView()
   const { state, dispatch } = useNavigation()
   const history = useHistory()
