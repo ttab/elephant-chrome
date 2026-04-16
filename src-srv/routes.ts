@@ -133,6 +133,10 @@ function connectRouteHandler(app: Application, routePath: string, func: RouteHan
     }
 
     func(req, context).then((response) => {
+      if (res.headersSent) {
+        return
+      }
+
       if (ApiResponse.isContent(response)) {
         const { statusCode = 200, payload = '' } = response
 
@@ -162,9 +166,9 @@ function connectRouteHandler(app: Application, routePath: string, func: RouteHan
       }
     }).catch((ex: Error) => {
       logger.error(ex, 'RouteHandler error')
-      res.statusCode = 500
-      res.statusMessage = ex?.message || 'Unknown error'
-      res.send('')
+      if (!res.headersSent) {
+        res.status(500).send('')
+      }
     })
   }
 
