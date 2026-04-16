@@ -106,7 +106,7 @@ export const DocumentHistory = ({ uuid, currentVersion, onSelectVersion, selecte
           && visibleHistory.map((item, index) => {
             const title = documents?.find((doc) => doc.version === item.version)?.document?.title
             const isCurrent = item.version === currentVersion
-            const status = documentType === 'core/factbox' && item.status === 'usable' ? 'approved' : item.status
+            const status = documentType === 'core/factbox' && item.status === 'usable' ? 'done' : item.status
 
             return (
               <div key={`${item.version}`} className='grid grid-cols-[1.5rem_auto_1fr] group rounded'>
