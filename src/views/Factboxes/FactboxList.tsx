@@ -34,7 +34,7 @@ export const FactboxList = ({ columns }: {
 
   useEffect(() => {
     if (!data) return
-    //TO FIX: added pagination on the client side as a temporary solution. Needs to be reworked to show more correct data.
+    // TO FIX: added pagination on the client side as a temporary solution. Needs to be reworked to show more correct data.
     const start = (currentPage - 1) * PAGE_SIZE
     setData(data.slice(start, start + PAGE_SIZE))
   }, [data, currentPage, setData])

@@ -24,11 +24,11 @@ export const FactboxHeader = ({ ydoc, onDialogClose, asDialog }: {
         asDialog={asDialog}
       />
       <ViewHeader.Content className='justify-start'>
-        <div className='max-w-[850px] mx-auto flex flex-row gap-1 justify-between items-center w-full'>
-          <div className='flex flex-row gap-2 justify-start items-center @6xl/view:-ml-20'>
+        <div className='max-w-[750px] mx-auto flex flex-row gap-1 justify-between items-center w-full'>
+          <div className='flex flex-row gap-2 justify-end items-center @6xl/view:-ml-20'>
           </div>
 
-          <div className='flex flex-row gap-2 justify-end items-center'>
+          <div className='flex flex-row gap-2 justify-start items-center'>
             {!asDialog && (
               <>
                 <StatusMenu
@@ -39,12 +39,12 @@ export const FactboxHeader = ({ ydoc, onDialogClose, asDialog }: {
             {!!ydoc && !asDialog && (
               <ViewHeader.RemoteUsers ydoc={ydoc} />
             )}
+            <ViewHeader.Action ydoc={ydoc} onDialogClose={onDialogClose} asDialog={asDialog}>
+              { !asDialog && ydoc && (
+                <MetaSheet ydoc={ydoc} />
+              )}
+            </ViewHeader.Action>
           </div>
-          <ViewHeader.Action ydoc={ydoc} onDialogClose={onDialogClose} asDialog={asDialog}>
-            { !asDialog && ydoc && (
-              <MetaSheet ydoc={ydoc} />
-            )}
-          </ViewHeader.Action>
 
         </div>
       </ViewHeader.Content>
