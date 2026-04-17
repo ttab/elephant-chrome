@@ -25,7 +25,7 @@ export function TimelessArticleHeader({
   const handleSave = async () => {
     try {
       await snapshotDocument(ydoc.id, { force: true }, ydoc.provider?.document)
-      toast.success('Document saved')
+      toast.success(t('shared:operations.documentSaveSuccess'))
       onDialogClose?.(ydoc.id, title)
     } catch (error) {
       console.error('Failed to save timeless article:', error)

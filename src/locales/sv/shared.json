@@ -60,7 +60,8 @@
     "authorCreateSuccess": "Författardokument är skapat",
     "authorUpdateSuccess": "Författardokument har uppdaterats",
     "authorSaveSuccess": "Författardokument har sparats",
-    "savedFilter": "Ditt filter har sparats"
+    "savedFilter": "Ditt filter har sparats",
+    "documentSaveSuccess": "Dokument sparat"
   },
   "prompts": {
     "publishBeforeClose": "Vill du publicera ändringarna innan du stänger?",

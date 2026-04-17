@@ -60,7 +60,8 @@
     "authorCreateSuccess": "Forfatterdokument er opprettet",
     "authorUpdateSuccess": "Forfatterdokumentet er oppdatert",
     "authorSaveSuccess": "Forfatterdokumentet er lagret",
-    "savedFilter": "Filteret ditt er lagret"
+    "savedFilter": "Filteret ditt er lagret",
+    "documentSaveSuccess": "Dokument lagret"
   },
   "prompts": {
     "publishBeforeClose": "Vil du publisere endringer innen du stenger?",
