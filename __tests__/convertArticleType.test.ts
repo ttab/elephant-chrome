@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { Document } from '@ttab/elephant-api/newsdoc'
-import { prepareArticleConversion } from '@/shared/convertArticleType'
+import { Block, Document } from '@ttab/elephant-api/newsdoc'
+import { deriveNewPlanning, prepareArticleConversion } from '@/shared/convertArticleType'
 import type { Repository } from '@/shared/Repository'
 
 describe('prepareArticleConversion', () => {
@@ -224,5 +224,144 @@ describe('prepareArticleConversion', () => {
     await expect(
       prepareArticleConversion(doc, 'core/article#timeless', mockRepository, 'token')
     ).rejects.toThrow('Prune API returned empty document')
+  })
+})
+
+describe('deriveNewPlanning', () => {
+  const makeSourcePlanning = (overrides?: Partial<Parameters<typeof Document.create>[0]>) =>
+    Document.create({
+      uuid: 'source-planning-uuid',
+      type: 'core/planning-item',
+      uri: 'core://newscoverage/source-planning-uuid',
+      language: 'sv-se',
+      title: 'Monday coverage',
+      meta: [
+        Block.create({
+          type: 'core/planning-item',
+          data: { start_date: '2026-04-01', end_date: '2026-04-01', tentative: 'false' }
+        }),
+        Block.create({ type: 'core/newsvalue', value: '3' }),
+        Block.create({ type: 'tt/slugline', value: 'weather-feature' }),
+        Block.create({
+          type: 'core/description',
+          role: 'public',
+          data: { text: 'Public note' }
+        }),
+        Block.create({
+          type: 'core/description',
+          role: 'internal',
+          data: { text: 'Internal note' }
+        }),
+        Block.create({
+          type: 'core/assignment',
+          id: 'old-assignment-1',
+          data: { start_date: '2026-04-01' },
+          links: [
+            Block.create({
+              type: 'core/article',
+              uuid: 'old-deliverable-uuid',
+              rel: 'deliverable'
+            })
+          ]
+        }),
+        Block.create({ type: 'core/assignment', id: 'old-assignment-2' })
+      ],
+      links: [
+        Block.create({
+          type: 'core/section',
+          uuid: 'section-uuid',
+          rel: 'section',
+          title: 'Nyheter'
+        }),
+        Block.create({ type: 'core/story', uuid: 'story-uuid', rel: 'story' })
+      ],
+      ...overrides
+    })
+
+  it('returns document with fresh UUID and matching uri', () => {
+    const source = makeSourcePlanning()
+
+    const result = deriveNewPlanning({
+      sourcePlanning: source,
+      targetDate: '2026-05-15',
+      newUuid: 'fresh-planning-uuid'
+    })
+
+    expect(result.uuid).toBe('fresh-planning-uuid')
+    expect(result.uri).toBe('core://newscoverage/fresh-planning-uuid')
+    expect(result.type).toBe('core/planning-item')
+  })
+
+  it('rewrites start_date and end_date on the core/planning-item meta block', () => {
+    const source = makeSourcePlanning()
+
+    const result = deriveNewPlanning({
+      sourcePlanning: source,
+      targetDate: '2026-05-15',
+      newUuid: 'fresh-planning-uuid'
+    })
+
+    const planningItem = result.meta.find((b) => b.type === 'core/planning-item')
+    expect(planningItem?.data.start_date).toBe('2026-05-15')
+    expect(planningItem?.data.end_date).toBe('2026-05-15')
+    expect(planningItem?.data.tentative).toBe('false')
+  })
+
+  it('filters out all core/assignment meta blocks', () => {
+    const source = makeSourcePlanning()
+
+    const result = deriveNewPlanning({
+      sourcePlanning: source,
+      targetDate: '2026-05-15',
+      newUuid: 'fresh-planning-uuid'
+    })
+
+    expect(result.meta.find((b) => b.type === 'core/assignment')).toBeUndefined()
+  })
+
+  it('preserves other meta blocks (newsvalue, slugline, descriptions)', () => {
+    const source = makeSourcePlanning()
+
+    const result = deriveNewPlanning({
+      sourcePlanning: source,
+      targetDate: '2026-05-15',
+      newUuid: 'fresh-planning-uuid'
+    })
+
+    expect(result.meta.find((b) => b.type === 'core/newsvalue')?.value).toBe('3')
+    expect(result.meta.find((b) => b.type === 'tt/slugline')?.value).toBe('weather-feature')
+    const descriptions = result.meta.filter((b) => b.type === 'core/description')
+    expect(descriptions).toHaveLength(2)
+    expect(descriptions.find((d) => d.role === 'public')?.data.text).toBe('Public note')
+    expect(descriptions.find((d) => d.role === 'internal')?.data.text).toBe('Internal note')
+  })
+
+  it('appends rel=derived-from link to the source planning', () => {
+    const source = makeSourcePlanning()
+
+    const result = deriveNewPlanning({
+      sourcePlanning: source,
+      targetDate: '2026-05-15',
+      newUuid: 'fresh-planning-uuid'
+    })
+
+    const derivedFrom = result.links.find((l) => l.rel === 'derived-from')
+    expect(derivedFrom).toBeDefined()
+    expect(derivedFrom?.type).toBe('core/planning-item')
+    expect(derivedFrom?.uuid).toBe('source-planning-uuid')
+  })
+
+  it('preserves existing links (section, story) alongside the derived-from link', () => {
+    const source = makeSourcePlanning()
+
+    const result = deriveNewPlanning({
+      sourcePlanning: source,
+      targetDate: '2026-05-15',
+      newUuid: 'fresh-planning-uuid'
+    })
+
+    expect(result.links.find((l) => l.rel === 'section')?.uuid).toBe('section-uuid')
+    expect(result.links.find((l) => l.rel === 'story')?.uuid).toBe('story-uuid')
+    expect(result.links).toHaveLength(3)
   })
 })

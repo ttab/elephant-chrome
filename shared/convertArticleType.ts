@@ -71,3 +71,49 @@ export async function prepareArticleConversion(
     errors
   }
 }
+
+/**
+ * Derive a new planning document from an existing one, used when converting
+ * a timeless article to a regular article.
+ *
+ * - Assigns a fresh UUID and matching uri
+ * - Rewrites start_date and end_date on the core/planning-item meta block
+ * - Drops all core/assignment meta blocks (caller adds the new one)
+ * - Appends a rel='derived-from' link to the source planning
+ */
+export function deriveNewPlanning({
+  sourcePlanning,
+  targetDate,
+  newUuid
+}: {
+  sourcePlanning: Document
+  targetDate: string
+  newUuid: string
+}): Document {
+  const updatedMeta = sourcePlanning.meta
+    .filter((block) => block.type !== 'core/assignment')
+    .map((block) => {
+      if (block.type !== 'core/planning-item') {
+        return block
+      }
+      return Block.create({
+        ...block,
+        data: { ...block.data, start_date: targetDate, end_date: targetDate }
+      })
+    })
+
+  return Document.create({
+    ...sourcePlanning,
+    uuid: newUuid,
+    uri: `core://newscoverage/${newUuid}`,
+    meta: updatedMeta,
+    links: [
+      ...sourcePlanning.links,
+      Block.create({
+        type: 'core/planning-item',
+        uuid: sourcePlanning.uuid,
+        rel: 'derived-from'
+      })
+    ]
+  })
+}
