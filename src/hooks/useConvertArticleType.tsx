@@ -1,52 +1,42 @@
 import { useCallback, useState } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRegistry } from './useRegistry'
-import { prepareArticleConversion, type ArticleType } from '@/shared/convertArticleType'
+import { prepareArticleConversion } from '@/shared/convertArticleType'
 import { toast } from 'sonner'
 
-interface ConversionResult {
-  success: boolean
-  /** UUID of the newly created document (if successful) */
-  newDocumentId?: string
-  /** UUID of the newly created planning (only when converting timeless → article) */
-  newPlanningId?: string
-}
+export type ConvertArgs
+  = | { targetType: 'core/article#timeless' }
+    | {
+      targetType: 'core/article'
+      targetDate: string
+      sourcePlanningId?: string
+    }
 
-interface ConvertOptions {
-  /** Required when converting to core/article. Ignored otherwise. */
-  targetDate?: string
-  /** Optional source planning UUID; falls back to a blank planning when absent. */
-  sourcePlanningId?: string
-}
+export type ConversionResult
+  = | { success: false }
+    | { success: true, kind: 'timeless', newDocumentId: string }
+    | {
+      success: true
+      kind: 'article'
+      newDocumentId: string
+      newPlanningId: string
+      warnings: string[]
+    }
 
 interface UseConvertArticleTypeResult {
-  convert: (
-    documentId: string,
-    targetType: ArticleType,
-    options?: ConvertOptions
-  ) => Promise<ConversionResult>
+  convert: (documentId: string, args: ConvertArgs) => Promise<ConversionResult>
   isConverting: boolean
 }
 
-/**
- * Hook for converting between article types.
- *
- * - `core/article` → `core/article#timeless`: client-side prune + create-new-doc;
- *   source is marked "used" atomically via Repository.createDerivedDocument.
- * - `core/article#timeless` → `core/article`: delegates to the server route
- *   `POST /api/documents/:id/convertToArticle`, which also derives a new planning.
- */
 export function useConvertArticleType(): UseConvertArticleTypeResult {
   const { repository } = useRegistry()
   const { data: session } = useSession()
   const [isConverting, setIsConverting] = useState(false)
-
   const accessToken = session?.accessToken
 
   const convert = useCallback(async (
     documentId: string,
-    targetType: ArticleType,
-    options?: ConvertOptions
+    args: ConvertArgs
   ): Promise<ConversionResult> => {
     if (!repository || !accessToken) {
       toast.error('Unable to convert: not authenticated')
@@ -56,40 +46,47 @@ export function useConvertArticleType(): UseConvertArticleTypeResult {
     setIsConverting(true)
 
     try {
-      if (targetType === 'core/article') {
-        if (!options?.targetDate) {
-          toast.error('A target date is required to convert to article')
-          return { success: false }
-        }
-
+      if (args.targetType === 'core/article') {
         const res = await fetch(`/api/documents/${documentId}/convertToArticle`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            targetDate: options.targetDate,
-            sourcePlanningId: options.sourcePlanningId
+            targetDate: args.targetDate,
+            sourcePlanningId: args.sourcePlanningId
           })
         })
 
-        if (!res.ok) {
-          const body = (await res.json().catch(() => null)) as
-            | { statusMessage?: string }
-            | null
-          const message = body?.statusMessage || `HTTP ${res.status}`
+        const payload = (await res.json().catch(() => null)) as
+          | {
+            articleId?: string
+            planningId?: string
+            warnings?: string[]
+            error?: string
+            statusMessage?: string
+          }
+          | null
+
+        if (!res.ok || !payload?.articleId || !payload?.planningId) {
+          const message = payload?.error
+            ?? payload?.statusMessage
+            ?? `HTTP ${res.status}`
           toast.error(`Conversion failed: ${message}`)
           return { success: false }
         }
 
-        const payload = (await res.json()) as {
-          articleId: string
-          planningId: string
+        const warnings = payload.warnings ?? []
+        if (warnings.includes('source-not-marked-used')) {
+          toast.warning('Converted, but source status could not be updated')
+        } else {
+          toast.success('Document converted')
         }
 
-        toast.success('Document converted')
         return {
           success: true,
+          kind: 'article',
           newDocumentId: payload.articleId,
-          newPlanningId: payload.planningId
+          newPlanningId: payload.planningId,
+          warnings
         }
       }
 
@@ -121,7 +118,11 @@ export function useConvertArticleType(): UseConvertArticleTypeResult {
       })
 
       toast.success('Document converted')
-      return { success: true, newDocumentId: newDocument.uuid }
+      return {
+        success: true,
+        kind: 'timeless',
+        newDocumentId: newDocument.uuid
+      }
     } catch (err) {
       console.error('Article type conversion failed:', err)
       const message = err instanceof Error ? err.message : 'Unknown error'

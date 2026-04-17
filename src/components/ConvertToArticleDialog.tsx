@@ -35,11 +35,12 @@ export function ConvertToArticleDialog({ timelessId, onClose }: Props): JSX.Elem
   const formattedTarget = format(targetDate, 'yyyy-MM-dd')
 
   const handleConfirm = () => {
-    void convert(timelessId, 'core/article', {
+    void convert(timelessId, {
+      targetType: 'core/article',
       targetDate: formattedTarget,
       sourcePlanningId: sourcePlanningId || undefined
     }).then((result) => {
-      if (result.success && result.newDocumentId && result.newPlanningId) {
+      if (result.success && result.kind === 'article') {
         onClose({
           articleId: result.newDocumentId,
           planningId: result.newPlanningId

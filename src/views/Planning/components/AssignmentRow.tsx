@@ -51,6 +51,7 @@ import type { TranslationKey } from '@/types/i18next.d'
 import { RelatedWires } from './RelatedWires'
 import { useFeatureFlags } from '@/hooks/useFeatureFlags'
 import { useConvertArticleType } from '@/hooks/useConvertArticleType'
+import { ConvertToArticleDialog } from '@/components/ConvertToArticleDialog'
 
 export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDialog }: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -314,7 +315,17 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
           disabled: isConverting,
           icon: RefreshCwIcon,
           item: () => {
-            void convertArticleType(documentId, 'core/article')
+            showModal(
+              <ConvertToArticleDialog
+                timelessId={documentId}
+                onClose={(result) => {
+                  hideModal()
+                  if (result?.articleId) {
+                    openArticle(undefined, { id: result.articleId })
+                  }
+                }}
+              />
+            )
           }
         }]
       : []),
@@ -324,7 +335,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
           disabled: isConverting,
           icon: RefreshCwIcon,
           item: () => {
-            void convertArticleType(documentId, 'core/article#timeless')
+            void convertArticleType(documentId, { targetType: 'core/article#timeless' })
           }
         }]
       : [])

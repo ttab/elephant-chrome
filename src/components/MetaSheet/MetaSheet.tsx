@@ -118,7 +118,7 @@ export function MetaSheet({ ydoc, readOnly, readOnlyVersion }: {
                             variant='outline'
                             size='sm'
                             disabled={isConverting}
-                            onClick={() => void convert(ydoc.id, 'core/article#timeless')}
+                            onClick={() => void convert(ydoc.id, { targetType: 'core/article#timeless' })}
                           >
                             <RefreshCwIcon size={14} strokeWidth={1.75} className={isConverting ? 'animate-spin' : ''} />
                             {t('actions.convertToTimeless')}
