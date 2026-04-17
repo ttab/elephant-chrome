@@ -19,6 +19,12 @@
     "convertToArticle": "Konvertera till artikel",
     "convertToTimeless": "Konvertera till tidlös"
   },
+  "convertToArticle": {
+    "descriptionWithPlanning": "En ny planering skapas från den ursprungliga planeringen. Välj datum för den nya artikeln.",
+    "descriptionNoPlanning": "Ingen ursprunglig planering hittades. En ny tom planering skapas. Välj datum för den nya artikeln.",
+    "targetDateLabel": "Datum",
+    "converting": "Konverterar..."
+  },
   "placeholders": {
     "addByline": "Lägg till byline",
     "addSource": "Lägg till källa"

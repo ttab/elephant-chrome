@@ -19,6 +19,12 @@
     "convertToArticle": "Konverter til artikkel",
     "convertToTimeless": "Konverter til tidløs"
   },
+  "convertToArticle": {
+    "descriptionWithPlanning": "En ny planlegging vil avledes fra den opprinnelige. Velg dato for den nye artikkelen.",
+    "descriptionNoPlanning": "Ingen opprinnelig planlegging ble funnet. En ny tom planlegging opprettes. Velg dato for den nye artikkelen.",
+    "targetDateLabel": "Dato",
+    "converting": "Konverterer..."
+  },
   "placeholders": {
     "addByline": "Legg til byline",
     "addSource": "Legg til kilde"

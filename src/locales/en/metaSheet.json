@@ -19,6 +19,12 @@
     "convertToArticle": "Convert to article",
     "convertToTimeless": "Convert to timeless"
   },
+  "convertToArticle": {
+    "descriptionWithPlanning": "A new planning will be derived from the original. Pick a date for the new article.",
+    "descriptionNoPlanning": "No original planning was found. A new empty planning will be created. Pick a date for the new article.",
+    "targetDateLabel": "Date",
+    "converting": "Converting..."
+  },
   "placeholders": {
     "addByline": "Add byline",
     "addSource": "Add source"
