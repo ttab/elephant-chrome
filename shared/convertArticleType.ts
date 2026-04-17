@@ -14,16 +14,10 @@ export interface ArticleConversionResult {
 }
 
 /**
- * Prepare an article type conversion by creating a new document from the source.
- *
- * This does NOT modify the source document in-place. Instead it:
- * 1. Prunes the source document for the target type (removes invalid blocks)
- * 2. Creates a new document with a fresh UUID
- * 3. Adds a link back to the source document
- *
- * The caller is responsible for atomically:
- * - Saving the new document
- * - Setting the source document status to "used"
+ * Prune the source document against the target type and build a new document
+ * with a fresh UUID plus a rel='source' link back to the original. The caller
+ * is responsible for persisting the new document and marking the source as
+ * "used" atomically (see Repository.createDerivedDocument).
  */
 export async function prepareArticleConversion(
   sourceDocument: Document,
@@ -35,22 +29,18 @@ export async function prepareArticleConversion(
     throw new Error(`Document is already of type ${targetType}`)
   }
 
-  // Create document with target type for pruning
   const docWithTargetType = Document.create({
     ...sourceDocument,
     type: targetType
   })
 
-  // Prune to remove invalid blocks for the target type
   const { document: prunedDoc, errors } = await repository.pruneDocument(
     docWithTargetType,
     accessToken
   )
 
-  // Generate new UUID for the converted document
   const newUuid = crypto.randomUUID()
 
-  // Create new document with fresh UUID and link back to source
   const newDocument = Document.create({
     ...prunedDoc,
     uuid: newUuid,
@@ -73,13 +63,10 @@ export async function prepareArticleConversion(
 }
 
 /**
- * Derive a new planning document from an existing one, used when converting
- * a timeless article to a regular article.
- *
- * - Assigns a fresh UUID and matching uri
- * - Rewrites start_date and end_date on the core/planning-item meta block
- * - Drops all core/assignment meta blocks (caller adds the new one)
- * - Appends a rel='derived-from' link to the source planning
+ * Clone a planning for timeless→article conversion. Assignments are dropped
+ * because the caller adds exactly one new assignment pointing at the derived
+ * article. The `rel='derived-from'` link is the convention the Planning view
+ * filters on to render the back-link.
  */
 export function deriveNewPlanning({
   sourcePlanning,

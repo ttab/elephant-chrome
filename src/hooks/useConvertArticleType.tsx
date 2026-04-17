@@ -28,6 +28,11 @@ interface UseConvertArticleTypeResult {
   isConverting: boolean
 }
 
+/**
+ * Converts an article between its regular and timeless variants. The
+ * timeless→article direction delegates to the server because it also needs to
+ * derive a new planning; the reverse direction stays client-side.
+ */
 export function useConvertArticleType(): UseConvertArticleTypeResult {
   const { repository } = useRegistry()
   const { data: session } = useSession()

@@ -26,13 +26,6 @@ interface ConvertToArticleBody {
   isoDateTime?: string
 }
 
-/**
- * Convert a core/article#timeless document to core/article and create a derived
- * planning for the new article. The source planning (if any) is cloned: dates
- * are rewritten, existing assignments are dropped, and a single new assignment
- * is added pointing at the new article. The source timeless article is marked
- * with status "used".
- */
 export const POST: RouteHandler = async (
   req: Request,
   { collaborationServer, repository, res }
@@ -68,7 +61,6 @@ export const POST: RouteHandler = async (
     return { statusCode: 400, statusMessage: 'Invalid sourcePlanningId' }
   }
 
-  // 1. Fetch and validate the source timeless article
   const sourceResponse = await repository.getDocument({
     uuid: sourceId,
     accessToken
@@ -84,7 +76,6 @@ export const POST: RouteHandler = async (
     }
   }
 
-  // 2. Prune the source to core/article, then build the new article
   const docAsArticle = Document.create({
     ...sourceDoc,
     type: 'core/article'
@@ -109,7 +100,6 @@ export const POST: RouteHandler = async (
     ]
   })
 
-  // 3. Build the new planning — derive from source or fall back to template
   const newPlanningId = crypto.randomUUID()
   let newPlanning: Document
 
@@ -135,7 +125,6 @@ export const POST: RouteHandler = async (
 
   const assignmentIso = isoDateTime ?? `${targetDate}T09:00:00Z`
 
-  // 4. Persist the new article
   const articleConnection = await collaborationServer.server.openDirectConnection(
     newArticleId,
     context
@@ -166,7 +155,6 @@ export const POST: RouteHandler = async (
     return articleSnapshot
   }
 
-  // 5. Persist the new planning with a single assignment pointing at the new article
   const planningConnection = await collaborationServer.server.openDirectConnection(
     newPlanningId,
     context
