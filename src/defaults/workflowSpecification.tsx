@@ -229,7 +229,7 @@ export const getStatusSpecifications = (status: string, documentType?: string): 
         icon: CircleCheckIcon,
         className: cn(
           'text-white  rounded-full dark:text-black',
-          documentType === 'core/factbox' ? 'bg-approved fill-done' : 'bg-usable fill-usable'
+          documentType === 'core/factbox' ? 'bg-done fill-done' : 'bg-usable fill-usable'
         )
       }
     case 'unpublished':
