@@ -1,4 +1,6 @@
 import { QueryV1, type HitV1 } from '@ttab/elephant-api/index'
+import type { BulkGetItem } from '@ttab/elephant-api/repository'
+import type { Block } from '@ttab/elephant-api/newsdoc'
 import type { Session } from 'next-auth'
 import { fetch } from '@/hooks/index/useDocuments/lib/fetch'
 import type { Index } from '@/shared/Index'
@@ -25,6 +27,7 @@ export const withArticleFactboxes = async <T extends HitV1>({ hits, session, ind
     documentType: 'core/article',
     index,
     session,
+    size: 1000,
     fields: [
       'document.content.core_factbox.links.uuid',
       'workflow_state',
@@ -60,32 +63,41 @@ export const withArticleFactboxes = async <T extends HitV1>({ hits, session, ind
   // Only process usable articles
   const usableArticles = articles.filter((a) => a.fields['workflow_state']?.values[0] === 'usable')
   if (!usableArticles.length) return result
-  // Bulk-fetch full article documents to get complete factbox block structure
-  const bulkResponse = await repository.getDocuments({
-    documents: usableArticles.map((a) => ({ uuid: a.id })),
-    accessToken: session.accessToken
-  })
 
-  if (!bulkResponse?.items) return result
+  // Bulk-fetch full article documents in batches of 200 (repository maximum)
+  const BATCH_SIZE = 200
+  const batches = []
+  for (let i = 0; i < usableArticles.length; i += BATCH_SIZE) {
+    batches.push(usableArticles.slice(i, i + BATCH_SIZE))
+  }
+
+  const batchResponses = await Promise.all(
+    batches.map((batch) => repository.getDocuments({
+      documents: batch.map((a) => ({ uuid: a.id })),
+      accessToken: session.accessToken
+    }))
+  )
+
+  const allItems: BulkGetItem[] = batchResponses.flatMap((response) => response?.items ?? [])
 
   // Build a map from article UUID to its modified timestamp for sorting
   const modifiedByArticleId = new Map(
     usableArticles.map((a) => [a.id, a.fields['modified']?.values ?? []])
   )
 
-  for (const item of bulkResponse.items) {
+  for (const item of allItems) {
     if (!item.document) continue
 
     const articleId = item.document.uuid
     const modified = modifiedByArticleId.get(articleId) ?? []
-    const factboxBlocks = item.document.content.filter((b) => b.type === 'core/factbox')
+    const factboxBlocks = item.document.content.filter((b: Block) => b.type === 'core/factbox')
 
     for (let i = 0; i < factboxBlocks.length; i++) {
       const block = factboxBlocks[i]
       const id = block.links[0]?.uuid ?? `${articleId}:embedded:${i}`
 
       const title = block.title ?? ''
-      const text = block.content.find((b) => b.type === 'core/text')?.data?.text ?? ''
+      const text = block.content.find((b: Block) => b.type === 'core/text')?.data?.text ?? ''
 
       if (searchFilter && !title.toLowerCase().includes(searchFilter) && !text.toLowerCase().includes(searchFilter)) {
         continue
@@ -117,6 +129,5 @@ export const withArticleFactboxes = async <T extends HitV1>({ hits, session, ind
     const bTitle = b.fields['document.title']?.values[0] ?? ''
     return aTitle.localeCompare(bTitle)
   })
-
   return result
 }
