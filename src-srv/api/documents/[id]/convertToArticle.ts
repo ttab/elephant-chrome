@@ -1,0 +1,244 @@
+import type { Request } from 'express'
+import type { RouteHandler } from '../../../routes.js'
+import { Block, Document } from '@ttab/elephant-api/newsdoc'
+import {
+  appendAssignment,
+  appendDocumentToAssignment
+} from '../../../../shared/createYItem.js'
+import { deriveNewPlanning } from '@/shared/convertArticleType.js'
+import { planningDocumentTemplate } from '@/shared/templates/planningDocumentTemplate.js'
+import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc.js'
+import { toYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc.js'
+import { isValidUUID } from '@/shared/isValidUUID.js'
+import {
+  getContextFromValidSession,
+  isContext,
+  type Context
+} from '../../../lib/context.js'
+import { snapshot } from '../../../utils/snapshot.js'
+import logger from '../../../lib/logger.js'
+
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/
+
+interface ConvertToArticleBody {
+  targetDate?: string
+  sourcePlanningId?: string
+  isoDateTime?: string
+}
+
+/**
+ * Convert a core/article#timeless document to core/article and create a derived
+ * planning for the new article. The source planning (if any) is cloned: dates
+ * are rewritten, existing assignments are dropped, and a single new assignment
+ * is added pointing at the new article. The source timeless article is marked
+ * with status "used".
+ */
+export const POST: RouteHandler = async (
+  req: Request,
+  { collaborationServer, repository, res }
+) => {
+  const sourceId = req.params.id
+  const locals = res.locals as Record<string, unknown> | undefined
+  const session = locals?.session as {
+    accessToken?: string
+    user?: Context['user']
+  } | undefined
+
+  const context = getContextFromValidSession(session)
+  if (!isContext(context)) {
+    return context
+  }
+  const { accessToken } = context
+
+  if (!isValidUUID(sourceId)) {
+    return { statusCode: 400, statusMessage: 'Invalid source document id' }
+  }
+
+  const { targetDate, sourcePlanningId, isoDateTime }
+    = (req.body ?? {}) as ConvertToArticleBody
+
+  if (!targetDate || !DATE_RE.test(targetDate)) {
+    return {
+      statusCode: 400,
+      statusMessage: 'targetDate must be YYYY-MM-DD'
+    }
+  }
+
+  if (sourcePlanningId !== undefined && !isValidUUID(sourcePlanningId)) {
+    return { statusCode: 400, statusMessage: 'Invalid sourcePlanningId' }
+  }
+
+  // 1. Fetch and validate the source timeless article
+  const sourceResponse = await repository.getDocument({
+    uuid: sourceId,
+    accessToken
+  })
+  const sourceDoc = sourceResponse?.document
+  if (!sourceDoc) {
+    return { statusCode: 404, statusMessage: 'Source document not found' }
+  }
+  if (sourceDoc.type !== 'core/article#timeless') {
+    return {
+      statusCode: 400,
+      statusMessage: 'Source must be of type core/article#timeless'
+    }
+  }
+
+  // 2. Prune the source to core/article, then build the new article
+  const docAsArticle = Document.create({
+    ...sourceDoc,
+    type: 'core/article'
+  })
+  const { document: prunedArticle } = await repository.pruneDocument(
+    docAsArticle,
+    accessToken
+  )
+
+  const newArticleId = crypto.randomUUID()
+  const newArticle = Document.create({
+    ...prunedArticle,
+    uuid: newArticleId,
+    uri: `core://article/${newArticleId}`,
+    links: [
+      ...prunedArticle.links,
+      Block.create({
+        type: 'core/article#timeless',
+        uuid: sourceId,
+        rel: 'source'
+      })
+    ]
+  })
+
+  // 3. Build the new planning — derive from source or fall back to template
+  const newPlanningId = crypto.randomUUID()
+  let newPlanning: Document
+
+  if (sourcePlanningId) {
+    const sourcePlanningResponse = await repository.getDocument({
+      uuid: sourcePlanningId,
+      accessToken
+    })
+    if (!sourcePlanningResponse?.document) {
+      return { statusCode: 404, statusMessage: 'Source planning not found' }
+    }
+    newPlanning = deriveNewPlanning({
+      sourcePlanning: sourcePlanningResponse.document,
+      targetDate,
+      newUuid: newPlanningId
+    })
+  } else {
+    newPlanning = planningDocumentTemplate(newPlanningId, {
+      title: sourceDoc.title,
+      query: { from: targetDate }
+    })
+  }
+
+  const assignmentIso = isoDateTime ?? `${targetDate}T09:00:00Z`
+
+  // 4. Persist the new article
+  const articleConnection = await collaborationServer.server.openDirectConnection(
+    newArticleId,
+    context
+  )
+  await articleConnection.transact((document) => {
+    toYjsNewsDoc(
+      toGroupedNewsDoc({
+        version: 0n,
+        isMetaDocument: false,
+        mainDocument: '',
+        subset: [],
+        document: newArticle
+      }),
+      document
+    )
+  })
+  void articleConnection.disconnect().catch((ex: unknown) => {
+    logger.error(ex, 'Failed disconnecting after article creation')
+  })
+
+  const articleSnapshot = await snapshot(
+    collaborationServer,
+    newArticleId,
+    context,
+    { addToHistory: true }
+  )
+  if ('statusMessage' in articleSnapshot) {
+    return articleSnapshot
+  }
+
+  // 5. Persist the new planning with a single assignment pointing at the new article
+  const planningConnection = await collaborationServer.server.openDirectConnection(
+    newPlanningId,
+    context
+  )
+  await planningConnection.transact((document) => {
+    toYjsNewsDoc(
+      toGroupedNewsDoc({
+        version: 0n,
+        isMetaDocument: false,
+        mainDocument: '',
+        subset: [],
+        document: newPlanning
+      }),
+      document
+    )
+
+    const [index] = appendAssignment({
+      document,
+      type: 'text',
+      title: sourceDoc.title,
+      assignmentData: {
+        public: 'true',
+        start: assignmentIso,
+        end: assignmentIso,
+        start_date: targetDate,
+        end_date: targetDate
+      }
+    })
+
+    appendDocumentToAssignment({
+      document,
+      id: newArticleId,
+      index,
+      slug: '',
+      type: 'article'
+    })
+  })
+  void planningConnection.disconnect().catch((ex: unknown) => {
+    logger.error(ex, 'Failed disconnecting after planning creation')
+  })
+
+  const planningSnapshot = await snapshot(
+    collaborationServer,
+    newPlanningId,
+    context,
+    { addToHistory: true }
+  )
+  if ('statusMessage' in planningSnapshot) {
+    return planningSnapshot
+  }
+
+  // 6. Mark the source timeless article as "used"
+  try {
+    await repository.bulkSaveMeta({
+      statuses: [
+        {
+          uuid: sourceId,
+          name: 'used',
+          version: 0n
+        }
+      ],
+      accessToken
+    })
+  } catch (ex: unknown) {
+    logger.error(ex, `Failed marking source ${sourceId} as used after conversion`)
+  }
+
+  return {
+    statusCode: 200,
+    payload: {
+      articleId: newArticleId,
+      planningId: newPlanningId
+    }
+  }
+}
