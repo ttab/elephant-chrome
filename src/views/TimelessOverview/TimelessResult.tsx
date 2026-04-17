@@ -34,12 +34,9 @@ export const TimelessResult = ({ columns }: {
     }
   })
 
-  const onRowSelected = useCallback((row?: TimelessArticle) => {
-    if (row) {
-      console.info(`Selected timeless article ${row.id}`)
-    }
-    return row
-  }, [])
+  // Presence of this prop gates Table's open-on-click behaviour
+  // (see Table/index.tsx — early-returns when onRowSelected is absent).
+  const onRowSelected = useCallback(() => {}, [])
 
   return (
     <>
