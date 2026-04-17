@@ -1,11 +1,15 @@
 import type { Request } from 'express'
 import type { RouteHandler } from '../../../routes.js'
-import { Block, Document } from '@ttab/elephant-api/newsdoc'
+import type { Document } from '@ttab/elephant-api/newsdoc'
 import {
   appendAssignment,
   appendDocumentToAssignment
 } from '../../../../shared/createYItem.js'
-import { buildFallbackPlanning, deriveNewPlanning } from '@/shared/convertArticleType.js'
+import {
+  buildFallbackPlanning,
+  deriveNewPlanning,
+  prepareArticleConversion
+} from '@/shared/convertArticleType.js'
 import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc.js'
 import { toYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc.js'
 import { isValidUUID } from '@/shared/isValidUUID.js'
@@ -85,31 +89,24 @@ export const POST: RouteHandler = async (
       }
     }
 
-    const docAsArticle = Document.create({
-      ...sourceDoc,
-      type: 'core/article'
-    })
-    const { document: prunedArticle } = await repository.pruneDocument(
-      docAsArticle,
+    const {
+      newDocument: newArticle,
+      errors: pruneErrors
+    } = await prepareArticleConversion(
+      sourceDoc,
+      'core/article',
+      repository,
       accessToken
     ).catch((ex: unknown) => {
       throw new Error(`prune source document ${sourceId}`, { cause: ex })
     })
-
-    const newArticleId = crypto.randomUUID()
-    const newArticle = Document.create({
-      ...prunedArticle,
-      uuid: newArticleId,
-      uri: `core://article/${newArticleId}`,
-      links: [
-        ...prunedArticle.links,
-        Block.create({
-          type: 'core/article',
-          uuid: sourceId,
-          rel: 'source'
-        })
-      ]
-    })
+    const newArticleId = newArticle.uuid
+    if (pruneErrors.length > 0) {
+      logger.warn(
+        { sourceId, errors: pruneErrors },
+        'Prune validation warnings during timeless→article conversion'
+      )
+    }
 
     const newPlanningId = crypto.randomUUID()
     let newPlanning: Document
