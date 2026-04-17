@@ -57,11 +57,12 @@
     "title": "Factboxes",
     "columnLabels": {
       "description": "Description",
-      "lastChanged": "Last changed"
+      "lastChanged": "Last changed",
+      "origin": "Origin"
     },
     "origin": {
       "original": "Original",
-      "inArticle": "In article"
+      "inArticle": "From article"
     }
   },
   "search": {

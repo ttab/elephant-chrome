@@ -57,11 +57,12 @@
     "title": "Faktabokser",
     "columnLabels": {
       "description": "Beskrivelse",
-      "lastChanged": "Sist endret"
+      "lastChanged": "Sist endret",
+      "origin": "Ursprung"
     },
     "origin": {
       "original": "Original",
-      "inArticle": "I artikkel"
+      "inArticle": "Fra artikkel"
     }
   },
   "search": {
