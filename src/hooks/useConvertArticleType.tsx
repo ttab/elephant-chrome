@@ -4,6 +4,8 @@ import { useRegistry } from './useRegistry'
 import { prepareArticleConversion } from '@/shared/convertArticleType'
 import { toast } from 'sonner'
 
+const BASE_URL = import.meta.env.BASE_URL || ''
+
 export type ConvertArgs
   = | { targetType: 'core/article#timeless' }
     | {
@@ -52,7 +54,7 @@ export function useConvertArticleType(): UseConvertArticleTypeResult {
 
     try {
       if (args.targetType === 'core/article') {
-        const res = await fetch(`/api/documents/${documentId}/convertToArticle`, {
+        const res = await fetch(`${BASE_URL}/api/documents/${documentId}/convertToArticle`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
