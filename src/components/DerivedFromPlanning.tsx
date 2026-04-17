@@ -4,7 +4,7 @@ import type * as Y from 'yjs'
 import { Link } from '@/components'
 import { CalendarDaysIcon } from '@ttab/elephant-ui/icons'
 import { useYValue, type YDocument } from '@/modules/yjs/hooks'
-import { useDeliverablePlanningId } from '@/hooks/index/useDeliverablePlanningId'
+import { useDeliverableInfo } from '@/hooks/useDeliverableInfo'
 import { useTranslation } from 'react-i18next'
 
 /**
@@ -20,7 +20,7 @@ export function DerivedFromPlanning({
   const { t } = useTranslation()
   const [articleLinks] = useYValue<Block[]>(ydoc.ele, 'links.core/article')
   const source = articleLinks?.find((link) => link.rel === 'source')
-  const sourcePlanningId = useDeliverablePlanningId(source?.uuid ?? '')
+  const sourcePlanningId = useDeliverableInfo(source?.uuid ?? '')?.planningUuid
 
   if (!source?.uuid) {
     return <></>

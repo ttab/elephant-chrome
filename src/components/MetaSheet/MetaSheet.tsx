@@ -24,6 +24,7 @@ import { isArticleType } from '@/lib/isArticleType'
 import { useConvertArticleType } from '@/hooks/useConvertArticleType'
 import { ConvertToArticleDialog } from '@/components/ConvertToArticleDialog'
 import { useLink } from '@/hooks/useLink'
+import { RemoveHastFromArticle } from '@/components/RemoveHastFromArticle'
 import type * as Y from 'yjs'
 import { useTranslation } from 'react-i18next'
 
@@ -124,6 +125,7 @@ export function MetaSheet({ ydoc, readOnly, readOnlyVersion }: {
                             {t('actions.convertToTimeless')}
                           </Button>
                         )}
+                        <RemoveHastFromArticle ydoc={ydoc} />
                       </div>
 
                       <Label htmlFor='content-source'>{t('labels.otherSources')}</Label>

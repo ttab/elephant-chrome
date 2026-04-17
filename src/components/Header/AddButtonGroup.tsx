@@ -35,6 +35,7 @@ const AddButton = ({
   withNew,
   variant = 'default',
   className,
+  hast,
   view,
   onClick,
   t
@@ -42,6 +43,7 @@ const AddButton = ({
   withNew?: boolean
   variant?: Variant
   className?: string
+  hast?: boolean
   view: ButtonView
   onClick: (view: ButtonView) => void
   t: TFunction
@@ -56,17 +58,18 @@ const AddButton = ({
       onClick={() => onClick(view)}
     >
       {withNew && <PlusIcon size={18} strokeWidth={1.75} />}
-      <span className='pl-0.5'>{`${withNew ? t('common:misc.new') : typeLabel(view.type)}`}</span>
+      <span className='pl-0.5'>{`${withNew ? t('common:misc.new') : view.name === 'Flash' && hast ? 'HAST' : typeLabel(view.type)}`}</span>
     </Button>
   )
 }
 
 export const AddButtonGroup = ({ docType = 'core/planning-item', query }: { type: View, query: QueryParams, docType?: string }) => {
   const { showModal, hideModal } = useModal()
-  const { repository } = useRegistry()
+  const { repository, featureFlags } = useRegistry()
   const openTimelessArticle = useLink('TimelessArticle')
   const { data: session } = useSession()
   const { t } = useTranslation()
+  const hasHast = !!featureFlags.hasHast
 
   const views: ButtonView[] = addButtonTypes.map((type) => {
     const format = addButtonGroupValueFormat[type]
@@ -88,7 +91,7 @@ export const AddButtonGroup = ({ docType = 'core/planning-item', query }: { type
           toast.error((error as Error).message)
         })
     } else if (showModal) {
-      const initialDocument = getTemplateFromView(view.name)(id, { query })
+      const initialDocument = getTemplateFromView(view.name, { useHast: hasHast })(id, { query })
       showModal(
         <ViewDialog
           onDialogClose={hideModal}
@@ -144,6 +147,7 @@ export const AddButtonGroup = ({ docType = 'core/planning-item', query }: { type
                   t={t}
                   variant='ghost'
                   className='px-0'
+                  hast={hasHast}
                   view={view}
                   onClick={handleCreate}
                 />

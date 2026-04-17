@@ -29,5 +29,6 @@ export interface TemplatePayload {
     'tt/wire'?: Block[]
     'core/event'?: Block[]
     'core/timeless-category'?: Block[]
+    'core/content-source'?: Block[]
   }
 }

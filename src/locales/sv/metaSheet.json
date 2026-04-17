@@ -17,7 +17,8 @@
   "actions": {
     "addNote": "Lägg till notering",
     "convertToArticle": "Konvertera till artikel",
-    "convertToTimeless": "Konvertera till tidlös"
+    "convertToTimeless": "Konvertera till tidlös",
+    "removeHastFromArticle": "Ta bort HAST från artikeln"
   },
   "convertToArticle": {
     "descriptionWithPlanning": "En ny planering skapas från den ursprungliga planeringen. Välj datum för den nya artikeln.",
@@ -26,6 +27,11 @@
     "targetDateLabel": "Datum",
     "converting": "Konverterar...",
     "failed": "Konverteringen misslyckades. Försök igen eller avbryt."
+  },
+  "removeHastPrompt": {
+    "title": "Ta bort HAST från artikeln",
+    "description": "Detta tar bort HAST och gör det till en vanlig artikel. Framtida versioner skickas inte som HAST om du inte aktiverar det igen.",
+    "confirm": "Ta bort"
   },
   "placeholders": {
     "addByline": "Lägg till byline",

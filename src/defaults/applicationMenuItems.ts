@@ -104,7 +104,7 @@ export const getApplicationMenu = (featureFlags: AllowedFeatureFlag): Applicatio
       items: [
         {
           name: 'Flash',
-          label: i18next.t('app:mainMenu.flash'),
+          label: i18next.t('app:mainMenu.flash', { type: featureFlags.hasHast ? i18next.t('flash:hastLabel') : i18next.t('flash:title') }),
           icon: ZapIcon,
           color: '#FF5150',
           target: 'dialog'

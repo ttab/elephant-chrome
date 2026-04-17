@@ -15,7 +15,8 @@ import type {
   AttachmentDetails,
   StatusUpdate,
   GetHistoryResponse,
-  ValidationResult
+  ValidationResult,
+  GetDeliverableInfoResponse
 } from '@ttab/elephant-api/repository'
 import { Block, Document } from '@ttab/elephant-api/newsdoc'
 import type { RpcError, FinishedUnaryCall } from '@protobuf-ts/runtime-rpc'
@@ -24,8 +25,24 @@ import { isValidUUID } from './isValidUUID.js'
 import { fromYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc.js'
 import { fromGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc.js'
 
+import { decodeJwt } from 'jose'
 import { meta } from './meta.js'
 import { getSystemLanguage } from '@/shared/getSystemLanguage.js'
+
+function buildAcl(accessToken: string): Array<{ uri: string, permissions: string[] }> {
+  try {
+    const decoded = decodeJwt(accessToken)
+    const units = Array.isArray(decoded.units) ? decoded.units as string[] : []
+
+    if (units.includes('/redaktionen-npk')) {
+      return [{ uri: 'core://unit/redaktionen-npk', permissions: ['r', 'w'] }]
+    }
+  } catch {
+    // JWT decode failure → fall back to default ACL
+  }
+
+  return [{ uri: 'core://unit/redaktionen', permissions: ['r', 'w'] }]
+}
 
 export interface Status {
   name: string
@@ -183,6 +200,26 @@ export class Repository {
       }
 
       throw new Error(`Unable to fetch documents meta: ${(err as Error)?.message || 'Unknown error'}`)
+    }
+  }
+
+  async getDeliverableInfo({ uuid, accessToken }: {
+    uuid: string
+    accessToken: string
+  }): Promise<GetDeliverableInfoResponse | null> {
+    if (!isValidUUID(uuid)) {
+      return null
+    }
+
+    try {
+      const { response } = await this.#client.getDeliverableInfo({ uuid }, meta(accessToken))
+      return response
+    } catch (err: unknown) {
+      if ((err as { code: string })?.code === 'not_found') {
+        return null
+      }
+
+      throw new Error(`Unable to fetch deliverable info: ${(err as Error)?.message || 'Unknown error'}`)
     }
   }
 
@@ -445,7 +482,7 @@ export class Repository {
         : status && status !== 'draft'
           ? basicStatus
           : [],
-      acl: [{ uri: 'core://unit/redaktionen', permissions: ['r', 'w'] }],
+      acl: buildAcl(accessToken),
       uuid: document.uuid,
       lockToken: '',
       updateMetaDocument: false,

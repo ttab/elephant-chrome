@@ -18,7 +18,7 @@ interface ServerEnvs {
   environment: string
 }
 
-type FeatureFlags = Record<string, string | boolean>
+type FeatureFlags = Record<string, boolean>
 
 interface ServerConfig {
   urls: ServerUrls

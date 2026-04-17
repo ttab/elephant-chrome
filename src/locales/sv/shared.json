@@ -35,6 +35,7 @@
     "planningDate": "Datum i planeringen",
     "setTime": "Ange tid",
     "asSavePlaceholder": "Publicera ny information",
+    "embargoMinTime": "Embargo: kan inte schemaläggas före {{time}}",
     "causes": {
       "development_short": "UV",
       "development_long": "Utveckling",
