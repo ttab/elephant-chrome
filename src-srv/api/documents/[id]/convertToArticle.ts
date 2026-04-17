@@ -18,7 +18,7 @@ import {
 import { snapshot } from '../../../utils/snapshot.js'
 import logger from '../../../lib/logger.js'
 
-const DATE_RE = /^\d{4}-\d{2}-\d{2}$/
+const DATE_RE = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/
 
 interface ConvertToArticleBody {
   targetDate?: string
