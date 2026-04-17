@@ -38,6 +38,8 @@
   "removeInfoConfirm": "Er du sikker på at du vil slette informasjonen?",
   "changeType": "Endre type",
   "changeTypeConfirm": "Er du sikker på at du vil endre informasjonstypen?",
-  "derivedFromPlanning": "Avledet fra",
-  "derivedFromPlanningLink": "opprinnelig planlegging"
+  "derivedFrom": "Opprettet fra",
+  "derivedFromTimelessLink": "tidløs artikkel",
+  "derivedFromConnector": "og",
+  "derivedFromPlanningLink": "planlegging"
 }

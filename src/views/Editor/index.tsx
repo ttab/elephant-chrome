@@ -71,9 +71,13 @@ const Editor = (props: ViewProps): JSX.Element => {
     )
   }
 
-  // If published or specific version has be specified
-  if (workflowStatus?.name === 'usable' || props.version || workflowStatus?.name === 'unpublished') {
-    const bigIntVersion = workflowStatus?.name === 'usable'
+  // If published, used, or a specific version is requested — render read-only.
+  const isTerminalStatus = workflowStatus?.name === 'usable'
+    || workflowStatus?.name === 'unpublished'
+    || workflowStatus?.name === 'used'
+
+  if (isTerminalStatus || props.version) {
+    const bigIntVersion = workflowStatus?.name === 'usable' || workflowStatus?.name === 'used'
       ? workflowStatus?.version
       : BigInt(props.version ?? 0)
 

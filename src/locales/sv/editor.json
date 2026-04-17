@@ -38,6 +38,8 @@
   "removeInfoConfirm": "Är du säker på att du vill ta bort info?",
   "changeType": "Ändra typ",
   "changeTypeConfirm": "Är du säker på att du vill ändra typ av info?",
-  "derivedFromPlanning": "Härledd från",
-  "derivedFromPlanningLink": "ursprunglig planering"
+  "derivedFrom": "Skapad från",
+  "derivedFromTimelessLink": "tidlös artikel",
+  "derivedFromConnector": "och",
+  "derivedFromPlanningLink": "planering"
 }

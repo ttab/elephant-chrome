@@ -158,7 +158,8 @@ export function createTimelessColumns<Ns extends Namespace>({
       },
       cell: ({ row }) => {
         const documentId = row.original.id
-        return <TimelessRowActions documentId={documentId} />
+        const status = row.getValue<string>('status')
+        return <TimelessRowActions documentId={documentId} status={status} />
       }
     }
   ]

@@ -109,6 +109,16 @@
           "description": "Continue working on a new version of the {{label}}"
         }
       }
+    },
+    "used": {
+      "title": "Used",
+      "description": "The {{label}} has been used to derive a new document",
+      "transitions": {
+        "draft": {
+          "title": "Reopen as draft",
+          "description": "Revert the {{label}} to a draft for further editing"
+        }
+      }
     }
   },
   "core/event": {

@@ -97,6 +97,15 @@
     },
     "placeholders": {
       "addCategory": "Lägg till kategori"
+    },
+    "toasts": {
+      "convertedSuccess": "Tidlös artikel konverterad",
+      "convertedSourceNotMarkedUsed": "Konverterad, men källstatusen kunde inte uppdateras",
+      "conversionFailed": "Konverteringen misslyckades: {{message}}",
+      "notAuthenticated": "Kan inte konvertera: inte inloggad",
+      "documentNotFound": "Dokumentet hittades inte",
+      "openArticle": "Öppna artikel",
+      "openPlanning": "Öppna planering"
     }
   },
   "imageSearch": {

@@ -312,7 +312,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
     ...(assignmentType === 'timeless' && documentId
       ? [{
           label: t('planning:assignment.convertToArticle'),
-          disabled: isConverting,
+          disabled: isConverting || articleStatus?.meta?.workflowState === 'used',
           icon: RefreshCwIcon,
           item: () => {
             showModal(
@@ -332,7 +332,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
     ...(assignmentType === 'text' && documentId
       ? [{
           label: t('planning:assignment.convertToTimeless'),
-          disabled: isConverting,
+          disabled: isConverting || articleStatus?.meta?.workflowState === 'used',
           icon: RefreshCwIcon,
           item: () => {
             void convertArticleType(documentId, { targetType: 'core/article#timeless' })

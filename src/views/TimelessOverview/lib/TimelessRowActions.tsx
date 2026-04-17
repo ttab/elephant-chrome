@@ -8,13 +8,18 @@ import { useTranslation } from 'react-i18next'
 
 interface TimelessRowActionsProps {
   documentId: string
+  status?: string
 }
 
-export function TimelessRowActions({ documentId }: TimelessRowActionsProps): JSX.Element {
+export function TimelessRowActions({
+  documentId,
+  status
+}: TimelessRowActionsProps): JSX.Element {
   const { isConverting } = useConvertArticleType()
   const { t } = useTranslation(['views', 'common'])
   const [dialogOpen, setDialogOpen] = useState(false)
   const openEditor = useLink('Editor')
+  const isUsed = status === 'used'
 
   const handleOpenNewTab = (event: MouseEvent<HTMLDivElement>) => {
     event.preventDefault()
@@ -37,7 +42,7 @@ export function TimelessRowActions({ documentId }: TimelessRowActionsProps): JSX
     {
       label: t('views:timeless.actions.convertToArticle'),
       icon: RefreshCwIcon,
-      disabled: isConverting,
+      disabled: isConverting || isUsed,
       item: handleConvert
     }
   ]

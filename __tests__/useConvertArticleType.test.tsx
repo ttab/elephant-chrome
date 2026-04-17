@@ -76,7 +76,7 @@ describe('useConvertArticleType', () => {
     })
 
     expect(outcome).toEqual({ success: false })
-    expect(toast.error).toHaveBeenCalledWith('Unable to convert: not authenticated')
+    expect(toast.error).toHaveBeenCalledWith('Kan inte konvertera: inte inloggad')
     expect(global.fetch).not.toHaveBeenCalled()
     expect(result.current.isConverting).toBe(false)
   })
@@ -91,10 +91,13 @@ describe('useConvertArticleType', () => {
 
     const { result } = renderHook(() => useConvertArticleType())
 
-    const outcome = await result.current.convert(TIMELESS_ID, {
-      targetType: 'core/article',
-      targetDate: '2026-05-15',
-      sourcePlanningId: PLANNING_ID
+    let outcome!: Awaited<ReturnType<typeof result.current.convert>>
+    await act(async () => {
+      outcome = await result.current.convert(TIMELESS_ID, {
+        targetType: 'core/article',
+        targetDate: '2026-05-15',
+        sourcePlanningId: PLANNING_ID
+      })
     })
 
     expect(outcome).toEqual({
@@ -104,7 +107,10 @@ describe('useConvertArticleType', () => {
       newPlanningId: PLANNING_ID,
       warnings: []
     })
-    expect(toast.success).toHaveBeenCalledWith('Document converted')
+    expect(toast.success).toHaveBeenCalledWith(
+      'Tidlös artikel konverterad',
+      expect.objectContaining<{ action: unknown }>({ action: expect.anything() })
+    )
   })
 
   it('shows a warning toast when server returns source-not-marked-used', async () => {
@@ -121,15 +127,20 @@ describe('useConvertArticleType', () => {
 
     const { result } = renderHook(() => useConvertArticleType())
 
-    await result.current.convert(TIMELESS_ID, {
-      targetType: 'core/article',
-      targetDate: '2026-05-15'
+    await act(async () => {
+      await result.current.convert(TIMELESS_ID, {
+        targetType: 'core/article',
+        targetDate: '2026-05-15'
+      })
     })
 
-    expect(toast.warning).toHaveBeenCalledWith(
-      'Converted, but source status could not be updated'
+    // Warning is surfaced via toast.success with the "source not marked used"
+    // copy; the toast payload also includes action links.
+    expect(toast.success).toHaveBeenCalledWith(
+      'Konverterad, men källstatusen kunde inte uppdateras',
+      expect.objectContaining<{ action: unknown }>({ action: expect.anything() })
     )
-    expect(toast.success).not.toHaveBeenCalled()
+    expect(toast.warning).not.toHaveBeenCalled()
   })
 
   it('logs the orphan articleId when server returns articleId without planningId', async () => {
@@ -143,9 +154,12 @@ describe('useConvertArticleType', () => {
 
     const { result } = renderHook(() => useConvertArticleType())
 
-    const outcome = await result.current.convert(TIMELESS_ID, {
-      targetType: 'core/article',
-      targetDate: '2026-05-15'
+    let outcome!: Awaited<ReturnType<typeof result.current.convert>>
+    await act(async () => {
+      outcome = await result.current.convert(TIMELESS_ID, {
+        targetType: 'core/article',
+        targetDate: '2026-05-15'
+      })
     })
 
     expect(outcome).toEqual({ success: false })
@@ -164,13 +178,18 @@ describe('useConvertArticleType', () => {
 
     const { result } = renderHook(() => useConvertArticleType())
 
-    const outcome = await result.current.convert(TIMELESS_ID, {
-      targetType: 'core/article',
-      targetDate: '2026-05-15'
+    let outcome!: Awaited<ReturnType<typeof result.current.convert>>
+    await act(async () => {
+      outcome = await result.current.convert(TIMELESS_ID, {
+        targetType: 'core/article',
+        targetDate: '2026-05-15'
+      })
     })
 
     expect(outcome).toEqual({ success: false })
-    expect(toast.error).toHaveBeenCalledWith('Conversion failed: network down')
+    expect(toast.error).toHaveBeenCalledWith(
+      expect.stringContaining('network down')
+    )
     await waitFor(() => {
       expect(result.current.isConverting).toBe(false)
     })
@@ -227,8 +246,11 @@ describe('useConvertArticleType', () => {
 
     const { result } = renderHook(() => useConvertArticleType())
 
-    const outcome = await result.current.convert(ARTICLE_ID, {
-      targetType: 'core/article#timeless'
+    let outcome!: Awaited<ReturnType<typeof result.current.convert>>
+    await act(async () => {
+      outcome = await result.current.convert(ARTICLE_ID, {
+        targetType: 'core/article#timeless'
+      })
     })
 
     expect(outcome).toEqual({
@@ -240,6 +262,9 @@ describe('useConvertArticleType', () => {
       newDocument,
       sourceUuid: ARTICLE_ID
     }))
-    expect(toast.success).toHaveBeenCalledWith('Document converted')
+    expect(toast.success).toHaveBeenCalledWith(
+      'Tidlös artikel konverterad',
+      expect.objectContaining<{ action: unknown }>({ action: expect.anything() })
+    )
   })
 })

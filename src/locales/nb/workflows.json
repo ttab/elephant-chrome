@@ -109,6 +109,16 @@
           "description": "Fortsett å jobbe på en ny versjon av {{label}}"
         }
       }
+    },
+    "used": {
+      "title": "Brukt",
+      "description": "{{label, capitalize}} har blitt brukt til å avlede et nytt dokument",
+      "transitions": {
+        "draft": {
+          "title": "Åpne som utkast",
+          "description": "Tilbakestill {{label}} til utkast for videre redigering"
+        }
+      }
     }
   },
   "core/event": {

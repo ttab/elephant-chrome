@@ -3,6 +3,9 @@ import { useSession } from 'next-auth/react'
 import { useRegistry } from './useRegistry'
 import { prepareArticleConversion } from '@/shared/convertArticleType'
 import { toast } from 'sonner'
+import { useTranslation } from 'react-i18next'
+import { CalendarDaysIcon, PenBoxIcon } from '@ttab/elephant-ui/icons'
+import { ToastAction } from '@/components/ToastAction'
 
 const BASE_URL = import.meta.env.BASE_URL || ''
 
@@ -38,6 +41,7 @@ interface UseConvertArticleTypeResult {
 export function useConvertArticleType(): UseConvertArticleTypeResult {
   const { repository } = useRegistry()
   const { data: session } = useSession()
+  const { t } = useTranslation()
   const [isConverting, setIsConverting] = useState(false)
   const accessToken = session?.accessToken
 
@@ -46,7 +50,7 @@ export function useConvertArticleType(): UseConvertArticleTypeResult {
     args: ConvertArgs
   ): Promise<ConversionResult> => {
     if (!repository || !accessToken) {
-      toast.error('Unable to convert: not authenticated')
+      toast.error(t('views:timeless.toasts.notAuthenticated'))
       return { success: false }
     }
 
@@ -82,16 +86,35 @@ export function useConvertArticleType(): UseConvertArticleTypeResult {
               `Orphan article created during failed conversion: ${payload.articleId}`
             )
           }
-          toast.error(`Conversion failed: ${message}`)
+          toast.error(t('views:timeless.toasts.conversionFailed', { message }))
           return { success: false }
         }
 
         const warnings = payload.warnings ?? []
-        if (warnings.includes('source-not-marked-used')) {
-          toast.warning('Converted, but source status could not be updated')
-        } else {
-          toast.success('Document converted')
-        }
+        const title = warnings.includes('source-not-marked-used')
+          ? t('views:timeless.toasts.convertedSourceNotMarkedUsed')
+          : t('views:timeless.toasts.convertedSuccess')
+
+        toast.success(title, {
+          action: (
+            <div className='flex gap-1'>
+              <ToastAction
+                documentId={payload.articleId}
+                withView='Editor'
+                label={t('views:timeless.toasts.openArticle')}
+                Icon={PenBoxIcon}
+                target='last'
+              />
+              <ToastAction
+                documentId={payload.planningId}
+                withView='Planning'
+                label={t('views:timeless.toasts.openPlanning')}
+                Icon={CalendarDaysIcon}
+                target='last'
+              />
+            </div>
+          )
+        })
 
         return {
           success: true,
@@ -108,7 +131,7 @@ export function useConvertArticleType(): UseConvertArticleTypeResult {
       })
 
       if (!response?.document) {
-        toast.error('Document not found')
+        toast.error(t('views:timeless.toasts.documentNotFound'))
         return { success: false }
       }
 
@@ -129,7 +152,17 @@ export function useConvertArticleType(): UseConvertArticleTypeResult {
         accessToken
       })
 
-      toast.success('Document converted')
+      toast.success(t('views:timeless.toasts.convertedSuccess'), {
+        action: (
+          <ToastAction
+            documentId={newDocument.uuid}
+            withView='Editor'
+            label={t('views:timeless.toasts.openArticle')}
+            Icon={PenBoxIcon}
+            target='last'
+          />
+        )
+      })
       return {
         success: true,
         kind: 'timeless',
@@ -138,12 +171,12 @@ export function useConvertArticleType(): UseConvertArticleTypeResult {
     } catch (err) {
       console.error('Article type conversion failed:', err)
       const message = err instanceof Error ? err.message : 'Unknown error'
-      toast.error(`Conversion failed: ${message}`)
+      toast.error(t('views:timeless.toasts.conversionFailed', { message }))
       return { success: false }
     } finally {
       setIsConverting(false)
     }
-  }, [repository, accessToken])
+  }, [repository, accessToken, t])
 
   return { convert, isConverting }
 }
