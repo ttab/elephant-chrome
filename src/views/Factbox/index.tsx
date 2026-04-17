@@ -25,6 +25,7 @@ import { Editor as PlainEditor } from '@/components/PlainEditor'
 
 import { useTranslation } from 'react-i18next'
 import { documentTypeValueFormat } from '@/defaults/documentTypeFormats'
+import { InfoText } from './components/InfoText'
 
 const meta: ViewMetadata = {
   name: 'Factbox',
@@ -147,6 +148,7 @@ const EmbeddedFactboxView = (props: ViewProps & { data?: EleDocumentResponse }):
         />
         <ViewHeader.Action onDialogClose={props.onDialogClose} asDialog={!!props.asDialog} />
       </ViewHeader.Root>
+      <InfoText originalId='12345' />
 
       <div className='flex flex-col w-full max-w-[1000px] mx-auto'>
         <View.Content className='flex flex-col max-w-[1000px]'>
