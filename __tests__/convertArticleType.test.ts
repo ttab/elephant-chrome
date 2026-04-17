@@ -1,6 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { Block, Document } from '@ttab/elephant-api/newsdoc'
-import { deriveNewPlanning, prepareArticleConversion } from '@/shared/convertArticleType'
+import {
+  buildFallbackPlanning,
+  deriveNewPlanning,
+  prepareArticleConversion
+} from '@/shared/convertArticleType'
+import { planningDocumentTemplate } from '@/shared/templates/planningDocumentTemplate'
 import type { Repository } from '@/shared/Repository'
 
 describe('prepareArticleConversion', () => {
@@ -350,5 +355,58 @@ describe('deriveNewPlanning', () => {
     expect(result.links.find((l) => l.rel === 'story')?.uuid).toBe('story-uuid')
     // Schema has no allowed rel for a back-link to the source planning.
     expect(result.links).toHaveLength(2)
+  })
+})
+
+describe('buildFallbackPlanning', () => {
+  it('seeds core/newsvalue with an integer-parseable value', () => {
+    // Regression test: the planning schema requires exactly one core/newsvalue
+    // with an integer-parseable `value`. The bare planningDocumentTemplate
+    // creates an empty one which fails validation, so buildFallbackPlanning
+    // MUST override it.
+    const planning = buildFallbackPlanning({
+      newUuid: 'fallback-uuid',
+      title: 'Some title',
+      targetDate: '2026-05-15'
+    })
+
+    const newsvalue = planning.meta.find((m) => m.type === 'core/newsvalue')
+    expect(newsvalue).toBeDefined()
+    expect(newsvalue?.value).not.toBe('')
+    expect(Number.isInteger(Number(newsvalue?.value))).toBe(true)
+  })
+
+  it('sets planning-item start_date and end_date to targetDate', () => {
+    const planning = buildFallbackPlanning({
+      newUuid: 'fallback-uuid',
+      title: 'Some title',
+      targetDate: '2026-05-15'
+    })
+
+    const planningItem = planning.meta.find((m) => m.type === 'core/planning-item')
+    expect(planningItem?.data.start_date).toBe('2026-05-15')
+    expect(planningItem?.data.end_date).toBe('2026-05-15')
+  })
+
+  it('generates the core/newscoverage uri from the given uuid', () => {
+    const planning = buildFallbackPlanning({
+      newUuid: 'fallback-uuid',
+      title: 'Some title',
+      targetDate: '2026-05-15'
+    })
+
+    expect(planning.uuid).toBe('fallback-uuid')
+    expect(planning.uri).toBe('core://newscoverage/fallback-uuid')
+  })
+
+  it('pins the default-template gap that makes the override necessary', () => {
+    // Pinning test: if the default template is ever updated to seed a valid
+    // newsvalue, delete this test AND the override in buildFallbackPlanning.
+    const planning = planningDocumentTemplate('x', {
+      title: 'test',
+      query: { from: '2026-05-15' }
+    })
+    const newsvalue = planning.meta.find((m) => m.type === 'core/newsvalue')
+    expect(newsvalue?.value).toBe('')
   })
 })
