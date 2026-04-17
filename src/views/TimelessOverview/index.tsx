@@ -9,7 +9,10 @@ import { Commands } from '@/components/Commands'
 import { createTimelessColumns } from './lib/createTimelessColumns'
 import type { TimelessArticle } from '@/shared/schemas/timelessArticle'
 import { TimelessResult } from './TimelessResult'
+import { useQuery } from '@/hooks/useQuery'
+import { useInitFilters } from '@/hooks/useInitFilters'
 import { useRegistry } from '@/hooks/useRegistry'
+import { useTimelessCategories } from '@/hooks/useTimelessCategories'
 import { useTranslation } from 'react-i18next'
 
 const meta: ViewMetadata = {
@@ -31,16 +34,37 @@ const meta: ViewMetadata = {
 export const Timeless = (): JSX.Element => {
   const [currentTab, setCurrentTab] = useState<string>('list')
   const { locale, timeZone } = useRegistry()
+  const categories = useTimelessCategories()
   const { t } = useTranslation('views')
+  const [query] = useQuery()
 
   const columns = useMemo(() =>
-    createTimelessColumns({ locale, timeZone, t }), [locale, timeZone, t])
+    createTimelessColumns({ locale, timeZone, categories, t }),
+  [locale, timeZone, categories, t])
+
+  const savedFilters = useInitFilters<TimelessArticle>({
+    path: 'filters.Timeless.current',
+    columns
+  })
+
+  // Default: hide used timeless articles. Once the user opens the status
+  // filter in the toolbar they can include them explicitly.
+  const columnFilters = useMemo(() => {
+    if (savedFilters.length > 0) {
+      return savedFilters
+    }
+    return [{ id: 'status', value: ['draft', 'done'] }]
+  }, [savedFilters])
 
   return (
     <View.Root tab={currentTab} onTabChange={setCurrentTab}>
       <TableProvider<TimelessArticle>
         columns={columns}
         type={meta.name}
+        initialState={{
+          columnFilters,
+          globalFilter: query.query
+        }}
       >
         <TableCommandMenu heading='Timeless'>
           <Commands />

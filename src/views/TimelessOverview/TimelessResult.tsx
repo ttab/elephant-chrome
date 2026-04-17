@@ -4,7 +4,6 @@ import { Table } from '@/components/Table'
 import { Pagination } from '@/components/Table/Pagination'
 import type { ColumnDef } from '@tanstack/react-table'
 import type { TimelessArticle, TimelessArticleFields } from '@/shared/schemas/timelessArticle'
-import { Toolbar } from './Toolbar'
 import { useDocuments } from '@/hooks/index/useDocuments'
 import { timelessParams } from '@/hooks/index/useDocuments/queries/views/timeless'
 
@@ -31,7 +30,6 @@ export const TimelessResult = ({ columns }: {
 
   return (
     <>
-      <Toolbar />
       <Table
         type='Timeless'
         searchType='Editor'
