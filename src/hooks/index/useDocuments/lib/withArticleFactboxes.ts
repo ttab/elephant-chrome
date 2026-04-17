@@ -2,23 +2,23 @@ import { QueryV1, type HitV1 } from '@ttab/elephant-api/index'
 import type { Session } from 'next-auth'
 import { fetch } from '@/hooks/index/useDocuments/lib/fetch'
 import type { Index } from '@/shared/Index'
+import type { Repository } from '@/shared/Repository'
 
 type withArticleFactboxFields = [
-  'document.content.core_factbox.title',
-  'document.content.core_factbox.content.core_text.data.text',
   'document.content.core_factbox.links.uuid',
   'workflow_state',
   'modified'
 ]
 
 
-export const withArticleFactboxes = async <T extends HitV1>({ hits, session, index, query }: {
+export const withArticleFactboxes = async <T extends HitV1>({ hits, session, index, query, repository }: {
   hits: T[]
   session: Session | null
   index?: Index
   query?: QueryV1
+  repository?: Repository
 }): Promise<T[]> => {
-  if (!session || !index) return hits
+  if (!session || !index || !repository) return hits
 
   // Fetch all articles that have an embedded core/factbox content element
   const articles = await fetch<HitV1, withArticleFactboxFields>({
@@ -26,8 +26,6 @@ export const withArticleFactboxes = async <T extends HitV1>({ hits, session, ind
     index,
     session,
     fields: [
-      'document.content.core_factbox.title',
-      'document.content.core_factbox.content.core_text.data.text',
       'document.content.core_factbox.links.uuid',
       'workflow_state',
       'modified'
@@ -53,46 +51,54 @@ export const withArticleFactboxes = async <T extends HitV1>({ hits, session, ind
     return null
   })()
 
-  const existingIds = new Set(hits.map((h) => h.id))
-
   // Tag standalone factboxes with their origin and collect into result
   const result: T[] = hits.map((hit) => ({
     ...hit,
     fields: { ...hit.fields, _document_origin: { values: ['core/factbox'] } }
   })) as T[]
 
-  // Build synthetic factbox hits from the embedded factbox data in each article.
-  // Only include factboxes from published (usable) articles.
-  // Use links.uuid as id when available so they deduplicate against standalone factboxes,
-  // otherwise fall back to articleId:embedded.
-  for (const article of articles) {
-    if (article.fields['workflow_state']?.values[0] !== 'usable') continue
+  // Only process usable articles
+  const usableArticles = articles.filter((a) => a.fields['workflow_state']?.values[0] === 'usable')
+  if (!usableArticles.length) return result
+  // Bulk-fetch full article documents to get complete factbox block structure
+  const bulkResponse = await repository.getDocuments({
+    documents: usableArticles.map((a) => ({ uuid: a.id })),
+    accessToken: session.accessToken
+  })
 
-    const uuids = article.fields['document.content.core_factbox.links.uuid']?.values ?? []
-    const titles = article.fields['document.content.core_factbox.title']?.values ?? []
-    const texts = article.fields['document.content.core_factbox.content.core_text.data.text']?.values ?? []
-    const modified = article.fields['modified']?.values ?? []
+  if (!bulkResponse?.items) return result
 
-    // Build one entry per embedded factbox (index-aligned across the arrays)
-    const count = Math.max(uuids.length, titles.length, 1)
+  // Build a map from article UUID to its modified timestamp for sorting
+  const modifiedByArticleId = new Map(
+    usableArticles.map((a) => [a.id, a.fields['modified']?.values ?? []])
+  )
 
-    for (let i = 0; i < count; i++) {
-      const id = uuids[i] ?? `${article.id}:embedded:${i}`
-      if (existingIds.has(id)) continue
-      if (searchFilter) {
-        const title = String(titles[i] ?? '').toLowerCase()
-        const text = String(texts[i] ?? '').toLowerCase()
-        if (!title.includes(searchFilter) && !text.includes(searchFilter)) continue
+  for (const item of bulkResponse.items) {
+    if (!item.document) continue
+
+    const articleId = item.document.uuid
+    const modified = modifiedByArticleId.get(articleId) ?? []
+    const factboxBlocks = item.document.content.filter((b) => b.type === 'core/factbox')
+
+    for (let i = 0; i < factboxBlocks.length; i++) {
+      const block = factboxBlocks[i]
+      const id = block.links[0]?.uuid ?? `${articleId}:embedded:${i}`
+
+      const title = block.title ?? ''
+      const text = block.content.find((b) => b.type === 'core/text')?.data?.text ?? ''
+
+      if (searchFilter && !title.toLowerCase().includes(searchFilter) && !text.toLowerCase().includes(searchFilter)) {
+        continue
       }
 
       result.push({
         id,
         score: 0,
-        sort: [modified[0] ?? '', String(titles[i] ?? '').toLowerCase()],
+        sort: [modified[0] ?? '', title.toLowerCase()],
         source: {},
         fields: {
-          'document.title': { values: titles[i] ? [titles[i]] : [] },
-          'document.content.core_text.data.text': { values: texts[i] ? [texts[i]] : [] },
+          'document.title': { values: title ? [title] : [] },
+          'document.content.core_text.data.text': { values: text ? [text] : [] },
           modified: { values: modified },
           current_version: { values: ['0'] },
           'heads.usable.version': { values: [] },

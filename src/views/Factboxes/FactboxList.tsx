@@ -1,6 +1,5 @@
 import { useCallback, type JSX } from 'react'
 import { useQuery } from '@/hooks'
-
 import { Table } from '@/components/Table'
 import type { ColumnDef } from '@tanstack/react-table'
 import type { Factbox, FactboxFields } from '@/shared/schemas/factbox'
