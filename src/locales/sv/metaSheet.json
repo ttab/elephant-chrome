@@ -22,8 +22,10 @@
   "convertToArticle": {
     "descriptionWithPlanning": "En ny planering skapas från den ursprungliga planeringen. Välj datum för den nya artikeln.",
     "descriptionNoPlanning": "Ingen ursprunglig planering hittades. En ny tom planering skapas. Välj datum för den nya artikeln.",
+    "loadingPlanning": "Letar efter den ursprungliga planeringen…",
     "targetDateLabel": "Datum",
-    "converting": "Konverterar..."
+    "converting": "Konverterar...",
+    "failed": "Konverteringen misslyckades. Försök igen eller avbryt."
   },
   "placeholders": {
     "addByline": "Lägg till byline",

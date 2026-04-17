@@ -8,12 +8,14 @@ import {
   PopoverContent,
   PopoverTrigger
 } from '@ttab/elephant-ui'
-import { CalendarIcon, LoaderIcon } from '@ttab/elephant-ui/icons'
+import { AlertCircleIcon, CalendarIcon, LoaderIcon } from '@ttab/elephant-ui/icons'
 import { format } from 'date-fns'
+import { QueryV1, TermQueryV1 } from '@ttab/elephant-api/index'
 import { Prompt } from './Prompt'
 import { useConvertArticleType } from '@/hooks/useConvertArticleType'
-import { useDeliverablePlanningId } from '@/hooks/index/useDeliverablePlanningId'
+import { useDocuments } from '@/hooks/index/useDocuments'
 import { useRegistry } from '@/hooks/useRegistry'
+import type { Planning, PlanningFields } from '@/shared/schemas/planning'
 
 interface ConversionPayload {
   articleId: string
@@ -29,35 +31,57 @@ export function ConvertToArticleDialog({ timelessId, onClose }: Props): JSX.Elem
   const { t } = useTranslation()
   const { locale } = useRegistry()
   const { convert, isConverting } = useConvertArticleType()
-  const sourcePlanningId = useDeliverablePlanningId(timelessId)
   const [targetDate, setTargetDate] = useState<Date>(() => new Date())
+  const [failed, setFailed] = useState(false)
+
+  const { data: plannings, isLoading: planningLoading } = useDocuments<Planning, PlanningFields>({
+    documentType: 'core/planning-item',
+    query: QueryV1.create({
+      conditions: {
+        oneofKind: 'term',
+        term: TermQueryV1.create({
+          field: 'document.meta.core_assignment.rel.deliverable.uuid',
+          value: timelessId
+        })
+      }
+    }),
+    fields: []
+  })
+  const sourcePlanningId = plannings?.[0]?.id
 
   const formattedTarget = format(targetDate, 'yyyy-MM-dd')
 
   const handleConfirm = () => {
+    setFailed(false)
     void convert(timelessId, {
       targetType: 'core/article',
       targetDate: formattedTarget,
-      sourcePlanningId: sourcePlanningId || undefined
+      sourcePlanningId
     }).then((result) => {
       if (result.success && result.kind === 'article') {
         onClose({
           articleId: result.newDocumentId,
           planningId: result.newPlanningId
         })
+        return
       }
+      setFailed(true)
     })
   }
+
+  const descriptionKey = planningLoading
+    ? 'metaSheet:convertToArticle.loadingPlanning'
+    : sourcePlanningId
+      ? 'metaSheet:convertToArticle.descriptionWithPlanning'
+      : 'metaSheet:convertToArticle.descriptionNoPlanning'
 
   return (
     <Prompt
       title={t('metaSheet:actions.convertToArticle')}
-      description={sourcePlanningId
-        ? t('metaSheet:convertToArticle.descriptionWithPlanning')
-        : t('metaSheet:convertToArticle.descriptionNoPlanning')}
+      description={t(descriptionKey)}
       primaryLabel={t('common:actions.confirm')}
       secondaryLabel={t('common:actions.abort')}
-      disablePrimary={isConverting}
+      disablePrimary={isConverting || planningLoading}
       onPrimary={handleConfirm}
       onSecondary={() => onClose()}
     >
@@ -89,6 +113,13 @@ export function ConvertToArticleDialog({ timelessId, onClose }: Props): JSX.Elem
           <div className='flex items-center gap-2 text-sm text-muted-foreground pt-2'>
             <LoaderIcon size={14} strokeWidth={1.75} className='animate-spin' />
             {t('metaSheet:convertToArticle.converting')}
+          </div>
+        )}
+
+        {failed && !isConverting && (
+          <div className='flex items-center gap-2 text-sm text-destructive pt-2'>
+            <AlertCircleIcon size={14} strokeWidth={1.75} />
+            {t('metaSheet:convertToArticle.failed')}
           </div>
         )}
       </div>

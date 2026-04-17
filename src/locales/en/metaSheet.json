@@ -22,8 +22,10 @@
   "convertToArticle": {
     "descriptionWithPlanning": "A new planning will be derived from the original. Pick a date for the new article.",
     "descriptionNoPlanning": "No original planning was found. A new empty planning will be created. Pick a date for the new article.",
+    "loadingPlanning": "Looking for the original planning…",
     "targetDateLabel": "Date",
-    "converting": "Converting..."
+    "converting": "Converting...",
+    "failed": "Conversion failed. Try again or cancel."
   },
   "placeholders": {
     "addByline": "Add byline",
