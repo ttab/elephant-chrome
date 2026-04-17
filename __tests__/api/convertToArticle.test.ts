@@ -320,6 +320,35 @@ describe('POST /api/documents/:id/convertToArticle — success & partial failure
     expect(typeof result.payload.articleId).toBe('string')
   })
 
+  it('surfaces articleId when the article snapshot itself fails', async () => {
+    const timeless = makeTimelessSource()
+    const planning = makePlanningReferencing(VALID_SOURCE_ID)
+    const ctx = makeContext({ sourceDoc: timeless, sourcePlanningDoc: planning })
+    ctx.repository.pruneDocument.mockResolvedValue({
+      document: Document.create({ ...timeless, type: 'core/article' }),
+      errors: []
+    })
+    // Article snapshot fails before the planning branch is ever reached.
+    mockSnapshot.mockResolvedValueOnce({
+      statusCode: 500,
+      statusMessage: 'article snapshot failed'
+    })
+
+    const req = makeRequest({
+      id: VALID_SOURCE_ID,
+      body: { targetDate: '2026-05-15', sourcePlanningId: VALID_PLANNING_ID }
+    })
+
+    const result = await POST(req as never, ctx as never) as PayloadResponse
+    expect(result.statusCode).toBe(500)
+    expect(result.payload.error).toBe('article-snapshot-failed')
+    expect(result.payload.message).toBe('article snapshot failed')
+    expect(typeof result.payload.articleId).toBe('string')
+    // Planning branch must not have run, and the source must not be marked used.
+    expect(mockSnapshot).toHaveBeenCalledTimes(1)
+    expect(ctx.repository.bulkSaveMeta).not.toHaveBeenCalled()
+  })
+
   it('surfaces articleId when planning snapshot returns a statusMessage', async () => {
     const timeless = makeTimelessSource()
     const planning = makePlanningReferencing(VALID_SOURCE_ID)

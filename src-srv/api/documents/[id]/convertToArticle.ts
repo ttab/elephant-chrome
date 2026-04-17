@@ -165,7 +165,21 @@ export const POST: RouteHandler = async (
     { addToHistory: true }
   )
   if ('statusMessage' in articleSnapshot) {
-    return articleSnapshot
+    // Article has been committed to Yjs but snapshot failed. Surface the
+    // articleId so the client can mark it as an orphan and let the user
+    // recover, matching the planning-failure contract below.
+    logger.error(
+      { articleId: newArticleId, statusMessage: articleSnapshot.statusMessage },
+      'Article snapshot failed after Yjs commit'
+    )
+    return {
+      statusCode: articleSnapshot.statusCode,
+      payload: {
+        error: 'article-snapshot-failed',
+        articleId: newArticleId,
+        message: articleSnapshot.statusMessage
+      }
+    }
   }
 
   // Partial failure: the article is already persisted but the planning isn't.
