@@ -70,6 +70,11 @@ export function useConvertArticleType(): UseConvertArticleTypeResult {
           const message = payload?.error
             ?? payload?.statusMessage
             ?? `HTTP ${res.status}`
+          if (payload?.articleId && !payload.planningId) {
+            console.warn(
+              `Orphan article created during failed conversion: ${payload.articleId}`
+            )
+          }
           toast.error(`Conversion failed: ${message}`)
           return { success: false }
         }

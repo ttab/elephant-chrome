@@ -214,11 +214,23 @@ export const POST: RouteHandler = async (
     context,
     { addToHistory: true }
   )
+  // Partial failure: the article is already persisted but the planning isn't.
+  // We leak the orphan articleId so the client/user can recover.
   if ('statusMessage' in planningSnapshot) {
-    return planningSnapshot
+    return {
+      statusCode: planningSnapshot.statusCode,
+      payload: {
+        error: 'planning-creation-failed',
+        articleId: newArticleId,
+        message: planningSnapshot.statusMessage
+      }
+    }
   }
 
-  // 6. Mark the source timeless article as "used"
+  // Mark the source timeless article as "used". Failures here are surfaced as
+  // warnings rather than 500s: the new article and planning are already
+  // committed, so rolling back the whole request would be strictly worse.
+  const warnings: string[] = []
   try {
     await repository.bulkSaveMeta({
       statuses: [
@@ -232,13 +244,15 @@ export const POST: RouteHandler = async (
     })
   } catch (ex: unknown) {
     logger.error(ex, `Failed marking source ${sourceId} as used after conversion`)
+    warnings.push('source-not-marked-used')
   }
 
   return {
     statusCode: 200,
     payload: {
       articleId: newArticleId,
-      planningId: newPlanningId
+      planningId: newPlanningId,
+      warnings
     }
   }
 }
