@@ -22,6 +22,8 @@ import { ContentSource } from '@/components/ContentSource'
 import { TimelessCategory } from '@/components/TimelessCategory'
 import { isArticleType } from '@/lib/isArticleType'
 import { useConvertArticleType } from '@/hooks/useConvertArticleType'
+import { ConvertToArticleDialog } from '@/components/ConvertToArticleDialog'
+import { useLink } from '@/hooks/useLink'
 import type * as Y from 'yjs'
 import { useTranslation } from 'react-i18next'
 
@@ -33,8 +35,10 @@ export function MetaSheet({ ydoc, readOnly, readOnlyVersion }: {
   const [documentType] = useYValue<string | undefined>(ydoc.ele, 'root.type')
   const [slugline] = useYValue<string | undefined>(ydoc.ele, 'meta.tt/slugline[0].value')
   const [isOpen, setIsOpen] = useState(false)
+  const [convertDialogOpen, setConvertDialogOpen] = useState(false)
   const { t } = useTranslation('metaSheet')
   const { convert, isConverting } = useConvertArticleType()
+  const openEditor = useLink('Editor')
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -103,7 +107,7 @@ export function MetaSheet({ ydoc, readOnly, readOnlyVersion }: {
                             variant='outline'
                             size='sm'
                             disabled={isConverting}
-                            onClick={() => void convert(ydoc.id, 'core/article')}
+                            onClick={() => setConvertDialogOpen(true)}
                           >
                             <RefreshCwIcon size={14} strokeWidth={1.75} className={isConverting ? 'animate-spin' : ''} />
                             {t('actions.convertToArticle')}
@@ -147,6 +151,18 @@ export function MetaSheet({ ydoc, readOnly, readOnlyVersion }: {
               )}
         </div>
       </SheetContent>
+
+      {convertDialogOpen && (
+        <ConvertToArticleDialog
+          timelessId={ydoc.id}
+          onClose={(result) => {
+            setConvertDialogOpen(false)
+            if (result?.articleId) {
+              openEditor(undefined, { id: result.articleId })
+            }
+          }}
+        />
+      )}
     </Sheet>
   )
 }

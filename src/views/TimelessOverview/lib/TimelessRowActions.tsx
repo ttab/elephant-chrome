@@ -1,7 +1,9 @@
-import { type MouseEvent, type JSX } from 'react'
+import { type MouseEvent, type JSX, useState } from 'react'
 import { DotMenu, type DotDropdownMenuActionItem } from '@/components/ui/DotMenu'
 import { ExternalLinkIcon, RefreshCwIcon } from '@ttab/elephant-ui/icons'
+import { ConvertToArticleDialog } from '@/components/ConvertToArticleDialog'
 import { useConvertArticleType } from '@/hooks/useConvertArticleType'
+import { useLink } from '@/hooks/useLink'
 import { useTranslation } from 'react-i18next'
 
 interface TimelessRowActionsProps {
@@ -9,8 +11,10 @@ interface TimelessRowActionsProps {
 }
 
 export function TimelessRowActions({ documentId }: TimelessRowActionsProps): JSX.Element {
-  const { convert, isConverting } = useConvertArticleType()
+  const { isConverting } = useConvertArticleType()
   const { t } = useTranslation(['views', 'common'])
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const openEditor = useLink('Editor')
 
   const handleOpenNewTab = (event: MouseEvent<HTMLDivElement>) => {
     event.preventDefault()
@@ -21,7 +25,7 @@ export function TimelessRowActions({ documentId }: TimelessRowActionsProps): JSX
   const handleConvert = (event: MouseEvent<HTMLDivElement>) => {
     event.preventDefault()
     event.stopPropagation()
-    void convert(documentId, 'core/article')
+    setDialogOpen(true)
   }
 
   const menuItems: DotDropdownMenuActionItem[] = [
@@ -38,5 +42,20 @@ export function TimelessRowActions({ documentId }: TimelessRowActionsProps): JSX
     }
   ]
 
-  return <DotMenu items={menuItems} />
+  return (
+    <>
+      <DotMenu items={menuItems} />
+      {dialogOpen && (
+        <ConvertToArticleDialog
+          timelessId={documentId}
+          onClose={(result) => {
+            setDialogOpen(false)
+            if (result?.articleId) {
+              openEditor(undefined, { id: result.articleId })
+            }
+          }}
+        />
+      )}
+    </>
+  )
 }
