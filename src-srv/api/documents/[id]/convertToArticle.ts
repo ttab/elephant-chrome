@@ -117,9 +117,14 @@ export const POST: RouteHandler = async (
       newUuid: newPlanningId
     })
   } else {
+    // Fallback: template + a placeholder newsvalue (schema requires exactly 1
+    // with integer-valued "value", which the default template does not set).
     newPlanning = planningDocumentTemplate(newPlanningId, {
       title: sourceDoc.title,
-      query: { from: targetDate }
+      query: { from: targetDate },
+      meta: {
+        'core/newsvalue': [Block.create({ type: 'core/newsvalue', value: '3' })]
+      }
     })
   }
 
@@ -225,7 +230,7 @@ export const POST: RouteHandler = async (
         {
           uuid: sourceId,
           name: 'used',
-          version: 0n
+          version: sourceResponse.version
         }
       ],
       accessToken
