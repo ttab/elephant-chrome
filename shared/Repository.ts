@@ -350,6 +350,62 @@ export class Repository {
   }
 
   /**
+   * Atomically create a new document and set status on source document.
+   * Used for article type conversion where we create a derived document
+   * and mark the source as "used".
+   *
+   * @param newDocument - The new document to create
+   * @param sourceUuid - UUID of the source document to mark as "used"
+   * @param accessToken - The access token
+   * @returns BulkUpdateResponse with results for both operations
+   */
+  async createDerivedDocument({ newDocument, sourceUuid, accessToken }: {
+    newDocument: Document
+    sourceUuid: string
+    accessToken: string
+  }): Promise<BulkUpdateResponse> {
+    try {
+      const { response } = await this.#client.bulkUpdate({
+        updates: [
+          // Create the new document
+          {
+            uuid: newDocument.uuid,
+            document: newDocument,
+            meta: {},
+            ifMatch: -1n, // Only create if doesn't exist
+            status: [], // Start with no status (draft)
+            acl: [{ uri: 'core://unit/redaktionen', permissions: ['r', 'w'] }],
+            updateMetaDocument: false,
+            lockToken: '',
+            ifWorkflowState: '',
+            ifStatusHeads: {},
+            attachObjects: {},
+            detachObjects: []
+          },
+          // Set source document status to "used"
+          {
+            uuid: sourceUuid,
+            meta: {},
+            ifMatch: 0n, // No optimistic lock on status update
+            status: [{ name: 'used', version: 0n, meta: {}, ifMatch: 0n }],
+            acl: [],
+            updateMetaDocument: false,
+            lockToken: '',
+            ifWorkflowState: '',
+            ifStatusHeads: {},
+            attachObjects: {},
+            detachObjects: []
+          }
+        ]
+      }, meta(accessToken))
+
+      return response
+    } catch (err: unknown) {
+      throw new Error(`Unable to create derived document: ${(err as Error)?.message || 'Unknown error'}`)
+    }
+  }
+
+  /**
    * Save a newsdoc to repository
    *
    * @param yDoc Y.Doc
