@@ -1,6 +1,7 @@
 import { Block, Document } from '@ttab/elephant-api/newsdoc'
 import type { ValidationResult } from '@ttab/elephant-api/repository'
 import type { Repository } from './Repository.js'
+import { planningDocumentTemplate } from './templates/planningDocumentTemplate.js'
 
 export type ArticleType = 'core/article' | 'core/article#timeless'
 
@@ -96,5 +97,29 @@ export function deriveNewPlanning({
     uri: `core://newscoverage/${newUuid}`,
     meta: updatedMeta,
     links: [...sourcePlanning.links]
+  })
+}
+
+/**
+ * Build a blank planning for timeless→article conversion when the timeless
+ * article has no associated planning to derive from. Seeds `core/newsvalue`
+ * with `"3"` because the planning schema requires exactly one newsvalue with
+ * an integer-parseable `value`, and the default template leaves it empty.
+ */
+export function buildFallbackPlanning({
+  newUuid,
+  title,
+  targetDate
+}: {
+  newUuid: string
+  title?: string
+  targetDate: string
+}): Document {
+  return planningDocumentTemplate(newUuid, {
+    title,
+    query: { from: targetDate },
+    meta: {
+      'core/newsvalue': [Block.create({ type: 'core/newsvalue', value: '3' })]
+    }
   })
 }

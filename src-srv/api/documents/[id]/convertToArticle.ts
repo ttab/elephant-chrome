@@ -5,8 +5,7 @@ import {
   appendAssignment,
   appendDocumentToAssignment
 } from '../../../../shared/createYItem.js'
-import { deriveNewPlanning } from '@/shared/convertArticleType.js'
-import { planningDocumentTemplate } from '@/shared/templates/planningDocumentTemplate.js'
+import { buildFallbackPlanning, deriveNewPlanning } from '@/shared/convertArticleType.js'
 import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc.js'
 import { toYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc.js'
 import { isValidUUID } from '@/shared/isValidUUID.js'
@@ -24,6 +23,13 @@ interface ConvertToArticleBody {
   targetDate?: string
   sourcePlanningId?: string
   isoDateTime?: string
+}
+
+function planningReferencesArticle(planning: Document, articleId: string): boolean {
+  return planning.meta.some((block) =>
+    block.type === 'core/assignment'
+    && block.links.some((link) => link.rel === 'deliverable' && link.uuid === articleId)
+  )
 }
 
 export const POST: RouteHandler = async (
@@ -111,20 +117,22 @@ export const POST: RouteHandler = async (
     if (!sourcePlanningResponse?.document) {
       return { statusCode: 404, statusMessage: 'Source planning not found' }
     }
+    if (!planningReferencesArticle(sourcePlanningResponse.document, sourceId)) {
+      return {
+        statusCode: 400,
+        statusMessage: 'sourcePlanningId does not reference the source article'
+      }
+    }
     newPlanning = deriveNewPlanning({
       sourcePlanning: sourcePlanningResponse.document,
       targetDate,
       newUuid: newPlanningId
     })
   } else {
-    // Fallback: template + a placeholder newsvalue (schema requires exactly 1
-    // with integer-valued "value", which the default template does not set).
-    newPlanning = planningDocumentTemplate(newPlanningId, {
+    newPlanning = buildFallbackPlanning({
+      newUuid: newPlanningId,
       title: sourceDoc.title,
-      query: { from: targetDate },
-      meta: {
-        'core/newsvalue': [Block.create({ type: 'core/newsvalue', value: '3' })]
-      }
+      targetDate
     })
   }
 
@@ -160,62 +168,76 @@ export const POST: RouteHandler = async (
     return articleSnapshot
   }
 
-  const planningConnection = await collaborationServer.server.openDirectConnection(
-    newPlanningId,
-    context
-  )
-  await planningConnection.transact((document) => {
-    toYjsNewsDoc(
-      toGroupedNewsDoc({
-        version: 0n,
-        isMetaDocument: false,
-        mainDocument: '',
-        subset: [],
-        document: newPlanning
-      }),
-      document
-    )
-
-    const [index] = appendAssignment({
-      document,
-      type: 'text',
-      title: sourceDoc.title,
-      assignmentData: {
-        public: 'true',
-        start: assignmentIso,
-        end: assignmentIso,
-        start_date: targetDate,
-        end_date: targetDate
-      }
-    })
-
-    appendDocumentToAssignment({
-      document,
-      id: newArticleId,
-      index,
-      slug: '',
-      type: 'article'
-    })
-  })
-  void planningConnection.disconnect().catch((ex: unknown) => {
-    logger.error(ex, 'Failed disconnecting after planning creation')
-  })
-
-  const planningSnapshot = await snapshot(
-    collaborationServer,
-    newPlanningId,
-    context,
-    { addToHistory: true }
-  )
   // Partial failure: the article is already persisted but the planning isn't.
-  // We leak the orphan articleId so the client/user can recover.
-  if ('statusMessage' in planningSnapshot) {
+  // Any rejection from the planning phase must still surface the orphan
+  // articleId so the client/user can recover, rather than bubbling to the
+  // top-level handler (which returns an empty 500 body).
+  try {
+    const planningConnection = await collaborationServer.server.openDirectConnection(
+      newPlanningId,
+      context
+    )
+    await planningConnection.transact((document) => {
+      toYjsNewsDoc(
+        toGroupedNewsDoc({
+          version: 0n,
+          isMetaDocument: false,
+          mainDocument: '',
+          subset: [],
+          document: newPlanning
+        }),
+        document
+      )
+
+      const [index] = appendAssignment({
+        document,
+        type: 'text',
+        title: sourceDoc.title,
+        assignmentData: {
+          public: 'true',
+          start: assignmentIso,
+          end: assignmentIso,
+          start_date: targetDate,
+          end_date: targetDate
+        }
+      })
+
+      appendDocumentToAssignment({
+        document,
+        id: newArticleId,
+        index,
+        slug: '',
+        type: 'article'
+      })
+    })
+    void planningConnection.disconnect().catch((ex: unknown) => {
+      logger.error(ex, 'Failed disconnecting after planning creation')
+    })
+
+    const planningSnapshot = await snapshot(
+      collaborationServer,
+      newPlanningId,
+      context,
+      { addToHistory: true }
+    )
+    if ('statusMessage' in planningSnapshot) {
+      return {
+        statusCode: planningSnapshot.statusCode,
+        payload: {
+          error: 'planning-creation-failed',
+          articleId: newArticleId,
+          message: planningSnapshot.statusMessage
+        }
+      }
+    }
+  } catch (ex: unknown) {
+    logger.error(ex, `Planning creation failed after article ${newArticleId} was committed`)
     return {
-      statusCode: planningSnapshot.statusCode,
+      statusCode: 500,
       payload: {
         error: 'planning-creation-failed',
         articleId: newArticleId,
-        message: planningSnapshot.statusMessage
+        message: ex instanceof Error ? ex.message : 'Unknown error'
       }
     }
   }
