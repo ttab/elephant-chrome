@@ -50,7 +50,8 @@
     "showOlder": "Vis eldre"
   },
   "related": {
-    "relatedEvents": "Koblede hendelser"
+    "relatedEvents": "Koblede hendelser",
+    "derivedFromPlanning": "Avledet fra planlegging"
   },
   "slugline": "Legg til stikkord",
   "story": "Legg til story",

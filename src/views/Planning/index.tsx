@@ -24,6 +24,7 @@ import { PlanningHeader } from './components/PlanningHeader'
 import React, { type SetStateAction, useMemo, type JSX } from 'react'
 import type { NewItem } from '../Event/components/PlanningTable'
 import { RelatedEvents } from './components/RelatedEvents'
+import { DerivedFromPlanning } from './components/DerivedFromPlanning'
 import type { Block, Document } from '@ttab/elephant-api/newsdoc'
 import { CopyGroup } from '../../components/CopyGroup'
 import { DuplicatesTable } from '../../components/DuplicatesTable'
@@ -132,6 +133,7 @@ const PlanningViewContent = (props: ViewProps & {
   const [copyGroupId] = useYValue<string | undefined>(document, 'meta.core/copy-group[0].uuid')
   const [newTitle] = useYValue(document, ['root', 'title'])
   const [relatedEvents] = useYValue<Block[]>(document, 'links.core/event')
+  const [relatedPlannings] = useYValue<Block[]>(document, 'links.core/planning-item')
 
   const [title] = useYValue<Y.XmlText>(document, 'root.title', true)
   const [slugline] = useYValue<Y.XmlText>(document, 'meta.tt/slugline[0].value', true)
@@ -254,6 +256,7 @@ const PlanningViewContent = (props: ViewProps & {
               documentId={props.documentId}
             />
             <RelatedEvents events={relatedEvents} />
+            <DerivedFromPlanning plannings={relatedPlannings} />
             {!props.asDialog && <DuplicatesTable documentId={props.documentId} type='core/planning-item' />}
             {copyGroupId && !props.asDialog && <CopyGroup copyGroupId={copyGroupId} type='core/planning-item' />}
           </Form.Table>
