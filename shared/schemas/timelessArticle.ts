@@ -29,7 +29,7 @@ const _schema = z.object(schemaShape)
 /**
  * Type inferred from fields
  */
-export type TimelessArticleFields = Array<keyof typeof _fields>
+export type TimelessArticleFields = readonly (typeof _fields)[number][]
 
 /**
  * Type inferred from the schema.
@@ -46,4 +46,4 @@ export interface TimelessArticle extends HitV1 {
 /**
  * Export fields
  */
-export const fields = _fields as unknown as TimelessArticleFields
+export const fields: TimelessArticleFields = _fields
