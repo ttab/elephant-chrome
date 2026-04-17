@@ -12,7 +12,6 @@ import { Error as ErrorView } from '@/views/Error'
 import { useEffect, useMemo, useState, type JSX } from 'react'
 import { getContentMenuLabels } from '@/defaults/contentMenuLabels'
 import { useYDocument, useYValue } from '@/modules/yjs/hooks'
-import { getTemplateFromView } from '@/shared/templates/lib/getTemplateFromView'
 import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
 import type { EleDocumentResponse } from '@/shared/types'
 import type { Document } from '@ttab/elephant-api/newsdoc'
@@ -22,9 +21,10 @@ import { cn } from '@ttab/elephant-ui/utils'
 import { DocumentHistory } from '@/components/DocumentHistory/DocumentHistory'
 import { type DocumentState, getDocumentState } from '@/lib/getDocumentState'
 import { Editor as PlainEditor } from '@/components/PlainEditor'
-
 import { useTranslation } from 'react-i18next'
 import { documentTypeValueFormat } from '@/defaults/documentTypeFormats'
+import { toast } from 'sonner'
+import { LoaderIcon } from '@ttab/elephant-ui/icons'
 
 const meta: ViewMetadata = {
   name: 'Factbox',
@@ -61,7 +61,10 @@ const Factbox = (props: ViewProps & { document?: Document }): JSX.Element => {
     if (!articleId || embeddedIndex === null || !repository || !session?.accessToken) return
 
     void repository.getDocument({ uuid: articleId, accessToken: session.accessToken }).then((response) => {
-      if (!response?.document) return
+      if (!response?.document) {
+        toast.error(t('errors:toasts.couldNotOpenEmbeddedFactbox'))
+        return
+      }
       const factboxBlocks = response.document.content.filter((block) => block.type === 'core/factbox')
       const block = factboxBlocks[embeddedIndex]
 
@@ -82,29 +85,29 @@ const Factbox = (props: ViewProps & { document?: Document }): JSX.Element => {
           links: block.links
         }
       }))
+    }).catch((error) => {
+      console.error('Error fetching document for embedded factbox:', error)
+      toast.error(t('errors:toasts.couldNotOpenEmbeddedFactbox'))
     })
-  }, [articleId, embeddedIndex, repository, session?.accessToken])
+  }, [articleId, embeddedIndex, repository, session?.accessToken, t])
 
   // Standalone factbox: build data from props.document if provided
-  const standaloneData = useMemo(() => {
-    if (embeddedMatch || !props.document || !documentId || typeof documentId !== 'string') {
-      return undefined
-    }
-    return toGroupedNewsDoc({
+  const standaloneData = (!embeddedMatch && props.document && documentId && typeof documentId === 'string')
+    ? toGroupedNewsDoc({
       version: 0n,
       isMetaDocument: false,
       mainDocument: '',
       subset: [],
-      document: props.document || getTemplateFromView('Factbox')(documentId)
+      document: props.document
     })
-  }, [documentId, props.document, embeddedMatch])
+    : undefined
 
   // Error handling for missing document
   if (!documentId || typeof documentId !== 'string') {
     return (
       <ErrorView
-        title={t('errors:messages.articleMissingTitle')}
-        message={t('errors:messages.articleMissingDescription')}
+        title={t('errors:messages.documentTypeMissing', { documentType: t('core:documentType.factbox') })}
+        message={t('errors:messages.documentTypeMissingDescription', { documentType: t('factbox:factboxDocument') })}
       />
     )
   }
@@ -133,7 +136,13 @@ const EmbeddedFactboxView = (props: ViewProps & { data?: EleDocumentResponse }):
   ], [])
 
   if (!props.data?.document) {
-    return <View.Root />
+    return (
+      <View.Root asDialog={props.asDialog} className={props.className}>
+        <div className='flex h-full w-full items-center justify-center'>
+          <LoaderIcon size={32} strokeWidth={1.75} className='animate-spin opacity-50' />
+        </div>
+      </View.Root>
+    )
   }
 
   return (

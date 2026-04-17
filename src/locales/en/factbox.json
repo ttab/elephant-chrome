@@ -1,5 +1,6 @@
 {
   "title": "Factbox",
+  "factboxDocument": "Factbox document",
   "action": {
     "createFactbox": "Create factbox"
   },
