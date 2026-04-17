@@ -48,7 +48,7 @@ export async function prepareArticleConversion(
     links: [
       ...prunedDoc.links,
       Block.create({
-        type: sourceDocument.type,
+        type: 'core/article',
         uuid: sourceDocument.uuid,
         rel: 'source'
       })
@@ -65,8 +65,9 @@ export async function prepareArticleConversion(
 /**
  * Clone a planning for timeless→article conversion. Assignments are dropped
  * because the caller adds exactly one new assignment pointing at the derived
- * article. The `rel='derived-from'` link is the convention the Planning view
- * filters on to render the back-link.
+ * article. The planning schema currently has no allowed rel for a back-link
+ * to the source planning, so the clone is not persistently linked — the
+ * trace runs article→source timeless→original planning instead.
  */
 export function deriveNewPlanning({
   sourcePlanning,
@@ -94,13 +95,6 @@ export function deriveNewPlanning({
     uuid: newUuid,
     uri: `core://newscoverage/${newUuid}`,
     meta: updatedMeta,
-    links: [
-      ...sourcePlanning.links,
-      Block.create({
-        type: 'core/planning-item',
-        uuid: sourcePlanning.uuid,
-        rel: 'derived-from'
-      })
-    ]
+    links: [...sourcePlanning.links]
   })
 }

@@ -50,8 +50,7 @@
     "showOlder": "Visa äldre"
   },
   "related": {
-    "relatedEvents": "Länkade händelser",
-    "derivedFromPlanning": "Härledd från planering"
+    "relatedEvents": "Länkade händelser"
   },
   "slugline": "Lägg till slugg",
   "story": "Lägg till story",

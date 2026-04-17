@@ -93,7 +93,7 @@ export const POST: RouteHandler = async (
     links: [
       ...prunedArticle.links,
       Block.create({
-        type: 'core/article#timeless',
+        type: 'core/article',
         uuid: sourceId,
         rel: 'source'
       })

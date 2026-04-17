@@ -37,5 +37,7 @@
   },
   "removeInfoConfirm": "Are you sure you want to remove the info?",
   "changeType": "Change type",
-  "changeTypeConfirm": "Are you sure you want to change the type of info?"
+  "changeTypeConfirm": "Are you sure you want to change the type of info?",
+  "derivedFromPlanning": "Derived from",
+  "derivedFromPlanningLink": "original planning"
 }

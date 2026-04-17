@@ -50,8 +50,7 @@
     "showOlder": "Show older"
   },
   "related": {
-    "relatedEvents": "Linked events",
-    "derivedFromPlanning": "Derived from planning"
+    "relatedEvents": "Linked events"
   },
   "slugline": "Add slug",
   "story": "Add story",

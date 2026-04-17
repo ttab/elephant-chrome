@@ -123,12 +123,13 @@ describe('prepareArticleConversion', () => {
     expect(result.newDocument.type).toBe('core/article')
     expect(result.sourceUuid).toBe('timeless-uuid')
 
-    // Link back to timeless source
+    // Link back to source (always typed as core/article because the schema
+    // only allows that type for rel=source on article documents)
     const sourceLink = result.newDocument.links.find(
       (link) => link.rel === 'source' && link.uuid === 'timeless-uuid'
     )
     expect(sourceLink).toBeDefined()
-    expect(sourceLink?.type).toBe('core/article#timeless')
+    expect(sourceLink?.type).toBe('core/article')
   })
 
   it('preserves existing links and adds source link', async () => {
@@ -336,22 +337,7 @@ describe('deriveNewPlanning', () => {
     expect(descriptions.find((d) => d.role === 'internal')?.data.text).toBe('Internal note')
   })
 
-  it('appends rel=derived-from link to the source planning', () => {
-    const source = makeSourcePlanning()
-
-    const result = deriveNewPlanning({
-      sourcePlanning: source,
-      targetDate: '2026-05-15',
-      newUuid: 'fresh-planning-uuid'
-    })
-
-    const derivedFrom = result.links.find((l) => l.rel === 'derived-from')
-    expect(derivedFrom).toBeDefined()
-    expect(derivedFrom?.type).toBe('core/planning-item')
-    expect(derivedFrom?.uuid).toBe('source-planning-uuid')
-  })
-
-  it('preserves existing links (section, story) alongside the derived-from link', () => {
+  it('preserves existing links (section, story) without adding back-link', () => {
     const source = makeSourcePlanning()
 
     const result = deriveNewPlanning({
@@ -362,6 +348,7 @@ describe('deriveNewPlanning', () => {
 
     expect(result.links.find((l) => l.rel === 'section')?.uuid).toBe('section-uuid')
     expect(result.links.find((l) => l.rel === 'story')?.uuid).toBe('story-uuid')
-    expect(result.links).toHaveLength(3)
+    // Schema has no allowed rel for a back-link to the source planning.
+    expect(result.links).toHaveLength(2)
   })
 })
