@@ -174,6 +174,61 @@ describe('POST /api/documents/:id/convertToArticle — input validation', () => 
     expect(result).toMatchObject({ statusCode: 400, statusMessage: /sourcePlanningId/i })
   })
 
+  it('returns 500 when repository.getDocument rejects for the source', async () => {
+    const ctx = makeContext()
+    ctx.repository.getDocument.mockRejectedValue(new Error('repo down'))
+    const req = makeRequest({ id: VALID_SOURCE_ID, body: { targetDate: '2026-05-15' } })
+
+    const result = await POST(req as never, ctx as never)
+    expect(result).toMatchObject({
+      statusCode: 500,
+      statusMessage: new RegExp(`fetch source document ${VALID_SOURCE_ID}`)
+    })
+  })
+
+  it('returns 500 when repository.pruneDocument rejects', async () => {
+    const timeless = makeTimelessSource()
+    const ctx = makeContext({ sourceDoc: timeless })
+    ctx.repository.pruneDocument.mockRejectedValue(new Error('prune boom'))
+    const req = makeRequest({ id: VALID_SOURCE_ID, body: { targetDate: '2026-05-15' } })
+
+    const result = await POST(req as never, ctx as never)
+    expect(result).toMatchObject({
+      statusCode: 500,
+      statusMessage: new RegExp(`prune source document ${VALID_SOURCE_ID}`)
+    })
+    // Article was never opened for Yjs commit — no orphan.
+    expect(ctx.collaborationServer.server.openDirectConnection).not.toHaveBeenCalled()
+  })
+
+  it('returns 500 when repository.getDocument rejects for the source planning', async () => {
+    const timeless = makeTimelessSource()
+    const ctx = makeContext({ sourceDoc: timeless })
+    ctx.repository.pruneDocument.mockResolvedValue({
+      document: Document.create({ ...timeless, type: 'core/article' }),
+      errors: []
+    })
+    ctx.repository.getDocument.mockImplementation(
+      ({ uuid }: { uuid: string }) => {
+        if (uuid === VALID_SOURCE_ID) {
+          return Promise.resolve({ document: timeless, version: 1n })
+        }
+        return Promise.reject(new Error('planning repo down'))
+      }
+    )
+    const req = makeRequest({
+      id: VALID_SOURCE_ID,
+      body: { targetDate: '2026-05-15', sourcePlanningId: VALID_PLANNING_ID }
+    })
+
+    const result = await POST(req as never, ctx as never)
+    expect(result).toMatchObject({
+      statusCode: 500,
+      statusMessage: new RegExp(`fetch source planning ${VALID_PLANNING_ID}`)
+    })
+    expect(ctx.collaborationServer.server.openDirectConnection).not.toHaveBeenCalled()
+  })
+
   it('returns 404 when source document is not found', async () => {
     const ctx = makeContext({ sourceDoc: undefined })
     const req = makeRequest({ id: VALID_SOURCE_ID, body: { targetDate: '2026-05-15' } })
