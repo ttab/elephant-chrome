@@ -116,7 +116,7 @@ export function factboxColumns<Ns extends Namespace>({ locale, timeZone, t }: { 
     {
       id: 'documentOrigin',
       meta: {
-        name: 'Origin',
+        name: t('views:factboxes.columnLabels.origin'),
         columnIcon: BoxesIcon,
         className: 'flex-none',
         options: [
