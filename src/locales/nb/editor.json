@@ -18,7 +18,9 @@
   "factbox": {
     "headerTitle": "Rediger originalen",
     "modifiedLabel": "Originalen er fra",
-    "footerTitle": "Endringer i faktaboksteksten gjelder kun for denne artikkelen"
+    "footerTitle": "Endringer i faktaboksteksten gjelder kun for denne artikkelen",
+    "factboxNewTitle": "Fakta",
+    "addSingleLabel": "Opprett faktaboks"
   },
   "image": {
     "captionLabel": "Tekst",
