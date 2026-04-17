@@ -8,33 +8,47 @@ interface ConversionResult {
   success: boolean
   /** UUID of the newly created document (if successful) */
   newDocumentId?: string
+  /** UUID of the newly created planning (only when converting timeless → article) */
+  newPlanningId?: string
+}
+
+interface ConvertOptions {
+  /** Required when converting to core/article. Ignored otherwise. */
+  targetDate?: string
+  /** Optional source planning UUID; falls back to a blank planning when absent. */
+  sourcePlanningId?: string
 }
 
 interface UseConvertArticleTypeResult {
-  convert: (documentId: string, targetType: ArticleType) => Promise<ConversionResult>
+  convert: (
+    documentId: string,
+    targetType: ArticleType,
+    options?: ConvertOptions
+  ) => Promise<ConversionResult>
   isConverting: boolean
 }
 
 /**
- * Hook for converting between article types (article <-> timeless).
+ * Hook for converting between article types.
  *
- * Conversion creates a NEW document from the source:
- * 1. Prunes the source for the target type (removes invalid blocks)
- * 2. Creates a new document with fresh UUID
- * 3. Sets the source document status to "used"
- *
- * Both operations happen atomically via bulkUpdate.
+ * - `core/article` → `core/article#timeless`: client-side prune + create-new-doc;
+ *   source is marked "used" atomically via Repository.createDerivedDocument.
+ * - `core/article#timeless` → `core/article`: delegates to the server route
+ *   `POST /api/documents/:id/convertToArticle`, which also derives a new planning.
  */
 export function useConvertArticleType(): UseConvertArticleTypeResult {
   const { repository } = useRegistry()
   const { data: session } = useSession()
   const [isConverting, setIsConverting] = useState(false)
 
+  const accessToken = session?.accessToken
+
   const convert = useCallback(async (
     documentId: string,
-    targetType: ArticleType
+    targetType: ArticleType,
+    options?: ConvertOptions
   ): Promise<ConversionResult> => {
-    if (!repository || !session?.accessToken) {
+    if (!repository || !accessToken) {
       toast.error('Unable to convert: not authenticated')
       return { success: false }
     }
@@ -42,10 +56,46 @@ export function useConvertArticleType(): UseConvertArticleTypeResult {
     setIsConverting(true)
 
     try {
-      // Fetch the source document
+      if (targetType === 'core/article') {
+        if (!options?.targetDate) {
+          toast.error('A target date is required to convert to article')
+          return { success: false }
+        }
+
+        const res = await fetch(`/api/documents/${documentId}/convertToArticle`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            targetDate: options.targetDate,
+            sourcePlanningId: options.sourcePlanningId
+          })
+        })
+
+        if (!res.ok) {
+          const body = (await res.json().catch(() => null)) as
+            | { statusMessage?: string }
+            | null
+          const message = body?.statusMessage || `HTTP ${res.status}`
+          toast.error(`Conversion failed: ${message}`)
+          return { success: false }
+        }
+
+        const payload = (await res.json()) as {
+          articleId: string
+          planningId: string
+        }
+
+        toast.success('Document converted')
+        return {
+          success: true,
+          newDocumentId: payload.articleId,
+          newPlanningId: payload.planningId
+        }
+      }
+
       const response = await repository.getDocument({
         uuid: documentId,
-        accessToken: session.accessToken
+        accessToken
       })
 
       if (!response?.document) {
@@ -53,24 +103,21 @@ export function useConvertArticleType(): UseConvertArticleTypeResult {
         return { success: false }
       }
 
-      // Prepare the conversion (prune + create new document structure)
       const { newDocument, sourceUuid, errors } = await prepareArticleConversion(
         response.document,
-        targetType,
+        'core/article#timeless',
         repository,
-        session.accessToken
+        accessToken
       )
 
-      // Log any pruning warnings (these are informational, not blockers)
       if (errors.length > 0) {
         console.warn('Conversion pruning warnings:', errors)
       }
 
-      // Atomically create new document and mark source as "used"
       await repository.createDerivedDocument({
         newDocument,
         sourceUuid,
-        accessToken: session.accessToken
+        accessToken
       })
 
       toast.success('Document converted')
@@ -83,7 +130,7 @@ export function useConvertArticleType(): UseConvertArticleTypeResult {
     } finally {
       setIsConverting(false)
     }
-  }, [repository, session?.accessToken])
+  }, [repository, accessToken])
 
   return { convert, isConverting }
 }
