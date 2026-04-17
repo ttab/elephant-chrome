@@ -26,7 +26,6 @@ const DATE_RE = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/
 interface ConvertToArticleBody {
   targetDate?: string
   sourcePlanningId?: string
-  isoDateTime?: string
 }
 
 function planningReferencesArticle(planning: Document, articleId: string): boolean {
@@ -57,7 +56,7 @@ export const POST: RouteHandler = async (
     return { statusCode: 400, statusMessage: 'Invalid source document id' }
   }
 
-  const { targetDate, sourcePlanningId, isoDateTime }
+  const { targetDate, sourcePlanningId }
     = (req.body ?? {}) as ConvertToArticleBody
 
   if (!targetDate || !DATE_RE.test(targetDate)) {
@@ -140,7 +139,7 @@ export const POST: RouteHandler = async (
       })
     }
 
-    const assignmentIso = isoDateTime ?? `${targetDate}T09:00:00Z`
+    const assignmentIso = `${targetDate}T09:00:00Z`
 
     const articleConnection = await collaborationServer.server.openDirectConnection(
       newArticleId,
