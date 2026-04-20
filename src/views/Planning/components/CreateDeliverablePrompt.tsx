@@ -15,16 +15,21 @@ import type { Block } from '@ttab/elephant-api/newsdoc'
 /**
  * Deliverable document creation dialog, responsible for creating articles and flashes in the repository.
  */
-export function CreateDeliverablePrompt({ ydoc, deliverableType, payload, onClose, title, documentLabel }: {
+export const CreateDeliverablePrompt = ({
+  ydoc,
+  deliverableType,
+  payload,
+  onClose,
+  title,
+  documentLabel
+}: {
   ydoc: YDocument<Y.Map<unknown>>
   deliverableType: 'article' | 'flash' | 'editorial-info' | 'timeless'
   payload: TemplatePayload
   title: string
   documentLabel: string
-  onClose: (
-    id?: string
-  ) => void
-}): JSX.Element {
+  onClose: (id?: string) => void
+}): JSX.Element => {
   const { repository } = useRegistry()
   const { data: session } = useSession()
   const [isCreating, setIsCreating] = useState(false)

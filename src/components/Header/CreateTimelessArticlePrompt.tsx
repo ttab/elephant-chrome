@@ -19,18 +19,14 @@ import {
 } from '@ttab/elephant-ui'
 import { CircleXIcon } from '@ttab/elephant-ui/icons'
 import { Newsvalues } from '@/defaults'
-import { convertToISOStringInTimeZone } from '@/shared/datetime'
+import { getAssignmentDateTime } from '@/shared/datetime'
 import { fetch as fetchPlannings } from '@/lib/index/fetch-plannings-twirp'
 import { addAssignmentWithDeliverable } from '@/lib/index/addAssignment'
+import type { DefaultValueOption } from '@/types'
 import { createNewTimelessArticle } from './lib/createNewTimelessArticle'
 
-interface PlanningOption {
-  value: string
-  label: string
-  payload: {
-    slugline?: string
-    section?: string
-  }
+type PlanningOption = Omit<DefaultValueOption, 'payload'> & {
+  payload: { slugline?: string, section?: string }
 }
 
 /**
@@ -71,9 +67,7 @@ export const CreateTimelessArticlePrompt = ({ id, onClose }: {
     }
     setIsCreating(true)
 
-    const now = new Date()
-    const localDate = convertToISOStringInTimeZone(now, timeZone).slice(0, 10)
-    const isoDateTime = `${now.toISOString().split('.')[0]}Z`
+    const { localDate, isoDateTime } = getAssignmentDateTime(new Date(), timeZone)
 
     const planningContext = selectedPlanning
       ? { planningId: selectedPlanning.value, slugline: selectedPlanning.payload.slugline }
@@ -184,6 +178,7 @@ export const CreateTimelessArticlePrompt = ({ id, onClose }: {
             placeholder={t('planning:move.pickPlanning')}
             fetch={fetchPlanningOptions}
             minSearchChars={2}
+            fetchDebounce={300}
             modal={true}
             onSelect={(option) => {
               if (option.value === selectedPlanning?.value) {

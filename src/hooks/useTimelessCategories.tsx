@@ -5,7 +5,5 @@ import { type IDBTimelessCategory } from '../datastore/types'
 export const useTimelessCategories = (): IDBTimelessCategory[] => {
   const { objects } = useContext(CoreTimelessCategoryContext)
 
-  return (objects).sort((a1, a2) => {
-    return a1.title.localeCompare(a2.title)
-  })
+  return [...objects].sort((a1, a2) => a1.title.localeCompare(a2.title))
 }
