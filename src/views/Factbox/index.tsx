@@ -1,7 +1,7 @@
 import { useQuery, useRegistry } from '@/hooks'
 import { type ViewProps, type ViewMetadata } from '@/types/index'
 import type * as Y from 'yjs'
-import { Bold, Italic, Text, OrderedList, UnorderedList, LocalizedQuotationMarks } from '@ttab/textbit-plugins'
+import { Bold, Italic, Text, OrderedList, UnorderedList, LocalizedQuotationMarks, Link } from '@ttab/textbit-plugins'
 import { Textbit } from '@ttab/textbit'
 import { useSession } from 'next-auth/react'
 import { getValueByYPath } from '@/shared/yUtils'
@@ -210,6 +210,7 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
   const configuredPlugins = useMemo(() => {
     return [
       UnorderedList(),
+      Link(),
       OrderedList(),
       Bold(),
       Italic(),
