@@ -226,10 +226,10 @@ export const getStatusSpecifications = (status: string, documentType?: string): 
       }
     case 'usable':
       return {
-        icon: documentType === 'core/factbox' ? BadgeCheckIcon : CircleCheckIcon,
+        icon: CircleCheckIcon,
         className: cn(
           'text-white  rounded-full dark:text-black',
-          documentType === 'core/factbox' ? 'bg-approved fill-approved' : 'bg-usable fill-usable'
+          documentType === 'core/factbox' ? 'bg-done fill-done' : 'bg-usable fill-usable'
         )
       }
     case 'unpublished':
@@ -413,17 +413,27 @@ export function getWorkflowSpecifications(): Record<string, WorkflowSpecificatio
       },
       usable: {
         title: i18n.t('workflows:core/factbox.usable.title'),
-        asSaveCTA: i18n.t('workflows:core/factbox.usable.asSaveCTA'),
-        asSaveTitle: i18n.t('workflows:core/factbox.usable.asSaveTitle'),
+        asSaveCTA: i18n.t('workflows:core/factbox.usable.title'),
         description: i18n.t('workflows:core/factbox.usable.description'),
-        updateDescription: i18n.t('workflows:core/factbox.usable.updateDescription'),
         isWorkflow: false,
-        asSave: true,
+        asSave: false,
         transitions: {
-          draft: {
+          unpublished: {
             verify: true,
-            title: i18n.t('workflows:core/factbox.usable.transitions.draft.title'),
-            description: i18n.t('workflows:core/factbox.usable.transitions.draft.description')
+            title: i18n.t('workflows:core/factbox.usable.transitions.unpublished.title'),
+            description: i18n.t('workflows:core/factbox.usable.transitions.unpublished.description')
+          }
+        }
+      },
+      unpublished: {
+        title: i18n.t('workflows:core/factbox.unpublished.title'),
+        description: i18n.t('workflows:core/factbox.unpublished.description'),
+        isWorkflow: false,
+        transitions: {
+          usable: {
+            verify: true,
+            title: i18n.t('workflows:core/factbox.unpublished.transitions.usable.title'),
+            description: i18n.t('workflows:core/factbox.unpublished.transitions.usable.description')
           }
         }
       }

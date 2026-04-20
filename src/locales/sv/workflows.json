@@ -226,8 +226,8 @@
       "transitions": {
         "usable": {
           "verify": false,
-          "title": "Godkänn",
-          "description": "Godkänn faktarutan för användning"
+          "title": "Klarmarkera",
+          "description": "Klarmarkera faktarutan för användning"
         },
         "unpublished": {
           "verify": false,
@@ -237,11 +237,11 @@
       }
     },
     "usable": {
-      "title": "Godkänd",
+      "title": "Klar",
       "asSaveCTA": "Ändrad",
       "asSaveTitle": "Uppdatera",
-      "description": "Faktarutan är godkänd",
-      "updateDescription": "Godkänn ändringarna",
+      "description": "Faktarutan är klar",
+      "updateDescription": "Klarmarkera ändringarna",
       "transitions": {
         "draft": {
           "title": "Till utkast",
@@ -261,8 +261,8 @@
       "transitions": {
         "usable": {
           "verify": false,
-          "title": "Godkänn",
-          "description": "Godkänn faktarutan för användning"
+          "title": "Klarmarkera",
+          "description": "Klarmarkera faktarutan för användning"
         }
       }
     }

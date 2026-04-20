@@ -1,5 +1,6 @@
 {
   "title": "Faktaruta",
+  "factboxDocument": "Faktarutedokument",
   "action": {
     "createFactbox": "Skapa faktaruta"
   },
