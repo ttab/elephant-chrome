@@ -66,12 +66,12 @@ export const withArticleFactboxes = async <T extends HitV1>({ hits, session, ind
   // Use articleId:embedded:index as id since links.uuid is not available in the index.
   for (const article of articles) {
     if (article.fields['workflow_state']?.values[0] !== 'usable') continue
-    
+
     const titles = article.fields['document.content.core_factbox.title']?.values ?? []
     const texts = article.fields['document.content.core_factbox.content.core_text.data.text']?.values ?? []
     const modified = article.fields['modified']?.values ?? []
     const originalFactboxId = article.fields['document.content.core_factbox.rel.source.uuid']?.values[0] ?? ''
-  
+
     // Build one entry per embedded factbox (index-aligned across the arrays)
     const count = Math.max(titles.length, 1)
     for (let i = 0; i < count; i++) {
