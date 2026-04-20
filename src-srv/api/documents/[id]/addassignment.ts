@@ -44,7 +44,7 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
   } = req.body as {
     planningId?: string
     planningTitle?: string
-    type: 'flash' | 'text'
+    type: 'flash' | 'text' | 'timeless'
     deliverableId: string
     title: string
     slugline?: string

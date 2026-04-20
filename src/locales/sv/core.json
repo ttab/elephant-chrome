@@ -20,7 +20,8 @@
     "category": "Kategori",
     "action": "Action",
     "story": "Story",
-    "showOlder": "Visa äldre"
+    "showOlder": "Visa äldre",
+    "slugline": "Slugg"
   },
   "status": {
     "draft": "Utkast",

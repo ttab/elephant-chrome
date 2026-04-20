@@ -20,7 +20,8 @@
     "category": "Category",
     "action": "Action",
     "story": "Story",
-    "showOlder": "Show older"
+    "showOlder": "Show older",
+    "slugline": "Slugline"
   },
   "status": {
     "draft": "Draft",

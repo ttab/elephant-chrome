@@ -14,7 +14,7 @@ const BASE_URL = import.meta.env.BASE_URL || ''
 export async function addAssignmentWithDeliverable(payload: {
   planningId?: string
   planningTitle?: string
-  type: 'flash' | 'text'
+  type: 'flash' | 'text' | 'timeless'
   deliverableId: string
   title: string
   slugline?: string
