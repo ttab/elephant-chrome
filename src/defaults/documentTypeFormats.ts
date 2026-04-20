@@ -93,7 +93,7 @@ const timelessArticle: DocumentTypeFormat = {
   'core/article#timeless': {
     icon: BookmarkIcon,
     get label() { return i18n.t('shared:assignmentTypes.timeless') },
-    key: 'TimelessArticle',
+    key: 'Editor',
     color: '#7C6F9C',
     readonly: {
       icon: PenOffIcon

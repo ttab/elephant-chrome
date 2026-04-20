@@ -1,8 +1,9 @@
 import { type MouseEvent, type JSX, useState } from 'react'
 import { DotMenu, type DotDropdownMenuActionItem } from '@/components/ui/DotMenu'
-import { ExternalLinkIcon, RefreshCwIcon } from '@ttab/elephant-ui/icons'
+import { CalendarDaysIcon, RefreshCwIcon } from '@ttab/elephant-ui/icons'
 import { ConvertToArticleDialog } from '@/components/ConvertToArticleDialog'
 import { useConvertArticleType } from '@/hooks/useConvertArticleType'
+import { useDeliverableInfo } from '@/hooks/useDeliverableInfo'
 import { useLink } from '@/hooks/useLink'
 import { useTranslation } from 'react-i18next'
 
@@ -19,12 +20,16 @@ export function TimelessRowActions({
   const { t } = useTranslation(['views', 'common'])
   const [dialogOpen, setDialogOpen] = useState(false)
   const openEditor = useLink('Editor')
+  const openPlanning = useLink('Planning')
+  const planningId = useDeliverableInfo(documentId)?.planningUuid ?? ''
   const isUsed = status === 'used'
 
-  const handleOpenNewTab = (event: MouseEvent<HTMLDivElement>) => {
+  const handleOpenPlanning = (event: MouseEvent<HTMLDivElement>) => {
     event.preventDefault()
     event.stopPropagation()
-    window.open(`${import.meta.env.BASE_URL}/editor?id=${documentId}`, '_blank')
+    if (planningId) {
+      openPlanning(undefined, { id: planningId })
+    }
   }
 
   const handleConvert = (event: MouseEvent<HTMLDivElement>) => {
@@ -35,9 +40,10 @@ export function TimelessRowActions({
 
   const menuItems: DotDropdownMenuActionItem[] = [
     {
-      label: t('views:timeless.actions.openNewTab'),
-      icon: ExternalLinkIcon,
-      item: handleOpenNewTab
+      label: t('views:timeless.actions.openPlanning'),
+      icon: CalendarDaysIcon,
+      disabled: !planningId,
+      item: handleOpenPlanning
     },
     {
       label: t('views:timeless.actions.convertToArticle'),
