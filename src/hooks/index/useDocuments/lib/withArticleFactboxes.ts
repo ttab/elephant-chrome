@@ -6,7 +6,7 @@ import type { Index } from '@/shared/Index'
 type withArticleFactboxFields = [
   'document.content.core_factbox.title',
   'document.content.core_factbox.content.core_text.data.text',
-  'document.content.core_factbox.links.uuid',
+  'document.content.core_factbox.rel.source.uuid',
   'workflow_state',
   'modified'
 ]
@@ -28,7 +28,7 @@ export const withArticleFactboxes = async <T extends HitV1>({ hits, session, ind
     fields: [
       'document.content.core_factbox.title',
       'document.content.core_factbox.content.core_text.data.text',
-      'document.content.core_factbox.links.uuid',
+      'document.content.core_factbox.rel.source.uuid',
       'workflow_state',
       'modified'
     ],
@@ -63,21 +63,19 @@ export const withArticleFactboxes = async <T extends HitV1>({ hits, session, ind
 
   // Build synthetic factbox hits from the embedded factbox data in each article.
   // Only include factboxes from published (usable) articles.
-  // Use links.uuid as id when available so they deduplicate against standalone factboxes,
-  // otherwise fall back to articleId:embedded.
+  // Use articleId:embedded:index as id since links.uuid is not available in the index.
   for (const article of articles) {
     if (article.fields['workflow_state']?.values[0] !== 'usable') continue
-
-    const uuids = article.fields['document.content.core_factbox.links.uuid']?.values ?? []
+    
     const titles = article.fields['document.content.core_factbox.title']?.values ?? []
     const texts = article.fields['document.content.core_factbox.content.core_text.data.text']?.values ?? []
     const modified = article.fields['modified']?.values ?? []
-
+    const originalFactboxId = article.fields['document.content.core_factbox.rel.source.uuid']?.values[0] ?? ''
+  
     // Build one entry per embedded factbox (index-aligned across the arrays)
-    const count = Math.max(uuids.length, titles.length, 1)
-
+    const count = Math.max(titles.length, 1)
     for (let i = 0; i < count; i++) {
-      const id = uuids[i] ?? `${article.id}:embedded:${i}`
+      const id = `${article.id}:embedded:${i}`
       if (existingIds.has(id)) continue
       if (searchFilter) {
         const title = String(titles[i] ?? '').toLowerCase()
@@ -96,7 +94,8 @@ export const withArticleFactboxes = async <T extends HitV1>({ hits, session, ind
           modified: { values: modified },
           current_version: { values: ['0'] },
           'heads.usable.version': { values: [] },
-          _document_origin: { values: ['core/article'] }
+          _document_origin: { values: ['core/article'] },
+          _document_origin_id: { values: [originalFactboxId] }
         }
       } as unknown as T)
     }

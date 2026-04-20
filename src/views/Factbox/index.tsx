@@ -57,7 +57,6 @@ const Factbox = (props: ViewProps & { document?: Document }): JSX.Element => {
 
     void repository.getDocument({ uuid: articleId, accessToken: session.accessToken }).then((response) => {
       if (!response?.document) return
-      console.log(response)
       const factboxBlocks = response.document.content.filter((block) => block.type === 'core/factbox')
       const block = factboxBlocks[embeddedIndex]
 
