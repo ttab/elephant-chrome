@@ -92,7 +92,7 @@
     },
     "actions": {
       "new": "New timeless",
-      "openNewTab": "Open in new tab",
+      "openPlanning": "Open original planning",
       "convertToArticle": "Convert to article"
     },
     "placeholders": {

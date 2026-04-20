@@ -92,7 +92,7 @@
     },
     "actions": {
       "new": "Ny tidløs",
-      "openNewTab": "Åpne i ny fane",
+      "openPlanning": "Åpne opprinnelig planlegging",
       "convertToArticle": "Konverter til artikkel"
     },
     "placeholders": {

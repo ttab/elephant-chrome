@@ -92,7 +92,7 @@
     },
     "actions": {
       "new": "Ny tidlös",
-      "openNewTab": "Öppna i ny flik",
+      "openPlanning": "Öppna ursprunglig planering",
       "convertToArticle": "Konvertera till artikel"
     },
     "placeholders": {
