@@ -20,9 +20,7 @@ import type { VariantProps } from 'class-variance-authority'
 import type { QueryParams } from '@/hooks/useQuery'
 import { useLink } from '@/hooks/useLink'
 import { useRegistry } from '@/hooks/useRegistry'
-import { useSession } from 'next-auth/react'
-import { createNewTimelessArticle } from './lib/createNewTimelessArticle'
-import { toast } from 'sonner'
+import { CreateTimelessArticlePrompt } from './CreateTimelessArticlePrompt'
 import { useTranslation } from 'react-i18next'
 import type { TFunction } from 'i18next'
 
@@ -65,9 +63,8 @@ const AddButton = ({
 
 export const AddButtonGroup = ({ docType = 'core/planning-item', query }: { type: View, query: QueryParams, docType?: string }) => {
   const { showModal, hideModal } = useModal()
-  const { repository, featureFlags } = useRegistry()
-  const openTimelessArticle = useLink('TimelessArticle')
-  const { data: session } = useSession()
+  const { featureFlags } = useRegistry()
+  const openEditor = useLink('Editor')
   const { t } = useTranslation()
   const hasHast = !!featureFlags.hasHast
 
@@ -83,13 +80,18 @@ export const AddButtonGroup = ({ docType = 'core/planning-item', query }: { type
     const ViewDialog = Views[view.name]
     const id = crypto.randomUUID()
 
-    if (view.name === 'TimelessArticle') {
-      createNewTimelessArticle(repository, session, id)
-        .then((id) => openTimelessArticle(undefined, { id }, undefined))
-        .catch((error: unknown) => {
-          console.error('Error creating timeless article:', error)
-          toast.error((error as Error).message)
-        })
+    if (view.type === 'core/article#timeless' && showModal) {
+      showModal(
+        <CreateTimelessArticlePrompt
+          id={id}
+          onClose={(createdId) => {
+            hideModal()
+            if (createdId) {
+              openEditor(undefined, { id: createdId }, undefined)
+            }
+          }}
+        />
+      )
     } else if (showModal) {
       const initialDocument = getTemplateFromView(view.name, { useHast: hasHast })(id, { query })
       showModal(

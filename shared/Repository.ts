@@ -443,6 +443,40 @@ export class Repository {
   }
 
   /**
+   * Atomically create two new documents. Used for the "+ Timeless article"
+   * flow which creates both a timeless article and a planning that references
+   * it as a deliverable — saving them together avoids an orphan timeless if
+   * the planning save fails.
+   */
+  async createDocumentPair({ documents, accessToken }: {
+    documents: [Document, Document]
+    accessToken: string
+  }): Promise<BulkUpdateResponse> {
+    try {
+      const { response } = await this.#client.bulkUpdate({
+        updates: documents.map((document) => ({
+          uuid: document.uuid,
+          document,
+          meta: {},
+          ifMatch: -1n, // Only create if doesn't exist
+          status: [],
+          acl: [{ uri: 'core://unit/redaktionen', permissions: ['r', 'w'] }],
+          updateMetaDocument: false,
+          lockToken: '',
+          ifWorkflowState: '',
+          ifStatusHeads: {},
+          attachObjects: {},
+          detachObjects: []
+        }))
+      }, meta(accessToken))
+
+      return response
+    } catch (err: unknown) {
+      throw new Error(`Unable to create document pair: ${(err as Error)?.message || 'Unknown error'}`)
+    }
+  }
+
+  /**
    * Save a newsdoc to repository
    *
    * @param yDoc Y.Doc
