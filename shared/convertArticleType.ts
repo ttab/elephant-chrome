@@ -1,16 +1,12 @@
 import { Block, Document } from '@ttab/elephant-api/newsdoc'
 import type { ValidationResult } from '@ttab/elephant-api/repository'
 import type { Repository } from './Repository.js'
-import { planningDocumentTemplate } from './templates/planningDocumentTemplate.js'
 
 export type ArticleType = 'core/article' | 'core/article#timeless'
 
 export interface ArticleConversionResult {
-  /** The new document to be created (with new UUID) */
   newDocument: Document
-  /** The source document UUID (to be marked as "used") */
   sourceUuid: string
-  /** Validation errors from pruning (warnings, not blockers) */
   errors: ValidationResult[]
 }
 
@@ -66,9 +62,7 @@ export async function prepareArticleConversion(
 /**
  * Clone a planning for timeless→article conversion. Assignments are dropped
  * because the caller adds exactly one new assignment pointing at the derived
- * article. The planning schema currently has no allowed rel for a back-link
- * to the source planning, so the clone is not persistently linked — the
- * trace runs article→source timeless→original planning instead.
+ * article.
  */
 export function deriveNewPlanning({
   sourcePlanning,
@@ -100,26 +94,3 @@ export function deriveNewPlanning({
   })
 }
 
-/**
- * Build a blank planning for timeless→article conversion when the timeless
- * article has no associated planning to derive from. Seeds `core/newsvalue`
- * with `"3"` because the planning schema requires exactly one newsvalue with
- * an integer-parseable `value`, and the default template leaves it empty.
- */
-export function buildFallbackPlanning({
-  newUuid,
-  title,
-  targetDate
-}: {
-  newUuid: string
-  title?: string
-  targetDate: string
-}): Document {
-  return planningDocumentTemplate(newUuid, {
-    title,
-    query: { from: targetDate },
-    meta: {
-      'core/newsvalue': [Block.create({ type: 'core/newsvalue', value: '3' })]
-    }
-  })
-}

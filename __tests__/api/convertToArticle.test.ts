@@ -177,7 +177,10 @@ describe('POST /api/documents/:id/convertToArticle — input validation', () => 
   it('returns 500 when repository.getDocument rejects for the source', async () => {
     const ctx = makeContext()
     ctx.repository.getDocument.mockRejectedValue(new Error('repo down'))
-    const req = makeRequest({ id: VALID_SOURCE_ID, body: { targetDate: '2026-05-15' } })
+    const req = makeRequest({
+      id: VALID_SOURCE_ID,
+      body: { targetDate: '2026-05-15', sourcePlanningId: VALID_PLANNING_ID }
+    })
 
     const result = await POST(req as never, ctx as never)
     expect(result).toMatchObject({
@@ -190,7 +193,10 @@ describe('POST /api/documents/:id/convertToArticle — input validation', () => 
     const timeless = makeTimelessSource()
     const ctx = makeContext({ sourceDoc: timeless })
     ctx.repository.pruneDocument.mockRejectedValue(new Error('prune boom'))
-    const req = makeRequest({ id: VALID_SOURCE_ID, body: { targetDate: '2026-05-15' } })
+    const req = makeRequest({
+      id: VALID_SOURCE_ID,
+      body: { targetDate: '2026-05-15', sourcePlanningId: VALID_PLANNING_ID }
+    })
 
     const result = await POST(req as never, ctx as never)
     expect(result).toMatchObject({
@@ -231,10 +237,21 @@ describe('POST /api/documents/:id/convertToArticle — input validation', () => 
 
   it('returns 404 when source document is not found', async () => {
     const ctx = makeContext({ sourceDoc: undefined })
-    const req = makeRequest({ id: VALID_SOURCE_ID, body: { targetDate: '2026-05-15' } })
+    const req = makeRequest({
+      id: VALID_SOURCE_ID,
+      body: { targetDate: '2026-05-15', sourcePlanningId: VALID_PLANNING_ID }
+    })
 
     const result = await POST(req as never, ctx as never)
     expect(result).toMatchObject({ statusCode: 404, statusMessage: /Source document/i })
+  })
+
+  it('returns 400 when sourcePlanningId is missing', async () => {
+    const ctx = makeContext()
+    const req = makeRequest({ id: VALID_SOURCE_ID, body: { targetDate: '2026-05-15' } })
+
+    const result = await POST(req as never, ctx as never)
+    expect(result).toMatchObject({ statusCode: 400, statusMessage: /sourcePlanningId/i })
   })
 
   it('returns 400 when source document is not core/article#timeless', async () => {

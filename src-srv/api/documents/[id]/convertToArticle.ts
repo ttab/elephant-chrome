@@ -6,7 +6,6 @@ import {
   appendDocumentToAssignment
 } from '../../../../shared/createYItem.js'
 import {
-  buildFallbackPlanning,
   deriveNewPlanning,
   prepareArticleConversion
 } from '@/shared/convertArticleType.js'
@@ -66,8 +65,8 @@ export const POST: RouteHandler = async (
     }
   }
 
-  if (sourcePlanningId !== undefined && !isValidUUID(sourcePlanningId)) {
-    return { statusCode: 400, statusMessage: 'Invalid sourcePlanningId' }
+  if (!sourcePlanningId || !isValidUUID(sourcePlanningId)) {
+    return { statusCode: 400, statusMessage: 'sourcePlanningId is required' }
   }
 
   try {
@@ -108,36 +107,27 @@ export const POST: RouteHandler = async (
     }
 
     const newPlanningId = crypto.randomUUID()
-    let newPlanning: Document
 
-    if (sourcePlanningId) {
-      const sourcePlanningResponse = await repository.getDocument({
-        uuid: sourcePlanningId,
-        accessToken
-      }).catch((ex: unknown) => {
-        throw new Error(`fetch source planning ${sourcePlanningId}`, { cause: ex })
-      })
-      if (!sourcePlanningResponse?.document) {
-        return { statusCode: 404, statusMessage: 'Source planning not found' }
-      }
-      if (!planningReferencesArticle(sourcePlanningResponse.document, sourceId)) {
-        return {
-          statusCode: 400,
-          statusMessage: 'sourcePlanningId does not reference the source article'
-        }
-      }
-      newPlanning = deriveNewPlanning({
-        sourcePlanning: sourcePlanningResponse.document,
-        targetDate,
-        newUuid: newPlanningId
-      })
-    } else {
-      newPlanning = buildFallbackPlanning({
-        newUuid: newPlanningId,
-        title: sourceDoc.title,
-        targetDate
-      })
+    const sourcePlanningResponse = await repository.getDocument({
+      uuid: sourcePlanningId,
+      accessToken
+    }).catch((ex: unknown) => {
+      throw new Error(`fetch source planning ${sourcePlanningId}`, { cause: ex })
+    })
+    if (!sourcePlanningResponse?.document) {
+      return { statusCode: 404, statusMessage: 'Source planning not found' }
     }
+    if (!planningReferencesArticle(sourcePlanningResponse.document, sourceId)) {
+      return {
+        statusCode: 400,
+        statusMessage: 'sourcePlanningId does not reference the source article'
+      }
+    }
+    const newPlanning = deriveNewPlanning({
+      sourcePlanning: sourcePlanningResponse.document,
+      targetDate,
+      newUuid: newPlanningId
+    })
 
     const assignmentIso = `${targetDate}T09:00:00Z`
 

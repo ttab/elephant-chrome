@@ -52,6 +52,9 @@ export function ConvertToArticleDialog({ timelessId, onClose }: Props): JSX.Elem
   const formattedTarget = format(targetDate, 'yyyy-MM-dd')
 
   const handleConfirm = () => {
+    if (!sourcePlanningId) {
+      return
+    }
     setFailed(false)
     void convert(timelessId, {
       targetType: 'core/article',
@@ -81,7 +84,7 @@ export function ConvertToArticleDialog({ timelessId, onClose }: Props): JSX.Elem
       description={t(descriptionKey)}
       primaryLabel={t('common:actions.confirm')}
       secondaryLabel={t('common:actions.abort')}
-      disablePrimary={isConverting || planningLoading}
+      disablePrimary={isConverting || planningLoading || !sourcePlanningId}
       onPrimary={handleConfirm}
       onSecondary={() => onClose()}
     >
