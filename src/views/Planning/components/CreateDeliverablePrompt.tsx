@@ -1,7 +1,8 @@
 import { Prompt } from '@/components'
+import { TimelessCategorySelect } from '@/components/TimelessCategorySelect'
 import type { TemplatePayload } from '@/shared/templates/'
 import { useSession } from 'next-auth/react'
-import { useRegistry, useTimelessCategories } from '@/hooks'
+import { useRegistry } from '@/hooks'
 import { toast } from 'sonner'
 import { getTemplateFromDeliverable } from '@/shared/templates/lib/getTemplateFromDeliverable'
 import type { YDocument } from '@/modules/yjs/hooks'
@@ -9,8 +10,7 @@ import type * as Y from 'yjs'
 import type { JSX } from 'react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Block } from '@ttab/elephant-api/newsdoc'
-import { Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@ttab/elephant-ui'
+import type { Block } from '@ttab/elephant-api/newsdoc'
 
 /**
  * Deliverable document creation dialog, responsible for creating articles and flashes in the repository.
@@ -30,10 +30,6 @@ export function CreateDeliverablePrompt({ ydoc, deliverableType, payload, onClos
   const [isCreating, setIsCreating] = useState(false)
   const { t } = useTranslation()
   const [selectedCategory, setSelectedCategory] = useState<Block | undefined>()
-  const allCategories = useTimelessCategories().map((cat) => ({
-    value: cat.id,
-    label: cat.title
-  }))
 
   if (!ydoc.provider?.document || !session?.accessToken || !repository) {
     console.error('CreateDeliverablePrompt: Missing required dependencies', {
@@ -107,36 +103,10 @@ export function CreateDeliverablePrompt({ ydoc, deliverableType, payload, onClos
       }}
     >
       {deliverableType === 'timeless' && (
-        <div className='flex flex-col gap-2'>
-          <Label className='text-sm text-muted-foreground'>
-            {t('views:timeless.columnLabels.category')}
-          </Label>
-          <Select
-            value={selectedCategory?.uuid}
-            onValueChange={(value) => {
-              const cat = allCategories.find((c) => c.value === value)
-              if (cat) {
-                setSelectedCategory(Block.create({
-                  type: 'core/timeless-category',
-                  rel: 'subject',
-                  uuid: cat.value,
-                  title: cat.label
-                }))
-              }
-            }}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder={t('views:timeless.placeholders.addCategory')} />
-            </SelectTrigger>
-            <SelectContent>
-              {allCategories.map((cat) => (
-                <SelectItem key={cat.value} value={cat.value}>
-                  {cat.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        <TimelessCategorySelect
+          value={selectedCategory}
+          onChange={setSelectedCategory}
+        />
       )}
     </Prompt>
   )
