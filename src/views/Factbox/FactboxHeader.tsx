@@ -24,11 +24,11 @@ export const FactboxHeader = ({ ydoc, onDialogClose, asDialog }: {
         asDialog={asDialog}
       />
       <ViewHeader.Content className='justify-start'>
-        <div className='max-w-[750px] mx-auto flex flex-row gap-1 justify-between items-center w-full'>
+        <div className='mx-auto flex flex-row gap-1 justify-between items-center w-full'>
           <div className='flex flex-row gap-2 justify-end items-center @6xl/view:-ml-20'>
           </div>
 
-          <div className='flex flex-row gap-2 justify-start items-center'>
+          <div className='flex flex-row gap-4 justify-start items-center'>
             {!asDialog && (
               <>
                 <StatusMenu
