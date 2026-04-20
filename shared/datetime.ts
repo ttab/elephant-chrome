@@ -35,20 +35,6 @@ export function convertToISOStringInTimeZone(localDate: Date, timeZone: string):
 }
 
 /**
- * Produce the (timezone-aware local date, UTC ISO datetime without
- * milliseconds) pair that the planning/addassignment APIs expect.
- */
-export function getAssignmentDateTime(
-  date: Date,
-  timeZone: string
-): { localDate: string, isoDateTime: string } {
-  return {
-    localDate: convertToISOStringInTimeZone(date, timeZone).slice(0, 10),
-    isoDateTime: `${date.toISOString().split('.')[0]}Z`
-  }
-}
-
-/**
 * Format a iso string to a human readable date and time.
 * @param date Date
 * @param locale string

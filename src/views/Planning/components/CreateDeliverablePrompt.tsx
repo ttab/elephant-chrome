@@ -1,5 +1,5 @@
 import { Prompt } from '@/components'
-import { TimelessCategorySelect } from '@/components/TimelessCategorySelect'
+import { TimelessCategorySelect } from '@/components/TimelessCategory'
 import type { TemplatePayload } from '@/shared/templates/'
 import { useSession } from 'next-auth/react'
 import { useRegistry } from '@/hooks'

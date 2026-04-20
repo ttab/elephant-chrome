@@ -1,6 +1,6 @@
 import { type JSX, useCallback, useState } from 'react'
 import { Prompt } from '@/components'
-import { TimelessCategorySelect } from '@/components/TimelessCategorySelect'
+import { TimelessCategorySelect } from '@/components/TimelessCategory'
 import { useSession } from 'next-auth/react'
 import { useRegistry, useSections } from '@/hooks'
 import { toast } from 'sonner'
@@ -19,7 +19,7 @@ import {
 } from '@ttab/elephant-ui'
 import { CircleXIcon } from '@ttab/elephant-ui/icons'
 import { Newsvalues } from '@/defaults'
-import { getAssignmentDateTime } from '@/shared/datetime'
+import { convertToISOStringInTimeZone } from '@/shared/datetime'
 import { fetch as fetchPlannings } from '@/lib/index/fetch-plannings-twirp'
 import { addAssignmentWithDeliverable } from '@/lib/index/addAssignment'
 import type { DefaultValueOption } from '@/types'
@@ -67,7 +67,9 @@ export const CreateTimelessArticlePrompt = ({ id, onClose }: {
     }
     setIsCreating(true)
 
-    const { localDate, isoDateTime } = getAssignmentDateTime(new Date(), timeZone)
+    const now = new Date()
+    const localDate = convertToISOStringInTimeZone(now, timeZone).slice(0, 10)
+    const isoDateTime = `${now.toISOString().split('.')[0]}Z`
 
     const planningContext = selectedPlanning
       ? { planningId: selectedPlanning.value, slugline: selectedPlanning.payload.slugline }
