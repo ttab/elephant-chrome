@@ -6,7 +6,6 @@ import { Textbit } from '@ttab/textbit'
 import { useSession } from 'next-auth/react'
 import { getValueByYPath } from '@/shared/yUtils'
 import { Form, UserMessage, View } from '@/components'
-import { ViewHeader } from '@/components/View'
 import { FactboxHeader } from './FactboxHeader'
 import { Error as ErrorView } from '@/views/Error'
 import { useEffect, useMemo, useState, type JSX } from 'react'
@@ -22,11 +21,7 @@ import { cn } from '@ttab/elephant-ui/utils'
 import { DocumentHistory } from '@/components/DocumentHistory/DocumentHistory'
 import { type DocumentState, getDocumentState } from '@/lib/getDocumentState'
 import { Editor as PlainEditor } from '@/components/PlainEditor'
-
 import { useTranslation } from 'react-i18next'
-import { documentTypeValueFormat } from '@/defaults/documentTypeFormats'
-import { InfoText } from './components/InfoText'
-
 const meta: ViewMetadata = {
   name: 'Factbox',
   path: `${import.meta.env.BASE_URL || ''}/factbox`,
@@ -56,13 +51,13 @@ const Factbox = (props: ViewProps & { document?: Document }): JSX.Element => {
   const articleId = embeddedMatch?.[1]
   const embeddedIndex = embeddedMatch ? parseInt(embeddedMatch[2]) : null
   const documentId = embeddedMatch ? articleId : rawId
-
   // If this is an embedded factbox, fetch the article and extract the factbox block
   useEffect(() => {
     if (!articleId || embeddedIndex === null || !repository || !session?.accessToken) return
 
     void repository.getDocument({ uuid: articleId, accessToken: session.accessToken }).then((response) => {
       if (!response?.document) return
+      console.log(response)
       const factboxBlocks = response.document.content.filter((block) => block.type === 'core/factbox')
       const block = factboxBlocks[embeddedIndex]
 
@@ -121,9 +116,8 @@ const Factbox = (props: ViewProps & { document?: Document }): JSX.Element => {
 }
 
 const EmbeddedFactboxView = (props: ViewProps & { data?: EleDocumentResponse }): JSX.Element => {
-  const { t } = useTranslation('factbox')
-  const Icon = documentTypeValueFormat?.['core/factbox']?.icon
-
+  const articleId = props?.data?.document?.uuid
+  const originalId = props.data?.document?.links._?.[0]?.uuid
   const configuredPlugins = useMemo(() => [
     UnorderedList(),
     OrderedList(),
@@ -139,17 +133,12 @@ const EmbeddedFactboxView = (props: ViewProps & { data?: EleDocumentResponse }):
 
   return (
     <View.Root asDialog={props.asDialog} className={props?.className}>
-      <ViewHeader.Root asDialog={!!props.asDialog} className='flex justify-between'>
-        <ViewHeader.Title
-          name='Factbox'
-          title={t('title')}
-          icon={Icon}
-          asDialog={!!props.asDialog}
-        />
-        <ViewHeader.Action onDialogClose={props.onDialogClose} asDialog={!!props.asDialog} />
-      </ViewHeader.Root>
-      <InfoText originalId='12345' />
-
+      <FactboxHeader
+        onDialogClose={props.onDialogClose}
+        asDialog={!!props?.asDialog}
+        articleId={articleId}
+        originalId={originalId}
+      />
       <div className='flex flex-col w-full max-w-[1000px] mx-auto'>
         <View.Content className='flex flex-col max-w-[1000px]'>
           <p className={cn('text-lg font-bold pt-2 ps-12 pe-12')}>

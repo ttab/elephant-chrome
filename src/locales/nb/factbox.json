@@ -1,10 +1,13 @@
 {
   "title": "Faktaboks",
   "action": {
-    "createFactbox": "Ny faktaboks"
+    "createFactbox": "Ny faktaboks",
+    "openArticle": "Oppne artikkel",
+    "openOriginal": "Oppne original"
   },
   "prompts": {
     "approveBeforeClose": "Vil du godkjenne endringene før du lukker?",
     "savedButNotApproved": "Endringene er lagret, men faktaboksen er ikke godkjent."
-  }
+  },
+  "lockedToArticle": ""
 }
