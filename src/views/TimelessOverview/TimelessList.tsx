@@ -10,7 +10,7 @@ import { useUserTracker } from '@/hooks/useUserTracker'
 import { timelessParams } from '@/hooks/index/useDocuments/queries/views/timeless'
 import { columnFilterToQuery } from '@/lib/loadFilters'
 
-export const TimelessResult = ({ columns }: {
+export const TimelessList = ({ columns }: {
   columns: ColumnDef<TimelessArticle, unknown>[]
 }): JSX.Element => {
   const [filter] = useQuery()
@@ -18,9 +18,6 @@ export const TimelessResult = ({ columns }: {
   const [, setSavedFilters] = useUserTracker<QueryParams | undefined>('filters.Timeless.current')
   const columnFilters = table.getState().columnFilters
 
-  // Persist filter changes so they survive page refresh. Matches the
-  // "saved user filter" mechanism used elsewhere but runs automatically
-  // instead of requiring an explicit save action.
   useEffect(() => {
     setSavedFilters(columnFilterToQuery(columnFilters))
   }, [columnFilters, setSavedFilters])
@@ -34,8 +31,6 @@ export const TimelessResult = ({ columns }: {
     }
   })
 
-  // Presence of this prop gates Table's open-on-click behaviour
-  // (see Table/index.tsx — early-returns when onRowSelected is absent).
   const onRowSelected = useCallback(() => {}, [])
 
   return (

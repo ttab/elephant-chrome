@@ -8,7 +8,7 @@ import { TableCommandMenu } from '@/components/Commands/TableCommand'
 import { Commands } from '@/components/Commands'
 import { createTimelessColumns } from './lib/createTimelessColumns'
 import type { TimelessArticle } from '@/shared/schemas/timelessArticle'
-import { TimelessResult } from './TimelessResult'
+import { TimelessList } from './TimelessList'
 import { useQuery } from '@/hooks/useQuery'
 import { useInitFilters } from '@/hooks/useInitFilters'
 import { useRegistry } from '@/hooks/useRegistry'
@@ -84,7 +84,7 @@ export const Timeless = (): JSX.Element => {
 
         <View.Content>
           <TabsContent value='list' className='mt-0'>
-            <TimelessResult columns={columns} />
+            <TimelessList columns={columns} />
           </TabsContent>
         </View.Content>
       </TableProvider>
