@@ -387,44 +387,50 @@ export class Repository {
   }
 
   /**
-   * Atomically create a new document and set status on source document.
-   * Used for article type conversion where we create a derived document
-   * and mark the source as "used".
+   * Atomically create a new document, optionally a companion planning, and
+   * mark the source as "used". Used for article type conversion — the
+   * timeless→article direction passes a newPlanning (to own the new article
+   * as a deliverable); the reverse direction omits it.
    *
-   * @param newDocument - The new document to create
+   * @param newDocument - The derived document to create
+   * @param newPlanning - Optional companion planning (for timeless→article)
    * @param sourceUuid - UUID of the source document to mark as "used"
    * @param accessToken - The access token
-   * @returns BulkUpdateResponse with results for both operations
+   * @returns BulkUpdateResponse with results for all operations
    */
-  async createDerivedDocument({ newDocument, sourceUuid, accessToken }: {
+  async createDerivedDocument({ newDocument, newPlanning, sourceUuid, sourceVersion, accessToken }: {
     newDocument: Document
+    newPlanning?: Document
     sourceUuid: string
+    sourceVersion: bigint
     accessToken: string
   }): Promise<BulkUpdateResponse> {
+    const createUpdate = (doc: Document) => ({
+      uuid: doc.uuid,
+      document: doc,
+      meta: {},
+      ifMatch: -1n, // Only create if doesn't exist
+      status: [],
+      acl: [{ uri: 'core://unit/redaktionen', permissions: ['r', 'w'] }],
+      updateMetaDocument: false,
+      lockToken: '',
+      ifWorkflowState: '',
+      ifStatusHeads: {},
+      attachObjects: {},
+      detachObjects: []
+    })
+
     try {
       const { response } = await this.#client.bulkUpdate({
         updates: [
-          // Create the new document
-          {
-            uuid: newDocument.uuid,
-            document: newDocument,
-            meta: {},
-            ifMatch: -1n, // Only create if doesn't exist
-            status: [], // Start with no status (draft)
-            acl: [{ uri: 'core://unit/redaktionen', permissions: ['r', 'w'] }],
-            updateMetaDocument: false,
-            lockToken: '',
-            ifWorkflowState: '',
-            ifStatusHeads: {},
-            attachObjects: {},
-            detachObjects: []
-          },
+          createUpdate(newDocument),
+          ...(newPlanning ? [createUpdate(newPlanning)] : []),
           // Set source document status to "used"
           {
             uuid: sourceUuid,
             meta: {},
             ifMatch: 0n, // No optimistic lock on status update
-            status: [{ name: 'used', version: 0n, meta: {}, ifMatch: 0n }],
+            status: [{ name: 'used', version: sourceVersion, meta: {}, ifMatch: 0n }],
             acl: [],
             updateMetaDocument: false,
             lockToken: '',

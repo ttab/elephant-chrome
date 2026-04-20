@@ -100,7 +100,6 @@
     },
     "toasts": {
       "convertedSuccess": "Tidløs artikkel konvertert",
-      "convertedSourceNotMarkedUsed": "Konvertert, men kildestatusen kunne ikke oppdateres",
       "conversionFailed": "Konverteringen mislyktes: {{message}}",
       "notAuthenticated": "Kan ikke konvertere: ikke innlogget",
       "documentNotFound": "Dokumentet ble ikke funnet",

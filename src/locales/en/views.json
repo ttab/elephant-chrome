@@ -100,7 +100,6 @@
     },
     "toasts": {
       "convertedSuccess": "Timeless article converted",
-      "convertedSourceNotMarkedUsed": "Converted, but the source status could not be updated",
       "conversionFailed": "Conversion failed: {{message}}",
       "notAuthenticated": "Unable to convert: not authenticated",
       "documentNotFound": "Document not found",

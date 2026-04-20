@@ -1,13 +1,16 @@
 import { useCallback, useState } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRegistry } from './useRegistry'
-import { prepareArticleConversion } from '@/shared/convertArticleType'
+import {
+  attachArticleAssignment,
+  deriveNewPlanning,
+  planningReferencesArticle,
+  prepareArticleConversion
+} from '@/shared/convertArticleType'
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
 import { CalendarDaysIcon, PenBoxIcon } from '@ttab/elephant-ui/icons'
 import { ToastAction } from '@/components/ToastAction'
-
-const BASE_URL = import.meta.env.BASE_URL || ''
 
 export type ConvertArgs
   = | { targetType: 'core/article#timeless' }
@@ -25,7 +28,6 @@ export type ConversionResult
       kind: 'article'
       newDocumentId: string
       newPlanningId: string
-      warnings: string[]
     }
 
 interface UseConvertArticleTypeResult {
@@ -34,9 +36,11 @@ interface UseConvertArticleTypeResult {
 }
 
 /**
- * Converts an article between its regular and timeless variants. The
- * timeless→article direction delegates to the server because it also needs to
- * derive a new planning; the reverse direction stays client-side.
+ * Convert an article between its regular and timeless variants. Both
+ * directions run client-side via `repository.createDerivedDocument`
+ * (atomic bulkUpdate). Timeless→article additionally carries a companion
+ * planning in the same bulkUpdate so the derived article is owned as a
+ * deliverable from the first moment it exists.
  */
 export function useConvertArticleType(): UseConvertArticleTypeResult {
   const { repository } = useRegistry()
@@ -58,55 +62,87 @@ export function useConvertArticleType(): UseConvertArticleTypeResult {
 
     try {
       if (args.targetType === 'core/article') {
-        const res = await fetch(`${BASE_URL}/api/documents/${documentId}/convertToArticle`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            targetDate: args.targetDate,
-            sourcePlanningId: args.sourcePlanningId
-          })
-        })
-
-        const payload = (await res.json().catch(() => null)) as
-          | {
-            articleId?: string
-            planningId?: string
-            warnings?: string[]
-            error?: string
-            statusMessage?: string
-          }
-          | null
-
-        if (!res.ok || !payload?.articleId || !payload?.planningId) {
-          const message = payload?.error
-            ?? payload?.statusMessage
-            ?? `HTTP ${res.status}`
-          if (payload?.articleId && !payload.planningId) {
-            console.warn(
-              `Orphan article created during failed conversion: ${payload.articleId}`
-            )
-          }
-          toast.error(t('views:timeless.toasts.conversionFailed', { message }))
+        if (!args.sourcePlanningId) {
+          toast.error(t('views:timeless.toasts.conversionFailed', {
+            message: 'missing sourcePlanningId'
+          }))
           return { success: false }
         }
 
-        const warnings = payload.warnings ?? []
-        const title = warnings.includes('source-not-marked-used')
-          ? t('views:timeless.toasts.convertedSourceNotMarkedUsed')
-          : t('views:timeless.toasts.convertedSuccess')
+        const sourceResponse = await repository.getDocument({
+          uuid: documentId,
+          accessToken
+        })
+        if (!sourceResponse?.document) {
+          toast.error(t('views:timeless.toasts.documentNotFound'))
+          return { success: false }
+        }
+        if (sourceResponse.document.type !== 'core/article#timeless') {
+          toast.error(t('views:timeless.toasts.conversionFailed', {
+            message: 'source is not a timeless article'
+          }))
+          return { success: false }
+        }
 
-        toast.success(title, {
+        const planningResponse = await repository.getDocument({
+          uuid: args.sourcePlanningId,
+          accessToken
+        })
+        if (!planningResponse?.document) {
+          toast.error(t('views:timeless.toasts.conversionFailed', {
+            message: 'source planning not found'
+          }))
+          return { success: false }
+        }
+        if (!planningReferencesArticle(planningResponse.document, documentId)) {
+          toast.error(t('views:timeless.toasts.conversionFailed', {
+            message: 'source planning does not reference the timeless article'
+          }))
+          return { success: false }
+        }
+
+        const { newDocument: newArticle, errors } = await prepareArticleConversion(
+          sourceResponse.document,
+          'core/article',
+          repository,
+          accessToken
+        )
+        if (errors.length > 0) {
+          console.warn('Conversion pruning warnings:', errors)
+        }
+
+        const derivedPlanning = deriveNewPlanning({
+          sourcePlanning: planningResponse.document,
+          targetDate: args.targetDate,
+          newUuid: crypto.randomUUID()
+        })
+        const newPlanning = attachArticleAssignment({
+          planning: derivedPlanning,
+          articleId: newArticle.uuid,
+          articleTitle: sourceResponse.document.title ?? '',
+          targetDate: args.targetDate
+        })
+
+        await repository.createDerivedDocument({
+          newDocument: newArticle,
+          newPlanning,
+          sourceUuid: sourceResponse.document.uuid,
+          sourceVersion: sourceResponse.version,
+          accessToken
+        })
+
+        toast.success(t('views:timeless.toasts.convertedSuccess'), {
           action: (
             <div className='flex gap-1'>
               <ToastAction
-                documentId={payload.articleId}
+                documentId={newArticle.uuid}
                 withView='Editor'
                 label={t('views:timeless.toasts.openArticle')}
                 Icon={PenBoxIcon}
                 target='last'
               />
               <ToastAction
-                documentId={payload.planningId}
+                documentId={newPlanning.uuid}
                 withView='Planning'
                 label={t('views:timeless.toasts.openPlanning')}
                 Icon={CalendarDaysIcon}
@@ -119,9 +155,8 @@ export function useConvertArticleType(): UseConvertArticleTypeResult {
         return {
           success: true,
           kind: 'article',
-          newDocumentId: payload.articleId,
-          newPlanningId: payload.planningId,
-          warnings
+          newDocumentId: newArticle.uuid,
+          newPlanningId: newPlanning.uuid
         }
       }
 
@@ -149,6 +184,7 @@ export function useConvertArticleType(): UseConvertArticleTypeResult {
       await repository.createDerivedDocument({
         newDocument,
         sourceUuid,
+        sourceVersion: response.version,
         accessToken
       })
 

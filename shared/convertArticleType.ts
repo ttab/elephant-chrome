@@ -1,6 +1,7 @@
 import { Block, Document } from '@ttab/elephant-api/newsdoc'
 import type { ValidationResult } from '@ttab/elephant-api/repository'
 import type { Repository } from './Repository.js'
+import { assignmentPlanningTemplate } from './templates/assignmentPlanningTemplate.js'
 
 export type ArticleType = 'core/article' | 'core/article#timeless'
 
@@ -94,3 +95,74 @@ export function deriveNewPlanning({
   })
 }
 
+/**
+ * Append a `core/assignment` block to the planning that owns the article as a
+ * `rel='deliverable'`. Returns a new Document proto; does not mutate.
+ */
+export function attachArticleAssignment({
+  planning,
+  articleId,
+  articleTitle,
+  targetDate
+}: {
+  planning: Document
+  articleId: string
+  articleTitle: string
+  targetDate: string
+}): Document {
+  const assignmentIso = `${targetDate}T09:00:00Z`
+  // Inherit the planning's slugline onto the assignment. If the planning has
+  // no slugline the Repository will reject — that's the correct failure mode,
+  // since every planning is supposed to carry one.
+  const slugline = planning.meta.find((m) => m.type === 'tt/slugline')?.value
+
+  const assignment = assignmentPlanningTemplate({
+    assignmentType: 'text',
+    planningDate: targetDate,
+    title: articleTitle,
+    slugLine: slugline,
+    assignee: null,
+    assignmentData: {
+      public: 'true',
+      start: assignmentIso,
+      end: assignmentIso,
+      start_date: targetDate,
+      end_date: targetDate
+    }
+  })
+
+  // The template seeds a blank core/description placeholder; Repository
+  // validation rejects empty text — strip it and let it be added later via
+  // the UI if needed.
+  const cleanedMeta = assignment.meta.filter((block) =>
+    !(block.type === 'core/description' && !block.data?.text?.trim())
+  )
+
+  const assignmentWithDeliverable = Block.create({
+    ...assignment,
+    meta: cleanedMeta,
+    links: [
+      ...assignment.links,
+      Block.create({
+        type: 'core/article',
+        uuid: articleId,
+        rel: 'deliverable'
+      })
+    ]
+  })
+
+  return Document.create({
+    ...planning,
+    meta: [...planning.meta, assignmentWithDeliverable]
+  })
+}
+
+/**
+ * Does this planning own `articleId` as a deliverable via any assignment?
+ */
+export function planningReferencesArticle(planning: Document, articleId: string): boolean {
+  return planning.meta.some((block) =>
+    block.type === 'core/assignment'
+    && block.links.some((link) => link.rel === 'deliverable' && link.uuid === articleId)
+  )
+}
