@@ -4,7 +4,7 @@ import { createNewAssignment } from '@/shared/createYItem'
 import { useAuthors, useNavigationKeys } from '@/hooks'
 import { Assignment } from './Assignment'
 import type { MouseEvent, KeyboardEvent } from 'react'
-import { useMemo, useState, type JSX } from 'react'
+import { useMemo, useRef, useState, type JSX } from 'react'
 import { Button } from '@ttab/elephant-ui'
 import { useActiveAuthor } from '@/hooks/useActiveAuthor'
 import { snapshotDocument } from '@/lib/snapshotDocument'
@@ -36,6 +36,7 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId }: {
   const [selectedId, setSelectedId] = useState<string | undefined>(undefined)
   const [newAssignment] = useYValue<EleBlock>(ydoc.ctx, `core/assignment.${session?.user.sub || ''}`)
   const [focusedRowIndex, setFocusedRowIndex] = useState<number | undefined>()
+  const addButtonRef = useRef<HTMLButtonElement>(null)
   const author = useActiveAuthor({ full: false })
   const authors = useAuthors()
   const { t } = useTranslation()
@@ -110,11 +111,14 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId }: {
           toast.error(t('errors:messages.saveAssignmentError'))
         })
     }
+
+    requestAnimationFrame(() => addButtonRef.current?.focus())
   }
 
   const handleAbort = () => {
     if (!session) return
     (ydoc.ctx.get('core/assignment') as Y.Map<unknown>).delete(session.user.sub)
+    requestAnimationFrame(() => addButtonRef.current?.focus())
   }
 
   useNavigationKeys({
@@ -133,6 +137,7 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId }: {
       <div className='flex flex-col pt-2 text-primary pb-4'>
         <div className='pl-2'>
           <Button
+            ref={addButtonRef}
             disabled={newAssignment !== undefined || !ydoc.connected}
             variant='ghost'
             onKeyDown={(event: KeyboardEvent<HTMLButtonElement>) => event.key === 'Enter'
