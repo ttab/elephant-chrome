@@ -7,20 +7,22 @@ import type * as Y from 'yjs'
 import { useConvertArticleType } from '@/hooks/useConvertArticleType'
 import { useLink } from '@/hooks/useLink'
 import { ConvertToArticleDialog } from './ConvertToArticleDialog'
+import { ConvertToTimelessDialog } from './ConvertToTimelessDialog'
 
 /**
- * Convert button for article ↔ timeless article.
- * Timeless→article needs a target date + source planning (goes through
- * ConvertToArticleDialog); article→timeless is a one-click operation.
+ * Convert button for article ↔ timeless article. Both directions go
+ * through a dialog: timeless→article needs a target date + source planning,
+ * article→timeless needs a subject category.
  */
 export const ArticleTypeConversion = ({ ydoc, documentType }: {
   ydoc: YDocument<Y.Map<unknown>>
   documentType: string | undefined
 }): JSX.Element | null => {
   const { t } = useTranslation('metaSheet')
-  const { convert, isConverting } = useConvertArticleType()
+  const { isConverting } = useConvertArticleType()
   const openEditor = useLink('Editor')
-  const [dialogOpen, setDialogOpen] = useState(false)
+  const [toArticleOpen, setToArticleOpen] = useState(false)
+  const [toTimelessOpen, setToTimelessOpen] = useState(false)
 
   if (documentType !== 'core/article' && documentType !== 'core/article#timeless') {
     return null
@@ -35,7 +37,7 @@ export const ArticleTypeConversion = ({ ydoc, documentType }: {
           variant='outline'
           size='sm'
           disabled={isConverting}
-          onClick={() => setDialogOpen(true)}
+          onClick={() => setToArticleOpen(true)}
         >
           <RefreshCwIcon size={14} strokeWidth={1.75} className={iconClassName} />
           {t('actions.convertToArticle')}
@@ -46,19 +48,30 @@ export const ArticleTypeConversion = ({ ydoc, documentType }: {
           variant='outline'
           size='sm'
           disabled={isConverting}
-          onClick={() => void convert(ydoc.id, { targetType: 'core/article#timeless' })}
+          onClick={() => setToTimelessOpen(true)}
         >
           <RefreshCwIcon size={14} strokeWidth={1.75} className={iconClassName} />
           {t('actions.convertToTimeless')}
         </Button>
       )}
-      {dialogOpen && (
+      {toArticleOpen && (
         <ConvertToArticleDialog
           timelessId={ydoc.id}
           onClose={(result) => {
-            setDialogOpen(false)
+            setToArticleOpen(false)
             if (result?.articleId) {
               openEditor(undefined, { id: result.articleId })
+            }
+          }}
+        />
+      )}
+      {toTimelessOpen && (
+        <ConvertToTimelessDialog
+          articleId={ydoc.id}
+          onClose={(result) => {
+            setToTimelessOpen(false)
+            if (result?.timelessId) {
+              openEditor(undefined, { id: result.timelessId })
             }
           }}
         />

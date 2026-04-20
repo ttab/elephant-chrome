@@ -388,21 +388,25 @@ export class Repository {
 
   /**
    * Atomically create a new document, optionally a companion planning, and
-   * mark the source as "used". Used for article type conversion — the
-   * timeless→article direction passes a newPlanning (to own the new article
-   * as a deliverable); the reverse direction omits it.
-   *
-   * @param newDocument - The derived document to create
-   * @param newPlanning - Optional companion planning (for timeless→article)
-   * @param sourceUuid - UUID of the source document to mark as "used"
-   * @param accessToken - The access token
-   * @returns BulkUpdateResponse with results for all operations
+   * optionally update the source document's status. Used for article type
+   * conversion — the timeless→article direction passes a newPlanning (to own
+   * the new article as a deliverable) and marks the source timeless as
+   * "used"; the reverse direction omits both because the article workflow
+   * doesn't carry a "used" status.
    */
-  async createDerivedDocument({ newDocument, newPlanning, sourceUuid, sourceVersion, accessToken }: {
+  async createDerivedDocument({
+    newDocument,
+    newPlanning,
+    sourceStatusUpdate,
+    accessToken
+  }: {
     newDocument: Document
     newPlanning?: Document
-    sourceUuid: string
-    sourceVersion: bigint
+    sourceStatusUpdate?: {
+      uuid: string
+      name: string
+      version: bigint
+    }
     accessToken: string
   }): Promise<BulkUpdateResponse> {
     const createUpdate = (doc: Document) => ({
@@ -420,25 +424,33 @@ export class Repository {
       detachObjects: []
     })
 
+    const statusUpdate = sourceStatusUpdate
+      ? [{
+          uuid: sourceStatusUpdate.uuid,
+          meta: {},
+          ifMatch: 0n, // No optimistic lock on status update
+          status: [{
+            name: sourceStatusUpdate.name,
+            version: sourceStatusUpdate.version,
+            meta: {},
+            ifMatch: 0n
+          }],
+          acl: [],
+          updateMetaDocument: false,
+          lockToken: '',
+          ifWorkflowState: '',
+          ifStatusHeads: {},
+          attachObjects: {},
+          detachObjects: []
+        }]
+      : []
+
     try {
       const { response } = await this.#client.bulkUpdate({
         updates: [
           createUpdate(newDocument),
           ...(newPlanning ? [createUpdate(newPlanning)] : []),
-          // Set source document status to "used"
-          {
-            uuid: sourceUuid,
-            meta: {},
-            ifMatch: 0n, // No optimistic lock on status update
-            status: [{ name: 'used', version: sourceVersion, meta: {}, ifMatch: 0n }],
-            acl: [],
-            updateMetaDocument: false,
-            lockToken: '',
-            ifWorkflowState: '',
-            ifStatusHeads: {},
-            attachObjects: {},
-            detachObjects: []
-          }
+          ...statusUpdate
         ]
       }, meta(accessToken))
 
@@ -627,8 +639,9 @@ export class Repository {
   }
 
   /**
-   * Prune a document to remove invalid parts while preserving what remains valid.
-   * Useful for document type conversion (e.g., article to timeless-article).
+   * Prune a document against its type schema, stripping fields that aren't
+   * valid. Used for timeless→article conversion where the article schema is
+   * stricter than timeless.
    */
   async pruneDocument(document: Document, accessToken: string): Promise<{
     document: Document

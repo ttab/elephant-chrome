@@ -63,13 +63,15 @@ type GetDocumentMock = ReturnType<typeof vi.fn<(args: { uuid: string }) => Promi
 function primeRegistryWithRepository(repositoryOverrides?: Record<string, unknown>): {
   getDocument: GetDocumentMock
   createDerivedDocument: ReturnType<typeof vi.fn>
+  getDeliverableInfo: ReturnType<typeof vi.fn>
 } {
   const getDocument: GetDocumentMock = vi.fn()
   const createDerivedDocument = vi.fn().mockResolvedValue(undefined)
+  const getDeliverableInfo = vi.fn().mockResolvedValue(null)
   mockUseRegistry.mockReturnValue({
-    repository: { getDocument, createDerivedDocument, ...repositoryOverrides }
+    repository: { getDocument, createDerivedDocument, getDeliverableInfo, ...repositoryOverrides }
   } as never)
-  return { getDocument, createDerivedDocument }
+  return { getDocument, createDerivedDocument, getDeliverableInfo }
 }
 
 describe('useConvertArticleType', () => {
@@ -79,10 +81,9 @@ describe('useConvertArticleType', () => {
       data: { accessToken: 'abc123' },
       status: 'authenticated'
     } as never)
-    mockPrepareArticleConversion.mockResolvedValue({
-      newDocument: { uuid: NEW_ARTICLE_UUID, type: 'core/article' },
-      sourceUuid: TIMELESS_ID,
-      errors: []
+    mockPrepareArticleConversion.mockReturnValue({
+      newDocument: { uuid: NEW_ARTICLE_UUID, type: 'core/article', links: [] },
+      sourceUuid: TIMELESS_ID
     } as never)
     mockDeriveNewPlanning.mockReturnValue({ uuid: NEW_PLANNING_UUID } as never)
     mockAttachArticleAssignment.mockImplementation((args) => ({
@@ -135,10 +136,13 @@ describe('useConvertArticleType', () => {
 
     const { result } = renderHook(() => useConvertArticleType())
 
-    const outcome = await result.current.convert(TIMELESS_ID, {
-      targetType: 'core/article',
-      targetDate: '2026-05-15',
-      sourcePlanningId: PLANNING_ID
+    let outcome!: Awaited<ReturnType<typeof result.current.convert>>
+    await act(async () => {
+      outcome = await result.current.convert(TIMELESS_ID, {
+        targetType: 'core/article',
+        targetDate: '2026-05-15',
+        sourcePlanningId: PLANNING_ID
+      })
     })
 
     expect(outcome).toEqual({ success: false })
@@ -153,10 +157,13 @@ describe('useConvertArticleType', () => {
 
     const { result } = renderHook(() => useConvertArticleType())
 
-    const outcome = await result.current.convert(TIMELESS_ID, {
-      targetType: 'core/article',
-      targetDate: '2026-05-15',
-      sourcePlanningId: PLANNING_ID
+    let outcome!: Awaited<ReturnType<typeof result.current.convert>>
+    await act(async () => {
+      outcome = await result.current.convert(TIMELESS_ID, {
+        targetType: 'core/article',
+        targetDate: '2026-05-15',
+        sourcePlanningId: PLANNING_ID
+      })
     })
 
     expect(outcome).toEqual({ success: false })
@@ -179,10 +186,13 @@ describe('useConvertArticleType', () => {
 
     const { result } = renderHook(() => useConvertArticleType())
 
-    const outcome = await result.current.convert(TIMELESS_ID, {
-      targetType: 'core/article',
-      targetDate: '2026-05-15',
-      sourcePlanningId: PLANNING_ID
+    let outcome!: Awaited<ReturnType<typeof result.current.convert>>
+    await act(async () => {
+      outcome = await result.current.convert(TIMELESS_ID, {
+        targetType: 'core/article',
+        targetDate: '2026-05-15',
+        sourcePlanningId: PLANNING_ID
+      })
     })
 
     expect(outcome).toEqual({ success: false })
@@ -207,10 +217,13 @@ describe('useConvertArticleType', () => {
 
     const { result } = renderHook(() => useConvertArticleType())
 
-    const outcome = await result.current.convert(TIMELESS_ID, {
-      targetType: 'core/article',
-      targetDate: '2026-05-15',
-      sourcePlanningId: PLANNING_ID
+    let outcome!: Awaited<ReturnType<typeof result.current.convert>>
+    await act(async () => {
+      outcome = await result.current.convert(TIMELESS_ID, {
+        targetType: 'core/article',
+        targetDate: '2026-05-15',
+        sourcePlanningId: PLANNING_ID
+      })
     })
 
     expect(outcome).toEqual({ success: false })
@@ -252,11 +265,14 @@ describe('useConvertArticleType', () => {
     expect(createDerivedDocument).toHaveBeenCalledWith(expect.objectContaining<{
       newDocument: unknown
       newPlanning: unknown
-      sourceUuid: unknown
+      sourceStatusUpdate: unknown
     }>({
       newDocument: expect.objectContaining<{ uuid: string }>({ uuid: NEW_ARTICLE_UUID }),
       newPlanning: expect.objectContaining<{ uuid: string }>({ uuid: NEW_PLANNING_UUID }),
-      sourceUuid: TIMELESS_ID
+      sourceStatusUpdate: expect.objectContaining<{ uuid: string, name: string }>({
+        uuid: TIMELESS_ID,
+        name: 'used'
+      })
     }))
     expect(toast.success).toHaveBeenCalledWith(
       'Tidlös artikel konverterad',
@@ -302,19 +318,26 @@ describe('useConvertArticleType', () => {
     getDocument.mockResolvedValue({
       document: { uuid: ARTICLE_ID, type: 'core/article' }
     })
-    const newDocument = { uuid: 'new-uuid', type: 'core/article#timeless' }
-    mockPrepareArticleConversion.mockResolvedValue({
+    const newDocument = { uuid: 'new-uuid', type: 'core/article#timeless', links: [] }
+    mockPrepareArticleConversion.mockReturnValue({
       newDocument,
-      sourceUuid: ARTICLE_ID,
-      errors: []
+      sourceUuid: ARTICLE_ID
     } as never)
 
     const { result } = renderHook(() => useConvertArticleType())
 
+    const category = {
+      type: 'core/timeless-category',
+      rel: 'subject',
+      uuid: 'cat-uuid',
+      title: 'Culture'
+    } as never
+
     let outcome!: Awaited<ReturnType<typeof result.current.convert>>
     await act(async () => {
       outcome = await result.current.convert(ARTICLE_ID, {
-        targetType: 'core/article#timeless'
+        targetType: 'core/article#timeless',
+        category
       })
     })
 
@@ -323,10 +346,12 @@ describe('useConvertArticleType', () => {
       kind: 'timeless',
       newDocumentId: 'new-uuid'
     })
-    expect(createDerivedDocument).toHaveBeenCalledWith(expect.objectContaining({
-      newDocument,
-      sourceUuid: ARTICLE_ID
-    }))
+    const [[call]] = createDerivedDocument.mock.calls
+    expect(call).toMatchObject<{ newDocument: { uuid: string } }>({
+      newDocument: { uuid: 'new-uuid' }
+    })
+    // article → timeless must NOT mark the source — core/article has no "used" status.
+    expect(call).not.toHaveProperty('sourceStatusUpdate')
     expect(toast.success).toHaveBeenCalledWith(
       'Tidlös artikel konverterad',
       expect.objectContaining<{ action: unknown }>({ action: expect.anything() })

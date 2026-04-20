@@ -28,6 +28,9 @@
     "converting": "Converting...",
     "failed": "Conversion failed. Try again or cancel."
   },
+  "convertToTimeless": {
+    "description": "Pick a subject category for the new timeless article."
+  },
   "removeHastPrompt": {
     "title": "Remove HAST from article",
     "description": "This removes HAST and makes it a normal article. Future versions will not be sent as HAST unless you enable it again.",

@@ -52,6 +52,7 @@ import { RelatedWires } from './RelatedWires'
 import { useFeatureFlags } from '@/hooks/useFeatureFlags'
 import { useConvertArticleType } from '@/hooks/useConvertArticleType'
 import { ConvertToArticleDialog } from '@/components/ConvertToArticleDialog'
+import { ConvertToTimelessDialog } from '@/components/ConvertToTimelessDialog'
 
 export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDialog }: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -68,7 +69,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
   const { data: session } = useSession()
   const { t } = useTranslation()
   const featureFlags = useFeatureFlags(['hasPrint', 'hasHast'])
-  const { convert: convertArticleType, isConverting } = useConvertArticleType()
+  const { isConverting } = useConvertArticleType()
 
   const base = `meta.core/assignment[${index}]`
   const [assignment] = useYValue<Y.Map<unknown>>(ydoc.ele, base, true)
@@ -319,7 +320,17 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
           disabled: isConverting || articleStatus?.meta?.workflowState === 'used',
           icon: RefreshCwIcon,
           item: () => {
-            void convertArticleType(documentId, { targetType: 'core/article#timeless' })
+            showModal(
+              <ConvertToTimelessDialog
+                articleId={documentId}
+                onClose={(result) => {
+                  hideModal()
+                  if (result?.timelessId) {
+                    openArticle(undefined, { id: result.timelessId })
+                  }
+                }}
+              />
+            )
           }
         }]
       : [])

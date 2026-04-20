@@ -1,5 +1,4 @@
 import { Block, Document } from '@ttab/elephant-api/newsdoc'
-import type { ValidationResult } from '@ttab/elephant-api/repository'
 import type { Repository } from './Repository.js'
 import { assignmentPlanningTemplate } from './templates/assignmentPlanningTemplate.js'
 
@@ -8,55 +7,63 @@ export type ArticleType = 'core/article' | 'core/article#timeless'
 export interface ArticleConversionResult {
   newDocument: Document
   sourceUuid: string
-  errors: ValidationResult[]
 }
 
 /**
- * Prune the source document against the target type and build a new document
- * with a fresh UUID plus a rel='source' link back to the original. The caller
- * is responsible for persisting the new document and marking the source as
- * "used" atomically (see Repository.createDerivedDocument).
+ * Build a new article-family document from the source with the target type,
+ * a fresh UUID, and a rel='source' link back to the original.
+ *
+ * Direction semantics:
+ * - timeless → article: prunes via Repository. Article is the stricter
+ *   schema so any timeless-only fields get stripped.
+ * - article → timeless: skips prune. Timeless is structurally compatible
+ *   with article so the content transfers as-is plus the required
+ *   core/timeless-category (passed via extraLinks).
  */
-export async function prepareArticleConversion(
-  sourceDocument: Document,
-  targetType: ArticleType,
-  repository: Repository,
+export async function prepareArticleConversion({
+  sourceDocument,
+  targetType,
+  repository,
+  accessToken,
+  extraLinks = []
+}: {
+  sourceDocument: Document
+  targetType: ArticleType
+  repository: Repository
   accessToken: string
-): Promise<ArticleConversionResult> {
+  extraLinks?: Block[]
+}): Promise<ArticleConversionResult> {
   if (sourceDocument.type === targetType) {
     throw new Error(`Document is already of type ${targetType}`)
   }
 
   const docWithTargetType = Document.create({
     ...sourceDocument,
-    type: targetType
+    type: targetType,
+    links: [...sourceDocument.links, ...extraLinks]
   })
 
-  const { document: prunedDoc, errors } = await repository.pruneDocument(
-    docWithTargetType,
-    accessToken
-  )
+  const basis = targetType === 'core/article'
+    ? (await repository.pruneDocument(docWithTargetType, accessToken)).document
+    : docWithTargetType
 
   const newUuid = crypto.randomUUID()
 
-  const newDocument = Document.create({
-    ...prunedDoc,
-    uuid: newUuid,
-    uri: `core://article/${newUuid}`,
-    links: [
-      ...prunedDoc.links,
-      Block.create({
-        type: 'core/article',
-        uuid: sourceDocument.uuid,
-        rel: 'source'
-      })
-    ]
-  })
-
   return {
-    newDocument,
-    sourceUuid: sourceDocument.uuid,
-    errors
+    newDocument: Document.create({
+      ...basis,
+      uuid: newUuid,
+      uri: `core://article/${newUuid}`,
+      links: [
+        ...basis.links,
+        Block.create({
+          type: 'core/article',
+          uuid: sourceDocument.uuid,
+          rel: 'source'
+        })
+      ]
+    }),
+    sourceUuid: sourceDocument.uuid
   }
 }
 
@@ -166,3 +173,4 @@ export function planningReferencesArticle(planning: Document, articleId: string)
     && block.links.some((link) => link.rel === 'deliverable' && link.uuid === articleId)
   )
 }
+

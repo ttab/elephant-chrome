@@ -41,6 +41,7 @@
   "changeTypeConfirm": "Er du sikker på at du vil endre informasjonstypen?",
   "derivedFrom": "Opprettet fra",
   "derivedFromTimelessLink": "tidløs artikkel",
+  "derivedFromArticleLink": "artikkel",
   "derivedFromConnector": "og",
   "derivedFromPlanningLink": "planlegging"
 }

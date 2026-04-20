@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { Block, Document } from '@ttab/elephant-api/newsdoc'
 import {
   deriveNewPlanning,
@@ -28,14 +28,16 @@ describe('prepareArticleConversion', () => {
     })
 
     await expect(
-      prepareArticleConversion(doc, 'core/article#timeless', mockRepository, 'token')
+      prepareArticleConversion({
+        sourceDocument: doc,
+        targetType: 'core/article#timeless',
+        repository: mockRepository,
+        accessToken: 'token'
+      })
     ).rejects.toThrow('Document is already of type core/article#timeless')
-
-    // eslint-disable-next-line @typescript-eslint/unbound-method
-    expect(mockRepository.pruneDocument).not.toHaveBeenCalled()
   })
 
-  it('creates new document with fresh UUID when converting article to timeless', async () => {
+  it('skips prune for article → timeless (content transfers as-is + extraLinks)', async () => {
     const sourceDoc = Document.create({
       uuid: 'source-uuid',
       type: 'core/article',
@@ -45,59 +47,51 @@ describe('prepareArticleConversion', () => {
       links: []
     })
 
-    const prunedDoc = Document.create({
-      uuid: 'source-uuid', // Prune returns same UUID
-      type: 'core/article#timeless',
-      uri: 'core://article/source-uuid',
-      language: 'sv-se',
-      title: 'Test Article',
-      links: []
+    const category = Block.create({
+      type: 'core/timeless-category',
+      rel: 'subject',
+      uuid: 'cat-uuid',
+      title: 'Culture'
+    })
+
+    const result = await prepareArticleConversion({
+      sourceDocument: sourceDoc,
+      targetType: 'core/article#timeless',
+      repository: mockRepository,
+      accessToken: 'token',
+      extraLinks: [category]
     })
 
     // eslint-disable-next-line @typescript-eslint/unbound-method
-    vi.mocked(mockRepository.pruneDocument).mockResolvedValue({
-      document: prunedDoc,
-      errors: []
-    })
+    expect(mockRepository.pruneDocument).not.toHaveBeenCalled()
 
-    const result = await prepareArticleConversion(
-      sourceDoc,
-      'core/article#timeless',
-      mockRepository,
-      'token'
-    )
-
-    // Should have called prune with target type
-    // eslint-disable-next-line @typescript-eslint/unbound-method
-    expect(mockRepository.pruneDocument).toHaveBeenCalledWith(
-      expect.objectContaining({ type: 'core/article#timeless' }),
-      'token'
-    )
-
-    // New document should have fresh UUID
     expect(result.newDocument.uuid).toBe('new-uuid-12345')
     expect(result.newDocument.uri).toBe('core://article/new-uuid-12345')
     expect(result.newDocument.type).toBe('core/article#timeless')
-
-    // Should include source UUID for status update
+    expect(result.newDocument.title).toBe('Test Article')
     expect(result.sourceUuid).toBe('source-uuid')
 
-    // Should have link back to source document
-    const sourceLink = result.newDocument.links.find(
-      (link) => link.rel === 'source' && link.uuid === 'source-uuid'
-    )
-    expect(sourceLink).toBeDefined()
-    expect(sourceLink?.type).toBe('core/article')
+    expect(result.newDocument.links.find((l) => l.type === 'core/timeless-category'))
+      .toMatchObject({ uuid: 'cat-uuid', rel: 'subject' })
+    expect(result.newDocument.links.find((l) => l.rel === 'source'))
+      .toMatchObject({ type: 'core/article', uuid: 'source-uuid' })
   })
 
-  it('creates new document when converting timeless to article', async () => {
+  it('prunes for timeless → article (strips timeless-only fields)', async () => {
     const sourceDoc = Document.create({
       uuid: 'timeless-uuid',
       type: 'core/article#timeless',
       uri: 'core://article/timeless-uuid',
       language: 'sv-se',
       title: 'Timeless Article',
-      links: []
+      links: [
+        Block.create({
+          type: 'core/timeless-category',
+          rel: 'subject',
+          uuid: 'cat-uuid',
+          title: 'Culture'
+        })
+      ]
     })
 
     const prunedDoc = Document.create({
@@ -115,10 +109,16 @@ describe('prepareArticleConversion', () => {
       errors: []
     })
 
-    const result = await prepareArticleConversion(
-      sourceDoc,
-      'core/article',
-      mockRepository,
+    const result = await prepareArticleConversion({
+      sourceDocument: sourceDoc,
+      targetType: 'core/article',
+      repository: mockRepository,
+      accessToken: 'token'
+    })
+
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    expect(mockRepository.pruneDocument).toHaveBeenCalledWith(
+      expect.objectContaining<{ type: string }>({ type: 'core/article' }),
       'token'
     )
 
@@ -126,16 +126,11 @@ describe('prepareArticleConversion', () => {
     expect(result.newDocument.type).toBe('core/article')
     expect(result.sourceUuid).toBe('timeless-uuid')
 
-    // Link back to source (always typed as core/article because the schema
-    // only allows that type for rel=source on article documents)
-    const sourceLink = result.newDocument.links.find(
-      (link) => link.rel === 'source' && link.uuid === 'timeless-uuid'
-    )
-    expect(sourceLink).toBeDefined()
-    expect(sourceLink?.type).toBe('core/article')
+    expect(result.newDocument.links.find((l) => l.rel === 'source'))
+      .toMatchObject({ type: 'core/article', uuid: 'timeless-uuid' })
   })
 
-  it('preserves existing links and adds source link', async () => {
+  it('preserves existing links and adds source link (article → timeless)', async () => {
     const sourceDoc = Document.create({
       uuid: 'source-uuid',
       type: 'core/article',
@@ -147,87 +142,15 @@ describe('prepareArticleConversion', () => {
       ]
     })
 
-    const prunedDoc = Document.create({
-      uuid: 'source-uuid',
-      type: 'core/article#timeless',
-      uri: 'core://article/source-uuid',
-      language: 'sv-se',
-      title: 'Test',
-      links: [
-        { type: 'core/story', uuid: 'story-uuid', rel: 'subject', uri: '', url: '', title: '' }
-      ]
+    const result = await prepareArticleConversion({
+      sourceDocument: sourceDoc,
+      targetType: 'core/article#timeless',
+      repository: mockRepository,
+      accessToken: 'token'
     })
 
-    // eslint-disable-next-line @typescript-eslint/unbound-method
-    vi.mocked(mockRepository.pruneDocument).mockResolvedValue({
-      document: prunedDoc,
-      errors: []
-    })
-
-    const result = await prepareArticleConversion(
-      sourceDoc,
-      'core/article#timeless',
-      mockRepository,
-      'token'
-    )
-
-    // Should have original link + source link
-    expect(result.newDocument.links).toHaveLength(2)
-    expect(result.newDocument.links.find((l) => l.rel === 'subject')).toBeDefined()
-    expect(result.newDocument.links.find((l) => l.rel === 'source')).toBeDefined()
-  })
-
-  it('returns validation errors from prune', async () => {
-    const doc = Document.create({
-      uuid: 'test-uuid',
-      type: 'core/article#timeless',
-      uri: 'core://article/test-uuid',
-      language: 'sv-se',
-      title: 'Test',
-      links: []
-    })
-
-    const prunedDoc = Document.create({
-      uuid: 'test-uuid',
-      type: 'core/article',
-      uri: 'core://article/test-uuid',
-      language: 'sv-se',
-      title: 'Test',
-      links: []
-    })
-
-    const errors = [{ entity: [], error: 'Removed invalid block' }]
-
-    // eslint-disable-next-line @typescript-eslint/unbound-method
-    vi.mocked(mockRepository.pruneDocument).mockResolvedValue({
-      document: prunedDoc,
-      errors
-    })
-
-    const result = await prepareArticleConversion(doc, 'core/article', mockRepository, 'token')
-
-    expect(result.errors).toEqual(errors)
-    // Errors are warnings, conversion still succeeds
-    expect(result.newDocument).toBeDefined()
-  })
-
-  it('propagates errors from pruneDocument', async () => {
-    const doc = Document.create({
-      uuid: 'test-uuid',
-      type: 'core/article',
-      uri: 'core://article/test-uuid',
-      language: 'sv-se',
-      title: 'Test'
-    })
-
-    // eslint-disable-next-line @typescript-eslint/unbound-method
-    vi.mocked(mockRepository.pruneDocument).mockRejectedValue(
-      new Error('Prune API returned empty document')
-    )
-
-    await expect(
-      prepareArticleConversion(doc, 'core/article#timeless', mockRepository, 'token')
-    ).rejects.toThrow('Prune API returned empty document')
+    expect(result.newDocument.links.find((l) => l.rel === 'subject')?.uuid).toBe('story-uuid')
+    expect(result.newDocument.links.find((l) => l.rel === 'source')?.uuid).toBe('source-uuid')
   })
 })
 
@@ -351,8 +274,6 @@ describe('deriveNewPlanning', () => {
 
     expect(result.links.find((l) => l.rel === 'section')?.uuid).toBe('section-uuid')
     expect(result.links.find((l) => l.rel === 'story')?.uuid).toBe('story-uuid')
-    // Schema has no allowed rel for a back-link to the source planning.
     expect(result.links).toHaveLength(2)
   })
 })
-

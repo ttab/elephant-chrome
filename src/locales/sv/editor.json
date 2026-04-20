@@ -41,6 +41,7 @@
   "changeTypeConfirm": "Är du säker på att du vill ändra typ av info?",
   "derivedFrom": "Skapad från",
   "derivedFromTimelessLink": "tidlös artikel",
+  "derivedFromArticleLink": "artikel",
   "derivedFromConnector": "och",
   "derivedFromPlanningLink": "planering"
 }

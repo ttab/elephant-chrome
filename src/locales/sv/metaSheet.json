@@ -28,6 +28,9 @@
     "converting": "Konverterar...",
     "failed": "Konverteringen misslyckades. Försök igen eller avbryt."
   },
+  "convertToTimeless": {
+    "description": "Välj en kategori för den nya tidlösa artikeln."
+  },
   "removeHastPrompt": {
     "title": "Ta bort HAST från artikeln",
     "description": "Detta tar bort HAST och gör det till en vanlig artikel. Framtida versioner skickas inte som HAST om du inte aktiverar det igen.",

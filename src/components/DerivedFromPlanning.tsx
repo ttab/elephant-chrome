@@ -19,12 +19,19 @@ export function DerivedFromPlanning({
 }): JSX.Element {
   const { t } = useTranslation()
   const [articleLinks] = useYValue<Block[]>(ydoc.ele, 'links.core/article')
+  const [currentType] = useYValue<string>(ydoc.ele, 'root.type')
   const source = articleLinks?.find((link) => link.rel === 'source')
   const sourcePlanningId = useDeliverableInfo(source?.uuid ?? '')?.planningUuid
 
   if (!source?.uuid) {
     return <></>
   }
+
+  // Article ↔ timeless is the only conversion that leaves a rel='source'
+  // back-link, so the source type is the opposite of the current type.
+  const sourceLinkLabel = currentType === 'core/article#timeless'
+    ? t('editor:derivedFromArticleLink')
+    : t('editor:derivedFromTimelessLink')
 
   return (
     <div className='flex items-center gap-1.5 px-4 py-2 text-sm text-muted-foreground border-b'>
@@ -36,7 +43,7 @@ export function DerivedFromPlanning({
         target='last'
         className='underline hover:text-foreground'
       >
-        {t('editor:derivedFromTimelessLink')}
+        {sourceLinkLabel}
       </Link>
       {sourcePlanningId && (
         <>

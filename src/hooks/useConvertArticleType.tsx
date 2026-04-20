@@ -7,13 +7,15 @@ import {
   planningReferencesArticle,
   prepareArticleConversion
 } from '@/shared/convertArticleType'
+import { replaceDeliverable } from '@/lib/index/replaceDeliverable'
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
 import { CalendarDaysIcon, PenBoxIcon } from '@ttab/elephant-ui/icons'
 import { ToastAction } from '@/components/ToastAction'
+import type { Block } from '@ttab/elephant-api/newsdoc'
 
 export type ConvertArgs
-  = | { targetType: 'core/article#timeless' }
+  = | { targetType: 'core/article#timeless', category: Block }
     | {
       targetType: 'core/article'
       targetDate: string
@@ -101,15 +103,12 @@ export function useConvertArticleType(): UseConvertArticleTypeResult {
           return { success: false }
         }
 
-        const { newDocument: newArticle, errors } = await prepareArticleConversion(
-          sourceResponse.document,
-          'core/article',
+        const { newDocument: newArticle } = await prepareArticleConversion({
+          sourceDocument: sourceResponse.document,
+          targetType: 'core/article',
           repository,
           accessToken
-        )
-        if (errors.length > 0) {
-          console.warn('Conversion pruning warnings:', errors)
-        }
+        })
 
         const derivedPlanning = deriveNewPlanning({
           sourcePlanning: planningResponse.document,
@@ -126,8 +125,11 @@ export function useConvertArticleType(): UseConvertArticleTypeResult {
         await repository.createDerivedDocument({
           newDocument: newArticle,
           newPlanning,
-          sourceUuid: sourceResponse.document.uuid,
-          sourceVersion: sourceResponse.version,
+          sourceStatusUpdate: {
+            uuid: sourceResponse.document.uuid,
+            name: 'used',
+            version: sourceResponse.version
+          },
           accessToken
         })
 
@@ -170,22 +172,29 @@ export function useConvertArticleType(): UseConvertArticleTypeResult {
         return { success: false }
       }
 
-      const { newDocument, sourceUuid, errors } = await prepareArticleConversion(
-        response.document,
-        'core/article#timeless',
+      const { newDocument } = await prepareArticleConversion({
+        sourceDocument: response.document,
+        targetType: 'core/article#timeless',
         repository,
-        accessToken
-      )
+        accessToken,
+        // Timeless schema requires exactly one core/timeless-category subject link.
+        extraLinks: [args.category]
+      })
 
-      if (errors.length > 0) {
-        console.warn('Conversion pruning warnings:', errors)
-      }
-
+      // article → timeless: don't touch source status — core/article
+      // workflow doesn't carry a "used" state.
       await repository.createDerivedDocument({
         newDocument,
-        sourceUuid,
-        sourceVersion: response.version,
         accessToken
+      })
+
+      // Re-point any planning that owned the source article onto the new
+      // timeless, and flip the matching assignment's type. Routed via the
+      // server so Hocuspocus sees the change.
+      await replaceDeliverable({
+        fromArticleId: documentId,
+        toArticleId: newDocument.uuid,
+        newAssignmentType: 'timeless'
       })
 
       toast.success(t('views:timeless.toasts.convertedSuccess'), {
