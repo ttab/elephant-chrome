@@ -28,25 +28,7 @@ export function transformOrderedList(element: Block): TBElement {
   return transformList(element, 'core/ordered-list')
 }
 
-export function revertUnorderedList(transformedList: TBElement): Block {
-  return Block.create({
-    id: transformedList.id || crypto.randomUUID(),
-    type: transformedList.type,
-    content: (transformedList.children as TBElement[]).map((item) => {
-      return Block.create({
-        id: toString(item.id),
-        type: 'core/text',
-        data: {
-          text: Array.isArray(item.children) && item.children.length > 0 && typeof item.children[0] === 'object' && 'text' in item.children[0]
-            ? item.children[0].text
-            : ''
-        }
-      })
-    })
-  })
-}
-
-export function revertOrderedList(transformedList: TBElement): Block {
+export function revertList(transformedList: TBElement): Block {
   return Block.create({
     id: transformedList.id || crypto.randomUUID(),
     type: transformedList.type,
