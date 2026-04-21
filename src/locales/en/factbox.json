@@ -2,9 +2,11 @@
   "title": "Factbox",
   "factboxDocument": "Factbox document",
   "lockedToArticle": "Locked to article",
+  "from": "Locked to published",
+  "article": "article",
+  "factbox": "factbox",
   "action": {
     "createFactbox": "Create factbox",
-    "openArticle": "Open article",
     "openOriginal": "Open original"
   },
   "prompts": {

@@ -6,31 +6,16 @@ import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import { useTranslation } from 'react-i18next'
 import { documentTypeValueFormat } from '@/defaults/documentTypeFormats'
-import { FileLockIcon, FileSymlinkIcon, PenBoxIcon } from '@ttab/elephant-ui/icons'
-import { Button } from '@ttab/elephant-ui'
-import { useLink } from '@/hooks/useLink'
+import { PenOffIcon } from '@ttab/elephant-ui/icons'
 
-export const FactboxHeader = ({ ydoc, onDialogClose, asDialog, articleId, originalId }: {
+export const FactboxHeader = ({ ydoc, onDialogClose, asDialog }: {
   ydoc?: YDocument<Y.Map<unknown>>
   asDialog: boolean
   onDialogClose?: () => void
-  articleId?: string
-  originalId?: string
 }): JSX.Element => {
   const { t } = useTranslation('factbox')
-  const Icon = documentTypeValueFormat?.['core/factbox']?.icon
-  const openArticle = useLink('Editor')
-  const openOriginal = useLink('Factbox')
+  const Icon = ydoc ? documentTypeValueFormat?.['core/factbox']?.icon : PenOffIcon
 
-  const openLink = (event: React.MouseEvent, type: 'article' | 'original') => {
-    if (type === 'article' && articleId) {
-      openArticle(event, { id: articleId })
-    } else if (type === 'original' && originalId) {
-      openOriginal(event, { id: originalId })
-    }
-  }
-
-  console.log(articleId, originalId)
   return (
     <ViewHeader.Root asDialog={asDialog}>
       <ViewHeader.Title
@@ -47,44 +32,17 @@ export const FactboxHeader = ({ ydoc, onDialogClose, asDialog, articleId, origin
           <div className='flex flex-row gap-4 justify-start items-center'>
             <>
               {!asDialog && ydoc
-                ? (
-                    <StatusMenu
-                      ydoc={ydoc}
-                    />
-                  )
-                : (
-                    <div className='bg-zink-50 dark:bg-slate-700 text-xs py-1 px-3 border-2 rounded border-slate-200'>
-                      <FileLockIcon className='inline-block w-4 h-4 mr-1' />
-                      {t('lockedToArticle')}
-                    </div>
-                  )}
+                && (
+                  <StatusMenu
+                    ydoc={ydoc}
+                  />
+                )}
             </>
             {!!ydoc && !asDialog && (
               <ViewHeader.RemoteUsers ydoc={ydoc} />
             )}
             <ViewHeader.Action ydoc={ydoc} onDialogClose={onDialogClose} asDialog={asDialog}>
-              {!ydoc && (
-                <>
-                  <Button
-                    variant='ghost'
-                    size='sm'
-                    className='h-9 hover:bg-gray-200 dark:hover:bg-table-focused'
-                    onClick={(e) => articleId && openLink(e, 'article')}
-                    title={t('action.openArticle')}
-                  >
-                    <PenBoxIcon size={16} />
-                  </Button>
-                  <Button
-                    variant='ghost'
-                    size='sm'
-                    className='h-9 hover:bg-gray-200 dark:hover:bg-table-focused'
-                    onClick={(e) => originalId && openLink(e, 'original')}
-                    title={t('action.openOriginal')}
-                  >
-                    <FileSymlinkIcon size={16} />
-                  </Button>
-                </>
-              )}
+              
               { !asDialog && ydoc && (
                 <MetaSheet ydoc={ydoc} />
               )}
