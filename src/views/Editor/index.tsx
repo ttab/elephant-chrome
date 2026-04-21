@@ -17,12 +17,20 @@ import {
 } from '@ttab/textbit-plugins'
 import { ImageSearchPlugin } from '../../plugins/ImageSearch'
 import { FactboxPlugin } from '../../plugins/Factboxes'
+import { createFactboxConsume } from '../../plugins/Factboxes/consume'
 import { Editor as PlainEditor } from '@/components/PlainEditor'
 import { BaseEditor } from '@/components/Editor/BaseEditor'
+import type { TBConsumeFunction, TBConsumesFunction, TBPluginDefinition } from '@ttab/textbit'
+import { useSession } from 'next-auth/react'
+
+type WithConsumer = TBPluginDefinition & {
+  consumer?: { consumes: TBConsumesFunction, consume: TBConsumeFunction }
+}
 
 import {
   useQuery,
   useLink,
+  useRegistry,
   useWorkflowStatus
 } from '@/hooks'
 import type { ViewMetadata, ViewProps } from '@/types'
@@ -117,6 +125,8 @@ function EditorWrapper(props: ViewProps & {
   const openImageSearch = useLink('ImageSearch')
   const openFactboxes = useLink('Factboxes')
   const { t, i18n } = useTranslation()
+  const { repository } = useRegistry()
+  const { data: session } = useSession()
 
   const activeLocale = i18n.resolvedLanguage
 
@@ -147,20 +157,29 @@ function EditorWrapper(props: ViewProps & {
         countCharacters: ['heading-1'],
         ...getContentMenuLabels()
       }),
-      Factbox({
-        headerTitle: t('editor:factbox.headerTitle'),
-        modifiedLabel: t('editor:factbox.modifiedLabel'),
-        footerTitle: t('editor:factbox.footerTitle'),
-        onEditOriginal: (id: string) => {
-          openFactboxEditor(undefined, { id })
-        },
-        removable: !preview,
-        locale: activeLocale,
-        factboxNewTitle: t('editor:factbox.factboxNewTitle'),
-        addSingleLabel: t('editor:factbox.addSingleLabel')
-      })
+      (() => {
+        const plugin = Factbox({
+          headerTitle: t('editor:factbox.headerTitle'),
+          modifiedLabel: t('editor:factbox.modifiedLabel'),
+          footerTitle: t('editor:factbox.footerTitle'),
+          onEditOriginal: (id: string) => {
+            openFactboxEditor(undefined, { id })
+          },
+          removable: !preview,
+          locale: activeLocale,
+          factboxNewTitle: t('editor:factbox.factboxNewTitle'),
+          addSingleLabel: t('editor:factbox.addSingleLabel')
+        }) as WithConsumer
+        return {
+          ...plugin,
+          consumer: plugin.consumer && {
+            ...plugin.consumer,
+            consume: createFactboxConsume(repository, session)
+          }
+        }
+      })()
     ]
-  }, [openFactboxEditor, openFactboxes, openImageSearch, preview, t, activeLocale])
+  }, [openFactboxEditor, openFactboxes, openImageSearch, preview, t, activeLocale, repository, session])
 
   if (!content) {
     return <View.Root />
