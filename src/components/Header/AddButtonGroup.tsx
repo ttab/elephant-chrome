@@ -20,7 +20,7 @@ import type { VariantProps } from 'class-variance-authority'
 import type { QueryParams } from '@/hooks/useQuery'
 import { useLink } from '@/hooks/useLink'
 import { useRegistry } from '@/hooks/useRegistry'
-import { CreateTimelessArticlePrompt } from './CreateTimelessArticlePrompt'
+import { TimelessCreation } from '@/views/TimelessCreation'
 import { useTranslation } from 'react-i18next'
 import type { TFunction } from 'i18next'
 
@@ -82,7 +82,7 @@ export const AddButtonGroup = ({ docType = 'core/planning-item', query }: { type
 
     if (view.type === 'core/article#timeless' && showModal) {
       showModal(
-        <CreateTimelessArticlePrompt
+        <TimelessCreation
           id={id}
           onClose={(createdId) => {
             hideModal()

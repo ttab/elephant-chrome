@@ -15,7 +15,7 @@ interface PickerProps {
   asDialog?: boolean
 }
 
-const CategoryPicker = ({ value, onChange, asDialog }: PickerProps): JSX.Element => {
+export const CategoryPicker = ({ value, onChange, asDialog }: PickerProps): JSX.Element => {
   const { t } = useTranslation()
   const allCategories = useTimelessCategories().map((_) => ({
     value: _.id,
