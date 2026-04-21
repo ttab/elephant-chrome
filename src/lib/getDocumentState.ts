@@ -45,8 +45,8 @@ export function getDocumentState(document: HitV1 | StatusOverviewItem): Document
     usedVersionCreated = document.fields['heads.used.created']?.values[0]
   } else {
     version = Number(document.version)
-    flashVersion = Number(document.heads['flash'].version)
-    flashVersionCreated = document.heads['flash'].created
+    flashVersion = Number(document.heads['flash']?.version)
+    flashVersionCreated = document.heads['flash']?.created
     savedVersion = Number(document.heads['saved']?.version)
     savedVersionCreated = document.heads['saved']?.created
     readVersion = Number(document.heads['read']?.version)

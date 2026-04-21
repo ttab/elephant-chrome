@@ -134,6 +134,5 @@ export const withArticleFactboxes = async <T extends HitV1>({ hits, session, ind
     const bTitle = b.fields['document.title']?.values[0] ?? ''
     return aTitle.localeCompare(bTitle)
   })
-  console.log(result)
   return result
 }
