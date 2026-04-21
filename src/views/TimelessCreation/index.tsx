@@ -134,18 +134,15 @@ export const TimelessCreation = ({ id, onClose }: {
 
   return (
     <View.Root asDialog>
-      <ViewHeader.Root>
-        <ViewHeader.Content>
-          <div className='flex w-full h-full items-center space-x-2 font-bold'>
-            <ViewHeader.Title
-              name='Timeless'
-              title={t('views:timeless.actions.new')}
-              icon={BookmarkIcon}
-              iconColor='#7C6F9C'
-              asDialog
-            />
-          </div>
-        </ViewHeader.Content>
+      <ViewHeader.Root asDialog>
+        <ViewHeader.Title
+          name='Timeless'
+          title={t('views:timeless.actions.new')}
+          icon={BookmarkIcon}
+          iconColor='#7C6F9C'
+          asDialog
+        />
+        <ViewHeader.Content />
         <ViewHeader.Action asDialog onDialogClose={() => onClose()} />
       </ViewHeader.Root>
 
