@@ -82,7 +82,14 @@ export function ConvertToArticleDialog({ timelessId, onClose }: Props): JSX.Elem
     <Prompt
       title={t('metaSheet:actions.convertToArticle')}
       description={t(descriptionKey)}
-      primaryLabel={t('common:actions.confirm')}
+      primaryLabel={isConverting
+        ? (
+            <span className='inline-flex items-center gap-2'>
+              <LoaderIcon size={14} strokeWidth={1.75} className='animate-spin' />
+              {t('metaSheet:convertToArticle.converting')}
+            </span>
+          )
+        : t('common:actions.confirm')}
       secondaryLabel={t('common:actions.abort')}
       disablePrimary={isConverting || planningLoading || !sourcePlanningId}
       onPrimary={handleConfirm}
@@ -111,13 +118,6 @@ export function ConvertToArticleDialog({ timelessId, onClose }: Props): JSX.Elem
             />
           </PopoverContent>
         </Popover>
-
-        {isConverting && (
-          <div className='flex items-center gap-2 text-sm text-muted-foreground pt-2'>
-            <LoaderIcon size={14} strokeWidth={1.75} className='animate-spin' />
-            {t('metaSheet:convertToArticle.converting')}
-          </div>
-        )}
 
         {failed && !isConverting && (
           <div className='flex items-center gap-2 text-sm text-destructive pt-2'>
