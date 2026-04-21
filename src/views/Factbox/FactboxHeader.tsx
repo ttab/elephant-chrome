@@ -42,11 +42,9 @@ export const FactboxHeader = ({ ydoc, onDialogClose, asDialog }: {
               <ViewHeader.RemoteUsers ydoc={ydoc} />
             )}
             <ViewHeader.Action ydoc={ydoc} onDialogClose={onDialogClose} asDialog={asDialog}>
-              
               { !asDialog && ydoc && (
                 <MetaSheet ydoc={ydoc} />
               )}
-
             </ViewHeader.Action>
           </div>
 

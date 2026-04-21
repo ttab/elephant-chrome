@@ -169,7 +169,7 @@ const EmbeddedFactboxView = (props: ViewProps & { data?: EleDocumentResponse }):
               <BoxesIcon strokeWidth={1.75} size={16} className='mr-0.5' />
 
               <span>
-                {t('fromOriginal')}
+                {t('action.openOriginal')}
               </span>
               <TextLink
                 to='Factbox'
