@@ -275,7 +275,7 @@ describe('useConvertArticleType', () => {
       })
     }))
     expect(toast.success).toHaveBeenCalledWith(
-      'Tidlös artikel konverterad',
+      'Tidlös konverterad',
       expect.objectContaining<{ action: unknown }>({ action: expect.anything() })
     )
   })
@@ -353,7 +353,7 @@ describe('useConvertArticleType', () => {
     // article → timeless must NOT mark the source — core/article has no "used" status.
     expect(call).not.toHaveProperty('sourceStatusUpdate')
     expect(toast.success).toHaveBeenCalledWith(
-      'Tidlös artikel konverterad',
+      'Tidlös konverterad',
       expect.objectContaining<{ action: unknown }>({ action: expect.anything() })
     )
   })
