@@ -84,10 +84,10 @@ export function ConvertToArticleDialog({ timelessId, onClose }: Props): JSX.Elem
       description={t(descriptionKey)}
       primaryLabel={isConverting
         ? (
-            <span className='inline-flex items-center gap-2'>
-              <LoaderIcon size={14} strokeWidth={1.75} className='animate-spin' />
+            <>
+              <LoaderIcon size={14} strokeWidth={1.75} className='animate-spin mr-1' />
               {t('metaSheet:convertToArticle.converting')}
-            </span>
+            </>
           )
         : t('common:actions.confirm')}
       secondaryLabel={t('common:actions.abort')}
