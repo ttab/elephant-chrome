@@ -83,7 +83,8 @@ describe('useConvertArticleType', () => {
     } as never)
     mockPrepareArticleConversion.mockReturnValue({
       newDocument: { uuid: NEW_ARTICLE_UUID, type: 'core/article', links: [] },
-      sourceUuid: TIMELESS_ID
+      sourceUuid: TIMELESS_ID,
+      errors: []
     } as never)
     mockDeriveNewPlanning.mockReturnValue({ uuid: NEW_PLANNING_UUID } as never)
     mockAttachArticleAssignment.mockImplementation((args) => ({
@@ -321,7 +322,8 @@ describe('useConvertArticleType', () => {
     const newDocument = { uuid: 'new-uuid', type: 'core/article#timeless', links: [] }
     mockPrepareArticleConversion.mockReturnValue({
       newDocument,
-      sourceUuid: ARTICLE_ID
+      sourceUuid: ARTICLE_ID,
+      errors: []
     } as never)
 
     const { result } = renderHook(() => useConvertArticleType())

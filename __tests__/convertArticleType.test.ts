@@ -37,7 +37,7 @@ describe('prepareArticleConversion', () => {
     ).rejects.toThrow('Document is already of type core/article#timeless')
   })
 
-  it('skips prune for article → timeless (content transfers as-is + extraLinks)', async () => {
+  it('prunes for article → timeless and keeps the category link', async () => {
     const sourceDoc = Document.create({
       uuid: 'source-uuid',
       type: 'core/article',
@@ -54,6 +54,12 @@ describe('prepareArticleConversion', () => {
       title: 'Culture'
     })
 
+    // Simulate prune passing through the pre-supplied category link unchanged.
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    vi.mocked(mockRepository.pruneDocument).mockImplementation((doc) =>
+      Promise.resolve({ document: doc, errors: [] })
+    )
+
     const result = await prepareArticleConversion({
       sourceDocument: sourceDoc,
       targetType: 'core/article#timeless',
@@ -63,13 +69,17 @@ describe('prepareArticleConversion', () => {
     })
 
     // eslint-disable-next-line @typescript-eslint/unbound-method
-    expect(mockRepository.pruneDocument).not.toHaveBeenCalled()
+    expect(mockRepository.pruneDocument).toHaveBeenCalledWith(
+      expect.objectContaining<{ type: string }>({ type: 'core/article#timeless' }),
+      'token'
+    )
 
     expect(result.newDocument.uuid).toBe('new-uuid-12345')
     expect(result.newDocument.uri).toBe('core://article/new-uuid-12345')
     expect(result.newDocument.type).toBe('core/article#timeless')
     expect(result.newDocument.title).toBe('Test Article')
     expect(result.sourceUuid).toBe('source-uuid')
+    expect(result.errors).toEqual([])
 
     expect(result.newDocument.links.find((l) => l.type === 'core/timeless-category'))
       .toMatchObject({ uuid: 'cat-uuid', rel: 'subject' })
@@ -128,6 +138,7 @@ describe('prepareArticleConversion', () => {
 
     expect(result.newDocument.links.find((l) => l.rel === 'source'))
       .toMatchObject({ type: 'core/article', uuid: 'timeless-uuid' })
+    expect(result.errors).toEqual([])
   })
 
   it('preserves existing links and adds source link (article → timeless)', async () => {
@@ -141,6 +152,11 @@ describe('prepareArticleConversion', () => {
         { type: 'core/story', uuid: 'story-uuid', rel: 'subject', uri: '', url: '', title: '' }
       ]
     })
+
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    vi.mocked(mockRepository.pruneDocument).mockImplementation((doc) =>
+      Promise.resolve({ document: doc, errors: [] })
+    )
 
     const result = await prepareArticleConversion({
       sourceDocument: sourceDoc,

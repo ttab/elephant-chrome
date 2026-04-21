@@ -13,6 +13,15 @@ import { useTranslation } from 'react-i18next'
 import { CalendarDaysIcon, PenBoxIcon } from '@ttab/elephant-ui/icons'
 import { ToastAction } from '@/components/ToastAction'
 import type { Block } from '@ttab/elephant-api/newsdoc'
+import type { ValidationResult } from '@ttab/elephant-api/repository'
+
+function warnOnPruneErrors(errors: ValidationResult[]): void {
+  if (!errors.length) {
+    return
+  }
+  console.warn('Fields dropped during conversion prune:', errors)
+  toast.warning(errors.map((e) => e.error).filter(Boolean).join('\n') || 'Some fields were dropped during conversion.')
+}
 
 export type ConvertArgs
   = | { targetType: 'core/article#timeless', category: Block }
@@ -103,12 +112,13 @@ export function useConvertArticleType(): UseConvertArticleTypeResult {
           return { success: false }
         }
 
-        const { newDocument: newArticle } = await prepareArticleConversion({
+        const { newDocument: newArticle, errors: pruneErrors } = await prepareArticleConversion({
           sourceDocument: sourceResponse.document,
           targetType: 'core/article',
           repository,
           accessToken
         })
+        warnOnPruneErrors(pruneErrors)
 
         const derivedPlanning = deriveNewPlanning({
           sourcePlanning: planningResponse.document,
@@ -172,7 +182,7 @@ export function useConvertArticleType(): UseConvertArticleTypeResult {
         return { success: false }
       }
 
-      const { newDocument } = await prepareArticleConversion({
+      const { newDocument, errors: pruneErrors } = await prepareArticleConversion({
         sourceDocument: response.document,
         targetType: 'core/article#timeless',
         repository,
@@ -180,6 +190,7 @@ export function useConvertArticleType(): UseConvertArticleTypeResult {
         // Timeless schema requires exactly one core/timeless-category subject link.
         extraLinks: [args.category]
       })
+      warnOnPruneErrors(pruneErrors)
 
       // article → timeless: don't touch source status — core/article
       // workflow doesn't carry a "used" state.

@@ -1,4 +1,5 @@
 import { Block, Document } from '@ttab/elephant-api/newsdoc'
+import type { ValidationResult } from '@ttab/elephant-api/repository'
 import type { Repository } from './Repository.js'
 import { assignmentPlanningTemplate } from './templates/assignmentPlanningTemplate.js'
 
@@ -7,18 +8,14 @@ export type ArticleType = 'core/article' | 'core/article#timeless'
 export interface ArticleConversionResult {
   newDocument: Document
   sourceUuid: string
+  errors: ValidationResult[]
 }
 
 /**
- * Build a new article-family document from the source with the target type,
- * a fresh UUID, and a rel='source' link back to the original.
- *
- * Direction semantics:
- * - timeless → article: prunes via Repository. Article is the stricter
- *   schema so any timeless-only fields get stripped.
- * - article → timeless: skips prune. Timeless is structurally compatible
- *   with article so the content transfers as-is plus the required
- *   core/timeless-category (passed via extraLinks).
+ * Prune the source document against the target type and build a new document
+ * with a fresh UUID plus a rel='source' link back to the original. The caller
+ * is responsible for persisting the new document and marking the source as
+ * "used" atomically (see Repository.createDerivedDocument).
  */
 export async function prepareArticleConversion({
   sourceDocument,
@@ -43,19 +40,20 @@ export async function prepareArticleConversion({
     links: [...sourceDocument.links, ...extraLinks]
   })
 
-  const basis = targetType === 'core/article'
-    ? (await repository.pruneDocument(docWithTargetType, accessToken)).document
-    : docWithTargetType
+  const { document: prunedDoc, errors } = await repository.pruneDocument(
+    docWithTargetType,
+    accessToken
+  )
 
   const newUuid = crypto.randomUUID()
 
   return {
     newDocument: Document.create({
-      ...basis,
+      ...prunedDoc,
       uuid: newUuid,
       uri: `core://article/${newUuid}`,
       links: [
-        ...basis.links,
+        ...prunedDoc.links,
         Block.create({
           type: 'core/article',
           uuid: sourceDocument.uuid,
@@ -63,7 +61,8 @@ export async function prepareArticleConversion({
         })
       ]
     }),
-    sourceUuid: sourceDocument.uuid
+    sourceUuid: sourceDocument.uuid,
+    errors
   }
 }
 
