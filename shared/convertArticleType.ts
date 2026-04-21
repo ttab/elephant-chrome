@@ -55,9 +55,9 @@ export async function prepareArticleConversion({
       links: [
         ...prunedDoc.links,
         Block.create({
-          type: 'core/article',
+          type: sourceDocument.type,
           uuid: sourceDocument.uuid,
-          rel: 'source'
+          rel: 'source-document'
         })
       ]
     }),

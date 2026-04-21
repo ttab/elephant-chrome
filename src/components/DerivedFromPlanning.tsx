@@ -18,17 +18,22 @@ export function DerivedFromPlanning({
   ydoc: YDocument<Y.Map<unknown>>
 }): JSX.Element {
   const { t } = useTranslation()
-  const [articleLinks] = useYValue<Block[]>(ydoc.ele, 'links.core/article')
   const [currentType] = useYValue<string>(ydoc.ele, 'root.type')
-  const source = articleLinks?.find((link) => link.rel === 'source')
+
+  // Article ↔ timeless is the only conversion that leaves a rel='source-document'
+  // back-link, and the source link carries the *source's* type — so look
+  // under the opposite bucket from the current document's type.
+  const sourceLinksPath = currentType === 'core/article#timeless'
+    ? 'links.core/article'
+    : 'links.core/article#timeless'
+  const [sourceLinks] = useYValue<Block[]>(ydoc.ele, sourceLinksPath)
+  const source = sourceLinks?.find((link) => link.rel === 'source-document')
   const sourcePlanningId = useDeliverableInfo(source?.uuid ?? '')?.planningUuid
 
   if (!source?.uuid) {
     return <></>
   }
 
-  // Article ↔ timeless is the only conversion that leaves a rel='source'
-  // back-link, so the source type is the opposite of the current type.
   const sourceLinkLabel = currentType === 'core/article#timeless'
     ? t('editor:derivedFromArticleLink')
     : t('editor:derivedFromTimelessLink')

@@ -83,7 +83,7 @@ describe('prepareArticleConversion', () => {
 
     expect(result.newDocument.links.find((l) => l.type === 'core/timeless-category'))
       .toMatchObject({ uuid: 'cat-uuid', rel: 'subject' })
-    expect(result.newDocument.links.find((l) => l.rel === 'source'))
+    expect(result.newDocument.links.find((l) => l.rel === 'source-document'))
       .toMatchObject({ type: 'core/article', uuid: 'source-uuid' })
   })
 
@@ -136,8 +136,8 @@ describe('prepareArticleConversion', () => {
     expect(result.newDocument.type).toBe('core/article')
     expect(result.sourceUuid).toBe('timeless-uuid')
 
-    expect(result.newDocument.links.find((l) => l.rel === 'source'))
-      .toMatchObject({ type: 'core/article', uuid: 'timeless-uuid' })
+    expect(result.newDocument.links.find((l) => l.rel === 'source-document'))
+      .toMatchObject({ type: 'core/article#timeless', uuid: 'timeless-uuid' })
     expect(result.errors).toEqual([])
   })
 
@@ -166,7 +166,7 @@ describe('prepareArticleConversion', () => {
     })
 
     expect(result.newDocument.links.find((l) => l.rel === 'subject')?.uuid).toBe('story-uuid')
-    expect(result.newDocument.links.find((l) => l.rel === 'source')?.uuid).toBe('source-uuid')
+    expect(result.newDocument.links.find((l) => l.rel === 'source-document')?.uuid).toBe('source-uuid')
   })
 })
 
