@@ -70,7 +70,7 @@ export const FactboxHeader = ({ ydoc, onDialogClose, asDialog, articleId, origin
                     size='sm'
                     className='h-9 hover:bg-gray-200 dark:hover:bg-table-focused'
                     onClick={(e) => articleId && openLink(e, 'article')}
-                    title={t('action.openArticle') || 'Open article'}
+                    title={t('action.openArticle')}
                   >
                     <PenBoxIcon size={16} />
                   </Button>
@@ -79,7 +79,7 @@ export const FactboxHeader = ({ ydoc, onDialogClose, asDialog, articleId, origin
                     size='sm'
                     className='h-9 hover:bg-gray-200 dark:hover:bg-table-focused'
                     onClick={(e) => originalId && openLink(e, 'original')}
-                    title={t('action.openOriginal') || 'Open original'}
+                    title={t('action.openOriginal')}
                   >
                     <FileSymlinkIcon size={16} />
                   </Button>
