@@ -62,11 +62,15 @@ export async function createArticle({
   // and unmounts the component, triggering CollaborationClientRegistry cleanup)
   const yjsDocument = ydoc.provider?.document
 
-  // Set wire content on the Y.Doc SYNCHRONOUSLY before any async operations.
-  // After the first await, dialog close may unmount the component and disconnect
-  // the provider, making ydoc.ele potentially stale. Setting content now ensures
-  // it is captured by snapshotDocument even in that case.
-  if (wireContent) {
+  // Seed the article with the wire body only when the user has opted into
+  // translation — the translated version replaces this below. Without
+  // translation, the article keeps the empty template content.
+  //
+  // Done SYNCHRONOUSLY before any async operations: after the first await,
+  // dialog close may unmount the component and disconnect the provider,
+  // making ydoc.ele potentially stale. Setting content now ensures it is
+  // captured by snapshotDocument even in that case (e.g. if translation fails).
+  if (wireContent && translationMode) {
     ydoc.ele.set('content', toContentYXmlText(wireContent))
   }
 
