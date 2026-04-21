@@ -13,9 +13,10 @@ interface PickerProps {
   value: Block | undefined
   onChange: (category: Block | undefined) => void
   asDialog?: boolean
+  validation?: boolean
 }
 
-export const CategoryPicker = ({ value, onChange, asDialog }: PickerProps): JSX.Element => {
+export const CategoryPicker = ({ value, onChange, asDialog, validation }: PickerProps): JSX.Element => {
   const { t } = useTranslation()
   const allCategories = useTimelessCategories().map((_) => ({
     value: _.id,
@@ -31,6 +32,8 @@ export const CategoryPicker = ({ value, onChange, asDialog }: PickerProps): JSX.
       sortOrder='label'
       size='xs'
       modal={asDialog}
+      variant='outline'
+      validation={validation}
       options={allCategories}
       selectedOptions={selectedOptions}
       placeholder={t('views:timeless.placeholders.addCategory')}

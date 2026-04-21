@@ -44,7 +44,7 @@ export const TimelessCreation = ({ id, onClose }: {
 
   const [title, setTitle] = useState<string>('')
   const [selectedCategory, setSelectedCategory] = useState<Block | undefined>()
-  const [newsvalue, setNewsvalue] = useState<string>('3')
+  const [newsvalue, setNewsvalue] = useState<string | undefined>(undefined)
   const [selectedPlanning, setSelectedPlanning] = useState<PlanningOption | undefined>()
   const [slugline, setSlugline] = useState<string>('')
   const [sectionId, setSectionId] = useState<string>('')
@@ -55,6 +55,7 @@ export const TimelessCreation = ({ id, onClose }: {
   const isNewPlanning = !selectedPlanning
   const canCreate = !!trimmedTitle
     && !!selectedCategory
+    && !!newsvalue
     && (isNewPlanning ? (!!trimmedSlugline && !!sectionId) : true)
 
   const sectionOptions = useMemo(
@@ -72,7 +73,7 @@ export const TimelessCreation = ({ id, onClose }: {
   const SelectedNewsvalueIcon = selectedNewsvalueOptions[0]?.icon
 
   const handleCreate = async (): Promise<void> => {
-    if (!canCreate || !selectedCategory) {
+    if (!canCreate || !selectedCategory || !newsvalue) {
       return
     }
 
@@ -169,6 +170,7 @@ export const TimelessCreation = ({ id, onClose }: {
                   value={selectedCategory}
                   onChange={setSelectedCategory}
                   asDialog
+                  validation
                 />
               </>
 
@@ -177,6 +179,7 @@ export const TimelessCreation = ({ id, onClose }: {
                 size='xs'
                 modal={true}
                 variant='outline'
+                validation
                 options={Newsvalues}
                 selectedOptions={selectedNewsvalueOptions}
                 placeholder={`${t('common:actions.add')} ${t('core:labels.newsvalue').toLocaleLowerCase()}`}
