@@ -7,6 +7,7 @@
     "openArticle": "Öppna artikel",
     "openOriginal": "Öppna original"
   },
+  "usedInArticles": "Används i artiklar",
   "prompts": {
     "approveBeforeClose": "Vill du godkänna ändringarna innan du stänger?",
     "savedButNotApproved": "Dina ändringar är sparade men dokumentet är inte satt som godkänt."

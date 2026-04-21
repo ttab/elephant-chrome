@@ -30,7 +30,6 @@ export const FactboxHeader = ({ ydoc, onDialogClose, asDialog, articleId, origin
     }
   }
 
-  console.log(articleId, originalId)
   return (
     <ViewHeader.Root asDialog={asDialog}>
       <ViewHeader.Title
