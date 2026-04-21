@@ -63,7 +63,7 @@ export function factboxColumns<Ns extends Namespace>({ locale, timeZone, t }: { 
               origin === 'core/article'
                 ? (
                     <div title={t('workflows:base.usable.title')}>
-                      <CircleCheckIcon strokeWidth={1.75} className='text-white rounded-full dark:text-blackbg-usable fill-usable' />
+                      <CircleCheckIcon strokeWidth={1.75} className='text-white rounded-full dark:text-black bg-usable fill-usable' />
                     </div>
                   )
                 : (
@@ -119,7 +119,7 @@ export function factboxColumns<Ns extends Namespace>({ locale, timeZone, t }: { 
     {
       id: 'documentOrigin',
       meta: {
-        name: 'Origin',
+        name: t('views:factboxes.columnLabels.origin'),
         columnIcon: BoxesIcon,
         className: 'flex-none',
         options: [

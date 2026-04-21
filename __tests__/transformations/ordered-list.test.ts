@@ -1,6 +1,6 @@
 import type { TBElement } from '@ttab/textbit'
 import { Block } from '@ttab/elephant-api/newsdoc'
-import { revertUnorderedList, transformOrderedList } from '@/shared/transformations/newsdoc/core'
+import { revertList, transformOrderedList } from '@/shared/transformations/newsdoc/core'
 
 const orderedListNewsDoc = Block.create({
   id: '2faca87e-e7c2-43d7-8c6d-72a1b003bc3e',
@@ -74,7 +74,7 @@ describe('Handles Ordered List', () => {
     const transformedToSlate = transformOrderedList(orderedListNewsDoc as unknown as Block)
     expect(transformedToSlate).toEqual(orderedListSlate)
 
-    const revertedToNewsDoc = revertUnorderedList(transformedToSlate)
+    const revertedToNewsDoc = revertList(transformedToSlate)
     expect(revertedToNewsDoc).toEqual(orderedListNewsDoc)
   })
 })

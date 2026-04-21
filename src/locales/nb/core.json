@@ -5,7 +5,8 @@
     "assignment": "oppdrag",
     "article": "artikkel",
     "flash": "Flash",
-    "quickArticle": "hurtigartikkel"
+    "quickArticle": "hurtigartikkel",
+    "factbox": "Faktaboks"
   },
   "labels": {
     "newsvalue": "Nyhetesverdi",

@@ -30,6 +30,7 @@ export const FactboxHeader = ({ ydoc, onDialogClose, asDialog, articleId, origin
     }
   }
 
+  console.log(articleId, originalId)
   return (
     <ViewHeader.Root asDialog={asDialog}>
       <ViewHeader.Title
@@ -39,11 +40,11 @@ export const FactboxHeader = ({ ydoc, onDialogClose, asDialog, articleId, origin
         asDialog={asDialog}
       />
       <ViewHeader.Content className='justify-start'>
-        <div className='max-w-[850px] mx-auto flex flex-row gap-1 justify-between items-center w-full'>
-          <div className='flex flex-row gap-2 justify-start items-center @6xl/view:-ml-20'>
+        <div className='mx-auto flex flex-row gap-1 justify-between items-center w-full'>
+          <div className='flex flex-row gap-2 justify-end items-center @6xl/view:-ml-20'>
           </div>
 
-          <div className='flex flex-row gap-2 justify-end items-center'>
+          <div className='flex flex-row gap-4 justify-start items-center'>
             <>
               {!asDialog && ydoc
                 ? (
@@ -61,31 +62,35 @@ export const FactboxHeader = ({ ydoc, onDialogClose, asDialog, articleId, origin
             {!!ydoc && !asDialog && (
               <ViewHeader.RemoteUsers ydoc={ydoc} />
             )}
-          </div>
-          <ViewHeader.Action ydoc={ydoc} onDialogClose={onDialogClose} asDialog={asDialog}>
-            <Button
-              variant='ghost'
-              size='sm'
-              className='h-9 hover:bg-gray-200 dark:hover:bg-table-focused'
-              onClick={(e) => articleId && openLink(e, 'article')}
-              title={t('action.openArticle') || 'Open article'}
-            >
-              <PenBoxIcon size={16} />
-            </Button>
-            <Button
-              variant='ghost'
-              size='sm'
-              className='h-9 hover:bg-gray-200 dark:hover:bg-table-focused'
-              onClick={(e) => originalId && openLink(e, 'original')}
-              title={t('action.openOriginal') || 'Open original'}
-            >
-              <FileSymlinkIcon size={16} />
-            </Button>
-            { !asDialog && ydoc && (
-              <MetaSheet ydoc={ydoc} />
-            )}
+            <ViewHeader.Action ydoc={ydoc} onDialogClose={onDialogClose} asDialog={asDialog}>
+              {!ydoc && (
+                <>
+                  <Button
+                    variant='ghost'
+                    size='sm'
+                    className='h-9 hover:bg-gray-200 dark:hover:bg-table-focused'
+                    onClick={(e) => articleId && openLink(e, 'article')}
+                    title={t('action.openArticle') || 'Open article'}
+                  >
+                    <PenBoxIcon size={16} />
+                  </Button>
+                  <Button
+                    variant='ghost'
+                    size='sm'
+                    className='h-9 hover:bg-gray-200 dark:hover:bg-table-focused'
+                    onClick={(e) => originalId && openLink(e, 'original')}
+                    title={t('action.openOriginal') || 'Open original'}
+                  >
+                    <FileSymlinkIcon size={16} />
+                  </Button>
+                </>
+              )}
+              { !asDialog && ydoc && (
+                <MetaSheet ydoc={ydoc} />
+              )}
 
-          </ViewHeader.Action>
+            </ViewHeader.Action>
+          </div>
 
         </div>
       </ViewHeader.Content>

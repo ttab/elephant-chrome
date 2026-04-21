@@ -1,5 +1,6 @@
 {
   "title": "Faktaboks",
+  "factboxDocument": "Faktaboks dokument",
   "action": {
     "createFactbox": "Ny faktaboks",
     "openArticle": "Oppne artikkel",

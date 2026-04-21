@@ -1,5 +1,6 @@
 {
   "title": "Faktaruta",
+  "factboxDocument": "Faktarutedokument",
   "lockedToArticle": "Låst till artikel",
   "action": {
     "createFactbox": "Skapa faktaruta",

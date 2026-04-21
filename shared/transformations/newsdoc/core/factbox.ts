@@ -3,7 +3,7 @@ import { TextbitElement, type TBElement } from '@ttab/textbit'
 import { newsDocToSlate } from '../index.js'
 import { toString } from '../../lib/toString.js'
 import { revertText } from './text.js'
-import { revertUnorderedList } from './Lists.js'
+import { revertList } from './Lists.js'
 
 export const transformFactbox = (element: Block): TBElement => {
   const { id, data, title, content = [], links = [] } = element
@@ -62,7 +62,7 @@ export function revertFactbox(element: TBElement): Block {
   const body = (factboxBody?.children as TBElement[] | undefined)
     ?.map((child) => {
       if (child.type === 'core/unordered-list' || child.type === 'core/ordered-list') {
-        return revertUnorderedList(child)
+        return revertList(child)
       }
       return revertText(child)
     })
