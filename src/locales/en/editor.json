@@ -40,7 +40,7 @@
   "changeType": "Change type",
   "changeTypeConfirm": "Are you sure you want to change the type of info?",
   "derivedFrom": "Created from",
-  "derivedFromTimelessLink": "timeless article",
+  "derivedFromTimelessLink": "timeless",
   "derivedFromArticleLink": "article",
   "derivedFromConnector": "and",
   "derivedFromPlanningLink": "planning"

@@ -22,14 +22,14 @@
   },
   "convertToArticle": {
     "descriptionWithPlanning": "A new planning will be derived from the original. Pick a date for the new article.",
-    "descriptionNoPlanning": "No original planning was found — this timeless article can't be converted.",
+    "descriptionNoPlanning": "No original planning was found — this timeless can't be converted.",
     "loadingPlanning": "Looking for the original planning…",
     "targetDateLabel": "Date",
     "converting": "Converting...",
     "failed": "Conversion failed. Try again or cancel."
   },
   "convertToTimeless": {
-    "description": "Pick a subject category for the new timeless article."
+    "description": "Pick a subject category for the new timeless."
   },
   "removeHastPrompt": {
     "title": "Remove HAST from article",

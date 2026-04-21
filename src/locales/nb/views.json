@@ -80,7 +80,7 @@
     "loggingIn": "Logger inn..."
   },
   "timeless": {
-    "title": "Tidløse artikler",
+    "title": "Tidløse",
     "columnLabels": {
       "category": "Kategori",
       "created": "Opprettet",
@@ -99,7 +99,7 @@
       "addCategory": "Legg til kategori"
     },
     "toasts": {
-      "convertedSuccess": "Tidløs artikkel konvertert",
+      "convertedSuccess": "Tidløs konvertert",
       "conversionFailed": "Konverteringen mislyktes: {{message}}",
       "notAuthenticated": "Kan ikke konvertere: ikke innlogget",
       "documentNotFound": "Dokumentet ble ikke funnet",

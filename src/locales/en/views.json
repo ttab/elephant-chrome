@@ -80,7 +80,7 @@
     "loggingIn": "Logging in..."
   },
   "timeless": {
-    "title": "Timeless articles",
+    "title": "Timeless",
     "columnLabels": {
       "category": "Category",
       "created": "Created",
@@ -99,7 +99,7 @@
       "addCategory": "Add category"
     },
     "toasts": {
-      "convertedSuccess": "Timeless article converted",
+      "convertedSuccess": "Timeless converted",
       "conversionFailed": "Conversion failed: {{message}}",
       "notAuthenticated": "Unable to convert: not authenticated",
       "documentNotFound": "Document not found",

@@ -22,14 +22,14 @@
   },
   "convertToArticle": {
     "descriptionWithPlanning": "En ny planlegging vil avledes fra den opprinnelige. Velg dato for den nye artikkelen.",
-    "descriptionNoPlanning": "Ingen opprinnelig planlegging ble funnet — denne tidløse artikkelen kan ikke konverteres.",
+    "descriptionNoPlanning": "Ingen opprinnelig planlegging ble funnet — denne tidløse kan ikke konverteres.",
     "loadingPlanning": "Leter etter den opprinnelige planleggingen…",
     "targetDateLabel": "Dato",
     "converting": "Konverterer...",
     "failed": "Konverteringen mislyktes. Prøv igjen eller avbryt."
   },
   "convertToTimeless": {
-    "description": "Velg en kategori for den nye tidløse artikkelen."
+    "description": "Velg en kategori for den nye tidløse."
   },
   "removeHastPrompt": {
     "title": "Fjern HAST fra artikkelen",

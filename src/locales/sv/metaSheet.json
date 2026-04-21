@@ -22,14 +22,14 @@
   },
   "convertToArticle": {
     "descriptionWithPlanning": "En ny planering skapas från den ursprungliga planeringen. Välj datum för den nya artikeln.",
-    "descriptionNoPlanning": "Ingen ursprunglig planering hittades — denna tidlösa artikel kan inte konverteras.",
+    "descriptionNoPlanning": "Ingen ursprunglig planering hittades — denna tidlösa kan inte konverteras.",
     "loadingPlanning": "Letar efter den ursprungliga planeringen…",
     "targetDateLabel": "Datum",
     "converting": "Konverterar...",
     "failed": "Konverteringen misslyckades. Försök igen eller avbryt."
   },
   "convertToTimeless": {
-    "description": "Välj en kategori för den nya tidlösa artikeln."
+    "description": "Välj en kategori för den nya tidlösa."
   },
   "removeHastPrompt": {
     "title": "Ta bort HAST från artikeln",
