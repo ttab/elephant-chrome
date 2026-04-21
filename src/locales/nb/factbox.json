@@ -2,12 +2,12 @@
   "title": "Faktaboks",
   "factboxDocument": "Faktaboks dokument",
   "lockedToArticle": "Låst til artikkel",
-  "from": "Fra publisert",
+  "fromPublished": "Låst til publisert",
   "article": "artikkel",
-  "factbox": "faktaboks",
+  "original": "orginal",
   "action": {
     "createFactbox": "Ny faktaboks",
-    "openOriginal": "Åpne original"
+    "open": "Åpne"
   },
   "prompts": {
     "approveBeforeClose": "Vil du godkjenne endringene før du lukker?",

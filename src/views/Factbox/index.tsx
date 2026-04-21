@@ -155,7 +155,7 @@ const EmbeddedFactboxView = (props: ViewProps & { data?: EleDocumentResponse }):
             <div className='flex gap-1.5'>
               <FileLockIcon strokeWidth={1.75} size={16} className='mr-0.5' />
               <span>
-                {t('from')}
+                {t('fromPublished')}
               </span>
               <TextLink
                 to='Editor'
@@ -169,14 +169,14 @@ const EmbeddedFactboxView = (props: ViewProps & { data?: EleDocumentResponse }):
               <BoxesIcon strokeWidth={1.75} size={16} className='mr-0.5' />
 
               <span>
-                {t('action.openOriginal')}
+                {t('action.open')}
               </span>
               <TextLink
                 to='Factbox'
                 className='underline hover:text-foreground'
                 props={{ id: originalId }}
               >
-                {t('factbox')}
+                {t('original')}
               </TextLink>
             </div>
           </div>

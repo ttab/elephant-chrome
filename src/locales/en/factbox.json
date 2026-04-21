@@ -2,12 +2,12 @@
   "title": "Factbox",
   "factboxDocument": "Factbox document",
   "lockedToArticle": "Locked to article",
-  "from": "Locked to published",
+  "fromPublished": "Locked to published",
   "article": "article",
-  "factbox": "factbox",
+  "original": "original",
   "action": {
     "createFactbox": "Create factbox",
-    "openOriginal": "Open original"
+    "open": "Open"
   },
   "prompts": {
     "approveBeforeClose": "Do you want to approve the changes before closing?",
