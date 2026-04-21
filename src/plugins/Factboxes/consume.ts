@@ -99,8 +99,6 @@ export const createFactboxConsume = (
     throw new Error('Factbox plugin expected string for consumation')
   }
 
-  console.log('🧩 Factbox consume dropped:', input)
-
   const payload = JSON.parse(input.data) as FactboxDragPayload
 
   let children: TBElement[] | undefined
