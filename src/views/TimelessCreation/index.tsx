@@ -261,28 +261,30 @@ export const TimelessCreation = ({ id, onClose }: {
                 }}
               />
 
-              {!!selectedPlanning && (
-                <Button
-                  variant='ghost'
-                  asChild
-                  className='text-muted-foreground flex size-4 p-0 data-[state=open]:bg-muted hover:bg-accent2'
-                  onClick={(e) => {
-                    e.preventDefault()
-                    setSelectedPlanning(undefined)
-                  }}
-                >
-                  <CircleXIcon size={18} strokeWidth={1.75} />
-                </Button>
-              )}
+              <>
+                {!!selectedPlanning && (
+                  <Button
+                    variant='ghost'
+                    asChild
+                    className='text-muted-foreground flex size-4 p-0 data-[state=open]:bg-muted hover:bg-accent2'
+                    onClick={(e) => {
+                      e.preventDefault()
+                      setSelectedPlanning(undefined)
+                    }}
+                  >
+                    <CircleXIcon size={18} strokeWidth={1.75} />
+                  </Button>
+                )}
 
-              <Checkbox
-                id='TimelessSearchOlder'
-                checked={searchOlder}
-                onCheckedChange={(checked: boolean) => setSearchOlder(checked)}
-              />
-              <Label htmlFor='TimelessSearchOlder' className='text-muted-foreground'>
-                {t('wires:creation.showOlder')}
-              </Label>
+                <Checkbox
+                  id='TimelessSearchOlder'
+                  checked={searchOlder}
+                  onCheckedChange={(checked: boolean) => setSearchOlder(checked)}
+                />
+                <Label htmlFor='TimelessSearchOlder' className='text-muted-foreground'>
+                  {t('wires:creation.showOlder')}
+                </Label>
+              </>
             </Form.Group>
 
             {isNewPlanning && (
