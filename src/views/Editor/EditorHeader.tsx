@@ -155,7 +155,7 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
                 <Button
                   variant='ghost'
                   size='sm'
-                  className='gap-1.5 text-muted-foreground px-2'
+                  className='hidden @xl/view:inline-flex gap-1.5 text-muted-foreground px-2'
                   onClick={(event) => openSources(event, { id: ydoc.id }, 'last')}
                   title={t('wires:sources.title')}
                 >
