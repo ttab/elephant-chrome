@@ -7,15 +7,31 @@ import { Block } from '@ttab/elephant-api/newsdoc'
  * Save a new timeless article document. The caller is responsible for
  * creating/updating the companion planning that owns this timeless as a
  * deliverable (via the addassignment endpoint).
+ *
+ * The slugline and section are stored on the timeless itself so that later
+ * conversions (timeless → article, fallback planning) always find valid
+ * values to inherit. Pass them from the picked planning (existing planning
+ * path) or the creation form (new planning path).
  */
-export async function createNewTimelessArticle(
-  repository: Repository | undefined,
-  session: Session | null,
-  id: string,
-  title: string,
-  category: Block,
+export async function createNewTimelessArticle({
+  repository,
+  session,
+  id,
+  title,
+  category,
+  newsvalue,
+  slugline,
+  section
+}: {
+  repository: Repository | undefined
+  session: Session | null
+  id: string
+  title: string
+  category: Block
   newsvalue: string
-): Promise<string> {
+  slugline: string
+  section: Block | undefined
+}): Promise<string> {
   if (!session?.accessToken || !repository) {
     console.error('CreateTimelessArticle: Missing required dependencies', {
       hasAccessToken: !!session?.accessToken,
@@ -24,13 +40,22 @@ export async function createNewTimelessArticle(
     throw new Error('Cannot create timeless article')
   }
 
+  const trimmedSlugline = slugline.trim()
+  if (!trimmedSlugline) {
+    throw new Error('Cannot create timeless article without a slugline')
+  }
+
   try {
     const document = timelessTemplate(id, {
       title,
       meta: {
-        'core/newsvalue': [Block.create({ type: 'core/newsvalue', value: newsvalue })]
+        'core/newsvalue': [Block.create({ type: 'core/newsvalue', value: newsvalue })],
+        'tt/slugline': [Block.create({ type: 'tt/slugline', value: trimmedSlugline })]
       },
-      links: { 'core/timeless-category': [category] }
+      links: {
+        'core/timeless-category': [category],
+        ...(section ? { 'core/section': [section] } : {})
+      }
     })
     await repository.saveDocument(document, session.accessToken)
     return id

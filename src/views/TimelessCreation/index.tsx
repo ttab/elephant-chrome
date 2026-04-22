@@ -4,7 +4,7 @@ import { useSession } from 'next-auth/react'
 import { useRegistry, useSections } from '@/hooks'
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
-import type { Block } from '@ttab/elephant-api/newsdoc'
+import { Block } from '@ttab/elephant-api/newsdoc'
 import { Button, Checkbox, ComboBox, Input, Label } from '@ttab/elephant-ui'
 import {
   BookmarkIcon,
@@ -81,23 +81,50 @@ export const TimelessCreation = ({ id, onClose }: {
     const localDate = convertToISOStringInTimeZone(now, timeZone).slice(0, 10)
     const isoDateTime = `${now.toISOString().split('.')[0]}Z`
 
+    const resolvedSection = selectedPlanning
+      ? sections.find((s) => s.id === selectedPlanning.payload.section)
+      : sections.find((s) => s.id === sectionId)
+
     const planningContext = selectedPlanning
       ? { planningId: selectedPlanning.value, slugline: selectedPlanning.payload.slugline }
-      : (() => {
-          const section = sections.find((s) => s.id === sectionId)
-          return {
-            planningId: undefined,
-            planningTitle: trimmedTitle,
-            slugline: trimmedSlugline,
-            priority: Number(newsvalue),
-            section: section ? { uuid: section.id, title: section.title } : undefined
-          }
-        })()
+      : {
+          planningId: undefined,
+          planningTitle: trimmedTitle,
+          slugline: trimmedSlugline,
+          priority: Number(newsvalue),
+          section: resolvedSection
+            ? { uuid: resolvedSection.id, title: resolvedSection.title }
+            : undefined
+        }
+
+    const timelessSlugline = (planningContext.slugline ?? '').trim()
+    if (!timelessSlugline) {
+      toast.error(t('errors:toasts.creationFailed', {
+        error: t('core:labels.slugline')
+      }))
+      return
+    }
+
+    const sectionBlock = resolvedSection
+      ? Block.create({
+        type: 'core/section',
+        rel: 'section',
+        uuid: resolvedSection.id,
+        title: resolvedSection.title
+      })
+      : undefined
 
     try {
-      const newId = await createNewTimelessArticle(
-        repository, session, id, trimmedTitle, selectedCategory, newsvalue
-      )
+      const newId = await createNewTimelessArticle({
+        repository,
+        session,
+        id,
+        title: trimmedTitle,
+        category: selectedCategory,
+        newsvalue,
+        slugline: timelessSlugline,
+        section: sectionBlock
+      })
       const updatedPlanningId = await addAssignmentWithDeliverable({
         ...planningContext,
         type: 'timeless',
