@@ -6,7 +6,6 @@ import type { DeliverableType } from '@/shared/templates/lib/getDeliverableType.
 import { group, toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc.js'
 import { toYMap } from '@/shared/transformations/toYMap.js'
 import { toYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc.js'
-import type { IDBAuthor } from '../src/datastore/types.js'
 
 /**
 * General function to create a new document as Y.Doc from a template
@@ -67,7 +66,7 @@ export function createDocument<T>({
 */
 export function appendAssignment(options: {
   document: Y.Doc
-  assignee?: IDBAuthor | null | undefined
+  assignee?: { id: string, name: string } | null | undefined
   type: 'text' | 'flash' | 'graphic' | 'picture' | 'video' | 'picture/video' | 'timeless'
   slugLine?: string
   title?: string
@@ -100,7 +99,7 @@ export function createNewAssignment({
   assignmentData
 }: {
   document: Y.Doc
-  assignee?: IDBAuthor | null | undefined
+  assignee?: { id: string, name: string } | null | undefined
   type: 'text' | 'flash' | 'graphic' | 'picture' | 'video' | 'picture/video' | 'timeless'
   slugLine?: string
   title?: string

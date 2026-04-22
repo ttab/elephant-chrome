@@ -2,6 +2,7 @@ import { type JSX, useCallback, useMemo, useState } from 'react'
 import { CategoryPicker } from '@/components/TimelessCategory'
 import { useSession } from 'next-auth/react'
 import { useRegistry, useSections } from '@/hooks'
+import { useActiveAuthor } from '@/hooks/useActiveAuthor'
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
 import { Block } from '@ttab/elephant-api/newsdoc'
@@ -41,6 +42,7 @@ export const TimelessCreation = ({ id, onClose }: {
   const { data: session } = useSession()
   const { t } = useTranslation()
   const sections = useSections({ sort: 'title' })
+  const activeAuthor = useActiveAuthor({ full: false })
 
   const [title, setTitle] = useState<string>('')
   const [selectedCategory, setSelectedCategory] = useState<Block | undefined>()
@@ -79,7 +81,9 @@ export const TimelessCreation = ({ id, onClose }: {
 
     const now = new Date()
     const localDate = convertToISOStringInTimeZone(now, timeZone).slice(0, 10)
-    const isoDateTime = `${now.toISOString().split('.')[0]}Z`
+    // Timeless assignments are date-only — store the date boundary instead
+    // of a specific creation-time so downstream consumers don't format it.
+    const isoDateTime = `${localDate}T00:00:00Z`
 
     const resolvedSection = selectedPlanning
       ? sections.find((s) => s.id === selectedPlanning.payload.section)
@@ -132,7 +136,10 @@ export const TimelessCreation = ({ id, onClose }: {
         title: trimmedTitle,
         publicVisibility: true,
         localDate,
-        isoDateTime
+        isoDateTime,
+        author: activeAuthor
+          ? { id: activeAuthor.id, name: activeAuthor.name }
+          : undefined
       })
       if (!updatedPlanningId) {
         throw new Error('Planning link failed')

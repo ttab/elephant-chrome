@@ -118,6 +118,9 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
     if (typeof assignmentType !== 'string') {
       return undefined
     }
+    if (assignmentType === 'timeless') {
+      return undefined
+    }
     const endAndStartAreNotEqual = endTime && startTime && endTime !== startTime
 
     if (isVisualAssignmentType(assignmentType) && startTime) {

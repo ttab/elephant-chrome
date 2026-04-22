@@ -108,7 +108,9 @@ export const Assignment = ({ ydoc, assignment, onAbort, onClose }: {
               path={`${path}.links.core/author`}
               placeholder={t('planning:assignment.actions.addAssignee')}
             />
-            <AssignmentTime assignment={assignment} />
+            {assignmentType !== 'timeless' && (
+              <AssignmentTime assignment={assignment} />
+            )}
 
             {/* FIXME: Disable until we have an idea of how this should be clear to end-user
             <AssignmentVisibility
