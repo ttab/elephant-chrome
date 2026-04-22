@@ -57,6 +57,7 @@ export async function prepareArticleConversion({
         Block.create({
           type: sourceDocument.type,
           uuid: sourceDocument.uuid,
+          title: sourceDocument.title,
           rel: 'source-document'
         })
       ]

@@ -1,5 +1,5 @@
 import { Awareness } from '@/components'
-import { ComboBox, Label } from '@ttab/elephant-ui'
+import { ComboBox } from '@ttab/elephant-ui'
 import { useTimelessCategories } from '@/hooks'
 import { useYValue } from '@/modules/yjs/hooks'
 import { Block } from '@ttab/elephant-api/newsdoc'
@@ -91,22 +91,15 @@ export const TimelessCategory = ({ ydoc, path, asDialog, onChange }: {
 export const TimelessCategorySelect = ({ value, onChange }: {
   value: Block | undefined
   onChange: (category: Block) => void
-}): JSX.Element => {
-  const { t } = useTranslation()
-
-  return (
-    <div className='flex flex-col gap-2'>
-      <Label className='text-sm text-muted-foreground'>
-        {t('views:timeless.columnLabels.category')}
-      </Label>
-      <CategoryPicker
-        value={value}
-        onChange={(block) => {
-          if (block) {
-            onChange(block)
-          }
-        }}
-      />
-    </div>
-  )
-}
+}): JSX.Element => (
+  <div className='flex flex-col gap-2'>
+    <CategoryPicker
+      value={value}
+      onChange={(block) => {
+        if (block) {
+          onChange(block)
+        }
+      }}
+    />
+  </div>
+)
