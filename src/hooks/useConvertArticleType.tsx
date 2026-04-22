@@ -3,10 +3,12 @@ import { useSession } from 'next-auth/react'
 import { useRegistry } from './useRegistry'
 import {
   attachArticleAssignment,
+  buildFallbackPlanning,
   deriveNewPlanning,
   planningReferencesArticle,
   prepareArticleConversion
 } from '@/shared/convertArticleType'
+import type { Document } from '@ttab/elephant-api/newsdoc'
 import { replaceDeliverable } from '@/lib/index/replaceDeliverable'
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
@@ -73,13 +75,6 @@ export function useConvertArticleType(): UseConvertArticleTypeResult {
 
     try {
       if (args.targetType === 'core/article') {
-        if (!args.sourcePlanningId) {
-          toast.error(t('views:timeless.toasts.conversionFailed', {
-            message: 'missing sourcePlanningId'
-          }))
-          return { success: false }
-        }
-
         const sourceResponse = await repository.getDocument({
           uuid: documentId,
           accessToken
@@ -95,21 +90,36 @@ export function useConvertArticleType(): UseConvertArticleTypeResult {
           return { success: false }
         }
 
-        const planningResponse = await repository.getDocument({
-          uuid: args.sourcePlanningId,
-          accessToken
-        })
-        if (!planningResponse?.document) {
-          toast.error(t('views:timeless.toasts.conversionFailed', {
-            message: 'source planning not found'
-          }))
-          return { success: false }
-        }
-        if (!planningReferencesArticle(planningResponse.document, documentId)) {
-          toast.error(t('views:timeless.toasts.conversionFailed', {
-            message: 'source planning does not reference the timeless article'
-          }))
-          return { success: false }
+        const newPlanningUuid = crypto.randomUUID()
+        let basePlanning: Document
+        if (args.sourcePlanningId) {
+          const planningResponse = await repository.getDocument({
+            uuid: args.sourcePlanningId,
+            accessToken
+          })
+          if (!planningResponse?.document) {
+            toast.error(t('views:timeless.toasts.conversionFailed', {
+              message: 'source planning not found'
+            }))
+            return { success: false }
+          }
+          if (!planningReferencesArticle(planningResponse.document, documentId)) {
+            toast.error(t('views:timeless.toasts.conversionFailed', {
+              message: 'source planning does not reference the timeless article'
+            }))
+            return { success: false }
+          }
+          basePlanning = deriveNewPlanning({
+            sourcePlanning: planningResponse.document,
+            targetDate: args.targetDate,
+            newUuid: newPlanningUuid
+          })
+        } else {
+          basePlanning = buildFallbackPlanning({
+            sourceTimeless: sourceResponse.document,
+            targetDate: args.targetDate,
+            newUuid: newPlanningUuid
+          })
         }
 
         const { newDocument: newArticle, errors: pruneErrors } = await prepareArticleConversion({
@@ -120,13 +130,8 @@ export function useConvertArticleType(): UseConvertArticleTypeResult {
         })
         warnOnPruneErrors(pruneErrors)
 
-        const derivedPlanning = deriveNewPlanning({
-          sourcePlanning: planningResponse.document,
-          targetDate: args.targetDate,
-          newUuid: crypto.randomUUID()
-        })
         const newPlanning = attachArticleAssignment({
-          planning: derivedPlanning,
+          planning: basePlanning,
           articleId: newArticle.uuid,
           articleTitle: sourceResponse.document.title ?? '',
           targetDate: args.targetDate

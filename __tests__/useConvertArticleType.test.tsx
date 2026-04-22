@@ -7,6 +7,7 @@ import { useConvertArticleType } from '@/hooks/useConvertArticleType'
 import { useRegistry } from '@/hooks/useRegistry'
 import {
   attachArticleAssignment,
+  buildFallbackPlanning,
   deriveNewPlanning,
   prepareArticleConversion
 } from '@/shared/convertArticleType'
@@ -24,6 +25,7 @@ vi.mock('@/shared/convertArticleType', async () => {
     ...actual,
     prepareArticleConversion: vi.fn(),
     deriveNewPlanning: vi.fn(),
+    buildFallbackPlanning: vi.fn(),
     attachArticleAssignment: vi.fn()
   }
 })
@@ -40,6 +42,7 @@ const mockUseRegistry = vi.mocked(useRegistry)
 const mockUseSession = vi.mocked(useSession)
 const mockPrepareArticleConversion = vi.mocked(prepareArticleConversion)
 const mockDeriveNewPlanning = vi.mocked(deriveNewPlanning)
+const mockBuildFallbackPlanning = vi.mocked(buildFallbackPlanning)
 const mockAttachArticleAssignment = vi.mocked(attachArticleAssignment)
 
 const TIMELESS_ID = '11111111-1111-1111-8111-111111111111'
@@ -87,6 +90,7 @@ describe('useConvertArticleType', () => {
       errors: []
     } as never)
     mockDeriveNewPlanning.mockReturnValue({ uuid: NEW_PLANNING_UUID } as never)
+    mockBuildFallbackPlanning.mockReturnValue({ uuid: NEW_PLANNING_UUID } as never)
     mockAttachArticleAssignment.mockImplementation((args) => ({
       ...(args.planning as object),
       uuid: NEW_PLANNING_UUID
@@ -111,8 +115,11 @@ describe('useConvertArticleType', () => {
     expect(result.current.isConverting).toBe(false)
   })
 
-  it('rejects when sourcePlanningId is missing', async () => {
-    const { createDerivedDocument } = primeRegistryWithRepository()
+  it('builds a fresh planning from the timeless when sourcePlanningId is missing', async () => {
+    const { getDocument, createDerivedDocument } = primeRegistryWithRepository()
+    getDocument.mockResolvedValue({
+      document: { uuid: TIMELESS_ID, type: 'core/article#timeless', title: 'Solo' }
+    })
 
     const { result } = renderHook(() => useConvertArticleType())
 
@@ -124,11 +131,21 @@ describe('useConvertArticleType', () => {
       })
     })
 
-    expect(outcome).toEqual({ success: false })
-    expect(toast.error).toHaveBeenCalledWith(
-      expect.stringContaining('missing sourcePlanningId')
-    )
-    expect(createDerivedDocument).not.toHaveBeenCalled()
+    expect(outcome).toEqual({
+      success: true,
+      kind: 'article',
+      newDocumentId: NEW_ARTICLE_UUID,
+      newPlanningId: NEW_PLANNING_UUID
+    })
+    // Only the timeless was fetched — no planning lookup.
+    expect(getDocument).toHaveBeenCalledTimes(1)
+    expect(mockBuildFallbackPlanning).toHaveBeenCalledTimes(1)
+    expect(mockDeriveNewPlanning).not.toHaveBeenCalled()
+    expect(createDerivedDocument).toHaveBeenCalledWith(expect.objectContaining<{
+      newPlanning: unknown
+    }>({
+      newPlanning: expect.objectContaining<{ uuid: string }>({ uuid: NEW_PLANNING_UUID })
+    }))
   })
 
   it('rejects when source document is not found', async () => {

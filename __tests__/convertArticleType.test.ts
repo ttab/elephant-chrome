@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { Block, Document } from '@ttab/elephant-api/newsdoc'
 import {
+  buildFallbackPlanning,
   deriveNewPlanning,
   prepareArticleConversion
 } from '@/shared/convertArticleType'
@@ -291,5 +292,71 @@ describe('deriveNewPlanning', () => {
     expect(result.links.find((l) => l.rel === 'section')?.uuid).toBe('section-uuid')
     expect(result.links.find((l) => l.rel === 'story')?.uuid).toBe('story-uuid')
     expect(result.links).toHaveLength(2)
+  })
+})
+
+describe('buildFallbackPlanning', () => {
+  const makeTimeless = (overrides?: Partial<Parameters<typeof Document.create>[0]>) =>
+    Document.create({
+      uuid: 'timeless-uuid',
+      type: 'core/article#timeless',
+      uri: 'core://article/timeless-uuid',
+      language: 'sv-se',
+      title: 'A timeless article',
+      meta: [
+        Block.create({ type: 'tt/slugline', value: 'ever-green' }),
+        Block.create({ type: 'core/newsvalue', value: '4' })
+      ],
+      links: [
+        Block.create({
+          type: 'core/section',
+          uuid: 'section-uuid',
+          rel: 'section',
+          title: 'Inrikes'
+        }),
+        Block.create({
+          type: 'core/timeless-category',
+          uuid: 'cat-uuid',
+          rel: 'subject',
+          title: 'Runor'
+        })
+      ],
+      ...overrides
+    })
+
+  it('seeds slugline, newsvalue, section, and title from the timeless', () => {
+    const result = buildFallbackPlanning({
+      sourceTimeless: makeTimeless(),
+      targetDate: '2026-05-15',
+      newUuid: 'fresh-uuid'
+    })
+
+    expect(result.uuid).toBe('fresh-uuid')
+    expect(result.type).toBe('core/planning-item')
+    expect(result.uri).toBe('core://newscoverage/fresh-uuid')
+    expect(result.title).toBe('A timeless article')
+    expect(result.language).toBe('sv-se')
+
+    expect(result.meta.find((b) => b.type === 'tt/slugline')?.value).toBe('ever-green')
+    expect(result.meta.find((b) => b.type === 'core/newsvalue')?.value).toBe('4')
+
+    const planningItem = result.meta.find((b) => b.type === 'core/planning-item')
+    expect(planningItem?.data.start_date).toBe('2026-05-15')
+    expect(planningItem?.data.end_date).toBe('2026-05-15')
+
+    expect(result.links).toHaveLength(1)
+    expect(result.links[0]).toMatchObject({ type: 'core/section', uuid: 'section-uuid' })
+  })
+
+  it('emits empty slugline/newsvalue when the timeless has none', () => {
+    const result = buildFallbackPlanning({
+      sourceTimeless: makeTimeless({ meta: [], links: [] }),
+      targetDate: '2026-05-15',
+      newUuid: 'fresh-uuid'
+    })
+
+    expect(result.meta.find((b) => b.type === 'tt/slugline')).toBeDefined()
+    expect(result.meta.find((b) => b.type === 'core/newsvalue')).toBeDefined()
+    expect(result.links).toHaveLength(0)
   })
 })

@@ -1,14 +1,15 @@
 import { useState, type JSX } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
+  Alert,
+  AlertDescription,
   Button,
   Calendar,
-  Label,
   Popover,
   PopoverContent,
   PopoverTrigger
 } from '@ttab/elephant-ui'
-import { AlertCircleIcon, CalendarIcon, LoaderIcon } from '@ttab/elephant-ui/icons'
+import { AlertCircleIcon, CalendarIcon, InfoIcon, LoaderIcon } from '@ttab/elephant-ui/icons'
 import { format } from 'date-fns'
 import { QueryV1, TermQueryV1 } from '@ttab/elephant-api/index'
 import { Prompt } from './Prompt'
@@ -52,14 +53,11 @@ export function ConvertToArticleDialog({ timelessId, onClose }: Props): JSX.Elem
   const formattedTarget = format(targetDate, 'yyyy-MM-dd')
 
   const handleConfirm = () => {
-    if (!sourcePlanningId) {
-      return
-    }
     setFailed(false)
     void convert(timelessId, {
       targetType: 'core/article',
       targetDate: formattedTarget,
-      sourcePlanningId
+      ...(sourcePlanningId ? { sourcePlanningId } : {})
     }).then((result) => {
       if (result.success && result.kind === 'article') {
         onClose({
@@ -78,6 +76,8 @@ export function ConvertToArticleDialog({ timelessId, onClose }: Props): JSX.Elem
       ? 'metaSheet:convertToArticle.descriptionWithPlanning'
       : 'metaSheet:convertToArticle.descriptionNoPlanning'
 
+  const showNoPlanningHint = !planningLoading && !sourcePlanningId
+
   return (
     <Prompt
       title={t('metaSheet:actions.convertToArticle')}
@@ -91,12 +91,11 @@ export function ConvertToArticleDialog({ timelessId, onClose }: Props): JSX.Elem
           )
         : t('common:actions.confirm')}
       secondaryLabel={t('common:actions.abort')}
-      disablePrimary={isConverting || planningLoading || !sourcePlanningId}
+      disablePrimary={isConverting || planningLoading}
       onPrimary={handleConfirm}
       onSecondary={() => onClose()}
     >
       <div className='flex flex-col gap-2 pt-2'>
-        <Label>{t('metaSheet:convertToArticle.targetDateLabel')}</Label>
         <Popover>
           <PopoverTrigger asChild>
             <Button variant='outline' className='w-full justify-start gap-2'>
@@ -118,6 +117,15 @@ export function ConvertToArticleDialog({ timelessId, onClose }: Props): JSX.Elem
             />
           </PopoverContent>
         </Popover>
+
+        {showNoPlanningHint && (
+          <Alert className='bg-gray-50' variant='default'>
+            <InfoIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />
+            <AlertDescription>
+              {t('metaSheet:convertToArticle.noPlanningHint')}
+            </AlertDescription>
+          </Alert>
+        )}
 
         {failed && !isConverting && (
           <div className='flex items-center gap-2 text-sm text-destructive pt-2'>

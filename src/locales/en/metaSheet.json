@@ -22,11 +22,12 @@
   },
   "convertToArticle": {
     "descriptionWithPlanning": "A new planning will be derived from the original. Pick a date for the new article.",
-    "descriptionNoPlanning": "No original planning was found — this timeless can't be converted.",
+    "descriptionNoPlanning": "Pick a date for the new article.",
     "loadingPlanning": "Looking for the original planning…",
     "targetDateLabel": "Date",
     "converting": "Converting...",
-    "failed": "Conversion failed. Try again or cancel."
+    "failed": "Conversion failed. Try again or cancel.",
+    "noPlanningHint": "No original planning was found — a new planning will be created from the timeless."
   },
   "convertToTimeless": {
     "description": "Pick a subject category for the new timeless."

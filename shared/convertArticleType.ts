@@ -68,6 +68,60 @@ export async function prepareArticleConversion({
 }
 
 /**
+ * Build a fresh planning for timeless→article conversion when no source
+ * planning exists. Inherits slugline, newsvalue, section, and language from
+ * the timeless so the generated planning carries meaningful metadata.
+ */
+export function buildFallbackPlanning({
+  sourceTimeless,
+  targetDate,
+  newUuid
+}: {
+  sourceTimeless: Document
+  targetDate: string
+  newUuid: string
+}): Document {
+  const slugline = sourceTimeless.meta.find((b) => b.type === 'tt/slugline')
+  const newsvalue = sourceTimeless.meta.find((b) => b.type === 'core/newsvalue')
+  const sectionLink = sourceTimeless.links.find(
+    (l) => l.type === 'core/section' && l.rel === 'section'
+  )
+
+  const meta: Block[] = [
+    Block.create({
+      type: 'core/planning-item',
+      data: {
+        end_date: targetDate,
+        tentative: 'false',
+        start_date: targetDate
+      }
+    }),
+    newsvalue ? Block.create({ ...newsvalue }) : Block.create({ type: 'core/newsvalue' }),
+    slugline ? Block.create({ ...slugline }) : Block.create({ type: 'tt/slugline' }),
+    Block.create({
+      type: 'core/description',
+      data: { text: '' },
+      role: 'public'
+    }),
+    Block.create({
+      type: 'core/description',
+      data: { text: '' },
+      role: 'internal'
+    })
+  ]
+
+  return Document.create({
+    uuid: newUuid,
+    type: 'core/planning-item',
+    uri: `core://newscoverage/${newUuid}`,
+    title: sourceTimeless.title,
+    language: sourceTimeless.language,
+    meta,
+    links: sectionLink ? [Block.create({ ...sectionLink })] : []
+  })
+}
+
+/**
  * Clone a planning for timeless→article conversion. Assignments are dropped
  * because the caller adds exactly one new assignment pointing at the derived
  * article.
