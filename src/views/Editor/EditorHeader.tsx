@@ -101,8 +101,10 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
       })
     }
 
-    // When we set withheld or draft we must change related dates (publish and start respecively)
-    if (['withheld', 'draft'].includes(newStatus)) {
+    // When we set withheld or draft we must change related dates on the planning
+    // assignment (publish and start respectively). Skip when no planning is associated —
+    // the transition still succeeds, but no assignment times are touched.
+    if (['withheld', 'draft'].includes(newStatus) && planningId) {
       // We require a valid publish time if scheduling
       if (newStatus === 'withheld' && !(data?.time instanceof Date)) {
         toast.error(t('errors:toasts.couldNotScheduleArticle'))
@@ -180,9 +182,9 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
                   </Button>
                 )}
 
-                {!!(propPlanningId || planningId) && (!isReadOnlyAndUpdated || isUnpublished) && (
+                {(!isReadOnlyAndUpdated || isUnpublished) && (
                   <StatusMenu
-                    planningId={propPlanningId || planningId}
+                    planningId={propPlanningId || planningId || undefined}
                     ydoc={ydoc}
                     onBeforeStatusChange={onBeforeStatusChange}
                     embargoUntil={embargoUntil}

@@ -35,6 +35,7 @@
     "setTime": "Ange tid",
     "asSavePlaceholder": "Publicera ny information",
     "embargoMinTime": "Embargo: kan inte schemaläggas före {{time}}",
+    "schedulingRequiresPlanning": "Schemaläggning är inte tillgänglig eftersom dokumentet saknar en kopplad planering.",
     "causes": {
       "development_short": "UV",
       "development_long": "Utveckling",
