@@ -83,7 +83,6 @@
     "title": "Timeless",
     "columnLabels": {
       "category": "Category",
-      "created": "Created",
       "lastChanged": "Last changed",
       "actions": "Actions"
     },

@@ -9,7 +9,6 @@ export const _fields = [
   'workflow_state',
   'document.rel.subject.uuid',
   'document.rel.subject.title',
-  'created',
   'modified'
 ] as const
 

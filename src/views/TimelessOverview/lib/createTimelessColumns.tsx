@@ -10,7 +10,6 @@ import { FacetedFilter } from '@/components/Commands/FacetedFilter'
 import {
   BookmarkIcon,
   CalendarIcon,
-  CalendarPlusIcon,
   CircleCheckIcon,
   MoreVerticalIcon,
   PenBoxIcon
@@ -110,27 +109,7 @@ export function createTimelessColumns<Ns extends Namespace>({
         value.includes(row.getValue(id))
     },
     {
-      id: 'created',
-      meta: {
-        name: t('views:timeless.columnLabels.created'),
-        columnIcon: CalendarPlusIcon,
-        className: 'flex-none hidden @4xl/view:[display:revert]'
-      },
-      accessorFn: (data) => data.fields['created']?.values[0],
-      cell: ({ row }) => {
-        const date = row.getValue<string>('created')
-        const readable = date
-          ? dateToReadableDateTime(new Date(date), locale.code.full, timeZone, true)
-          : '-'
-        return (
-          <span className='font-thin text-sm text-muted-foreground'>
-            {readable}
-          </span>
-        )
-      }
-    },
-    {
-      id: 'modified',
+      id: 'lastChanged',
       meta: {
         name: t('views:timeless.columnLabels.lastChanged'),
         columnIcon: CalendarIcon,
@@ -138,7 +117,7 @@ export function createTimelessColumns<Ns extends Namespace>({
       },
       accessorFn: (data) => data.fields['modified']?.values[0],
       cell: ({ row }) => {
-        const date = row.getValue<string>('modified')
+        const date = row.getValue<string>('lastChanged')
         const readable = date
           ? dateToReadableDateTime(new Date(date), locale.code.full, timeZone, true)
           : '-'
