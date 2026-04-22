@@ -36,6 +36,7 @@
     "setTime": "Set time",
     "asSavePlaceholder": "Publish new information",
     "embargoMinTime": "Embargo: cannot schedule before {{time}}",
+    "schedulingRequiresPlanning": "Scheduling is unavailable because this document has no associated planning.",
     "causes": {
       "development_short": "DEV",
       "development_long": "Development",

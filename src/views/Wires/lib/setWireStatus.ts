@@ -61,8 +61,7 @@ export function calculateWireStatuses(wires: Wire[], newStatus: WireStatusName) 
     const currentVersion = wire.fields?.['current_version']?.values?.[0]
     const currentStatus = getWireStatus(wire)
 
-    // Don't allow changing status of used wires
-    if (!currentVersion || currentStatus === 'used') {
+    if (!currentVersion) {
       continue
     }
 
