@@ -1,4 +1,4 @@
-import { type JSX, useState } from 'react'
+import { type JSX } from 'react'
 import { Button } from '@ttab/elephant-ui'
 import { RefreshCwIcon } from '@ttab/elephant-ui/icons'
 import { useTranslation } from 'react-i18next'
@@ -6,6 +6,7 @@ import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import { useConvertArticleType } from '@/hooks/useConvertArticleType'
 import { useLink } from '@/hooks/useLink'
+import { useModal } from '@/components/Modal/useModal'
 import { ConvertToArticleDialog } from './ConvertToArticleDialog'
 import { ConvertToTimelessDialog } from './ConvertToTimelessDialog'
 
@@ -20,15 +21,42 @@ export const ArticleTypeConversion = ({ ydoc, documentType }: {
 }): JSX.Element | null => {
   const { t } = useTranslation('metaSheet')
   const { isConverting } = useConvertArticleType()
+  const { showModal, hideModal } = useModal()
   const openEditor = useLink('Editor')
-  const [toArticleOpen, setToArticleOpen] = useState(false)
-  const [toTimelessOpen, setToTimelessOpen] = useState(false)
 
   if (documentType !== 'core/article' && documentType !== 'core/article#timeless') {
     return null
   }
 
   const iconClassName = isConverting ? 'animate-spin' : ''
+
+  const openToArticle = () => {
+    showModal(
+      <ConvertToArticleDialog
+        timelessId={ydoc.id}
+        onClose={(result) => {
+          hideModal()
+          if (result?.articleId) {
+            openEditor(undefined, { id: result.articleId })
+          }
+        }}
+      />
+    )
+  }
+
+  const openToTimeless = () => {
+    showModal(
+      <ConvertToTimelessDialog
+        articleId={ydoc.id}
+        onClose={(result) => {
+          hideModal()
+          if (result?.timelessId) {
+            openEditor(undefined, { id: result.timelessId })
+          }
+        }}
+      />
+    )
+  }
 
   return (
     <>
@@ -37,7 +65,7 @@ export const ArticleTypeConversion = ({ ydoc, documentType }: {
           variant='outline'
           size='sm'
           disabled={isConverting}
-          onClick={() => setToArticleOpen(true)}
+          onClick={openToArticle}
         >
           <RefreshCwIcon size={14} strokeWidth={1.75} className={iconClassName} />
           {t('actions.convertToArticle')}
@@ -48,33 +76,11 @@ export const ArticleTypeConversion = ({ ydoc, documentType }: {
           variant='outline'
           size='sm'
           disabled={isConverting}
-          onClick={() => setToTimelessOpen(true)}
+          onClick={openToTimeless}
         >
           <RefreshCwIcon size={14} strokeWidth={1.75} className={iconClassName} />
           {t('actions.convertToTimeless')}
         </Button>
-      )}
-      {toArticleOpen && (
-        <ConvertToArticleDialog
-          timelessId={ydoc.id}
-          onClose={(result) => {
-            setToArticleOpen(false)
-            if (result?.articleId) {
-              openEditor(undefined, { id: result.articleId })
-            }
-          }}
-        />
-      )}
-      {toTimelessOpen && (
-        <ConvertToTimelessDialog
-          articleId={ydoc.id}
-          onClose={(result) => {
-            setToTimelessOpen(false)
-            if (result?.timelessId) {
-              openEditor(undefined, { id: result.timelessId })
-            }
-          }}
-        />
       )}
     </>
   )

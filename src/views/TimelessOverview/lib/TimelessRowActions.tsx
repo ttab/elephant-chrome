@@ -1,10 +1,11 @@
-import { type MouseEvent, type JSX, useState } from 'react'
+import { type MouseEvent, type JSX } from 'react'
 import { DotMenu, type DotDropdownMenuActionItem } from '@/components/ui/DotMenu'
 import { CalendarDaysIcon, RefreshCwIcon } from '@ttab/elephant-ui/icons'
 import { ConvertToArticleDialog } from '@/components/ConvertToArticleDialog'
 import { useConvertArticleType } from '@/hooks/useConvertArticleType'
 import { useDeliverableInfo } from '@/hooks/useDeliverableInfo'
 import { useLink } from '@/hooks/useLink'
+import { useModal } from '@/components/Modal/useModal'
 import { useTranslation } from 'react-i18next'
 
 interface TimelessRowActionsProps {
@@ -18,7 +19,7 @@ export function TimelessRowActions({
 }: TimelessRowActionsProps): JSX.Element {
   const { isConverting } = useConvertArticleType()
   const { t } = useTranslation(['views', 'common'])
-  const [dialogOpen, setDialogOpen] = useState(false)
+  const { showModal, hideModal } = useModal()
   const openEditor = useLink('Editor')
   const openPlanning = useLink('Planning')
   const planningId = useDeliverableInfo(documentId)?.planningUuid ?? ''
@@ -35,7 +36,17 @@ export function TimelessRowActions({
   const handleConvert = (event: MouseEvent<HTMLDivElement>) => {
     event.preventDefault()
     event.stopPropagation()
-    setDialogOpen(true)
+    showModal(
+      <ConvertToArticleDialog
+        timelessId={documentId}
+        onClose={(result) => {
+          hideModal()
+          if (result?.articleId) {
+            openEditor(undefined, { id: result.articleId })
+          }
+        }}
+      />
+    )
   }
 
   const menuItems: DotDropdownMenuActionItem[] = [
@@ -53,20 +64,5 @@ export function TimelessRowActions({
     }
   ]
 
-  return (
-    <>
-      <DotMenu items={menuItems} />
-      {dialogOpen && (
-        <ConvertToArticleDialog
-          timelessId={documentId}
-          onClose={(result) => {
-            setDialogOpen(false)
-            if (result?.articleId) {
-              openEditor(undefined, { id: result.articleId })
-            }
-          }}
-        />
-      )}
-    </>
-  )
+  return <DotMenu items={menuItems} />
 }
