@@ -7,9 +7,6 @@ import type * as Y from 'yjs'
 import { useTranslation } from 'react-i18next'
 import { documentTypeValueFormat } from '@/defaults/documentTypeFormats'
 import { PenOffIcon } from '@ttab/elephant-ui/icons'
-import { FileLockIcon, FileSymlinkIcon, PenBoxIcon } from '@ttab/elephant-ui/icons'
-import { Button } from '@ttab/elephant-ui'
-import { useLink } from '@/hooks/useLink'
 
 export const FactboxHeader = ({ ydoc, onDialogClose, asDialog }: {
   ydoc?: YDocument<Y.Map<unknown>>
@@ -47,28 +44,6 @@ export const FactboxHeader = ({ ydoc, onDialogClose, asDialog }: {
               <ViewHeader.RemoteUsers ydoc={ydoc} />
             )}
             <ViewHeader.Action ydoc={ydoc} onDialogClose={onDialogClose} asDialog={asDialog}>
-              {!ydoc && (
-                <>
-                  <Button
-                    variant='ghost'
-                    size='sm'
-                    className='h-9 hover:bg-gray-200 dark:hover:bg-table-focused'
-                    onClick={(e) => articleId && openLink(e, 'article')}
-                    title={t('action.openArticle') || 'Open article'}
-                  >
-                    <PenBoxIcon size={16} />
-                  </Button>
-                  <Button
-                    variant='ghost'
-                    size='sm'
-                    className='h-9 hover:bg-gray-200 dark:hover:bg-table-focused'
-                    onClick={(e) => originalId && openLink(e, 'original')}
-                    title={t('action.openOriginal') || 'Open original'}
-                  >
-                    <FileSymlinkIcon size={16} />
-                  </Button>
-                </>
-              )}
               { !asDialog && ydoc && (
                 <MetaSheet ydoc={ydoc} />
               )}
