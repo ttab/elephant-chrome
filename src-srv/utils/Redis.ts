@@ -1,5 +1,6 @@
 import { createClient } from 'redis'
 import type { RedisClientType } from 'redis'
+import logger from '../lib/logger.js'
 
 const BASE_PREFIX = 'elc::hp'
 
@@ -14,6 +15,11 @@ export class Redis {
 
   async connect(): Promise<void> {
     const client = createClient({ url: this.#url })
+
+    client.on('error', (err: Error) => {
+      const { hostname, port } = new URL(this.#url)
+      logger.error({ err, host: hostname, port }, 'Redis cache connection error')
+    })
 
     await client.connect().catch((ex) => {
       throw new Error('connect to redis', { cause: ex })
