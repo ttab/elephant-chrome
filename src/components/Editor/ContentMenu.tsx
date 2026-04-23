@@ -1,13 +1,27 @@
 import type { JSX } from 'react'
-import { Menu, usePluginRegistry } from '@ttab/textbit'
+import { Menu, useEditor, usePluginRegistry } from '@ttab/textbit'
 import { ContentMenuGroup } from './ContentMenuGroup'
 import { ContentMenuItem } from './ContentMenuItem'
 
 export const ContentMenu = (): JSX.Element => {
+  const editor = useEditor()
   const { actions } = usePluginRegistry()
 
+  const currentPluginClass = (() => {
+    if (!editor.selection) {
+      return null
+    }
+
+    const topNode = editor.children[editor.selection.anchor.path[0]]
+    return actions.find((a) => a.plugin.name === topNode?.type)?.plugin.class ?? null
+  })()
+
+  const insideBlock = currentPluginClass === 'block'
+
   const textActions = actions.filter((action) => action.plugin.class === 'text')
-  const blockActions = actions.filter((action) => action.plugin.class === 'block')
+  const blockActions = insideBlock
+    ? []
+    : actions.filter((action) => action.plugin.class === 'block')
 
   return (
     <Menu.Root className='group mt-2'>
