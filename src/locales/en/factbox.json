@@ -9,6 +9,7 @@
     "createFactbox": "Create factbox",
     "open": "Open"
   },
+  "usedInArticles": "Used in articles",
   "prompts": {
     "approveBeforeClose": "Do you want to approve the changes before closing?",
     "savedButNotApproved": "Your changes are saved but the factbox is not approved."

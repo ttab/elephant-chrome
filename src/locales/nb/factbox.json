@@ -9,6 +9,7 @@
     "createFactbox": "Ny faktaboks",
     "open": "Åpne"
   },
+  "usedInArticles": "Brukes i artikler",
   "prompts": {
     "approveBeforeClose": "Vil du godkjenne endringene før du lukker?",
     "savedButNotApproved": "Endringene er lagret, men faktaboksen er ikke godkjent."

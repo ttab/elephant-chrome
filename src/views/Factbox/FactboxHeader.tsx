@@ -12,6 +12,8 @@ export const FactboxHeader = ({ ydoc, onDialogClose, asDialog }: {
   ydoc?: YDocument<Y.Map<unknown>>
   asDialog: boolean
   onDialogClose?: () => void
+  articleId?: string
+  originalId?: string
 }): JSX.Element => {
   const { t } = useTranslation('factbox')
   const Icon = ydoc ? documentTypeValueFormat?.['core/factbox']?.icon : PenOffIcon
@@ -45,6 +47,7 @@ export const FactboxHeader = ({ ydoc, onDialogClose, asDialog }: {
               { !asDialog && ydoc && (
                 <MetaSheet ydoc={ydoc} />
               )}
+
             </ViewHeader.Action>
           </div>
 
