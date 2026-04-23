@@ -6,9 +6,11 @@ export function getDeliverableType(type: string | undefined): DeliverableType {
       return 'flash'
     case 'editorial-info':
       return 'editorial-info'
+    case 'timeless':
+      return 'timeless'
     default:
       return 'article'
   }
 }
 
-export type DeliverableType = 'article' | 'flash' | 'editorial-info'
+export type DeliverableType = 'article' | 'flash' | 'editorial-info' | 'timeless'

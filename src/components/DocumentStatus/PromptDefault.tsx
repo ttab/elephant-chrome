@@ -6,6 +6,9 @@ import { useTranslation } from 'react-i18next'
 import { HastToggle } from '@/components/HastToggle'
 import type * as Y from 'yjs'
 import type { YDocument } from '@/modules/yjs/hooks'
+import { useRegistry } from '@/hooks/useRegistry'
+import { toZonedTime } from 'date-fns-tz'
+import { format } from 'date-fns'
 import type { LucideIcon } from '@ttab/elephant-ui/icons'
 
 export const PromptDefault = ({
@@ -18,6 +21,7 @@ export const PromptDefault = ({
   ydoc,
   usableId,
   documentType,
+  embargoUntil,
   anchor,
   typeIcon
 }: {
@@ -34,19 +38,25 @@ export const PromptDefault = ({
   ydoc?: YDocument<Y.Map<unknown>>
   usableId?: bigint
   documentType?: string
+  embargoUntil?: string
   anchor?: HTMLElement | null
   typeIcon?: LucideIcon
 }) => {
   const [cause, setCause] = useState<string | undefined>(currentCause)
   const isUnpublishPrompt = prompt.status === 'unpublished'
   const { t } = useTranslation('common')
+  const { timeZone } = useRegistry()
+
+  const embargoDate = embargoUntil ? new Date(embargoUntil) : undefined
+  const embargoIsActive = embargoDate ? embargoDate > new Date() : false
+  const embargoBlocksPublish = embargoIsActive && prompt.status === 'usable'
 
   const showCauseField = isUnpublishPrompt
     ? false
     : requireCause || cause
   const disablePrimary = isUnpublishPrompt
     ? false
-    : requireCause && !cause
+    : (requireCause && !cause) || embargoBlocksPublish
 
   useEffect(() => {
     if (prompt.status === 'draft') {
@@ -91,6 +101,13 @@ export const PromptDefault = ({
       primaryVariant={isUnpublishPrompt ? 'destructive' : undefined}
       typeIcon={typeIcon}
     >
+      {embargoBlocksPublish && embargoDate && (
+        <div className='text-sm text-orange-700 dark:text-orange-400'>
+          {t('editor:embargoActive', {
+            time: format(toZonedTime(embargoDate, timeZone), 'yyyy-MM-dd HH:mm')
+          })}
+        </div>
+      )}
       {ydoc?.ele && documentType === 'core/article' && prompt.status !== 'unpublished' && prompt.status !== 'draft' && (
         <HastToggle ydoc={ydoc} usableId={usableId} variant='full' />
       )}

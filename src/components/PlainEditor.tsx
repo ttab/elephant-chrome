@@ -2,7 +2,7 @@ import type { EleDocument, EleDocumentResponse } from '@/shared/types'
 import { Textbit, type Element } from '@ttab/textbit'
 import useSWR from 'swr'
 import { LoadingText } from './LoadingText'
-import { Bold, Italic, Link, Text, OrderedList, UnorderedList, TTVisual, Factbox, Table } from '@ttab/textbit-plugins'
+import { Bold, Italic, Link, Text, OrderedList, UnorderedList, TTVisual, Image, Factbox, Table } from '@ttab/textbit-plugins'
 import { PreVersion } from './Version/PreVersion'
 import type { Status as DocumentStatuses } from '@ttab/elephant-api/repository'
 import { PreVersionInfo } from './Version/PreVersionInfo'
@@ -52,6 +52,11 @@ export const Editor = ({ id, version, textOnly = false, direct, versionStatusHis
     return [
       ...basePlugins.map((initPlugin) => initPlugin()),
       TTVisual({
+        captionLabel: t('image.captionLabel'),
+        bylineLabel: t('image.bylineLabel'),
+        removable: false
+      }),
+      Image({
         captionLabel: t('image.captionLabel'),
         bylineLabel: t('image.bylineLabel'),
         removable: false
@@ -153,5 +158,5 @@ function filterText(content: Element[], textOnly: boolean): Element[] {
     return content
   }
 
-  return content.filter((c) => c.type !== 'tt/visual')
+  return content.filter((c) => c.type !== 'tt/visual' && c.type !== 'core/image')
 }

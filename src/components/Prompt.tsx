@@ -1,4 +1,4 @@
-import { useEffect, useState, type PropsWithChildren, type JSX, useLayoutEffect } from 'react'
+import { useEffect, useState, type PropsWithChildren, type JSX, type ReactNode, useLayoutEffect } from 'react'
 import { useKeydownGlobal } from '@/hooks/useKeydownGlobal'
 import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@ttab/elephant-ui'
 import type { MouseEvent } from 'react'
@@ -10,7 +10,7 @@ import { cn } from '@ttab/elephant-ui/utils'
 interface PromptProps extends PropsWithChildren {
   title?: string
   description?: string
-  primaryLabel: string
+  primaryLabel: ReactNode
   secondaryLabel?: string
   cancelLabel?: string
   onPrimary: (event: MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement> | KeyboardEvent) => void
