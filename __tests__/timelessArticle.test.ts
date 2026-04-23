@@ -43,12 +43,26 @@ describe('timelessArticleDocumentTemplate', () => {
     expect(categoryLink?.rel).toBe('subject')
   })
 
-  it('includes default content-source link', () => {
-    const doc = timelessArticleDocumentTemplate('test-id')
+  it('passes through caller-provided content-source link', () => {
+    const doc = timelessArticleDocumentTemplate('test-id', {
+      links: {
+        'core/content-source': [Block.create({
+          type: 'core/content-source',
+          rel: 'source',
+          uri: 'tt://content-source/npk',
+          title: 'NPK'
+        })]
+      }
+    })
     const source = doc.links.find((l) => l.type === 'core/content-source')
 
-    expect(source).toBeDefined()
-    expect(source?.title).toBe('TT')
+    expect(source?.uri).toBe('tt://content-source/npk')
+    expect(source?.title).toBe('NPK')
+  })
+
+  it('omits content-source link when caller provides none', () => {
+    const doc = timelessArticleDocumentTemplate('test-id')
+    expect(doc.links.some((l) => l.type === 'core/content-source')).toBe(false)
   })
 
   it('includes meta from payload', () => {

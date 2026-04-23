@@ -34,6 +34,7 @@ describe('initializeAuthor', () => {
       expires: 'mockExpires',
       status: 'authenticated',
       units: [],
+      org: '',
       error: '',
       user: {
         sub: 'core://user/5558',
