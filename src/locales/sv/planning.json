@@ -7,6 +7,8 @@
     "publishWindow": "Publiceringsfönster",
     "publishTime": "Publiceringstid",
     "createPrintArticle": "Skapa printartikel",
+    "convertToArticle": "Konvertera till artikel",
+    "convertToTimeless": "Konvertera till tidlös",
     "removeAssignment": "Vill du ta bort uppdraget",
     "chooseTime": "Välj tid",
     "timeFromTo": "Tid från-till",

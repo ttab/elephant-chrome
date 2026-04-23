@@ -168,7 +168,8 @@ export const PATCH: RouteHandler = async (req: Request, { collaborationServer, r
   const context: Context = {
     accessToken,
     user,
-    agent: 'server'
+    agent: 'server',
+    units: []
   }
 
   if (!isContext(context)) {

@@ -6,11 +6,14 @@ import {
 import { StatusMenuOption } from './StatusMenuOption'
 import type { PropsWithChildren } from 'react'
 
-export const StatusOptions = ({ transitions, statuses, onSelect, children, hasChanges }: {
+export const StatusOptions = ({
+  transitions, statuses, onSelect, children, hasChanges, disabledTransitions
+}: {
   transitions: Record<string, WorkflowTransition>
   statuses: Record<string, StatusSpecification>
   onSelect: (state: { status: string } & WorkflowTransition) => void
   hasChanges?: boolean
+  disabledTransitions?: Record<string, { reason: string }>
 } & PropsWithChildren) => {
   return (
     <div className='p-2'>
@@ -31,6 +34,7 @@ export const StatusOptions = ({ transitions, statuses, onSelect, children, hasCh
               state={state}
               onSelect={onSelect}
               hasChanges={hasChanges}
+              disabledReason={disabledTransitions?.[status]?.reason}
             />
           )
         })}

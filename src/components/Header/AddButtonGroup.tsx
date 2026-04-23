@@ -1,6 +1,5 @@
 import { Button } from '@ttab/elephant-ui'
 import { PlusIcon, ChevronDownIcon, type LucideIcon } from '@ttab/elephant-ui/icons'
-import { type ReactNode } from 'react'
 import * as Views from '@/views'
 import { getTemplateFromView } from '@/shared/templates/lib/getTemplateFromView'
 import { cn } from '@ttab/elephant-ui/utils'
@@ -19,11 +18,13 @@ import { addButtonGroupValueFormat } from '@/defaults/documentTypeFormats'
 import type { buttonVariants } from '@ttab/elephant-ui'
 import type { VariantProps } from 'class-variance-authority'
 import type { QueryParams } from '@/hooks/useQuery'
+import { useLink } from '@/hooks/useLink'
+import { useRegistry } from '@/hooks/useRegistry'
+import { TimelessCreation } from '@/views/TimelessCreation'
 import { useTranslation } from 'react-i18next'
 import type { TFunction } from 'i18next'
-import { useRegistry } from '@/hooks/index'
 
-const addButtonTypes = ['core/planning-item', 'core/event', 'core/article', 'core/factbox', 'core/flash'] as const
+const addButtonTypes = ['core/planning-item', 'core/event', 'core/article', 'core/factbox', 'core/flash', 'core/article#timeless'] as const
 
 type Variant = VariantProps<typeof buttonVariants>['variant']
 type ButtonView = { name: View, type: string, icon?: { icon?: LucideIcon, color?: string } }
@@ -32,24 +33,19 @@ const AddButton = ({
   withNew,
   variant = 'default',
   className,
-  showModal,
-  hideModal,
   hast,
   view,
-  query,
+  onClick,
   t
 }: {
-  query: QueryParams
   withNew?: boolean
   variant?: Variant
   className?: string
-  showModal?: (content: ReactNode, type?: 'dialog') => void
-  hideModal?: () => void
   hast?: boolean
   view: ButtonView
+  onClick: (view: ButtonView) => void
   t: TFunction
 }) => {
-  const ViewDialog = Views[view.name]
   const typeLabel = (t?: string) => t ? addButtonGroupValueFormat[t].label : ''
 
   return (
@@ -57,21 +53,7 @@ const AddButton = ({
       size='sm'
       variant={variant}
       className={!withNew ? '' : cn('h-8 pr-4', className)}
-      onClick={() => {
-        const id = crypto.randomUUID()
-        const initialDocument = getTemplateFromView(view.name, { useHast: hast })(id, { query })
-
-        if (showModal) {
-          showModal(
-            <ViewDialog
-              onDialogClose={hideModal}
-              asDialog
-              id={id}
-              document={initialDocument}
-            />
-          )
-        }
-      }}
+      onClick={() => onClick(view)}
     >
       {withNew && <PlusIcon size={18} strokeWidth={1.75} />}
       <span className='pl-0.5'>{`${withNew ? t('common:misc.new') : view.name === 'Flash' && hast ? 'HAST' : typeLabel(view.type)}`}</span>
@@ -81,8 +63,9 @@ const AddButton = ({
 
 export const AddButtonGroup = ({ docType = 'core/planning-item', query }: { type: View, query: QueryParams, docType?: string }) => {
   const { showModal, hideModal } = useModal()
-  const { t } = useTranslation()
   const { featureFlags } = useRegistry()
+  const openEditor = useLink('Editor')
+  const { t } = useTranslation()
   const hasHast = !!featureFlags.hasHast
 
   const views: ButtonView[] = addButtonTypes.map((type) => {
@@ -93,16 +76,42 @@ export const AddButtonGroup = ({ docType = 'core/planning-item', query }: { type
   const firstItem = views.find((view) => view.type === docType) as ButtonView
   const ItemIcon = firstItem.icon
 
+  const handleCreate = (view: ButtonView) => {
+    const ViewDialog = Views[view.name]
+    const id = crypto.randomUUID()
+
+    if (view.type === 'core/article#timeless' && showModal) {
+      showModal(
+        <TimelessCreation
+          id={id}
+          onClose={(createdId) => {
+            hideModal()
+            if (createdId) {
+              openEditor(undefined, { id: createdId }, undefined)
+            }
+          }}
+        />
+      )
+    } else if (showModal) {
+      const initialDocument = getTemplateFromView(view.name, { useHast: hasHast })(id, { query })
+      showModal(
+        <ViewDialog
+          onDialogClose={hideModal}
+          asDialog
+          id={id}
+          document={initialDocument}
+        />
+      )
+    }
+  }
 
   return (
     <ButtonGroup>
       <AddButton
         t={t}
         withNew
-        showModal={showModal}
-        hideModal={hideModal}
         view={firstItem?.type ? firstItem : views[0]}
-        query={query}
+        onClick={handleCreate}
       />
       <ButtonGroupSeparator />
       <DropdownMenu>
@@ -124,10 +133,8 @@ export const AddButtonGroup = ({ docType = 'core/planning-item', query }: { type
                 t={t}
                 variant='ghost'
                 className='px-0'
-                showModal={showModal}
-                hideModal={hideModal}
                 view={firstItem}
-                query={query}
+                onClick={handleCreate}
               />
             </DropdownMenuItem>
           )}
@@ -142,11 +149,9 @@ export const AddButtonGroup = ({ docType = 'core/planning-item', query }: { type
                   t={t}
                   variant='ghost'
                   className='px-0'
-                  showModal={showModal}
-                  hideModal={hideModal}
                   hast={hasHast}
                   view={view}
-                  query={query}
+                  onClick={handleCreate}
                 />
               </DropdownMenuItem>
             )

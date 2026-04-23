@@ -60,7 +60,13 @@
     "createError2": "Could not create new article!",
     "assignmentRollbackError": "The article couldn't be confirmed as saved and the assignment couldn't be removed. Please check the planning manually.",
     "markUsed": "Mark as used",
-    "createButton": "Create article"
+    "createButton": "Create article",
+    "embargo": "Embargo until",
+    "translateToNynorsk": "Translation",
+    "translationNone": "None",
+    "translationStandard": "Standard",
+    "translationPersonal": "Personal preferences",
+    "translationError": "Translation failed. Article created without translation."
   },
   "sources": {
     "title": "Sources",

@@ -14,6 +14,7 @@ import {
   LibraryIcon,
   MoveRightIcon,
   PenIcon,
+  RefreshCwIcon,
   type LucideProps
 } from '@ttab/elephant-ui/icons'
 import { type MouseEvent, useMemo, useState, useCallback, useEffect, useRef, type JSX } from 'react'
@@ -49,6 +50,9 @@ import { useTranslation } from 'react-i18next'
 import type { TranslationKey } from '@/types/i18next.d'
 import { RelatedWires } from './RelatedWires'
 import { useFeatureFlags } from '@/hooks/useFeatureFlags'
+import { useConvertArticleType } from '@/hooks/useConvertArticleType'
+import { ConvertToArticleDialog } from '@/components/ConvertToArticleDialog'
+import { ConvertToTimelessDialog } from '@/components/ConvertToTimelessDialog'
 
 export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDialog, planningDate }: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -66,6 +70,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
   const { data: session } = useSession()
   const { t } = useTranslation()
   const featureFlags = useFeatureFlags(['hasPrint', 'hasHast'])
+  const { isConverting } = useConvertArticleType()
 
   const base = `meta.core/assignment[${index}]`
   const [assignment] = useYValue<Y.Map<unknown>>(ydoc.ele, base, true)
@@ -102,7 +107,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
   const [planningId] = getValueByYPath<string | undefined>(ydoc.ele, 'root.uuid')
 
   const documentId = articleId || flashId || editorialInfoId
-  const isDocument = assignmentType === 'flash' || assignmentType === 'text' || assignmentType === 'editorial-info'
+  const isDocument = assignmentType === 'flash' || assignmentType === 'text' || assignmentType === 'editorial-info' || assignmentType === 'timeless'
   const documentLabel = assignmentType
     ? t(`shared:assignmentTypes.${assignmentType}` as TranslationKey)
     : t('common:misc.unknown')
@@ -115,6 +120,9 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
 
   const assignmentTime = useMemo(() => {
     if (typeof assignmentType !== 'string') {
+      return undefined
+    }
+    if (assignmentType === 'timeless') {
       return undefined
     }
     const endAndStartAreNotEqual = endTime && startTime && endTime !== startTime
@@ -291,12 +299,53 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
             )
           }
         }]
+      : []),
+    ...(assignmentType === 'timeless' && documentId
+      ? [{
+          label: t('planning:assignment.convertToArticle'),
+          disabled: isConverting || articleStatus?.meta?.workflowState === 'used',
+          icon: RefreshCwIcon,
+          item: () => {
+            showModal(
+              <ConvertToArticleDialog
+                timelessId={documentId}
+                onClose={(result) => {
+                  hideModal()
+                  if (result?.articleId) {
+                    openArticle(undefined, { id: result.articleId })
+                  }
+                }}
+              />
+            )
+          }
+        }]
+      : []),
+    ...(assignmentType === 'text' && documentId
+      ? [{
+          label: t('planning:assignment.convertToTimeless'),
+          disabled: isConverting || articleStatus?.meta?.workflowState === 'used',
+          icon: RefreshCwIcon,
+          item: () => {
+            showModal(
+              <ConvertToTimelessDialog
+                articleId={documentId}
+                onClose={(result) => {
+                  hideModal()
+                  if (result?.timelessId) {
+                    openArticle(undefined, { id: result.timelessId })
+                  }
+                }}
+              />
+            )
+          }
+        }]
       : [])
   ]
   const selected = articleId && openDocuments.includes(articleId)
 
   useRepositoryEvents([
     'core/article',
+    'core/article#timeless',
     'core/flash',
     'core/editorial-info'
   ], (event) => {

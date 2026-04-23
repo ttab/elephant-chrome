@@ -1,14 +1,17 @@
 import type { StatusSpecification, WorkflowTransition } from '@/defaults/workflowSpecification'
-import { DropdownMenuItem } from '@ttab/elephant-ui'
+import { DropdownMenuItem, Tooltip } from '@ttab/elephant-ui'
 import { cn } from '@ttab/elephant-ui/utils'
 import { CircleArrowRightIcon } from '@ttab/elephant-ui/icons'
 
-export const StatusMenuOption = ({ statusDef, state, status, onSelect, hasChanges }: {
+export const StatusMenuOption = ({
+  statusDef, state, status, onSelect, hasChanges, disabledReason
+}: {
   statusDef: StatusSpecification
   state: WorkflowTransition
   status: string
   onSelect: (state: { status: string } & WorkflowTransition) => void
   hasChanges?: boolean
+  disabledReason?: string
 }) => {
   const iconProps = {
     size: 21,
@@ -18,11 +21,16 @@ export const StatusMenuOption = ({ statusDef, state, status, onSelect, hasChange
   }
 
   const Icon = status === 'usable' && hasChanges ? CircleArrowRightIcon : statusDef.icon
+  const isDisabled = !!disabledReason
 
-  return (
+  const item = (
     <DropdownMenuItem
-      className='flex flex-row gap-5 w-full py-2 pe-2 items-start rounded-md'
-      onClick={() => onSelect({ status, ...state })}
+      disabled={isDisabled}
+      className={cn(
+        'flex flex-row gap-5 w-full py-2 pe-2 items-start rounded-md',
+        isDisabled && 'opacity-50 cursor-not-allowed'
+      )}
+      onSelect={() => onSelect({ status, ...state })}
     >
       <div className='w-4 grow-0 shrink-0 pt-0.5'>
         {!!Icon && <Icon {...iconProps} />}
@@ -35,5 +43,15 @@ export const StatusMenuOption = ({ statusDef, state, status, onSelect, hasChange
         </div>
       </div>
     </DropdownMenuItem>
+  )
+
+  if (!isDisabled) {
+    return item
+  }
+
+  return (
+    <Tooltip content={disabledReason}>
+      {item}
+    </Tooltip>
   )
 }

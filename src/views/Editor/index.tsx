@@ -26,6 +26,7 @@ import {
 } from '@/hooks'
 import type { ViewMetadata, ViewProps } from '@/types'
 import { EditorHeader } from './EditorHeader'
+import { DerivedFromPlanning } from '@/components/DerivedFromPlanning'
 import { Error } from '../Error'
 
 import { getValueByYPath } from '@/shared/yUtils'
@@ -71,9 +72,13 @@ const Editor = (props: ViewProps): JSX.Element => {
     )
   }
 
-  // If published or specific version has be specified
-  if (workflowStatus?.name === 'usable' || props.version || workflowStatus?.name === 'unpublished') {
-    const bigIntVersion = workflowStatus?.name === 'usable'
+  // If published, used, or a specific version is requested — render read-only.
+  const isTerminalStatus = workflowStatus?.name === 'usable'
+    || workflowStatus?.name === 'unpublished'
+    || workflowStatus?.name === 'used'
+
+  if (isTerminalStatus || props.version) {
+    const bigIntVersion = workflowStatus?.name === 'usable' || workflowStatus?.name === 'used'
       ? workflowStatus?.version
       : BigInt(props.version ?? 0)
 
@@ -173,6 +178,8 @@ function EditorWrapper(props: ViewProps & {
         lang={documentLanguage}
       >
         <EditorHeader ydoc={ydoc} planningId={planningId} readOnly={preview} />
+
+        <DerivedFromPlanning ydoc={ydoc} />
 
         <Notes ydoc={ydoc} />
 

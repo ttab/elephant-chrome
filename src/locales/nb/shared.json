@@ -15,7 +15,8 @@
     "graphic": "Grafikk",
     "picture": "Foto",
     "video": "Video",
-    "picture/video": "Foto/Video"
+    "picture/video": "Foto/Video",
+    "timeless": "Tidløs"
   },
   "toolbar": {
     "clearFilters": "Tøm",
@@ -35,6 +36,8 @@
     "setTime": "Angi tid",
     "setDate": "Angi dato",
     "asSavePlaceholder": "Publiser ny informasjon",
+    "embargoMinTime": "Embargo: kan ikke planlegges før {{time}}",
+    "schedulingRequiresPlanning": "Planlegging er ikke tilgjengelig fordi dokumentet mangler en tilknyttet planlegging.",
     "causes": {
       "development_short": "UV",
       "development_long": "Utvikling",
@@ -59,7 +62,8 @@
     "authorCreateSuccess": "Forfatterdokument er opprettet",
     "authorUpdateSuccess": "Forfatterdokumentet er oppdatert",
     "authorSaveSuccess": "Forfatterdokumentet er lagret",
-    "savedFilter": "Filteret ditt er lagret"
+    "savedFilter": "Filteret ditt er lagret",
+    "documentSaveSuccess": "Dokument lagret"
   },
   "prompts": {
     "publishBeforeClose": "Vil du publisere endringer innen du stenger?",

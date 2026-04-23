@@ -79,6 +79,33 @@
     "rememberMe": "Remember me next time",
     "loggingIn": "Logging in..."
   },
+  "timeless": {
+    "title": "Timeless",
+    "columnLabels": {
+      "category": "Category",
+      "lastChanged": "Last changed",
+      "actions": "Actions"
+    },
+    "toolbar": {
+      "allCategories": "All categories"
+    },
+    "actions": {
+      "new": "New timeless",
+      "openPlanning": "Open original planning",
+      "convertToArticle": "Convert to article"
+    },
+    "placeholders": {
+      "addCategory": "Add category"
+    },
+    "toasts": {
+      "convertedSuccess": "Timeless converted",
+      "conversionFailed": "Conversion failed: {{message}}",
+      "notAuthenticated": "Unable to convert: not authenticated",
+      "documentNotFound": "Document not found",
+      "openArticle": "Open article",
+      "openPlanning": "Open planning"
+    }
+  },
   "imageSearch": {
     "title": "Images",
     "labels": {

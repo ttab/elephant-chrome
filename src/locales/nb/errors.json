@@ -40,6 +40,7 @@
     "saveError": "Kunne ikke lagre planen",
     "saveChangeError": "Kunne ikke lagre endringen",
     "missingMetadata": "Mangler nyhetsverdi eller seksjon",
+    "missingTimelessCategory": "Mangler tidløs kategori",
     "assignmentMoveError": "Oppdraget kunne ikke flyttes",
     "assignmentMoveErrorNotLoggedIn": "Oppdraget kunne ikke flyttes. Du er ikke logget inn.",
     "assignmentMoveErrorTryAgain": "Oppdraget kunne ikke flyttes. Vennligst prøv igjen.",
