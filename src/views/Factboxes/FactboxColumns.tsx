@@ -15,6 +15,7 @@ interface FactboxData {
   modified: string
   id: string
   version: string
+  created: string
   originalId?: string
 }
 
@@ -28,7 +29,8 @@ export function factboxColumns<Ns extends Namespace>({ locale, timeZone, t }: { 
       title: row.getValue<string>('title'),
       text: row.original.fields['document.content.core_text.data.text'].values.join('\n'),
       modified: row.getValue<string>('edited'),
-      id: id,
+      id,
+      created: row.original.fields?.['created']?.values.join(),
       version: row.original.fields.current_version.values[0]
     }
 
@@ -37,6 +39,7 @@ export function factboxColumns<Ns extends Namespace>({ locale, timeZone, t }: { 
       text: factboxData.text,
       modified: factboxData.modified,
       id: factboxData.id,
+      created: factboxData.created,
       original_updated: factboxData.modified,
       original_version: factboxData.version
     }))

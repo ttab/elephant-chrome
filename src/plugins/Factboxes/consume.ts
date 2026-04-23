@@ -12,6 +12,7 @@ type FactboxDragPayload = {
   original_version?: string
   original_updated?: string
   locally_changed?: string
+  created?: string
 }
 
 const EMBEDDED_ID_RE = /^(.+):embedded:(\d+)$/
@@ -130,6 +131,7 @@ export const createFactboxConsume = (
         original_updated: payload.original_updated,
         original_version: payload.original_version,
         locally_changed: payload.locally_changed,
+        created: payload.created,
         rel: 'factbox',
         type: 'core/factbox'
       },
