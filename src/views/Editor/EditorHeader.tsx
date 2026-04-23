@@ -173,34 +173,40 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
           return (readOnly && fmt?.readonly?.icon) || fmt?.icon
         })()}
         ydoc={!readOnly ? ydoc : undefined}
+        titleClassName='hidden @4xl/view:block'
       />
 
       <ViewHeader.Content className='justify-start'>
-        <div className='max-w-[810px] mx-auto flex flex-row gap-2 justify-between items-center w-full'>
+        <div className='max-w-[810px] mx-auto flex flex-row gap-1 @xl/view:gap-2 justify-between items-center w-full'>
           <div className='flex flex-row gap-1 justify-start items-center @7xl/view:-ml-20'>
-            <div className='hidden flex-row gap-2 justify-start items-center @md/view:flex'>
+            <div className='hidden flex-row gap-1 @xl/view:gap-2 justify-start items-center @md/view:flex'>
               {!readOnly && <AddNote ydoc={ydoc} />}
               {!readOnly && documentType !== 'core/editorial-info'
                 && <Newsvalue ydoc={ydoc} path='meta.core/newsvalue[0].value' />}
               {!readOnly && documentType === 'core/article' && (
-                <HastToggle ydoc={ydoc} usableId={workflowStatus?.usableId} />
+                <HastToggle
+                  ydoc={ydoc}
+                  usableId={workflowStatus?.usableId}
+                  labelClassName='hidden @3xl/view:inline'
+                />
               )}
               {readOnly && <HastIndicator documentId={ydoc.id} size={18} />}
               {!!wireBlocks?.length && (
                 <Button
                   variant='ghost'
                   size='sm'
-                  className='gap-1.5 text-muted-foreground'
+                  className='hidden @xl/view:inline-flex gap-1.5 text-muted-foreground px-2'
                   onClick={(event) => openSources(event, { id: ydoc.id }, 'last')}
+                  title={t('wires:sources.title')}
                 >
                   <CableIcon size={15} strokeWidth={1.75} />
-                  {t('wires:sources.title')}
+                  <span className='hidden @3xl/view:inline'>{t('wires:sources.title')}</span>
                 </Button>
               )}
             </div>
           </div>
 
-          <div className='flex flex-row gap-2 justify-end items-center'>
+          <div className='flex flex-row gap-1 @xl/view:gap-2 justify-end items-center'>
             {!!ydoc.id && (
               <>
                 {!readOnly && <ViewHeader.RemoteUsers ydoc={ydoc} />}
@@ -208,6 +214,7 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
                 {isReadOnlyAndUpdated && !isUnpublished && !isUsed && readOnlyVersion && (
                   <Button
                     variant='secondary'
+                    size='sm'
                     onClick={(event) => {
                       openLatestVersion(
                         event,
@@ -215,8 +222,10 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
                         'self'
                       )
                     }}
+                    title={t('editor:goToLatestVersion')}
                   >
-                    {t('editor:goToLatestVersion')}
+                    <span className='hidden @2xl/view:inline'>{t('editor:goToLatestVersion')}</span>
+                    <span className='@2xl/view:hidden'>{t('editor:goToLatestVersionShort')}</span>
                   </Button>
                 )}
 
