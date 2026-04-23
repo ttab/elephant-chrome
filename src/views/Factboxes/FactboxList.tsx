@@ -28,6 +28,7 @@ export const FactboxList = ({ columns }: {
     size: 1000,
     options: {
       subscribe: true,
+      setTableData: true,
       withArticleFactboxes: true
     }
   })

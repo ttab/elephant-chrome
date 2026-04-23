@@ -1,8 +1,13 @@
 {
   "title": "Faktaruta",
   "factboxDocument": "Faktarutedokument",
+  "lockedToArticle": "Låst till artikel",
+  "fromPublished": "Låst till publicerad",
+  "article": "artikel",
+  "original": "original",
   "action": {
-    "createFactbox": "Skapa faktaruta"
+    "createFactbox": "Skapa faktaruta",
+    "open": "Öppna"
   },
   "prompts": {
     "approveBeforeClose": "Vill du godkänna ändringarna innan du stänger?",

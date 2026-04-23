@@ -6,7 +6,6 @@ import { Textbit } from '@ttab/textbit'
 import { useSession } from 'next-auth/react'
 import { getValueByYPath } from '@/shared/yUtils'
 import { Form, UserMessage, View } from '@/components'
-import { ViewHeader } from '@/components/View'
 import { FactboxHeader } from './FactboxHeader'
 import { Error as ErrorView } from '@/views/Error'
 import { useEffect, useMemo, useState, type JSX } from 'react'
@@ -22,10 +21,9 @@ import { DocumentHistory } from '@/components/DocumentHistory/DocumentHistory'
 import { type DocumentState, getDocumentState } from '@/lib/getDocumentState'
 import { Editor as PlainEditor } from '@/components/PlainEditor'
 import { useTranslation } from 'react-i18next'
-import { documentTypeValueFormat } from '@/defaults/documentTypeFormats'
 import { toast } from 'sonner'
-import { LoaderIcon } from '@ttab/elephant-ui/icons'
-
+import { BoxesIcon, FileLockIcon, LoaderIcon } from '@ttab/elephant-ui/icons'
+import { Link as TextLink } from '@/components'
 const meta: ViewMetadata = {
   name: 'Factbox',
   path: `${import.meta.env.BASE_URL || ''}/factbox`,
@@ -49,7 +47,6 @@ const Factbox = (props: ViewProps & { document?: Document }): JSX.Element => {
   const { repository } = useRegistry()
   const { data: session } = useSession()
   const [embeddedData, setEmbeddedData] = useState<EleDocumentResponse | undefined>(undefined)
-
   // Parse embedded id: "articleId:embedded:index"
   const embeddedMatch = typeof rawId === 'string' ? rawId.match(/^(.+):embedded:(\d+)$/) : null
   const articleId = embeddedMatch?.[1]
@@ -123,9 +120,9 @@ const Factbox = (props: ViewProps & { document?: Document }): JSX.Element => {
 }
 
 const EmbeddedFactboxView = (props: ViewProps & { data?: EleDocumentResponse }): JSX.Element => {
+  const articleId = props?.data?.document?.uuid
+  const originalId = props.data?.document?.links._?.[0]?.uuid
   const { t } = useTranslation('factbox')
-  const Icon = documentTypeValueFormat?.['core/factbox']?.icon
-
   const configuredPlugins = useMemo(() => [
     UnorderedList(),
     OrderedList(),
@@ -147,18 +144,42 @@ const EmbeddedFactboxView = (props: ViewProps & { data?: EleDocumentResponse }):
 
   return (
     <View.Root asDialog={props.asDialog} className={props?.className}>
-      <ViewHeader.Root asDialog={!!props.asDialog} className='flex justify-between'>
-        <ViewHeader.Title
-          name='Factbox'
-          title={t('title')}
-          icon={Icon}
-          asDialog={!!props.asDialog}
-        />
-        <ViewHeader.Action onDialogClose={props.onDialogClose} asDialog={!!props.asDialog} />
-      </ViewHeader.Root>
-
+      <FactboxHeader
+        onDialogClose={props.onDialogClose}
+        asDialog={!!props?.asDialog}
+      />
       <div className='flex flex-col w-full max-w-[1000px] mx-auto'>
         <View.Content className='flex flex-col max-w-[1000px]'>
+          <div className='flex flex-col gap-1.5 text-sm text-muted-foreground border-b p-4'>
+
+            <div className='flex gap-1.5'>
+              <FileLockIcon strokeWidth={1.75} size={16} className='mr-0.5' />
+              <span>
+                {t('fromPublished')}
+              </span>
+              <TextLink
+                to='Editor'
+                props={{ id: articleId }}
+                className='underline hover:text-foreground'
+              >
+                {t('article')}
+              </TextLink>
+            </div>
+            <div className='flex gap-1.5'>
+              <BoxesIcon strokeWidth={1.75} size={16} className='mr-0.5' />
+
+              <span>
+                {t('action.open')}
+              </span>
+              <TextLink
+                to='Factbox'
+                className='underline hover:text-foreground'
+                props={{ id: originalId }}
+              >
+                {t('original')}
+              </TextLink>
+            </div>
+          </div>
           <p className={cn('text-lg font-bold pt-2 ps-12 pe-12')}>
             {props.data.document.title}
           </p>

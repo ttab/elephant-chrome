@@ -7,11 +7,12 @@ import type { Index } from '@/shared/Index'
 import type { Repository } from '@/shared/Repository'
 
 type withArticleFactboxFields = [
-  'document.content.core_factbox.links.uuid',
+  'document.content.core_factbox.title',
+  'document.content.core_factbox.content.core_text.data.text',
+  'document.content.core_factbox.rel.source.uuid',
   'workflow_state',
   'modified'
 ]
-
 
 export const withArticleFactboxes = async <T extends HitV1>({ hits, session, index, query, repository }: {
   hits: T[]
@@ -29,7 +30,9 @@ export const withArticleFactboxes = async <T extends HitV1>({ hits, session, ind
     session,
     size: 1000,
     fields: [
-      'document.content.core_factbox.links.uuid',
+      'document.content.core_factbox.title',
+      'document.content.core_factbox.content.core_text.data.text',
+      'document.content.core_factbox.rel.source.uuid',
       'workflow_state',
       'modified'
     ],
@@ -94,10 +97,11 @@ export const withArticleFactboxes = async <T extends HitV1>({ hits, session, ind
 
     for (let i = 0; i < factboxBlocks.length; i++) {
       const block = factboxBlocks[i]
-      const id = block.links[0]?.uuid ?? `${articleId}:embedded:${i}`
+      const id = `${articleId}:embedded:${i}`
 
       const title = block.title ?? ''
       const text = block.content.find((b: Block) => b.type === 'core/text')?.data?.text ?? ''
+      const originalFactboxId = block.links[0]?.uuid ?? ''
 
       if (searchFilter && !title.toLowerCase().includes(searchFilter) && !text.toLowerCase().includes(searchFilter)) {
         continue
@@ -114,7 +118,8 @@ export const withArticleFactboxes = async <T extends HitV1>({ hits, session, ind
           modified: { values: modified },
           current_version: { values: ['0'] },
           'heads.usable.version': { values: [] },
-          _document_origin: { values: ['core/article'] }
+          _document_origin: { values: ['core/article'] },
+          _document_origin_id: { values: [originalFactboxId] }
         }
       } as unknown as T)
     }
@@ -129,5 +134,6 @@ export const withArticleFactboxes = async <T extends HitV1>({ hits, session, ind
     const bTitle = b.fields['document.title']?.values[0] ?? ''
     return aTitle.localeCompare(bTitle)
   })
+
   return result
 }

@@ -6,14 +6,15 @@ import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import { useTranslation } from 'react-i18next'
 import { documentTypeValueFormat } from '@/defaults/documentTypeFormats'
+import { PenOffIcon } from '@ttab/elephant-ui/icons'
 
 export const FactboxHeader = ({ ydoc, onDialogClose, asDialog }: {
-  ydoc: YDocument<Y.Map<unknown>>
+  ydoc?: YDocument<Y.Map<unknown>>
   asDialog: boolean
   onDialogClose?: () => void
 }): JSX.Element => {
   const { t } = useTranslation('factbox')
-  const Icon = documentTypeValueFormat?.['core/factbox']?.icon
+  const Icon = ydoc ? documentTypeValueFormat?.['core/factbox']?.icon : PenOffIcon
 
   return (
     <ViewHeader.Root asDialog={asDialog}>
@@ -29,13 +30,14 @@ export const FactboxHeader = ({ ydoc, onDialogClose, asDialog }: {
           </div>
 
           <div className='flex flex-row gap-4 justify-start items-center'>
-            {!asDialog && (
-              <>
-                <StatusMenu
-                  ydoc={ydoc}
-                />
-              </>
-            )}
+            <>
+              {!asDialog && ydoc
+                && (
+                  <StatusMenu
+                    ydoc={ydoc}
+                  />
+                )}
+            </>
             {!!ydoc && !asDialog && (
               <ViewHeader.RemoteUsers ydoc={ydoc} />
             )}
