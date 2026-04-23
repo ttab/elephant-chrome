@@ -1,4 +1,3 @@
-import { Button } from '@ttab/elephant-ui'
 import { XIcon } from '@ttab/elephant-ui/icons'
 import { SectionFilterValue } from './Value/SectionFilterValue'
 import { WireSourceFilterValue } from './Value/WireSourceFilterValue'
@@ -11,28 +10,38 @@ import { CategoryFilterValue } from './Value/CategoryFilterValue'
 import { FromFilterValue } from './Value/FromFilterValue'
 import { AuthorFilterValue } from './Value/AuthorFilterValue'
 import { ATypeFilterValue } from './Value/ATypeFilterValue'
+import { AdvancedSearchFilterValue } from './Value/AdvancedSearchFilterValue'
 
-export const FilterValue = ({ type, values, onClearFilter }: {
+export const FilterValue = ({ type, values, onClearFilter, onEditFilter }: {
   type: string
   values: string[]
   onClearFilter: (type: string) => void
+  onEditFilter?: (type: string) => void
 }) => {
   if (!values.length) {
     return
   }
 
   return (
-    <Button
-      variant='outline'
-      size='sm'
-      className='h-8 border-dashed group hover:bg-muted/30'
-      onClick={() => {
-        onClearFilter(type)
-      }}
-    >
-      <SpecificFilterValue type={type} values={values} />
-      <XIcon size={22} strokeWidth={1.75} className='p-1 rounded-sm ml-2 group-hover:bg-muted' />
-    </Button>
+    <div className='flex items-center h-8 border border-dashed rounded-md group hover:bg-muted/30'>
+      <button
+        type='button'
+        onClick={() => onEditFilter?.(type)}
+        className='flex items-center px-2 text-sm'
+      >
+        <SpecificFilterValue type={type} values={values} />
+      </button>
+      <button
+        type='button'
+        onClick={(e) => {
+          e.stopPropagation()
+          onClearFilter(type)
+        }}
+        className='flex items-center pr-1.5'
+      >
+        <XIcon size={22} strokeWidth={1.75} className='p-1 rounded-sm group-hover:bg-muted' />
+      </button>
+    </div>
   )
 }
 
@@ -63,6 +72,8 @@ export const SpecificFilterValue = ({ type, values }: {
       return <AuthorFilterValue values={values} />
     case 'aType':
       return <ATypeFilterValue values={values} />
+    case 'advancedSearch':
+      return <AdvancedSearchFilterValue values={values} />
     default:
       return null
   }

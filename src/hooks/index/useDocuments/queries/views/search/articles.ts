@@ -9,6 +9,9 @@ import {
   RangeQueryV1
 } from '@ttab/elephant-api/index'
 import { fields } from '@/shared/schemas/article'
+import { buildAdvancedQuery } from '@/components/AdvancedSearch/lib/buildQuery'
+import { deserializeAdvancedState, hasAdvancedParams } from '@/components/AdvancedSearch/hooks/useAdvancedSearchParams'
+import { articlesFields, dateFields } from '@/components/AdvancedSearch/configs'
 
 /**
  * Constructs a query object based on the provided filter parameters.
@@ -85,7 +88,12 @@ function constructQuery(filter: QueryParams | undefined): QueryV1 | undefined {
     addCondition('document.rel.author.uuid', filter.author)
   }
 
-  if (filter.query) {
+  if (hasAdvancedParams(filter)) {
+    const advQuery = buildAdvancedQuery(deserializeAdvancedState(filter, articlesFields), articlesFields, dateFields.articles)
+    if (advQuery) {
+      boolConditions.must.push(advQuery)
+    }
+  } else if (filter.query) {
     boolConditions.must.push(
       {
         conditions: {
@@ -116,7 +124,7 @@ function constructQuery(filter: QueryParams | undefined): QueryV1 | undefined {
     })
   }
 
-  // No other filters than type and query, and query is empty, do a matchAll
+  // Only 'type', empty 'query', and inactive 'adv*' keys remain — fall back to matchAll
   if (Object.keys(filter).every((key) => {
     if (key === 'type') {
       return true
@@ -124,6 +132,10 @@ function constructQuery(filter: QueryParams | undefined): QueryV1 | undefined {
 
     if (key === 'query') {
       return !filter.query
+    }
+
+    if (key.startsWith('adv')) {
+      return !hasAdvancedParams(filter)
     }
 
     return false

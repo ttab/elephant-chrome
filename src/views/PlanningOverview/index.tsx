@@ -10,6 +10,7 @@ import { planningListColumns } from './PlanningListColumns'
 import { useSections } from '@/hooks/useSections'
 import { useAuthors } from '@/hooks/useAuthors'
 import { Commands } from '@/components/Commands'
+import { SearchLink } from '@/components/AdvancedSearch'
 import { useQuery } from '@/hooks/useQuery'
 import type { Planning } from '@/shared/schemas/planning'
 import { useInitFilters } from '@/hooks/useInitFilters'
@@ -66,6 +67,7 @@ export const Plannings = (): JSX.Element => {
           <ViewHeader.Content>
             <ViewHeader.Title name='Plannings' title={t('views:plannings.label.plural')} />
             <Header type='Planning' docType='core/planning-item' />
+            <SearchLink searchType='plannings' />
           </ViewHeader.Content>
 
           <ViewHeader.Action />
