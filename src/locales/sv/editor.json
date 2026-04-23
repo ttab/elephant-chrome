@@ -18,6 +18,8 @@
   "factbox": {
     "headerTitle": "Redigera faktarutans original",
     "modifiedLabel": "Originalet är från",
+    "createdLabel": "Skapad",
+    "lastModifiedLabel": "Senast ändrad",
     "footerTitle": "Ändringar i faktarutans text sker endast för denna artikel",
     "factboxNewTitle": "Fakta",
     "addSingleLabel": "Skapa faktaruta"
