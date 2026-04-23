@@ -31,6 +31,7 @@
     "numberOfChars": "Antall tegn: artikkel (totalt)"
   },
   "goToLatestVersion": "Gå til siste versjon",
+  "goToLatestVersionShort": "Siste",
   "embargoActive": "Kan ikke publiseres direkte — embargo gjelder til {{time}}",
   "addRoleInfo": {
     "editorial": "Legg til redaksjonell informasjon",

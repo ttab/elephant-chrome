@@ -31,6 +31,7 @@
     "numberOfChars": "Number of characters: article (total)"
   },
   "goToLatestVersion": "Go to latest version",
+  "goToLatestVersionShort": "Latest",
   "embargoActive": "Cannot publish directly — embargo active until {{time}}",
   "addRoleInfo": {
     "editorial": "Add editorial info",

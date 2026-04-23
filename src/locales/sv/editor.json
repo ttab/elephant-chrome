@@ -31,6 +31,7 @@
     "numberOfChars": "Antal tecken: artikel (totalt)"
   },
   "goToLatestVersion": "Gå till senaste versionen",
+  "goToLatestVersionShort": "Senaste",
   "embargoActive": "Kan inte publiceras direkt — embargo gäller till {{time}}",
   "addRoleInfo": {
     "editorial": "Lägg till redaktionell info",

@@ -185,7 +185,7 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
                     title={t('editor:goToLatestVersion')}
                   >
                     <span className='hidden @2xl/view:inline'>{t('editor:goToLatestVersion')}</span>
-                    <span className='@2xl/view:hidden'>{t('editor:goToLatestVersionShort', { defaultValue: 'Latest' })}</span>
+                    <span className='@2xl/view:hidden'>{t('editor:goToLatestVersionShort')}</span>
                   </Button>
                 )}
 
