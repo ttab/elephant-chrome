@@ -28,8 +28,6 @@ export const WireCreation = (props: ViewProps & {
   wires?: WireType[]
 }): JSX.Element => {
   const { data: session } = useSession()
-  const sessionOrg = session?.org
-  const sessionUnits = session?.units
 
   // The article we're creating
   const [documentId, data] = useMemo(() => {
@@ -44,7 +42,7 @@ export const WireCreation = (props: ViewProps & {
       }
     }))
 
-    const contentSource = getContentSourceLink({ org: sessionOrg, units: sessionUnits })
+    const contentSource = getContentSourceLink({ org: session?.org, units: session?.units })
 
     const payload = {
       meta: {
@@ -64,7 +62,7 @@ export const WireCreation = (props: ViewProps & {
       subset: [],
       document: Templates.article(documentId, payload)
     })]
-  }, [props.wires, sessionOrg, sessionUnits])
+  }, [props.wires, session?.units, session?.org])
 
   return (
     <>
