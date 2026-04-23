@@ -52,7 +52,9 @@ export const MoveDialog = ({ ydoc, onClose, newDate }: {
       toast.error(t('errors:toasts.fetchAssignmentStatuses'))
       console.error('Failed to get assignment statuses', err)
     })
-  }, [assignments, repository, data?.accessToken, t, onClose])
+    // We only want to fetch statuses on load not on every rerender
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [assignments, repository, data?.accessToken, t])
 
   return (
     <Dialog open={true}>
