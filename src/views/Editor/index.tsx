@@ -161,6 +161,8 @@ function EditorWrapper(props: ViewProps & {
         const plugin = Factbox({
           headerTitle: t('editor:factbox.headerTitle'),
           modifiedLabel: t('editor:factbox.modifiedLabel'),
+          createdLabel: t('editor:factbox.createdLabel'),
+          lastModifiedLabel: t('editor:factbox.lastModifiedLabel'),
           footerTitle: t('editor:factbox.footerTitle'),
           onEditOriginal: (id: string) => {
             openFactboxEditor(undefined, { id })
