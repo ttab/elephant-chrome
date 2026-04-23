@@ -40,7 +40,7 @@ export const getAssignmentStatuses = async (assignments: EleBlock[], repository:
       return { id: assignmentsId.find((item) => item?.uuid === assignment.uuid)?.id, uuid: assignment.uuid, workflowState: assignment.workflowState }
     })
   } catch (error) {
-    console.log(error)
+    console.error(error)
     throw error
   }
 }
