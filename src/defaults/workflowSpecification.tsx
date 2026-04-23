@@ -1,6 +1,7 @@
 import i18n from 'i18next'
 import type { TranslationKey } from '@/types/i18next.d'
 import {
+  ArchiveIcon,
   CircleCheckIcon,
   CircleDotIcon,
   CircleArrowLeftIcon,
@@ -183,6 +184,18 @@ const baseDeliverable = (type: 'article' | 'flash'): WorkflowSpecification => {
           description: i18n.t('workflows:base.unpublished.transitions.draft.description', { label: typeLabel })
         }
       }
+    },
+    used: {
+      title: i18n.t('workflows:base.used.title'),
+      description: i18n.t('workflows:base.used.description', { label: typeLabel }),
+      isWorkflow: false,
+      transitions: {
+        draft: {
+          default: true,
+          title: i18n.t('workflows:base.used.transitions.draft.title'),
+          description: i18n.t('workflows:base.used.transitions.draft.description', { label: typeLabel })
+        }
+      }
     }
   }
 }
@@ -223,6 +236,10 @@ export const StatusSpecifications: Record<string, StatusSpecification> = {
   cancelled: {
     icon: CircleXIcon,
     className: 'bg-cancelled text-white fill-cancelled rounded-full dark:text-black'
+  },
+  used: {
+    icon: ArchiveIcon,
+    className: 'text-muted-foreground'
   }
 }
 
@@ -364,6 +381,44 @@ export function getWorkflowSpecifications(): Record<string, WorkflowSpecificatio
       }
     },
     'core/article': baseDeliverable('article'),
+    'core/article#timeless': {
+      draft: {
+        title: i18n.t('workflows:base.draft.title', { label: i18n.t('workflows:base.article') }),
+        description: i18n.t('workflows:base.draft.description', { label: i18n.t('workflows:base.article') }),
+        isWorkflow: true,
+        transitions: {
+          done: {
+            default: true,
+            title: i18n.t('workflows:base.draft.transitions.done.title'),
+            description: i18n.t('workflows:base.draft.transitions.done.description', { label: i18n.t('workflows:base.article') })
+          }
+        }
+      },
+      done: {
+        title: i18n.t('workflows:base.done.title'),
+        description: i18n.t('workflows:base.done.description', { label: i18n.t('workflows:base.article') }),
+        isWorkflow: true,
+        transitions: {
+          draft: {
+            default: true,
+            title: i18n.t('workflows:base.done.transitions.draft.title'),
+            description: i18n.t('workflows:base.done.transitions.draft.description', { label: i18n.t('workflows:base.article') })
+          }
+        }
+      },
+      used: {
+        title: i18n.t('workflows:base.used.title'),
+        description: i18n.t('workflows:base.used.description', { label: i18n.t('workflows:base.article') }),
+        isWorkflow: false,
+        transitions: {
+          draft: {
+            default: true,
+            title: i18n.t('workflows:base.used.transitions.draft.title'),
+            description: i18n.t('workflows:base.used.transitions.draft.description', { label: i18n.t('workflows:base.article') })
+          }
+        }
+      }
+    },
     'core/flash': baseDeliverable('flash'),
     'core/factbox': {
       draft: {

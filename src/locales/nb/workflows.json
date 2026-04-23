@@ -109,6 +109,16 @@
           "description": "Fortsett å jobbe på en ny versjon av {{label}}"
         }
       }
+    },
+    "used": {
+      "title": "Brukt",
+      "description": "{{label, capitalize}} har blitt brukt til å avlede et nytt dokument",
+      "transitions": {
+        "draft": {
+          "title": "Åpne som utkast",
+          "description": "Tilbakestill {{label}} til utkast for videre redigering"
+        }
+      }
     }
   },
   "core/event": {
@@ -407,6 +417,118 @@
         "draft": {
           "title": "",
           "description": ""
+        }
+      }
+    }
+  },
+  "core/article#timeless": {
+    "article": "artikkelen",
+    "flash": "flashen",
+    "draft": {
+      "title": "Utkast",
+      "description": "Du jobber med et utkast av {{label}}",
+      "transitions": {
+        "done": {
+          "title": "Klarmarkere",
+          "description": "Marker {{label}} som ferdig"
+        },
+        "approved": {
+          "title": "Godkjenn",
+          "description": "Godkjenn {{label}} for publisering"
+        },
+        "usable": {
+          "title": "Publiser",
+          "description": "Publiser {{label}}"
+        },
+        "withheld": {
+          "title": "Planlegg publisering",
+          "description": "Angi dato og tid for publisering"
+        }
+      }
+    },
+    "done": {
+      "title": "Klar",
+      "description": "{{label, capitalize}} er ferdig og venter på godkjenning",
+      "transitions": {
+        "approved": {
+          "title": "Godkjenn",
+          "description": "Godkjenn {{label}} for publisering"
+        },
+        "usable": {
+          "title": "Publiser",
+          "description": "Publiser {{label}} direkte"
+        },
+        "withheld": {
+          "title": "Planlegg publisering",
+          "description": "Angi dato og tid for publisering"
+        },
+        "draft": {
+          "title": "Til utkast",
+          "description": "Gjør om {{label}} til et utkast igjen"
+        },
+        "unpublished": {
+          "title": "Avpubliser",
+          "description": "Avbryt og arkiver {{label}}"
+        }
+      }
+    },
+    "approved": {
+      "title": "Godkjent",
+      "description": "{{label, capitalize}} er godkjent for publisering",
+      "transitions": {
+        "usable": {
+          "title": "Publiser",
+          "description": "Publiser {{label}}"
+        },
+        "withheld": {
+          "title": "Planlegg publisering",
+          "description": "Angi dato og tid for publisering"
+        },
+        "draft": {
+          "title": "Til utkast",
+          "description": "Gjør om {{label}} til et utkast igjen"
+        },
+        "unpublished": {
+          "title": "Avpubliser",
+          "description": "Avbryt og arkiver {{label}}"
+        }
+      }
+    },
+    "usable": {
+      "title": "Publisert",
+      "description": "{{label, capitalize}} er publisert",
+      "transitions": {
+        "draft": {
+          "title": "Ny versjon",
+          "description": "Fortsett å jobbe på en ny versjon av {{label}}"
+        },
+        "unpublished": {
+          "title": "Avpubliser",
+          "description": "Avbryt publiseringen og arkiver {{label}}"
+        }
+      }
+    },
+    "withheld": {
+      "title": "Planlagt",
+      "description": "{{label, capitalize}} er planlagt for automatisk publisering",
+      "transitions": {
+        "usable": {
+          "title": "Publiser direkte",
+          "description": "Publiser {{label}} direkte"
+        },
+        "draft": {
+          "title": "Til utkast",
+          "description": "Avbryt planlagt publisering og gjør om til utkast igjen"
+        }
+      }
+    },
+    "unpublished": {
+      "title": "Avpublisert",
+      "description": "{{label, capitalize}} har blitt avpublisert",
+      "transitions": {
+        "draft": {
+          "title": "Ny versjon",
+          "description": "Fortsett å jobbe på en ny versjon av {{label}}"
         }
       }
     }

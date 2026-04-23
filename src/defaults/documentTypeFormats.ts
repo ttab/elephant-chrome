@@ -1,6 +1,7 @@
 import i18n from 'i18next'
 import {
   BriefcaseBusinessIcon,
+  BookmarkIcon,
   CalendarDaysIcon,
   CalendarPlus2Icon,
   NewspaperIcon,
@@ -88,6 +89,18 @@ const flash: DocumentTypeFormat = {
   }
 }
 
+const timelessArticle: DocumentTypeFormat = {
+  'core/article#timeless': {
+    icon: BookmarkIcon,
+    get label() { return i18n.t('shared:assignmentTypes.timeless') },
+    key: 'Editor',
+    color: '#7C6F9C',
+    readonly: {
+      icon: PenOffIcon
+    }
+  }
+}
+
 const quickArticle: DocumentTypeFormat = {
   'core/article': {
     icon: NewspaperIcon,
@@ -102,6 +115,7 @@ export const documentTypeValueFormat = {
   ...event,
   ...planning,
   ...article,
+  ...timelessArticle,
   ...editorialInfo,
   ...factbox,
   ...flash
@@ -114,5 +128,6 @@ export const addButtonGroupValueFormat = {
   ...quickArticle,
   ...editorialInfo,
   ...factbox,
-  ...flash
+  ...flash,
+  ...timelessArticle
 }

@@ -1,4 +1,4 @@
-import { useHistory, useLink, useNavigation, useView, useWorkflowStatus } from '@/hooks'
+import { useHistory, useLink, useNavigation, useRegistry, useView, useWorkflowStatus } from '@/hooks'
 import { Newsvalue } from '@/components/Newsvalue'
 import { useCallback, type JSX } from 'react'
 import { MetaSheet } from '@/components/MetaSheet/MetaSheet'
@@ -10,6 +10,7 @@ import type { Block } from '@ttab/elephant-api/newsdoc'
 import { toast } from 'sonner'
 import { handleLink } from '@/components/Link/lib/handleLink'
 import { useDeliverableInfo } from '@/hooks/useDeliverableInfo'
+import { useSession } from 'next-auth/react'
 import { Button } from '@ttab/elephant-ui'
 import { updateAssignmentTime } from '@/lib/index/updateAssignmentPublishTime'
 import type { YDocument } from '@/modules/yjs/hooks'
@@ -42,6 +43,8 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
   const history = useHistory()
   const planningId = useDeliverableInfo(ydoc.id)?.planningUuid ?? ''
   const [workflowStatus] = useWorkflowStatus({ ydoc, documentId: ydoc.id })
+  const { repository } = useRegistry()
+  const { data: session } = useSession()
   const { t } = useTranslation('shared')
   const documentType = workflowStatus?.type
 
@@ -89,6 +92,35 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
       }
     }
 
+    // Transitioning from a used/readonly state needs a direct status write,
+    // since the default snapshotDocument path expects a live Yjs session
+    // which we don't have in the readonly editor.
+    const isUsedToDraft = workflowStatus?.name === 'used' && newStatus === 'draft'
+
+    if (isUsedToDraft) {
+      if (!repository || !session?.accessToken || !workflowStatus?.version) {
+        toast.error(t('errors:toasts.couldNotChangeStatus'))
+        return false
+      }
+
+      try {
+        await repository.saveMeta({
+          status: {
+            uuid: ydoc.id,
+            name: 'draft',
+            version: workflowStatus.version
+          },
+          accessToken: session.accessToken,
+          isWorkflow: true,
+          currentStatus: workflowStatus
+        })
+      } catch (err) {
+        console.error('Failed to reopen as draft:', err)
+        toast.error(t('errors:toasts.couldNotChangeStatus'))
+        return false
+      }
+    }
+
     if (newStatus === 'draft') {
       handleLink({
         dispatch,
@@ -99,6 +131,11 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
         origin: viewId,
         target: 'self'
       })
+
+      // saveMeta already applied the status change; skip default setDocumentStatus.
+      if (isUsedToDraft) {
+        return false
+      }
     }
 
     // When we set withheld or draft we must change related dates on the planning
@@ -119,10 +156,11 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
     }
 
     return true
-  }, [planningId, dispatch, ydoc.id, history, state.viewRegistry, viewId, t, embargoUntil])
+  }, [planningId, dispatch, ydoc.id, history, state.viewRegistry, viewId, t, repository, session?.accessToken, workflowStatus, embargoUntil])
 
   const isReadOnlyAndUpdated = workflowStatus && workflowStatus?.name !== 'usable' && readOnly
   const isUnpublished = workflowStatus?.name === 'unpublished'
+  const isUsed = workflowStatus?.name === 'used'
 
   return (
     <ViewHeader.Root>
@@ -167,7 +205,7 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
               <>
                 {!readOnly && <ViewHeader.RemoteUsers ydoc={ydoc} />}
 
-                {isReadOnlyAndUpdated && !isUnpublished && readOnlyVersion && (
+                {isReadOnlyAndUpdated && !isUnpublished && !isUsed && readOnlyVersion && (
                   <Button
                     variant='secondary'
                     onClick={(event) => {
@@ -182,7 +220,7 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
                   </Button>
                 )}
 
-                {(!isReadOnlyAndUpdated || isUnpublished) && (
+                {(!isReadOnlyAndUpdated || isUnpublished || isUsed) && (
                   <StatusMenu
                     planningId={propPlanningId || planningId || undefined}
                     ydoc={ydoc}

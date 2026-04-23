@@ -11,6 +11,7 @@
     "print": "Print",
     "search": "Search",
     "wires": "Wires",
+    "timeless": "Timeless",
     "quickarticle": "Create quick-article",
     "title": "Main menu",
     "actions": {

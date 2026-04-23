@@ -15,6 +15,7 @@ import type {
   AttachmentDetails,
   StatusUpdate,
   GetHistoryResponse,
+  ValidationResult,
   GetDeliverableInfoResponse
 } from '@ttab/elephant-api/repository'
 import { Block, Document } from '@ttab/elephant-api/newsdoc'
@@ -386,6 +387,80 @@ export class Repository {
   }
 
   /**
+   * Atomically create a new document, optionally a companion planning, and
+   * optionally update the source document's status. Used for article type
+   * conversion — the timeless→article direction passes a newPlanning (to own
+   * the new article as a deliverable) and marks the source timeless as
+   * "used"; the reverse direction omits both because the article workflow
+   * doesn't carry a "used" status.
+   */
+  async createDerivedDocument({
+    newDocument,
+    newPlanning,
+    sourceStatusUpdate,
+    accessToken
+  }: {
+    newDocument: Document
+    newPlanning?: Document
+    sourceStatusUpdate?: {
+      uuid: string
+      name: string
+      version: bigint
+    }
+    accessToken: string
+  }): Promise<BulkUpdateResponse> {
+    const createUpdate = (doc: Document) => ({
+      uuid: doc.uuid,
+      document: doc,
+      meta: {},
+      ifMatch: -1n, // Only create if doesn't exist
+      status: [],
+      acl: [{ uri: 'core://unit/redaktionen', permissions: ['r', 'w'] }],
+      updateMetaDocument: false,
+      lockToken: '',
+      ifWorkflowState: '',
+      ifStatusHeads: {},
+      attachObjects: {},
+      detachObjects: []
+    })
+
+    const statusUpdate = sourceStatusUpdate
+      ? [{
+          uuid: sourceStatusUpdate.uuid,
+          meta: {},
+          ifMatch: 0n, // No optimistic lock on status update
+          status: [{
+            name: sourceStatusUpdate.name,
+            version: sourceStatusUpdate.version,
+            meta: {},
+            ifMatch: 0n
+          }],
+          acl: [],
+          updateMetaDocument: false,
+          lockToken: '',
+          ifWorkflowState: '',
+          ifStatusHeads: {},
+          attachObjects: {},
+          detachObjects: []
+        }]
+      : []
+
+    try {
+      const { response } = await this.#client.bulkUpdate({
+        updates: [
+          createUpdate(newDocument),
+          ...(newPlanning ? [createUpdate(newPlanning)] : []),
+          ...statusUpdate
+        ]
+      }, meta(accessToken))
+
+      return response
+    } catch (err: unknown) {
+      throw new Error(`Unable to create derived document: ${(err as Error)?.message || 'Unknown error'}`)
+    }
+  }
+
+  /**
    * Save a newsdoc to repository
    *
    * @param yDoc Y.Doc
@@ -561,5 +636,28 @@ export class Repository {
     }
 
     return attachments[0]
+  }
+
+  /**
+   * Prune a document against its type schema, stripping fields that aren't
+   * valid. Used for timeless→article conversion where the article schema is
+   * stricter than timeless.
+   */
+  async pruneDocument(document: Document, accessToken: string): Promise<{
+    document: Document
+    errors: ValidationResult[]
+  }> {
+    try {
+      const { response } = await this.#client.prune({ document }, meta(accessToken))
+      if (!response.document) {
+        throw new Error('Prune API returned empty document')
+      }
+      return {
+        document: response.document,
+        errors: response.errors ?? []
+      }
+    } catch (err: unknown) {
+      throw new Error(`Unable to prune document: ${(err as Error)?.message || 'Unknown error'}`)
+    }
   }
 }

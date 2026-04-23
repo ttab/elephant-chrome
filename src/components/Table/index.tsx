@@ -37,7 +37,7 @@ const BASE_URL = import.meta.env.BASE_URL
 
 interface TableProps<TData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
-  type: 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Factbox' | 'Print' | 'PrintEditor'
+  type: 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Factbox' | 'Print' | 'PrintEditor' | 'Timeless'
   onRowSelected?: (row?: TData) => void
 }
 

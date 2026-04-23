@@ -11,11 +11,26 @@
     "versions": "Versioner",
     "version": "Version",
     "editorialInfoType": "Redaktionell info, typ",
-    "slugline": "Slugg"
+    "slugline": "Slugg",
+    "category": "Kategori"
   },
   "actions": {
     "addNote": "Lägg till notering",
+    "convertToArticle": "Konvertera till artikel",
+    "convertToTimeless": "Konvertera till tidlös",
     "removeHastFromArticle": "Ta bort HAST från artikeln"
+  },
+  "convertToArticle": {
+    "descriptionWithPlanning": "En ny planering skapas från den ursprungliga planeringen. Välj datum för den nya artikeln.",
+    "descriptionNoPlanning": "Välj datum för den nya artikeln.",
+    "loadingPlanning": "Letar efter den ursprungliga planeringen…",
+    "targetDateLabel": "Datum",
+    "converting": "Konverterar...",
+    "failed": "Konverteringen misslyckades. Försök igen eller avbryt.",
+    "noPlanningHint": "Ingen ursprunglig planering hittades — en ny planering skapas från den tidlösa."
+  },
+  "convertToTimeless": {
+    "description": "Välj en kategori för den nya tidlösa."
   },
   "removeHastPrompt": {
     "title": "Ta bort HAST från artikeln",

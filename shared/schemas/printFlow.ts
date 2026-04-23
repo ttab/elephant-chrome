@@ -31,7 +31,7 @@ export type PrintFlowFieldsObject = z.infer<typeof _schema>
 /**
  * Type inferred from fields
  */
-export type PrintFlowFields = Array<keyof typeof _fields>
+export type PrintFlowFields = readonly (typeof _fields)[number][]
 
 /**
  * Interface extending HitV1 with a fields property of type PrintArticlesFields
@@ -43,4 +43,4 @@ export interface PrintFlow extends HitV1 {
 /**
  * Export fields and cast it as PrintFlowFields
  */
-export const fields = _fields as unknown as PrintFlowFields
+export const fields: PrintFlowFields = _fields

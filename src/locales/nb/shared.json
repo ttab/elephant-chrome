@@ -15,7 +15,8 @@
     "graphic": "Grafikk",
     "picture": "Foto",
     "video": "Video",
-    "picture/video": "Foto/Video"
+    "picture/video": "Foto/Video",
+    "timeless": "Tidløs"
   },
   "toolbar": {
     "clearFilters": "Tøm",
@@ -60,7 +61,8 @@
     "authorCreateSuccess": "Forfatterdokument er opprettet",
     "authorUpdateSuccess": "Forfatterdokumentet er oppdatert",
     "authorSaveSuccess": "Forfatterdokumentet er lagret",
-    "savedFilter": "Filteret ditt er lagret"
+    "savedFilter": "Filteret ditt er lagret",
+    "documentSaveSuccess": "Dokument lagret"
   },
   "prompts": {
     "publishBeforeClose": "Vil du publisere endringer innen du stenger?",

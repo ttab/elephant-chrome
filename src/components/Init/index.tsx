@@ -9,6 +9,7 @@ import { CoreStoryProvider } from '../../datastore/contexts/CoreStoryProvider'
 import { TTWireSourceProvider } from '../../datastore/contexts/TTWireSourceProvider'
 import { CoreContentSourceProvider } from '../../datastore/contexts/CoreContentSourceProvider'
 import { TTEditorialInfoTypeProvider } from '../../datastore/contexts/TTEditorialInfoTypeProvider'
+import { CoreTimelessCategoryProvider } from '../../datastore/contexts/CoreTimelessCategoryProvider'
 import { UserTrackerProvider } from '../../contexts'
 import { useRegistry } from '@/hooks/useRegistry'
 import { initializeAuthor } from './lib/actions/author'
@@ -100,17 +101,19 @@ export const Init = ({ children }: PropsWithChildren): JSX.Element => {
             <CoreAuthorProvider>
               <CoreStoryProvider>
                 <CoreCategoryProvider>
-                  <CoreOrganiserProvider>
-                    <TTWireSourceProvider>
-                      <CoreContentSourceProvider>
-                        <TTEditorialInfoTypeProvider>
-                          <NavigationProvider>
-                            {children}
-                          </NavigationProvider>
-                        </TTEditorialInfoTypeProvider>
-                      </CoreContentSourceProvider>
-                    </TTWireSourceProvider>
-                  </CoreOrganiserProvider>
+                  <CoreTimelessCategoryProvider>
+                    <CoreOrganiserProvider>
+                      <TTWireSourceProvider>
+                        <CoreContentSourceProvider>
+                          <TTEditorialInfoTypeProvider>
+                            <NavigationProvider>
+                              {children}
+                            </NavigationProvider>
+                          </TTEditorialInfoTypeProvider>
+                        </CoreContentSourceProvider>
+                      </TTWireSourceProvider>
+                    </CoreOrganiserProvider>
+                  </CoreTimelessCategoryProvider>
                 </CoreCategoryProvider>
               </CoreStoryProvider>
             </CoreAuthorProvider>

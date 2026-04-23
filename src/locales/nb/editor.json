@@ -38,5 +38,10 @@
   },
   "removeInfoConfirm": "Er du sikker på at du vil slette informasjonen?",
   "changeType": "Endre type",
-  "changeTypeConfirm": "Er du sikker på at du vil endre informasjonstypen?"
+  "changeTypeConfirm": "Er du sikker på at du vil endre informasjonstypen?",
+  "derivedFrom": "Opprettet fra",
+  "derivedFromTimelessLink": "tidløs",
+  "derivedFromArticleLink": "artikkel",
+  "derivedFromConnector": "og",
+  "derivedFromPlanningLink": "planlegging"
 }
