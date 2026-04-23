@@ -9,6 +9,7 @@ import type { YDocument } from '@/modules/yjs/hooks'
 import { useRegistry } from '@/hooks/useRegistry'
 import { toZonedTime } from 'date-fns-tz'
 import { format } from 'date-fns'
+import type { LucideIcon } from '@ttab/elephant-ui/icons'
 
 export const PromptDefault = ({
   prompt,
@@ -20,7 +21,9 @@ export const PromptDefault = ({
   ydoc,
   usableId,
   documentType,
-  embargoUntil
+  embargoUntil,
+  anchor,
+  typeIcon
 }: {
   prompt: {
     status: string
@@ -36,6 +39,8 @@ export const PromptDefault = ({
   usableId?: bigint
   documentType?: string
   embargoUntil?: string
+  anchor?: HTMLElement | null
+  typeIcon?: LucideIcon
 }) => {
   const [cause, setCause] = useState<string | undefined>(currentCause)
   const isUnpublishPrompt = prompt.status === 'unpublished'
@@ -83,7 +88,8 @@ export const PromptDefault = ({
 
   return (
     <Prompt
-      title={prompt.title}
+      title={prompt.promptTitle || prompt.title}
+      anchor={anchor}
       description={prompt.description}
       primaryLabel={prompt.title}
       secondaryLabel={t('actions.abort')}
@@ -93,6 +99,7 @@ export const PromptDefault = ({
       }}
       disablePrimary={disablePrimary}
       primaryVariant={isUnpublishPrompt ? 'destructive' : undefined}
+      typeIcon={typeIcon}
     >
       {embargoBlocksPublish && embargoDate && (
         <div className='text-sm text-orange-700 dark:text-orange-400'>

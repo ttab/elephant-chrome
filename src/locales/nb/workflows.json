@@ -8,19 +8,23 @@
       "transitions": {
         "done": {
           "title": "Klarmarkere",
-          "description": "Marker {{label}} som ferdig"
+          "description": "Marker {{label}} som ferdig",
+          "promptTitle": "Klarmarkere {{label}}"
         },
         "approved": {
           "title": "Godkjenn",
-          "description": "Godkjenn {{label}} for publisering"
+          "description": "Godkjenn {{label}} for publisering",
+          "promptTitle": "Godkjenn {{label}}"
         },
         "usable": {
           "title": "Publiser",
-          "description": "Publiser {{label}}"
+          "description": "Publiser {{label}}",
+          "promptTitle": "Publiser {{label}}"
         },
         "withheld": {
           "title": "Planlegg publisering",
-          "description": "Angi dato og tid for publisering"
+          "description": "Angi dato og tid for publisering",
+          "promptTitle": "Planlegg publisering av {{label}}"
         }
       }
     },
@@ -30,23 +34,28 @@
       "transitions": {
         "approved": {
           "title": "Godkjenn",
-          "description": "Godkjenn {{label}} for publisering"
+          "description": "Godkjenn {{label}} for publisering",
+          "promptTitle": "Godkjenn {{label}}"
         },
         "usable": {
           "title": "Publiser",
-          "description": "Publiser {{label}} direkte"
+          "description": "Publiser {{label}} direkte",
+          "promptTitle": "Publiser {{label}}"
         },
         "withheld": {
           "title": "Planlegg publisering",
-          "description": "Angi dato og tid for publisering"
+          "description": "Angi dato og tid for publisering",
+          "promptTitle": "Planlegg publisering av {{label}}"
         },
         "draft": {
           "title": "Til utkast",
-          "description": "Gjør om {{label}} til et utkast igjen"
+          "description": "Gjør om {{label}} til et utkast igjen",
+          "promptTitle": "Gjør om {{label}} til utkast"
         },
         "unpublished": {
           "title": "Avpubliser",
-          "description": "Avbryt og arkiver {{label}}"
+          "description": "Avbryt og arkiver {{label}}",
+          "promptTitle": "Avpubliser {{label}}"
         }
       }
     },
@@ -56,19 +65,23 @@
       "transitions": {
         "usable": {
           "title": "Publiser",
-          "description": "Publiser {{label}}"
+          "description": "Publiser {{label}}",
+          "promptTitle": "Publiser {{label}}"
         },
         "withheld": {
           "title": "Planlegg publisering",
-          "description": "Angi dato og tid for publisering"
+          "description": "Angi dato og tid for publisering",
+          "promptTitle": "Planlegg publisering av {{label}}"
         },
         "draft": {
           "title": "Til utkast",
-          "description": "Gjør om {{label}} til et utkast igjen"
+          "description": "Gjør om {{label}} til et utkast igjen",
+          "promptTitle": "Gjør om {{label}} til utkast"
         },
         "unpublished": {
           "title": "Avpubliser",
-          "description": "Avbryt og arkiver {{label}}"
+          "description": "Avbryt og arkiver {{label}}",
+          "promptTitle": "Avpubliser {{label}}"
         }
       }
     },
@@ -78,11 +91,13 @@
       "transitions": {
         "draft": {
           "title": "Ny versjon",
-          "description": "Fortsett å jobbe på en ny versjon av {{label}}"
+          "description": "Fortsett å jobbe på en ny versjon av {{label}}",
+          "promptTitle": "Ny versjon av {{label}}"
         },
         "unpublished": {
           "title": "Avpubliser",
-          "description": "Avbryt publiseringen og arkiver {{label}}"
+          "description": "Avbryt publiseringen og arkiver {{label}}",
+          "promptTitle": "Avpubliser {{label}}"
         }
       }
     },
@@ -92,11 +107,13 @@
       "transitions": {
         "usable": {
           "title": "Publiser direkte",
-          "description": "Publiser {{label}} direkte"
+          "description": "Publiser {{label}} direkte",
+          "promptTitle": "Publiser {{label}}"
         },
         "draft": {
           "title": "Til utkast",
-          "description": "Avbryt planlagt publisering og gjør om til utkast igjen"
+          "description": "Avbryt planlagt publisering og gjør om til utkast igjen",
+          "promptTitle": "Gjør om {{label}} til utkast"
         }
       }
     },
@@ -106,7 +123,8 @@
       "transitions": {
         "draft": {
           "title": "Ny versjon",
-          "description": "Fortsett å jobbe på en ny versjon av {{label}}"
+          "description": "Fortsett å jobbe på en ny versjon av {{label}}",
+          "promptTitle": "Ny versjon av {{label}}"
         }
       }
     },
@@ -132,7 +150,8 @@
         },
         "usable": {
           "title": "Publiser eksternt",
-          "description": "Publiser hendelsen eksternt"
+          "description": "Publiser hendelsen eksternt",
+          "promptTitle": "Publiser hendelsen"
         }
       }
     },
@@ -142,11 +161,13 @@
       "transitions": {
         "usable": {
           "title": "Publiser",
-          "description": "Publiser hendelsen eksternt"
+          "description": "Publiser hendelsen eksternt",
+          "promptTitle": "Publiser hendelsen"
         },
         "unpublished": {
           "title": "Avpubliser",
-          "description": "Avpubliser hendelsen"
+          "description": "Avpubliser hendelsen",
+          "promptTitle": "Avpubliser hendelsen"
         }
       }
     },
@@ -160,7 +181,8 @@
       "transitions": {
         "unpublished": {
           "title": "Avpubliser",
-          "description": "Avpubliser hendelsen eksternt"
+          "description": "Avpubliser hendelsen eksternt",
+          "promptTitle": "Avpubliser hendelsen"
         }
       }
     },
@@ -170,7 +192,8 @@
       "transitions": {
         "draft": {
           "title": "Utkast",
-          "description": "Gjør om hendelsen til et utkast igjen"
+          "description": "Gjør om hendelsen til et utkast igjen",
+          "promptTitle": "Gjør om hendelsen til utkast"
         }
       }
     }
@@ -186,7 +209,8 @@
         },
         "usable": {
           "title": "Publiser eksternt",
-          "description": "Publiser planleggingen eksternt"
+          "description": "Publiser planleggingen eksternt",
+          "promptTitle": "Publiser planleggingen"
         }
       }
     },
@@ -196,11 +220,13 @@
       "transitions": {
         "usable": {
           "title": "Publiser",
-          "description": "Publiser planleggingen eksternt"
+          "description": "Publiser planleggingen eksternt",
+          "promptTitle": "Publiser planleggingen"
         },
         "unpublished": {
           "title": "Avpubliser",
-          "description": "Avpubliser planleggingen"
+          "description": "Avpubliser planleggingen",
+          "promptTitle": "Avpubliser planleggingen"
         }
       }
     },
@@ -214,7 +240,8 @@
       "transitions": {
         "unpublished": {
           "title": "Avpubliser",
-          "description": "Avpubliser planleggingen eksternt"
+          "description": "Avpubliser planleggingen eksternt",
+          "promptTitle": "Avpubliser planleggingen"
         }
       }
     },
@@ -224,7 +251,8 @@
       "transitions": {
         "draft": {
           "title": "Utkast",
-          "description": "Gjør om planleggingen til et utkast igjen"
+          "description": "Gjør om planleggingen til et utkast igjen",
+          "promptTitle": "Gjør om planleggingen til utkast"
         }
       }
     }
@@ -236,7 +264,8 @@
       "transitions": {
         "usable": {
           "title": "Publiser",
-          "description": "Publiser faktaboksen for bruk"
+          "description": "Publiser faktaboksen for bruk",
+          "promptTitle": "Publiser faktaboksen"
         }
       }
     },
@@ -248,7 +277,8 @@
       "transitions": {
         "draft": {
           "title": "Til utkast",
-          "description": "Gjør om faktaboksen til et utkast igjen"
+          "description": "Gjør om faktaboksen til et utkast igjen",
+          "promptTitle": "Gjør om faktaboksen til utkast"
         }
       }
     }
@@ -260,15 +290,18 @@
       "transitions": {
         "done": {
           "title": "Klarmarkere",
-          "description": "Marker som ferdig til redaksjonen"
+          "description": "Marker som ferdig til redaksjonen",
+          "promptTitle": "Klarmarkere redaksjonell info"
         },
         "approved": {
           "title": "Godkjenn",
-          "description": "Godkjenn for intern bruk i redaksjonen"
+          "description": "Godkjenn for intern bruk i redaksjonen",
+          "promptTitle": "Godkjenn redaksjonell info"
         },
         "usable": {
           "title": "Publiser",
-          "description": "Publiser slik at den er synlig eksternt"
+          "description": "Publiser slik at den er synlig eksternt",
+          "promptTitle": "Publiser redaksjonell info"
         }
       }
     },
@@ -278,15 +311,18 @@
       "transitions": {
         "approved": {
           "title": "Godkjenn",
-          "description": "Godkjenn for intern bruk i redaksjonen"
+          "description": "Godkjenn for intern bruk i redaksjonen",
+          "promptTitle": "Godkjenn redaksjonell info"
         },
         "usable": {
           "title": "Publiser",
-          "description": "Publiser slik at den er synlig eksternt"
+          "description": "Publiser slik at den er synlig eksternt",
+          "promptTitle": "Publiser redaksjonell info"
         },
         "draft": {
           "title": "Til utkast",
-          "description": "Gjør om til et utkast igjen"
+          "description": "Gjør om til et utkast igjen",
+          "promptTitle": "Gjør om redaksjonell info til utkast"
         }
       }
     },
@@ -296,11 +332,13 @@
       "transitions": {
         "usable": {
           "title": "Publiser",
-          "description": "Publiser slik at den er synlig eksternt"
+          "description": "Publiser slik at den er synlig eksternt",
+          "promptTitle": "Publiser redaksjonell info"
         },
         "draft": {
           "title": "Til utkast",
-          "description": "Gjør om til et utkast igjen"
+          "description": "Gjør om til et utkast igjen",
+          "promptTitle": "Gjør om redaksjonell info til utkast"
         }
       }
     },
@@ -310,11 +348,13 @@
       "transitions": {
         "draft": {
           "title": "Til utkast",
-          "description": "Gjør om til et utkast igjen"
+          "description": "Gjør om til et utkast igjen",
+          "promptTitle": "Gjør om redaksjonell info til utkast"
         },
         "unpublished": {
           "title": "Trekk tilbake",
-          "description": "Avbryt publiseringen og arkiver informasjonen"
+          "description": "Avbryt publiseringen og arkiver informasjonen",
+          "promptTitle": "Trekk tilbake redaksjonell info"
         }
       }
     }
@@ -326,15 +366,18 @@
       "transitions": {
         "needs_proofreading": {
           "title": "",
-          "description": ""
+          "description": "",
+          "promptTitle": ""
         },
         "print_done": {
           "title": "",
-          "description": ""
+          "description": "",
+          "promptTitle": ""
         },
         "usable": {
           "title": "",
-          "description": ""
+          "description": "",
+          "promptTitle": ""
         }
       }
     },
@@ -344,19 +387,23 @@
       "transitions": {
         "print_done": {
           "title": "",
-          "description": ""
+          "description": "",
+          "promptTitle": ""
         },
         "usable": {
           "title": "",
-          "description": ""
+          "description": "",
+          "promptTitle": ""
         },
         "cancelled": {
           "title": "",
-          "description": ""
+          "description": "",
+          "promptTitle": ""
         },
         "draft": {
           "title": "",
-          "description": ""
+          "description": "",
+          "promptTitle": ""
         }
       }
     },
@@ -366,23 +413,28 @@
       "transitions": {
         "approved": {
           "title": "",
-          "description": ""
+          "description": "",
+          "promptTitle": ""
         },
         "usable": {
           "title": "",
-          "description": ""
+          "description": "",
+          "promptTitle": ""
         },
         "needs_proofreading": {
           "title": "",
-          "description": ""
+          "description": "",
+          "promptTitle": ""
         },
         "cancelled": {
           "title": "",
-          "description": ""
+          "description": "",
+          "promptTitle": ""
         },
         "draft": {
           "title": "",
-          "description": ""
+          "description": "",
+          "promptTitle": ""
         }
       }
     },
@@ -396,7 +448,8 @@
       "transitions": {
         "unpublished": {
           "title": "",
-          "description": ""
+          "description": "",
+          "promptTitle": ""
         }
       }
     },
@@ -406,7 +459,8 @@
       "transitions": {
         "draft": {
           "title": "",
-          "description": ""
+          "description": "",
+          "promptTitle": ""
         }
       }
     },
@@ -416,7 +470,8 @@
       "transitions": {
         "draft": {
           "title": "",
-          "description": ""
+          "description": "",
+          "promptTitle": ""
         }
       }
     }

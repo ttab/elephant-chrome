@@ -12,6 +12,7 @@ import {
 
 interface WorkflowItem {
   title: string
+  promptTitle?: string
   asSaveTitle?: string
   asSaveCTA?: string
   description: string
@@ -51,21 +52,25 @@ const baseDeliverable = (type: 'article' | 'flash'): WorkflowSpecification => {
           default: true,
           verify: true,
           title: i18n.t('workflows:base.draft.transitions.done.title'),
+          promptTitle: i18n.t('workflows:base.draft.transitions.done.promptTitle', { label: typeLabel }),
           description: i18n.t('workflows:base.draft.transitions.done.description', { label: typeLabel })
         },
         approved: {
           verify: true,
           title: i18n.t('workflows:base.draft.transitions.approved.title'),
+          promptTitle: i18n.t('workflows:base.draft.transitions.approved.promptTitle', { label: typeLabel }),
           description: i18n.t('workflows:base.draft.transitions.approved.description', { label: typeLabel })
         },
         usable: {
           verify: true,
           title: i18n.t('workflows:base.draft.transitions.usable.title'),
+          promptTitle: i18n.t('workflows:base.draft.transitions.usable.promptTitle', { label: typeLabel }),
           description: i18n.t('workflows:base.draft.transitions.usable.description', { label: typeLabel })
         },
         withheld: {
           verify: true,
           title: i18n.t('workflows:base.draft.transitions.withheld.title'),
+          promptTitle: i18n.t('workflows:base.draft.transitions.withheld.promptTitle', { label: typeLabel }),
           description: i18n.t('workflows:base.draft.transitions.withheld.description')
         }
       }
@@ -80,26 +85,31 @@ const baseDeliverable = (type: 'article' | 'flash'): WorkflowSpecification => {
           default: true,
           verify: true,
           title: i18n.t('workflows:base.done.transitions.approved.title'),
+          promptTitle: i18n.t('workflows:base.done.transitions.approved.promptTitle', { label: typeLabel }),
           description: i18n.t('workflows:base.done.transitions.approved.description', { label: typeLabel })
         },
         usable: {
           verify: true,
           title: i18n.t('workflows:base.done.transitions.usable.title'),
+          promptTitle: i18n.t('workflows:base.done.transitions.usable.promptTitle', { label: typeLabel }),
           description: i18n.t('workflows:base.done.transitions.usable.description', { label: typeLabel })
         },
         withheld: {
           verify: true,
           title: i18n.t('workflows:base.done.transitions.withheld.title'),
+          promptTitle: i18n.t('workflows:base.done.transitions.withheld.promptTitle', { label: typeLabel }),
           description: i18n.t('workflows:base.done.transitions.withheld.description')
         },
         draft: {
           verify: true,
           title: i18n.t('workflows:base.done.transitions.draft.title'),
+          promptTitle: i18n.t('workflows:base.done.transitions.draft.promptTitle', { label: typeLabel }),
           description: i18n.t('workflows:base.done.transitions.draft.description', { label: typeLabel })
         },
         unpublished: {
           verify: true,
           title: i18n.t('workflows:base.done.transitions.unpublished.title'),
+          promptTitle: i18n.t('workflows:base.done.transitions.unpublished.promptTitle', { label: typeLabel }),
           description: i18n.t('workflows:base.done.transitions.unpublished.description', { label: typeLabel })
         }
       }
@@ -114,21 +124,25 @@ const baseDeliverable = (type: 'article' | 'flash'): WorkflowSpecification => {
           default: true,
           verify: true,
           title: i18n.t('workflows:base.approved.transitions.usable.title'),
+          promptTitle: i18n.t('workflows:base.approved.transitions.usable.promptTitle', { label: typeLabel }),
           description: i18n.t('workflows:base.approved.transitions.usable.description', { label: typeLabel })
         },
         withheld: {
           verify: true,
           title: i18n.t('workflows:base.approved.transitions.withheld.title'),
+          promptTitle: i18n.t('workflows:base.approved.transitions.withheld.promptTitle', { label: typeLabel }),
           description: i18n.t('workflows:base.approved.transitions.withheld.description')
         },
         draft: {
           verify: true,
           title: i18n.t('workflows:base.approved.transitions.draft.title'),
+          promptTitle: i18n.t('workflows:base.approved.transitions.draft.promptTitle', { label: typeLabel }),
           description: i18n.t('workflows:base.approved.transitions.draft.description', { label: typeLabel })
         },
         unpublished: {
           verify: true,
           title: i18n.t('workflows:base.approved.transitions.unpublished.title'),
+          promptTitle: i18n.t('workflows:base.approved.transitions.unpublished.promptTitle', { label: typeLabel }),
           description: i18n.t('workflows:base.approved.transitions.unpublished.description', { label: typeLabel })
         }
       }
@@ -143,11 +157,13 @@ const baseDeliverable = (type: 'article' | 'flash'): WorkflowSpecification => {
           default: true,
           verify: true,
           title: i18n.t('workflows:base.usable.transitions.draft.title'),
+          promptTitle: i18n.t('workflows:base.usable.transitions.draft.promptTitle', { label: typeLabel }),
           description: i18n.t('workflows:base.usable.transitions.draft.description', { label: typeLabel })
         },
         unpublished: {
           verify: true,
           title: i18n.t('workflows:base.usable.transitions.unpublished.title'),
+          promptTitle: i18n.t('workflows:base.usable.transitions.unpublished.promptTitle', { label: typeLabel }),
           description: i18n.t('workflows:base.usable.transitions.unpublished.description', { label: typeLabel })
         }
       }
@@ -162,11 +178,13 @@ const baseDeliverable = (type: 'article' | 'flash'): WorkflowSpecification => {
           default: true,
           verify: true,
           title: i18n.t('workflows:base.withheld.transitions.usable.title'),
+          promptTitle: i18n.t('workflows:base.withheld.transitions.usable.promptTitle', { label: typeLabel }),
           description: i18n.t('workflows:base.withheld.transitions.usable.description', { label: typeLabel })
         },
         draft: {
           verify: true,
           title: i18n.t('workflows:base.withheld.transitions.draft.title'),
+          promptTitle: i18n.t('workflows:base.withheld.transitions.draft.promptTitle', { label: typeLabel }),
           description: i18n.t('workflows:base.withheld.transitions.draft.description')
         }
       }
@@ -181,6 +199,7 @@ const baseDeliverable = (type: 'article' | 'flash'): WorkflowSpecification => {
           default: true,
           verify: true,
           title: i18n.t('workflows:base.unpublished.transitions.draft.title'),
+          promptTitle: i18n.t('workflows:base.unpublished.transitions.draft.promptTitle', { label: typeLabel }),
           description: i18n.t('workflows:base.unpublished.transitions.draft.description', { label: typeLabel })
         }
       }
@@ -262,6 +281,7 @@ export function getWorkflowSpecifications(): Record<string, WorkflowSpecificatio
           usable: {
             verify: true,
             title: i18n.t('workflows:core/event.draft.transitions.usable.title'),
+            promptTitle: i18n.t('workflows:core/event.draft.transitions.usable.promptTitle'),
             description: i18n.t('workflows:core/event.draft.transitions.usable.description')
           }
         }
@@ -274,11 +294,13 @@ export function getWorkflowSpecifications(): Record<string, WorkflowSpecificatio
           usable: {
             verify: true,
             title: i18n.t('workflows:core/event.done.transitions.usable.title'),
+            promptTitle: i18n.t('workflows:core/event.done.transitions.usable.promptTitle'),
             description: i18n.t('workflows:core/event.done.transitions.usable.description')
           },
           unpublished: {
             verify: true,
             title: i18n.t('workflows:core/event.done.transitions.unpublished.title'),
+            promptTitle: i18n.t('workflows:core/event.done.transitions.unpublished.promptTitle'),
             description: i18n.t('workflows:core/event.done.transitions.unpublished.description')
           }
         }
@@ -296,6 +318,7 @@ export function getWorkflowSpecifications(): Record<string, WorkflowSpecificatio
           unpublished: {
             verify: true,
             title: i18n.t('workflows:core/event.usable.transitions.unpublished.title'),
+            promptTitle: i18n.t('workflows:core/event.usable.transitions.unpublished.promptTitle'),
             description: i18n.t('workflows:core/event.usable.transitions.unpublished.description')
           }
         }
@@ -308,6 +331,7 @@ export function getWorkflowSpecifications(): Record<string, WorkflowSpecificatio
           draft: {
             verify: true,
             title: i18n.t('workflows:core/event.unpublished.transitions.draft.title'),
+            promptTitle: i18n.t('workflows:core/event.unpublished.transitions.draft.promptTitle'),
             description: i18n.t('workflows:core/event.unpublished.transitions.draft.description')
           }
         }
@@ -329,6 +353,7 @@ export function getWorkflowSpecifications(): Record<string, WorkflowSpecificatio
           usable: {
             verify: true,
             title: i18n.t('workflows:core/planning-item.draft.transitions.usable.title'),
+            promptTitle: i18n.t('workflows:core/planning-item.draft.transitions.usable.promptTitle'),
             description: i18n.t('workflows:core/planning-item.draft.transitions.usable.description')
           }
         }
@@ -340,12 +365,14 @@ export function getWorkflowSpecifications(): Record<string, WorkflowSpecificatio
         transitions: {
           usable: {
             title: i18n.t('workflows:core/planning-item.done.transitions.usable.title'),
+            promptTitle: i18n.t('workflows:core/planning-item.done.transitions.usable.promptTitle'),
             verify: true,
             description: i18n.t('workflows:core/planning-item.done.transitions.usable.description')
           },
           unpublished: {
             verify: true,
             title: i18n.t('workflows:core/planning-item.done.transitions.unpublished.title'),
+            promptTitle: i18n.t('workflows:core/planning-item.done.transitions.unpublished.promptTitle'),
             description: i18n.t('workflows:core/planning-item.done.transitions.unpublished.description')
           }
         }
@@ -363,6 +390,7 @@ export function getWorkflowSpecifications(): Record<string, WorkflowSpecificatio
           unpublished: {
             verify: true,
             title: i18n.t('workflows:core/planning-item.usable.transitions.unpublished.title'),
+            promptTitle: i18n.t('workflows:core/planning-item.usable.transitions.unpublished.promptTitle'),
             description: i18n.t('workflows:core/planning-item.usable.transitions.unpublished.description')
           }
         }
@@ -375,6 +403,7 @@ export function getWorkflowSpecifications(): Record<string, WorkflowSpecificatio
           draft: {
             verify: true,
             title: i18n.t('workflows:core/planning-item.unpublished.transitions.draft.title'),
+            promptTitle: i18n.t('workflows:core/planning-item.unpublished.transitions.draft.promptTitle'),
             description: i18n.t('workflows:core/planning-item.unpublished.transitions.draft.description')
           }
         }
@@ -429,7 +458,8 @@ export function getWorkflowSpecifications(): Record<string, WorkflowSpecificatio
           usable: {
             verify: true,
             title: i18n.t('workflows:core/factbox.draft.transitions.usable.title'),
-            description: i18n.t('workflows:core/factbox.draft.transitions.usable.description')
+            description: i18n.t('workflows:core/factbox.draft.transitions.usable.description'),
+            promptTitle: i18n.t('workflows:core/factbox.draft.transitions.usable.promptTitle')
           }
         }
       },
@@ -444,7 +474,8 @@ export function getWorkflowSpecifications(): Record<string, WorkflowSpecificatio
           draft: {
             verify: true,
             title: i18n.t('workflows:core/factbox.usable.transitions.draft.title'),
-            description: i18n.t('workflows:core/factbox.usable.transitions.draft.description')
+            description: i18n.t('workflows:core/factbox.usable.transitions.draft.description'),
+            promptTitle: i18n.t('workflows:core/factbox.usable.transitions.draft.promptTitle')
           }
         }
       }
@@ -458,15 +489,18 @@ export function getWorkflowSpecifications(): Record<string, WorkflowSpecificatio
           done: {
             default: true,
             title: i18n.t('workflows:core/editorial-info.draft.transitions.done.title'),
+            promptTitle: i18n.t('workflows:core/editorial-info.draft.transitions.done.promptTitle'),
             description: i18n.t('workflows:core/editorial-info.draft.transitions.done.description')
           },
           approved: {
             title: i18n.t('workflows:core/editorial-info.draft.transitions.approved.title'),
+            promptTitle: i18n.t('workflows:core/editorial-info.draft.transitions.approved.promptTitle'),
             description: i18n.t('workflows:core/editorial-info.draft.transitions.approved.description')
           },
           usable: {
             verify: true,
             title: i18n.t('workflows:core/editorial-info.draft.transitions.usable.title'),
+            promptTitle: i18n.t('workflows:core/editorial-info.draft.transitions.usable.promptTitle'),
             description: i18n.t('workflows:core/editorial-info.draft.transitions.usable.description')
           }
         }
@@ -479,15 +513,18 @@ export function getWorkflowSpecifications(): Record<string, WorkflowSpecificatio
           approved: {
             default: true,
             title: i18n.t('workflows:core/editorial-info.done.transitions.approved.title'),
+            promptTitle: i18n.t('workflows:core/editorial-info.done.transitions.approved.promptTitle'),
             description: i18n.t('workflows:core/editorial-info.done.transitions.approved.description')
           },
           usable: {
             verify: true,
             title: i18n.t('workflows:core/editorial-info.done.transitions.usable.title'),
+            promptTitle: i18n.t('workflows:core/editorial-info.done.transitions.usable.promptTitle'),
             description: i18n.t('workflows:core/editorial-info.done.transitions.usable.description')
           },
           draft: {
             title: i18n.t('workflows:core/editorial-info.done.transitions.draft.title'),
+            promptTitle: i18n.t('workflows:core/editorial-info.done.transitions.draft.promptTitle'),
             description: i18n.t('workflows:core/editorial-info.done.transitions.draft.description')
           }
         }
@@ -501,10 +538,12 @@ export function getWorkflowSpecifications(): Record<string, WorkflowSpecificatio
             default: true,
             verify: true,
             title: i18n.t('workflows:core/editorial-info.approved.transitions.usable.title'),
+            promptTitle: i18n.t('workflows:core/editorial-info.approved.transitions.usable.promptTitle'),
             description: i18n.t('workflows:core/editorial-info.approved.transitions.usable.description')
           },
           draft: {
             title: i18n.t('workflows:core/editorial-info.approved.transitions.draft.title'),
+            promptTitle: i18n.t('workflows:core/editorial-info.approved.transitions.draft.promptTitle'),
             description: i18n.t('workflows:core/editorial-info.approved.transitions.draft.description')
           }
         }
@@ -517,10 +556,12 @@ export function getWorkflowSpecifications(): Record<string, WorkflowSpecificatio
           draft: {
             default: true,
             title: i18n.t('workflows:core/editorial-info.usable.transitions.draft.title'),
+            promptTitle: i18n.t('workflows:core/editorial-info.usable.transitions.draft.promptTitle'),
             description: i18n.t('workflows:core/editorial-info.usable.transitions.draft.description')
           },
           unpublished: {
             title: i18n.t('workflows:core/editorial-info.usable.transitions.unpublished.title'),
+            promptTitle: i18n.t('workflows:core/editorial-info.usable.transitions.unpublished.promptTitle'),
             description: i18n.t('workflows:core/editorial-info.usable.transitions.unpublished.description')
           }
         }
@@ -535,15 +576,18 @@ export function getWorkflowSpecifications(): Record<string, WorkflowSpecificatio
           needs_proofreading: {
             default: true,
             title: 'Begär korrläsning',
+            promptTitle: 'Begär korrläsning av printartikeln',
             description: 'Behöver korrläsning av printartikeln'
           },
           print_done: {
             title: 'Klarmarkera',
+            promptTitle: 'Klarmarkera printartikeln',
             description: 'Markera printartikeln som klar'
           },
           usable: {
             verify: true,
             title: 'Exportera',
+            promptTitle: 'Exportera printartikeln',
             description: 'Exportera printartikeln'
           }
         }
@@ -555,21 +599,25 @@ export function getWorkflowSpecifications(): Record<string, WorkflowSpecificatio
         transitions: {
           print_done: {
             title: 'Klarmarkera',
+            promptTitle: 'Klarmarkera printartikeln',
             description: 'Markera printartikeln som klar'
           },
           usable: {
             verify: true,
             title: 'Exportera',
+            promptTitle: 'Exportera printartikeln',
             description: 'Exportera printartikeln'
           },
           cancelled: {
             verify: true,
             title: 'Kasta',
+            promptTitle: 'Kasta printartikeln',
             description: 'Kasta printartikeln'
           },
           draft: {
             verify: true,
             title: 'Till utkast',
+            promptTitle: 'Gör om printartikeln till ett utkast',
             description: 'Gör om printartikeln till ett utkast igen'
           }
         }
@@ -579,26 +627,25 @@ export function getWorkflowSpecifications(): Record<string, WorkflowSpecificatio
         description: 'Printartikeln är klar och väntar på godkännande',
         isWorkflow: true,
         transitions: {
-          approved: {
-            default: true,
-            title: 'Godkänn',
-            description: 'Godkänn printartikeln'
-          },
           usable: {
             verify: true,
             title: 'Exportera',
+            promptTitle: 'Exportera printartikeln',
             description: 'Exportera printartikeln'
           },
           needs_proofreading: {
             title: 'Begär korrläsning',
+            promptTitle: 'Begär korrläsning av printartikeln',
             description: 'Behöver korrläsning av printartikeln'
           },
           cancelled: {
             title: 'Kasta',
+            promptTitle: 'Kasta printartikeln',
             description: 'Kasta printartikeln'
           },
           draft: {
             title: 'Till utkast',
+            promptTitle: 'Gör om printartikeln till ett utkast',
             description: 'Gör om printartikeln till ett utkast igen'
           }
         }
@@ -616,6 +663,7 @@ export function getWorkflowSpecifications(): Record<string, WorkflowSpecificatio
           unpublished: {
             verify: true,
             title: 'Dra tillbaka',
+            promptTitle: 'Dra tillbaka printartikeln',
             description: 'Avbryt export och arkivera printartikeln'
           }
         }
@@ -627,6 +675,7 @@ export function getWorkflowSpecifications(): Record<string, WorkflowSpecificatio
         transitions: {
           draft: {
             title: 'Till utkast',
+            promptTitle: 'Gör om printartikeln till ett utkast',
             description: 'Gör om printartikeln till ett utkast igen'
           }
         }
@@ -638,6 +687,7 @@ export function getWorkflowSpecifications(): Record<string, WorkflowSpecificatio
         transitions: {
           draft: {
             title: 'Till utkast',
+            promptTitle: 'Gör om printartikeln till ett utkast',
             description: 'Gör om printartikeln till ett utkast igen'
           }
         }
