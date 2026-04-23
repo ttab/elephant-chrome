@@ -1,5 +1,4 @@
 import i18n from 'i18next'
-import type { TranslationKey } from '@/types/i18next.d'
 import {
   ArchiveIcon,
   CircleCheckIcon,
@@ -9,6 +8,7 @@ import {
   CircleXIcon,
   type LucideIcon
 } from '@ttab/elephant-ui/icons'
+import type { TranslationKey } from '@/types/i18next'
 
 interface WorkflowItem {
   title: string
@@ -66,12 +66,6 @@ const baseDeliverable = (type: 'article' | 'flash'): WorkflowSpecification => {
           title: i18n.t('workflows:base.draft.transitions.usable.title'),
           promptTitle: i18n.t('workflows:base.draft.transitions.usable.promptTitle', { label: typeLabel }),
           description: i18n.t('workflows:base.draft.transitions.usable.description', { label: typeLabel })
-        },
-        withheld: {
-          verify: true,
-          title: i18n.t('workflows:base.draft.transitions.withheld.title'),
-          promptTitle: i18n.t('workflows:base.draft.transitions.withheld.promptTitle', { label: typeLabel }),
-          description: i18n.t('workflows:base.draft.transitions.withheld.description')
         }
       }
     },
@@ -93,12 +87,6 @@ const baseDeliverable = (type: 'article' | 'flash'): WorkflowSpecification => {
           title: i18n.t('workflows:base.done.transitions.usable.title'),
           promptTitle: i18n.t('workflows:base.done.transitions.usable.promptTitle', { label: typeLabel }),
           description: i18n.t('workflows:base.done.transitions.usable.description', { label: typeLabel })
-        },
-        withheld: {
-          verify: true,
-          title: i18n.t('workflows:base.done.transitions.withheld.title'),
-          promptTitle: i18n.t('workflows:base.done.transitions.withheld.promptTitle', { label: typeLabel }),
-          description: i18n.t('workflows:base.done.transitions.withheld.description')
         },
         draft: {
           verify: true,
@@ -126,12 +114,6 @@ const baseDeliverable = (type: 'article' | 'flash'): WorkflowSpecification => {
           title: i18n.t('workflows:base.approved.transitions.usable.title'),
           promptTitle: i18n.t('workflows:base.approved.transitions.usable.promptTitle', { label: typeLabel }),
           description: i18n.t('workflows:base.approved.transitions.usable.description', { label: typeLabel })
-        },
-        withheld: {
-          verify: true,
-          title: i18n.t('workflows:base.approved.transitions.withheld.title'),
-          promptTitle: i18n.t('workflows:base.approved.transitions.withheld.promptTitle', { label: typeLabel }),
-          description: i18n.t('workflows:base.approved.transitions.withheld.description')
         },
         draft: {
           verify: true,
@@ -168,27 +150,6 @@ const baseDeliverable = (type: 'article' | 'flash'): WorkflowSpecification => {
         }
       }
     },
-    withheld: {
-      title: i18n.t('workflows:base.withheld.title'),
-      description: i18n.t('workflows:base.withheld.description', { label: typeLabel }),
-      isWorkflow: true,
-      requireCause: true,
-      transitions: {
-        usable: {
-          default: true,
-          verify: true,
-          title: i18n.t('workflows:base.withheld.transitions.usable.title'),
-          promptTitle: i18n.t('workflows:base.withheld.transitions.usable.promptTitle', { label: typeLabel }),
-          description: i18n.t('workflows:base.withheld.transitions.usable.description', { label: typeLabel })
-        },
-        draft: {
-          verify: true,
-          title: i18n.t('workflows:base.withheld.transitions.draft.title'),
-          promptTitle: i18n.t('workflows:base.withheld.transitions.draft.promptTitle', { label: typeLabel }),
-          description: i18n.t('workflows:base.withheld.transitions.draft.description')
-        }
-      }
-    },
     unpublished: {
       title: i18n.t('workflows:base.unpublished.title'),
       description: i18n.t('workflows:base.unpublished.description', { label: typeLabel }),
@@ -201,18 +162,6 @@ const baseDeliverable = (type: 'article' | 'flash'): WorkflowSpecification => {
           title: i18n.t('workflows:base.unpublished.transitions.draft.title'),
           promptTitle: i18n.t('workflows:base.unpublished.transitions.draft.promptTitle', { label: typeLabel }),
           description: i18n.t('workflows:base.unpublished.transitions.draft.description', { label: typeLabel })
-        }
-      }
-    },
-    used: {
-      title: i18n.t('workflows:base.used.title'),
-      description: i18n.t('workflows:base.used.description', { label: typeLabel }),
-      isWorkflow: false,
-      transitions: {
-        draft: {
-          default: true,
-          title: i18n.t('workflows:base.used.transitions.draft.title'),
-          description: i18n.t('workflows:base.used.transitions.draft.description', { label: typeLabel })
         }
       }
     }
@@ -264,7 +213,71 @@ export const StatusSpecifications: Record<string, StatusSpecification> = {
 
 
 export function getWorkflowSpecifications(): Record<string, WorkflowSpecification> {
+  const article = baseDeliverable('article')
+  const articleLabel = i18n.t('workflows:base.article')
+
   return {
+    'core/article': {
+      ...article,
+      draft: {
+        ...article.draft,
+        transitions: {
+          ...article.draft.transitions,
+          withheld: {
+            verify: true,
+            title: i18n.t('workflows:base.draft.transitions.withheld.title'),
+            promptTitle: i18n.t('workflows:base.draft.transitions.withheld.promptTitle', { label: articleLabel }),
+            description: i18n.t('workflows:base.draft.transitions.withheld.description')
+          }
+        }
+      },
+      done: {
+        ...article.done,
+        transitions: {
+          ...article.done.transitions,
+          withheld: {
+            verify: true,
+            title: i18n.t('workflows:base.done.transitions.withheld.title'),
+            promptTitle: i18n.t('workflows:base.done.transitions.withheld.promptTitle', { label: articleLabel }),
+            description: i18n.t('workflows:base.done.transitions.withheld.description')
+          }
+        }
+      },
+      approved: {
+        ...article.approved,
+        transitions: {
+          ...article.approved.transitions,
+          withheld: {
+            verify: true,
+            title: i18n.t('workflows:base.approved.transitions.withheld.title'),
+            promptTitle: i18n.t('workflows:base.approved.transitions.withheld.promptTitle', { label: articleLabel }),
+            description: i18n.t('workflows:base.approved.transitions.withheld.description')
+          }
+        }
+      },
+      withheld: {
+        title: i18n.t('workflows:base.withheld.title'),
+        description: i18n.t('workflows:base.withheld.description', { label: articleLabel }),
+        isWorkflow: true,
+        requireCause: true,
+        transitions: {
+          usable: {
+            default: true,
+            verify: true,
+            title: i18n.t('workflows:base.withheld.transitions.usable.title'),
+            promptTitle: i18n.t('workflows:base.withheld.transitions.usable.promptTitle', { label: articleLabel }),
+            description: i18n.t('workflows:base.withheld.transitions.usable.description', { label: articleLabel })
+          },
+          draft: {
+            verify: true,
+            title: i18n.t('workflows:base.withheld.transitions.draft.title'),
+            promptTitle: i18n.t('workflows:base.withheld.transitions.draft.promptTitle', { label: articleLabel }),
+            description: i18n.t('workflows:base.withheld.transitions.draft.description')
+          }
+        }
+      }
+    },
+    'core/flash': baseDeliverable('flash'),
     'core/event': {
       draft: {
         title: i18n.t('workflows:core/event.draft.title'),
@@ -409,7 +422,6 @@ export function getWorkflowSpecifications(): Record<string, WorkflowSpecificatio
         }
       }
     },
-    'core/article': baseDeliverable('article'),
     'core/article#timeless': {
       draft: {
         title: i18n.t('workflows:base.draft.title', { label: i18n.t('workflows:base.article') }),
@@ -448,7 +460,6 @@ export function getWorkflowSpecifications(): Record<string, WorkflowSpecificatio
         }
       }
     },
-    'core/flash': baseDeliverable('flash'),
     'core/factbox': {
       draft: {
         title: i18n.t('workflows:core/factbox.draft.title'),

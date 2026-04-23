@@ -80,11 +80,9 @@ export async function fetchAssignments({ index, repository, type, requireDeliver
       if (!document) continue
 
       const sameDay = getPlanningDate(document) === dateStr
-
       for (const assignment of getAssignmentsFromDocument(document, type)) {
         const sameDayAssignment = getAssignmentDate(assignment) === dateStr
-
-        if (!sameDay && (hasPublishSlot(assignment) || !sameDayAssignment)) {
+        if (!sameDay && assignment._deliverableType !== 'core/article' && (hasPublishSlot(assignment) || !sameDayAssignment)) {
           continue
         }
 

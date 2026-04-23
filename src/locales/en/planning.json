@@ -41,7 +41,7 @@
     "label": "Move",
     "dateSwitch": "Change planning date",
     "dateSwitchDescription": "The planning and all its text assignments will change date to",
-    "dateSwitchAssignments": "Choose below if image and video assignments should also change date",
+    "dateSwitchAssignments": "Choose below if scheduled articles, image and video assignments should also change date",
     "assignmentCreateInfo": "If you do not choose a planning, a new planning with this assignment will be created for you on the selected date.",
     "assignmentAddInfo": "This assignment will be added to the selected planning",
     "assignmentMoveSuccess": "The assignment has been moved",

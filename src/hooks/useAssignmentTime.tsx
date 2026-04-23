@@ -19,7 +19,8 @@ export interface TimeDef {
  */
 export function useAssignmentTime(
   assignment: Y.Map<unknown>,
-  newDate?: string
+  newDate?: string,
+  articleStatus?: string
 ): undefined | TimeDef {
   const [assignmentType] = useYValue<string>(assignment, 'meta.core/assignment-type[0].value')
   const [publishTime] = useYValue<string>(assignment, 'data.publish')
@@ -57,6 +58,16 @@ export function useAssignmentTime(
       newTime: [combineDateAndTime(newDate, originalStart)],
       tooltip: t('assignment.startTime'),
       icon: CalendarClockIcon
+    }
+  }
+
+  if (articleStatus === 'withheld' && publishTime) {
+    return {
+      name: 'publish',
+      time: [new Date(publishTime)],
+      newTime: [combineDateAndTime(newDate, new Date(publishTime))],
+      tooltip: t('assignment.publishTime'),
+      icon: AlarmClockCheckIcon
     }
   }
 

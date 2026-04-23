@@ -54,12 +54,13 @@ import { useConvertArticleType } from '@/hooks/useConvertArticleType'
 import { ConvertToArticleDialog } from '@/components/ConvertToArticleDialog'
 import { ConvertToTimelessDialog } from '@/components/ConvertToTimelessDialog'
 
-export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDialog }: {
+export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDialog, planningDate }: {
   ydoc: YDocument<Y.Map<unknown>>
   index: number
   onSelect?: () => void
   isFocused?: boolean
   asDialog?: boolean
+  planningDate?: string
 }): JSX.Element => {
   const openArticle = useLink('Editor')
   const openFlash = useLink('Flash')
@@ -111,8 +112,11 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
     ? t(`shared:assignmentTypes.${assignmentType}` as TranslationKey)
     : t('common:misc.unknown')
 
+  const publishDate = publishTime ? new Date(publishTime).toISOString().split('T')[0] : null
+  const publishDateInFuture = planningDate && publishDate && planningDate < publishDate
   const openDocument = assignmentType === 'flash' ? openFlash : openArticle
   const { showModal, hideModal } = useModal()
+  const workflowState = articleStatus?.meta?.workflowState
 
   const assignmentTime = useMemo(() => {
     if (typeof assignmentType !== 'string') {
@@ -122,7 +126,6 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
       return undefined
     }
     const endAndStartAreNotEqual = endTime && startTime && endTime !== startTime
-
     if (isVisualAssignmentType(assignmentType) && startTime) {
       if (endAndStartAreNotEqual) {
         return {
@@ -138,6 +141,13 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
         type: assignmentType
       }
     }
+    if (publishTime && workflowState === 'withheld' && publishDateInFuture) {
+      return {
+        time: [new Date(publishDate).toLocaleDateString(undefined, { day: 'numeric', month: 'short' }), new Date(publishTime)],
+        tooltip: t('planning:assignment.publishTime'),
+        type: assignmentType
+      }
+    }
 
     if (publishSlot) {
       const slotName = getTimeSlotTypes().find((slot) => slot.slots?.includes(publishSlot))?.label
@@ -148,13 +158,6 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
       }
     }
 
-    if (publishTime) {
-      return {
-        time: [new Date(publishTime)],
-        tooltip: t('planning:assignment.publishTime'),
-        type: assignmentType
-      }
-    }
 
     if (endAndStartAreNotEqual) {
       return {
@@ -171,7 +174,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
         type: assignmentType
       }
     }
-  }, [publishTime, assignmentType, startTime, endTime, publishSlot, t])
+  }, [publishTime, assignmentType, startTime, endTime, publishSlot, t, publishDate, workflowState, publishDateInFuture])
 
   const TimeIcon = useMemo(() => {
     const timeIcons: Record<string, React.FC<LucideProps>> = {
@@ -339,7 +342,6 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
       : [])
   ]
   const selected = articleId && openDocuments.includes(articleId)
-  const workflowState = articleStatus?.meta?.workflowState
 
   useRepositoryEvents([
     'core/article',

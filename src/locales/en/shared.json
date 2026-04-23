@@ -34,6 +34,7 @@
     "pickCause": "Choose cause...",
     "planningDate": "Date in planning",
     "setTime": "Set time",
+    "setDate": "Set date",
     "asSavePlaceholder": "Publish new information",
     "embargoMinTime": "Embargo: cannot schedule before {{time}}",
     "schedulingRequiresPlanning": "Scheduling is unavailable because this document has no associated planning.",

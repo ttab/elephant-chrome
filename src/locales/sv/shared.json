@@ -34,6 +34,7 @@
     "pickCause": "Välj anledning...",
     "planningDate": "Datum i planeringen",
     "setTime": "Ange tid",
+    "setDate": "Ange datum",
     "asSavePlaceholder": "Publicera ny information",
     "embargoMinTime": "Embargo: kan inte schemaläggas före {{time}}",
     "schedulingRequiresPlanning": "Schemaläggning är inte tillgänglig eftersom dokumentet saknar en kopplad planering.",

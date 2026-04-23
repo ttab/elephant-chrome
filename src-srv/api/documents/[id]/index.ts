@@ -144,15 +144,18 @@ export const PATCH: RouteHandler = async (req: Request, { collaborationServer, r
       type: string
       status: string
       time: string
+      start_date?: string
+      start?: string
     }
   }
-
   const id = req.params.id
   const {
     deliverableId,
     type: deliverableType,
     status,
-    time
+    time,
+    start_date,
+    start
   } = assignment || {}
 
   if (!id || !assignment || !deliverableId || !deliverableType || !status || !time) {
@@ -179,16 +182,25 @@ export const PATCH: RouteHandler = async (req: Request, { collaborationServer, r
   const connection = await collaborationServer.server.openDirectConnection(id, context)
 
   // Make the change to the document in one transaction
+  let assignmentFound = false
   await connection.transact((document) => {
     const yRoot = document.getMap('ele')
-    const { index } = getAssignment(yRoot, deliverableId, deliverableType) || {}
+    const assignment = getAssignment(yRoot, deliverableId, deliverableType)
 
+    if (!assignment) {
+      return
+    }
+
+    assignmentFound = true
+    const { index } = assignment
     const base = `meta.core/assignment[${index}]`
     const [assignmentType] = getValueByYPath<string | undefined>(yRoot, `${base}.meta.core/assignment-type[0].value`)
 
     if (status === 'withheld') {
-      // When scheduling we always set the publishTime to the given time
+      // When scheduling we always set the publishTime, start and startDate to the given time and date.
       setValueByYPath(yRoot, `${base}.data.publish`, time)
+      setValueByYPath(yRoot, `${base}.data.start`, start)
+      setValueByYPath(yRoot, `${base}.data.start_date`, start_date)
     } else if (assignmentType && ['text', 'flash', 'editorial-info'].includes(assignmentType)) {
       // If assignment type is text, flash or editorial info and the current start time is less
       // than the given time we bump the start time.
@@ -204,12 +216,20 @@ export const PATCH: RouteHandler = async (req: Request, { collaborationServer, r
     logger.error(ex, 'Failed disconnecting after PATCH update')
   })
 
+  if (!assignmentFound) {
+    return {
+      statusCode: 404,
+      statusMessage: `Assignment for deliverable ${deliverableId} not found in document ${id}`
+    }
+  }
 
-  return snapshot(
+  const response = await snapshot(
     collaborationServer,
     id,
     context
   )
+
+  return response
 }
 
 
