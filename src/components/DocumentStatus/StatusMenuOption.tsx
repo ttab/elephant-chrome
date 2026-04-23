@@ -30,16 +30,7 @@ export const StatusMenuOption = ({
         'flex flex-row gap-5 w-full py-2 pe-2 items-start rounded-md',
         isDisabled && 'opacity-50 cursor-not-allowed'
       )}
-      onSelect={(event) => {
-        if (isDisabled) {
-          event.preventDefault()
-          return
-        }
-      }}
-      onClick={() => {
-        if (isDisabled) return
-        onSelect({ status, ...state })
-      }}
+      onSelect={() => onSelect({ status, ...state })}
     >
       <div className='w-4 grow-0 shrink-0 pt-0.5'>
         {!!Icon && <Icon {...iconProps} />}
@@ -60,7 +51,7 @@ export const StatusMenuOption = ({
 
   return (
     <Tooltip content={disabledReason}>
-      <div>{item}</div>
+      {item}
     </Tooltip>
   )
 }
