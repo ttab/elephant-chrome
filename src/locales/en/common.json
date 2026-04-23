@@ -93,6 +93,7 @@
       "exactPhrase": "Requires words to appear in exact order",
       "requireAllTerms": "All search terms must be present (default is any term)",
       "fuzzyMatching": "Allows approximate matches, e.g. typos or misspellings",
+      "fuzzyDisabledForPhrase": "Fuzzy matching is not available for exact phrase searches",
       "fuzzyEdits": "Number of character changes allowed per word",
       "prefixLength": "Number of starting characters that must match exactly before fuzzy kicks in",
       "boost": "Multiplier for relevance scoring — higher values rank matches higher",

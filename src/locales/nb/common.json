@@ -93,6 +93,7 @@
       "exactPhrase": "Krever at ordene forekommer i nøyaktig rekkefølge",
       "requireAllTerms": "Alle søketermer må være til stede (standard er hvilken som helst term)",
       "fuzzyMatching": "Tillater omtrentlige treff, f.eks. skrivefeil",
+      "fuzzyDisabledForPhrase": "Fuzzy-samsvar er ikke tilgjengelig for eksakt frase-søk",
       "fuzzyEdits": "Antall tegnendringer som tillates per ord",
       "prefixLength": "Antall starttegn som må samsvare nøyaktig før fuzzy-samsvar aktiveres",
       "boost": "Multiplikator for relevanspoeng — høyere verdier rangerer treff høyere",

@@ -14,6 +14,9 @@ export const StructuredMode = ({ state, fields, onChange }: StructuredModeProps)
   const { t } = useTranslation()
   const hasAdvancedOptions = state.fuzzy || state.boost > 1 || state.fieldExists.length > 0
   const [showMore, setShowMore] = useState(hasAdvancedOptions)
+  // OpenSearch doesn't support fuzziness on phrase queries, so fuzzy is disabled in phrase mode.
+  const fuzzyDisabled = state.matchType === 'phrase'
+  const showFuzzyOptions = state.fuzzy && !fuzzyDisabled
 
   useEffect(() => {
     if (hasAdvancedOptions) {
@@ -164,18 +167,21 @@ export const StructuredMode = ({ state, fields, onChange }: StructuredModeProps)
           <div className='flex flex-col gap-2'>
             <div className='flex items-center gap-3'>
               <label
-                className='flex items-center gap-1.5 text-sm w-fit'
-                title={t('advancedSearch.hints.fuzzyMatching')}
+                className={`flex items-center gap-1.5 text-sm w-fit ${fuzzyDisabled ? 'opacity-50' : ''}`}
+                title={fuzzyDisabled
+                  ? t('advancedSearch.hints.fuzzyDisabledForPhrase')
+                  : t('advancedSearch.hints.fuzzyMatching')}
               >
                 <Checkbox
                   checked={state.fuzzy}
+                  disabled={fuzzyDisabled}
                   onCheckedChange={(checked) => onChange({
                     ...state, fuzzy: checked === true
                   })}
                 />
                 {t('advancedSearch.fuzzyMatching')}
               </label>
-              {state.fuzzy && (
+              {showFuzzyOptions && (
                 <ToggleGroup
                   type='single'
                   value={String(state.fuzzyEdits)}
@@ -201,7 +207,7 @@ export const StructuredMode = ({ state, fields, onChange }: StructuredModeProps)
                 </ToggleGroup>
               )}
             </div>
-            {state.fuzzy && (
+            {showFuzzyOptions && (
               <div className='flex items-center gap-2 ml-6'>
                 <Label
                   className='text-xs text-muted-foreground'

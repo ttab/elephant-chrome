@@ -64,7 +64,8 @@ export function buildAdvancedQuery(
       boost: s.boost > 1 ? s.boost : 0
     })
 
-    if (s.fuzzy) {
+    // OpenSearch rejects multi_match type=phrase with fuzziness, so skip fuzzy for phrase queries.
+    if (s.fuzzy && s.matchType !== 'phrase') {
       if (s.fuzzyEdits === 'auto') {
         multiMatch.fuzziness = Fuzziness.create({
           auto: FuzzinessAuto.create({ low: BigInt(0), high: BigInt(0) })

@@ -132,6 +132,25 @@ describe('buildAdvancedQuery', () => {
       }
     })
 
+    it('omits fuzziness when matchType is phrase (OpenSearch rejects the combination)', () => {
+      const state = createDefaultState(articlesFields)
+      state.structured.query = 'exact phrase'
+      state.structured.matchType = 'phrase'
+      state.structured.fuzzy = true
+      state.structured.fuzzyEdits = 2
+      state.structured.fuzzyPrefixLength = 1
+
+      const result = buildAdvancedQuery(state, articlesFields)
+      expect(result?.conditions.oneofKind).toBe('multiMatch')
+
+      if (result?.conditions.oneofKind === 'multiMatch') {
+        const mm = result.conditions.multiMatch
+        expect(mm.type).toBe('phrase')
+        expect(mm.fuzziness).toBeUndefined()
+        expect(mm.prefixLength).toBe(BigInt(0))
+      }
+    })
+
     it('uses edits when explicitly set to number', () => {
       const state = createDefaultState(articlesFields)
       state.structured.query = 'fuzzy search'

@@ -93,6 +93,7 @@
       "exactPhrase": "Kräver att orden förekommer i exakt ordning",
       "requireAllTerms": "Alla söktermer måste finnas med (standard är valfri term)",
       "fuzzyMatching": "Tillåter ungefärliga matchningar, t.ex. stavfel",
+      "fuzzyDisabledForPhrase": "Fuzzy-matchning är inte tillgängligt för exakt fras-sökning",
       "fuzzyEdits": "Antal teckenändringar som tillåts per ord",
       "prefixLength": "Antal inledande tecken som måste matcha exakt innan fuzzy-matchning aktiveras",
       "boost": "Multiplikator för relevanspoäng — högre värden rankar matchningar högre",
