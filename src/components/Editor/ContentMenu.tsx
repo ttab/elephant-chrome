@@ -7,6 +7,10 @@ export const ContentMenu = (): JSX.Element => {
   const editor = useEditor()
   const { actions } = usePluginRegistry()
 
+  // Check in what plugin context the user is upon selecting from the menu.
+  // If they are inside a block class element, other block class elements should not be selectable to insert,
+  // as we currently have no need for adding one block class element inside another.
+  // However, this might change in future iterations.
   const currentPluginClass = (() => {
     if (!editor.selection) {
       return null
