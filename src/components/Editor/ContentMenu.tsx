@@ -2,6 +2,7 @@ import type { JSX } from 'react'
 import { Menu, useEditor, usePluginRegistry } from '@ttab/textbit'
 import { ContentMenuGroup } from './ContentMenuGroup'
 import { ContentMenuItem } from './ContentMenuItem'
+import { TextbitElement } from '@ttab/textbit'
 
 export const ContentMenu = (): JSX.Element => {
   const editor = useEditor()
@@ -11,16 +12,10 @@ export const ContentMenu = (): JSX.Element => {
   // If they are inside a block class element, other block class elements should not be selectable to insert,
   // as we currently have no need for adding one block class element inside another.
   // However, this might change in future iterations.
-  const currentPluginClass = (() => {
-    if (!editor.selection) {
-      return null
-    }
-
-    const topNode = editor.children[editor.selection.anchor.path[0]]
-    return actions.find((a) => a.plugin.name === topNode?.type)?.plugin.class ?? null
-  })()
-
-  const insideBlock = currentPluginClass === 'block'
+  const topNode = editor.selection
+    ? editor.children[editor.selection.anchor.path[0]]
+    : undefined
+  const insideBlock = TextbitElement.isBlock(topNode)
 
   const textActions = actions.filter((action) => action.plugin.class === 'text')
   const blockActions = insideBlock
