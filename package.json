@@ -43,7 +43,7 @@
     "@date-fns/utc": "^2.1.1",
     "@grafana/faro-react": "^2.3.1",
     "@hocuspocus/extension-logger": "^3.4.4",
-    "@hocuspocus/extension-redis": "^3.4.4",
+    "@hocuspocus/extension-redis": "^4.0.0",
     "@hocuspocus/provider": "^3.4.4",
     "@hocuspocus/server": "^3.4.4",
     "@microsoft/fetch-event-source": "^2.0.1",
