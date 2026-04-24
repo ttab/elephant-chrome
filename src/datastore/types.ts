@@ -74,4 +74,5 @@ export interface SupportedLanguage {
 export interface AllowedFeatureFlag {
   hasPrint?: boolean
   hasHast?: boolean
+  hasLooseSlugline?: boolean
 }

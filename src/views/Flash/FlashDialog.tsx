@@ -9,6 +9,7 @@ import { Alert, AlertDescription, AlertTitle, Button, Checkbox, ComboBox, Label 
 import { CircleXIcon, TagsIcon, GanttChartSquareIcon, NewspaperIcon, ZapIcon, InfoIcon, TriangleAlertIcon } from '@ttab/elephant-ui/icons'
 import { Newsvalues } from '@/defaults'
 import { useRegistry, useSections } from '@/hooks'
+import { useFeatureFlags } from '@/hooks/useFeatureFlags'
 import { useSession } from 'next-auth/react'
 import type { Dispatch, SetStateAction } from 'react'
 import { type JSX, useEffect, useMemo, useRef, useState } from 'react'
@@ -74,22 +75,23 @@ export const FlashDialog = (props: {
   const [relatedDocsSlugline, setSlugline] = useState<string>('') // slugline for complementary planning- and quick-article documents
   const { t } = useTranslation()
   const [invalidSlug, setInvalidSlug] = useState(false)
+  const { hasLooseSlugline } = useFeatureFlags(['hasLooseSlugline'])
 
   useEffect(() => {
-    if (selectedPlanning?.payload?.slugline) {
+    if (!hasLooseSlugline && selectedPlanning?.payload?.slugline) {
       setInvalidSlug(selectedPlanning.payload.slugline === relatedDocsSlugline)
     }
 
     return () => {
       setInvalidSlug(false)
     }
-  }, [relatedDocsSlugline, selectedPlanning])
+  }, [relatedDocsSlugline, selectedPlanning, hasLooseSlugline])
 
   const handleSubmit = (setCreatePrompt: Dispatch<SetStateAction<boolean>>): void => {
     // Only validate slug length if we also create a quick-article, OR if flash is added
     // to an already existing planning. For new plannings, empty sluglines are fine
     // as they can be changed at a later time.
-    if (shouldCreateQuickArticle) {
+    if (shouldCreateQuickArticle && !hasLooseSlugline) {
       if (!relatedDocsSlugline.length) {
         setInvalidSlug(true)
         return
@@ -399,7 +401,7 @@ export const FlashDialog = (props: {
                 </div>
               </Form.Group>
             )}
-            {!isHast && shouldCreateQuickArticle && (
+            {!isHast && shouldCreateQuickArticle && !hasLooseSlugline && (
               <Form.Group icon={TagsIcon}>
                 <div className='w-1/2 relative'>
                   {invalidSlug && (
