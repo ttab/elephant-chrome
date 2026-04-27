@@ -6,7 +6,7 @@ import { Row } from './Row'
 export const GroupedRows = <TData, TValue>({ row, columns, handleOpen, openDocuments, type }: {
   activeId?: string
   row: RowType<unknown>
-  type: 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Factbox' | 'Print' | 'PrintEditor'
+  type: 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Factbox' | 'Print' | 'PrintEditor' | 'Timeless'
   columns: Array<ColumnDef<TData, TValue>>
   handleOpen: (event: MouseEvent<HTMLTableRowElement> | KeyboardEvent, subRow: RowType<unknown>) => void
   openDocuments: string[]

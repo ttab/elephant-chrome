@@ -8,6 +8,505 @@
       "transitions": {
         "done": {
           "title": "Mark as done",
+          "description": "Mark the {{label}} as done",
+          "promptTitle": "Mark {{label}} as done"
+        },
+        "approved": {
+          "title": "Approve",
+          "description": "Approve the {{label}} for publishing",
+          "promptTitle": "Approve {{label}}"
+        },
+        "usable": {
+          "title": "Publish",
+          "description": "Publish the {{label}}",
+          "promptTitle": "Publish {{label}}"
+        },
+        "withheld": {
+          "title": "Schedule publishing",
+          "description": "Set a date and time for publishing",
+          "promptTitle": "Schedule publishing of {{label}}"
+        }
+      }
+    },
+    "done": {
+      "title": "Done",
+      "description": "The {{label}} is done and awaiting approval",
+      "transitions": {
+        "approved": {
+          "title": "Approve",
+          "description": "Approve the {{label}} for publishing",
+          "promptTitle": "Approve {{label}}"
+        },
+        "usable": {
+          "title": "Publish",
+          "description": "Publish the {{label}} directly",
+          "promptTitle": "Publish {{label}}"
+        },
+        "withheld": {
+          "title": "Schedule publishing",
+          "description": "Set a date and time for publishing",
+          "promptTitle": "Schedule publishing of {{label}}"
+        },
+        "draft": {
+          "title": "To draft",
+          "description": "Revert the {{label}} to a draft",
+          "promptTitle": "Revert {{label}} to draft"
+        },
+        "unpublished": {
+          "title": "Unpublish",
+          "description": "Cancel and archive the {{label}}",
+          "promptTitle": "Unpublish {{label}}"
+        }
+      }
+    },
+    "approved": {
+      "title": "Approved",
+      "description": "The {{label}} is approved for publishing",
+      "transitions": {
+        "usable": {
+          "title": "Publish",
+          "description": "Publish the {{label}}",
+          "promptTitle": "Publish {{label}}"
+        },
+        "withheld": {
+          "title": "Schedule publishing",
+          "description": "Set a date and time for publishing",
+          "promptTitle": "Schedule publishing of {{label}}"
+        },
+        "draft": {
+          "title": "To draft",
+          "description": "Revert the {{label}} to a draft",
+          "promptTitle": "Revert {{label}} to draft"
+        },
+        "unpublished": {
+          "title": "Unpublish",
+          "description": "Cancel and archive the {{label}}",
+          "promptTitle": "Unpublish {{label}}"
+        }
+      }
+    },
+    "usable": {
+      "title": "Published",
+      "description": "The {{label}} is published",
+      "transitions": {
+        "draft": {
+          "title": "New version",
+          "description": "Continue working on a new version of the {{label}}",
+          "promptTitle": "New version of {{label}}"
+        },
+        "unpublished": {
+          "title": "Unpublish",
+          "description": "Cancel the publication and archive the {{label}}",
+          "promptTitle": "Unpublish {{label}}"
+        }
+      }
+    },
+    "withheld": {
+      "title": "Scheduled",
+      "description": "The {{label}} is scheduled for automatic publishing",
+      "transitions": {
+        "usable": {
+          "title": "Publish now",
+          "description": "Publish the {{label}} immediately",
+          "promptTitle": "Publish {{label}} now"
+        },
+        "draft": {
+          "title": "To draft",
+          "description": "Cancel the scheduled publishing and revert to a draft",
+          "promptTitle": "Revert {{label}} to draft"
+        }
+      }
+    },
+    "unpublished": {
+      "title": "Unpublished",
+      "description": "The {{label}} has been unpublished",
+      "transitions": {
+        "draft": {
+          "title": "New version",
+          "description": "Continue working on a new version of the {{label}}",
+          "promptTitle": "New version of {{label}}"
+        }
+      }
+    },
+    "used": {
+      "title": "Used",
+      "description": "The {{label}} has been used to derive a new document",
+      "transitions": {
+        "draft": {
+          "title": "Reopen as draft",
+          "description": "Revert the {{label}} to a draft for further editing"
+        }
+      }
+    }
+  },
+  "core/event": {
+    "draft": {
+      "title": "Draft",
+      "description": "You are working on a draft of this event",
+      "transitions": {
+        "done": {
+          "title": "Use internally",
+          "description": "Make the event internally visible"
+        },
+        "usable": {
+          "title": "Publish externally",
+          "description": "Publish the event externally",
+          "promptTitle": "Publish event externally"
+        }
+      }
+    },
+    "done": {
+      "title": "Internal",
+      "description": "The event is internally visible",
+      "transitions": {
+        "usable": {
+          "title": "Publish",
+          "description": "Publish the event externally",
+          "promptTitle": "Publish event"
+        },
+        "unpublished": {
+          "title": "Unpublish",
+          "description": "Unpublish the event",
+          "promptTitle": "Unpublish event"
+        }
+      }
+    },
+    "usable": {
+      "title": "Published",
+      "asSaveCTA": "Unpublished changes",
+      "asSaveTitle": "Publish new version",
+      "description": "The event is published externally",
+      "changedDescription": "The event has been changed since the last publication",
+      "updateDescription": "Update the published event with the new changes",
+      "transitions": {
+        "unpublished": {
+          "title": "Unpublish",
+          "description": "Unpublish the event externally",
+          "promptTitle": "Unpublish event"
+        }
+      }
+    },
+    "unpublished": {
+      "title": "Unpublished",
+      "description": "The event has been unpublished",
+      "transitions": {
+        "draft": {
+          "title": "Draft",
+          "description": "Revert the event to a draft",
+          "promptTitle": "Revert event to draft"
+        }
+      }
+    }
+  },
+  "core/planning-item": {
+    "draft": {
+      "title": "Draft",
+      "description": "You are working on a draft of this planning",
+      "transitions": {
+        "done": {
+          "title": "Use internally",
+          "description": "Make the planning internally visible"
+        },
+        "usable": {
+          "title": "Publish externally",
+          "description": "Publish the planning externally",
+          "promptTitle": "Publish planning externally"
+        }
+      }
+    },
+    "done": {
+      "title": "Internal",
+      "description": "The planning is internally visible",
+      "transitions": {
+        "usable": {
+          "title": "Publish",
+          "description": "Publish the planning externally",
+          "promptTitle": "Publish planning"
+        },
+        "unpublished": {
+          "title": "Unpublish",
+          "description": "Unpublish the planning",
+          "promptTitle": "Unpublish planning"
+        }
+      }
+    },
+    "usable": {
+      "title": "Published",
+      "asSaveCTA": "Unpublished changes",
+      "asSaveTitle": "Publish changed version",
+      "description": "The planning is published",
+      "changedDescription": "The planning has been changed since the last publication",
+      "updateDescription": "Update the published planning with the new changes",
+      "transitions": {
+        "unpublished": {
+          "title": "Unpublish",
+          "description": "Unpublish the planning externally",
+          "promptTitle": "Unpublish planning"
+        }
+      }
+    },
+    "unpublished": {
+      "title": "Unpublished",
+      "description": "The planning has been unpublished",
+      "transitions": {
+        "draft": {
+          "title": "Draft",
+          "description": "Revert the planning to a draft",
+          "promptTitle": "Revert planning to draft"
+        }
+      }
+    }
+  },
+  "core/factbox": {
+    "draft": {
+      "title": "Draft",
+      "description": "You are working on a draft of the factbox",
+      "transitions": {
+        "usable": {
+          "verify": false,
+          "title": "Approve",
+          "description": "Approve the factbox for use"
+        },
+        "unpublished": {
+          "verify": false,
+          "title": "Discard",
+          "description": "Remove the factbox"
+        }
+      }
+    },
+    "usable": {
+      "title": "Approved",
+      "asSaveCTA": "Changed",
+      "asSaveTitle": "Update",
+      "description": "The factbox is approved",
+      "updateDescription": "Approve the changes",
+      "transitions": {
+        "draft": {
+          "title": "To draft",
+          "description": "Revert the factbox to a draft"
+        },
+        "unpublished": {
+          "verify": false,
+          "title": "Discard",
+          "description": "Remove the factbox"
+        }
+      }
+    },
+    "unpublished": {
+      "title": "Discarded",
+      "description": "The factbox is not visible or usable",
+      "isWorkflow": false,
+      "transitions": {
+        "usable": {
+          "verify": false,
+          "title": "Approve",
+          "description": "Approve the factbox for use"
+        }
+      }
+    }
+  },
+  "core/editorial-info": {
+    "draft": {
+      "title": "Draft",
+      "description": "You are working on a draft of this editorial info",
+      "transitions": {
+        "done": {
+          "title": "Mark as done",
+          "description": "Mark the editorial info as done",
+          "promptTitle": "Mark editorial info as done"
+        },
+        "approved": {
+          "title": "Approve",
+          "description": "Approve the editorial info for internal use",
+          "promptTitle": "Approve editorial info"
+        },
+        "usable": {
+          "title": "Publish",
+          "description": "Publish the editorial info externally",
+          "promptTitle": "Publish editorial info"
+        }
+      }
+    },
+    "done": {
+      "title": "Done",
+      "description": "The editorial info is done and awaiting approval",
+      "transitions": {
+        "approved": {
+          "title": "Approve",
+          "description": "Approve the editorial info for internal use",
+          "promptTitle": "Approve editorial info"
+        },
+        "usable": {
+          "title": "Publish",
+          "description": "Publish the editorial info externally",
+          "promptTitle": "Publish editorial info"
+        },
+        "draft": {
+          "title": "To draft",
+          "description": "Revert the editorial info to a draft",
+          "promptTitle": "Revert editorial info to draft"
+        }
+      }
+    },
+    "approved": {
+      "title": "Internal",
+      "description": "The editorial info is published internally and can be published externally",
+      "transitions": {
+        "usable": {
+          "title": "Publish",
+          "description": "Publish the editorial info externally",
+          "promptTitle": "Publish editorial info"
+        },
+        "draft": {
+          "title": "To draft",
+          "description": "Revert the editorial info to a draft",
+          "promptTitle": "Revert editorial info to draft"
+        }
+      }
+    },
+    "usable": {
+      "title": "Published",
+      "description": "The editorial info is published",
+      "transitions": {
+        "draft": {
+          "title": "To draft",
+          "description": "Revert the editorial info to a draft",
+          "promptTitle": "Revert editorial info to draft"
+        },
+        "unpublished": {
+          "title": "Withdraw",
+          "description": "Cancel the publication and archive the editorial info",
+          "promptTitle": "Withdraw editorial info"
+        }
+      }
+    }
+  },
+  "tt/print-article": {
+    "draft": {
+      "title": "Draft",
+      "description": "You are working on a draft of the print article",
+      "transitions": {
+        "needs_proofreading": {
+          "title": "Request proofreading",
+          "description": "The print article needs proofreading",
+          "promptTitle": "Request proofreading of print article"
+        },
+        "print_done": {
+          "title": "Mark as done",
+          "description": "Mark the print article as done",
+          "promptTitle": "Mark print article as done"
+        },
+        "usable": {
+          "title": "Export",
+          "description": "Export the print article",
+          "promptTitle": "Export print article"
+        }
+      }
+    },
+    "needs_proofreading": {
+      "title": "Ready for proofing",
+      "description": "The print article needs proofreading",
+      "transitions": {
+        "print_done": {
+          "title": "Mark as done",
+          "description": "Mark the print article as done",
+          "promptTitle": "Mark print article as done"
+        },
+        "usable": {
+          "title": "Export",
+          "description": "Export the print article",
+          "promptTitle": "Export print article"
+        },
+        "cancelled": {
+          "title": "Discard",
+          "description": "Discard the print article",
+          "promptTitle": "Discard print article"
+        },
+        "draft": {
+          "title": "To draft",
+          "description": "Revert the print article to a draft",
+          "promptTitle": "Revert print article to draft"
+        }
+      }
+    },
+    "print_done": {
+      "title": "Done",
+      "description": "The print article is done and awaiting approval",
+      "transitions": {
+        "approved": {
+          "title": "Approve",
+          "description": "Approve the print article",
+          "promptTitle": "Approve print article"
+        },
+        "usable": {
+          "title": "Export",
+          "description": "Export the print article",
+          "promptTitle": "Export print article"
+        },
+        "needs_proofreading": {
+          "title": "Request proofreading",
+          "description": "The print article needs proofreading",
+          "promptTitle": "Request proofreading of print article"
+        },
+        "cancelled": {
+          "title": "Discard",
+          "description": "Discard the print article",
+          "promptTitle": "Discard print article"
+        },
+        "draft": {
+          "title": "To draft",
+          "description": "Revert the print article to a draft",
+          "promptTitle": "Revert print article to draft"
+        }
+      }
+    },
+    "usable": {
+      "title": "Exported",
+      "asSaveCTA": "Unexported changes",
+      "asSaveTitle": "Export changed version",
+      "description": "The print article is exported",
+      "changedDescription": "The print article has been changed since the last export",
+      "updateDescription": "Update the exported print article with the new changes",
+      "transitions": {
+        "unpublished": {
+          "title": "Withdraw",
+          "description": "Cancel the export and archive the print article",
+          "promptTitle": "Withdraw print article"
+        }
+      }
+    },
+    "unpublished": {
+      "title": "Withdrawn",
+      "description": "The print article has been unpublished",
+      "transitions": {
+        "draft": {
+          "title": "To draft",
+          "description": "Revert the print article to a draft",
+          "promptTitle": "Revert print article to draft"
+        }
+      }
+    },
+    "cancelled": {
+      "title": "Discarded",
+      "description": "The print article has been discarded",
+      "transitions": {
+        "draft": {
+          "title": "To draft",
+          "description": "Revert the print article to a draft",
+          "promptTitle": "Revert print article to draft"
+        }
+      }
+    }
+  },
+  "core/article#timeless": {
+    "article": "article",
+    "flash": "flash",
+    "draft": {
+      "title": "Draft",
+      "description": "You are working on a draft of the {{label}}",
+      "transitions": {
+        "done": {
+          "title": "Mark as done",
           "description": "Mark the {{label}} as done"
         },
         "approved": {
@@ -107,330 +606,6 @@
         "draft": {
           "title": "New version",
           "description": "Continue working on a new version of the {{label}}"
-        }
-      }
-    }
-  },
-  "core/event": {
-    "draft": {
-      "title": "Draft",
-      "description": "You are working on a draft of this event",
-      "transitions": {
-        "done": {
-          "title": "Use internally",
-          "description": "Make the event internally visible"
-        },
-        "usable": {
-          "title": "Publish externally",
-          "description": "Publish the event externally"
-        }
-      }
-    },
-    "done": {
-      "title": "Internal",
-      "description": "The event is internally visible",
-      "transitions": {
-        "usable": {
-          "title": "Publish",
-          "description": "Publish the event externally"
-        },
-        "unpublished": {
-          "title": "Unpublish",
-          "description": "Unpublish the event"
-        }
-      }
-    },
-    "usable": {
-      "title": "Published",
-      "asSaveCTA": "Unpublished changes",
-      "asSaveTitle": "Publish new version",
-      "description": "The event is published externally",
-      "changedDescription": "The event has been changed since the last publication",
-      "updateDescription": "Update the published event with the new changes",
-      "transitions": {
-        "unpublished": {
-          "title": "Unpublish",
-          "description": "Unpublish the event externally"
-        }
-      }
-    },
-    "unpublished": {
-      "title": "Unpublished",
-      "description": "The event has been unpublished",
-      "transitions": {
-        "draft": {
-          "title": "Draft",
-          "description": "Revert the event to a draft"
-        }
-      }
-    }
-  },
-  "core/planning-item": {
-    "draft": {
-      "title": "Draft",
-      "description": "You are working on a draft of this planning",
-      "transitions": {
-        "done": {
-          "title": "Use internally",
-          "description": "Make the planning internally visible"
-        },
-        "usable": {
-          "title": "Publish externally",
-          "description": "Publish the planning externally"
-        }
-      }
-    },
-    "done": {
-      "title": "Internal",
-      "description": "The planning is internally visible",
-      "transitions": {
-        "usable": {
-          "title": "Publish",
-          "description": "Publish the planning externally"
-        },
-        "unpublished": {
-          "title": "Unpublish",
-          "description": "Unpublish the planning"
-        }
-      }
-    },
-    "usable": {
-      "title": "Published",
-      "asSaveCTA": "Unpublished changes",
-      "asSaveTitle": "Publish changed version",
-      "description": "The planning is published",
-      "changedDescription": "The planning has been changed since the last publication",
-      "updateDescription": "Update the published planning with the new changes",
-      "transitions": {
-        "unpublished": {
-          "title": "Unpublish",
-          "description": "Unpublish the planning externally"
-        }
-      }
-    },
-    "unpublished": {
-      "title": "Unpublished",
-      "description": "The planning has been unpublished",
-      "transitions": {
-        "draft": {
-          "title": "Draft",
-          "description": "Revert the planning to a draft"
-        }
-      }
-    }
-  },
-  "core/factbox": {
-    "draft": {
-      "title": "Draft",
-      "description": "You are working on a draft of the factbox",
-      "transitions": {
-        "usable": {
-          "verify": false,
-          "title": "Approve",
-          "description": "Approve the factbox for use"
-        },
-        "unpublished": {
-          "verify": false,
-          "title": "Discard",
-          "description": "Remove the factbox"
-        }
-      }
-    },
-    "usable": {
-      "title": "Approved",
-      "asSaveCTA": "Changed",
-      "asSaveTitle": "Update",
-      "description": "The factbox is approved",
-      "updateDescription": "Approve the changes",
-      "transitions": {
-        "draft": {
-          "title": "To draft",
-          "description": "Revert the factbox to a draft"
-        },
-        "unpublished": {
-          "verify": false,
-          "title": "Discard",
-          "description": "Remove the factbox"
-        }
-      }
-    },
-    "unpublished": {
-      "title": "Discarded",
-      "description": "The factbox is not visible or usable",
-      "isWorkflow": false,
-      "transitions": {
-        "usable": {
-          "verify": false,
-          "title": "Approve",
-          "description": "Approve the factbox for use"
-        }
-      }
-    }
-  },
-  "core/editorial-info": {
-    "draft": {
-      "title": "Draft",
-      "description": "You are working on a draft of this editorial info",
-      "transitions": {
-        "done": {
-          "title": "Mark as done",
-          "description": "Mark the editorial info as done"
-        },
-        "approved": {
-          "title": "Approve",
-          "description": "Approve the editorial info for internal use"
-        },
-        "usable": {
-          "title": "Publish",
-          "description": "Publish the editorial info externally"
-        }
-      }
-    },
-    "done": {
-      "title": "Done",
-      "description": "The editorial info is done and awaiting approval",
-      "transitions": {
-        "approved": {
-          "title": "Approve",
-          "description": "Approve the editorial info for internal use"
-        },
-        "usable": {
-          "title": "Publish",
-          "description": "Publish the editorial info externally"
-        },
-        "draft": {
-          "title": "To draft",
-          "description": "Revert the editorial info to a draft"
-        }
-      }
-    },
-    "approved": {
-      "title": "Internal",
-      "description": "The editorial info is published internally and can be published externally",
-      "transitions": {
-        "usable": {
-          "title": "Publish",
-          "description": "Publish the editorial info externally"
-        },
-        "draft": {
-          "title": "To draft",
-          "description": "Revert the editorial info to a draft"
-        }
-      }
-    },
-    "usable": {
-      "title": "Published",
-      "description": "The editorial info is published",
-      "transitions": {
-        "draft": {
-          "title": "To draft",
-          "description": "Revert the editorial info to a draft"
-        },
-        "unpublished": {
-          "title": "Withdraw",
-          "description": "Cancel the publication and archive the editorial info"
-        }
-      }
-    }
-  },
-  "tt/print-article": {
-    "draft": {
-      "title": "Draft",
-      "description": "You are working on a draft of the print article",
-      "transitions": {
-        "needs_proofreading": {
-          "title": "Request proofreading",
-          "description": "The print article needs proofreading"
-        },
-        "print_done": {
-          "title": "Mark as done",
-          "description": "Mark the print article as done"
-        },
-        "usable": {
-          "title": "Export",
-          "description": "Export the print article"
-        }
-      }
-    },
-    "needs_proofreading": {
-      "title": "Ready for proofing",
-      "description": "The print article needs proofreading",
-      "transitions": {
-        "print_done": {
-          "title": "Mark as done",
-          "description": "Mark the print article as done"
-        },
-        "usable": {
-          "title": "Export",
-          "description": "Export the print article"
-        },
-        "cancelled": {
-          "title": "Discard",
-          "description": "Discard the print article"
-        },
-        "draft": {
-          "title": "To draft",
-          "description": "Revert the print article to a draft"
-        }
-      }
-    },
-    "print_done": {
-      "title": "Done",
-      "description": "The print article is done and awaiting approval",
-      "transitions": {
-        "approved": {
-          "title": "Approve",
-          "description": "Approve the print article"
-        },
-        "usable": {
-          "title": "Export",
-          "description": "Export the print article"
-        },
-        "needs_proofreading": {
-          "title": "Request proofreading",
-          "description": "The print article needs proofreading"
-        },
-        "cancelled": {
-          "title": "Discard",
-          "description": "Discard the print article"
-        },
-        "draft": {
-          "title": "To draft",
-          "description": "Revert the print article to a draft"
-        }
-      }
-    },
-    "usable": {
-      "title": "Exported",
-      "asSaveCTA": "Unexported changes",
-      "asSaveTitle": "Export changed version",
-      "description": "The print article is exported",
-      "changedDescription": "The print article has been changed since the last export",
-      "updateDescription": "Update the exported print article with the new changes",
-      "transitions": {
-        "unpublished": {
-          "title": "Withdraw",
-          "description": "Cancel the export and archive the print article"
-        }
-      }
-    },
-    "unpublished": {
-      "title": "Withdrawn",
-      "description": "The print article has been unpublished",
-      "transitions": {
-        "draft": {
-          "title": "To draft",
-          "description": "Revert the print article to a draft"
-        }
-      }
-    },
-    "cancelled": {
-      "title": "Discarded",
-      "description": "The print article has been discarded",
-      "transitions": {
-        "draft": {
-          "title": "To draft",
-          "description": "Revert the print article to a draft"
         }
       }
     }

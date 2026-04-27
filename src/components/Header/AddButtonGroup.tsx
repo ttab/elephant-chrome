@@ -22,11 +22,12 @@ import { useLink } from '@/hooks/useLink'
 import { useSession } from 'next-auth/react'
 import { createNewFactbox } from './lib/createNewFactbox'
 import { toast } from 'sonner'
+import { useRegistry } from '@/hooks/useRegistry'
+import { TimelessCreation } from '@/views/TimelessCreation'
 import { useTranslation } from 'react-i18next'
 import type { TFunction } from 'i18next'
-import { useRegistry } from '@/hooks/index'
 
-const addButtonTypes = ['core/planning-item', 'core/event', 'core/article', 'core/factbox', 'core/flash'] as const
+const addButtonTypes = ['core/planning-item', 'core/event', 'core/article', 'core/factbox', 'core/flash', 'core/article#timeless'] as const
 
 type Variant = VariantProps<typeof buttonVariants>['variant']
 type ButtonView = { name: View, type: string, icon?: { icon?: LucideIcon, color?: string } }
@@ -43,9 +44,9 @@ const AddButton = ({
   withNew?: boolean
   variant?: Variant
   className?: string
+  hast?: boolean
   view: ButtonView
   onClick: (view: ButtonView) => void
-  hast?: boolean
   t: TFunction
 }) => {
   const typeLabel = (t?: string) => t ? addButtonGroupValueFormat[t].label : ''
@@ -65,11 +66,11 @@ const AddButton = ({
 
 export const AddButtonGroup = ({ docType = 'core/planning-item', query }: { type: View, query: QueryParams, docType?: string }) => {
   const { showModal, hideModal } = useModal()
-  const { repository } = useRegistry()
+  const { repository, featureFlags } = useRegistry()
   const openFactboxEditor = useLink('Factbox')
+  const openEditor = useLink('Editor')
   const { data: session } = useSession()
   const { t } = useTranslation()
-  const { featureFlags } = useRegistry()
   const hasHast = !!featureFlags.hasHast
 
   const views: ButtonView[] = addButtonTypes.map((type) => {
@@ -91,6 +92,19 @@ export const AddButtonGroup = ({ docType = 'core/planning-item', query }: { type
           console.error('Error creating factbox:', error)
           toast.error((error as Error).message)
         })
+    }
+    if (view.type === 'core/article#timeless' && showModal) {
+      showModal(
+        <TimelessCreation
+          id={id}
+          onClose={(createdId) => {
+            hideModal()
+            if (createdId) {
+              openEditor(undefined, { id: createdId }, undefined)
+            }
+          }}
+        />
+      )
     } else if (showModal) {
       const initialDocument = getTemplateFromView(view.name, { useHast: hasHast })(id, { query })
       showModal(

@@ -1,5 +1,4 @@
 import type { Wire } from '@/shared/schemas/wire.js'
-import type { IDBAuthor } from '../../src/datastore/types.js'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import { DEFAULT_TIMEZONE } from '../../src/defaults/defaultTimezone.js'
 import { newLocalDate } from '@/shared/datetime.js'
@@ -24,7 +23,7 @@ export function assignmentPlanningTemplate({
   title?: string
   wires?: Wire[]
   assignmentData?: Block['data']
-  assignee: IDBAuthor | null | undefined
+  assignee: { id: string, name: string } | null | undefined
 }): Block {
   const systemNow = newLocalDate(DEFAULT_TIMEZONE)
   const systemHour = systemNow.getHours().toString()

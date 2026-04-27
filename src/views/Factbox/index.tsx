@@ -9,6 +9,7 @@ import { Form, UserMessage, View } from '@/components'
 import { FactboxHeader } from './FactboxHeader'
 import { Error as ErrorView } from '@/views/Error'
 import { useEffect, useMemo, useState, type JSX } from 'react'
+import { LinkedArticles } from './lib/LinkedArticles'
 import { getContentMenuLabels } from '@/defaults/contentMenuLabels'
 import { useYDocument, useYValue } from '@/modules/yjs/hooks'
 import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
@@ -148,7 +149,7 @@ const EmbeddedFactboxView = (props: ViewProps & { data?: EleDocumentResponse }):
         onDialogClose={props.onDialogClose}
         asDialog={!!props?.asDialog}
       />
-      <div className='flex flex-col w-full max-w-[1000px] mx-auto'>
+      <div className='flex-1 min-h-0 flex flex-col w-full max-w-[1000px] mx-auto'>
         <View.Content className='flex flex-col max-w-[1000px]'>
           <div className='flex flex-col gap-1.5 text-sm text-muted-foreground border-b p-4'>
 
@@ -188,7 +189,7 @@ const EmbeddedFactboxView = (props: ViewProps & { data?: EleDocumentResponse }):
             value={props.data.document.content}
             plugins={configuredPlugins}
             readOnly
-            className='h-screen max-h-screen flex flex-col'
+            className='h-full flex flex-col'
           >
             <Textbit.Editable
               className='outline-none pt-4 pb-4 ps-12 pe-12 dark:text-slate-100 grow pr-12 max-w-(--breakpoint-xl)'
@@ -243,9 +244,14 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
   const isOldVersion = factboxversion !== undefined && factboxversion !== currentVersion
 
   if (!ydoc.provider?.isSynced || !content) {
-    return <View.Root />
+    return (
+      <View.Root asDialog={props.asDialog} className={props.className}>
+        <div className='flex h-full w-full items-center justify-center'>
+          <LoaderIcon size={32} strokeWidth={1.75} className='animate-spin opacity-50' />
+        </div>
+      </View.Root>
+    )
   }
-
   return (
     <View.Root asDialog={props.asDialog} className={props?.className}>
       <FactboxHeader
@@ -253,7 +259,7 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
         onDialogClose={props.onDialogClose}
         asDialog={!!props?.asDialog}
       />
-      <div className='flex flex-col w-full max-w-[1000px] mx-auto'>
+      <div className='flex-1 min-h-0 flex flex-col w-full max-w-[1000px] mx-auto'>
         <div className='border mx-12 mt-2 py-1.5 px-3 rounded'>
           <DocumentHistory
             uuid={props.documentId}
@@ -267,7 +273,7 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
         </div>
         {isOldVersion
           ? (
-              <View.Content className='flex flex-col max-w-[1000px] pt-8' variant='grid'>
+              <View.Content className='flex flex-col max-w-[1000px] pt-8' variant='default'>
                 <PlainEditor
                   key={factboxversion.toString()}
                   id={props.documentId}
@@ -283,8 +289,9 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
                 content={content}
                 lang={documentLanguage}
                 plugins={configuredPlugins}
+                className='flex-1 min-h-0'
               >
-                <View.Content className='flex flex-col max-w-[1000px]'>
+                <View.Content className='flex flex-col' variant='default'>
                   <Form.Root asDialog={props?.asDialog}>
                     <Form.Content>
                       <Form.Title>
@@ -316,6 +323,7 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
                       )}
                     </div>
                   </div>
+                  <LinkedArticles documentId={props.documentId} />
                 </View.Content>
 
                 <View.Footer>

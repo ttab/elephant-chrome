@@ -18,14 +18,17 @@ import type { View } from '@/types/index'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import { useTranslation } from 'react-i18next'
+import { documentTypeValueFormat } from '@/defaults/documentTypeFormats'
 
-export const StatusMenu = ({ ydoc, onBeforeStatusChange, planningId }: {
+
+export const StatusMenu = ({ ydoc, onBeforeStatusChange, planningId, embargoUntil }: {
   ydoc: YDocument<Y.Map<unknown>>
   onBeforeStatusChange?: (
     status: string,
     data?: Record<string, unknown>
   ) => Promise<boolean>
   planningId?: string
+  embargoUntil?: string
 }) => {
   const [documentStatus, setDocumentStatus] = useWorkflowStatus({ ydoc })
   const containerRef = useRef<HTMLDivElement>(null)
@@ -38,6 +41,13 @@ export const StatusMenu = ({ ydoc, onBeforeStatusChange, planningId }: {
   const history = useHistory()
   const { viewId } = useView()
   const { t } = useTranslation()
+  const viewElementRef = useRef<HTMLElement | null>(null)
+  const icon = documentTypeValueFormat[documentStatus?.type || 'core/article'].icon
+
+  useEffect(() => {
+    viewElementRef.current = document.getElementById(viewId)
+  }, [viewId])
+
 
   // Read workflow specifications from current type and current status
   const isWorkflow = documentStatus?.type
@@ -63,6 +73,11 @@ export const StatusMenu = ({ ydoc, onBeforeStatusChange, planningId }: {
   // Callback function to set status. Will first call onBeforeStatusChange() if
   // provided by props, then proceed to change the status if allowed.
   const setStatus = useCallback(async (newStatus: string, data?: Record<string, unknown>) => {
+    if (newStatus === 'withheld' && !planningId) {
+      toast.error(t('shared:status_menu.schedulingRequiresPlanning'))
+      return
+    }
+
     setIsTransitioning(true)
 
     try {
@@ -82,7 +97,7 @@ export const StatusMenu = ({ ydoc, onBeforeStatusChange, planningId }: {
     } finally {
       setIsTransitioning(false)
     }
-  }, [onBeforeStatusChange, setDocumentStatus])
+  }, [onBeforeStatusChange, setDocumentStatus, planningId, t])
 
   const unPublishDocument = async (newStatus?: string) => {
     if (!repository || !session?.accessToken || newStatus !== 'unpublished') {
@@ -171,6 +186,13 @@ export const StatusMenu = ({ ydoc, onBeforeStatusChange, planningId }: {
               onSelect={showPrompt}
               hasChanges={asSave && isChanged}
               documentType={documentStatus.type}
+              disabledTransitions={!planningId
+                ? {
+                    withheld: {
+                      reason: t('shared:status_menu.schedulingRequiresPlanning')
+                    }
+                  }
+                : undefined}
             >
               {asSave && isChanged && (
                 <StatusMenuOption
@@ -210,9 +232,12 @@ export const StatusMenu = ({ ydoc, onBeforeStatusChange, planningId }: {
               setStatus={(...args) => void setStatus(...args)}
               planningId={planningId}
               requireCause={!!documentStatus.checkpoint}
+              embargoUntil={embargoUntil}
               ydoc={ydoc}
               usableId={documentStatus.usableId}
               documentType={documentStatus.type}
+              anchor={viewElementRef.current}
+              typeIcon={icon}
             />
           )}
 
@@ -227,6 +252,9 @@ export const StatusMenu = ({ ydoc, onBeforeStatusChange, planningId }: {
               ydoc={ydoc}
               usableId={documentStatus.usableId}
               documentType={documentStatus.type}
+              embargoUntil={embargoUntil}
+              anchor={viewElementRef.current}
+              typeIcon={icon}
             />
           )}
         </>

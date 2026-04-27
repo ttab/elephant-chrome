@@ -84,6 +84,33 @@
     "rememberMe": "Kom ihåg mig nästa gång",
     "loggingIn": "Loggar in..."
   },
+  "timeless": {
+    "title": "Tidlös",
+    "columnLabels": {
+      "category": "Kategori",
+      "lastChanged": "Senast ändrad",
+      "actions": "Åtgärder"
+    },
+    "toolbar": {
+      "allCategories": "Alla kategorier"
+    },
+    "actions": {
+      "new": "Ny tidlös",
+      "openPlanning": "Öppna ursprunglig planering",
+      "convertToArticle": "Konvertera till artikel"
+    },
+    "placeholders": {
+      "addCategory": "Lägg till kategori"
+    },
+    "toasts": {
+      "convertedSuccess": "Tidlös konverterad",
+      "conversionFailed": "Konverteringen misslyckades: {{message}}",
+      "notAuthenticated": "Kan inte konvertera: inte inloggad",
+      "documentNotFound": "Dokumentet hittades inte",
+      "openArticle": "Öppna artikel",
+      "openPlanning": "Öppna planering"
+    }
+  },
   "imageSearch": {
     "title": "Bilder",
     "labels": {

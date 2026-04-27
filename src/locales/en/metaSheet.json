@@ -11,10 +11,31 @@
     "versions": "Versions",
     "version": "Version",
     "editorialInfoType": "Editorial info, type",
-    "slugline": "Slug"
+    "slugline": "Slug",
+    "category": "Category"
   },
   "actions": {
-    "addNote": "Add note"
+    "addNote": "Add note",
+    "convertToArticle": "Convert to article",
+    "convertToTimeless": "Convert to timeless",
+    "removeHastFromArticle": "Remove HAST from article"
+  },
+  "convertToArticle": {
+    "descriptionWithPlanning": "A new planning will be derived from the original. Pick a date for the new article.",
+    "descriptionNoPlanning": "Pick a date for the new article.",
+    "loadingPlanning": "Looking for the original planning…",
+    "targetDateLabel": "Date",
+    "converting": "Converting...",
+    "failed": "Conversion failed. Try again or cancel.",
+    "noPlanningHint": "No original planning was found — a new planning will be created from the timeless."
+  },
+  "convertToTimeless": {
+    "description": "Pick a subject category for the new timeless."
+  },
+  "removeHastPrompt": {
+    "title": "Remove HAST from article",
+    "description": "This removes HAST and makes it a normal article. Future versions will not be sent as HAST unless you enable it again.",
+    "confirm": "Remove"
   },
   "placeholders": {
     "addByline": "Add byline",

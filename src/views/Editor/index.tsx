@@ -1,5 +1,6 @@
 import type { JSX } from 'react'
 import { useMemo } from 'react'
+import type { Block } from '@ttab/elephant-api/newsdoc'
 import { View } from '@/components'
 import { Notes } from '@/components/Notes'
 import {
@@ -36,6 +37,7 @@ import {
 import type { ViewMetadata, ViewProps } from '@/types'
 import { EditorHeader } from './EditorHeader'
 import { Error as ErrorComponent } from '../Error'
+import { DerivedFromPlanning } from '@/components/DerivedFromPlanning'
 import { getValueByYPath } from '@/shared/yUtils'
 import { getContentMenuLabels } from '@/defaults/contentMenuLabels'
 import type { YDocument } from '@/modules/yjs/hooks'
@@ -79,9 +81,13 @@ const Editor = (props: ViewProps): JSX.Element => {
     )
   }
 
-  // If published or specific version has be specified
-  if (workflowStatus?.name === 'usable' || props.version || workflowStatus?.name === 'unpublished') {
-    const bigIntVersion = workflowStatus?.name === 'usable'
+  // If published, used, or a specific version is requested — render read-only.
+  const isTerminalStatus = workflowStatus?.name === 'usable'
+    || workflowStatus?.name === 'unpublished'
+    || workflowStatus?.name === 'used'
+
+  if (isTerminalStatus || props.version) {
+    const bigIntVersion = workflowStatus?.name === 'usable' || workflowStatus?.name === 'used'
       ? workflowStatus?.version
       : BigInt(props.version ?? 0)
 
@@ -120,6 +126,7 @@ function EditorWrapper(props: ViewProps & {
     visibility: !preview
   })
   const [documentLanguage] = getValueByYPath<string>(ydoc.ele, 'root.language')
+  const [hast] = getValueByYPath<Block | undefined>(ydoc.ele, 'meta.ntb/hast[0]')
   const [content] = getValueByYPath<Y.XmlText>(ydoc.ele, 'content', true)
   const openFactboxEditor = useLink('Factbox')
   const openImageSearch = useLink('ImageSearch')
@@ -154,7 +161,7 @@ function EditorWrapper(props: ViewProps & {
         visibility: () => [false, true, false]
       }),
       Text({
-        countCharacters: ['heading-1'],
+        countCharacters: hast ? ['heading-1', 'preamble'] : ['heading-1'],
         ...getContentMenuLabels()
       }),
       (() => {
@@ -181,7 +188,7 @@ function EditorWrapper(props: ViewProps & {
         }
       })()
     ]
-  }, [openFactboxEditor, openFactboxes, openImageSearch, preview, t, activeLocale, repository, session])
+  }, [openFactboxEditor, openFactboxes, openImageSearch, preview, t, activeLocale, repository, session, hast])
 
   if (!content) {
     return <View.Root />
@@ -197,6 +204,9 @@ function EditorWrapper(props: ViewProps & {
         lang={documentLanguage}
       >
         <EditorHeader ydoc={ydoc} planningId={planningId} readOnly={preview} />
+
+        <DerivedFromPlanning ydoc={ydoc} />
+
         <Notes ydoc={ydoc} />
 
         <View.Content className='flex flex-col max-w-[1000px]'variant='grid'>
