@@ -1,8 +1,7 @@
 import type { JSX } from 'react'
-import { Menu, useEditor, usePluginRegistry } from '@ttab/textbit'
+import { Menu, usePluginRegistry } from '@ttab/textbit'
 import { ContentMenuGroup } from './ContentMenuGroup'
 import { ContentMenuItem } from './ContentMenuItem'
-import { TextbitElement } from '@ttab/textbit'
 
 const factBoxActions = ['core/text/set-body',
   'core/ordered-list/add-ordered-list',
@@ -10,22 +9,10 @@ const factBoxActions = ['core/text/set-body',
 ]
 
 export const ContentMenu = ({ editorType }: { editorType?: string }): JSX.Element => {
-  const editor = useEditor()
   const { actions } = usePluginRegistry()
 
-  // Check in what plugin context the user is upon selecting from the menu.
-  // If they are inside a block class element, other block class elements should not be selectable to insert,
-  // as we currently have no need for adding one block class element inside another.
-  // However, this might change in future iterations.
-  const topNode = editor.selection
-    ? editor.children[editor.selection.anchor.path[0]]
-    : undefined
-  const insideBlock = TextbitElement.isBlock(topNode)
-
   const textActions = actions.filter((action) => action.plugin.class === 'text')
-  const blockActions = insideBlock
-    ? []
-    : actions.filter((action) => action.plugin.class === 'block')
+  const blockActions = actions.filter((action) => action.plugin.class === 'block')
   const factBoxTextActions = actions.filter((action) => factBoxActions.includes(action.name))
 
   const visibleTextActions = editorType === 'factbox' ? factBoxTextActions : textActions
@@ -45,8 +32,6 @@ export const ContentMenu = ({ editorType }: { editorType?: string }): JSX.Elemen
               && (
                 <ContentMenuGroup>
                   {visibleTextActions.map((action) => <ContentMenuItem action={action} key={action.name} />)}
-                  {textActions.length > 0
-                    && textActions.map((action) => <ContentMenuItem action={action} key={action.name} />)}
                 </ContentMenuGroup>
               )}
           </Menu.Content>
