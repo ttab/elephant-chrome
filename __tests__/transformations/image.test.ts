@@ -35,6 +35,7 @@ const imageSlate: TBElement = {
     rel: 'image',
     uri: 'core://image/abc-def-123',
     url: '',
+    src: '',
     type: 'core/image',
     text: 'A test image caption',
     html_caption: undefined,
@@ -339,6 +340,23 @@ describe('Image transformations', () => {
     expect(imageLink?.uuid).toBe('')
     expect(reverted.data.text).toBe('NTB photo caption')
     expect(reverted.data.credit).toBe('NTB Photographer')
+  })
+
+  it('exposes link url as properties.src so the Image plugin can render', () => {
+    const ntbNewsDoc = Block.create({
+      ...imageNewsDoc,
+      links: [
+        {
+          ...imageNewsDoc.links[0],
+          type: 'mediamanager/image',
+          uri: 'mediamanager://image/ntb/abc',
+          url: 'https://preview-cdn.example/image.jpg'
+        }
+      ]
+    })
+
+    const transformed = transformImage(ntbNewsDoc)
+    expect(transformed.properties?.src).toBe('https://preview-cdn.example/image.jpg')
   })
 
   it('handles uri without image id', () => {
