@@ -1,6 +1,6 @@
 import { useLink } from '@/hooks/useLink'
 import { Button } from '@ttab/elephant-ui'
-import { BookAIcon } from 'lucide-react'
+import { BookAIcon } from '@ttab/elephant-ui/icons'
 import { useTranslation } from 'react-i18next'
 
 

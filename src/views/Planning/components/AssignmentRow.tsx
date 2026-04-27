@@ -68,7 +68,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
   const { repository } = useRegistry()
   const { data: session } = useSession()
   const { t } = useTranslation()
-  const featureFlags = useFeatureFlags(['hasPrint', 'hasHast'])
+  const featureFlags = useFeatureFlags(['hasPrint', 'hasHast', 'hasLooseSlugline'])
   const { isConverting } = useConvertArticleType()
 
   const base = `meta.core/assignment[${index}]`
@@ -485,7 +485,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
         />
       )}
 
-      {showCreateDialogPayload && !slugline && assignmentType !== 'flash' && (
+      {showCreateDialogPayload && !slugline && assignmentType !== 'flash' && !featureFlags.hasLooseSlugline && (
         <Prompt
           title={t('planning:prompts.slugMissing')}
           description={t('planning:prompts.slugMissingDescription')}
@@ -498,7 +498,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
         />
       )}
 
-      {showCreateDialogPayload && ydoc.provider?.document && (slugline || assignmentType === 'flash') && (
+      {showCreateDialogPayload && ydoc.provider?.document && (slugline || assignmentType === 'flash' || featureFlags.hasLooseSlugline) && (
         <CreateDeliverablePrompt
           ydoc={ydoc}
           payload={createPayload(ydoc.provider.document, index, assignmentType) || {}}
