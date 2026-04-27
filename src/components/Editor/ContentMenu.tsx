@@ -45,6 +45,8 @@ export const ContentMenu = ({ editorType }: { editorType?: string }): JSX.Elemen
               && (
                 <ContentMenuGroup>
                   {visibleTextActions.map((action) => <ContentMenuItem action={action} key={action.name} />)}
+                  {textActions.length > 0
+                    && textActions.map((action) => <ContentMenuItem action={action} key={action.name} />)}
                 </ContentMenuGroup>
               )}
           </Menu.Content>

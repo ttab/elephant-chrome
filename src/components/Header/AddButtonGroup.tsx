@@ -44,9 +44,9 @@ const AddButton = ({
   withNew?: boolean
   variant?: Variant
   className?: string
+  hast?: boolean
   view: ButtonView
   onClick: (view: ButtonView) => void
-  hast?: boolean
   t: TFunction
 }) => {
   const typeLabel = (t?: string) => t ? addButtonGroupValueFormat[t].label : ''
@@ -92,7 +92,8 @@ export const AddButtonGroup = ({ docType = 'core/planning-item', query }: { type
           console.error('Error creating factbox:', error)
           toast.error((error as Error).message)
         })
-    } else if (view.type === 'core/article#timeless' && showModal) {
+    }
+    if (view.type === 'core/article#timeless' && showModal) {
       showModal(
         <TimelessCreation
           id={id}
