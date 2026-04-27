@@ -52,17 +52,19 @@ export const PromptSchedule = ({
   useEffect(() => {
     if (loading) return
 
-    const formatedPublishDate = publishDate.toLocaleString()
-    const formatedNow = now.toLocaleString().slice(0, 10)
-
     // If embargo is active, use embargo time as minimum
     if (embargoIsActive && embargoDate) {
       setTime(embargoDate)
       return
     }
 
+    if (!publishDate) return
+
+    const formatedPublishDate = publishDate.toLocaleString()
+    const formatedNow = now.toLocaleString().slice(0, 10)
+
     // only set to publish date if it's in the future, otherwise default to now
-    if (publishDate && formatedPublishDate >= formatedNow) {
+    if (formatedPublishDate >= formatedNow) {
       const d = new Date(publishDate)
       d.setHours(now.getHours(), now.getMinutes(), 0, 0)
       setTime(d)
