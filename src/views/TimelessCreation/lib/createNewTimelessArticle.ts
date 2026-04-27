@@ -41,16 +41,15 @@ export async function createNewTimelessArticle({
   }
 
   const trimmedSlugline = slugline.trim()
-  if (!trimmedSlugline) {
-    throw new Error('Cannot create timeless article without a slugline')
-  }
 
   try {
     const document = timelessTemplate(id, {
       title,
       meta: {
         'core/newsvalue': [Block.create({ type: 'core/newsvalue', value: newsvalue })],
-        'tt/slugline': [Block.create({ type: 'tt/slugline', value: trimmedSlugline })]
+        ...(trimmedSlugline
+          ? { 'tt/slugline': [Block.create({ type: 'tt/slugline', value: trimmedSlugline })] }
+          : {})
       },
       links: {
         'core/timeless-category': [category],

@@ -3,6 +3,7 @@ import { CategoryPicker } from '@/components/TimelessCategory'
 import { useSession } from 'next-auth/react'
 import { useRegistry, useSections } from '@/hooks'
 import { useActiveAuthor } from '@/hooks/useActiveAuthor'
+import { useFeatureFlags } from '@/hooks/useFeatureFlags'
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
 import { Block } from '@ttab/elephant-api/newsdoc'
@@ -43,6 +44,7 @@ export const TimelessCreation = ({ id, onClose }: {
   const { t } = useTranslation()
   const sections = useSections({ sort: 'title' })
   const activeAuthor = useActiveAuthor({ full: false })
+  const { hasLooseSlugline } = useFeatureFlags(['hasLooseSlugline'])
 
   const [title, setTitle] = useState<string>('')
   const [selectedCategory, setSelectedCategory] = useState<Block | undefined>()
@@ -58,7 +60,7 @@ export const TimelessCreation = ({ id, onClose }: {
   const canCreate = !!trimmedTitle
     && !!selectedCategory
     && !!newsvalue
-    && (isNewPlanning ? (!!trimmedSlugline && !!sectionId) : true)
+    && (isNewPlanning ? ((hasLooseSlugline || !!trimmedSlugline) && !!sectionId) : true)
 
   const sectionOptions = useMemo(
     () => sections.map((s) => ({ value: s.id, label: s.title })),
@@ -102,7 +104,7 @@ export const TimelessCreation = ({ id, onClose }: {
         }
 
     const timelessSlugline = (planningContext.slugline ?? '').trim()
-    if (!timelessSlugline) {
+    if (!hasLooseSlugline && !timelessSlugline) {
       toast.error(t('errors:toasts.creationFailed', {
         error: t('core:labels.slugline')
       }))
@@ -289,14 +291,14 @@ export const TimelessCreation = ({ id, onClose }: {
 
             {isNewPlanning && (
               <Form.Group icon={TagIcon}>
-                <>
+                {!hasLooseSlugline && (
                   <Input
                     className='pt-2 h-7 max-w-48 text-medium placeholder:text-[#5D709F] placeholder-shown:border-[#5D709F] placeholder-shown:bg-[#5D709F]/5'
                     placeholder={`${t('common:actions.add')} ${t('core:labels.slugline').toLocaleLowerCase()}`}
                     value={slugline}
                     onChange={(event) => setSlugline(event.target.value)}
                   />
-                </>
+                )}
 
                 <ComboBox
                   max={1}

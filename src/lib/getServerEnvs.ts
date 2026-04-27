@@ -72,7 +72,8 @@ export async function getServerEnvs(): Promise<ServerConfig> {
       },
       featureFlags: {
         hasPrint: data['hasPrint'] ? !!data['hasPrint'] : false,
-        hasHast: data['hasHast'] ? !!data['hasHast'] : false
+        hasHast: data['hasHast'] ? !!data['hasHast'] : false,
+        hasLooseSlugline: data['hasLooseSlugline'] ? !!data['hasLooseSlugline'] : false
       }
     }
   } catch (ex) {

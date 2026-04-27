@@ -2,6 +2,7 @@ import { InfoIcon, PlusIcon } from '@ttab/elephant-ui/icons'
 import { AssignmentRow } from './AssignmentRow'
 import { createNewAssignment } from '@/shared/createYItem'
 import { useAuthors, useNavigationKeys } from '@/hooks'
+import { useFeatureFlags } from '@/hooks/useFeatureFlags'
 import { Assignment } from './Assignment'
 import type { MouseEvent, KeyboardEvent } from 'react'
 import { useMemo, useRef, useState, type JSX } from 'react'
@@ -40,6 +41,7 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId }: {
   const author = useActiveAuthor({ full: false })
   const authors = useAuthors()
   const { t } = useTranslation()
+  const { hasLooseSlugline } = useFeatureFlags(['hasLooseSlugline'])
 
   const selectedAssignment = useMemo(() => {
     if (!selectedId) return undefined
@@ -78,9 +80,11 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId }: {
       createNewAssignment({
         document: ydoc.provider.document,
         assignee: author,
-        slugLine: (!slugLines?.includes(planningSlugLine || ''))
-          ? planningSlugLine
-          : undefined,
+        slugLine: hasLooseSlugline
+          ? undefined
+          : ((!slugLines?.includes(planningSlugLine || ''))
+              ? planningSlugLine
+              : undefined),
         type: 'text'
       })
     )
