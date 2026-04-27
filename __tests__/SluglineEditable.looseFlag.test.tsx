@@ -40,11 +40,11 @@ vi.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key })
 }))
 
-// Capture compareValues passed to Validation without rendering its real children.
+// Capture props passed to Validation without rendering its real children.
 const validationSpy = vi.fn()
 vi.mock('@/components/Validation', () => ({
-  Validation: (props: { compareValues?: string[] }) => {
-    validationSpy(props.compareValues)
+  Validation: (props: { compareValues?: string[], onValidation?: unknown }) => {
+    validationSpy(props)
     return null
   }
 }))
@@ -67,17 +67,22 @@ describe('SluglineEditable — hasLooseSlugline flag', () => {
 
   it('collects sibling sluglines as compareValues when the flag is off (default)', () => {
     mockHasLooseSlugline = false
-    render(<SluglineEditable ydoc={mockYdoc} />)
+    const onValidation = vi.fn()
+    render(<SluglineEditable ydoc={mockYdoc} onValidation={onValidation} />)
     expect(validationSpy).toHaveBeenCalled()
-    const compareValues = validationSpy.mock.calls[0][0] as string[]
-    expect(compareValues).toEqual(expect.arrayContaining(['alpha', 'beta', 'wip']))
-    expect(compareValues).toHaveLength(3)
+    const props = validationSpy.mock.calls[0][0] as { compareValues: string[], onValidation: unknown }
+    expect(props.compareValues).toEqual(expect.arrayContaining(['alpha', 'beta', 'wip']))
+    expect(props.compareValues).toHaveLength(3)
+    expect(props.onValidation).toBe(onValidation)
   })
 
-  it('passes an empty compareValues list when hasLooseSlugline is on', () => {
+  it('passes an empty compareValues list and drops onValidation when hasLooseSlugline is on', () => {
     mockHasLooseSlugline = true
-    render(<SluglineEditable ydoc={mockYdoc} />)
+    const onValidation = vi.fn()
+    render(<SluglineEditable ydoc={mockYdoc} onValidation={onValidation} />)
     expect(validationSpy).toHaveBeenCalled()
-    expect(validationSpy.mock.calls[0][0]).toEqual([])
+    const props = validationSpy.mock.calls[0][0] as { compareValues: string[], onValidation: unknown }
+    expect(props.compareValues).toEqual([])
+    expect(props.onValidation).toBeUndefined()
   })
 })

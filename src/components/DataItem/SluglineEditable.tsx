@@ -72,7 +72,7 @@ export const SluglineEditable = ({ ydoc, rootMap, value, documentStatus, onValid
   return (
     <div
       className='flex flex-col gap-2 items-center [&_[role="textbox"]:has([data-slate-placeholder="true"])]:min-w-28'
-      data-ele-validation={!!onValidation}
+      data-ele-validation={!!onValidation && !hasLooseSlugline}
     >
       {editable
         ? (
@@ -82,7 +82,7 @@ export const SluglineEditable = ({ ydoc, rootMap, value, documentStatus, onValid
               label='Slugline'
               block='tt/slugline'
               path={path}
-              onValidation={onValidation}
+              onValidation={hasLooseSlugline ? undefined : onValidation}
               compareValues={slugLines}
               validateStateRef={validateStateRef}
             >
