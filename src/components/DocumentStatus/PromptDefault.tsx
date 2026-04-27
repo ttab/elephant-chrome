@@ -42,7 +42,9 @@ export const PromptDefault = ({
   anchor?: HTMLElement | null
   typeIcon?: LucideIcon
 }) => {
-  const [cause, setCause] = useState<string | undefined>(currentCause)
+  const [cause, setCause] = useState<string | undefined>(
+    currentCause || (requireCause ? 'development' : undefined)
+  )
   const isUnpublishPrompt = prompt.status === 'unpublished'
   const { t } = useTranslation('common')
   const { timeZone } = useRegistry()
@@ -57,12 +59,6 @@ export const PromptDefault = ({
   const disablePrimary = isUnpublishPrompt
     ? false
     : (requireCause && !cause) || embargoBlocksPublish
-
-  useEffect(() => {
-    if (prompt.status === 'draft') {
-      setCause('')
-    }
-  }, [prompt.status])
 
   const handleSubmit = useCallback(() => {
     if (isUnpublishPrompt && unPublishDocument) {
@@ -114,7 +110,7 @@ export const PromptDefault = ({
       {(showCauseField) && (
         <PromptCauseField
           onValueChange={setCause}
-          cause={prompt.status !== 'draft' ? cause : ''}
+          cause={cause}
         />
       )}
     </Prompt>
