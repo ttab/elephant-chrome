@@ -8,7 +8,7 @@ import { useHistory, useNavigation, useView } from '@/hooks/index'
 import { cn } from '@ttab/elephant-ui/utils'
 import { DotMenu } from '@/components/ui/DotMenu'
 import { Link } from '@/components'
-import { PenIcon, CalendarDaysIcon, LibraryIcon } from '@ttab/elephant-ui/icons'
+import { PenIcon, CalendarDaysIcon } from '@ttab/elephant-ui/icons'
 import type { HitV1 } from '@ttab/elephant-api/index'
 import { useDeliverableInfo } from '@/hooks/useDeliverableInfo'
 import { useLatest } from './hooks/useLatest'
@@ -18,6 +18,7 @@ import { useTranslation } from 'react-i18next'
 import { CreatePrintArticle } from '@/components/CreatePrintArticle'
 import { useModal } from '@/components/Modal/useModal'
 import { useFeatureFlags } from '@/hooks/useFeatureFlags'
+import { documentTypeValueFormat } from '@/defaults/documentTypeFormats'
 
 const meta: ViewMetadata = {
   name: 'Latest',
@@ -133,6 +134,7 @@ const Menu = ({ articleId }: { articleId: string }): JSX.Element => {
   const { t } = useTranslation('common')
   const { showModal, hideModal } = useModal()
   const featureFlags = useFeatureFlags(['hasPrint'])
+  const printIcon = documentTypeValueFormat['tt/print-article'].icon
 
   return (
     <div className='shrink p-'>
@@ -166,7 +168,7 @@ const Menu = ({ articleId }: { articleId: string }): JSX.Element => {
           ...(featureFlags.hasPrint
             ? [{
                 label: t('planning:assignment.createPrintArticle'),
-                icon: LibraryIcon,
+                icon: printIcon,
                 item: () => {
                   showModal(
                     <CreatePrintArticle

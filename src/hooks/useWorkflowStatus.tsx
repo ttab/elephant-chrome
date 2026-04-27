@@ -77,6 +77,8 @@ export const useWorkflowStatus = ({ ydoc, documentId: docId }: {
   useRepositoryEvents([
     'core/article',
     'core/article+meta',
+    'core/article#timeless',
+    'core/article#timeless+meta',
     'core/flash',
     'core/flash+meta',
     'core/editorial-info',

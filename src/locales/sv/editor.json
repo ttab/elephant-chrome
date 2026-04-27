@@ -33,11 +33,18 @@
     "numberOfChars": "Antal tecken: artikel (totalt)"
   },
   "goToLatestVersion": "Gå till senaste versionen",
+  "goToLatestVersionShort": "Senaste",
+  "embargoActive": "Kan inte publiceras direkt — embargo gäller till {{time}}",
   "addRoleInfo": {
     "editorial": "Lägg till redaktionell info",
     "internal": "Lägg till intern info"
   },
   "removeInfoConfirm": "Är du säker på att du vill ta bort info?",
   "changeType": "Ändra typ",
-  "changeTypeConfirm": "Är du säker på att du vill ändra typ av info?"
+  "changeTypeConfirm": "Är du säker på att du vill ändra typ av info?",
+  "derivedFrom": "Skapad från",
+  "derivedFromTimelessLink": "tidlös",
+  "derivedFromArticleLink": "artikel",
+  "derivedFromConnector": "och",
+  "derivedFromPlanningLink": "planering"
 }

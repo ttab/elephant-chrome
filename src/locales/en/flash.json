@@ -29,5 +29,12 @@
   },
   "sendAsHast": "Send as HAST",
   "sendAsHastDescription": "When published, this article will be sent as a HAST.",
-  "hastLabel": "HAST"
+  "hastLabel": "HAST",
+  "hastDefaultPreamble": "The story is updated",
+  "removeHast": {
+    "title": "Remove HAST",
+    "description": "Do you want to remove HAST from this version only, or from the entire article?",
+    "fromVersion": "This version",
+    "fromArticle": "Entire article"
+  }
 }

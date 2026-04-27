@@ -20,12 +20,12 @@ describe('hastDocumentTemplate', () => {
     expect(newsvalue?.value).toBe('5')
   })
 
-  it('sets default slugline to hast', () => {
+  it('sets default preamble text from i18n', () => {
     const doc = hastDocumentTemplate('test-id')
-    const slugline = doc.meta.find((m) => m.type === 'tt/slugline')
+    const preamble = doc.content.find((c) => c.role === 'preamble')
 
-    expect(slugline).toBeDefined()
-    expect(slugline?.value).toBe('hast')
+    expect(preamble).toBeDefined()
+    expect(preamble?.data?.text).toBe('Texten uppdateras')
   })
 
   it('includes ntb/hast meta block', () => {

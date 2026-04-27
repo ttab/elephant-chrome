@@ -40,6 +40,7 @@
     "saveError": "Kunde inte spara planeringen",
     "saveChangeError": "Kunde inte spara ändringen",
     "missingMetadata": "Saknar nyhetsvärde eller sektion",
+    "missingTimelessCategory": "Saknar tidlös kategori",
     "assignmentMoveError": "Uppdraget kunde inte flyttas",
     "assignmentMoveErrorNotLoggedIn": "Uppdraget kunde inte flyttas. Du är inte inloggad.",
     "assignmentMoveErrorTryAgain": "Uppdraget kunde inte flyttas. Var god försök igen.",

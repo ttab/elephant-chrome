@@ -86,12 +86,10 @@ export const StreamEntry = memo(({
       e.preventDefault()
       onPress?.(entry, e)
     } else if (e.key === 'm' || e.key === 'M') {
-      if (status !== 'used') {
-        e.preventDefault()
-        onToggleSelected(entry, e.shiftKey)
-      }
+      e.preventDefault()
+      onToggleSelected(entry, e.shiftKey)
     }
-  }, [entry, onPress, onToggleSelected, status])
+  }, [entry, onPress, onToggleSelected])
 
   const handleFocus = useCallback((e: React.FocusEvent<HTMLElement>) => {
     onFocus?.(entry, e)
@@ -145,7 +143,7 @@ export const StreamEntry = memo(({
         </div>
       )}
 
-      {!statusMutation && status !== 'used' && (
+      {!statusMutation && (
         <Button
           variant='icon'
           size='lg'

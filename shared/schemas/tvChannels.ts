@@ -32,7 +32,7 @@ export type TVChannelsObject = z.infer<typeof _schema>
 /**
  * Type inferred from fields
  */
-export type TVChannelsFields = Array<keyof typeof _fields>
+export type TVChannelsFields = readonly (typeof _fields)[number][]
 
 /**
  * Interface extending HitV1 with a fields property of type TVChannelsFields
@@ -44,4 +44,4 @@ export interface TVChannels extends HitV1 {
 /**
  * Export fields and cast it as TVChannelsFields
  */
-export const fields = _fields as unknown as TVChannelsFields
+export const fields: TVChannelsFields = _fields

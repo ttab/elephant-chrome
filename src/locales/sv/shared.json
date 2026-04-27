@@ -15,7 +15,8 @@
     "graphic": "Grafik",
     "picture": "Bild",
     "video": "Video",
-    "picture/video": "Bild/Video"
+    "picture/video": "Bild/Video",
+    "timeless": "Tidlös"
   },
   "toolbar": {
     "clearFilters": "Rensa",
@@ -34,6 +35,8 @@
     "planningDate": "Datum i planeringen",
     "setTime": "Ange tid",
     "asSavePlaceholder": "Publicera ny information",
+    "embargoMinTime": "Embargo: kan inte schemaläggas före {{time}}",
+    "schedulingRequiresPlanning": "Schemaläggning är inte tillgänglig eftersom dokumentet saknar en kopplad planering.",
     "causes": {
       "development_short": "UV",
       "development_long": "Utveckling",
@@ -58,7 +61,8 @@
     "authorCreateSuccess": "Författardokument är skapat",
     "authorUpdateSuccess": "Författardokument har uppdaterats",
     "authorSaveSuccess": "Författardokument har sparats",
-    "savedFilter": "Ditt filter har sparats"
+    "savedFilter": "Ditt filter har sparats",
+    "documentSaveSuccess": "Dokument sparat"
   },
   "prompts": {
     "publishBeforeClose": "Vill du publicera ändringarna innan du stänger?",

@@ -59,12 +59,15 @@ export function articleDocumentTemplate(id: string, payload?: TemplatePayload): 
     ],
     links: [
       ...Object.values(payload?.links ?? {}).flat(),
-      Block.create({
-        uri: 'tt://content-source/tt',
-        type: 'core/content-source',
-        title: 'TT',
-        rel: 'source'
-      })
+      ...(payload?.links?.['core/content-source']?.length
+        ? []
+        : [Block.create({
+            uri: 'tt://content-source/tt',
+            type: 'core/content-source',
+            title: 'TT',
+            rel: 'source'
+          })]
+      )
     ]
   })
 }
