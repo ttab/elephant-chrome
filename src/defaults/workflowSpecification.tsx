@@ -1,6 +1,7 @@
 import i18n from 'i18next'
 import type { TranslationKey } from '@/types/i18next.d'
 import {
+  ArchiveIcon,
   CircleCheckIcon,
   CircleDotIcon,
   CircleArrowLeftIcon,
