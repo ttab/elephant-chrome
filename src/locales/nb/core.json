@@ -21,7 +21,8 @@
     "category": "Kategori",
     "action": "Action",
     "story": "Story",
-    "showOlder": "Vis eldre"
+    "showOlder": "Vis eldre",
+    "slugline": "Slugg"
   },
   "status": {
     "draft": "Utkast",
@@ -30,6 +31,7 @@
     "usable": "Publisert",
     "unpublished": "Avpublisert",
     "done": "Ferdig",
+    "used": "Brukt",
     "print_done": "",
     "needs_proofreading": "",
     "withheld": "Planlagt",

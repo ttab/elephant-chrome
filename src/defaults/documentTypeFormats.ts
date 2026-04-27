@@ -1,6 +1,7 @@
 import i18n from 'i18next'
 import {
   BriefcaseBusinessIcon,
+  BookmarkIcon,
   CalendarDaysIcon,
   CalendarPlus2Icon,
   NewspaperIcon,
@@ -9,7 +10,8 @@ import {
   PenBoxIcon,
   PenOffIcon,
   ZapIcon,
-  type LucideIcon
+  type LucideIcon,
+  LibraryIcon
 } from '@ttab/elephant-ui/icons'
 
 type DocumentTypeFormat = Record<string, {
@@ -88,6 +90,18 @@ const flash: DocumentTypeFormat = {
   }
 }
 
+const timelessArticle: DocumentTypeFormat = {
+  'core/article#timeless': {
+    icon: BookmarkIcon,
+    get label() { return i18n.t('shared:assignmentTypes.timeless') },
+    key: 'Editor',
+    color: '#7C6F9C',
+    readonly: {
+      icon: PenOffIcon
+    }
+  }
+}
+
 const quickArticle: DocumentTypeFormat = {
   'core/article': {
     icon: NewspaperIcon,
@@ -97,14 +111,25 @@ const quickArticle: DocumentTypeFormat = {
   }
 }
 
+const printArticle: DocumentTypeFormat = {
+  'tt/print-article': {
+    icon: LibraryIcon,
+    get label() { return i18n.t('print:articles.title') },
+    key: 'PrintArticle',
+    color: '#aabbcc'
+  }
+}
+
 
 export const documentTypeValueFormat = {
   ...event,
   ...planning,
   ...article,
+  ...timelessArticle,
   ...editorialInfo,
   ...factbox,
-  ...flash
+  ...flash,
+  ...printArticle
 }
 
 export const addButtonGroupValueFormat = {
@@ -114,5 +139,6 @@ export const addButtonGroupValueFormat = {
   ...quickArticle,
   ...editorialInfo,
   ...factbox,
-  ...flash
+  ...flash,
+  ...timelessArticle
 }

@@ -12,6 +12,7 @@ export const TextboxEditable = ({ singleLine, autoFocus, onFocus, onBlur }: {
 }): JSX.Element | undefined => {
   return (
     <Textbit.Editable
+      constraints={{ allowEdgeWhitespace: false }}
       autoFocus={autoFocus}
       onBlur={onBlur}
       onFocus={onFocus}

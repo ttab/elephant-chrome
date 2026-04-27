@@ -11,10 +11,31 @@
     "versions": "Versjoner",
     "version": "Versjon",
     "editorialInfoType": "Redaksjonell informasjon, type",
-    "slugline": "Stikkord"
+    "slugline": "Stikkord",
+    "category": "Kategori"
   },
   "actions": {
-    "addNote": "Legg til beskjed"
+    "addNote": "Legg til beskjed",
+    "convertToArticle": "Konverter til artikkel",
+    "convertToTimeless": "Konverter til tidløs",
+    "removeHastFromArticle": "Fjern HAST fra artikkelen"
+  },
+  "convertToArticle": {
+    "descriptionWithPlanning": "En ny planlegging vil avledes fra den opprinnelige. Velg dato for den nye artikkelen.",
+    "descriptionNoPlanning": "Velg dato for den nye artikkelen.",
+    "loadingPlanning": "Leter etter den opprinnelige planleggingen…",
+    "targetDateLabel": "Dato",
+    "converting": "Konverterer...",
+    "failed": "Konverteringen mislyktes. Prøv igjen eller avbryt.",
+    "noPlanningHint": "Ingen opprinnelig planlegging ble funnet — en ny planlegging opprettes fra den tidløse."
+  },
+  "convertToTimeless": {
+    "description": "Velg en kategori for den nye tidløse."
+  },
+  "removeHastPrompt": {
+    "title": "Fjern HAST fra artikkelen",
+    "description": "Dette fjerner HAST og gjør den til en vanlig artikkel. Fremtidige versjoner sendes ikke som HAST med mindre du aktiverer det igjen.",
+    "confirm": "Fjern"
   },
   "placeholders": {
     "addByline": "Legg til byline",

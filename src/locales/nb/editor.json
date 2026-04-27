@@ -33,11 +33,18 @@
     "numberOfChars": "Antall tegn: artikkel (totalt)"
   },
   "goToLatestVersion": "Gå til siste versjon",
+  "goToLatestVersionShort": "Siste",
+  "embargoActive": "Kan ikke publiseres direkte — embargo gjelder til {{time}}",
   "addRoleInfo": {
     "editorial": "Legg til redaksjonell informasjon",
     "internal": "Legg til intern informasjon"
   },
   "removeInfoConfirm": "Er du sikker på at du vil slette informasjonen?",
   "changeType": "Endre type",
-  "changeTypeConfirm": "Er du sikker på at du vil endre informasjonstypen?"
+  "changeTypeConfirm": "Er du sikker på at du vil endre informasjonstypen?",
+  "derivedFrom": "Opprettet fra",
+  "derivedFromTimelessLink": "tidløs",
+  "derivedFromArticleLink": "artikkel",
+  "derivedFromConnector": "og",
+  "derivedFromPlanningLink": "planlegging"
 }

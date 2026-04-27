@@ -6,7 +6,7 @@ import { Label } from '@ttab/elephant-ui'
 import { TimeInput } from '../TimeInput'
 import { toZonedTime } from 'date-fns-tz'
 import { format } from 'date-fns'
-import { CalendarIcon, LoaderIcon } from '@ttab/elephant-ui/icons'
+import { CalendarIcon, LoaderIcon, type LucideIcon } from '@ttab/elephant-ui/icons'
 import { PromptCauseField } from './PromptCauseField'
 import { useTranslation } from 'react-i18next'
 import { useCollaborationDocument } from '@/hooks/useCollaborationDocument'
@@ -16,8 +16,8 @@ import { HastToggle } from '@/components/HastToggle'
 import type * as Y from 'yjs'
 
 export const PromptSchedule = ({
-  prompt, planningId, setStatus, showPrompt, requireCause = false,
-  ydoc: ydoc, usableId, documentType
+  prompt, planningId, setStatus, showPrompt, requireCause = false, anchor, typeIcon,
+  embargoUntil, ydoc, usableId, documentType
 }: {
   prompt: {
     status: string
@@ -28,18 +28,26 @@ export const PromptSchedule = ({
     status: string
   } & WorkflowTransition) | undefined>>
   requireCause?: boolean
+  embargoUntil?: string
   ydoc?: YDocument<Y.Map<unknown>>
   usableId?: bigint
   documentType?: string
+  anchor?: HTMLElement | null
+  typeIcon?: LucideIcon
 }) => {
   const { timeZone } = useRegistry()
   const { loading, document } = useCollaborationDocument({ documentId: planningId })
   const ele = document ? document.getMap('ele') : undefined
   const [publishDate] = useYValue<Date>(ele, 'meta.core/planning-item[0].data.start_date') as Date[]
   const now = new Date()
-  const [time, setTime] = useState(now)
+  const embargoDate = embargoUntil ? new Date(embargoUntil) : undefined
+  const embargoIsActive = embargoDate ? embargoDate > now : false
+  const [time, setTime] = useState(embargoIsActive && embargoDate ? embargoDate : now)
   const [cause, setCause] = useState<string | undefined>()
   const { t } = useTranslation()
+
+  // Check if selected time respects embargo
+  const timeViolatesEmbargo = embargoIsActive && embargoDate ? time < embargoDate : false
 
   useEffect(() => {
     if (loading) return
@@ -47,7 +55,13 @@ export const PromptSchedule = ({
     const formatedPublishDate = publishDate.toLocaleString()
     const formatedNow = now.toLocaleString().slice(0, 10)
 
-    // only set to pulish date if it's in the future, otherwise default to now
+    // If embargo is active, use embargo time as minimum
+    if (embargoIsActive && embargoDate) {
+      setTime(embargoDate)
+      return
+    }
+
+    // only set to publish date if it's in the future, otherwise default to now
     if (publishDate && formatedPublishDate >= formatedNow) {
       const d = new Date(publishDate)
       d.setHours(now.getHours(), now.getMinutes(), 0, 0)
@@ -59,7 +73,8 @@ export const PromptSchedule = ({
 
   return (
     <Prompt
-      title={prompt.title}
+      title={prompt.promptTitle || prompt.title}
+      anchor={anchor}
       primaryLabel={prompt.title}
       secondaryLabel={t('common:actions.abort')}
       onPrimary={() => {
@@ -75,10 +90,19 @@ export const PromptSchedule = ({
       onSecondary={() => {
         showPrompt(undefined)
       }}
-      disablePrimary={requireCause && !cause}
+      disablePrimary={(requireCause && !cause) || timeViolatesEmbargo}
+      typeIcon={typeIcon}
     >
       <div className='flex flex-col items-start gap-6'>
         {prompt.description}
+
+        {embargoIsActive && embargoDate && (
+          <div className='text-sm text-orange-700 dark:text-orange-400'>
+            {t('shared:status_menu.embargoMinTime', {
+              time: format(toZonedTime(embargoDate, timeZone), 'yyyy-MM-dd HH:mm')
+            })}
+          </div>
+        )}
 
         <div className='flex flex-row justify-items-start items-stretch gap-6 flex-wrap pt-2'>
 

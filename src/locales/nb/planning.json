@@ -7,6 +7,8 @@
     "publishWindow": "Publiseringsvindu",
     "publishTime": "Publiseringstid",
     "createPrintArticle": "",
+    "convertToArticle": "Konverter til artikkel",
+    "convertToTimeless": "Konverter til tidløs",
     "removeAssignment": "Vil du fjerne oppdraget",
     "chooseTime": "Velg tid",
     "timeFromTo": "Tid fra-to",

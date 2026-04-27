@@ -52,7 +52,7 @@ export type AssignmentFieldsObject = z.infer<typeof _schema>
 /**
  * Type inferred from fields
  */
-export type AssignmentFields = Array<keyof typeof _fields>
+export type AssignmentFields = readonly (typeof _fields)[number][]
 
 /**
  * Interface extending HitV1 with a fields property of type AssignmentFields
@@ -65,4 +65,4 @@ export interface Assignment extends HitV1 {
 /**
  * Export fields and cast it as AssignmentFields
  */
-export const fields = _fields as unknown as AssignmentFields
+export const fields: AssignmentFields = _fields

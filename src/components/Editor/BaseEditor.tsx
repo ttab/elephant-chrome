@@ -71,6 +71,7 @@ const EditorText = (props: {
 
   return (
     <Textbit.Editable
+      constraints={{ allowEdgeWhitespace: false }}
       autoFocus={props.autoFocus === true && isActive}
       className={cn(`outline-none
           pt-4

@@ -170,9 +170,12 @@ export const SettingsProvider = ({ application, children }: {
       })
     }
 
-    // If we already have settings, notify immediately
+    // If settings have already been fetched (payload may be undefined for 404/no-settings),
+    // notify immediately so the subscriber can resolve its loading state.
     const current = getState(documentType)
-    if (current.payload) {
+    const alreadyFetched = requestedTypesRef.current.has(documentType)
+
+    if (alreadyFetched && !current.loading) {
       try {
         handler(current.payload)
       } catch (err) {

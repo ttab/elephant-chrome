@@ -8,9 +8,12 @@ import {
   SignalHighIcon,
   UsersIcon,
   ShapesIcon,
-  CircleCheckIcon
+  CircleCheckIcon,
+  ZapIcon
 } from '@ttab/elephant-ui/icons'
 import { Newsvalues } from '@/defaults/newsvalues'
+import { Button } from '@ttab/elephant-ui'
+import { HastIndicator } from '@/components/HastIndicator'
 import { FacetedFilter } from '@/components/Commands/FacetedFilter'
 import { getAssignmentTypes, isVisualAssignmentType } from '@/defaults/assignmentTypes'
 import { Type } from '@/components/Table/Items/Type'
@@ -342,6 +345,25 @@ export function assignmentColumns<Ns extends Namespace>({ authors = [], locale, 
       },
       filterFn: (row, id, value: string[]) =>
         value.some((v: string) => row.getValue<string[] | undefined>(id)?.includes(v))
+    },
+    {
+      id: 'hast',
+      meta: {
+        name: 'Hast',
+        columnIcon: ZapIcon,
+        className: 'box-content w-8 sm:w-8 pr-1 sm:pr-4'
+      },
+      cell: ({ row }) => {
+        const deliverableId = row.original
+          .fields['document.meta.core_assignment.rel.deliverable.uuid']?.values[0]
+        return (
+          <div className='flex items-center'>
+            <Button size='xs' variant='icon' className='p-0'>
+              <HastIndicator documentId={deliverableId} size={18} />
+            </Button>
+          </div>
+        )
+      }
     },
     {
       id: 'action',
