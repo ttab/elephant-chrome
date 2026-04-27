@@ -14,10 +14,8 @@ export const WirePreview = ({ wire }: {
 }) => {
   const { t } = useTranslation('wires')
   const data = {
-    source: wire?.fields['document.rel.source.uri']?.values[0]
-      ?.replace('wires://source/', ''),
-    provider: wire?.fields['document.rel.provider.uri']?.values[0]
-      ?.replace('wires://provider/', ''),
+    source: wire?.fields['document.rel.source.title']?.values[0],
+    provider: wire?.fields['document.rel.provider.title']?.values[0],
     role: wire?.fields['document.meta.tt_wire.role'].values[0],
     newsvalue: wire?.fields['document.meta.core_newsvalue.value']?.values[0],
     status: getWireStatus(wire),
