@@ -6,7 +6,7 @@ export function quickArticleDocumentTemplate(id: string, payload?: TemplatePaylo
   return Document.create({
     uuid: id,
     uri: `core://article/${id}`,
-    language: 'sv-se',
+    language: payload?.language ?? 'sv-se',
     title: payload?.title,
     type: 'core/article',
     content: [

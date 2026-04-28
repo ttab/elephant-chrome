@@ -16,7 +16,7 @@ export function timelessArticleDocumentTemplate(
     uuid: id,
     type: 'core/article#timeless',
     uri: `core://article/${id}`,
-    language: getSystemLanguage(),
+    language: payload?.language ?? getSystemLanguage(),
     title: payload?.title,
     content: [
       Block.create({

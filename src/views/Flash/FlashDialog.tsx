@@ -8,7 +8,7 @@ import type { DefaultValueOption, ViewProps } from '@/types'
 import { Alert, AlertDescription, AlertTitle, Button, Checkbox, ComboBox, Label } from '@ttab/elephant-ui'
 import { CircleXIcon, TagsIcon, GanttChartSquareIcon, NewspaperIcon, ZapIcon, InfoIcon, TriangleAlertIcon } from '@ttab/elephant-ui/icons'
 import { Newsvalues } from '@/defaults'
-import { useRegistry, useSections } from '@/hooks'
+import { useDocumentDefaults, useRegistry, useSections } from '@/hooks'
 import { useFeatureFlags } from '@/hooks/useFeatureFlags'
 import { useSession } from 'next-auth/react'
 import type { Dispatch, SetStateAction } from 'react'
@@ -76,6 +76,7 @@ export const FlashDialog = (props: {
   const { t } = useTranslation()
   const [invalidSlug, setInvalidSlug] = useState(false)
   const { hasLooseSlugline } = useFeatureFlags(['hasLooseSlugline'])
+  const defaults = useDocumentDefaults()
 
   useEffect(() => {
     if (!hasLooseSlugline && selectedPlanning?.payload?.slugline) {
@@ -123,7 +124,11 @@ export const FlashDialog = (props: {
 
     const { deliverableId, payload, text } = quickArticleData
 
-    const quickArticleDocument = quickArticleDocumentTemplate(deliverableId, payload, text)
+    const quickArticleDocument = quickArticleDocumentTemplate(
+      deliverableId,
+      { ...defaults, ...payload },
+      text
+    )
 
     void (async () => {
       await repository?.saveDocument(

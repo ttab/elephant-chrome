@@ -5,7 +5,7 @@ import { useMemo, type JSX } from 'react'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import type { Wire as WireType } from '@/shared/schemas/wire'
 import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
-import { useHasUnit } from '@/hooks'
+import { useDocumentDefaults } from '@/hooks'
 
 const meta: ViewMetadata = {
   name: 'WireCreation',
@@ -26,9 +26,7 @@ const meta: ViewMetadata = {
 export const WireCreation = (props: ViewProps & {
   wires?: WireType[]
 }): JSX.Element => {
-  // NPK desks publish in Nynorsk regardless of the system default — translate
-  // incoming NTB Bokmål articles to nn-no at creation time.
-  const isNpkUser = useHasUnit('/redaktionen-npk')
+  const defaults = useDocumentDefaults()
 
   // The article we're creating
   const [documentId, data] = useMemo(() => {
@@ -44,7 +42,7 @@ export const WireCreation = (props: ViewProps & {
     }))
 
     const payload = {
-      ...(isNpkUser ? { language: 'nn-no' } : {}),
+      ...defaults,
       meta: {
         'tt/slugline': [Block.create({ type: 'tt/slugline' })],
         'core/newsvalue': [Block.create({ type: 'core/newsvalue' })]
@@ -61,7 +59,7 @@ export const WireCreation = (props: ViewProps & {
       subset: [],
       document: Templates.article(documentId, payload)
     })]
-  }, [props.wires, isNpkUser])
+  }, [props.wires, defaults])
 
   return (
     <>
