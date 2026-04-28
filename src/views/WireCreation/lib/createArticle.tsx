@@ -82,16 +82,30 @@ export async function createArticle({
     title: section.title
   }))
 
-  // Replace default content sources with wire-provided ones
+  // Merge wire-provided content-sources with the template's (session-derived)
+  // default. De-duplicate by URI so the session default is kept when the wire
+  // carries the same source.
   if (contentSources?.length) {
-    setValueByYPath(ydoc.ele, 'links.core/content-source', contentSources.map((source) =>
-      Block.create({
-        type: 'core/content-source',
-        uri: source.uri,
-        title: source.title,
-        rel: source.rel || 'source'
-      })
-    ))
+    const [existing] = getValueByYPath<EleBlock[]>(ydoc.ele, 'links.core/content-source')
+    const merged: Block[] = (existing ?? []).map((source) => Block.create({
+      type: 'core/content-source',
+      uri: source.uri,
+      title: source.title,
+      rel: source.rel || 'source'
+    }))
+    const seen = new Set(merged.map((block) => block.uri))
+    for (const source of contentSources) {
+      if (!seen.has(source.uri)) {
+        merged.push(Block.create({
+          type: 'core/content-source',
+          uri: source.uri,
+          title: source.title,
+          rel: source.rel || 'source'
+        }))
+        seen.add(source.uri)
+      }
+    }
+    setValueByYPath(ydoc.ele, 'links.core/content-source', merged)
   }
 
   // Collect all base data from the Y.Doc synchronously before any async operations

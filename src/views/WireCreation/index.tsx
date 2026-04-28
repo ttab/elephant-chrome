@@ -5,6 +5,8 @@ import { useMemo, type JSX } from 'react'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import type { Wire as WireType } from '@/shared/schemas/wire'
 import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
+import { useSession } from 'next-auth/react'
+import { getContentSourceLink } from '@/shared/getContentSourceLink'
 
 const meta: ViewMetadata = {
   name: 'WireCreation',
@@ -25,6 +27,8 @@ const meta: ViewMetadata = {
 export const WireCreation = (props: ViewProps & {
   wires?: WireType[]
 }): JSX.Element => {
+  const { data: session } = useSession()
+
   // The article we're creating
   const [documentId, data] = useMemo(() => {
     const documentId = crypto.randomUUID()
@@ -38,13 +42,16 @@ export const WireCreation = (props: ViewProps & {
       }
     }))
 
+    const contentSource = getContentSourceLink({ org: session?.org, units: session?.units })
+
     const payload = {
       meta: {
         'tt/slugline': [Block.create({ type: 'tt/slugline' })],
         'core/newsvalue': [Block.create({ type: 'core/newsvalue' })]
       },
       links: {
-        'tt/wire': ttWireLinks
+        'tt/wire': ttWireLinks,
+        ...(contentSource ? { 'core/content-source': [contentSource] } : {})
       }
     }
 
@@ -55,7 +62,7 @@ export const WireCreation = (props: ViewProps & {
       subset: [],
       document: Templates.article(documentId, payload)
     })]
-  }, [props.wires])
+  }, [props.wires, session?.units, session?.org])
 
   return (
     <>
