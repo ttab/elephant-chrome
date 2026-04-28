@@ -11,6 +11,7 @@ import { cn } from '@ttab/elephant-ui/utils'
 import { useView } from '@/hooks/useView'
 import { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
+import { getLanguageLabel } from '@/lib/getLanguageLabel'
 
 const EditorRoot = (props: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -109,10 +110,10 @@ const EditorFooter = ({ lang }: { lang?: string }) => {
     <>
       {lang && (
         <span
-          className='mr-auto rounded-full bg-muted px-2 py-0.5 text-xs lowercase tracking-wide text-muted-foreground'
-          title={t('footer.language')}
+          className='mr-auto rounded-full bg-muted px-2 py-0.5 text-xs tracking-wide text-muted-foreground'
+          title={`${t('footer.language')} (${lang})`}
         >
-          {lang}
+          {getLanguageLabel(lang)}
         </span>
       )}
       <div className='flex gap-2'>
