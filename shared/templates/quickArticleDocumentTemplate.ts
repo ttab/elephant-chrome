@@ -1,12 +1,13 @@
 import { Block, Document } from '@ttab/elephant-api/newsdoc'
 import type { TemplatePayload } from './index.ts'
+import { getSystemLanguage } from '../getSystemLanguage.js'
 
 // Two-on-two document template, following the creation of flash-level text assignments
 export function quickArticleDocumentTemplate(id: string, payload?: TemplatePayload, text?: string): Document {
   return Document.create({
     uuid: id,
     uri: `core://article/${id}`,
-    language: payload?.language ?? 'sv-se',
+    language: payload?.language ?? getSystemLanguage(),
     title: payload?.title,
     type: 'core/article',
     content: [
