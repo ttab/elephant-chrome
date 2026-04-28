@@ -29,6 +29,7 @@ export interface useDocumentsFetchOptions {
   asAssignments?: boolean
   setTableData?: boolean
   subscribe?: boolean
+  withArticleFactboxes?: boolean
 }
 
 class AbortError extends Error { }

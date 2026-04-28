@@ -1,9 +1,12 @@
 import { Title } from '@/components/Table/Items/Title'
+import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
+import { FacetedFilter } from '@/components/Commands/FacetedFilter'
 import type { Factbox } from '@/shared/schemas/factbox'
 import { dateToReadableDateTime } from '@/shared/datetime'
 import type { LocaleData } from '@/types/index'
+import type { TranslationKey } from '@/types/i18next.d'
 import type { ColumnDef, Row } from '@tanstack/react-table'
-import { BoxesIcon } from '@ttab/elephant-ui/icons'
+import { BoxesIcon, CircleCheckIcon, NewspaperIcon } from '@ttab/elephant-ui/icons'
 import type { TFunction, Namespace } from 'i18next'
 
 interface FactboxData {
@@ -12,15 +15,22 @@ interface FactboxData {
   modified: string
   id: string
   version: string
+  created: string
+  originalId?: string
 }
 
 export function factboxColumns<Ns extends Namespace>({ locale, timeZone, t }: { locale: LocaleData, timeZone: string, t: TFunction<Ns> }): Array<ColumnDef<Factbox>> {
   const handleDragStart = (event: React.DragEvent<HTMLDivElement>, row: Row<Factbox>) => {
+    const id = row.original.id.includes('embedded')
+      ? row.original.fields['_document_origin_id']?.values[0]
+      : row.original.id
+
     const factboxData: FactboxData = {
       title: row.getValue<string>('title'),
       text: row.original.fields['document.content.core_text.data.text'].values.join('\n'),
       modified: row.getValue<string>('edited'),
-      id: row.original.id,
+      id,
+      created: row.original.fields?.['created']?.values.join(),
       version: row.original.fields.current_version.values[0]
     }
 
@@ -29,12 +39,47 @@ export function factboxColumns<Ns extends Namespace>({ locale, timeZone, t }: { 
       text: factboxData.text,
       modified: factboxData.modified,
       id: factboxData.id,
+      created: factboxData.created,
       original_updated: factboxData.modified,
       original_version: factboxData.version
     }))
   }
 
   return [
+    {
+      id: 'documentStatus',
+      meta: {
+        Filter: ({ column, setSearch }) => (
+          <FacetedFilter column={column} setSearch={setSearch} />
+        ),
+        name: t('core:labels.status'),
+        columnIcon: CircleCheckIcon,
+        className: 'flex-none',
+        display: (value: string) => (
+          <span>{t(`core:status.${value}` as TranslationKey)}</span>
+        )
+      },
+      cell: ({ row }) => {
+        const currentStatus = row.original.fields['workflow_state']?.values[0]
+        const origin = row.original.fields['_document_origin']?.values[0] ?? 'core/factbox'
+        return (
+          <div className='relative w-fit'>
+            {
+              origin === 'core/article'
+                ? (
+                    <div title={t('workflows:base.usable.title')}>
+                      <CircleCheckIcon strokeWidth={1.75} className='text-white rounded-full dark:text-black bg-usable fill-usable' />
+                    </div>
+                  )
+                : (
+                    <DocumentStatus type='core/factbox' status={currentStatus} />
+                  )
+            }
+          </div>
+        )
+      },
+      filterFn: (row, id, value: string[]) => value.includes(row.getValue(id))
+    },
     {
       id: 'title',
       meta: {
@@ -52,7 +97,8 @@ export function factboxColumns<Ns extends Namespace>({ locale, timeZone, t }: { 
             <Title title={row.getValue<string>('title')} />
           </div>
         )
-      }
+      },
+      enableGlobalFilter: true
     },
     {
       id: 'description',
@@ -70,6 +116,32 @@ export function factboxColumns<Ns extends Namespace>({ locale, timeZone, t }: { 
             className='max-w-4xl font-thin text-sm text-muted-foreground truncate space-x-2 justify-start items-center'
           >
             {row.getValue<string>('description')}
+          </div>
+        )
+      },
+      enableGlobalFilter: true
+    },
+    {
+      id: 'documentOrigin',
+      meta: {
+        name: t('views:factboxes.columnLabels.origin'),
+        columnIcon: BoxesIcon,
+        className: 'flex-none',
+        options: [
+          { label: t('factboxes.origin.inArticle'), value: 'core/article' },
+          { label: t('factboxes.origin.original'), value: 'core/factbox' }
+        ],
+        quickFilter: true
+      },
+      accessorFn: (data) => data.fields['_document_origin']?.values[0] ?? 'core/factbox',
+      cell: ({ row }) => {
+        const origin = row.getValue<string>('documentOrigin')
+        const Icon = origin === 'core/article' ? NewspaperIcon : BoxesIcon
+        return (
+          <div className='flex items-center relative' title={origin === 'core/article' ? t('factboxes.origin.inArticle') : t('factboxes.origin.original')}>
+
+            <Icon strokeWidth={1} size={16} />
+
           </div>
         )
       }
