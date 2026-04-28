@@ -13,9 +13,13 @@ export const WirePreview = ({ wire }: {
   wire: Wire
 }) => {
   const { t } = useTranslation('wires')
+  const sourceTitle = wire?.fields['document.rel.source.title']?.values[0]
+  const sourceUri = wire?.fields['document.rel.source.uri']?.values[0]
+  const providerTitle = wire?.fields['document.rel.provider.title']?.values[0]
+  const providerUri = wire?.fields['document.rel.provider.uri']?.values[0]
   const data = {
-    source: wire?.fields['document.rel.source.title']?.values[0],
-    provider: wire?.fields['document.rel.provider.title']?.values[0],
+    source: sourceTitle || sourceUri?.replace('wires://source/', ''),
+    provider: providerTitle || providerUri?.replace('wires://provider/', ''),
     role: wire?.fields['document.meta.tt_wire.role'].values[0],
     newsvalue: wire?.fields['document.meta.core_newsvalue.value']?.values[0],
     status: getWireStatus(wire),
@@ -35,11 +39,11 @@ export const WirePreview = ({ wire }: {
         <div className='text-sm flex flex-row gap-2'>
           {data?.source && (
             <Badge className='h-6 pointer-events-none'>
-              {data.source}
+              {decodeString(data.source)}
             </Badge>
           )}
 
-          {data?.provider && data.provider !== data.source && data.provider.toLocaleLowerCase() !== data.source && (
+          {data?.provider && data.provider.toLocaleLowerCase() !== data.source?.toLocaleLowerCase() && (
             <Badge className='h-6'>
               {decodeString(data.provider)}
             </Badge>
