@@ -18,6 +18,7 @@ export const transformImage = (element: Block): TBElement => {
     height: data.height,
     uploadId: links[0].uri.split('/').at(-1) || '',
     url: links[0].url,
+    src: links[0].url,
     ...transformSoftcrop(meta) || {}
   }
 
