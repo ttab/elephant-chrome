@@ -28,7 +28,8 @@
     "words": "Ord",
     "numberOfWords": "Antall ord: artikkel (totalt)",
     "chars": "Tegn",
-    "numberOfChars": "Antall tegn: artikkel (totalt)"
+    "numberOfChars": "Antall tegn: artikkel (totalt)",
+    "language": "Artikkelspråk"
   },
   "goToLatestVersion": "Gå til siste versjon",
   "goToLatestVersionShort": "Siste",
