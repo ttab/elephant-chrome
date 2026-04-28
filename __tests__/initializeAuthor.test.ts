@@ -383,6 +383,26 @@ describe('initializeAuthor', () => {
     expect(toast.error).toHaveBeenCalled()
   })
 
+  it('should omit contact-info block when session has no email', async () => {
+    mockSession.user.email = undefined as unknown as string
+    setupMocks({ ok: true, hits: [] }, { status: { code: 'OK' } })
+
+    const result = await initializeAuthor({
+      url: mockUrl,
+      session: mockSession,
+      repository: mockRepository,
+      t: i18n.t
+    })
+
+    expect(result).toBe(true)
+
+    const savedDoc = (mockRepository.saveDocument as Mock).mock.calls[0][0] as {
+      meta: Array<{ type: string, data: Record<string, unknown> }>
+    }
+    const contactInfo = savedDoc.meta.find((m) => m.type === 'core/contact-info')
+    expect(contactInfo).toBeUndefined()
+  })
+
   it('should throw an error when query for authordocs fails', async () => {
     setupMocks({ ok: false, hits: [{}, {}] })
 
