@@ -247,19 +247,19 @@ function createAuthorDoc(session: Session, envRole: 'stage' | 'prod', language: 
     uri: `core://author/${uuid}`,
     type: 'core/author',
     title: session.user.name,
-    meta: [{
-      type: 'core/author',
-      data: {
-        firstName,
-        lastName
-      }
-    }, {
-      type: 'core/contact-info',
-      data: {
-        email: session.user.email
-      },
-      role: 'office'
-    }],
+    meta: [
+      Block.create({
+        type: 'core/author',
+        data: { firstName, lastName }
+      }),
+      ...(session.user.email
+        ? [Block.create({
+            type: 'core/contact-info',
+            data: { email: session.user.email },
+            role: 'office'
+          })]
+        : [])
+    ],
     language
   })
 
