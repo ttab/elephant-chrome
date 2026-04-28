@@ -4,9 +4,9 @@ import { decodeString } from '@/lib/decodeString'
 import type { Wire } from '@/shared/schemas/wire'
 import { Editor } from '@/components/PlainEditor'
 import { getWireStatus } from '@/lib/getWireStatus'
-import { getWireState } from '@/lib/getWireState'
-import { DocumentHistory } from './DocumentHistory'
+import { DocumentHistory } from './DocumentHistory/DocumentHistory'
 import { useState, useEffect } from 'react'
+import { getDocumentState } from '@/lib/getDocumentState'
 import { useTranslation } from 'react-i18next'
 
 export const WirePreview = ({ wire }: {
@@ -22,7 +22,7 @@ export const WirePreview = ({ wire }: {
     newsvalue: wire?.fields['document.meta.core_newsvalue.value']?.values[0],
     status: getWireStatus(wire),
     version: wire?.fields['current_version']?.values[0] ? BigInt(wire.fields['current_version'].values[0]) : 1n,
-    wireState: getWireState(wire)
+    wireState: getDocumentState(wire)
   }
 
   const [wireVersion, setWireVersion] = useState<bigint | undefined>(undefined)
@@ -86,7 +86,7 @@ export const WirePreview = ({ wire }: {
         <DocumentHistory
           uuid={wire.id}
           currentVersion={data?.version}
-          wireState={data.wireState}
+          documentState={data.wireState}
           onSelectVersion={setWireVersion}
           selectedVersion={wireVersion}
         />

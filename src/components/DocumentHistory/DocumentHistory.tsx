@@ -4,59 +4,25 @@ import { useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 import { dateToReadableDateTime } from '@/shared/datetime'
 import { HistoryEntry } from './HistoryEntry'
-import type { WireState } from '@/lib/getWireState'
+import type { DocumentState } from '@/lib/getDocumentState'
 
 interface VersionEntry {
   version: bigint
   created: string
-}
-
-function getStatusForVersion(version: bigint, currentVersion: bigint | undefined, wireState?: WireState): string | null {
-  if (!wireState) return null
-  const n = Number(version)
-
-  if (version === currentVersion) {
-    // Flash takes visual priority over other statuses
-    if (wireState.isFlash) return 'flash'
-    return wireState.status ?? null
-  }
-
-  // Collect all past-version statuses that match this version number
-  const candidates: Array<{ key: string, created: string | undefined }> = []
-  if (wireState.wasFlash === n) {
-    candidates.push({ key: 'flash', created: wireState.wasFlashCreated })
-  }
-  if (wireState.wasUsed === n) {
-    candidates.push({ key: 'used', created: wireState.wasUsedCreated })
-  }
-  if (wireState.wasSaved === n) {
-    candidates.push({ key: 'saved', created: wireState.wasSavedCreated })
-  }
-  if (wireState.wasRead === n) {
-    candidates.push({ key: 'read', created: wireState.wasReadCreated })
-  }
-
-  if (candidates.length === 0) return null
-  if (candidates.length === 1) return candidates[0].key
-
-  // Multiple statuses on the same past version — pick the youngest (most recent timestamp)
-  const winner = candidates.reduce((best, candidate) => {
-    if (!candidate.created) return best
-    if (!best.created) return candidate
-    return new Date(candidate.created).getTime() > new Date(best.created).getTime() ? candidate : best
-  })
-  return winner.key
+  status: string
 }
 
 const COLLAPSED_MAX = 4
 const COLLAPSE_THRESHOLD = 5
 
-export const DocumentHistory = ({ uuid, currentVersion, wireState, onSelectVersion, selectedVersion }: {
+export const DocumentHistory = ({ uuid, currentVersion, onSelectVersion, selectedVersion, withStatusOnly = false, documentType }: {
   uuid: string
   currentVersion?: bigint
-  wireState?: WireState
+  documentState?: DocumentState
   onSelectVersion: (version: bigint) => void
   selectedVersion: bigint | undefined
+  withStatusOnly?: boolean
+  documentType?: string
 }) => {
   const { repository, locale, timeZone } = useRegistry()
   const { data: session } = useSession()
@@ -93,9 +59,13 @@ export const DocumentHistory = ({ uuid, currentVersion, wireState, onSelectVersi
         }
 
         // One entry per version, newest first
-        const history: VersionEntry[] = [...result.versions]
+        let history: VersionEntry[] = [...result.versions]
           .sort((a, b) => (a.version < b.version ? 1 : a.version > b.version ? -1 : 0))
-          .map((v) => ({ version: v.version, created: v.created }))
+          .map((v) => ({ version: v.version, created: v.created, status: Object.keys(v.statuses)[0] }))
+
+        if (withStatusOnly) {
+          history = history.filter((version, i) => i === 0 || version.status !== undefined)
+        }
 
         pending.documents = true
         const documents = await repository.getDocuments({
@@ -122,7 +92,7 @@ export const DocumentHistory = ({ uuid, currentVersion, wireState, onSelectVersi
       if (pending.history) c1.abort()
       if (pending.documents) c2.abort()
     }
-  }, [uuid, repository, session?.accessToken])
+  }, [uuid, repository, session?.accessToken, withStatusOnly])
 
   const isCollapsible = (history?.length ?? 0) > COLLAPSE_THRESHOLD
   const visibleHistory = history && isCollapsible && !showAll
@@ -136,7 +106,7 @@ export const DocumentHistory = ({ uuid, currentVersion, wireState, onSelectVersi
           && visibleHistory.map((item, index) => {
             const title = documents?.find((doc) => doc.version === item.version)?.document?.title
             const isCurrent = item.version === currentVersion
-            const status = getStatusForVersion(item.version, currentVersion, wireState)
+            const status = documentType === 'core/factbox' && item.status === 'usable' ? 'done' : item.status
 
             return (
               <div key={`${item.version}`} className='grid grid-cols-[1.5rem_auto_1fr] group rounded'>
