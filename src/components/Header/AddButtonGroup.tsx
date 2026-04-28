@@ -45,8 +45,6 @@ const AddButton = ({
   onClick: (view: ButtonView) => void
   t: TFunction
 }) => {
-  const typeLabel = (t?: string) => t ? addButtonGroupValueFormat[t].label : ''
-
   return (
     <Button
       size='sm'
