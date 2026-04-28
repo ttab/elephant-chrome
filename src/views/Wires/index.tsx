@@ -492,8 +492,8 @@ export const Wires = (): JSX.Element => {
               <div
                 data-wires-preview
                 className={cn(
-                  'relative rounded-lg grid shadow-xl border border-default-foreground/20 mx-1 justify-center',
-                  'grid-rows-[auto_1fr] h-full overflow-hidden',
+                  'relative rounded-lg grid shadow-xl border border-default-foreground/20 mx-1',
+                  'grid-cols-1 grid-rows-[auto_1fr] h-full overflow-hidden',
                   '@7xl/view:ml-0 @7xl/view:w-xl @7xl/view:my-2 @7xl/view:mx-0'
                 )}
               >
