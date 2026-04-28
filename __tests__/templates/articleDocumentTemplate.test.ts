@@ -74,10 +74,28 @@ describe('articleDocumentTemplate', () => {
     expect(storyLink.rel).toBe('subject')
   })
 
-  it('includes TT content source link', () => {
+  it('passes through caller-provided content-source link', () => {
+    const payload: TemplatePayload = {
+      links: {
+        'core/content-source': [
+          Block.create({
+            type: 'core/content-source',
+            rel: 'source',
+            uri: 'tt://content-source/ntb',
+            title: 'NTB'
+          })
+        ]
+      }
+    }
+    const doc = articleDocumentTemplate('id', payload)
+    const source = doc.links.find((l: Block) => l.type === 'core/content-source')
+    expect(source?.uri).toBe('tt://content-source/ntb')
+    expect(source?.title).toBe('NTB')
+  })
+
+  it('omits content-source link when caller provides none', () => {
     const doc = articleDocumentTemplate('id')
-    const links = doc.links
-    expect(links.some((l: Block) => l.type === 'core/content-source' && l.title === 'TT')).toBe(true)
+    expect(doc.links.some((l: Block) => l.type === 'core/content-source')).toBe(false)
   })
 
   it('matches inline snapshot with fixed date', () => {
@@ -171,26 +189,7 @@ describe('articleDocumentTemplate', () => {
           },
         ],
         "language": "sv-se",
-        "links": [
-          {
-            "content": [],
-            "contenttype": "",
-            "data": {},
-            "id": "",
-            "links": [],
-            "meta": [],
-            "name": "",
-            "rel": "source",
-            "role": "",
-            "sensitivity": "",
-            "title": "TT",
-            "type": "core/content-source",
-            "uri": "tt://content-source/tt",
-            "url": "",
-            "uuid": "",
-            "value": "",
-          },
-        ],
+        "links": [],
         "meta": [],
         "title": "",
         "type": "core/article",

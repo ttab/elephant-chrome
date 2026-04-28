@@ -2,6 +2,7 @@ import type { Repository } from '@/shared/Repository'
 import { timeless as timelessTemplate } from '@/shared/templates'
 import type { Session } from 'next-auth'
 import { Block } from '@ttab/elephant-api/newsdoc'
+import { getContentSourceLink } from '@/shared/getContentSourceLink'
 
 /**
  * Save a new timeless article document. The caller is responsible for
@@ -45,6 +46,7 @@ export async function createNewTimelessArticle({
   const trimmedSlugline = slugline.trim()
 
   try {
+    const contentSource = getContentSourceLink({ org: session.org, units: session.units })
     const document = timelessTemplate(id, {
       title,
       ...(language ? { language } : {}),
@@ -56,7 +58,8 @@ export async function createNewTimelessArticle({
       },
       links: {
         'core/timeless-category': [category],
-        ...(section ? { 'core/section': [section] } : {})
+        ...(section ? { 'core/section': [section] } : {}),
+        ...(contentSource ? { 'core/content-source': [contentSource] } : {})
       }
     })
     await repository.saveDocument(document, session.accessToken)

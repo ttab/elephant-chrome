@@ -73,12 +73,14 @@ export async function createAuthInfo(
             user.sub = account.providerAccountId
           }
 
-          // Extract units from the JWT access token
+          // Extract units and org from the JWT access token
           let units: string[] = []
+          let org = ''
           if (account.access_token) {
             try {
               const decoded = decodeJwt(account.access_token)
               units = Array.isArray(decoded.units) ? decoded.units as string[] : []
+              org = typeof decoded.org === 'string' ? decoded.org : ''
             } catch {
               // Token decode failure is non-fatal
             }
@@ -89,6 +91,7 @@ export async function createAuthInfo(
             accessTokenExpires: Date.now() + (account.expires_in || 300) * 1000,
             refreshToken: account.refresh_token,
             units,
+            org,
             user
           }
         }
@@ -171,13 +174,15 @@ async function refreshAccessToken(
       throw new Error('refresh request error response: invalid token response')
     }
 
-    // Re-extract units from the refreshed access token
+    // Re-extract units and org from the refreshed access token
     let units: string[] = (token.units as string[]) || []
+    let org = typeof token.org === 'string' ? token.org : ''
     try {
       const decoded = decodeJwt(refreshedTokens.access_token as string)
       units = Array.isArray(decoded.units) ? decoded.units as string[] : units
+      org = typeof decoded.org === 'string' ? decoded.org : org
     } catch {
-      // Token decode failure is non-fatal, keep existing units
+      // Token decode failure is non-fatal, keep existing values
     }
 
     return {
@@ -185,7 +190,8 @@ async function refreshAccessToken(
       accessToken: refreshedTokens.access_token,
       accessTokenExpires: Date.now() + refreshedTokens.expires_in * 1000,
       refreshToken: refreshedTokens.refresh_token ?? token.refreshToken,
-      units
+      units,
+      org
     }
   } catch (ex) {
     logger.error({

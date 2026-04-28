@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react'
 import { useDocumentDefaults, useRegistry } from '@/hooks'
 import { toast } from 'sonner'
 import { getTemplateFromDeliverable } from '@/shared/templates/lib/getTemplateFromDeliverable'
+import { getContentSourceLink } from '@/shared/getContentSourceLink'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import type { JSX } from 'react'
@@ -64,6 +65,19 @@ export const CreateDeliverablePrompt = ({
       finalPayload.links = {
         ...finalPayload.links,
         'core/timeless-category': [selectedCategory]
+      }
+    }
+
+    // Derive the default content-source from the session unless the caller
+    // already supplied one on the payload.
+    const callerSource = finalPayload.links?.['core/content-source']
+    if (!callerSource?.length) {
+      const contentSource = getContentSourceLink({ org: session.org, units: session.units })
+      if (contentSource) {
+        finalPayload.links = {
+          ...finalPayload.links,
+          'core/content-source': [contentSource]
+        }
       }
     }
 
