@@ -18,7 +18,11 @@
   "factbox": {
     "headerTitle": "Edit factbox original",
     "modifiedLabel": "The original is from",
-    "footerTitle": "Changes to the factbox text only apply to this article"
+    "createdLabel": "Created",
+    "lastModifiedLabel": "Last modified",
+    "footerTitle": "Changes to the factbox text only apply to this article",
+    "factboxNewTitle": "Facts",
+    "addSingleLabel": "Create factbox"
   },
   "image": {
     "captionLabel": "Text",

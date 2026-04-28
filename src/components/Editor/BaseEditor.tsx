@@ -51,6 +51,7 @@ const EditorText = (props: {
   autoFocus?: boolean
   className?: string
   allowStyling?: boolean
+  editorType?: string
 }) => {
   const { isActive } = useView()
   const ref = useRef<HTMLDivElement>(null)
@@ -91,7 +92,7 @@ const EditorText = (props: {
           <>
             <DropMarker />
             <Gutter>
-              <ContentMenu />
+              <ContentMenu editorType={props.editorType} />
             </Gutter>
             <Toolbar />
           </>
