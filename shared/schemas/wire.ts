@@ -6,7 +6,9 @@ import type { FieldValuesV1, HitV1 } from '@ttab/elephant-api/index'
  */
 const _fields = [
   'document.rel.source.uri',
+  'document.rel.source.title',
   'document.rel.provider.uri',
+  'document.rel.provider.title',
   'modified',
   'document.meta.core_newsvalue.value',
   'document.title',
