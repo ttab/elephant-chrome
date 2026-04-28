@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { HitV1 } from '@ttab/elephant-api/index'
-import { WirePreview } from '@/components/WirePreview/WirePreview'
+import { WirePreview } from '@/components/WirePreview'
 import type { Wire } from '@/shared/schemas/wire'
 
 vi.mock('@/components/WirePreview/DocumentHistory', () => ({
