@@ -52,6 +52,7 @@ const renderOptions = (disabledTransitions?: Record<string, { reason: string }>)
           transitions={{ withheld: withheldTransition, usable: usableTransition }}
           statuses={statuses}
           onSelect={onSelect}
+          documentType='core/article'
           disabledTransitions={disabledTransitions}
         />
       </DropdownMenuContent>
