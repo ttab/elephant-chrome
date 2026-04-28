@@ -1,10 +1,10 @@
 import type { TBElement } from '@ttab/textbit'
-import { revertList, transformUnorderedList } from '@/shared/transformations/newsdoc/core/Lists'
 import { Block } from '@ttab/elephant-api/newsdoc'
+import { revertList, transformOrderedList } from '@/shared/transformations/newsdoc/core'
 
-const unorderedListNewsDoc = Block.create({
+const orderedListNewsDoc = Block.create({
   id: '2faca87e-e7c2-43d7-8c6d-72a1b003bc3e',
-  type: 'core/unordered-list',
+  type: 'core/ordered-list',
   content: [
     {
       id: '604713cd-1e36-43c5-a64d-3534d67b2bd9',
@@ -30,15 +30,15 @@ const unorderedListNewsDoc = Block.create({
   ]
 })
 
-const unorderedListSlate: TBElement = {
+const orderedListSlate: TBElement = {
   id: '2faca87e-e7c2-43d7-8c6d-72a1b003bc3e',
   class: 'text',
-  type: 'core/unordered-list',
+  type: 'core/ordered-list',
   children: [
     {
       id: '604713cd-1e36-43c5-a64d-3534d67b2bd9',
       class: 'text',
-      type: 'core/unordered-list/list-item',
+      type: 'core/ordered-list/list-item',
       children: [
         {
           text: 'List item one'
@@ -48,7 +48,7 @@ const unorderedListSlate: TBElement = {
     {
       id: '604713cd-1e36-43c5-a64d-3534d67b2bd9',
       class: 'text',
-      type: 'core/unordered-list/list-item',
+      type: 'core/ordered-list/list-item',
       children: [
         {
           text: 'List item two'
@@ -58,7 +58,7 @@ const unorderedListSlate: TBElement = {
     {
       id: '604713cd-1e36-43c5-a64d-3534d67b2bd9',
       class: 'text',
-      type: 'core/unordered-list/list-item',
+      type: 'core/ordered-list/list-item',
       children: [
         {
           text: 'List item three'
@@ -69,12 +69,12 @@ const unorderedListSlate: TBElement = {
 }
 
 
-describe('Handles Unordered List', () => {
+describe('Handles Ordered List', () => {
   it('transforms and reverts', () => {
-    const transformedToSlate = transformUnorderedList(unorderedListNewsDoc as unknown as Block)
-    expect(transformedToSlate).toEqual(unorderedListSlate)
+    const transformedToSlate = transformOrderedList(orderedListNewsDoc as unknown as Block)
+    expect(transformedToSlate).toEqual(orderedListSlate)
 
     const revertedToNewsDoc = revertList(transformedToSlate)
-    expect(revertedToNewsDoc).toEqual(unorderedListNewsDoc)
+    expect(revertedToNewsDoc).toEqual(orderedListNewsDoc)
   })
 })
