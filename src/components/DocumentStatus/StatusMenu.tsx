@@ -42,7 +42,7 @@ export const StatusMenu = ({ ydoc, onBeforeStatusChange, planningId, embargoUnti
   const { viewId } = useView()
   const { t } = useTranslation()
   const viewElementRef = useRef<HTMLElement | null>(null)
-  const icon = documentTypeValueFormat[documentStatus?.type || 'core/article'].icon
+  const icon = documentTypeValueFormat[(documentStatus?.type || 'core/article') as keyof typeof documentTypeValueFormat].icon
 
   useEffect(() => {
     viewElementRef.current = document.getElementById(viewId)
