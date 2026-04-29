@@ -373,22 +373,34 @@ export function assignmentColumns<Ns extends Namespace>({ authors = [], locale, 
         className: 'flex-none p-0'
       },
       cell: ({ row }) => {
-        const deliverableUuid = row.original?.fields['document.meta.core_assignment.rel.deliverable.uuid']?.values[0] || ''
+        const deliverableUuid = row.original?.fields['document.meta.core_assignment.rel.deliverable.uuid']?.values[0]
         const planningId = row.original.id
+        const assignmentTypeValue = row.original?.fields[
+          'document.meta.core_assignment.meta.core_assignment_type.value'
+        ]?.values?.[0]
+        const typeLabel = assignmentTypeValue
+          ? t(`shared:assignmentTypes.${assignmentTypeValue}` as TranslationKey)
+          : undefined
+        const openDeliverableLabel = typeLabel
+          ? t('common:actions.openType', { type: typeLabel })
+          : t('views:assignments.actionMenu.openArticle')
         return (
           <div className='shrink p-'>
             <DotMenu
               items={[
                 {
-                  label: t('views:assignments.actionMenu.openArticle'),
-                  item: (
-                    <Link to='Editor' target='last' props={{ id: deliverableUuid }} className='flex flex-row gap-5'>
-                      <div className='pt-1'>
-                        <PenIcon size={14} strokeWidth={1.5} className='shrink' />
-                      </div>
-                      <div className='grow'>{t('views:assignments.actionMenu.openArticle')}</div>
-                    </Link>
-                  )
+                  label: openDeliverableLabel,
+                  disabled: !deliverableUuid,
+                  item: deliverableUuid
+                    ? (
+                        <Link to='Editor' target='last' props={{ id: deliverableUuid }} className='flex flex-row gap-5'>
+                          <div className='pt-1'>
+                            <PenIcon size={14} strokeWidth={1.5} className='shrink' />
+                          </div>
+                          <div className='grow'>{openDeliverableLabel}</div>
+                        </Link>
+                      )
+                    : () => {}
                 },
                 {
 
