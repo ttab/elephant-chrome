@@ -72,7 +72,9 @@ const Factbox = (props: ViewProps & { document?: Document }): JSX.Element => {
       const factboxBlocks = response.document.content.filter((block) => block.type === 'core/factbox')
       const block = factboxBlocks[embeddedIndex]
 
-      if (!block) return
+      if (!block) {
+        return
+      }
 
       setEmbeddedData(toGroupedNewsDoc({
         version: response.version,
