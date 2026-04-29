@@ -27,7 +27,7 @@ import type { TFunction } from 'i18next'
 const addButtonTypes = ['core/planning-item', 'core/event', 'core/article', 'core/factbox', 'core/flash', 'core/article#timeless'] as const
 
 type Variant = VariantProps<typeof buttonVariants>['variant']
-type ButtonView = { name: View, type: string, icon?: { icon?: LucideIcon, color?: string } }
+type ButtonView = { name: View, type: keyof typeof addButtonGroupValueFormat, icon?: { icon?: LucideIcon, color?: string } }
 
 const getViewLabel = (view: ButtonView, hast?: boolean): string => {
   if (view.name === 'Flash' && hast) {
