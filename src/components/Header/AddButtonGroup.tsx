@@ -29,8 +29,13 @@ const addButtonTypes = ['core/planning-item', 'core/event', 'core/article', 'cor
 type Variant = VariantProps<typeof buttonVariants>['variant']
 type ButtonView = { name: View, type: string, icon?: { icon?: LucideIcon, color?: string } }
 
-const getViewLabel = (view: ButtonView, hast?: boolean) =>
-  view.name === 'Flash' && hast ? 'HAST' : (view.type ? addButtonGroupValueFormat[view.type].label : '')
+const getViewLabel = (view: ButtonView, hast?: boolean): string => {
+  if (view.name === 'Flash' && hast) {
+    return 'HAST'
+  }
+
+  return addButtonGroupValueFormat[view.type]?.label ?? ''
+}
 
 const AddButton = ({
   variant = 'default',
