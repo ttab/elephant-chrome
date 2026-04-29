@@ -15,6 +15,7 @@ export interface TemplatePayload {
   query?: Record<string, string | string[] | undefined>
   title?: string
   text?: string
+  content?: Block[]
   meta?: {
     'tt/slugline'?: Block[]
     'core/newsvalue'?: Block[]

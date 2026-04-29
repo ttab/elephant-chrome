@@ -12,6 +12,15 @@ export const createNewFactbox = async (repository: Repository | undefined, sessi
     throw new Error(i18next.t('errors:messages.couldNotCreateNewFactbox'))
   }
 
+  const makeFactbox = (document?: Document) => {
+    if (document) {
+      const content = document.content
+      return getTemplateFromView('Factbox')(id, { title: document.title, content })
+    }
+
+    return getTemplateFromView('Factbox')(id, { title: `${i18next.t('editor:factbox.factboxNewTitle')}:` })
+  }
+
   try {
     const factboxDocument = getTemplateFromView('Factbox')(id, { title: `${i18next.t('editor:factbox.factboxNewTitle')}:` })
     await repository.saveDocument(factboxDocument, session.accessToken)
