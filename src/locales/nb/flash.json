@@ -9,7 +9,7 @@
     "newFlashTitle": "Lag ny Flash",
     "newHastTitle": "Lag ny HAST",
     "createAndSendType": "Opprett og send {{type}}",
-    "createAndMarkTypeAsDone": "Opprett og ferdigmerk {{type}}",
+    "createAndMarkTypeAsDone": "Opprett og legg {{type}} som klar",
     "approveType": "Godkjenn {{type}}",
     "shortFirstText": "Kort første tekst"
   },

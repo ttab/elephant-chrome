@@ -7,9 +7,9 @@
       "description": "Du jobber med et utkast av {{label}}",
       "transitions": {
         "done": {
-          "title": "Klarmarkere",
-          "description": "Marker {{label}} som ferdig",
-          "promptTitle": "Klarmarkere {{label}}"
+          "title": "Legg klar",
+          "description": "Legg {{label}} som klar",
+          "promptTitle": "Legg klar {{label}}"
         },
         "approved": {
           "title": "Godkjenn",
@@ -30,7 +30,7 @@
     },
     "done": {
       "title": "Klar",
-      "description": "{{label, capitalize}} er ferdig og venter på godkjenning",
+      "description": "{{label, capitalize}} er klar og venter på godkjenning",
       "transitions": {
         "approved": {
           "title": "Godkjenn",
@@ -289,9 +289,9 @@
       "description": "Du jobber med et utkast av denne informasjonen til redaksjonen",
       "transitions": {
         "done": {
-          "title": "Klarmarkere",
-          "description": "Marker som ferdig til redaksjonen",
-          "promptTitle": "Klarmarkere redaksjonell info"
+          "title": "Legg klar",
+          "description": "Legg som klar til redaksjonen",
+          "promptTitle": "Legg klar redaksjonell info"
         },
         "approved": {
           "title": "Godkjenn",
@@ -307,7 +307,7 @@
     },
     "done": {
       "title": "Klar",
-      "description": "Informasjonen er ferdig og venter på godkjenning",
+      "description": "Informasjonen er klar og venter på godkjenning",
       "transitions": {
         "approved": {
           "title": "Godkjenn",
@@ -484,8 +484,8 @@
       "description": "Du jobber med et utkast av {{label}}",
       "transitions": {
         "done": {
-          "title": "Klarmarkere",
-          "description": "Marker {{label}} som ferdig"
+          "title": "Legg klar",
+          "description": "Legg {{label}} som klar"
         },
         "approved": {
           "title": "Godkjenn",
@@ -503,7 +503,7 @@
     },
     "done": {
       "title": "Klar",
-      "description": "{{label, capitalize}} er ferdig og venter på godkjenning",
+      "description": "{{label, capitalize}} er klar og venter på godkjenning",
       "transitions": {
         "approved": {
           "title": "Godkjenn",
