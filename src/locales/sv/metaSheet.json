@@ -6,6 +6,7 @@
     "byline": "Byline",
     "actions": "Åtgärder",
     "otherSources": "Externa källor",
+    "origin": "Skapad från",
     "source": "Källa",
     "extraInformation": "Extra information",
     "versions": "Versioner",
@@ -16,21 +17,21 @@
   },
   "actions": {
     "addNote": "Lägg till notering",
-    "convertToArticle": "Konvertera till artikel",
-    "convertToTimeless": "Konvertera till tidlös",
+    "convertToArticle": "Planera som artikel",
+    "convertToTimeless": "Spara som tidlös",
     "removeHastFromArticle": "Ta bort HAST från artikeln"
   },
   "convertToArticle": {
-    "descriptionWithPlanning": "En ny planering skapas från den ursprungliga planeringen. Välj datum för den nya artikeln.",
-    "descriptionNoPlanning": "Välj datum för den nya artikeln.",
+    "descriptionWithPlanning": "En ny planering härleds från den ursprungliga. Välj datum för den nya artikeln. Den tidlösa artikeln finns kvar.",
+    "descriptionNoPlanning": "Välj datum för den nya artikeln. Den tidlösa artikeln finns kvar.",
     "loadingPlanning": "Letar efter den ursprungliga planeringen…",
     "targetDateLabel": "Datum",
-    "converting": "Konverterar...",
-    "failed": "Konverteringen misslyckades. Försök igen eller avbryt.",
+    "converting": "Sparar…",
+    "failed": "Kunde inte skapa det nya dokumentet. Försök igen eller avbryt.",
     "noPlanningHint": "Ingen ursprunglig planering hittades — en ny planering skapas från den tidlösa."
   },
   "convertToTimeless": {
-    "description": "Välj en kategori för den nya tidlösa."
+    "description": "Välj kategori för den nya tidlösa artikeln. Den ursprungliga artikeln finns kvar."
   },
   "removeHastPrompt": {
     "title": "Ta bort HAST från artikeln",

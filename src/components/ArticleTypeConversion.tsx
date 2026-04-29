@@ -37,7 +37,10 @@ export const ArticleTypeConversion = ({ ydoc, documentType }: {
         onClose={(result) => {
           hideModal()
           if (result?.articleId) {
-            openEditor(undefined, { id: result.articleId })
+            // Replace the source slot in-place so the new article appears
+            // where the timeless was — the source is now `used` and
+            // shouldn't keep its slot.
+            openEditor(undefined, { id: result.articleId }, 'self')
           }
         }}
       />
@@ -51,7 +54,7 @@ export const ArticleTypeConversion = ({ ydoc, documentType }: {
         onClose={(result) => {
           hideModal()
           if (result?.timelessId) {
-            openEditor(undefined, { id: result.timelessId })
+            openEditor(undefined, { id: result.timelessId }, 'self')
           }
         }}
       />

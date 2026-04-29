@@ -340,6 +340,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
   ]
   const selected = articleId && openDocuments.includes(articleId)
   const workflowState = articleStatus?.meta?.workflowState
+  const isUsedTimeless = assignmentType === 'timeless' && workflowState === 'used'
 
   useRepositoryEvents([
     'core/article',
@@ -399,7 +400,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
           />
           <AssigneeAvatars assignees={authors.map((author) => author.title)} />
 
-          <div className='hidden items-center @3xl/view:flex'>
+          <div className={cn('hidden items-center @3xl/view:flex', isUsedTimeless && 'opacity-60')}>
             <SluglineButton value={slugline} />
           </div>
         </div>
@@ -438,7 +439,14 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
             workflowState={workflowState}
           />
           <HastIndicator documentId={deliverableId} />
-          <span className='leading-relaxed group-hover/assrow:underline'>{title}</span>
+          <span
+            className={cn(
+              'leading-relaxed group-hover/assrow:underline',
+              isUsedTimeless && 'text-muted-foreground'
+            )}
+          >
+            {title}
+          </span>
         </div>
         <div className='flex items-center gap-2'>
           {/* FIXME: Disable until we have an idea of how this should be clear to end-user

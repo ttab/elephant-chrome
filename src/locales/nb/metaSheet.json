@@ -6,6 +6,7 @@
     "byline": "Byline",
     "actions": "Handlinger",
     "otherSources": "Eksterne kilder",
+    "origin": "Skapt fra",
     "source": "Kilde",
     "extraInformation": "Tilleggsinformasjon",
     "versions": "Versjoner",
@@ -16,21 +17,21 @@
   },
   "actions": {
     "addNote": "Legg til beskjed",
-    "convertToArticle": "Konverter til artikkel",
-    "convertToTimeless": "Konverter til tidløs",
+    "convertToArticle": "Planlegg som artikkel",
+    "convertToTimeless": "Lagre som tidløs",
     "removeHastFromArticle": "Fjern HAST fra artikkelen"
   },
   "convertToArticle": {
-    "descriptionWithPlanning": "En ny planlegging vil avledes fra den opprinnelige. Velg dato for den nye artikkelen.",
-    "descriptionNoPlanning": "Velg dato for den nye artikkelen.",
+    "descriptionWithPlanning": "En ny planlegging avledes fra den opprinnelige. Velg dato for den nye artikkelen. Den tidløse artikkelen er fortsatt tilgjengelig.",
+    "descriptionNoPlanning": "Velg dato for den nye artikkelen. Den tidløse artikkelen er fortsatt tilgjengelig.",
     "loadingPlanning": "Leter etter den opprinnelige planleggingen…",
     "targetDateLabel": "Dato",
-    "converting": "Konverterer...",
-    "failed": "Konverteringen mislyktes. Prøv igjen eller avbryt.",
+    "converting": "Lagrer…",
+    "failed": "Kunne ikke opprette det nye dokumentet. Prøv igjen eller avbryt.",
     "noPlanningHint": "Ingen opprinnelig planlegging ble funnet — en ny planlegging opprettes fra den tidløse."
   },
   "convertToTimeless": {
-    "description": "Velg en kategori for den nye tidløse."
+    "description": "Velg kategori for den nye tidløse artikkelen. Den opprinnelige artikkelen er fortsatt tilgjengelig."
   },
   "removeHastPrompt": {
     "title": "Fjern HAST fra artikkelen",

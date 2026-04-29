@@ -6,6 +6,7 @@
     "byline": "Byline",
     "actions": "Actions",
     "otherSources": "External sources",
+    "origin": "Created from",
     "source": "Source",
     "extraInformation": "Extra information",
     "versions": "Versions",
@@ -16,21 +17,21 @@
   },
   "actions": {
     "addNote": "Add note",
-    "convertToArticle": "Convert to article",
-    "convertToTimeless": "Convert to timeless",
+    "convertToArticle": "Plan as article",
+    "convertToTimeless": "Save as timeless",
     "removeHastFromArticle": "Remove HAST from article"
   },
   "convertToArticle": {
-    "descriptionWithPlanning": "A new planning will be derived from the original. Pick a date for the new article.",
-    "descriptionNoPlanning": "Pick a date for the new article.",
+    "descriptionWithPlanning": "A new planning will be derived from the original. Pick a date for the new article. The timeless remains available.",
+    "descriptionNoPlanning": "Pick a date for the new article. The timeless remains available.",
     "loadingPlanning": "Looking for the original planning…",
     "targetDateLabel": "Date",
-    "converting": "Converting...",
-    "failed": "Conversion failed. Try again or cancel.",
+    "converting": "Saving…",
+    "failed": "Could not create the new document. Try again or cancel.",
     "noPlanningHint": "No original planning was found — a new planning will be created from the timeless."
   },
   "convertToTimeless": {
-    "description": "Pick a subject category for the new timeless."
+    "description": "Pick a subject category for the new timeless. The article remains in place."
   },
   "removeHastPrompt": {
     "title": "Remove HAST from article",
