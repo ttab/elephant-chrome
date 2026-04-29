@@ -12,7 +12,7 @@ import { useEffect, useMemo, useState, type JSX } from 'react'
 import { LinkedArticles } from './lib/LinkedArticles'
 import { getContentMenuLabels } from '@/defaults/contentMenuLabels'
 import { useYDocument, useYValue } from '@/modules/yjs/hooks'
-import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
+import { fromGroupedNewsDoc, toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
 import type { EleDocumentResponse } from '@/shared/types'
 import type { Document } from '@ttab/elephant-api/newsdoc'
 import { BaseEditor } from '@/components/Editor/BaseEditor'
@@ -25,6 +25,10 @@ import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { BoxesIcon, FileLockIcon, LoaderIcon } from '@ttab/elephant-ui/icons'
 import { Link as TextLink } from '@/components'
+import { useLink } from '@/hooks/useLink'
+import { createNewFactbox } from '@/components/Header/lib/createNewFactbox'
+
+const BASE_URL = import.meta.env.BASE_URL || ''
 const meta: ViewMetadata = {
   name: 'Factbox',
   path: `${import.meta.env.BASE_URL || ''}/factbox`,
@@ -52,11 +56,13 @@ const Factbox = (props: ViewProps & { document?: Document }): JSX.Element => {
   const embeddedMatch = typeof rawId === 'string' ? rawId.match(/^(.+):embedded:(\d+)$/) : null
   const articleId = embeddedMatch?.[1]
   const embeddedIndex = embeddedMatch ? parseInt(embeddedMatch[2]) : null
-  const documentId = embeddedMatch ? articleId : rawId
+  const documentId = embeddedMatch ? articleId : query?.id || rawId
 
   // If this is an embedded factbox, fetch the article and extract the factbox block
   useEffect(() => {
-    if (!articleId || embeddedIndex === null || !repository || !session?.accessToken) return
+    if (!articleId || embeddedIndex === null || !repository || !session?.accessToken) {
+      return
+    }
 
     void repository.getDocument({ uuid: articleId, accessToken: session.accessToken }).then((response) => {
       if (!response?.document) {
@@ -132,6 +138,49 @@ const EmbeddedFactboxView = (props: ViewProps & { data?: EleDocumentResponse }):
     LocalizedQuotationMarks(),
     Text({ ...getContentMenuLabels() })
   ], [])
+
+  const handleOpenOriginal = async (event: React.MouseEvent) => {
+    event.preventDefault()
+    if (!originalId || isOpeningOriginal) return
+
+    setIsOpeningOriginal(true)
+    try {
+      const response = await fetch(`${BASE_URL}/api/documents/${originalId}`)
+
+      if (!response.ok) {
+        if (!props.data) {
+          throw new Error('Embedded factbox data is not available')
+        }
+
+        const { document } = fromGroupedNewsDoc(props.data)
+
+        const newDocument: Document = {
+          ...document,
+          uuid: originalId,
+          uri: `core://factbox/${originalId}`
+        }
+
+        createNewFactbox(repository, session, originalId, newDocument)
+          .then((id) => {
+            openFactbox(undefined, { id }, undefined)
+          })
+          .catch((error: unknown) => {
+            console.error('Error creating factbox:', error)
+            toast.error((error as Error).message)
+          })
+        return
+      }
+
+      if (response.ok) {
+        openFactbox(undefined, { id: originalId }, undefined)
+      }
+    } catch (error) {
+      console.error('Error opening original factbox:', error)
+      toast.error((error as Error).message)
+    } finally {
+      setIsOpeningOriginal(false)
+    }
+  }
 
   if (!props.data?.document) {
     return (
