@@ -132,6 +132,10 @@ const EmbeddedFactboxView = (props: ViewProps & { data?: EleDocumentResponse }):
   const articleId = props?.data?.document?.uuid
   const originalId = props.data?.document?.links._?.[0]?.uuid
   const { t } = useTranslation('factbox')
+  const { repository } = useRegistry()
+  const { data: session } = useSession()
+  const openFactbox = useLink('Factbox')
+  const [isOpeningOriginal, setIsOpeningOriginal] = useState(false)
   const configuredPlugins = useMemo(() => [
     UnorderedList(),
     OrderedList(),
@@ -223,13 +227,17 @@ const EmbeddedFactboxView = (props: ViewProps & { data?: EleDocumentResponse }):
               <span>
                 {t('action.open')}
               </span>
-              <TextLink
-                to='Factbox'
-                className='underline hover:text-foreground'
-                props={{ id: originalId }}
+              <button
+                type='button'
+                onClick={(event) => void handleOpenOriginal(event)}
+                disabled={isOpeningOriginal || !originalId}
+                className='underline hover:text-foreground inline-flex items-center gap-1 disabled:opacity-50'
               >
                 {t('original')}
-              </TextLink>
+                {isOpeningOriginal && (
+                  <LoaderIcon size={12} strokeWidth={1.75} className='animate-spin opacity-70' />
+                )}
+              </button>
             </div>
           </div>
           <p className={cn('text-lg font-bold pt-2 ps-12 pe-12')}>
