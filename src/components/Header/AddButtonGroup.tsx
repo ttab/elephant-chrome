@@ -27,36 +27,38 @@ import type { TFunction } from 'i18next'
 const addButtonTypes = ['core/planning-item', 'core/event', 'core/article', 'core/factbox', 'core/flash', 'core/article#timeless'] as const
 
 type Variant = VariantProps<typeof buttonVariants>['variant']
-type ButtonView = { name: View, type: string, icon?: { icon?: LucideIcon, color?: string } }
+type ButtonView = { name: View, type: keyof typeof addButtonGroupValueFormat, icon?: { icon?: LucideIcon, color?: string } }
+
+const getViewLabel = (view: ButtonView, hast?: boolean): string => {
+  if (view.name === 'Flash' && hast) {
+    return 'HAST'
+  }
+
+  return addButtonGroupValueFormat[view.type]?.label ?? ''
+}
 
 const AddButton = ({
-  withNew,
   variant = 'default',
   className,
-  hast,
   view,
   onClick,
   t
 }: {
-  withNew?: boolean
   variant?: Variant
   className?: string
-  hast?: boolean
   view: ButtonView
   onClick: (view: ButtonView) => void
   t: TFunction
 }) => {
-  const typeLabel = (t?: string) => t ? addButtonGroupValueFormat[t].label : ''
-
   return (
     <Button
       size='sm'
       variant={variant}
-      className={!withNew ? '' : cn('h-8 pr-4', className)}
+      className={cn('h-8 pr-4', className)}
       onClick={() => onClick(view)}
     >
-      {withNew && <PlusIcon size={18} strokeWidth={1.75} />}
-      <span className='pl-0.5'>{`${withNew ? t('common:misc.new') : view.name === 'Flash' && hast ? 'HAST' : typeLabel(view.type)}`}</span>
+      <PlusIcon size={18} strokeWidth={1.75} />
+      <span className='pl-0.5'>{t('common:misc.new')}</span>
     </Button>
   )
 }
@@ -109,7 +111,6 @@ export const AddButtonGroup = ({ docType = 'core/planning-item', query }: { type
     <ButtonGroup>
       <AddButton
         t={t}
-        withNew
         view={firstItem?.type ? firstItem : views[0]}
         onClick={handleCreate}
       />
@@ -127,15 +128,13 @@ export const AddButtonGroup = ({ docType = 'core/planning-item', query }: { type
         </div>
         <DropdownMenuContent>
           {firstItem?.type && (
-            <DropdownMenuItem inset={false} className='py-0 px-1'>
+            <DropdownMenuItem
+              inset={false}
+              className='py-1.5 px-2 cursor-pointer'
+              onSelect={() => handleCreate(firstItem)}
+            >
               {ItemIcon?.icon && <ItemIcon.icon strokeWidth={1.75} size={18} color={ItemIcon.color} />}
-              <AddButton
-                t={t}
-                variant='ghost'
-                className='px-0'
-                view={firstItem}
-                onClick={handleCreate}
-              />
+              <span className='pl-4'>{getViewLabel(firstItem, hasHast)}</span>
             </DropdownMenuItem>
           )}
           <DropdownMenuSeparator />
@@ -143,16 +142,14 @@ export const AddButtonGroup = ({ docType = 'core/planning-item', query }: { type
             const ViewIcon = view.icon
 
             return (
-              <DropdownMenuItem inset={false} className='py-0 px-1' key={view.name}>
+              <DropdownMenuItem
+                inset={false}
+                className='py-1.5 px-2 cursor-pointer'
+                key={view.name}
+                onSelect={() => handleCreate(view)}
+              >
                 {ViewIcon?.icon && <ViewIcon.icon strokeWidth={1.75} size={18} color={ViewIcon.color} />}
-                <AddButton
-                  t={t}
-                  variant='ghost'
-                  className='px-0'
-                  hast={hasHast}
-                  view={view}
-                  onClick={handleCreate}
-                />
+                <span className='pl-4'>{getViewLabel(view, hasHast)}</span>
               </DropdownMenuItem>
             )
           })}
