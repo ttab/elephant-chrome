@@ -10,8 +10,8 @@
     "markReadDisabled": "Velg telegrammer for å merke som lest",
     "markUsed": "Merk som brukt",
     "markUsedDisabled": "Velg telegrammer for å merke som brukt",
-    "createArticle": "Opprett artikkel med tilhørende planlegging fra telegram",
-    "createArticleDisabled": "Velg telegrammer for å opprette artikkel med tilhørende planlegging",
+    "createArticle": "Opprett artikkel med tilhørende plan fra telegram",
+    "createArticleDisabled": "Velg telegrammer for å opprette artikkel med tilhørende plan",
     "createArticleAriaLabel": "Opprett artikkel fra telegram"
   },
   "stream": {
@@ -35,7 +35,7 @@
     "selected": "valgte"
   },
   "toast": {
-    "openPlanning": "Åpne planlegging",
+    "openPlanning": "Åpne plan",
     "openArticle": "Åpne artikkel",
     "statusChangeFailed": "En eller flere statusendringer mislyktes!"
   },
@@ -45,20 +45,20 @@
   },
   "creation": {
     "title": "Opprett artikkel",
-    "selectPlanning": "Velg planlegging",
+    "selectPlanning": "Velg plan",
     "showOlder": "Vis eldre",
-    "planningTitle": "Planleggingstittel",
+    "planningTitle": "Plantittel",
     "articleTitle": "Tittel",
     "assignmentTitle": "Oppdragstittel",
-    "noPlanningHint": "Hvis du ikke velger en planlegging, vil en ny planlegging med tilhørende oppdrag bli opprettet for deg.",
-    "withPlanningHint": "Denne artikkelen vil bli lagt i et nytt oppdrag i den valgte planleggingen",
+    "noPlanningHint": "Hvis du ikke velger en plan, vil en ny plan med tilhørende oppdrag bli opprettet for deg.",
+    "withPlanningHint": "Denne artikkelen vil bli lagt i et nytt oppdrag i den valgte planen",
     "dialogTitle": "Opprett artikkel fra telegram",
-    "dialogNoPlanningDescription": "En ny planlegging med tilhørende oppdrag for denne artikkelen vil bli opprettet for deg.",
-    "dialogWithPlanningDescription": "Denne artikkelen vil bli lagt i et nytt oppdrag i planleggingen \"{{planningLabel}}\"",
+    "dialogNoPlanningDescription": "En ny plan med tilhørende oppdrag for denne artikkelen vil bli opprettet for deg.",
+    "dialogWithPlanningDescription": "Denne artikkelen vil bli lagt i et nytt oppdrag i planen \"{{planningLabel}}\"",
     "articleCreated": "Artikkel opprettet",
     "createError": "Kunne ikke opprette en artikkel!",
     "createError2": "Kunne ikke opprette ny artikkel!",
-    "assignmentRollbackError": "Artikkelen kunne ikke bekreftes som lagret, og oppgaven kunne ikke slettes. Vennligst sjekk planleggingen manuelt.",
+    "assignmentRollbackError": "Artikkelen kunne ikke bekreftes som lagret, og oppgaven kunne ikke slettes. Vennligst sjekk planen manuelt.",
     "markUsed": "Merk som brukt",
     "createButton": "Opprett artikkel",
     "embargo": "Embargo til",

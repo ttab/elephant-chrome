@@ -36,7 +36,7 @@
     "setTime": "Skriv inn tid",
     "asSavePlaceholder": "Publiser ny informasjon",
     "embargoMinTime": "Embargo: kan ikke planlegges før {{time}}",
-    "schedulingRequiresPlanning": "Planlegging er ikke tilgjengelig fordi dokumentet mangler en tilknyttet planlegging.",
+    "schedulingRequiresPlanning": "Planen er ikke tilgjengelig fordi dokumentet mangler en tilknyttet plan.",
     "causes": {
       "development_short": "UV",
       "development_long": "Utvikling",
