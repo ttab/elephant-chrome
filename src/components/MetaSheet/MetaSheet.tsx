@@ -22,7 +22,7 @@ import { ContentSource } from '@/components/ContentSource'
 import { TimelessCategory } from '@/components/TimelessCategory'
 import { isArticleType } from '@/lib/isArticleType'
 import { ArticleTypeConversion } from '@/components/ArticleTypeConversion'
-import { DerivedFromPlanning, useSourceDocumentInfo } from '@/components/DerivedFromPlanning'
+import { OriginLinks, useSourceDocumentInfo } from '@/components/OriginLinks'
 import { RemoveHastFromArticle } from '@/components/RemoveHastFromArticle'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import type * as Y from 'yjs'
@@ -130,7 +130,7 @@ export function MetaSheet({ ydoc, readOnly, readOnlyVersion }: {
                         <>
                           <Label htmlFor='origin' className='text-xs text-muted-foreground -mb-3'>{t('labels.origin')}</Label>
                           <div id='origin'>
-                            <DerivedFromPlanning ydoc={ydoc} />
+                            <OriginLinks {...sourceInfo} />
                           </div>
                         </>
                       )}

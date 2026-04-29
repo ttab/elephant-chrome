@@ -6,20 +6,23 @@ import { useYValue, type YDocument } from '@/modules/yjs/hooks'
 import { useDeliverableInfo } from '@/hooks/useDeliverableInfo'
 import { useTranslation } from 'react-i18next'
 
-interface SourceDocumentInfo {
-  source: Block
-  sourceType: 'core/article' | 'core/article#timeless'
+type SourceType = 'core/article' | 'core/article#timeless'
+
+export interface SourceDocumentInfo {
+  sourceUuid: string
+  sourceType: SourceType
   sourcePlanningId: string | undefined
 }
 
-// Article ↔ timeless conversion is the only flow that leaves a
-// rel='source-document' back-link. The source link carries the *source's*
-// type, so look under the opposite bucket from the current document's type.
-export function useSourceDocumentInfo(
+// Within the `links.core/article` and `links.core/article#timeless` buckets,
+// `rel='source-document'` is left only by article ↔ timeless conversion.
+// The link carries the *source's* type, so look under the opposite bucket
+// from the current document's type.
+export const useSourceDocumentInfo = (
   ydoc: YDocument<Y.Map<unknown>>
-): SourceDocumentInfo | null {
+): SourceDocumentInfo | null => {
   const [currentType] = useYValue<string>(ydoc.ele, 'root.type')
-  const sourceType = currentType === 'core/article#timeless'
+  const sourceType: SourceType = currentType === 'core/article#timeless'
     ? 'core/article'
     : 'core/article#timeless'
   const [sourceLinks] = useYValue<Block[]>(ydoc.ele, `links.${sourceType}`)
@@ -30,26 +33,21 @@ export function useSourceDocumentInfo(
     return null
   }
 
-  return { source, sourceType, sourcePlanningId }
+  return { sourceUuid: source.uuid, sourceType, sourcePlanningId }
 }
 
 /**
- * Compact "Created from" entry rendered inside the MetaSheet's Origin
- * section when the document was derived via article ↔ timeless conversion.
+ * Compact "Created from" entry. Links back to the source document and,
+ * when present, the planning that source was attached to. Rendered in
+ * the MetaSheet's Origin section in both live and read-only views.
  */
-export function DerivedFromPlanning({
-  ydoc
-}: {
-  ydoc: YDocument<Y.Map<unknown>>
-}): JSX.Element | null {
+export const OriginLinks = ({
+  sourceUuid,
+  sourceType,
+  sourcePlanningId
+}: SourceDocumentInfo): JSX.Element => {
   const { t } = useTranslation()
-  const info = useSourceDocumentInfo(ydoc)
-
-  if (!info) {
-    return null
-  }
-
-  const sourceLinkLabel = info.sourceType === 'core/article'
+  const sourceLinkLabel = sourceType === 'core/article'
     ? t('editor:derivedFromArticleLink')
     : t('editor:derivedFromTimelessLink')
 
@@ -57,18 +55,18 @@ export function DerivedFromPlanning({
     <div className='flex flex-wrap items-center gap-1 text-sm text-muted-foreground'>
       <Link
         to='Editor'
-        props={{ id: info.source.uuid }}
+        props={{ id: sourceUuid }}
         target='last'
         className='underline hover:text-foreground'
       >
         {sourceLinkLabel}
       </Link>
-      {info.sourcePlanningId && (
+      {sourcePlanningId && (
         <>
           <span>{t('editor:derivedFromConnector')}</span>
           <Link
             to='Planning'
-            props={{ id: info.sourcePlanningId }}
+            props={{ id: sourcePlanningId }}
             target='last'
             className='underline hover:text-foreground'
           >
