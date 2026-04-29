@@ -22,7 +22,7 @@
     "removeHastFromArticle": "Ta bort HAST från artikeln"
   },
   "convertToArticle": {
-    "descriptionWithPlanning": "En ny planering härleds från den ursprungliga. Välj datum för den nya artikeln. Den tidlösa artikeln finns kvar.",
+    "descriptionWithPlanning": "En ny planering skapas från den ursprungliga. Välj datum för den nya artikeln. Den tidlösa artikeln finns kvar.",
     "descriptionNoPlanning": "Välj datum för den nya artikeln. Den tidlösa artikeln finns kvar.",
     "loadingPlanning": "Letar efter den ursprungliga planeringen…",
     "targetDateLabel": "Datum",

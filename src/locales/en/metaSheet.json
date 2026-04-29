@@ -22,7 +22,7 @@
     "removeHastFromArticle": "Remove HAST from article"
   },
   "convertToArticle": {
-    "descriptionWithPlanning": "A new planning will be derived from the original. Pick a date for the new article. The timeless remains available.",
+    "descriptionWithPlanning": "A new planning will be created from the original. Pick a date for the new article. The timeless remains available.",
     "descriptionNoPlanning": "Pick a date for the new article. The timeless remains available.",
     "loadingPlanning": "Looking for the original planning…",
     "targetDateLabel": "Date",
