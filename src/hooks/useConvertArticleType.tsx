@@ -150,7 +150,7 @@ export function useConvertArticleType(): UseConvertArticleTypeResult {
 
         toast.success(t('views:timeless.toasts.articlePlanned'), {
           action: (
-            <div className='flex gap-1'>
+            <div className='flex gap-1 justify-end ml-auto [&>div]:w-auto'>
               <ToastAction
                 documentId={newArticle.uuid}
                 withView='Editor'

@@ -67,6 +67,7 @@ export const ArticleTypeConversion = ({ ydoc, documentType }: {
         <Button
           variant='outline'
           size='sm'
+          className='gap-1.5 text-muted-foreground'
           disabled={isConverting}
           onClick={openToArticle}
         >
@@ -78,6 +79,7 @@ export const ArticleTypeConversion = ({ ydoc, documentType }: {
         <Button
           variant='outline'
           size='sm'
+          className='gap-1.5 text-muted-foreground'
           disabled={isConverting}
           onClick={openToTimeless}
         >

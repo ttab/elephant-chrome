@@ -1,9 +1,11 @@
 import useSWR from 'swr'
 import { Label } from '@ttab/elephant-ui'
+import { Link } from '@/components'
 import { Version } from '@/components/Version'
 import { toast } from 'sonner'
 import type { EleBlockGroup, EleDocumentResponse } from '@/shared/types'
 import type { ReactNode } from 'react'
+import { useDeliverableInfo } from '@/hooks/useDeliverableInfo'
 import { useEditorialInfoTypes } from '@/hooks/useEditorialInfoType'
 import { useTranslation } from 'react-i18next'
 
@@ -64,6 +66,10 @@ export const ReadOnly = ({ documentId, version }: { documentId: string, version:
     { revalidateOnFocus: false, revalidateOnReconnect: false }
   )
 
+  const sourceDocument = data?.links?.['core/article']?.find((l) => l.rel === 'source-document')
+    ?? data?.links?.['core/article#timeless']?.find((l) => l.rel === 'source-document')
+  const sourcePlanningId = useDeliverableInfo(sourceDocument?.uuid ?? '')?.planningUuid
+
   if (error) {
     return <div></div>
   }
@@ -78,6 +84,10 @@ export const ReadOnly = ({ documentId, version }: { documentId: string, version:
 
   const editorialInfoTypeId = data?.links?.['core/editorial-info-type']?.[0]?.uuid
   const editorialInfoTypeTitle = editorialInfoTypes.find((type) => type.id === editorialInfoTypeId)?.title
+
+  const sourceLinkLabel = sourceDocument?.type === 'core/article'
+    ? t('editor:derivedFromArticleLink')
+    : t('editor:derivedFromTimelessLink')
 
 
   return (
@@ -99,6 +109,33 @@ export const ReadOnly = ({ documentId, version }: { documentId: string, version:
         <ValueBlock label={t('labels.source')} value={(contentSource || []).map((cs) => cs.title).join('-')} />
         <ValueBlock label={t('labels.editorialInfoType')} value={editorialInfoTypeTitle} />
       </InfoBlock>
+      {sourceDocument?.uuid && (
+        <InfoBlock text={t('labels.origin')} labelId='origin'>
+          <div className='flex flex-wrap items-center gap-1 text-sm text-muted-foreground'>
+            <Link
+              to='Editor'
+              props={{ id: sourceDocument.uuid }}
+              target='last'
+              className='underline hover:text-foreground'
+            >
+              {sourceLinkLabel}
+            </Link>
+            {sourcePlanningId && (
+              <>
+                <span>{t('editor:derivedFromConnector')}</span>
+                <Link
+                  to='Planning'
+                  props={{ id: sourcePlanningId }}
+                  target='last'
+                  className='underline hover:text-foreground'
+                >
+                  {t('editor:derivedFromPlanningLink')}
+                </Link>
+              </>
+            )}
+          </div>
+        </InfoBlock>
+      )}
     </div>
   )
 }
