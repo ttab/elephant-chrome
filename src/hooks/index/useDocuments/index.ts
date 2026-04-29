@@ -104,7 +104,12 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
     }),
   [index, repository, session, page, size, documentType, query, fields, sort, options])
 
-  const { data, error, mutate, isLoading, isValidating } = useSWR<T[], Error>(key, fetcher)
+  const { data, error, mutate, isLoading, isValidating } = useSWR<T[], Error>(key, fetcher, {
+    onError: (err) => {
+      console.error('Document fetch failed:', err)
+      toast.error(t('errors:messages.failedFetchingDocument'))
+    }
+  })
 
   // Keep refs up to date for polling
   useEffect(() => {
@@ -112,11 +117,6 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
     mutateRef.current = mutate
     dataRef.current = data
   }, [subscriptions, mutate, data])
-
-  if (error) {
-    console.error('Document fetch failed:', error)
-    toast.error(t('errors:messages.failedFetchingDocument'))
-  }
 
   // Set table data after fetch
   useEffect(() => {
