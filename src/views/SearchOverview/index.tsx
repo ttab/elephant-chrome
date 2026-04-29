@@ -80,10 +80,10 @@ export const Search = (): JSX.Element => {
             {!Object.keys(params).length
               ? null
               : (
-                  <>
+                  <div className='flex items-center gap-1'>
                     <SearchBar searchType={searchType} page={Number(query.page)} />
                     <SearchDropdown searchType={searchType} setSearchType={setSearchType} />
-                  </>
+                  </div>
                 )}
           </ViewHeader.Content>
         </ViewHeader.Root>

@@ -7,7 +7,9 @@ import {
   QueryV1,
   SortingV1,
   type HitV1,
-  QueryRequestV1
+  type MappingPropertyV1,
+  QueryRequestV1,
+  GetMappingsRequestV1
 } from '@ttab/elephant-api/index'
 import { meta } from './meta'
 import { pagination } from '@/lib/pagination'
@@ -157,6 +159,22 @@ export class Index {
         pageSize: 0,
         pages: 0,
         hits: []
+      }
+    }
+  }
+
+  async getMappings(documentType: string, accessToken: string): Promise<{ ok: boolean, properties: MappingPropertyV1[], errorMessage?: string }> {
+    try {
+      const { response } = await this.#client.getMappings(
+        GetMappingsRequestV1.create({ documentType }),
+        meta(accessToken)
+      )
+      return { ok: true, properties: response.properties }
+    } catch (err: unknown) {
+      return {
+        ok: false,
+        properties: [],
+        errorMessage: `Unable to get mappings: ${(err as Error)?.message || 'Unknown error'}`
       }
     }
   }
