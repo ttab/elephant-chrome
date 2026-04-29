@@ -65,6 +65,8 @@ export const Editor = ({ id, version, textOnly = false, direct, versionStatusHis
       Factbox({
         headerTitle: t('factbox.headerTitle'),
         modifiedLabel: t('factbox.modifiedLabel'),
+        createdLabel: t('factbox.createdLabel'),
+        lastModifiedLabel: t('factbox.lastModifiedLabel'),
         footerTitle: t('factbox.footerTitle'),
         removable: false,
         locale: activeLocale
