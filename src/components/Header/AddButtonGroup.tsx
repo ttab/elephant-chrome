@@ -92,7 +92,9 @@ export const AddButtonGroup = ({ docType = 'core/planning-item', query }: { type
           console.error('Error creating factbox:', error)
           toast.error((error as Error).message)
         })
+      return
     }
+
     if (view.type === 'core/article#timeless' && showModal) {
       showModal(
         <TimelessCreation
