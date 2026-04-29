@@ -55,6 +55,6 @@
   "slugline": "Legg til stikkord",
   "story": "Legg til story",
   "title": "Plantittel",
-  "yourNewType": "Din nye skapede {{type, lowercase}}",
+  "yourNewType": "Dine sist opprettede {{type, lowercase}}",
   "preview": "Forhåndsvisning"
 }

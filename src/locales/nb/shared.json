@@ -65,8 +65,8 @@
     "documentSaveSuccess": "Dokument lagret"
   },
   "prompts": {
-    "publishBeforeClose": "Vil du publisere endringer innen du stenger?",
-    "savedButNotPublished": "Ändringarna er sparede men ikke publisert."
+    "publishBeforeClose": "Vil du publisere endringer før du lukker?",
+    "savedButNotPublished": "Endringene er lagret, men ikke publisert."
   },
   "editorialInfo": {
     "noteText": "OBS! Denne meldingen er ikke ment for publisering."
