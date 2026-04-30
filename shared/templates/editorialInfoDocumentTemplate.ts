@@ -15,7 +15,7 @@ export function editorialInfoDocumentTemplate(id: string, payload?: TemplatePayl
     uuid: id,
     type: 'core/editorial-info',
     uri: `core://editorial-info/${id}`, // Migrated documents have core://article/...
-    language: getSystemLanguage(),
+    language: payload?.language ?? getSystemLanguage(),
     title: payload?.title,
     content: [
       {

@@ -2,7 +2,7 @@ import { Prompt } from '@/components'
 import { TimelessCategorySelect } from '@/components/TimelessCategory'
 import type { TemplatePayload } from '@/shared/templates/'
 import { useSession } from 'next-auth/react'
-import { useRegistry } from '@/hooks'
+import { useDocumentDefaults, useRegistry } from '@/hooks'
 import { toast } from 'sonner'
 import { getTemplateFromDeliverable } from '@/shared/templates/lib/getTemplateFromDeliverable'
 import { getContentSourceLink } from '@/shared/getContentSourceLink'
@@ -36,6 +36,7 @@ export const CreateDeliverablePrompt = ({
   const [isCreating, setIsCreating] = useState(false)
   const { t } = useTranslation()
   const [selectedCategory, setSelectedCategory] = useState<Block | undefined>()
+  const defaults = useDocumentDefaults()
 
   if (!ydoc.provider?.document || !session?.accessToken || !repository) {
     console.error('CreateDeliverablePrompt: Missing required dependencies', {
@@ -59,7 +60,7 @@ export const CreateDeliverablePrompt = ({
     }
 
     // Add timeless category to payload if selected
-    const finalPayload = { ...payload }
+    const finalPayload: TemplatePayload = { ...defaults, ...payload }
     if (deliverableType === 'timeless' && selectedCategory) {
       finalPayload.links = {
         ...finalPayload.links,

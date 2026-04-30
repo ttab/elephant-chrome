@@ -20,6 +20,7 @@ import type { VariantProps } from 'class-variance-authority'
 import type { QueryParams } from '@/hooks/useQuery'
 import { useLink } from '@/hooks/useLink'
 import { useRegistry } from '@/hooks/useRegistry'
+import { useDocumentDefaults } from '@/hooks/useDocumentDefaults'
 import { TimelessCreation } from '@/views/TimelessCreation'
 import { useTranslation } from 'react-i18next'
 import type { TFunction } from 'i18next'
@@ -69,6 +70,7 @@ export const AddButtonGroup = ({ docType = 'core/planning-item', query }: { type
   const openEditor = useLink('Editor')
   const { t } = useTranslation()
   const hasHast = !!featureFlags.hasHast
+  const defaults = useDocumentDefaults()
 
   const views: ButtonView[] = addButtonTypes.map((type) => {
     const format = addButtonGroupValueFormat[type]
@@ -95,7 +97,7 @@ export const AddButtonGroup = ({ docType = 'core/planning-item', query }: { type
         />
       )
     } else if (showModal) {
-      const initialDocument = getTemplateFromView(view.name, { useHast: hasHast })(id, { query })
+      const initialDocument = getTemplateFromView(view.name, { useHast: hasHast })(id, { ...defaults, query })
       showModal(
         <ViewDialog
           onDialogClose={hideModal}
