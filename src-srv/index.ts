@@ -60,6 +60,10 @@ export async function runServer(): Promise<string> {
   assertEnvs()
   setSystemLanguage(process.env.SYSTEM_LANGUAGE ?? '')
 
+  if (TLS_CERT_PATH && !TLS_KEY_PATH) {
+    throw new Error('TLS_CERT_PATH is set but TLS_KEY_PATH is empty')
+  }
+
   const { apiDir, distDir } = getPaths()
   const wsInstance = expressWebsockets(express())
   const { app } = wsInstance
