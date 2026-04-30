@@ -1,32 +1,18 @@
 import { useState } from 'react'
-import { describe, it, expect, beforeEach, afterEach, vi, type MockInstance } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { render, act } from '@testing-library/react'
 import { useHistory } from '@/navigation/hooks/useHistory'
 
 describe('useHistory', () => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let addSpy: MockInstance<any>
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let removeSpy: MockInstance<any>
-
-  beforeEach(() => {
-    addSpy = vi.spyOn(window, 'addEventListener')
-    removeSpy = vi.spyOn(window, 'removeEventListener')
-  })
-
-  afterEach(() => {
-    addSpy.mockRestore()
-    removeSpy.mockRestore()
-  })
-
-  const popstateAdds = () =>
-    (addSpy.mock.calls as [string, ...unknown[]][])
-      .filter(([type]) => type === 'popstate').length
-  const popstateRemoves = () =>
-    (removeSpy.mock.calls as [string, ...unknown[]][])
-      .filter(([type]) => type === 'popstate').length
-
   it('does not resubscribe to popstate on every re-render', () => {
+    const addSpy = vi.spyOn(window, 'addEventListener')
+    const removeSpy = vi.spyOn(window, 'removeEventListener')
+
+    const popstateAdds = (): number =>
+      addSpy.mock.calls.filter((call) => call[0] === 'popstate').length
+    const popstateRemoves = (): number =>
+      removeSpy.mock.calls.filter((call) => call[0] === 'popstate').length
+
     const Probe = () => {
       const [, setN] = useState(0)
       useHistory()
@@ -47,6 +33,8 @@ describe('useHistory', () => {
     expect(popstateAdds() - addsAfterMount).toBe(0)
     expect(popstateRemoves() - removesAfterMount).toBe(0)
 
+    addSpy.mockRestore()
+    removeSpy.mockRestore()
     unmount()
   })
 })
