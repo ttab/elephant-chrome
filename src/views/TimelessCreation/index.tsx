@@ -292,12 +292,14 @@ export const TimelessCreation = ({ id, onClose }: {
             {isNewPlanning && (
               <Form.Group icon={TagIcon}>
                 {!hasLooseSlugline && (
-                  <Input
-                    className='pt-2 h-7 max-w-48 text-medium placeholder:text-[#5D709F] placeholder-shown:border-[#5D709F] placeholder-shown:bg-[#5D709F]/5'
-                    placeholder={`${t('common:actions.add')} ${t('core:labels.slugline').toLocaleLowerCase()}`}
-                    value={slugline}
-                    onChange={(event) => setSlugline(event.target.value)}
-                  />
+                  <>
+                    <Input
+                      className='pt-2 h-7 max-w-48 text-medium placeholder:text-[#5D709F] placeholder-shown:border-[#5D709F] placeholder-shown:bg-[#5D709F]/5'
+                      placeholder={`${t('common:actions.add')} ${t('core:labels.slugline').toLocaleLowerCase()}`}
+                      value={slugline}
+                      onChange={(event) => setSlugline(event.target.value)}
+                    />
+                  </>
                 )}
 
                 <ComboBox
