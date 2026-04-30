@@ -54,10 +54,10 @@ export const UserInfo = ({ user, data }: {
                 .catch((error) => console.error(error))
               localStorage.removeItem('trustGoogle')
             }}
-            className='gap-4'
+            className='inline-flex items-center gap-2 rounded-md border bg-background px-3 h-9 text-sm hover:bg-accent'
           >
-            {t('app:mainMenu.logout')}
             <LogOutIcon strokeWidth={1.75} size={16} />
+            {t('app:mainMenu.logout')}
           </Button>
         </SheetClose>
       </div>
