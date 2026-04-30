@@ -12,15 +12,17 @@ export function factboxDocumentTemplate(id: string, payload?: TemplatePayload): 
     uuid: id,
     type: 'core/factbox',
     uri: `core://factbox/${id}`,
+    title: payload?.title ?? '',
     language: payload?.language ?? getSystemLanguage(),
-    title: '',
-    content: [
-      Block.create({
-        type: 'core/text',
-        data: {
-          text: ''
-        }
-      })
-    ]
+    content: payload?.content
+      ? [...payload.content]
+      : [
+          Block.create({
+            type: 'core/text',
+            data: {
+              text: ''
+            }
+          })
+        ]
   })
 }

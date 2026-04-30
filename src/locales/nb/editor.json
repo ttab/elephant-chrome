@@ -8,8 +8,8 @@
     "tvListing": "",
     "unorderedList": "Liste",
     "orderedList": "Punktliste",
-    "searchImages": "Bildesøk",
-    "factboxes": "Faktabokser"
+    "searchImages": "Søk bilder",
+    "factboxes": "Søk faktabokser"
   },
   "numberOfChars": "Antall tegn",
   "spelling": {
@@ -18,7 +18,11 @@
   "factbox": {
     "headerTitle": "Rediger originalen",
     "modifiedLabel": "Originalen er fra",
-    "footerTitle": "Endringer i faktaboksteksten gjelder kun for denne artikkelen"
+    "createdLabel": "Opprettet",
+    "lastModifiedLabel": "Sist endret",
+    "footerTitle": "Endringer i faktaboksteksten gjelder kun for denne artikkelen",
+    "factboxNewTitle": "Fakta",
+    "addSingleLabel": "Opprett faktaboks"
   },
   "image": {
     "captionLabel": "Tekst",

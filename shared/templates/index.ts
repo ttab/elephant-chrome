@@ -15,6 +15,7 @@ export interface TemplatePayload {
   query?: Record<string, string | string[] | undefined>
   title?: string
   text?: string
+  content?: Block[]
   language?: string
   meta?: {
     'tt/slugline'?: Block[]

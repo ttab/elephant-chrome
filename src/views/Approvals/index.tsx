@@ -9,7 +9,7 @@ import { Header } from '@/components/Header'
 import { newLocalDate } from '@/shared/datetime.ts'
 import { ApprovalsCard } from './ApprovalsCard'
 import { Toolbar } from './Toolbar.tsx'
-import { StatusSpecifications } from '@/defaults/workflowSpecification'
+import { getStatusSpecifications } from '@/defaults/workflowSpecification'
 import { useTrackedDocuments } from '@/hooks/useTrackedDocuments.tsx'
 import { useTranslation } from 'react-i18next'
 
@@ -182,7 +182,7 @@ export const ApprovalsView = (): JSX.Element => {
                   <ApprovalsCard
                     key={assignment.id}
                     assignment={assignment}
-                    status={StatusSpecifications[assignment._deliverableStatus || 'draft']}
+                    status={getStatusSpecifications(assignment._deliverableStatus || 'draft')}
                     isFocused={focusedId === assignment.id}
                     isSelected={isSelected}
                     openEditors={openEditors}
