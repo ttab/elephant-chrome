@@ -5,6 +5,7 @@ import { useMemo, type JSX } from 'react'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import type { Wire as WireType } from '@/shared/schemas/wire'
 import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
+import { useDocumentDefaults } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import { getContentSourceLink } from '@/shared/getContentSourceLink'
 
@@ -27,6 +28,7 @@ const meta: ViewMetadata = {
 export const WireCreation = (props: ViewProps & {
   wires?: WireType[]
 }): JSX.Element => {
+  const defaults = useDocumentDefaults()
   const { data: session } = useSession()
 
   // The article we're creating
@@ -45,6 +47,7 @@ export const WireCreation = (props: ViewProps & {
     const contentSource = getContentSourceLink({ org: session?.org, units: session?.units })
 
     const payload = {
+      ...defaults,
       meta: {
         'tt/slugline': [Block.create({ type: 'tt/slugline' })],
         'core/newsvalue': [Block.create({ type: 'core/newsvalue' })]
@@ -62,7 +65,7 @@ export const WireCreation = (props: ViewProps & {
       subset: [],
       document: Templates.article(documentId, payload)
     })]
-  }, [props.wires, session?.units, session?.org])
+  }, [props.wires, defaults, session?.units, session?.org])
 
   return (
     <>

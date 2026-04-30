@@ -167,10 +167,11 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
       <ViewHeader.Title
         name='Editor'
         preview={readOnly && !readOnlyVersion}
-        title={documentTypeValueFormat?.[documentType || 'core/article']?.label}
+        title={documentTypeValueFormat?.[(documentType || 'core/article') as keyof typeof documentTypeValueFormat]?.label}
         icon={(() => {
-          const fmt = documentTypeValueFormat?.[documentType || 'core/article']
-          return (readOnly && fmt?.readonly?.icon) || fmt?.icon
+          const fmt = documentTypeValueFormat?.[(documentType || 'core/article') as keyof typeof documentTypeValueFormat]
+          const readonlyIcon = fmt && 'readonly' in fmt ? fmt.readonly?.icon : undefined
+          return (readOnly && readonlyIcon) || fmt?.icon
         })()}
         ydoc={!readOnly ? ydoc : undefined}
         titleClassName='hidden @4xl/view:block'

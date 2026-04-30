@@ -16,6 +16,7 @@ export interface TemplatePayload {
   title?: string
   text?: string
   content?: Block[]
+  language?: string
   meta?: {
     'tt/slugline'?: Block[]
     'core/newsvalue'?: Block[]

@@ -32,7 +32,8 @@
     "words": "Ord",
     "numberOfWords": "Antal ord: artikel (totalt)",
     "chars": "Tecken",
-    "numberOfChars": "Antal tecken: artikel (totalt)"
+    "numberOfChars": "Antal tecken: artikel (totalt)",
+    "language": "Artikelspråk"
   },
   "goToLatestVersion": "Gå till senaste versionen",
   "goToLatestVersionShort": "Senaste",

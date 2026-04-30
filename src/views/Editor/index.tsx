@@ -219,7 +219,7 @@ function EditorWrapper(props: ViewProps & {
         </View.Content>
 
         <View.Footer>
-          <BaseEditor.Footer />
+          <BaseEditor.Footer lang={documentLanguage} />
         </View.Footer>
       </BaseEditor.Root>
     </View.Root>

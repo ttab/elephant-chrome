@@ -8,6 +8,7 @@ import { Planning } from '@/views/Planning'
 import { useModal } from '@/components/Modal/useModal'
 import { createPayload } from '@/shared/templates/lib/createPayload'
 import { useDocuments } from '@/hooks/index/useDocuments'
+import { useDocumentDefaults } from '@/hooks/useDocumentDefaults'
 import { QueryV1, BoolQueryV1, TermsQueryV1 } from '@ttab/elephant-api/index'
 import { Link } from '@/components/index'
 import type { Planning as PlanningType } from '@/shared/schemas/planning'
@@ -28,6 +29,7 @@ export const PlanningTable = ({ ydoc, asDialog }: {
   const [newItem, setNewItem] = useState<NewItem>()
   const [nestedDialogOpen, setNestedOpen] = useState<boolean>(false)
   const { t } = useTranslation()
+  const defaults = useDocumentDefaults()
 
   useEffect(() => {
     return () => {
@@ -108,6 +110,7 @@ export const PlanningTable = ({ ydoc, asDialog }: {
 
 
               const payload = {
+                ...defaults,
                 ...eventData || {},
                 links: {
                   ...eventData?.links,

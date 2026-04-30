@@ -1,7 +1,7 @@
 import { type JSX, useCallback, useMemo, useState } from 'react'
 import { CategoryPicker } from '@/components/TimelessCategory'
 import { useSession } from 'next-auth/react'
-import { useRegistry, useSections } from '@/hooks'
+import { useDocumentDefaults, useRegistry, useSections } from '@/hooks'
 import { useActiveAuthor } from '@/hooks/useActiveAuthor'
 import { useFeatureFlags } from '@/hooks/useFeatureFlags'
 import { toast } from 'sonner'
@@ -45,6 +45,7 @@ export const TimelessCreation = ({ id, onClose }: {
   const sections = useSections({ sort: 'title' })
   const activeAuthor = useActiveAuthor({ full: false })
   const { hasLooseSlugline } = useFeatureFlags(['hasLooseSlugline'])
+  const defaults = useDocumentDefaults()
 
   const [title, setTitle] = useState<string>('')
   const [selectedCategory, setSelectedCategory] = useState<Block | undefined>()
@@ -129,7 +130,8 @@ export const TimelessCreation = ({ id, onClose }: {
         category: selectedCategory,
         newsvalue,
         slugline: timelessSlugline,
-        section: sectionBlock
+        section: sectionBlock,
+        language: defaults.language
       })
       const updatedPlanningId = await addAssignmentWithDeliverable({
         ...planningContext,
