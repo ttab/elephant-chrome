@@ -46,7 +46,6 @@ const AddButton = ({
   className,
   view,
   onClick,
-  hast,
   t
 }: {
   variant?: Variant
