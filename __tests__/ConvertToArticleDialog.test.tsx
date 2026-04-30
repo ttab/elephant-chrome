@@ -130,7 +130,7 @@ describe('ConvertToArticleDialog', () => {
 
     render(<ConvertToArticleDialog timelessId={TIMELESS_ID} onClose={vi.fn()} />)
 
-    const confirm = screen.getByRole('button', { name: /konverterar/i })
+    const confirm = screen.getByRole('button', { name: /sparar/i })
     expect(confirm).toBeDisabled()
   })
 

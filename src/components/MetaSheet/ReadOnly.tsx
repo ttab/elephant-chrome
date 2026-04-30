@@ -1,9 +1,11 @@
 import useSWR from 'swr'
 import { Label } from '@ttab/elephant-ui'
 import { Version } from '@/components/Version'
+import { OriginLinks } from '@/components/OriginLinks'
 import { toast } from 'sonner'
 import type { EleBlockGroup, EleDocumentResponse } from '@/shared/types'
 import type { ReactNode } from 'react'
+import { useDeliverableInfo } from '@/hooks/useDeliverableInfo'
 import { useEditorialInfoTypes } from '@/hooks/useEditorialInfoType'
 import { useTranslation } from 'react-i18next'
 
@@ -64,6 +66,10 @@ export const ReadOnly = ({ documentId, version }: { documentId: string, version:
     { revalidateOnFocus: false, revalidateOnReconnect: false }
   )
 
+  const sourceDocument = data?.links?.['core/article']?.find((l) => l.rel === 'source-document')
+    ?? data?.links?.['core/article#timeless']?.find((l) => l.rel === 'source-document')
+  const sourcePlanningId = useDeliverableInfo(sourceDocument?.uuid ?? '')?.planningUuid
+
   if (error) {
     return <div></div>
   }
@@ -78,7 +84,6 @@ export const ReadOnly = ({ documentId, version }: { documentId: string, version:
 
   const editorialInfoTypeId = data?.links?.['core/editorial-info-type']?.[0]?.uuid
   const editorialInfoTypeTitle = editorialInfoTypes.find((type) => type.id === editorialInfoTypeId)?.title
-
 
   return (
     <div className='flex flex-col gap-6 px-5 py-4 border-t'>
@@ -99,6 +104,15 @@ export const ReadOnly = ({ documentId, version }: { documentId: string, version:
         <ValueBlock label={t('labels.source')} value={(contentSource || []).map((cs) => cs.title).join('-')} />
         <ValueBlock label={t('labels.editorialInfoType')} value={editorialInfoTypeTitle} />
       </InfoBlock>
+      {sourceDocument?.uuid && (
+        <InfoBlock text={t('labels.origin')} labelId='origin'>
+          <OriginLinks
+            sourceUuid={sourceDocument.uuid}
+            sourceType={sourceDocument.type === 'core/article' ? 'core/article' : 'core/article#timeless'}
+            sourcePlanningId={sourcePlanningId}
+          />
+        </InfoBlock>
+      )}
     </div>
   )
 }

@@ -92,17 +92,19 @@
     "actions": {
       "new": "Ny tidløs",
       "openPlanning": "Åpne opprinnelig planlegging",
-      "convertToArticle": "Konverter til artikkel"
+      "convertToArticle": "Planlegg som artikkel"
     },
     "placeholders": {
       "addCategory": "Legg til kategori"
     },
     "toasts": {
-      "convertedSuccess": "Tidløs konvertert",
-      "conversionFailed": "Konverteringen mislyktes: {{message}}",
+      "articlePlanned": "Artikkel planlagt",
+      "timelessSaved": "Tidløs lagret",
+      "conversionFailed": "Kunne ikke opprette det nye dokumentet: {{message}}",
       "notAuthenticated": "Kan ikke konvertere: ikke innlogget",
       "documentNotFound": "Dokumentet ble ikke funnet",
       "openArticle": "Åpne artikkel",
+      "openTimeless": "Åpne tidløs",
       "openPlanning": "Åpne planlegging"
     }
   },

@@ -41,7 +41,6 @@
   "removeInfoConfirm": "Är du säker på att du vill ta bort info?",
   "changeType": "Ändra typ",
   "changeTypeConfirm": "Är du säker på att du vill ändra typ av info?",
-  "derivedFrom": "Skapad från",
   "derivedFromTimelessLink": "tidlös",
   "derivedFromArticleLink": "artikel",
   "derivedFromConnector": "och",

@@ -41,7 +41,6 @@
   "removeInfoConfirm": "Are you sure you want to remove the info?",
   "changeType": "Change type",
   "changeTypeConfirm": "Are you sure you want to change the type of info?",
-  "derivedFrom": "Created from",
   "derivedFromTimelessLink": "timeless",
   "derivedFromArticleLink": "article",
   "derivedFromConnector": "and",
