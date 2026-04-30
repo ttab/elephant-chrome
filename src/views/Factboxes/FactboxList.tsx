@@ -1,4 +1,4 @@
-import { useCallback, useEffect, type JSX } from 'react'
+import { useEffect, type JSX } from 'react'
 import { useQuery } from '@/hooks'
 import { Table } from '@/components/Table'
 import type { ColumnDef } from '@tanstack/react-table'
@@ -40,22 +40,12 @@ export const FactboxList = ({ columns }: {
     setData(data.slice(start, start + PAGE_SIZE))
   }, [data, currentPage, setData])
 
-  const onRowSelected = useCallback((row?: Factbox) => {
-    if (row) {
-      console.info(`Selected planning item ${row.id}`)
-    } else {
-      console.info('Deselected row')
-    }
-    return row
-  }, [])
-
   return (
     <>
       <Toolbar />
       <Table
         type='Factbox'
         columns={columns}
-        onRowSelected={onRowSelected}
       />
       <Pagination total={data?.length} />
     </>
