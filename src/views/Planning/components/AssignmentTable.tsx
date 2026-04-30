@@ -108,7 +108,7 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId }: {
     ])
     deleteByYPath(ydoc.ctx, ['core/assignment', session?.user.sub])
 
-    if (documentId && ydoc.provider) {
+    if (documentId && ydoc.provider && !ydoc.isInProgress) {
       snapshotDocument(documentId, { force: true }, ydoc.provider.document)
         .catch((ex) => {
           console.error('Error closing assignment:', ex)
