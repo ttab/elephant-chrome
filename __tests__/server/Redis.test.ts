@@ -94,7 +94,6 @@ describe('Redis', () => {
     })
 
     test('createClient is configured with bounded reconnect and disabled offline queue', async () => {
-      const { createClient } = await import('redis')
       vi.mocked(createClient).mockClear()
 
       const redis = new Redis('redis://cache:6379')
@@ -109,6 +108,7 @@ describe('Redis', () => {
       expect(typeof strategy).toBe('function')
       expect(strategy(1)).toBeLessThanOrEqual(2000)
       expect(strategy(5)).toBeLessThanOrEqual(2000)
+      expect(strategy(10)).not.toBeInstanceOf(Error)
       expect(strategy(11)).toBeInstanceOf(Error)
     })
   })
