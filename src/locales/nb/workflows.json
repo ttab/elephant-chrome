@@ -2,6 +2,7 @@
   "base": {
     "article": "artikkelen",
     "flash": "flashen",
+    "timeless": "den tidløse",
     "draft": {
       "title": "Utkast",
       "description": "Du jobber med et utkast av {{label}}",

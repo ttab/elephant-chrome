@@ -37,7 +37,7 @@ import {
 import type { ViewMetadata, ViewProps } from '@/types'
 import { EditorHeader } from './EditorHeader'
 import { Error as ErrorComponent } from '../Error'
-import { DerivedFromPlanning } from '@/components/DerivedFromPlanning'
+
 import { getValueByYPath } from '@/shared/yUtils'
 import { getContentMenuLabels } from '@/defaults/contentMenuLabels'
 import type { YDocument } from '@/modules/yjs/hooks'
@@ -204,8 +204,6 @@ function EditorWrapper(props: ViewProps & {
         lang={documentLanguage}
       >
         <EditorHeader ydoc={ydoc} planningId={planningId} readOnly={preview} />
-
-        <DerivedFromPlanning ydoc={ydoc} />
 
         <Notes ydoc={ydoc} />
 

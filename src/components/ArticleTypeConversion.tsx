@@ -37,7 +37,7 @@ export const ArticleTypeConversion = ({ ydoc, documentType }: {
         onClose={(result) => {
           hideModal()
           if (result?.articleId) {
-            openEditor(undefined, { id: result.articleId })
+            openEditor(undefined, { id: result.articleId }, 'self')
           }
         }}
       />
@@ -51,7 +51,7 @@ export const ArticleTypeConversion = ({ ydoc, documentType }: {
         onClose={(result) => {
           hideModal()
           if (result?.timelessId) {
-            openEditor(undefined, { id: result.timelessId })
+            openEditor(undefined, { id: result.timelessId }, 'self')
           }
         }}
       />
@@ -64,6 +64,7 @@ export const ArticleTypeConversion = ({ ydoc, documentType }: {
         <Button
           variant='outline'
           size='sm'
+          className='gap-1.5 text-muted-foreground'
           disabled={isConverting}
           onClick={openToArticle}
         >
@@ -75,6 +76,7 @@ export const ArticleTypeConversion = ({ ydoc, documentType }: {
         <Button
           variant='outline'
           size='sm'
+          className='gap-1.5 text-muted-foreground'
           disabled={isConverting}
           onClick={openToTimeless}
         >
