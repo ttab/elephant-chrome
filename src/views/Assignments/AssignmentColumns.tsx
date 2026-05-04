@@ -385,7 +385,7 @@ export function assignmentColumns<Ns extends Namespace>({ authors = [], locale, 
           ? t('common:actions.openType', { type: typeLabel })
           : t('views:assignments.actionMenu.openArticle')
         return (
-          <div className='shrink p-'>
+          <div className='shrink'>
             <DotMenu
               items={[
                 {
