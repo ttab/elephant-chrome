@@ -1,13 +1,12 @@
 import { createClient } from 'redis'
 import type { RedisClientType } from 'redis'
-import { instrumentRedisClient, type RedisHealth } from './redisHealth.js'
+import { instrumentRedisClient } from './redisHealth.js'
 
 const BASE_PREFIX = 'elc::hp'
 
 export class Redis {
   readonly #url: string
   #redisClient?: RedisClientType
-  #health?: RedisHealth
 
   constructor(url: string) {
     this.#url = url
@@ -29,17 +28,13 @@ export class Redis {
     })
 
     const { hostname, port } = new URL(this.#url)
-    this.#health = instrumentRedisClient(client, 'redis-cache', { host: hostname, port })
+    instrumentRedisClient(client, 'redis-cache', { host: hostname, port })
 
     await client.connect().catch((ex) => {
       throw new Error('connect to redis', { cause: ex })
     })
 
     this.#redisClient = client as RedisClientType
-  }
-
-  isHealthy(): boolean {
-    return this.#health?.isHealthy() ?? false
   }
 
   async get(key: string): Promise<Uint8Array | undefined> {

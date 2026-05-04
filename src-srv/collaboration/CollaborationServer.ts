@@ -3,7 +3,6 @@ import { Logger } from '@hocuspocus/extension-logger'
 import { Redis as PubsubExtension } from '@hocuspocus/extension-redis'
 
 import type { Redis } from '../utils/Redis.js'
-import type { RedisHealth } from '../utils/redisHealth.js'
 import { createRedisClient } from './createRedisClient.js'
 import type { Repository } from '@/shared/Repository.js'
 import type { User } from '@/shared/User.js'
@@ -44,7 +43,6 @@ export class CollaborationServer {
 
   #handlePaths: string[]
   #openForBusiness: boolean = false
-  #pubsubHealth?: RedisHealth
 
   /**
    * Collaboration server constructor. Creates and initializes
@@ -83,11 +81,7 @@ export class CollaborationServer {
           prefix: 'elc::hp',
           host: redisHost,
           port: parseInt(redisPort, 10),
-          createClient: () => {
-            const created = createRedisClient(redisUrl)
-            this.#pubsubHealth ??= created.health
-            return created.client
-          }
+          createClient: () => createRedisClient(redisUrl)
         }),
         this.#openDocuments,
         new CacheExtension({
@@ -193,12 +187,5 @@ export class CollaborationServer {
    */
   getSnapshot() {
     return this.#openDocuments?.getSnapshot()
-  }
-
-  /**
-   * Whether the Hocuspocus pubsub Redis client is currently healthy.
-   */
-  isPubsubHealthy(): boolean {
-    return this.#pubsubHealth?.isHealthy() ?? false
   }
 }
