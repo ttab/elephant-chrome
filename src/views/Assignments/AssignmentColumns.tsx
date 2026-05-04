@@ -31,7 +31,7 @@ import type { Assignment } from '@/shared/schemas/assignments'
 import { parseISO } from 'date-fns'
 import { DotMenu } from '@/components/ui/DotMenu'
 import { Link } from '@/components'
-import { PenIcon, CalendarDaysIcon } from '@ttab/elephant-ui/icons'
+import { PenIcon, CalendarDaysIcon, BanIcon } from '@ttab/elephant-ui/icons'
 import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
 import { getDocumentStatuses } from '@/defaults/documentStatuses'
 import { selectableStatuses } from '../Planning/components/AssignmentStatus'
@@ -400,7 +400,14 @@ export function assignmentColumns<Ns extends Namespace>({ authors = [], locale, 
                           <div className='grow'>{openDeliverableLabel}</div>
                         </Link>
                       )
-                    : () => {}
+                    : (
+                        <div className='flex flex-row gap-5'>
+                          <div className='pt-1'>
+                            <BanIcon size={14} strokeWidth={1.5} className='shrink' />
+                          </div>
+                          <div className='grow'>{openDeliverableLabel}</div>
+                        </div>
+                      )
                 },
                 {
 
@@ -415,7 +422,14 @@ export function assignmentColumns<Ns extends Namespace>({ authors = [], locale, 
                           <div className='grow'>{t('views:assignments.actionMenu.openPlanning')}</div>
                         </Link>
                       )
-                    : () => {}
+                    : (
+                        <div className='flex flex-row gap-5'>
+                          <div className='pt-1'>
+                            <BanIcon size={14} strokeWidth={1.5} className='shrink' />
+                          </div>
+                          <div className='grow'>{t('views:assignments.actionMenu.openPlanning')}</div>
+                        </div>
+                      )
                 }
               ]}
             />
