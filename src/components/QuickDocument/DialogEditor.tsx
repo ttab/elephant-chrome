@@ -35,7 +35,7 @@ export const DialogEditor = ({ ydoc, setTitle, onValidation, validateStateRef, t
     return <></>
   }
 
-  const countCharacters = type === 'flash' || type === 'hast'
+  const countCharacters = type === 'flash' || type === 'hast' || type === 'article'
     ? ['heading-1', 'preamble', 'body']
     : ['heading-1']
 
