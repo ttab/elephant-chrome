@@ -412,38 +412,38 @@ export function getWorkflowSpecifications(): Record<string, WorkflowSpecificatio
     'core/article': baseDeliverable('article'),
     'core/article#timeless': {
       draft: {
-        title: i18n.t('workflows:base.draft.title', { label: i18n.t('workflows:base.article') }),
-        description: i18n.t('workflows:base.draft.description', { label: i18n.t('workflows:base.article') }),
+        title: i18n.t('workflows:base.draft.title', { label: i18n.t('workflows:base.timeless') }),
+        description: i18n.t('workflows:base.draft.description', { label: i18n.t('workflows:base.timeless') }),
         isWorkflow: true,
         transitions: {
           done: {
             default: true,
             title: i18n.t('workflows:base.draft.transitions.done.title'),
-            description: i18n.t('workflows:base.draft.transitions.done.description', { label: i18n.t('workflows:base.article') })
+            description: i18n.t('workflows:base.draft.transitions.done.description', { label: i18n.t('workflows:base.timeless') })
           }
         }
       },
       done: {
         title: i18n.t('workflows:base.done.title'),
-        description: i18n.t('workflows:base.done.description', { label: i18n.t('workflows:base.article') }),
+        description: i18n.t('workflows:base.done.description', { label: i18n.t('workflows:base.timeless') }),
         isWorkflow: true,
         transitions: {
           draft: {
             default: true,
             title: i18n.t('workflows:base.done.transitions.draft.title'),
-            description: i18n.t('workflows:base.done.transitions.draft.description', { label: i18n.t('workflows:base.article') })
+            description: i18n.t('workflows:base.done.transitions.draft.description', { label: i18n.t('workflows:base.timeless') })
           }
         }
       },
       used: {
         title: i18n.t('workflows:base.used.title'),
-        description: i18n.t('workflows:base.used.description', { label: i18n.t('workflows:base.article') }),
+        description: i18n.t('workflows:base.used.description', { label: i18n.t('workflows:base.timeless') }),
         isWorkflow: false,
         transitions: {
           draft: {
             default: true,
             title: i18n.t('workflows:base.used.transitions.draft.title'),
-            description: i18n.t('workflows:base.used.transitions.draft.description', { label: i18n.t('workflows:base.article') })
+            description: i18n.t('workflows:base.used.transitions.draft.description', { label: i18n.t('workflows:base.timeless') })
           }
         }
       }
