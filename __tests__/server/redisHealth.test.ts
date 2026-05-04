@@ -50,4 +50,26 @@ describe('instrumentRedisClient', () => {
     client.emit('ready')
     expect(logger.info).not.toHaveBeenCalled()
   })
+
+  test('logs terminal disconnect on end event after error', () => {
+    const client = new EventEmitter()
+    instrumentRedisClient(client, 'cache', { host: 'h', port: '1' })
+
+    const err = new Error('Redis cache reconnect attempts exhausted')
+    client.emit('error', err)
+    client.emit('end')
+
+    expect(logger.error).toHaveBeenCalledTimes(2)
+    expect(logger.error).toHaveBeenLastCalledWith(
+      expect.objectContaining({ err, label: 'cache', downForMs: expect.any(Number) }),
+      'cache permanently disconnected'
+    )
+  })
+
+  test('does not log on end event during graceful shutdown', () => {
+    const client = new EventEmitter()
+    instrumentRedisClient(client, 'cache', { host: 'h', port: '1' })
+    client.emit('end')
+    expect(logger.error).not.toHaveBeenCalled()
+  })
 })

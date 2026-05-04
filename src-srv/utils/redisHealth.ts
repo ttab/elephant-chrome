@@ -16,8 +16,10 @@ export const instrumentRedisClient = (
   { host, port }: Endpoint
 ): RedisHealth => {
   let downSince: number | null = null
+  let lastError: Error | undefined
 
   client.on('error', (err: Error) => {
+    lastError = err
     if (downSince !== null) return
     downSince = Date.now()
     logger.error({ err, host, port, label }, `${label} entered error state`)
@@ -27,7 +29,17 @@ export const instrumentRedisClient = (
     if (downSince === null) return
     const downForMs = Date.now() - downSince
     downSince = null
+    lastError = undefined
     logger.info({ label, host, port, downForMs }, `${label} recovered`)
+  })
+
+  client.on('end', () => {
+    if (downSince === null) return
+    const downForMs = Date.now() - downSince
+    logger.error(
+      { err: lastError, label, host, port, downForMs },
+      `${label} permanently disconnected`
+    )
   })
 
   return {
