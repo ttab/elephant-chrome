@@ -14,7 +14,18 @@ export class Redis {
   }
 
   async connect(): Promise<void> {
-    const client = createClient({ url: this.#url })
+    const client = createClient({
+      url: this.#url,
+      disableOfflineQueue: true,
+      socket: {
+        reconnectStrategy: (retries: number) => {
+          if (retries > 10) {
+            return new Error('Redis cache reconnect attempts exhausted')
+          }
+          return Math.min(retries * 100, 2000)
+        }
+      }
+    })
 
     client.on('error', (err: Error) => {
       const { hostname, port } = new URL(this.#url)

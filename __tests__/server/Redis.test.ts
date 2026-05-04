@@ -1,4 +1,4 @@
-import { vi, describe, it, expect, beforeEach, type Mock } from 'vitest'
+import { vi, describe, it, test, expect, beforeEach, type Mock } from 'vitest'
 import { Redis } from '../../src-srv/utils/Redis'
 
 // Mock the redis module
@@ -48,7 +48,9 @@ describe('Redis', () => {
       const redis = new Redis('redis://localhost:6379')
       await redis.connect()
 
-      expect(createClient).toHaveBeenCalledWith({ url: 'redis://localhost:6379' })
+      expect(createClient).toHaveBeenCalledWith(
+        expect.objectContaining({ url: 'redis://localhost:6379' })
+      )
     })
 
     it('attaches error handler before connecting', async () => {
@@ -87,6 +89,25 @@ describe('Redis', () => {
       const redis = new Redis('redis://localhost:6379')
 
       await expect(redis.connect()).rejects.toThrow('connect to redis')
+    })
+
+    test('createClient is configured with bounded reconnect and disabled offline queue', async () => {
+      const { createClient } = await import('redis')
+      vi.mocked(createClient).mockClear()
+
+      const redis = new Redis('redis://cache:6379')
+      await redis.connect()
+
+      const args = vi.mocked(createClient).mock.calls[0][0]
+      expect(args).toMatchObject({
+        url: 'redis://cache:6379',
+        disableOfflineQueue: true
+      })
+      const strategy = (args!.socket as { reconnectStrategy: (n: number) => number | Error }).reconnectStrategy
+      expect(typeof strategy).toBe('function')
+      expect(strategy(1)).toBeLessThanOrEqual(2000)
+      expect(strategy(5)).toBeLessThanOrEqual(2000)
+      expect(strategy(11)).toBeInstanceOf(Error)
     })
   })
 
