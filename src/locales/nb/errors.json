@@ -17,7 +17,7 @@
     "documentTypeMissing": "{{documentType}} mangler",
     "documentTypeMissingDescription": "Inget {{documentType, lowercase}} er oppgitt. Naviger tilbake til oversikten og forsøk igjen.",
     "couldNotCreateNewFactbox": "Det gikk ikke å opprette ny faktaboks!",
-    "statusChangeforDocumentTypeFailed": "Kunne ikke endre status på {{documentType, lowercase}}! Det gikk ikke å finne en koblet planlegging.",
+    "statusChangeforDocumentTypeFailed": "Kunne ikke endre status på {{documentType, lowercase}}! Det gikk ikke å finne en koblet plan.",
     "scheduleArticleFailed": "Kunne ikke planlegge artikkelen! Tid eller dato angitt feil.",
     "createQuickArticleFailed": "Feil ved oppretting av hurtigartikkel.",
     "flashCreationFailed": "HAST kunne ikke opprettes.",
@@ -26,11 +26,11 @@
     "failedToLoadMetaData": "Det oppsto en feil under henting av metadata.",
     "saveAssignmentError": "Kunne ikke lagre oppdraget",
     "createDeliverableError": "Kan ikke opprette leveransen",
-    "changeStatusError": "Statusen kunne ikke endres. Oppgavens publiseringstidspunkt kunne ikke endres i den lenkede planleggingen.",
+    "changeStatusError": "Statusen kunne ikke endres. Oppgavens publiseringstidspunkt kunne ikke endres i den lenkede planen.",
     "loadFailed": "Kunne ikke laste",
     "noDeliverables": "Ingen leveranser",
     "documentCreationFailed": "{{type}} kunne ikke opprettes.",
-    "documentCreatedAssignmentFailed": "{{type}} har blitt opprettet. Dessverre mislyktes det å koble den til en planlegging."
+    "documentCreatedAssignmentFailed": "{{type}} har blitt opprettet. Dessverre mislyktes det å koble den til en plan."
   },
   "toasts": {
     "couldNotCreateNewEvent": "Kunne ikke opprette ny hendelse!",
@@ -62,7 +62,7 @@
     "couldNotChangeStatusReloadBrowser": "Det har oppstått en feil. Gjeldende status kunne ikke endres! Last inn nettleseren på nytt og prøv på nytt.",
     "couldNotChangeStatus": "Det oppstod en feil når aktuell status skulle endres.",
     "couldNotSaveStatus": "Det oppstod en feil når aktuell status skulle lagres.",
-    "couldNotFindPlanningSection": "Finner ikke planleggingskategorien",
+    "couldNotFindPlanningSection": "Finner ikke plankategorien",
     "authorUpdateFailure": "Kunne ikke oppdatere forfatterdokumentet: {{errorMessage}}",
     "authorSaveFailure": "Kunne ikke lagre forfatterdokumentet: {{errorMessage}}",
     "authorCreateFailure": "Kunne ikke opprette forfatterdokument: Failed to create author doc",

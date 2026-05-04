@@ -22,13 +22,13 @@
     "removeHastFromArticle": "Fjern HAST fra artikkelen"
   },
   "convertToArticle": {
-    "descriptionWithPlanning": "En ny planlegging opprettes fra den opprinnelige. Velg dato for den nye artikkelen. Den tidløse artikkelen er fortsatt tilgjengelig.",
+    "descriptionWithPlanning": "En ny plan opprettes fra den opprinnelige. Velg dato for den nye artikkelen. Den tidløse artikkelen er fortsatt tilgjengelig.",
     "descriptionNoPlanning": "Velg dato for den nye artikkelen. Den tidløse artikkelen er fortsatt tilgjengelig.",
-    "loadingPlanning": "Leter etter den opprinnelige planleggingen…",
+    "loadingPlanning": "Leter etter den opprinnelige planen…",
     "targetDateLabel": "Dato",
     "converting": "Lagrer…",
     "failed": "Kunne ikke opprette det nye dokumentet. Prøv igjen eller avbryt.",
-    "noPlanningHint": "Ingen opprinnelig planlegging ble funnet — en ny planlegging opprettes fra den tidløse."
+    "noPlanningHint": "Ingen opprinnelig plan ble funnet — en ny plan opprettes fra den tidløse."
   },
   "convertToTimeless": {
     "description": "Velg kategori for den nye tidløse artikkelen. Den opprinnelige artikkelen er fortsatt tilgjengelig."
