@@ -50,6 +50,22 @@ describe('createRedisClient', () => {
     })
   })
 
+  test('returns a fresh client per invocation (Hocuspocus pub+sub contract)', () => {
+    const clients: { on: Mock }[] = []
+    ;(IORedis as unknown as Mock).mockImplementation(function () {
+      const fresh = { on: vi.fn() }
+      clients.push(fresh)
+      return fresh
+    })
+
+    const a = createRedisClient(new URL('redis://cache:6379'))
+    const b = createRedisClient(new URL('redis://cache:6379'))
+
+    expect(IORedis).toHaveBeenCalledTimes(2)
+    expect(clients).toHaveLength(2)
+    expect(a).not.toBe(b)
+  })
+
   test('attaches error listener that logs with err/host/port', () => {
     createRedisClient(new URL('redis://cache:6379'))
     const calls = mockClient.on.mock.calls as Array<[string, (err: Error) => void]>
