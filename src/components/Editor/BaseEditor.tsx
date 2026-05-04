@@ -11,6 +11,7 @@ import { cn } from '@ttab/elephant-ui/utils'
 import { useView } from '@/hooks/useView'
 import { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
+import { getLanguageLabel } from '@/lib/getLanguageLabel'
 
 const EditorRoot = (props: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -51,6 +52,7 @@ const EditorText = (props: {
   autoFocus?: boolean
   className?: string
   allowStyling?: boolean
+  editorType?: string
 }) => {
   const { isActive } = useView()
   const ref = useRef<HTMLDivElement>(null)
@@ -91,7 +93,7 @@ const EditorText = (props: {
           <>
             <DropMarker />
             <Gutter>
-              <ContentMenu />
+              <ContentMenu editorType={props.editorType} />
             </Gutter>
             <Toolbar />
           </>
@@ -101,12 +103,20 @@ const EditorText = (props: {
   )
 }
 
-const EditorFooter = () => {
+const EditorFooter = ({ lang }: { lang?: string }) => {
   const { stats } = useTextbit()
   const { t } = useTranslation('editor')
 
   return (
     <>
+      {lang && (
+        <span
+          className='mr-auto rounded-full bg-muted px-2 py-0.5 text-xs tracking-wide text-muted-foreground'
+          title={`${t('footer.language')} (${lang})`}
+        >
+          {getLanguageLabel(lang)}
+        </span>
+      )}
       <div className='flex gap-2'>
         <strong>{`${t('footer.words')}:`}</strong>
         <span title={t('footer.numberOfWords')}>{`${stats.short.words} (${stats.full.words})`}</span>

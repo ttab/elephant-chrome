@@ -25,6 +25,14 @@ describe('articleDocumentTemplate', () => {
     setSystemLanguage(original)
   })
 
+  it('overrides system language when payload.language is set', () => {
+    const original = getSystemLanguage()
+    setSystemLanguage('nb-NO')
+    const doc = articleDocumentTemplate('id', { language: 'nn-no' })
+    expect(doc.language).toBe('nn-no')
+    setSystemLanguage(original)
+  })
+
   it('removes core/description from meta', () => {
     const payload: TemplatePayload = {
       meta: {

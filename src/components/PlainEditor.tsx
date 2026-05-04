@@ -11,7 +11,7 @@ import { cn } from '@ttab/elephant-ui/utils'
 import { AlertDescription } from '@ttab/elephant-ui'
 import { MessageCircleMoreIcon } from '@ttab/elephant-ui/icons'
 
-export const Editor = ({ id, version, textOnly = false, direct, versionStatusHistory, disableScroll = false, showNotes = false }: {
+export const Editor = ({ id, version, textOnly = false, direct, versionStatusHistory, disableScroll = false, showNotes = false, showTitle = false }: {
   id: string
   textOnly?: boolean
   version?: bigint | undefined
@@ -19,6 +19,7 @@ export const Editor = ({ id, version, textOnly = false, direct, versionStatusHis
   direct?: boolean
   disableScroll?: boolean
   showNotes?: boolean
+  showTitle?: boolean
 }): JSX.Element => {
   const { t, i18n } = useTranslation('editor')
 
@@ -41,6 +42,8 @@ export const Editor = ({ id, version, textOnly = false, direct, versionStatusHis
       Factbox({
         headerTitle: t('factbox.headerTitle'),
         modifiedLabel: t('factbox.modifiedLabel'),
+        createdLabel: t('factbox.createdLabel'),
+        lastModifiedLabel: t('factbox.lastModifiedLabel'),
         footerTitle: t('factbox.footerTitle'),
         removable: false,
         locale: activeLocale
@@ -85,6 +88,12 @@ export const Editor = ({ id, version, textOnly = false, direct, versionStatusHis
     >
       {versionStatusHistory && version && (
         <PreVersionInfo version={version} versionStatusHistory={versionStatusHistory} />
+      )}
+
+      {showTitle && document.title && (
+        <p className='text-lg font-bold pt-2 ps-12 pe-12 '>
+          {document.title}
+        </p>
       )}
 
       {!!notes.length && (
