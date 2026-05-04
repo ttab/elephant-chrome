@@ -6,7 +6,12 @@ const BASE_URL = import.meta.env.BASE_URL || ''
 const fetcher = async (url: string): Promise<EleDocument | undefined> => {
   const response = await fetch(url)
   if (!response.ok) {
-    throw new Error('Network response was not ok')
+    const body = await response.text().catch(() => '')
+    const err = new Error(
+      `useDocumentSnapshot: ${response.status} ${response.statusText} ${url}${body ? ` ${body}` : ''}`
+    )
+    console.error(err)
+    throw err
   }
   const result = await response.json() as EleDocumentResponse
   return result.document

@@ -151,7 +151,6 @@ export const TimelessCreation = ({ id, onClose }: {
       const message = ex instanceof Error ? ex.message : t('errors:messages.unknown')
       console.error('Failed to create timeless article:', ex)
       toast.error(t('errors:toasts.creationFailed', { error: message }))
-      throw ex
     }
   }
 

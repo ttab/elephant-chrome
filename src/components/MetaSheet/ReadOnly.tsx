@@ -41,7 +41,11 @@ export const ReadOnly = ({ documentId, version }: { documentId: string, version:
   const sourcePlanningId = useDeliverableInfo(sourceDocument?.uuid ?? '')?.planningUuid
 
   if (error) {
-    return <div></div>
+    return (
+      <div className='px-5 py-4 border-t text-sm text-muted-foreground'>
+        {t('errors:messages.failedToLoadMetaData')}
+      </div>
+    )
   }
 
   const isTimeless = data?.type === 'core/article#timeless'

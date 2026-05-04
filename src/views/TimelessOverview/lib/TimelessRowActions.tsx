@@ -41,9 +41,6 @@ export function TimelessRowActions({
         onClose={(result) => {
           hideModal()
           if (result?.planningId) {
-            // Land in the new planning so the user gets workflow context
-            // for the freshly scheduled article. The Editor is reachable
-            // via the toast action.
             openPlanning(undefined, { id: result.planningId })
           }
         }}

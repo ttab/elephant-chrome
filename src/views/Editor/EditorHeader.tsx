@@ -52,12 +52,11 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
   // Fetch embargo from the original wire document (schema doesn't allow
   // storing embargo_until on the article's wire link data)
   const primaryWireId = wireBlocks?.[0]?.uuid
-  const { data: wireDocument } = useDocumentSnapshot({ id: primaryWireId, direct: true })
+  const { data: wireDocument, error: wireError } = useDocumentSnapshot({ id: primaryWireId, direct: true })
   const embargoUntil = wireDocument?.meta?.['tt/wire']?.[0]?.data?.embargo_until
+  const wireUnverified = !!primaryWireId && !!wireError
 
-  // In read-only mode we can't read from the Y.Map (ydoc.ele is undefined),
-  // so fall back to the document data for the timeless category. The fetch
-  // dedups via SWR with the one PlainEditor already runs against the same URL.
+  // Read-only has no Y.Map; fall back to the fetched document for the category.
   const isTimeless = documentType === 'core/article#timeless'
   const [yjsTimelessCategory] = useYValue<Block[]>(ydoc.ele, 'links.core/timeless-category')
   const { data: articleDocument } = useDocumentSnapshot({
@@ -87,6 +86,12 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
 
   // Callback to set correct withheld time to the assignment
   const onBeforeStatusChange = useCallback(async (newStatus: string, data?: Record<string, unknown>) => {
+    // Block publish if the embargo couldn't be verified (fail-closed).
+    if (newStatus === 'usable' && wireUnverified) {
+      toast.error(t('editor:embargoCheckUnavailable'))
+      return false
+    }
+
     // Prevent direct publish if embargo is still active
     if (newStatus === 'usable' && embargoUntil) {
       const embargoDate = new Date(embargoUntil)
@@ -162,7 +167,7 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
     }
 
     return true
-  }, [planningId, dispatch, ydoc.id, history, state.viewRegistry, viewId, t, repository, session?.accessToken, workflowStatus, embargoUntil])
+  }, [planningId, dispatch, ydoc.id, history, state.viewRegistry, viewId, t, repository, session?.accessToken, workflowStatus, embargoUntil, wireUnverified])
 
   const isReadOnlyAndUpdated = workflowStatus && workflowStatus?.name !== 'usable' && readOnly
   const isUnpublished = workflowStatus?.name === 'unpublished'

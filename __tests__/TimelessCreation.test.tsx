@@ -46,9 +46,7 @@ describe('TimelessCreation', () => {
     vi.mocked(useFeatureFlags).mockReturnValue({ hasLooseSlugline: false } as never)
   })
 
-  // Regression: Form.Group's cloneChildrenWithProps overwrites onChange with
-  // undefined when an Input is a direct child. The slugline Input must be
-  // shielded by a fragment so typing actually updates the value.
+  // Form.Group's cloneChildrenWithProps strips onChange from direct Input children; the fragment shield must stay.
   it('accepts text input in the slugline field', async () => {
     const user = userEvent.setup()
     render(<TimelessCreation id='test-id' onClose={vi.fn()} />)

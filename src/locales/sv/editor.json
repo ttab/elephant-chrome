@@ -33,6 +33,7 @@
   "goToLatestVersion": "Gå till senaste versionen",
   "goToLatestVersionShort": "Senaste",
   "embargoActive": "Kan inte publiceras direkt — embargo gäller till {{time}}",
+  "embargoCheckUnavailable": "Kan inte verifiera embargo. Försök igen.",
   "addRoleInfo": {
     "editorial": "Lägg till redaktionell info",
     "internal": "Lägg till intern info"
