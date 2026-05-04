@@ -4,7 +4,7 @@
     "charactersShort": "tgn",
     "tooltips": {
       "openPreview": "Åpne forhåndsvisning",
-      "openPlanning": "Åpne planlegging",
+      "openPlanning": "Åpne plan",
       "lastChanged": "Sist endret",
       "scheduledAt": "Planlagt kl"
     }
@@ -12,13 +12,13 @@
   "plannings": {
     "label": {
       "plural": "Planer",
-      "singular": "Planlegging"
+      "singular": "Plan"
     },
     "toasts": {
       "create": {
-        "success": "Planlegging opprettet"
+        "success": "Plan opprettet"
       },
-      "openItem": "Åpne planlegging"
+      "openItem": "Åpne plan"
     }
   },
   "events": {
@@ -31,7 +31,7 @@
       "status": "Status",
       "organiser": "Arrangør",
       "section": "Kategori",
-      "planningStatus": "Planleggingsstatus",
+      "planningStatus": "Planstatus",
       "action": "Action"
     },
     "tooltips": {
@@ -49,7 +49,7 @@
     },
     "actionMenu": {
       "openArticle": "Åpne artikkel",
-      "openPlanning": "Åpne planlegging"
+      "openPlanning": "Åpne plan"
     },
     "myAssignments": "Mine oppdrag"
   },
@@ -71,7 +71,7 @@
       "search": "Søk"
     },
     "labels": {
-      "plannings": "Planlegging",
+      "plannings": "Plan",
       "events": "Hendelser",
       "articles": "Artikler"
     },
@@ -96,7 +96,7 @@
     },
     "actions": {
       "new": "Ny tidløs",
-      "openPlanning": "Åpne opprinnelig planlegging",
+      "openPlanning": "Åpne opprinnelig plan",
       "convertToArticle": "Konverter til artikkel"
     },
     "placeholders": {
@@ -108,7 +108,7 @@
       "notAuthenticated": "Kan ikke konvertere: ikke innlogget",
       "documentNotFound": "Dokumentet ble ikke funnet",
       "openArticle": "Åpne artikkel",
-      "openPlanning": "Åpne planlegging"
+      "openPlanning": "Åpne plan"
     }
   },
   "imageSearch": {

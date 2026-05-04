@@ -7,9 +7,9 @@
       "description": "Du jobber med et utkast av {{label}}",
       "transitions": {
         "done": {
-          "title": "Klarmarkere",
-          "description": "Marker {{label}} som ferdig",
-          "promptTitle": "Klarmarkere {{label}}"
+          "title": "Legg klar",
+          "description": "Legg {{label}} som klar",
+          "promptTitle": "Legg klar {{label}}"
         },
         "approved": {
           "title": "Godkjenn",
@@ -30,7 +30,7 @@
     },
     "done": {
       "title": "Klar",
-      "description": "{{label, capitalize}} er ferdig og venter på godkjenning",
+      "description": "{{label, capitalize}} er klar og venter på godkjenning",
       "transitions": {
         "approved": {
           "title": "Godkjenn",
@@ -201,32 +201,32 @@
   "core/planning-item": {
     "draft": {
       "title": "Utkast",
-      "description": "Du jobber med et utkast av denne planleggingen",
+      "description": "Du jobber med et utkast av denne planen",
       "transitions": {
         "done": {
           "title": "Bruk internt",
-          "description": "Gjør planleggingen synlig internt"
+          "description": "Gjør planen synlig internt"
         },
         "usable": {
           "title": "Publiser eksternt",
-          "description": "Publiser planleggingen eksternt",
-          "promptTitle": "Publiser planleggingen"
+          "description": "Publiser planen eksternt",
+          "promptTitle": "Publiser planen"
         }
       }
     },
     "done": {
       "title": "Intern",
-      "description": "Planleggingen er synlig internt",
+      "description": "Planen er synlig internt",
       "transitions": {
         "usable": {
           "title": "Publiser",
-          "description": "Publiser planleggingen eksternt",
-          "promptTitle": "Publiser planleggingen"
+          "description": "Publiser planen eksternt",
+          "promptTitle": "Publiser planen"
         },
         "unpublished": {
           "title": "Avpubliser",
-          "description": "Avpubliser planleggingen",
-          "promptTitle": "Avpubliser planleggingen"
+          "description": "Avpubliser planen",
+          "promptTitle": "Avpubliser planen"
         }
       }
     },
@@ -234,25 +234,25 @@
       "title": "Publisert",
       "asSaveCTA": "Upubliserte endringer",
       "asSaveTitle": "Publiser endret versjon",
-      "description": "Planleggingen er publisert",
-      "changedDescription": "Planleggingen har blitt endret siden forrige publisering",
-      "updateDescription": "Oppdater den publiserte planleggingen med de nye endringene",
+      "description": "Planen er publisert",
+      "changedDescription": "Planen har blitt endret siden forrige publisering",
+      "updateDescription": "Oppdater den publiserte planen med de nye endringene",
       "transitions": {
         "unpublished": {
           "title": "Avpubliser",
-          "description": "Avpubliser planleggingen eksternt",
-          "promptTitle": "Avpubliser planleggingen"
+          "description": "Avpubliser planen eksternt",
+          "promptTitle": "Avpubliser planen"
         }
       }
     },
     "unpublished": {
       "title": "Avpublisert",
-      "description": "Planleggingen har blitt avpublisert",
+      "description": "Planen har blitt avpublisert",
       "transitions": {
         "draft": {
           "title": "Utkast",
-          "description": "Gjør om planleggingen til et utkast igjen",
-          "promptTitle": "Gjør om planleggingen til utkast"
+          "description": "Gjør om planen til et utkast igjen",
+          "promptTitle": "Gjør om planen til utkast"
         }
       }
     }
@@ -311,9 +311,9 @@
       "description": "Du jobber med et utkast av denne informasjonen til redaksjonen",
       "transitions": {
         "done": {
-          "title": "Klarmarkere",
-          "description": "Marker som ferdig til redaksjonen",
-          "promptTitle": "Klarmarkere redaksjonell info"
+          "title": "Legg klar",
+          "description": "Legg som klar til redaksjonen",
+          "promptTitle": "Legg klar redaksjonell info"
         },
         "approved": {
           "title": "Godkjenn",
@@ -329,7 +329,7 @@
     },
     "done": {
       "title": "Klar",
-      "description": "Informasjonen er ferdig og venter på godkjenning",
+      "description": "Informasjonen er klar og venter på godkjenning",
       "transitions": {
         "approved": {
           "title": "Godkjenn",
@@ -506,8 +506,8 @@
       "description": "Du jobber med et utkast av {{label}}",
       "transitions": {
         "done": {
-          "title": "Klarmarkere",
-          "description": "Marker {{label}} som ferdig"
+          "title": "Legg klar",
+          "description": "Legg {{label}} som klar"
         },
         "approved": {
           "title": "Godkjenn",
@@ -525,7 +525,7 @@
     },
     "done": {
       "title": "Klar",
-      "description": "{{label, capitalize}} er ferdig og venter på godkjenning",
+      "description": "{{label, capitalize}} er klar og venter på godkjenning",
       "transitions": {
         "approved": {
           "title": "Godkjenn",
