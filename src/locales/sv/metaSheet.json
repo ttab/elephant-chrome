@@ -28,7 +28,7 @@
     "targetDateLabel": "Datum",
     "converting": "Sparar…",
     "failed": "Kunde inte skapa det nya dokumentet. Försök igen eller avbryt.",
-    "noPlanningHint": "Ingen ursprunglig planering hittades — en ny planering skapas från den tidlösa."
+    "noPlanningHint": "Ingen ursprunglig planering hittades — en ny planering skapas från tidlös."
   },
   "convertToTimeless": {
     "description": "Välj kategori för den nya tidlösa artikeln. Den ursprungliga artikeln finns kvar."
