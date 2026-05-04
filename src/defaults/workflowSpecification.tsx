@@ -1,6 +1,7 @@
 import i18n from 'i18next'
 import type { TranslationKey } from '@/types/i18next.d'
 import {
+  ArchiveIcon,
   CircleCheckIcon,
   CircleDotIcon,
   CircleArrowLeftIcon,
@@ -282,6 +283,11 @@ export const getStatusSpecifications = (status: string, documentType?: string): 
       return {
         icon: CircleXIcon,
         className: 'bg-cancelled text-white fill-cancelled rounded-full dark:text-black'
+      }
+    case 'used':
+      return {
+        icon: ArchiveIcon,
+        className: 'text-muted-foreground'
       }
     default:
       return {
