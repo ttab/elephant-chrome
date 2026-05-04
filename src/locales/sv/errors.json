@@ -66,7 +66,8 @@
     "authorUpdateFailure": "Kunde inte uppdatera författardokument: {{errorMessage}}",
     "authorSaveFailure": "Kunde inte spara författardokument: {{errorMessage}}",
     "authorCreateFailure": "Kunde inte skapa författardokument: Failed to create author doc",
-    "authorCreateUndefinedFailed": "Kunde inte skapa författardokument: Failed to fetch author document: undefined"
+    "authorCreateUndefinedFailed": "Kunde inte skapa författardokument: Failed to fetch author document: undefined",
+    "couldNotOpenEmbeddedFactbox": "Kunde inte ladda faktarutan. Vänligen navigera tillbaka till översikten och försök igen."
   },
   "systemMessages": {
     "connectionFailed": "Misslyckades att ansluta till meddelandetjänsten, vänligen ladda om fönstret."

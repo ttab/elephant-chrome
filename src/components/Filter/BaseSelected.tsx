@@ -28,7 +28,8 @@ export const BaseSelected = ({ options, filterPage, facets }: {
               ...filter,
               [filterPage]: selected.size === 0
                 ? undefined
-                : Array.from(selected)
+                : Array.from(selected),
+              page: undefined
             })
             setCurrentFilters({
               ...currentFilters,
@@ -40,7 +41,8 @@ export const BaseSelected = ({ options, filterPage, facets }: {
             selected.add(option.value)
             setFilter({
               ...filter,
-              [filterPage]: Array.from(selected)
+              [filterPage]: Array.from(selected),
+              page: undefined
             })
             setCurrentFilters({
               ...currentFilters,

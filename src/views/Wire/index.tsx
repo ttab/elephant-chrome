@@ -4,7 +4,7 @@ import { useMemo, type JSX } from 'react'
 import { QueryV1, BoolQueryV1, TermsQueryV1 } from '@ttab/elephant-api/index'
 import { fields as wireFields, type Wire as WireDoc, type WireFields } from '@/shared/schemas/wire'
 import { useDocuments } from '@/hooks/index/useDocuments'
-import { WirePreview } from '@/components/WirePreview/WirePreview'
+import { WirePreview } from '@/components/WirePreview'
 import { CableIcon } from '@ttab/elephant-ui/icons'
 
 const meta: ViewMetadata = {

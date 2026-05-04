@@ -263,22 +263,44 @@
       "description": "Du jobbar på ett utkast av faktarutan",
       "transitions": {
         "usable": {
-          "title": "Publicera",
-          "description": "Publicera faktarutan för användning",
-          "promptTitle": "Publicera faktarutan"
+          "verify": false,
+          "title": "Klarmarkera",
+          "description": "Klarmarkera faktarutan för användning"
+        },
+        "unpublished": {
+          "verify": false,
+          "title": "Kasta",
+          "description": "Ta bort faktarutan"
         }
       }
     },
     "usable": {
-      "title": "Användbar",
+      "title": "Klar",
       "asSaveCTA": "Ändrad",
-      "asSaveTitle": "Publicera ny information",
-      "description": "Faktarutan är användbar",
+      "asSaveTitle": "Uppdatera",
+      "description": "Faktarutan är klar",
+      "updateDescription": "Klarmarkera ändringarna",
       "transitions": {
         "draft": {
           "title": "Till utkast",
-          "promptTitle": "Gör om faktarutan till utkast",
           "description": "Gör om faktarutan till ett utkast igen"
+        },
+        "unpublished": {
+          "verify": false,
+          "title": "Kasta",
+          "description": "Ta bort faktarutan"
+        }
+      }
+    },
+    "unpublished": {
+      "title": "Kastad",
+      "description": "Faktarutan är inte synlig eller användbar",
+      "isWorkflow": false,
+      "transitions": {
+        "usable": {
+          "verify": false,
+          "title": "Klarmarkera",
+          "description": "Klarmarkera faktarutan för användning"
         }
       }
     }

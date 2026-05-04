@@ -10,6 +10,7 @@ import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
 import { Editor as PlainEditor } from '@/components/PlainEditor'
 import { getTemplateFromView } from '@/shared/templates/lib/getTemplateFromView'
 import { useRegistry } from '@/hooks/useRegistry'
+import { useDocumentDefaults } from '@/hooks/useDocumentDefaults'
 import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type { Document } from '@ttab/elephant-api/newsdoc'
@@ -41,6 +42,7 @@ export const Flash = (props: ViewProps & {
   const { featureFlags } = useRegistry()
   const { t } = useTranslation('flash')
   const hasHast = !!featureFlags.hasHast
+  const defaults = useDocumentDefaults()
 
   const persistentDocumentId = useRef<string>('')
   if (!persistentDocumentId.current) {
@@ -61,9 +63,12 @@ export const Flash = (props: ViewProps & {
       isMetaDocument: false,
       mainDocument: '',
       subset: [],
-      document: props.document || getTemplateFromView('Flash', { useHast: hasHast })(documentId)
+      document: props.document || getTemplateFromView('Flash', { useHast: hasHast })(
+        documentId,
+        { ...defaults }
+      )
     })
-  }, [documentId, props.document, hasHast])
+  }, [documentId, props.document, hasHast, defaults])
 
   // Error handling for missing document
   if ((!props.asDialog && !documentId) || typeof documentId !== 'string') {
