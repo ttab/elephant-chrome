@@ -1,7 +1,6 @@
-import type { EleDocument, EleDocumentResponse } from '@/shared/types'
 import { Textbit, type Element } from '@ttab/textbit'
-import useSWR from 'swr'
 import { LoadingText } from './LoadingText'
+import { useDocumentSnapshot } from '@/hooks'
 import { Bold, Italic, Link, Text, OrderedList, UnorderedList, TTVisual, Image, Factbox, Table } from '@ttab/textbit-plugins'
 import { PreVersion } from './Version/PreVersion'
 import type { Status as DocumentStatuses } from '@ttab/elephant-api/repository'
@@ -11,17 +10,6 @@ import { useTranslation } from 'react-i18next'
 import { cn } from '@ttab/elephant-ui/utils'
 import { AlertDescription } from '@ttab/elephant-ui'
 import { MessageCircleMoreIcon } from '@ttab/elephant-ui/icons'
-
-const BASE_URL = import.meta.env.BASE_URL || ''
-
-const fetcher = async (url: string): Promise<EleDocument | undefined> => {
-  const response = await fetch(url)
-  if (!response.ok) {
-    throw new Error('Network response was not ok')
-  }
-  const result = await response.json() as EleDocumentResponse
-  return result.document
-}
 
 export const Editor = ({ id, version, textOnly = false, direct, versionStatusHistory, disableScroll = false, showNotes = false, showTitle = false }: {
   id: string
@@ -36,17 +24,6 @@ export const Editor = ({ id, version, textOnly = false, direct, versionStatusHis
   const { t, i18n } = useTranslation('editor')
 
   const activeLocale = i18n.resolvedLanguage
-
-  const searchParams = new URLSearchParams()
-  if (typeof version !== 'undefined') {
-    searchParams.set('version', version.toString())
-  }
-
-  if (direct) {
-    searchParams.set('direct', 'true')
-  }
-
-  const documentUrl = `${BASE_URL}/api/documents/${id}${searchParams.size ? `?${searchParams.toString()}` : ''}`
 
   const getPlugins = () => {
     const basePlugins = [Text, UnorderedList, OrderedList, Bold, Italic, Link, Table]
@@ -74,11 +51,7 @@ export const Editor = ({ id, version, textOnly = false, direct, versionStatusHis
     ]
   }
 
-  const { data: document, error } = useSWR<EleDocument | undefined, Error>(
-    documentUrl,
-    fetcher,
-    { revalidateOnFocus: false, revalidateOnReconnect: false }
-  )
+  const { data: document, error } = useDocumentSnapshot({ id, version, direct })
 
   if (error) {
     return <div>{t('errors:messages.loadFailed')}</div>
@@ -137,7 +110,7 @@ export const Editor = ({ id, version, textOnly = false, direct, versionStatusHis
       )}
 
       <Textbit.Root
-        key={documentUrl}
+        key={`${id}-${version ?? 'latest'}`}
         value={filterText(content, textOnly)}
         plugins={getPlugins()}
         readOnly

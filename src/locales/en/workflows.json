@@ -2,6 +2,7 @@
   "base": {
     "article": "article",
     "flash": "flash",
+    "timeless": "timeless",
     "draft": {
       "title": "Draft",
       "description": "You are working on a draft of the {{label}}",

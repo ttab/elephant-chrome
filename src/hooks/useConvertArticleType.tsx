@@ -148,9 +148,9 @@ export function useConvertArticleType(): UseConvertArticleTypeResult {
           accessToken
         })
 
-        toast.success(t('views:timeless.toasts.convertedSuccess'), {
+        toast.success(t('views:timeless.toasts.articlePlanned'), {
           action: (
-            <div className='flex gap-1'>
+            <div className='flex gap-1 justify-end ml-auto [&>div]:w-auto'>
               <ToastAction
                 documentId={newArticle.uuid}
                 withView='Editor'
@@ -213,12 +213,12 @@ export function useConvertArticleType(): UseConvertArticleTypeResult {
         newAssignmentType: 'timeless'
       })
 
-      toast.success(t('views:timeless.toasts.convertedSuccess'), {
+      toast.success(t('views:timeless.toasts.timelessSaved'), {
         action: (
           <ToastAction
             documentId={newDocument.uuid}
             withView='Editor'
-            label={t('views:timeless.toasts.openArticle')}
+            label={t('views:timeless.toasts.openTimeless')}
             Icon={PenBoxIcon}
             target='last'
           />

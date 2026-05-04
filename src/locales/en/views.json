@@ -97,17 +97,19 @@
     "actions": {
       "new": "New timeless",
       "openPlanning": "Open original planning",
-      "convertToArticle": "Convert to article"
+      "convertToArticle": "Plan as article"
     },
     "placeholders": {
       "addCategory": "Add category"
     },
     "toasts": {
-      "convertedSuccess": "Timeless converted",
-      "conversionFailed": "Conversion failed: {{message}}",
+      "articlePlanned": "Article planned",
+      "timelessSaved": "Timeless saved",
+      "conversionFailed": "Could not create the new document: {{message}}",
       "notAuthenticated": "Unable to convert: not authenticated",
       "documentNotFound": "Document not found",
       "openArticle": "Open article",
+      "openTimeless": "Open timeless",
       "openPlanning": "Open planning"
     }
   },

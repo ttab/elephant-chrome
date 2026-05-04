@@ -38,6 +38,7 @@
   "goToLatestVersion": "Go to latest version",
   "goToLatestVersionShort": "Latest",
   "embargoActive": "Cannot publish directly — embargo active until {{time}}",
+  "embargoCheckUnavailable": "Cannot verify embargo. Try again.",
   "addRoleInfo": {
     "editorial": "Add editorial info",
     "internal": "Add internal info"
@@ -45,7 +46,6 @@
   "removeInfoConfirm": "Are you sure you want to remove the info?",
   "changeType": "Change type",
   "changeTypeConfirm": "Are you sure you want to change the type of info?",
-  "derivedFrom": "Created from",
   "derivedFromTimelessLink": "timeless",
   "derivedFromArticleLink": "article",
   "derivedFromConnector": "and",
