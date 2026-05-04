@@ -21,9 +21,8 @@ import { UserMessage } from '@/components/UserMessage'
 import { Newsvalues } from '@/defaults'
 import { convertToISOStringInTimeZone } from '@/shared/datetime'
 import { fetch as fetchPlannings } from '@/lib/index/fetch-plannings-twirp'
-import { addAssignmentWithDeliverable } from '@/lib/index/addAssignment'
 import type { DefaultValueOption } from '@/types'
-import { createNewTimelessArticle } from './lib/createNewTimelessArticle'
+import { submitTimeless } from './lib/submitTimeless'
 
 type PlanningOption = Omit<DefaultValueOption, 'payload'> & {
   payload: { slugline?: string, section?: string }
@@ -122,7 +121,7 @@ export const TimelessCreation = ({ id, onClose }: {
       : undefined
 
     try {
-      const newId = await createNewTimelessArticle({
+      const newId = await submitTimeless({
         repository,
         session,
         id,
@@ -131,23 +130,14 @@ export const TimelessCreation = ({ id, onClose }: {
         newsvalue,
         slugline: timelessSlugline,
         section: sectionBlock,
-        language: defaults.language
-      })
-      const updatedPlanningId = await addAssignmentWithDeliverable({
-        ...planningContext,
-        type: 'timeless',
-        deliverableId: newId,
-        title: trimmedTitle,
-        publicVisibility: true,
+        language: defaults.language,
+        planningContext,
         localDate,
         isoDateTime,
         author: activeAuthor
           ? { id: activeAuthor.id, name: activeAuthor.name }
           : undefined
       })
-      if (!updatedPlanningId) {
-        throw new Error('Planning link failed')
-      }
       onClose(newId)
     } catch (ex) {
       const message = ex instanceof Error ? ex.message : t('errors:messages.unknown')
