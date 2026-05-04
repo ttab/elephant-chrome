@@ -1,6 +1,7 @@
 import { Story, Section, Byline, Newsvalue } from '@/components'
 import { SluglineButton } from '@/components/DataItem/Slugline'
 import {
+  Button,
   Label,
   Sheet,
   SheetClose,
@@ -11,16 +12,21 @@ import {
   SheetTrigger
 } from '@ttab/elephant-ui'
 import { useYValue, type YDocument } from '@/modules/yjs/hooks'
-import { PanelRightCloseIcon, PanelRightOpenIcon } from '@ttab/elephant-ui/icons'
+import { CableIcon, PanelRightCloseIcon, PanelRightOpenIcon } from '@ttab/elephant-ui/icons'
 import { useState, type JSX } from 'react'
 import { AddNote } from '@/components/Notes/AddNote'
 import { Version } from '@/components/Version'
 import { ReadOnly } from './ReadOnly'
 import { EditorialInfoTypes } from '@/components/EditorialInfoTypes'
 import { ContentSource } from '@/components/ContentSource'
+import { TimelessCategory } from '@/components/TimelessCategory'
+import { isArticleType } from '@/lib/isArticleType'
+import { ArticleTypeConversion } from '@/components/ArticleTypeConversion'
 import { RemoveHastFromArticle } from '@/components/RemoveHastFromArticle'
+import type { Block } from '@ttab/elephant-api/newsdoc'
 import type * as Y from 'yjs'
 import { useTranslation } from 'react-i18next'
+import { useLink } from '@/hooks'
 
 export function MetaSheet({ ydoc, readOnly, readOnlyVersion }: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -29,8 +35,10 @@ export function MetaSheet({ ydoc, readOnly, readOnlyVersion }: {
 }): JSX.Element {
   const [documentType] = useYValue<string | undefined>(ydoc.ele, 'root.type')
   const [slugline] = useYValue<string | undefined>(ydoc.ele, 'meta.tt/slugline[0].value')
+  const [wireBlocks] = useYValue<Block[]>(ydoc.ele, 'links.tt/wire')
   const [isOpen, setIsOpen] = useState(false)
   const { t } = useTranslation('metaSheet')
+  const openSources = useLink('Sources')
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -63,13 +71,22 @@ export function MetaSheet({ ydoc, readOnly, readOnlyVersion }: {
             : (
                 <div className='flex flex-col gap-6 px-5 py-4 border-t'>
 
-                  {documentType === 'core/article' && (
+                  {isArticleType(documentType) && (
                     <>
                       <Label htmlFor='properties' className='text-xs text-muted-foreground -mb-3'>{t('labels.properties')}</Label>
                       <div className='flex flex-row gap-3' id='properties'>
                         <Newsvalue ydoc={ydoc} path='meta.core/newsvalue[0].value' />
                         <SluglineButton value={slugline} />
                       </div>
+
+                      {documentType === 'core/article#timeless' && (
+                        <>
+                          <Label htmlFor='timeless-category' className='text-xs text-muted-foreground -mb-3'>{t('labels.category')}</Label>
+                          <div id='timeless-category'>
+                            <TimelessCategory ydoc={ydoc} path='links.core/timeless-category' />
+                          </div>
+                        </>
+                      )}
 
                       <Label htmlFor='tags' className='text-xs text-muted-foreground -mb-3'>{t('labels.tags')}</Label>
                       <div className='flex flex-row gap-3' id='tags'>
@@ -85,12 +102,26 @@ export function MetaSheet({ ydoc, readOnly, readOnlyVersion }: {
                       <Label htmlFor='actions' className='text-xs text-muted-foreground -mb-3'>{t('labels.actions')}</Label>
                       <div className='flex flex-col gap-2' id='actions'>
                         <AddNote ydoc={ydoc} text={t('actions.addNote')} />
+                        <ArticleTypeConversion ydoc={ydoc} documentType={documentType} />
                         <RemoveHastFromArticle ydoc={ydoc} />
                       </div>
 
                       <Label htmlFor='content-source'>{t('labels.otherSources')}</Label>
-                      <div id='content-source'>
+                      <div id='content-source' className='flex flex-col gap-2 items-start'>
                         <ContentSource ydoc={ydoc} path='links.core/content-source' />
+                        {!!wireBlocks?.length && (
+                          <Button
+                            variant='ghost'
+                            className='h-9 px-1 gap-1 text-muted-foreground text-xs font-normal hover:bg-gray-200 dark:hover:bg-table-focused'
+                            onClick={(event) => {
+                              setIsOpen(false)
+                              openSources(event, { id: ydoc.id }, 'last')
+                            }}
+                          >
+                            <CableIcon size={18} strokeWidth={1.75} />
+                            {t('wires:sources.title')}
+                          </Button>
+                        )}
                       </div>
 
                     </>

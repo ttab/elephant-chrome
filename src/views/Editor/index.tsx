@@ -12,22 +12,32 @@ import {
   TTVisual,
   Factbox,
   Table,
-  LocalizedQuotationMarks
+  LocalizedQuotationMarks,
+  UnorderedList,
+  OrderedList
 } from '@ttab/textbit-plugins'
 import { ImageSearchPlugin } from '../../plugins/ImageSearch'
 import { FactboxPlugin } from '../../plugins/Factboxes'
+import { createFactboxConsume } from '../../plugins/Factboxes/consume'
 import { Editor as PlainEditor } from '@/components/PlainEditor'
 import { BaseEditor } from '@/components/Editor/BaseEditor'
+import type { TBConsumeFunction, TBConsumesFunction, TBPluginDefinition } from '@ttab/textbit'
+import { useSession } from 'next-auth/react'
+
+type WithConsumer = TBPluginDefinition & {
+  consumer?: { consumes: TBConsumesFunction, consume: TBConsumeFunction }
+}
 
 import {
   useQuery,
   useLink,
+  useRegistry,
   useWorkflowStatus
 } from '@/hooks'
 import type { ViewMetadata, ViewProps } from '@/types'
 import { EditorHeader } from './EditorHeader'
-import { Error } from '../Error'
-
+import { Error as ErrorComponent } from '../Error'
+import { DerivedFromPlanning } from '@/components/DerivedFromPlanning'
 import { getValueByYPath } from '@/shared/yUtils'
 import { getContentMenuLabels } from '@/defaults/contentMenuLabels'
 import type { YDocument } from '@/modules/yjs/hooks'
@@ -64,16 +74,20 @@ const Editor = (props: ViewProps): JSX.Element => {
   // Error handling for missing document
   if (!documentId || typeof documentId !== 'string') {
     return (
-      <Error
+      <ErrorComponent
         title={t('errors:messages.articleMissingTitle')}
         message={t('errors:messages.articleMissingDescription')}
       />
     )
   }
 
-  // If published or specific version has be specified
-  if (workflowStatus?.name === 'usable' || props.version || workflowStatus?.name === 'unpublished') {
-    const bigIntVersion = workflowStatus?.name === 'usable'
+  // If published, used, or a specific version is requested — render read-only.
+  const isTerminalStatus = workflowStatus?.name === 'usable'
+    || workflowStatus?.name === 'unpublished'
+    || workflowStatus?.name === 'used'
+
+  if (isTerminalStatus || props.version) {
+    const bigIntVersion = workflowStatus?.name === 'usable' || workflowStatus?.name === 'used'
       ? workflowStatus?.version
       : BigInt(props.version ?? 0)
 
@@ -118,6 +132,8 @@ function EditorWrapper(props: ViewProps & {
   const openImageSearch = useLink('ImageSearch')
   const openFactboxes = useLink('Factboxes')
   const { t, i18n } = useTranslation()
+  const { repository } = useRegistry()
+  const { data: session } = useSession()
 
   const activeLocale = i18n.resolvedLanguage
 
@@ -131,6 +147,8 @@ function EditorWrapper(props: ViewProps & {
       FactboxPlugin({ openFactboxes }),
       Table(),
       LocalizedQuotationMarks(),
+      OrderedList(),
+      UnorderedList(),
       TTVisual({
         captionLabel: t('editor:image.captionLabel'),
         bylineLabel: t('editor:image.bylineLabel'),
@@ -146,18 +164,31 @@ function EditorWrapper(props: ViewProps & {
         countCharacters: hast ? ['heading-1', 'preamble'] : ['heading-1'],
         ...getContentMenuLabels()
       }),
-      Factbox({
-        headerTitle: t('editor:factbox.headerTitle'),
-        modifiedLabel: t('editor:factbox.modifiedLabel'),
-        footerTitle: t('editor:factbox.footerTitle'),
-        onEditOriginal: (id: string) => {
-          openFactboxEditor(undefined, { id })
-        },
-        removable: !preview,
-        locale: activeLocale
-      })
+      (() => {
+        const plugin = Factbox({
+          headerTitle: t('editor:factbox.headerTitle'),
+          modifiedLabel: t('editor:factbox.modifiedLabel'),
+          createdLabel: t('editor:factbox.createdLabel'),
+          lastModifiedLabel: t('editor:factbox.lastModifiedLabel'),
+          footerTitle: t('editor:factbox.footerTitle'),
+          onEditOriginal: (id: string) => {
+            openFactboxEditor(undefined, { id })
+          },
+          removable: !preview,
+          locale: activeLocale,
+          factboxNewTitle: t('editor:factbox.factboxNewTitle'),
+          addSingleLabel: t('editor:factbox.addSingleLabel')
+        }) as WithConsumer
+        return {
+          ...plugin,
+          consumer: plugin.consumer && {
+            ...plugin.consumer,
+            consume: createFactboxConsume(repository, session)
+          }
+        }
+      })()
     ]
-  }, [openFactboxEditor, openFactboxes, openImageSearch, t, activeLocale, preview, hast])
+  }, [openFactboxEditor, openFactboxes, openImageSearch, preview, t, activeLocale, repository, session, hast])
 
   if (!content) {
     return <View.Root />
@@ -174,6 +205,8 @@ function EditorWrapper(props: ViewProps & {
       >
         <EditorHeader ydoc={ydoc} planningId={planningId} readOnly={preview} />
 
+        <DerivedFromPlanning ydoc={ydoc} />
+
         <Notes ydoc={ydoc} />
 
         <View.Content className='flex flex-col max-w-[1000px]'variant='grid'>
@@ -186,7 +219,7 @@ function EditorWrapper(props: ViewProps & {
         </View.Content>
 
         <View.Footer>
-          <BaseEditor.Footer />
+          <BaseEditor.Footer lang={documentLanguage} />
         </View.Footer>
       </BaseEditor.Root>
     </View.Root>

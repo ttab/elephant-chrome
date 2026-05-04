@@ -2,7 +2,7 @@ import type { EleDocument, EleDocumentResponse } from '@/shared/types'
 import { Textbit, type Element } from '@ttab/textbit'
 import useSWR from 'swr'
 import { LoadingText } from './LoadingText'
-import { Bold, Italic, Link, Text, OrderedList, UnorderedList, TTVisual, Factbox, Table } from '@ttab/textbit-plugins'
+import { Bold, Italic, Link, Text, OrderedList, UnorderedList, TTVisual, Image, Factbox, Table } from '@ttab/textbit-plugins'
 import { PreVersion } from './Version/PreVersion'
 import type { Status as DocumentStatuses } from '@ttab/elephant-api/repository'
 import { PreVersionInfo } from './Version/PreVersionInfo'
@@ -23,7 +23,7 @@ const fetcher = async (url: string): Promise<EleDocument | undefined> => {
   return result.document
 }
 
-export const Editor = ({ id, version, textOnly = false, direct, versionStatusHistory, disableScroll = false, showNotes = false }: {
+export const Editor = ({ id, version, textOnly = false, direct, versionStatusHistory, disableScroll = false, showNotes = false, showTitle = false }: {
   id: string
   textOnly?: boolean
   version?: bigint | undefined
@@ -31,6 +31,7 @@ export const Editor = ({ id, version, textOnly = false, direct, versionStatusHis
   direct?: boolean
   disableScroll?: boolean
   showNotes?: boolean
+  showTitle?: boolean
 }): JSX.Element => {
   const { t, i18n } = useTranslation('editor')
 
@@ -56,9 +57,16 @@ export const Editor = ({ id, version, textOnly = false, direct, versionStatusHis
         bylineLabel: t('image.bylineLabel'),
         removable: false
       }),
+      Image({
+        captionLabel: t('image.captionLabel'),
+        bylineLabel: t('image.bylineLabel'),
+        removable: false
+      }),
       Factbox({
         headerTitle: t('factbox.headerTitle'),
         modifiedLabel: t('factbox.modifiedLabel'),
+        createdLabel: t('factbox.createdLabel'),
+        lastModifiedLabel: t('factbox.lastModifiedLabel'),
         footerTitle: t('factbox.footerTitle'),
         removable: false,
         locale: activeLocale
@@ -109,6 +117,12 @@ export const Editor = ({ id, version, textOnly = false, direct, versionStatusHis
         <PreVersionInfo version={version} versionStatusHistory={versionStatusHistory} />
       )}
 
+      {showTitle && document.title && (
+        <p className='text-lg font-bold pt-2 ps-12 pe-12 '>
+          {document.title}
+        </p>
+      )}
+
       {!!notes.length && (
         <div className='pe-12 ps-12 mt-6'>
           {notes.map((note, index) => (
@@ -153,5 +167,5 @@ function filterText(content: Element[], textOnly: boolean): Element[] {
     return content
   }
 
-  return content.filter((c) => c.type !== 'tt/visual')
+  return content.filter((c) => c.type !== 'tt/visual' && c.type !== 'core/image')
 }

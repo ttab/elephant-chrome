@@ -56,10 +56,11 @@ function HastSwitch({ checked, onCheckedChange, size = 'default' }: {
   )
 }
 
-export const HastToggle = ({ ydoc, usableId, className, variant = 'compact' }: {
+export const HastToggle = ({ ydoc, usableId, className, labelClassName, variant = 'compact' }: {
   ydoc: YDocument<Y.Map<unknown>>
   usableId?: bigint
   className?: string
+  labelClassName?: string
   variant?: 'compact' | 'full'
 }): JSX.Element | null => {
   const { featureFlags } = useRegistry()
@@ -163,7 +164,7 @@ export const HastToggle = ({ ydoc, usableId, className, variant = 'compact' }: {
     <div className={cn('flex items-center gap-1.5', className)}>
       <HastSwitch checked={isHast} onCheckedChange={handleToggle} />
       <Label
-        className={cn('text-xs cursor-pointer', textColor)}
+        className={cn('text-xs cursor-pointer', textColor, labelClassName)}
         onClick={handleToggle}
       >
         {t('flash:hastLabel')}

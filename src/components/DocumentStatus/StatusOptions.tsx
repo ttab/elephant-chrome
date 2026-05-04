@@ -1,16 +1,20 @@
 import {
+  getStatusSpecifications,
   type StatusSpecification,
-  type WorkflowTransition,
-  StatusSpecifications
+  type WorkflowTransition
 } from '@/defaults/workflowSpecification'
 import { StatusMenuOption } from './StatusMenuOption'
 import type { PropsWithChildren } from 'react'
 
-export const StatusOptions = ({ transitions, statuses, onSelect, children, hasChanges }: {
+export const StatusOptions = ({
+  transitions, statuses, onSelect, children, hasChanges, documentType, disabledTransitions
+}: {
   transitions: Record<string, WorkflowTransition>
   statuses: Record<string, StatusSpecification>
   onSelect: (state: { status: string } & WorkflowTransition) => void
   hasChanges?: boolean
+  documentType: string | undefined
+  disabledTransitions?: Record<string, { reason: string }>
 } & PropsWithChildren) => {
   return (
     <div className='p-2'>
@@ -22,7 +26,7 @@ export const StatusOptions = ({ transitions, statuses, onSelect, children, hasCh
           return !!(status === 'draft' || status === 'unpublished' || statuses[status])
         })
         .map(([status, state]) => {
-          const statusDef = status === 'unpublished' ? StatusSpecifications[status] : statuses[status]
+          const statusDef = status === 'unpublished' ? getStatusSpecifications(status, documentType) : statuses[status]
           return (
             <StatusMenuOption
               key={status}
@@ -31,6 +35,7 @@ export const StatusOptions = ({ transitions, statuses, onSelect, children, hasCh
               state={state}
               onSelect={onSelect}
               hasChanges={hasChanges}
+              disabledReason={disabledTransitions?.[status]?.reason}
             />
           )
         })}

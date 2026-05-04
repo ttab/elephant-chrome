@@ -406,7 +406,7 @@ export const Stream = memo(({
       if (!shiftAnchorRef.current) {
         shiftAnchorRef.current = entryId
         const currentWire = allDataRef.current.find((w) => w.id === entryId)
-        if (currentWire && getWireState(currentWire).status !== 'used') {
+        if (currentWire) {
           onToggleWire(currentWire, true)
           lastToggledWireIdRef.current = entryId
         }
@@ -422,7 +422,7 @@ export const Stream = memo(({
 
       if (movingAway) {
         const nextWire = allDataRef.current.find((w) => w.id === nextEntryId)
-        if (nextWire && getWireState(nextWire).status !== 'used') {
+        if (nextWire) {
           onToggleWire(nextWire, true)
           lastToggledWireIdRef.current = nextEntryId
         }

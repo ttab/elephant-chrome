@@ -1,6 +1,5 @@
 import { Button } from '@ttab/elephant-ui'
 import { PlusIcon, ChevronDownIcon, type LucideIcon } from '@ttab/elephant-ui/icons'
-import { type ReactNode } from 'react'
 import * as Views from '@/views'
 import { getTemplateFromView } from '@/shared/templates/lib/getTemplateFromView'
 import { cn } from '@ttab/elephant-ui/utils'
@@ -19,71 +18,64 @@ import { addButtonGroupValueFormat } from '@/defaults/documentTypeFormats'
 import type { buttonVariants } from '@ttab/elephant-ui'
 import type { VariantProps } from 'class-variance-authority'
 import type { QueryParams } from '@/hooks/useQuery'
+import { useLink } from '@/hooks/useLink'
+import { useSession } from 'next-auth/react'
+import { createNewFactbox } from './lib/createNewFactbox'
+import { toast } from 'sonner'
+import { useRegistry } from '@/hooks/useRegistry'
+import { useDocumentDefaults } from '@/hooks/useDocumentDefaults'
+import { TimelessCreation } from '@/views/TimelessCreation'
 import { useTranslation } from 'react-i18next'
 import type { TFunction } from 'i18next'
-import { useRegistry } from '@/hooks/index'
 
-const addButtonTypes = ['core/planning-item', 'core/event', 'core/article', 'core/factbox', 'core/flash'] as const
+const addButtonTypes = ['core/planning-item', 'core/event', 'core/article', 'core/factbox', 'core/flash', 'core/article#timeless'] as const
 
 type Variant = VariantProps<typeof buttonVariants>['variant']
-type ButtonView = { name: View, type: string, icon?: { icon?: LucideIcon, color?: string } }
+type ButtonView = { name: View, type: keyof typeof addButtonGroupValueFormat, icon?: { icon?: LucideIcon, color?: string } }
+
+const getViewLabel = (view: ButtonView, hast?: boolean): string => {
+  if (view.name === 'Flash' && hast) {
+    return 'HAST'
+  }
+
+  return addButtonGroupValueFormat[view.type]?.label ?? ''
+}
 
 const AddButton = ({
-  withNew,
   variant = 'default',
   className,
-  showModal,
-  hideModal,
-  hast,
   view,
-  query,
+  onClick,
   t
 }: {
-  query: QueryParams
-  withNew?: boolean
   variant?: Variant
   className?: string
-  showModal?: (content: ReactNode, type?: 'dialog') => void
-  hideModal?: () => void
-  hast?: boolean
   view: ButtonView
+  onClick: (view: ButtonView) => void
   t: TFunction
 }) => {
-  const ViewDialog = Views[view.name]
-  const typeLabel = (t?: string) => t ? addButtonGroupValueFormat[t].label : ''
-
   return (
     <Button
       size='sm'
       variant={variant}
-      className={!withNew ? '' : cn('h-8 pr-4', className)}
-      onClick={() => {
-        const id = crypto.randomUUID()
-        const initialDocument = getTemplateFromView(view.name, { useHast: hast })(id, { query })
-
-        if (showModal) {
-          showModal(
-            <ViewDialog
-              onDialogClose={hideModal}
-              asDialog
-              id={id}
-              document={initialDocument}
-            />
-          )
-        }
-      }}
+      className={cn('h-8 pr-4', className)}
+      onClick={() => onClick(view)}
     >
-      {withNew && <PlusIcon size={18} strokeWidth={1.75} />}
-      <span className='pl-0.5'>{`${withNew ? t('common:misc.new') : view.name === 'Flash' && hast ? 'HAST' : typeLabel(view.type)}`}</span>
+      <PlusIcon size={18} strokeWidth={1.75} />
+      <span className='pl-0.5'>{t('common:misc.new')}</span>
     </Button>
   )
 }
 
 export const AddButtonGroup = ({ docType = 'core/planning-item', query }: { type: View, query: QueryParams, docType?: string }) => {
   const { showModal, hideModal } = useModal()
+  const { repository, featureFlags } = useRegistry()
+  const openFactboxEditor = useLink('Factbox')
+  const openEditor = useLink('Editor')
+  const { data: session } = useSession()
   const { t } = useTranslation()
-  const { featureFlags } = useRegistry()
   const hasHast = !!featureFlags.hasHast
+  const defaults = useDocumentDefaults()
 
   const views: ButtonView[] = addButtonTypes.map((type) => {
     const format = addButtonGroupValueFormat[type]
@@ -93,16 +85,51 @@ export const AddButtonGroup = ({ docType = 'core/planning-item', query }: { type
   const firstItem = views.find((view) => view.type === docType) as ButtonView
   const ItemIcon = firstItem.icon
 
+  const handleCreate = (view: ButtonView) => {
+    const ViewDialog = Views[view.name]
+    const id = crypto.randomUUID()
+
+    if (view.name === 'Factbox') {
+      createNewFactbox(repository, session, id)
+        .then((id) => openFactboxEditor(undefined, { id }, undefined))
+        .catch((error: unknown) => {
+          console.error('Error creating factbox:', error)
+          toast.error((error as Error).message)
+        })
+      return
+    }
+
+    if (view.type === 'core/article#timeless' && showModal) {
+      showModal(
+        <TimelessCreation
+          id={id}
+          onClose={(createdId) => {
+            hideModal()
+            if (createdId) {
+              openEditor(undefined, { id: createdId }, undefined)
+            }
+          }}
+        />
+      )
+    } else if (showModal) {
+      const initialDocument = getTemplateFromView(view.name, { useHast: hasHast })(id, { ...defaults, query })
+      showModal(
+        <ViewDialog
+          onDialogClose={hideModal}
+          asDialog
+          id={id}
+          document={initialDocument}
+        />
+      )
+    }
+  }
 
   return (
     <ButtonGroup>
       <AddButton
         t={t}
-        withNew
-        showModal={showModal}
-        hideModal={hideModal}
         view={firstItem?.type ? firstItem : views[0]}
-        query={query}
+        onClick={handleCreate}
       />
       <ButtonGroupSeparator />
       <DropdownMenu>
@@ -118,17 +145,13 @@ export const AddButtonGroup = ({ docType = 'core/planning-item', query }: { type
         </div>
         <DropdownMenuContent>
           {firstItem?.type && (
-            <DropdownMenuItem inset={false} className='py-0 px-1'>
+            <DropdownMenuItem
+              inset={false}
+              className='py-1.5 px-2 cursor-pointer'
+              onSelect={() => handleCreate(firstItem)}
+            >
               {ItemIcon?.icon && <ItemIcon.icon strokeWidth={1.75} size={18} color={ItemIcon.color} />}
-              <AddButton
-                t={t}
-                variant='ghost'
-                className='px-0'
-                showModal={showModal}
-                hideModal={hideModal}
-                view={firstItem}
-                query={query}
-              />
+              <span className='pl-4'>{getViewLabel(firstItem, hasHast)}</span>
             </DropdownMenuItem>
           )}
           <DropdownMenuSeparator />
@@ -136,18 +159,14 @@ export const AddButtonGroup = ({ docType = 'core/planning-item', query }: { type
             const ViewIcon = view.icon
 
             return (
-              <DropdownMenuItem inset={false} className='py-0 px-1' key={view.name}>
+              <DropdownMenuItem
+                inset={false}
+                className='py-1.5 px-2 cursor-pointer'
+                key={view.name}
+                onSelect={() => handleCreate(view)}
+              >
                 {ViewIcon?.icon && <ViewIcon.icon strokeWidth={1.75} size={18} color={ViewIcon.color} />}
-                <AddButton
-                  t={t}
-                  variant='ghost'
-                  className='px-0'
-                  showModal={showModal}
-                  hideModal={hideModal}
-                  hast={hasHast}
-                  view={view}
-                  query={query}
-                />
+                <span className='pl-4'>{getViewLabel(view, hasHast)}</span>
               </DropdownMenuItem>
             )
           })}

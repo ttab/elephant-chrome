@@ -13,6 +13,7 @@ export const GET = (): Promise<unknown> => {
       systemLanguage: process.env.SYSTEM_LANGUAGE ?? '',
       hasPrint: process.env.HAS_PRINT ?? '',
       hasHast: process.env.HAS_HAST ?? '',
+      hasLooseSlugline: process.env.HAS_LOOSE_SLUGLINE ?? '',
       environment: process.env.ENVIRONMENT ?? ''
     }
   })

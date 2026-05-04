@@ -60,7 +60,13 @@
     "createError2": "Kunde inte skapa ny artikel!",
     "assignmentRollbackError": "Artikeln kunde inte bekräftas som sparad och uppdraget kunde inte tas bort. Kontrollera planeringen manuellt.",
     "markUsed": "Markera som använd",
-    "createButton": "Skapa artikel"
+    "createButton": "Skapa artikel",
+    "embargo": "Embargo till",
+    "translateToNynorsk": "Översättning",
+    "translationNone": "Ingen",
+    "translationStandard": "Standard",
+    "translationPersonal": "Personliga preferenser",
+    "translationError": "Översättning misslyckades. Artikeln skapades utan översättning."
   },
   "sources": {
     "title": "Källor",

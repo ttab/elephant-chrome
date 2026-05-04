@@ -5,7 +5,8 @@
     "assignment": "assignment",
     "article": "article",
     "flash": "flash",
-    "quickArticle": "quick article"
+    "quickArticle": "quick article",
+    "factbox": "Factbox"
   },
   "labels": {
     "newsvalue": "News value",
@@ -20,7 +21,8 @@
     "category": "Category",
     "action": "Action",
     "story": "Story",
-    "showOlder": "Show older"
+    "showOlder": "Show older",
+    "slugline": "Slugline"
   },
   "status": {
     "draft": "Draft",
@@ -29,6 +31,7 @@
     "usable": "Published",
     "unpublished": "Unpublished",
     "done": "Done",
+    "used": "Used",
     "print_done": "Done",
     "needs_proofreading": "Ready for check",
     "withheld": "Scheduled",

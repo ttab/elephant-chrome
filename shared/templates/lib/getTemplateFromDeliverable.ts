@@ -11,6 +11,8 @@ export function getTemplateFromDeliverable(type: DeliverableType): (id: string, 
       return Templates.flash
     case 'editorial-info':
       return Templates.editorialInfo
+    case 'timeless':
+      return Templates.timeless
     default:
       return Templates.article
   }

@@ -5,7 +5,8 @@
     "assignment": "uppdrag",
     "article": "artikel",
     "flash": "flash",
-    "quickArticle": "två på två"
+    "quickArticle": "två på två",
+    "factbox": "Faktaruta"
   },
   "labels": {
     "newsvalue": "Nyhetsvärde",
@@ -20,7 +21,8 @@
     "category": "Kategori",
     "action": "Action",
     "story": "Story",
-    "showOlder": "Visa äldre"
+    "showOlder": "Visa äldre",
+    "slugline": "Slugg"
   },
   "status": {
     "draft": "Utkast",
@@ -29,6 +31,7 @@
     "usable": "Publicerad",
     "unpublished": "Avpublicerad",
     "done": "Klar",
+    "used": "Använd",
     "print_done": "Klar",
     "needs_proofreading": "Klar för korr",
     "withheld": "Schemalagd",

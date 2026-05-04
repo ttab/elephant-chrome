@@ -1,4 +1,5 @@
 import {
+  BookmarkIcon,
   CableIcon,
   BriefcaseBusinessIcon,
   CalendarDaysIcon,
@@ -89,6 +90,12 @@ export const getApplicationMenu = (featureFlags: AllowedFeatureFlag): Applicatio
           label: i18next.t('app:mainMenu.factboxes'),
           icon: BoxesIcon,
           color: '#99c5c4'
+        },
+        {
+          name: 'Timeless',
+          label: i18next.t('app:mainMenu.timeless'),
+          icon: BookmarkIcon,
+          color: '#7C6F9C'
         }
       ]
     },

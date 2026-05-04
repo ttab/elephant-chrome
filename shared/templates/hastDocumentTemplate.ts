@@ -7,7 +7,7 @@ export function hastDocumentTemplate(id: string, payload?: TemplatePayload): Doc
   return Document.create({
     uuid: id,
     uri: `core://article/${id}`,
-    language: getSystemLanguage(),
+    language: payload?.language ?? getSystemLanguage(),
     title: payload?.title,
     type: 'core/article',
     content: [

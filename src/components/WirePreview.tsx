@@ -4,25 +4,27 @@ import { decodeString } from '@/lib/decodeString'
 import type { Wire } from '@/shared/schemas/wire'
 import { Editor } from '@/components/PlainEditor'
 import { getWireStatus } from '@/lib/getWireStatus'
-import { getWireState } from '@/lib/getWireState'
-import { DocumentHistory } from './DocumentHistory'
+import { DocumentHistory } from './DocumentHistory/DocumentHistory'
 import { useState, useEffect } from 'react'
+import { getDocumentState } from '@/lib/getDocumentState'
 import { useTranslation } from 'react-i18next'
 
 export const WirePreview = ({ wire }: {
   wire: Wire
 }) => {
   const { t } = useTranslation('wires')
+  const sourceTitle = wire?.fields['document.rel.source.title']?.values[0]
+  const sourceUri = wire?.fields['document.rel.source.uri']?.values[0]
+  const providerTitle = wire?.fields['document.rel.provider.title']?.values[0]
+  const providerUri = wire?.fields['document.rel.provider.uri']?.values[0]
   const data = {
-    source: wire?.fields['document.rel.source.uri']?.values[0]
-      ?.replace('wires://source/', ''),
-    provider: wire?.fields['document.rel.provider.uri']?.values[0]
-      ?.replace('wires://provider/', ''),
+    source: sourceTitle || sourceUri?.replace('wires://source/', ''),
+    provider: providerTitle || providerUri?.replace('wires://provider/', ''),
     role: wire?.fields['document.meta.tt_wire.role'].values[0],
     newsvalue: wire?.fields['document.meta.core_newsvalue.value']?.values[0],
     status: getWireStatus(wire),
     version: wire?.fields['current_version']?.values[0] ? BigInt(wire.fields['current_version'].values[0]) : 1n,
-    wireState: getWireState(wire)
+    wireState: getDocumentState(wire)
   }
 
   const [wireVersion, setWireVersion] = useState<bigint | undefined>(undefined)
@@ -37,11 +39,11 @@ export const WirePreview = ({ wire }: {
         <div className='text-sm flex flex-row gap-2'>
           {data?.source && (
             <Badge className='h-6 pointer-events-none'>
-              {data.source}
+              {decodeString(data.source)}
             </Badge>
           )}
 
-          {data?.provider && data.provider !== data.source && data.provider.toLocaleLowerCase() !== data.source && (
+          {data?.provider && data.provider.toLocaleLowerCase() !== data.source?.toLocaleLowerCase() && (
             <Badge className='h-6'>
               {decodeString(data.provider)}
             </Badge>
@@ -86,7 +88,7 @@ export const WirePreview = ({ wire }: {
         <DocumentHistory
           uuid={wire.id}
           currentVersion={data?.version}
-          wireState={data.wireState}
+          documentState={data.wireState}
           onSelectVersion={setWireVersion}
           selectedVersion={wireVersion}
         />
@@ -95,7 +97,7 @@ export const WirePreview = ({ wire }: {
       <Editor
         id={wire.id}
         version={wireVersion}
-        textOnly={true}
+        textOnly={false}
         direct
         disableScroll={true}
         showNotes={true}
