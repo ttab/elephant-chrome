@@ -1,4 +1,12 @@
-import { useHistory, useLink, useNavigation, useRegistry, useView, useWorkflowStatus } from '@/hooks'
+import {
+  useDocumentSnapshot,
+  useHistory,
+  useLink,
+  useNavigation,
+  useRegistry,
+  useView,
+  useWorkflowStatus
+} from '@/hooks'
 import { Newsvalue } from '@/components/Newsvalue'
 import { useCallback, type JSX } from 'react'
 import { MetaSheet } from '@/components/MetaSheet/MetaSheet'
@@ -18,19 +26,8 @@ import { useYValue } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import { useTranslation } from 'react-i18next'
 import { documentTypeValueFormat } from '@/defaults/documentTypeFormats'
-import useSWR from 'swr'
-import type { EleDocument, EleDocumentResponse } from '@/shared/types'
 import { HastToggle } from '@/components/HastToggle'
 import { HastIndicator } from '@/components/HastIndicator'
-
-const BASE_URL = import.meta.env.BASE_URL || ''
-
-const wireDocFetcher = async (url: string): Promise<EleDocument | undefined> => {
-  const response = await fetch(url)
-  if (!response.ok) return undefined
-  const result = await response.json() as EleDocumentResponse
-  return result.document
-}
 
 export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: propPlanningId }: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -55,12 +52,21 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
   // Fetch embargo from the original wire document (schema doesn't allow
   // storing embargo_until on the article's wire link data)
   const primaryWireId = wireBlocks?.[0]?.uuid
-  const { data: wireDocument } = useSWR<EleDocument | undefined>(
-    primaryWireId ? `${BASE_URL}/api/documents/${primaryWireId}?direct=true` : null,
-    wireDocFetcher,
-    { revalidateOnFocus: false, revalidateOnReconnect: false }
-  )
+  const { data: wireDocument } = useDocumentSnapshot({ id: primaryWireId, direct: true })
   const embargoUntil = wireDocument?.meta?.['tt/wire']?.[0]?.data?.embargo_until
+
+  // In read-only mode we can't read from the Y.Map (ydoc.ele is undefined),
+  // so fall back to the document data for the timeless category. The fetch
+  // dedups via SWR with the one PlainEditor already runs against the same URL.
+  const isTimeless = documentType === 'core/article#timeless'
+  const [yjsTimelessCategory] = useYValue<Block[]>(ydoc.ele, 'links.core/timeless-category')
+  const { data: articleDocument } = useDocumentSnapshot({
+    id: ydoc.id,
+    version: readOnlyVersion,
+    enabled: readOnly && isTimeless
+  })
+  const timelessCategory = yjsTimelessCategory?.[0]?.title
+    ?? articleDocument?.links?.['core/timeless-category']?.[0]?.title
 
   // FIXME: We must have a way to retrieve the publish time defined in the planning.
   // FIXME: When yjs opening of related planning have been fixed this should be readded/remade.
@@ -191,6 +197,11 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
                 />
               )}
               {readOnly && <HastIndicator documentId={ydoc.id} size={18} />}
+              {isTimeless && timelessCategory && (
+                <span className='hidden @3xl/view:inline text-sm font-medium text-muted-foreground truncate'>
+                  {timelessCategory}
+                </span>
+              )}
               {!!wireBlocks?.length && (
                 <Button
                   variant='ghost'

@@ -1,19 +1,11 @@
-import useSWR from 'swr'
 import { Label } from '@ttab/elephant-ui'
 import { Version } from '@/components/Version'
 import { OriginLinks } from '@/components/OriginLinks'
-import { toast } from 'sonner'
-import type { EleBlockGroup, EleDocumentResponse } from '@/shared/types'
 import type { ReactNode } from 'react'
 import { useDeliverableInfo } from '@/hooks/useDeliverableInfo'
+import { useDocumentSnapshot } from '@/hooks'
 import { useEditorialInfoTypes } from '@/hooks/useEditorialInfoType'
 import { useTranslation } from 'react-i18next'
-
-const BASE_URL = import.meta.env.BASE_URL || ''
-type FetcherResult = {
-  meta: EleBlockGroup | undefined
-  links: EleBlockGroup | undefined
-} | undefined
 
 const ValueBlock = ({ label, value }: { label: string, value: string | number | undefined }) => {
   if (!value) {
@@ -41,30 +33,8 @@ const InfoBlock = ({ labelId, text, children }: { labelId: string, text: string,
 export const ReadOnly = ({ documentId, version }: { documentId: string, version: bigint | undefined }) => {
   const editorialInfoTypes = useEditorialInfoTypes()
   const { t } = useTranslation('metaSheet')
-  const fetcher = async (params: string[]): Promise<FetcherResult> => {
-    const [url] = params
-    const response = await fetch(url)
 
-    if (!response.ok) {
-      console.error(`Fetch metadata error for ${documentId}:`, error)
-      toast.error(t('errors:messages.failedToLoadMetaData'))
-      throw new Error('Readonly: Network response was not ok')
-    }
-
-    const result = await response.json() as EleDocumentResponse
-
-    if (result?.document?.content.length === 0 && result?.document?.meta && result?.document?.links) {
-      return result?.document
-    }
-
-    return { meta: result.document?.meta, links: result.document?.links }
-  }
-
-  const { data, error } = useSWR<FetcherResult, Error>(
-    [`${BASE_URL}/api/documents/${documentId}${version ? `?version=${version}` : ''}`, documentId],
-    fetcher,
-    { revalidateOnFocus: false, revalidateOnReconnect: false }
-  )
+  const { data, error } = useDocumentSnapshot({ id: documentId, version })
 
   const sourceDocument = data?.links?.['core/article']?.find((l) => l.rel === 'source-document')
     ?? data?.links?.['core/article#timeless']?.find((l) => l.rel === 'source-document')
@@ -74,6 +44,8 @@ export const ReadOnly = ({ documentId, version }: { documentId: string, version:
     return <div></div>
   }
 
+  const isTimeless = data?.type === 'core/article#timeless'
+  const timelessCategory = data?.links?.['core/timeless-category']?.[0]?.title
   const newsvalue = data?.meta?.['core/newsvalue']?.[0]?.value
   const slugline = data?.meta?.['tt/slugline']?.[0]?.value
   const section = data?.links?.['core/section']?.[0]?.title
@@ -91,6 +63,11 @@ export const ReadOnly = ({ documentId, version }: { documentId: string, version:
         <ValueBlock label={t('core:labels.newsvalue')} value={newsvalue} />
         <ValueBlock label={t('labels.byline')} value={authors} />
       </InfoBlock>
+      {isTimeless && timelessCategory && (
+        <InfoBlock text={t('labels.category')} labelId='timeless-category'>
+          <div className='text-sm font-bold'>{timelessCategory}</div>
+        </InfoBlock>
+      )}
       <InfoBlock text={t('labels.tags')} labelId='tags'>
         <ValueBlock label={t('labels.slugline')} value={slugline} />
         <ValueBlock label={t('core:labels.section')} value={section} />
