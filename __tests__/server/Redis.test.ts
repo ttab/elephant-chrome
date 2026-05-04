@@ -9,7 +9,9 @@ vi.mock('redis', () => ({
 // Mock the logger
 vi.mock('../../src-srv/lib/logger.js', () => ({
   default: {
-    error: vi.fn()
+    error: vi.fn(),
+    info: vi.fn(),
+    warn: vi.fn()
   }
 }))
 
@@ -78,8 +80,8 @@ describe('Redis', () => {
       errorHandler(testError)
 
       expect(logger.error).toHaveBeenCalledWith(
-        { err: testError, host: 'myhost', port: '6380' },
-        'Redis cache connection error'
+        expect.objectContaining({ err: testError, label: 'redis-cache', host: 'myhost', port: '6380' }),
+        'redis-cache entered error state'
       )
     })
 

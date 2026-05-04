@@ -1,7 +1,12 @@
 import { Redis as IORedis } from 'ioredis'
-import logger from '../lib/logger.js'
+import { instrumentRedisClient, type RedisHealth } from '../utils/redisHealth.js'
 
-export const createRedisClient = (redisUrl: URL): IORedis => {
+export interface PubsubClient {
+  client: IORedis
+  health: RedisHealth
+}
+
+export const createRedisClient = (redisUrl: URL): PubsubClient => {
   const { hostname, port, username, password, protocol } = redisUrl
 
   const client = new IORedis({
@@ -12,9 +17,6 @@ export const createRedisClient = (redisUrl: URL): IORedis => {
     ...(protocol === 'rediss:' ? { tls: { rejectUnauthorized: true } } : {})
   })
 
-  client.on('error', (err: Error) => {
-    logger.error({ err, host: hostname, port }, 'Hocuspocus Redis pubsub error')
-  })
-
-  return client
+  const health = instrumentRedisClient(client, 'redis-pubsub', { host: hostname, port })
+  return { client, health }
 }
