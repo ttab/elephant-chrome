@@ -1,4 +1,4 @@
-import { useCallback, useEffect, type JSX } from 'react'
+import { useEffect, type JSX } from 'react'
 import { useQuery, type QueryParams } from '@/hooks/useQuery'
 import { Table } from '@/components/Table'
 import { Pagination } from '@/components/Table/Pagination'
@@ -31,15 +31,12 @@ export const TimelessList = ({ columns }: {
     }
   })
 
-  const onRowSelected = useCallback(() => {}, [])
-
   return (
     <>
       <Table
         type='Timeless'
         searchType='Editor'
         columns={columns as ColumnDef<TimelessArticle>[]}
-        onRowSelected={onRowSelected}
       />
       <Pagination />
     </>
