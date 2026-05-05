@@ -1,8 +1,8 @@
 import { useSession } from 'next-auth/react'
 import useSWR from 'swr'
-import { useCallback, useMemo } from 'react'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { useRegistry, useRepositoryEvents } from '@/hooks'
-import type { GetDeliverableInfoResponse } from '@ttab/elephant-api/repository'
+import type { EventlogItem, GetDeliverableInfoResponse } from '@ttab/elephant-api/repository'
 
 export const useDeliverableInfo = (deliverableId: string): GetDeliverableInfoResponse | undefined => {
   const { repository } = useRegistry()
@@ -29,11 +29,18 @@ export const useDeliverableInfo = (deliverableId: string): GetDeliverableInfoRes
     }
   )
 
-  const revalidate = useCallback(() => {
-    void mutate()
+  const planningUuidRef = useRef<string | undefined>(data?.planningUuid)
+  useEffect(() => {
+    planningUuidRef.current = data?.planningUuid
+  }, [data?.planningUuid])
+
+  const onPlanningEvent = useCallback((event: EventlogItem) => {
+    if (planningUuidRef.current && event.uuid === planningUuidRef.current) {
+      void mutate()
+    }
   }, [mutate])
 
-  useRepositoryEvents('core/planning-item', revalidate)
+  useRepositoryEvents('core/planning-item', onPlanningEvent)
 
   return data ?? undefined
 }
