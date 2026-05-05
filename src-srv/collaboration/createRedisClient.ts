@@ -8,6 +8,11 @@ export const createRedisClient = (redisUrl: URL): IORedis => {
   const client = new IORedis({
     host: hostname,
     port: portNumber,
+    // Pub/sub clients don't need the loading-from-disk check, and the INFO it
+    // sends can fail with "only SUBSCRIBE/UNSUBSCRIBE/PING/QUIT/RESET allowed
+    // in this context" if the connection enters subscribe mode before the
+    // check completes (e.g. on Hocuspocus reconnect with auto-resubscribe).
+    enableReadyCheck: false,
     ...(username ? { username } : {}),
     ...(password ? { password } : {}),
     ...(protocol === 'rediss:' ? { tls: { rejectUnauthorized: true } } : {})

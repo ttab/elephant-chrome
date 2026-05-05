@@ -25,29 +25,35 @@ describe('createRedisClient', () => {
 
   test('parses redis:// URL into ioredis options with credentials', () => {
     createRedisClient(new URL('redis://user:pw@cache:6379'))
-    expect(IORedis).toHaveBeenCalledWith({
+    expect(IORedis).toHaveBeenCalledWith(expect.objectContaining({
       host: 'cache',
       port: 6379,
       username: 'user',
       password: 'pw'
-    })
+    }))
   })
 
   test('omits username/password when absent', () => {
     createRedisClient(new URL('redis://cache:6379'))
-    expect(IORedis).toHaveBeenCalledWith({
-      host: 'cache',
-      port: 6379
-    })
+    const opts = (IORedis as unknown as Mock).mock.calls[0][0] as Record<string, unknown>
+    expect(opts.username).toBeUndefined()
+    expect(opts.password).toBeUndefined()
   })
 
   test('rediss:// URL enables TLS', () => {
     createRedisClient(new URL('rediss://cache:6380'))
-    expect(IORedis).toHaveBeenCalledWith({
+    expect(IORedis).toHaveBeenCalledWith(expect.objectContaining({
       host: 'cache',
       port: 6380,
       tls: { rejectUnauthorized: true }
-    })
+    }))
+  })
+
+  test('disables ready-check (no INFO sent on a pub/sub connection)', () => {
+    createRedisClient(new URL('redis://cache:6379'))
+    expect(IORedis).toHaveBeenCalledWith(expect.objectContaining({
+      enableReadyCheck: false
+    }))
   })
 
   test('returns a fresh client per invocation (Hocuspocus pub+sub contract)', () => {
