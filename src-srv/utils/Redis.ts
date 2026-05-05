@@ -28,7 +28,7 @@ export class Redis {
     })
 
     const { hostname, port } = new URL(this.#url)
-    instrumentRedisClient(client, 'redis-cache', { host: hostname, port })
+    instrumentRedisClient(client, 'redis-cache', { host: hostname, port: parseInt(port, 10) })
 
     await client.connect().catch((ex) => {
       throw new Error('connect to redis', { cause: ex })

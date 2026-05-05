@@ -80,7 +80,7 @@ describe('Redis', () => {
       errorHandler(testError)
 
       expect(logger.error).toHaveBeenCalledWith(
-        expect.objectContaining({ err: testError, label: 'redis-cache', host: 'myhost', port: '6380' }),
+        expect.objectContaining({ err: testError, label: 'redis-cache', host: 'myhost', port: 6380 }),
         'redis-cache entered error state'
       )
     })

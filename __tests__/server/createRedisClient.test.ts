@@ -74,7 +74,7 @@ describe('createRedisClient', () => {
     const err = new Error('boom')
     errorCall![1](err)
     expect(logger.error).toHaveBeenCalledWith(
-      expect.objectContaining({ err, label: 'redis-pubsub', host: 'cache', port: '6379' }),
+      expect.objectContaining({ err, label: 'redis-pubsub', host: 'cache', port: 6379 }),
       'redis-pubsub entered error state'
     )
   })
