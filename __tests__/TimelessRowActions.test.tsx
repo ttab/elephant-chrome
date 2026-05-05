@@ -30,28 +30,36 @@ vi.mock('@/components/ConvertToArticleDialog', () => ({
 }))
 
 vi.mock('@/components/ui/DotMenu', () => ({
-  DotMenu: ({ items }: { items: Array<{
-    label: string
-    disabled?: boolean
-    item: (event: React.MouseEvent<HTMLDivElement>) => void
-  }> }) => (
-    <div>
-      {items.map((item) => (
-        <button
-          key={item.label}
-          data-testid={`menu-${item.label}`}
-          disabled={item.disabled}
-          onClick={(event) => {
-            if (typeof item.item === 'function') {
-              item.item(event as unknown as React.MouseEvent<HTMLDivElement>)
-            }
-          }}
-        >
-          {item.label}
-        </button>
-      ))}
-    </div>
-  )
+  DotMenu: ({ items, onOpenChange }: {
+    items: Array<{
+      label: string
+      disabled?: boolean
+      item: (event: React.MouseEvent<HTMLDivElement>) => void
+    }>
+    onOpenChange?: (open: boolean) => void
+  }) => {
+    // Simulate the menu being opened so any lazy-mounted hooks inside the
+    // component flip to their "opened" state.
+    onOpenChange?.(true)
+    return (
+      <div>
+        {items.map((item) => (
+          <button
+            key={item.label}
+            data-testid={`menu-${item.label}`}
+            disabled={item.disabled}
+            onClick={(event) => {
+              if (typeof item.item === 'function') {
+                item.item(event as unknown as React.MouseEvent<HTMLDivElement>)
+              }
+            }}
+          >
+            {item.label}
+          </button>
+        ))}
+      </div>
+    )
+  }
 }))
 
 const mockUseConvertArticleType = vi.mocked(useConvertArticleType)
@@ -144,5 +152,17 @@ describe('TimelessRowActions', () => {
     render(<TimelessRowActions documentId='timeless-id' />)
 
     expect(screen.getByTestId(/^menu-Planera/i)).toBeDisabled()
+  })
+
+  it('defers the deliverable-info fetch until the menu has been opened', () => {
+    setup()
+    render(<TimelessRowActions documentId='timeless-id' />)
+
+    // The DotMenu mock simulates an open by firing onOpenChange(true) on
+    // render. The first invocation of the hook (before the open propagates)
+    // must therefore be with an empty deliverableId, and the subsequent
+    // invocation with the real id.
+    expect(mockUseDeliverableInfo.mock.calls[0]?.[0]).toBe('')
+    expect(mockUseDeliverableInfo.mock.calls.at(-1)?.[0]).toBe('timeless-id')
   })
 })

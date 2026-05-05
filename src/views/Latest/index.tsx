@@ -1,6 +1,6 @@
 import type { LocaleData } from '@/types/index'
 import { type ViewMetadata } from '@/types/index'
-import { useRef, type JSX } from 'react'
+import { useRef, useState, type JSX } from 'react'
 import { format } from 'date-fns'
 import { useRegistry } from '@/hooks/useRegistry'
 import { handleLink } from '@/components/Link/lib/handleLink'
@@ -130,7 +130,10 @@ const Content = ({ documents, locale }: {
 }
 
 const Menu = ({ articleId }: { articleId: string }): JSX.Element => {
-  const planningId = useDeliverableInfo(articleId)?.planningUuid ?? ''
+  // Defer the deliverable-info fetch until the menu is opened (per-row lazy
+  // mount avoids fan-out fetch storms when the list contains many items).
+  const [hasOpened, setHasOpened] = useState(false)
+  const planningId = useDeliverableInfo(hasOpened ? articleId : '')?.planningUuid ?? ''
   const { t } = useTranslation('common')
   const { showModal, hideModal } = useModal()
   const featureFlags = useFeatureFlags(['hasPrint'])
@@ -139,6 +142,11 @@ const Menu = ({ articleId }: { articleId: string }): JSX.Element => {
   return (
     <div className='shrink p-'>
       <DotMenu
+        onOpenChange={(open) => {
+          if (open) {
+            setHasOpened(true)
+          }
+        }}
         items={[
           {
             label: t('actions.openType', { type: t('core:documentType.article') }),

@@ -58,9 +58,10 @@ export interface DotDropdownMenuActionItem {
  */
 const MENU_WIDTH = 224 // w-56 = 14rem = 224px
 
-export const DotMenu = ({ trigger = 'horizontal', items }: {
+export const DotMenu = ({ trigger = 'horizontal', items, onOpenChange }: {
   trigger?: 'horizontal' | 'vertical'
   items: DotDropdownMenuActionItem[]
+  onOpenChange?: (open: boolean) => void
 }): JSX.Element => {
   const triggerRef = useRef<HTMLButtonElement>(null)
   const [align, setAlign] = useState<'start' | 'end'>('start')
@@ -71,6 +72,7 @@ export const DotMenu = ({ trigger = 'horizontal', items }: {
         const spaceRight = window.innerWidth - triggerRef.current.getBoundingClientRect().left
         setAlign(spaceRight >= MENU_WIDTH ? 'start' : 'end')
       }
+      onOpenChange?.(open)
     }}
     >
       <DropdownMenuTrigger asChild>
