@@ -62,7 +62,6 @@ export class CollaborationServer {
     })
 
     const redisUrl = new URL(configuration.redisUrl)
-    const { hostname: redisHost, port: redisPort } = redisUrl
 
     this.server = new Hocuspocus({
       name: crypto.randomUUID(), // We need a server instance id to be able to acquire locks
@@ -79,8 +78,6 @@ export class CollaborationServer {
         }),
         new PubsubExtension({
           prefix: 'elc::hp',
-          host: redisHost,
-          port: parseInt(redisPort, 10),
           createClient: () => createRedisClient(redisUrl)
         }),
         this.#openDocuments,
