@@ -35,7 +35,7 @@ describe('instrumentRedisClient', () => {
     client.emit('ready')
     expect(health.isHealthy()).toBe(true)
     expect(logger.info).toHaveBeenCalledWith(
-      expect.objectContaining({ label: 'cache', downForMs: expect.any(Number) }),
+      expect.objectContaining({ label: 'cache', downForMs: expect.any(Number) as number }),
       expect.stringContaining('recovered')
     )
 
@@ -61,7 +61,7 @@ describe('instrumentRedisClient', () => {
 
     expect(logger.error).toHaveBeenCalledTimes(2)
     expect(logger.error).toHaveBeenLastCalledWith(
-      expect.objectContaining({ err, label: 'cache', downForMs: expect.any(Number) }),
+      expect.objectContaining({ err, label: 'cache', downForMs: expect.any(Number) as number }),
       'cache permanently disconnected'
     )
   })

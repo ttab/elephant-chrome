@@ -140,7 +140,7 @@ describe('Redis', () => {
       expect(mockClient.zAdd).toHaveBeenCalledWith(
         'elc::hp:doc_touched',
         expect.objectContaining({
-          score: expect.any(Number),
+          score: expect.any(Number) as number,
           value: 'missing-doc'
         })
       )
