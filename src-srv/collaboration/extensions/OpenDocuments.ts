@@ -99,14 +99,20 @@ export class OpenDocuments implements Extension {
     // Heartbeat interval
     setInterval(() => {
       this.#updateHeartbeat().catch((err: unknown) => {
-        logger.error({ err }, 'OpenDocuments heartbeat update failed')
+        logger.error(
+          { err, instanceId: this.#instanceId, count: this.#localConnectionCount },
+          'OpenDocuments heartbeat update failed'
+        )
       })
     }, this.#heartbeatInterval)
 
     // Cleanup interval
     setInterval(() => {
       this.#cleanupDeadConnections().catch((err: unknown) => {
-        logger.error({ err }, 'OpenDocuments dead-connection cleanup failed')
+        logger.error(
+          { err, instanceId: this.#instanceId },
+          'OpenDocuments dead-connection cleanup failed'
+        )
       })
     }, 60000 + Math.random() * 20000)
   }
