@@ -384,117 +384,117 @@
   },
   "tt/print-article": {
     "draft": {
-      "title": "",
-      "description": "",
+      "title": "Utkast",
+      "description": "Du jobber med et utkast av printartikkelen",
       "transitions": {
         "needs_proofreading": {
-          "title": "",
-          "description": "",
-          "promptTitle": ""
+          "title": "Be om korrektur",
+          "description": "Printartikkelen trenger korrektur",
+          "promptTitle": "Be om korrektur av printartikkelen"
         },
         "print_done": {
-          "title": "",
-          "description": "",
-          "promptTitle": ""
+          "title": "Legg klar",
+          "description": "Marker printartikkelen som klar",
+          "promptTitle": "Legg printartikkelen klar"
         },
         "usable": {
-          "title": "",
-          "description": "",
-          "promptTitle": ""
+          "title": "Eksporter",
+          "description": "Eksporter printartikkelen",
+          "promptTitle": "Eksporter printartikkelen"
         }
       }
     },
     "needs_proofreading": {
-      "title": "",
-      "description": "",
+      "title": "Klar for korrektur",
+      "description": "Printartikkelen trenger korrektur",
       "transitions": {
         "print_done": {
-          "title": "",
-          "description": "",
-          "promptTitle": ""
+          "title": "Legg klar",
+          "description": "Marker printartikkelen som klar",
+          "promptTitle": "Legg printartikkelen klar"
         },
         "usable": {
-          "title": "",
-          "description": "",
-          "promptTitle": ""
+          "title": "Eksporter",
+          "description": "Eksporter printartikkelen",
+          "promptTitle": "Eksporter printartikkelen"
         },
         "cancelled": {
-          "title": "",
-          "description": "",
-          "promptTitle": ""
+          "title": "Kast",
+          "description": "Kast printartikkelen",
+          "promptTitle": "Kast printartikkelen"
         },
         "draft": {
-          "title": "",
-          "description": "",
-          "promptTitle": ""
+          "title": "Til utkast",
+          "description": "Gjør om printartikkelen til et utkast igjen",
+          "promptTitle": "Gjør om printartikkelen til utkast"
         }
       }
     },
     "print_done": {
-      "title": "",
-      "description": "",
+      "title": "Klar",
+      "description": "Printartikkelen er klar og venter på godkjenning",
       "transitions": {
         "approved": {
-          "title": "",
-          "description": "",
-          "promptTitle": ""
+          "title": "Godkjenn",
+          "description": "Godkjenn printartikkelen",
+          "promptTitle": "Godkjenn printartikkelen"
         },
         "usable": {
-          "title": "",
-          "description": "",
-          "promptTitle": ""
+          "title": "Eksporter",
+          "description": "Eksporter printartikkelen",
+          "promptTitle": "Eksporter printartikkelen"
         },
         "needs_proofreading": {
-          "title": "",
-          "description": "",
-          "promptTitle": ""
+          "title": "Be om korrektur",
+          "description": "Printartikkelen trenger korrektur",
+          "promptTitle": "Be om korrektur av printartikkelen"
         },
         "cancelled": {
-          "title": "",
-          "description": "",
-          "promptTitle": ""
+          "title": "Kast",
+          "description": "Kast printartikkelen",
+          "promptTitle": "Kast printartikkelen"
         },
         "draft": {
-          "title": "",
-          "description": "",
-          "promptTitle": ""
+          "title": "Til utkast",
+          "description": "Gjør om printartikkelen til et utkast igjen",
+          "promptTitle": "Gjør om printartikkelen til utkast"
         }
       }
     },
     "usable": {
-      "title": "",
-      "asSaveCTA": "",
-      "asSaveTitle": "",
-      "description": "",
-      "changedDescription": "",
-      "updateDescription": "",
+      "title": "Eksportert",
+      "asSaveCTA": "Ueksporterte endringer",
+      "asSaveTitle": "Eksporter endret versjon",
+      "description": "Printartikkelen er eksportert",
+      "changedDescription": "Printartikkelen er endret siden siste eksport",
+      "updateDescription": "Oppdater den eksporterte printartikkelen med de nye endringene",
       "transitions": {
         "unpublished": {
-          "title": "",
-          "description": "",
-          "promptTitle": ""
+          "title": "Trekk tilbake",
+          "description": "Avbryt eksporten og arkiver printartikkelen",
+          "promptTitle": "Trekk tilbake printartikkelen"
         }
       }
     },
     "unpublished": {
-      "title": "",
-      "description": "",
+      "title": "Tilbaketrukket",
+      "description": "Printartikkelen er avpublisert",
       "transitions": {
         "draft": {
-          "title": "",
-          "description": "",
-          "promptTitle": ""
+          "title": "Til utkast",
+          "description": "Gjør om printartikkelen til et utkast igjen",
+          "promptTitle": "Gjør om printartikkelen til utkast"
         }
       }
     },
     "cancelled": {
-      "title": "",
-      "description": "",
+      "title": "Kastet",
+      "description": "Printartikkelen er kastet",
       "transitions": {
         "draft": {
-          "title": "",
-          "description": "",
-          "promptTitle": ""
+          "title": "Til utkast",
+          "description": "Gjør om printartikkelen til et utkast igjen",
+          "promptTitle": "Gjør om printartikkelen til utkast"
         }
       }
     }

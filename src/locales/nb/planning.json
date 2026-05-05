@@ -6,7 +6,7 @@
     "startTime": "Starttid",
     "publishWindow": "Publiseringsvindu",
     "publishTime": "Publiseringstid",
-    "createPrintArticle": "",
+    "createPrintArticle": "Opprett printartikkel",
     "convertToArticle": "Planlegg som artikkel",
     "convertToTimeless": "Lagre som tidløs",
     "removeAssignment": "Vil du fjerne oppdraget",
