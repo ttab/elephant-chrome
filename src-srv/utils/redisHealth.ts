@@ -16,7 +16,10 @@ export const instrumentRedisClient = (
   client.on('error', (err: Error) => {
     if (downSince !== null) return
     downSince = Date.now()
-    logger.error({ err, ...endpoint, label }, `${label} entered error state`)
+    const loggedErr = err instanceof AggregateError && err.errors[0] instanceof Error
+      ? err.errors[0]
+      : err
+    logger.error({ err: loggedErr, ...endpoint, label }, `${label} entered error state`)
   })
 
   client.on('ready', () => {

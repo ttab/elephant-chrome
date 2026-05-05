@@ -65,6 +65,7 @@ describe('Redis', () => {
       expect(onCallOrder).toBeLessThan(connectCallOrder)
 
       expect(mockClient.on).toHaveBeenCalledWith('error', expect.any(Function))
+      expect(mockClient.on).toHaveBeenCalledWith('ready', expect.any(Function))
     })
 
     it('error handler logs with host and port context', async () => {
@@ -83,6 +84,15 @@ describe('Redis', () => {
         expect.objectContaining({ err: testError, label: 'redis-cache', host: 'myhost', port: 6380 }),
         'redis-cache entered error state'
       )
+    })
+
+    it('is idempotent: second connect call is a no-op', async () => {
+      const redis = new Redis('redis://localhost:6379')
+      await redis.connect()
+      await redis.connect()
+
+      expect(createClient).toHaveBeenCalledTimes(1)
+      expect(mockClient.connect).toHaveBeenCalledTimes(1)
     })
 
     it('throws when connection fails', async () => {

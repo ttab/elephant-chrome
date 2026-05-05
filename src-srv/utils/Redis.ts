@@ -14,6 +14,8 @@ export class Redis {
   }
 
   async connect(): Promise<void> {
+    if (this.#redisClient) return
+
     const client = createClient({
       url: this.#url,
       disableOfflineQueue: true,

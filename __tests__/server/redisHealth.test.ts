@@ -44,4 +44,31 @@ describe('instrumentRedisClient', () => {
     client.emit('ready')
     expect(logger.info).not.toHaveBeenCalled()
   })
+
+  test('unwraps AggregateError to surface the inner error', () => {
+    const client = new EventEmitter()
+    instrumentRedisClient(client, 'cache', { host: 'h', port: 1 })
+
+    const inner = new Error('connect ECONNREFUSED 127.0.0.1:6379')
+    const aggregate = new AggregateError([inner], '')
+    client.emit('error', aggregate)
+
+    expect(logger.error).toHaveBeenCalledWith(
+      expect.objectContaining({ err: inner, label: 'cache' }),
+      'cache entered error state'
+    )
+  })
+
+  test('logs AggregateError as-is when it has no inner errors', () => {
+    const client = new EventEmitter()
+    instrumentRedisClient(client, 'cache', { host: 'h', port: 1 })
+
+    const aggregate = new AggregateError([], 'no inners')
+    client.emit('error', aggregate)
+
+    expect(logger.error).toHaveBeenCalledWith(
+      expect.objectContaining({ err: aggregate, label: 'cache' }),
+      'cache entered error state'
+    )
+  })
 })

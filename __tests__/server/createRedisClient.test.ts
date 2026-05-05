@@ -78,4 +78,9 @@ describe('createRedisClient', () => {
       'redis-pubsub entered error state'
     )
   })
+
+  test('attaches ready listener (recovery contract)', () => {
+    createRedisClient(new URL('redis://cache:6379'))
+    expect(mockClient.on).toHaveBeenCalledWith('ready', expect.any(Function))
+  })
 })
