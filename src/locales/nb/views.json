@@ -4,7 +4,7 @@
     "charactersShort": "tgn",
     "tooltips": {
       "openPreview": "Åpne forhåndsvisning",
-      "openPlanning": "Åpne planlegging",
+      "openPlanning": "Åpne plan",
       "lastChanged": "Sist endret",
       "scheduledAt": "Planlagt kl"
     }
@@ -12,13 +12,13 @@
   "plannings": {
     "label": {
       "plural": "Planer",
-      "singular": "Planlegging"
+      "singular": "Plan"
     },
     "toasts": {
       "create": {
-        "success": "Planlegging opprettet"
+        "success": "Plan opprettet"
       },
-      "openItem": "Åpne planlegging"
+      "openItem": "Åpne plan"
     }
   },
   "events": {
@@ -31,7 +31,7 @@
       "status": "Status",
       "organiser": "Arrangør",
       "section": "Kategori",
-      "planningStatus": "Planleggingsstatus",
+      "planningStatus": "Planstatus",
       "action": "Action"
     },
     "tooltips": {
@@ -49,7 +49,7 @@
     },
     "actionMenu": {
       "openArticle": "Åpne artikkel",
-      "openPlanning": "Åpne planlegging"
+      "openPlanning": "Åpne plan"
     },
     "myAssignments": "Mine oppdrag"
   },
@@ -57,7 +57,12 @@
     "title": "Faktabokser",
     "columnLabels": {
       "description": "Beskrivelse",
-      "lastChanged": "Sist endret"
+      "lastChanged": "Sist endret",
+      "origin": "Ursprung"
+    },
+    "origin": {
+      "original": "Original",
+      "inArticle": "Fra artikkel"
     }
   },
   "search": {
@@ -66,7 +71,7 @@
       "search": "Søk"
     },
     "labels": {
-      "plannings": "Planlegging",
+      "plannings": "Plan",
       "events": "Hendelser",
       "articles": "Artikler"
     },
@@ -78,6 +83,35 @@
     "loginWith": "Logg inn med",
     "rememberMe": "Husk meg neste gang",
     "loggingIn": "Logger inn..."
+  },
+  "timeless": {
+    "title": "Tidløse",
+    "columnLabels": {
+      "category": "Kategori",
+      "lastChanged": "Sist endret",
+      "actions": "Handlinger"
+    },
+    "toolbar": {
+      "allCategories": "Alle kategorier"
+    },
+    "actions": {
+      "new": "Ny tidløs",
+      "openPlanning": "Åpne opprinnelig plan",
+      "convertToArticle": "Planlegg som artikkel"
+    },
+    "placeholders": {
+      "addCategory": "Legg til kategori"
+    },
+    "toasts": {
+      "articlePlanned": "Artikkel planlagt",
+      "timelessSaved": "Tidløs lagret",
+      "conversionFailed": "Kunne ikke opprette det nye dokumentet: {{message}}",
+      "notAuthenticated": "Kan ikke konvertere: ikke innlogget",
+      "documentNotFound": "Dokumentet ble ikke funnet",
+      "openArticle": "Åpne artikkel",
+      "openTimeless": "Åpne tidløs",
+      "openPlanning": "Åpne plan"
+    }
   },
   "imageSearch": {
     "title": "Bilder",

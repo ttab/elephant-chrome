@@ -1,5 +1,6 @@
 import { createClient } from 'redis'
 import type { RedisClientType } from 'redis'
+import { instrumentRedisClient } from './redisHealth.js'
 
 const BASE_PREFIX = 'elc::hp'
 
@@ -13,7 +14,23 @@ export class Redis {
   }
 
   async connect(): Promise<void> {
-    const client = createClient({ url: this.#url })
+    if (this.#redisClient) return
+
+    const client = createClient({
+      url: this.#url,
+      disableOfflineQueue: true,
+      socket: {
+        reconnectStrategy: (retries: number) => {
+          if (retries > 10) {
+            return new Error('Redis cache reconnect attempts exhausted')
+          }
+          return Math.min(retries * 100, 2000)
+        }
+      }
+    })
+
+    const { hostname, port } = new URL(this.#url)
+    instrumentRedisClient(client, 'redis-cache', { host: hostname, port: parseInt(port, 10) })
 
     await client.connect().catch((ex) => {
       throw new Error('connect to redis', { cause: ex })

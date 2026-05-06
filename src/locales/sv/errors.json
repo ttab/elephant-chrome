@@ -40,6 +40,7 @@
     "saveError": "Kunde inte spara planeringen",
     "saveChangeError": "Kunde inte spara ändringen",
     "missingMetadata": "Saknar nyhetsvärde eller sektion",
+    "missingTimelessCategory": "Saknar tidlös kategori",
     "assignmentMoveError": "Uppdraget kunde inte flyttas",
     "assignmentMoveErrorNotLoggedIn": "Uppdraget kunde inte flyttas. Du är inte inloggad.",
     "assignmentMoveErrorTryAgain": "Uppdraget kunde inte flyttas. Var god försök igen.",
@@ -65,7 +66,8 @@
     "authorUpdateFailure": "Kunde inte uppdatera författardokument: {{errorMessage}}",
     "authorSaveFailure": "Kunde inte spara författardokument: {{errorMessage}}",
     "authorCreateFailure": "Kunde inte skapa författardokument: Failed to create author doc",
-    "authorCreateUndefinedFailed": "Kunde inte skapa författardokument: Failed to fetch author document: undefined"
+    "authorCreateUndefinedFailed": "Kunde inte skapa författardokument: Failed to fetch author document: undefined",
+    "couldNotOpenEmbeddedFactbox": "Kunde inte ladda faktarutan. Vänligen navigera tillbaka till översikten och försök igen."
   },
   "systemMessages": {
     "connectionFailed": "Misslyckades att ansluta till meddelandetjänsten, vänligen ladda om fönstret."

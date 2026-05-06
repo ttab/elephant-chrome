@@ -121,7 +121,7 @@ export const Commands = (props: FilterProps & { type: SearchKeys }): JSX.Element
         <DatePicker
           date={currentDate}
           setDate={(d: string) => {
-            setFilters({ ...filters, from: d })
+            setFilters({ ...filters, from: d, page: undefined })
           }}
         />
       </div>

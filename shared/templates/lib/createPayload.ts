@@ -1,5 +1,6 @@
 import { ungroup } from '@/shared/transformations/groupedNewsDoc'
 import type { TemplatePayload } from '@/shared/templates'
+import type { EleBlock } from '@/shared/types'
 import type * as Y from 'yjs'
 
 export function createPayload(document: Y.Doc, index?: number, payloadType: string = ''): TemplatePayload | undefined {
@@ -18,8 +19,11 @@ export function createPayload(document: Y.Doc, index?: number, payloadType: stri
 
   const currentMeta = currentAssignmentMeta || meta
 
-  // Get data from assignment, if available otherwise get it from root meta
-  const slugline = (currentMeta.get('tt/slugline') as Y.Array<unknown>)?.toJSON() || []
+  // Get data from assignment, if available otherwise get it from root meta.
+  // Empty slugline blocks must never reach the deliverable — repo rule is
+  // either-filled-or-absent.
+  const slugline: EleBlock[] = ((currentMeta.get('tt/slugline') as Y.Array<unknown>)?.toJSON() as EleBlock[] || [])
+    .filter((b) => typeof b.value === 'string' && b.value.trim().length > 0)
   const description = (currentMeta.get('core/description') as Y.Array<unknown>)?.toJSON() || []
 
   // Could be either YXMlText or string, convert to string

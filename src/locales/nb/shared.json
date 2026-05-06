@@ -15,7 +15,8 @@
     "graphic": "Grafikk",
     "picture": "Foto",
     "video": "Video",
-    "picture/video": "Foto/Video"
+    "picture/video": "Foto/Video",
+    "timeless": "Tidløs"
   },
   "toolbar": {
     "clearFilters": "Tøm",
@@ -34,6 +35,8 @@
     "planningDate": "Dato i planen",
     "setTime": "Skriv inn tid",
     "asSavePlaceholder": "Publiser ny informasjon",
+    "embargoMinTime": "Embargo: kan ikke planlegges før {{time}}",
+    "schedulingRequiresPlanning": "Planen er ikke tilgjengelig fordi dokumentet mangler en tilknyttet plan.",
     "causes": {
       "development_short": "UV",
       "development_long": "Utvikling",
@@ -58,11 +61,12 @@
     "authorCreateSuccess": "Forfatterdokument er opprettet",
     "authorUpdateSuccess": "Forfatterdokumentet er oppdatert",
     "authorSaveSuccess": "Forfatterdokumentet er lagret",
-    "savedFilter": "Filteret ditt er lagret"
+    "savedFilter": "Filteret ditt er lagret",
+    "documentSaveSuccess": "Dokument lagret"
   },
   "prompts": {
-    "publishBeforeClose": "Vil du publisere endringer innen du stenger?",
-    "savedButNotPublished": "Ändringarna er sparede men ikke publisert."
+    "publishBeforeClose": "Vil du publisere endringer før du lukker?",
+    "savedButNotPublished": "Endringene er lagret, men ikke publisert."
   },
   "editorialInfo": {
     "noteText": "OBS! Denne meldingen er ikke ment for publisering."

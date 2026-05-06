@@ -1,6 +1,5 @@
 import {
   type MouseEvent,
-  useEffect,
   useCallback,
   useMemo,
   type JSX
@@ -37,8 +36,7 @@ const BASE_URL = import.meta.env.BASE_URL
 
 interface TableProps<TData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
-  type: 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Factbox' | 'Print' | 'PrintEditor'
-  onRowSelected?: (row?: TData) => void
+  type: 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Factbox' | 'Print' | 'PrintEditor' | 'Timeless'
 }
 
 function getNextTableIndex(
@@ -75,7 +73,6 @@ function getNextTableIndex(
 export const Table = <TData, TValue>({
   columns,
   type,
-  onRowSelected,
   searchType
 }: TableProps<TData, TValue> & { searchType?: View }): JSX.Element => {
   const { state, dispatch } = useNavigation()
@@ -89,10 +86,6 @@ export const Table = <TData, TValue>({
   const handleOpen = useCallback((event: MouseEvent<HTMLTableRowElement> | KeyboardEvent, row: RowType<unknown>): void => {
     const target = event.target as HTMLElement
     if (target && 'dataset' in target && !target.dataset.rowAction) {
-      if (!onRowSelected) {
-        return
-      }
-
       const originalRow = row.original as { _id: string | undefined, id: string, fields?: Record<string, string[]> }
       const id = originalRow._id ?? originalRow.id
 
@@ -120,7 +113,7 @@ export const Table = <TData, TValue>({
         })
       })
     }
-  }, [dispatch, state.viewRegistry, onRowSelected, origin, type, history, searchType])
+  }, [dispatch, state.viewRegistry, origin, type, history, searchType])
 
   useNavigationKeys({
     keys: ['ArrowUp', 'ArrowDown', 'Enter', 'Escape', ' '],
@@ -163,14 +156,6 @@ export const Table = <TData, TValue>({
       }
     }
   })
-
-  useEffect(() => {
-    if (onRowSelected) {
-      const selectedRows = table.getSelectedRowModel()
-      // @ts-expect-error unknown type
-      onRowSelected(selectedRows?.rows[0]?.original)
-    }
-  }, [table, onRowSelected])
 
   const rows = table.getRowModel().rows
   const rowSelection = table.getState().rowSelection

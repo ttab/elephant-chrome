@@ -2,9 +2,10 @@ import { InfoIcon, PlusIcon } from '@ttab/elephant-ui/icons'
 import { AssignmentRow } from './AssignmentRow'
 import { createNewAssignment } from '@/shared/createYItem'
 import { useAuthors, useNavigationKeys } from '@/hooks'
+import { useFeatureFlags } from '@/hooks/useFeatureFlags'
 import { Assignment } from './Assignment'
 import type { MouseEvent, KeyboardEvent } from 'react'
-import { useMemo, useState, type JSX } from 'react'
+import { useMemo, useRef, useState, type JSX } from 'react'
 import { Button } from '@ttab/elephant-ui'
 import { useActiveAuthor } from '@/hooks/useActiveAuthor'
 import { snapshotDocument } from '@/lib/snapshotDocument'
@@ -36,9 +37,11 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId }: {
   const [selectedId, setSelectedId] = useState<string | undefined>(undefined)
   const [newAssignment] = useYValue<EleBlock>(ydoc.ctx, `core/assignment.${session?.user.sub || ''}`)
   const [focusedRowIndex, setFocusedRowIndex] = useState<number | undefined>()
+  const addButtonRef = useRef<HTMLButtonElement>(null)
   const author = useActiveAuthor({ full: false })
   const authors = useAuthors()
   const { t } = useTranslation()
+  const { hasLooseSlugline } = useFeatureFlags(['hasLooseSlugline'])
 
   const selectedAssignment = useMemo(() => {
     if (!selectedId) return undefined
@@ -77,9 +80,11 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId }: {
       createNewAssignment({
         document: ydoc.provider.document,
         assignee: author,
-        slugLine: (!slugLines?.includes(planningSlugLine || ''))
-          ? planningSlugLine
-          : undefined,
+        slugLine: hasLooseSlugline
+          ? undefined
+          : ((!slugLines?.includes(planningSlugLine || ''))
+              ? planningSlugLine
+              : undefined),
         type: 'text'
       })
     )
@@ -92,7 +97,7 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId }: {
     if (!assignment) return
 
     const [assignmentType] = getValueByYPath<string>(assignment, ['meta', 'core/assignment-type', 0, 'value'])
-    if (assignmentType && !['text', 'editorial-info'].includes(assignmentType)) {
+    if (assignmentType && !['text', 'editorial-info', 'timeless'].includes(assignmentType)) {
       deleteByYPath(assignment, ['meta', 'tt/slugline'])
     }
 
@@ -103,18 +108,21 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId }: {
     ])
     deleteByYPath(ydoc.ctx, ['core/assignment', session?.user.sub])
 
-    if (documentId && ydoc.provider) {
+    if (documentId && ydoc.provider && !ydoc.isInProgress) {
       snapshotDocument(documentId, { force: true }, ydoc.provider.document)
         .catch((ex) => {
           console.error('Error closing assignment:', ex)
           toast.error(t('errors:messages.saveAssignmentError'))
         })
     }
+
+    requestAnimationFrame(() => addButtonRef.current?.focus())
   }
 
   const handleAbort = () => {
     if (!session) return
     (ydoc.ctx.get('core/assignment') as Y.Map<unknown>).delete(session.user.sub)
+    requestAnimationFrame(() => addButtonRef.current?.focus())
   }
 
   useNavigationKeys({
@@ -133,6 +141,7 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId }: {
       <div className='flex flex-col pt-2 text-primary pb-4'>
         <div className='pl-2'>
           <Button
+            ref={addButtonRef}
             disabled={newAssignment !== undefined || !ydoc.connected}
             variant='ghost'
             onKeyDown={(event: KeyboardEvent<HTMLButtonElement>) => event.key === 'Enter'

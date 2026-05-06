@@ -8,13 +8,36 @@
     "latest": "Sist publisert",
     "logout": "Logg ut",
     "plannings": "Planer",
-    "print": "",
+    "print": "Print",
     "search": "Søk",
     "wires": "Byråimport",
+    "timeless": "Tidløse",
     "quickarticle": "Ny hurtigartikkel",
     "title": "Hovedmeny",
     "actions": {
       "toggleTheme": "Vexle tema"
+    }
+  },
+  "settings": {
+    "title": "Innstillinger",
+    "description": "Personlige innstillinger for brukerkontoen din.",
+    "saved": "Innstillinger lagret",
+    "saveError": "Kunne ikke lagre innstillinger",
+    "settingsButton": "Innstillinger",
+    "cancel": "Avbryt",
+    "save": "Lagre",
+    "loading": "Laster...",
+    "nynorskPrefs": {
+      "title": "Nynorsk-oversettelse",
+      "description": "Personlige preferanser for nynorsk-oversettelse. Kommaseparerte regelnøkler.",
+      "placeholder": "regel1,regel2,regel3"
+    },
+    "wireStreams": {
+      "title": "Kolonner",
+      "description": "Dine lagrede kolonner i byråvisningen. Redigeres i byråvisningen.",
+      "empty": "Ingen lagrede kolonner.",
+      "untitled": "Uten tittel",
+      "noFilters": "Ingen filtre"
     }
   },
   "systemMessages": {

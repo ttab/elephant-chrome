@@ -4,6 +4,9 @@ import expressWebsockets from 'express-ws'
 import cors from 'cors'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import type http from 'node:http'
+import https from 'node:https'
+import fs from 'node:fs'
 
 import { connectRouteHandlers, mapRoutes } from './routes.js'
 import ViteExpress from 'vite-express'
@@ -34,6 +37,9 @@ const NODE_ENV = process.env.NODE_ENV === 'production' ? 'production' : 'develop
 const PROTOCOL = process.env.VITE_PROTOCOL || 'https'
 const HOST = process.env.HOST || '127.0.0.1'
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 5183
+const TLS_CERT_PATH = process.env.TLS_CERT_PATH || ''
+const TLS_KEY_PATH = process.env.TLS_KEY_PATH || ''
+const TLS_PORT = process.env.TLS_PORT ? parseInt(process.env.TLS_PORT) : 1443
 const REPOSITORY_URL = process.env.REPOSITORY_URL || ''
 const REDIS_URL = process.env.REDIS_URL || ''
 const BASE_URL = process.env.BASE_URL || ''
@@ -54,8 +60,13 @@ export async function runServer(): Promise<string> {
   assertEnvs()
   setSystemLanguage(process.env.SYSTEM_LANGUAGE ?? '')
 
+  if (TLS_CERT_PATH && !TLS_KEY_PATH) {
+    throw new Error('TLS_CERT_PATH is set but TLS_KEY_PATH is empty')
+  }
+
   const { apiDir, distDir } = getPaths()
-  const { app } = expressWebsockets(express())
+  const wsInstance = expressWebsockets(express())
+  const { app } = wsInstance
 
 
   const routes = await mapRoutes(apiDir)
@@ -191,10 +202,47 @@ export async function runServer(): Promise<string> {
 
   const serverUrl = `${PROTOCOL}://${HOST}:${PORT}${BASE_URL || ''}`
 
+  const startHttpsServer = (): void => {
+    if (!TLS_CERT_PATH) {
+      return
+    }
+
+    const httpsServer = https.createServer({
+      cert: fs.readFileSync(TLS_CERT_PATH),
+      key: fs.readFileSync(TLS_KEY_PATH)
+    }, app as unknown as http.RequestListener)
+
+    const wss = wsInstance.getWss()
+    httpsServer.on('upgrade', (req, socket, head) => {
+      wss.handleUpgrade(req, socket, head, (ws) => {
+        wss.emit('connection', ws, req)
+      })
+    })
+
+    httpsServer.listen(TLS_PORT, () => {
+      logger.info(`HTTPS server listening on port ${TLS_PORT}`)
+    })
+
+    watchTlsFiles(TLS_CERT_PATH, TLS_KEY_PATH, () => {
+      try {
+        httpsServer.setSecureContext({
+          cert: fs.readFileSync(TLS_CERT_PATH),
+          key: fs.readFileSync(TLS_KEY_PATH)
+        })
+        logger.info('TLS certificate reloaded')
+      } catch (ex) {
+        logger.error({ err: ex }, 'Failed to reload TLS certificate')
+      }
+    })
+  }
+
   switch (NODE_ENV) {
     case 'development': {
       ViteExpress.listen(app as unknown as Express, PORT, () => {
         logger.info(`Development Server running on ${serverUrl}`)
+        // Start HTTPS only after Vite middleware is injected, otherwise
+        // requests for /src/* would fall through to the catch-all.
+        startHttpsServer()
       })
 
       break
@@ -206,7 +254,11 @@ export async function runServer(): Promise<string> {
       app.get('*', (_, res) => {
         res.sendFile(path.join(distDir, 'index.html'))
       })
-      app.listen(PORT)
+      app.listen(PORT, () => {
+        logger.info(`HTTP server listening on port ${PORT}`)
+      })
+
+      startHttpsServer()
 
       break
     }
@@ -221,6 +273,22 @@ runServer().then((url) => {
   logger.error(ex)
   process.exit(1)
 })
+
+function watchTlsFiles(certPath: string, keyPath: string, onChange: () => void): void {
+  // Kubernetes secret mounts atomically swap the entire directory via a
+  // symlink rename, so watch the parent directories rather than the files.
+  const dirs = new Set([path.dirname(certPath), path.dirname(keyPath)])
+  let timeout: NodeJS.Timeout | null = null
+
+  for (const dir of dirs) {
+    fs.watch(dir, () => {
+      if (timeout) {
+        clearTimeout(timeout)
+      }
+      timeout = setTimeout(onChange, 500)
+    })
+  }
+}
 
 function getPaths(): {
   distDir: string

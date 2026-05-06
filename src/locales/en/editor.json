@@ -9,7 +9,7 @@
     "unorderedList": "List",
     "orderedList": "Numbered list",
     "searchImages": "Search images",
-    "factboxes": "Factboxes"
+    "factboxes": "Search factboxes"
   },
   "numberOfChars": "Number of characters",
   "spelling": {
@@ -18,7 +18,11 @@
   "factbox": {
     "headerTitle": "Edit factbox original",
     "modifiedLabel": "The original is from",
-    "footerTitle": "Changes to the factbox text only apply to this article"
+    "createdLabel": "Created",
+    "lastModifiedLabel": "Last modified",
+    "footerTitle": "Changes to the factbox text only apply to this article",
+    "factboxNewTitle": "Facts",
+    "addSingleLabel": "Create factbox"
   },
   "image": {
     "captionLabel": "Text",
@@ -28,14 +32,22 @@
     "words": "Words",
     "numberOfWords": "Number of words: article (total)",
     "chars": "Characters",
-    "numberOfChars": "Number of characters: article (total)"
+    "numberOfChars": "Number of characters: article (total)",
+    "language": "Article language"
   },
   "goToLatestVersion": "Go to latest version",
+  "goToLatestVersionShort": "Latest",
+  "embargoActive": "Cannot publish directly — embargo active until {{time}}",
+  "embargoCheckUnavailable": "Cannot verify embargo. Try again.",
   "addRoleInfo": {
     "editorial": "Add editorial info",
     "internal": "Add internal info"
   },
   "removeInfoConfirm": "Are you sure you want to remove the info?",
   "changeType": "Change type",
-  "changeTypeConfirm": "Are you sure you want to change the type of info?"
+  "changeTypeConfirm": "Are you sure you want to change the type of info?",
+  "derivedFromTimelessLink": "timeless",
+  "derivedFromArticleLink": "article",
+  "derivedFromConnector": "and",
+  "derivedFromPlanningLink": "planning"
 }

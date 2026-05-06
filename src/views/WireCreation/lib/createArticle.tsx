@@ -2,6 +2,7 @@ import type { Session } from 'next-auth'
 import { getValueByYPath, setValueByYPath } from '@/shared/yUtils'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import type { Wire } from '@/shared/schemas/wire'
+import type { EleBlock } from '@/shared/types'
 import { toast } from 'sonner'
 import { ToastAction } from '@/components/ToastAction'
 import { CalendarDaysIcon, FileInputIcon } from '@ttab/elephant-ui/icons'
@@ -12,6 +13,8 @@ import { snapshotDocument } from '@/lib/snapshotDocument'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import i18n from '@/lib/i18n'
+import type { TBElement } from '@ttab/textbit'
+import { toContentYXmlText, translateWireContent } from './translateWireContent'
 
 export async function createArticle({
   ydoc,
@@ -21,7 +24,12 @@ export async function createArticle({
   planningTitle,
   newsvalue,
   section,
-  timeZone
+  timeZone,
+  embargoUntil,
+  contentSources,
+  wireContent,
+  translationMode,
+  personalPrefs
 }: {
   ydoc: YDocument<Y.Map<unknown>>
   status: string
@@ -35,6 +43,11 @@ export async function createArticle({
     title: string
   }
   timeZone: string
+  embargoUntil?: string
+  contentSources?: EleBlock[]
+  wireContent?: TBElement[]
+  translationMode?: 'standard' | 'personal'
+  personalPrefs?: string
 }): Promise<void> {
   const [documentId] = getValueByYPath<string>(ydoc.ele, 'root.uuid')
 
@@ -49,7 +62,53 @@ export async function createArticle({
   // and unmounts the component, triggering CollaborationClientRegistry cleanup)
   const yjsDocument = ydoc.provider?.document
 
-  // Create and collect all base data for the assignment
+  // Seed the article with the wire body only when the user has opted into
+  // translation — the translated version replaces this below. Without
+  // translation, the article keeps the empty template content.
+  //
+  // Done SYNCHRONOUSLY before any async operations: after the first await,
+  // dialog close may unmount the component and disconnect the provider,
+  // making ydoc.ele potentially stale. Setting content now ensures it is
+  // captured by snapshotDocument even in that case (e.g. if translation fails).
+  if (wireContent && translationMode) {
+    ydoc.ele.set('content', toContentYXmlText(wireContent))
+  }
+
+  // Set section on the article document synchronously as well.
+  setValueByYPath(ydoc.ele, 'links.core/section[0]', Block.create({
+    type: 'core/section',
+    rel: 'section',
+    uuid: section.uuid,
+    title: section.title
+  }))
+
+  // Merge wire-provided content-sources with the template's (session-derived)
+  // default. De-duplicate by URI so the session default is kept when the wire
+  // carries the same source.
+  if (contentSources?.length) {
+    const [existing] = getValueByYPath<EleBlock[]>(ydoc.ele, 'links.core/content-source')
+    const merged: Block[] = (existing ?? []).map((source) => Block.create({
+      type: 'core/content-source',
+      uri: source.uri,
+      title: source.title,
+      rel: source.rel || 'source'
+    }))
+    const seen = new Set(merged.map((block) => block.uri))
+    for (const source of contentSources) {
+      if (!seen.has(source.uri)) {
+        merged.push(Block.create({
+          type: 'core/content-source',
+          uri: source.uri,
+          title: source.title,
+          rel: source.rel || 'source'
+        }))
+        seen.add(source.uri)
+      }
+    }
+    setValueByYPath(ydoc.ele, 'links.core/content-source', merged)
+  }
+
+  // Collect all base data from the Y.Doc synchronously before any async operations
   const dt = new Date()
   const isoDateTime = `${new Date().toISOString().split('.')[0]}Z` // Remove ms, add Z back again
   const localDate = convertToISOStringInTimeZone(dt, timeZone).slice(0, 10)
@@ -57,6 +116,20 @@ export async function createArticle({
   const [assignmentSlugline] = getValueByYPath<string>(ydoc.ele, 'meta.tt/slugline[0].value')
   const [ydocNewsValue] = getValueByYPath<string>(ydoc.ele, 'meta.core/newsvalue[0].value')
   const resolvedNewsValue = newsvalue ?? ydocNewsValue
+
+  // Attempt translation if requested — this is async and may execute after
+  // the provider disconnects, so we use the captured yjsDocument reference.
+  if (wireContent && translationMode) {
+    try {
+      const translatedContent = await translateWireContent(wireContent, translationMode, personalPrefs)
+      if (yjsDocument) {
+        yjsDocument.getMap('ele').set('content', translatedContent)
+      }
+    } catch (ex) {
+      console.error('Translation failed, using original wire content', ex)
+      toast.error(i18n.t('wires:creation.translationError'))
+    }
+  }
 
   const updatedPlanningId = await addAssignmentWithDeliverable({
     planningId,
@@ -70,27 +143,25 @@ export async function createArticle({
     localDate,
     isoDateTime,
     section,
-    wires
+    wires,
+    embargoUntil
   })
 
   if (!updatedPlanningId) {
     throw new Error('CreateAssignmentError')
   }
 
-  // Set section on the article document. This is the authoritative write — it
-  // covers both cases: new planning (Section component may have already written
-  // it) and existing planning (Section component is not rendered).
-  setValueByYPath(ydoc.ele, 'links.core/section[0]', Block.create({
-    type: 'core/section',
-    rel: 'section',
-    uuid: section.uuid,
-    title: section.title
-  }))
-
   // Explicitly save article to repository via HTTP — works even if the
   // Hocuspocus provider has been disconnected (dialog closed before this point)
   try {
     await snapshotDocument(ydoc.id, { status: 'draft' }, yjsDocument)
+
+    // Remove the IndexedDB database created during the wire creation dialog.
+    // Without this, when the Editor opens the article (e.g. via the toast),
+    // CollaborationClient loads the stale IndexedDB state (which includes the
+    // creation dialog's Y.Doc mutations) before HP syncs — causing slate-yjs
+    // errors. Deleting it forces the Editor to load fresh from the HP server.
+    indexedDB.deleteDatabase(ydoc.id)
   } catch (ex) {
     // Roll back the assignment that was just added to the planning
     try {

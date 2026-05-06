@@ -5,7 +5,7 @@ import { cn } from '@ttab/elephant-ui/utils'
 import { cva } from 'class-variance-authority'
 import { Button } from '@ttab/elephant-ui'
 import { RefreshCwIcon, SquareCheckIcon, SquareIcon, ZapIcon } from '@ttab/elephant-ui/icons'
-import { getWireState, type WireStatusKey } from '@/lib/getWireState'
+import { getDocumentState, type StatusKey } from '@/lib/getDocumentState'
 import type { WireStatus } from '../lib/setWireStatus'
 import { StreamEntryCell } from './StreamEntryCell'
 import { getWireStatus } from '@/lib/getWireStatus'
@@ -69,13 +69,13 @@ export const StreamEntry = memo(({
   onFocus?: (item: Wire, event: React.FocusEvent<HTMLElement>) => void
   onPress?: (item: Wire, event: React.MouseEvent<HTMLElement> | React.KeyboardEvent<HTMLElement>) => void
 }): JSX.Element => {
+  const wireState = getDocumentState(entry)
   const { t } = useTranslation('wires')
-  const wireState = getWireState(entry)
   const lastStatus = getWireStatus(entry)
   // Use the pending mutation's status for optimistic display; fall back to actual wire state.
   // Rollback is automatic: clearing statusMutations (on both success and failure) reverts to
   // wireState.status, which reflects real data since no local data was mutated.
-  const status: WireStatusKey = statusMutation ? statusMutation.name : wireState.status
+  const status: StatusKey = statusMutation ? statusMutation.name : wireState.status
 
   const handleClick = useCallback((e: React.MouseEvent<HTMLElement>) => {
     onPress?.(entry, e)
@@ -86,12 +86,10 @@ export const StreamEntry = memo(({
       e.preventDefault()
       onPress?.(entry, e)
     } else if (e.key === 'm' || e.key === 'M') {
-      if (status !== 'used') {
-        e.preventDefault()
-        onToggleSelected(entry, e.shiftKey)
-      }
+      e.preventDefault()
+      onToggleSelected(entry, e.shiftKey)
     }
-  }, [entry, onPress, onToggleSelected, status])
+  }, [entry, onPress, onToggleSelected])
 
   const handleFocus = useCallback((e: React.FocusEvent<HTMLElement>) => {
     onFocus?.(entry, e)
@@ -112,7 +110,7 @@ export const StreamEntry = memo(({
         data-item-id={compositeId}
         data-entry-id={entry.id}
         tabIndex={0}
-        className={cn(variants({ status: ['flash', 'draft'].some((s) => status.includes(s)) ? null : (status as 'read' | 'used' | 'saved'), isFlash, wasSaved: lastStatus === 'saved', wasRead: lastStatus === 'read', wasUsed: lastStatus === 'used' }))}
+        className={cn(variants({ status: !status || ['flash', 'draft'].some((s) => status.includes(s)) ? null : (status as 'read' | 'used' | 'saved'), isFlash, wasSaved: lastStatus === 'saved', wasRead: lastStatus === 'read', wasUsed: lastStatus === 'used' }))}
         onKeyDown={handleKeyDown}
         onFocus={handleFocus}
         onClick={handleClick}
@@ -145,7 +143,7 @@ export const StreamEntry = memo(({
         </div>
       )}
 
-      {!statusMutation && status !== 'used' && (
+      {!statusMutation && (
         <Button
           variant='icon'
           size='lg'

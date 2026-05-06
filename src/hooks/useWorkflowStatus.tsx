@@ -77,6 +77,8 @@ export const useWorkflowStatus = ({ ydoc, documentId: docId }: {
   useRepositoryEvents([
     'core/article',
     'core/article+meta',
+    'core/article#timeless',
+    'core/article#timeless+meta',
     'core/flash',
     'core/flash+meta',
     'core/editorial-info',
@@ -84,7 +86,9 @@ export const useWorkflowStatus = ({ ydoc, documentId: docId }: {
     'tt/print-article',
     'tt/print-article+meta',
     'core/planning-item',
-    'core/planning-item+meta'
+    'core/planning-item+meta',
+    'core/factbox',
+    'core/factbox+meta'
 
   ], (event) => {
     if (event.uuid === documentId || event.mainDocument === documentId) {

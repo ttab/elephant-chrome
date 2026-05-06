@@ -14,6 +14,8 @@ declare module 'next-auth' {
       id: string
       sub: string
     }
+    units: string[]
+    org: string
     error: string
   }
   interface User extends NextAuthUser {

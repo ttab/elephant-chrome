@@ -31,6 +31,7 @@ describe('GET /api/envs', () => {
       systemLanguage: 'nb-NO',
       hasPrint: 'true',
       hasHast: 'true',
+      hasLooseSlugline: '',
       environment: 'test'
     })
   })

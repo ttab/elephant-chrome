@@ -23,7 +23,7 @@ export function articleDocumentTemplate(id: string, payload?: TemplatePayload): 
     uuid: id,
     type: 'core/article',
     uri: `core://article/${id}`,
-    language: getSystemLanguage(),
+    language: payload?.language ?? getSystemLanguage(),
     title: payload?.title,
     content: [
       Block.create({
@@ -58,13 +58,7 @@ export function articleDocumentTemplate(id: string, payload?: TemplatePayload): 
       ...Object.values(payload?.meta ?? {}).flat()
     ],
     links: [
-      ...Object.values(payload?.links ?? {}).flat(),
-      Block.create({
-        uri: 'tt://content-source/tt',
-        type: 'core/content-source',
-        title: 'TT',
-        rel: 'source'
-      })
+      ...Object.values(payload?.links ?? {}).flat()
     ]
   })
 }

@@ -11,6 +11,7 @@ import {
   useQuery,
   useWorkflowStatus
 } from '@/hooks'
+import { useFeatureFlags } from '@/hooks/useFeatureFlags'
 import { PlanDate } from './components/PlanDate'
 import { AssignmentTable } from './components/AssignmentTable'
 
@@ -135,6 +136,7 @@ const PlanningViewContent = (props: ViewProps & {
 
   const [title] = useYValue<Y.XmlText>(document, 'root.title', true)
   const [slugline] = useYValue<Y.XmlText>(document, 'meta.tt/slugline[0].value', true)
+  const { hasLooseSlugline } = useFeatureFlags(['hasLooseSlugline'])
   const pubIndex = useDescriptionIndex(document, 'public')
   const intIndex = useDescriptionIndex(document, 'internal')
   const [publicDescription] = useYValue<Y.XmlText>(document, `meta.core/description[${pubIndex}].data.text`, true)
@@ -232,11 +234,13 @@ const PlanningViewContent = (props: ViewProps & {
             </Form.Group>
 
             <Form.Group icon={TagsIcon}>
-              <SluglineEditable
-                ydoc={ydoc}
-                value={slugline}
-                documentStatus={documentStatus?.name}
-              />
+              {!hasLooseSlugline && (
+                <SluglineEditable
+                  ydoc={ydoc}
+                  value={slugline}
+                  documentStatus={documentStatus?.name}
+                />
+              )}
 
               <Newsvalue ydoc={ydoc} path='meta.core/newsvalue[0].value' />
             </Form.Group>

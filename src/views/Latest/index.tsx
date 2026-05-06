@@ -1,6 +1,6 @@
 import type { LocaleData } from '@/types/index'
 import { type ViewMetadata } from '@/types/index'
-import { useRef, type JSX } from 'react'
+import { useRef, useState, type JSX } from 'react'
 import { format } from 'date-fns'
 import { useRegistry } from '@/hooks/useRegistry'
 import { handleLink } from '@/components/Link/lib/handleLink'
@@ -8,7 +8,7 @@ import { useHistory, useNavigation, useView } from '@/hooks/index'
 import { cn } from '@ttab/elephant-ui/utils'
 import { DotMenu } from '@/components/ui/DotMenu'
 import { Link } from '@/components'
-import { PenIcon, CalendarDaysIcon, LibraryIcon } from '@ttab/elephant-ui/icons'
+import { PenIcon, CalendarDaysIcon } from '@ttab/elephant-ui/icons'
 import type { HitV1 } from '@ttab/elephant-api/index'
 import { useDeliverableInfo } from '@/hooks/useDeliverableInfo'
 import { useLatest } from './hooks/useLatest'
@@ -18,6 +18,7 @@ import { useTranslation } from 'react-i18next'
 import { CreatePrintArticle } from '@/components/CreatePrintArticle'
 import { useModal } from '@/components/Modal/useModal'
 import { useFeatureFlags } from '@/hooks/useFeatureFlags'
+import { documentTypeValueFormat } from '@/defaults/documentTypeFormats'
 
 const meta: ViewMetadata = {
   name: 'Latest',
@@ -129,14 +130,23 @@ const Content = ({ documents, locale }: {
 }
 
 const Menu = ({ articleId }: { articleId: string }): JSX.Element => {
-  const planningId = useDeliverableInfo(articleId)?.planningUuid ?? ''
+  // Defer the deliverable-info fetch until the menu is opened (per-row lazy
+  // mount avoids fan-out fetch storms when the list contains many items).
+  const [hasOpened, setHasOpened] = useState(false)
+  const planningId = useDeliverableInfo(hasOpened ? articleId : '')?.planningUuid ?? ''
   const { t } = useTranslation('common')
   const { showModal, hideModal } = useModal()
   const featureFlags = useFeatureFlags(['hasPrint'])
+  const printIcon = documentTypeValueFormat['tt/print-article'].icon
 
   return (
     <div className='shrink p-'>
       <DotMenu
+        onOpenChange={(open) => {
+          if (open) {
+            setHasOpened(true)
+          }
+        }}
         items={[
           {
             label: t('actions.openType', { type: t('core:documentType.article') }),
@@ -166,7 +176,7 @@ const Menu = ({ articleId }: { articleId: string }): JSX.Element => {
           ...(featureFlags.hasPrint
             ? [{
                 label: t('planning:assignment.createPrintArticle'),
-                icon: LibraryIcon,
+                icon: printIcon,
                 item: () => {
                   showModal(
                     <CreatePrintArticle

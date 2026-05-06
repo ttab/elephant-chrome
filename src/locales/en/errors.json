@@ -40,6 +40,7 @@
     "saveError": "Could not save the planning",
     "saveChangeError": "Could not save the change",
     "missingMetadata": "Missing news value or section",
+    "missingTimelessCategory": "Missing timeless category",
     "assignmentMoveError": "The assignment could not be moved",
     "assignmentMoveErrorNotLoggedIn": "The assignment could not be moved. You are not logged in.",
     "assignmentMoveErrorTryAgain": "The assignment could not be moved. Please try again.",
@@ -65,7 +66,8 @@
     "authorUpdateFailure": "Could not update author document: {{errorMessage}}",
     "authorSaveFailure": "Could not save author document: {{errorMessage}}",
     "authorCreateFailure": "Could not create author document: Failed to create author doc",
-    "authorCreateUndefinedFailed": "Could not create author document: Failed to fetch author document: undefined"
+    "authorCreateUndefinedFailed": "Could not create author document: Failed to fetch author document: undefined",
+    "couldNotOpenEmbeddedFactbox": "Could not open the factbox. Please navigate back to the overview and try again."
   },
   "systemMessages": {
     "connectionFailed": "Failed to connect to the messaging service, please reload the window."

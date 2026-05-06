@@ -8,6 +8,7 @@ import type { Block } from '@ttab/elephant-api/newsdoc'
 import { useYPath, useYValue, type YDocument } from '@/modules/yjs/hooks'
 import { useSession } from 'next-auth/react'
 import { useTranslation } from 'react-i18next'
+import { useFeatureFlags } from '@/hooks/useFeatureFlags'
 
 export const SluglineEditable = ({ ydoc, rootMap, value, documentStatus, onValidation, validateStateRef, compareValues, disabled }: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -24,10 +25,16 @@ export const SluglineEditable = ({ ydoc, rootMap, value, documentStatus, onValid
   const { data: session } = useSession()
   const [inProgressAssignment] = useYValue<Block>(ydoc.ctx, `core/assignment.${session?.user.sub || ''}`)
   const { t } = useTranslation()
+  const { hasLooseSlugline } = useFeatureFlags(['hasLooseSlugline'])
 
   // Get all current sluglines from assignments for validation purposes
   // or use provided compareValues
   const slugLines = useMemo(() => {
+    // NTB-mode: sluglines within a planning item don't need to be unique.
+    if (hasLooseSlugline) {
+      return []
+    }
+
     if (compareValues?.length) {
       return compareValues
     }
@@ -56,7 +63,7 @@ export const SluglineEditable = ({ ydoc, rootMap, value, documentStatus, onValid
     }
 
     return collected
-  }, [assignments, inProgressAssignment, compareValues, path])
+  }, [assignments, inProgressAssignment, compareValues, path, hasLooseSlugline])
 
   if (!editable && typeof slugLine !== 'string') {
     return <></>
@@ -65,7 +72,7 @@ export const SluglineEditable = ({ ydoc, rootMap, value, documentStatus, onValid
   return (
     <div
       className='flex flex-col gap-2 items-center [&_[role="textbox"]:has([data-slate-placeholder="true"])]:min-w-28'
-      data-ele-validation={!!onValidation}
+      data-ele-validation={!!onValidation && !hasLooseSlugline}
     >
       {editable
         ? (
@@ -75,7 +82,7 @@ export const SluglineEditable = ({ ydoc, rootMap, value, documentStatus, onValid
               label='Slugline'
               block='tt/slugline'
               path={path}
-              onValidation={onValidation}
+              onValidation={hasLooseSlugline ? undefined : onValidation}
               compareValues={slugLines}
               validateStateRef={validateStateRef}
             >

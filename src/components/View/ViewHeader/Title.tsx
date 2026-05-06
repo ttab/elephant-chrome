@@ -7,6 +7,7 @@ import type * as Y from 'yjs'
 import { useQuery } from '@/hooks/useQuery'
 import { useTranslation } from 'react-i18next'
 import { useFeatureFlags } from '@/hooks/useFeatureFlags'
+import { cn } from '@ttab/elephant-ui/utils'
 
 export const Title = ({
   name,
@@ -16,7 +17,8 @@ export const Title = ({
   icon: Icon,
   asDialog,
   ydoc,
-  preview
+  preview,
+  titleClassName
 }: {
   name: string
   title: string
@@ -26,6 +28,7 @@ export const Title = ({
   asDialog?: boolean
   ydoc?: YDocument<Y.Map<unknown>>
   preview?: boolean
+  titleClassName?: string
 } & PropsWithChildren): JSX.Element => {
   const { connected, synced } = ydoc ?? { connected: false, synced: false }
   const [isConnected, setIsConnected] = useState(true)
@@ -111,7 +114,7 @@ export const Title = ({
       )}
 
       {!!displayTitle && (
-        <h2 role='header-title' className={titleVariants({ asDialog: asDialog ?? false })}>
+        <h2 role='header-title' className={cn(titleVariants({ asDialog: asDialog ?? false }), titleClassName)}>
           {typeof shortTitle !== 'string'
             ? <>{displayTitle}</>
             : (

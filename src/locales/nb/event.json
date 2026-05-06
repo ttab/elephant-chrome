@@ -2,12 +2,12 @@
   "title": "Hendelse",
   "eventDocument": "Hendelsesdokument",
   "subheadings": {
-    "plannings": "Planlegginger",
+    "plannings": "Planer",
     "events": "Hendelser"
   },
   "createEvent": "Opprett hendelse",
   "buttons": {
-    "addPlanning": "Legg til planlegging"
+    "addPlanning": "Legg til plan"
   },
   "labels": {
     "markAsCancelled": "Merk som avlyst",
@@ -31,7 +31,7 @@
     "notPlanned": "Ikke planlagt"
   },
   "tooltips": {
-    "createPlanning": "Skape planlegging",
+    "createPlanning": "Skape plan",
     "planningCreated": "Har blitt planlagt"
   }
 }

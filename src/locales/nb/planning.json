@@ -1,12 +1,14 @@
 {
-  "planningDocument": "Planleggingsdokument",
+  "planningDocument": "Plandokument",
   "assignment": {
     "title": "Oppgavetittel",
     "startEndTime": "Start- og sluttid",
     "startTime": "Starttid",
     "publishWindow": "Publiseringsvindu",
     "publishTime": "Publiseringstid",
-    "createPrintArticle": "",
+    "createPrintArticle": "Opprett printartikkel",
+    "convertToArticle": "Planlegg som artikkel",
+    "convertToTimeless": "Lagre som tidløs",
     "removeAssignment": "Vil du fjerne oppdraget",
     "chooseTime": "Velg tid",
     "timeFromTo": "Tid fra-to",
@@ -24,7 +26,7 @@
     "public": "Beskrivelse"
   },
   "actions": {
-    "openPlanning": "Åpne planlegging",
+    "openPlanning": "Åpne plan",
     "open": "Åpne",
     "assignments": "Oppdrag",
     "noDeliverables": "Ingen leveranser"
@@ -37,11 +39,11 @@
   "move": {
     "pickPlanning": "Velg plan",
     "label": "Flytte",
-    "dateSwitch": "Endre dato på planlegging",
-    "dateSwitchDescription": "Planleggingen og alle tekstoppdragen endrer dato til",
+    "dateSwitch": "Endre dato på plan",
+    "dateSwitchDescription": "Planen og alle tekstoppdragen endrer dato til",
     "dateSwitchAssignments": "Velg nedenfor om bilde- og videooppdrag også skal endre datoer.",
     "assignmentCreateInfo": "Hvis du ikke velger en timeplan, vil en ny timeplan med denne oppgaven bli opprettet for deg på den valgte datoen.",
-    "assignmentAddInfo": "Denne oppgaven vil bli lagt til i den valgte planleggingen.",
+    "assignmentAddInfo": "Denne oppgaven vil bli lagt til i den valgte planen.",
     "assignmentMoveSuccess": "Oppdraget er flyttet",
     "moveAssignment": "Flytte oppdrag",
     "moveAssignmentConfirm": "Er du sikker på at du vil flytte oppgaven?",
@@ -52,7 +54,7 @@
   },
   "slugline": "Legg til stikkord",
   "story": "Legg til story",
-  "title": "Planleggingstittel",
-  "yourNewType": "Din nye skapede {{type, lowercase}}",
+  "title": "Plantittel",
+  "yourNewType": "Dine sist opprettede {{type, lowercase}}",
   "preview": "Forhåndsvisning"
 }

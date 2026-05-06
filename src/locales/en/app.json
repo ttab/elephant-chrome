@@ -11,10 +11,33 @@
     "print": "Print",
     "search": "Search",
     "wires": "Wires",
+    "timeless": "Timeless",
     "quickarticle": "Create quick-article",
     "title": "Main menu",
     "actions": {
       "toggleTheme": "Toggle theme"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "description": "Personal settings for your user account.",
+    "saved": "Settings saved",
+    "saveError": "Failed to save settings",
+    "settingsButton": "Settings",
+    "cancel": "Cancel",
+    "save": "Save",
+    "loading": "Loading...",
+    "nynorskPrefs": {
+      "title": "Nynorsk translation",
+      "description": "Personal preferences for Nynorsk translation. Comma-separated rule keys.",
+      "placeholder": "rule1,rule2,rule3"
+    },
+    "wireStreams": {
+      "title": "Columns",
+      "description": "Your saved columns in the wires view. Edit them in the wires view.",
+      "empty": "No saved columns.",
+      "untitled": "Untitled",
+      "noFilters": "No filters"
     }
   },
   "systemMessages": {

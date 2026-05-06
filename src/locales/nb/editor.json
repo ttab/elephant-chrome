@@ -5,11 +5,11 @@
     "bodyText": "Brødtekst",
     "vignette": "Vignett",
     "preamble": "Ingress",
-    "tvListing": "",
+    "tvListing": "Tablåinfo",
     "unorderedList": "Liste",
     "orderedList": "Punktliste",
-    "searchImages": "Bildesøk",
-    "factboxes": "Faktabokser"
+    "searchImages": "Søk bilder",
+    "factboxes": "Søk faktabokser"
   },
   "numberOfChars": "Antall tegn",
   "spelling": {
@@ -18,7 +18,11 @@
   "factbox": {
     "headerTitle": "Rediger originalen",
     "modifiedLabel": "Originalen er fra",
-    "footerTitle": "Endringer i faktaboksteksten gjelder kun for denne artikkelen"
+    "createdLabel": "Opprettet",
+    "lastModifiedLabel": "Sist endret",
+    "footerTitle": "Endringer i faktaboksteksten gjelder kun for denne artikkelen",
+    "factboxNewTitle": "Fakta",
+    "addSingleLabel": "Opprett faktaboks"
   },
   "image": {
     "captionLabel": "Tekst",
@@ -28,14 +32,22 @@
     "words": "Ord",
     "numberOfWords": "Antall ord: artikkel (totalt)",
     "chars": "Tegn",
-    "numberOfChars": "Antall tegn: artikkel (totalt)"
+    "numberOfChars": "Antall tegn: artikkel (totalt)",
+    "language": "Artikkelspråk"
   },
   "goToLatestVersion": "Gå til siste versjon",
+  "goToLatestVersionShort": "Siste",
+  "embargoActive": "Kan ikke publiseres direkte — embargo gjelder til {{time}}",
+  "embargoCheckUnavailable": "Kan ikke verifisere embargo. Prøv igjen.",
   "addRoleInfo": {
     "editorial": "Legg til redaksjonell informasjon",
     "internal": "Legg til intern informasjon"
   },
   "removeInfoConfirm": "Er du sikker på at du vil slette informasjonen?",
   "changeType": "Endre type",
-  "changeTypeConfirm": "Er du sikker på at du vil endre informasjonstypen?"
+  "changeTypeConfirm": "Er du sikker på at du vil endre informasjonstypen?",
+  "derivedFromTimelessLink": "tidløs",
+  "derivedFromArticleLink": "artikkel",
+  "derivedFromConnector": "og",
+  "derivedFromPlanningLink": "plan"
 }

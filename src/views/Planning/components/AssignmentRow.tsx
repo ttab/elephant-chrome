@@ -14,6 +14,7 @@ import {
   LibraryIcon,
   MoveRightIcon,
   PenIcon,
+  RefreshCwIcon,
   type LucideProps
 } from '@ttab/elephant-ui/icons'
 import { type MouseEvent, useMemo, useState, useCallback, useEffect, useRef, type JSX } from 'react'
@@ -49,6 +50,9 @@ import { useTranslation } from 'react-i18next'
 import type { TranslationKey } from '@/types/i18next.d'
 import { RelatedWires } from './RelatedWires'
 import { useFeatureFlags } from '@/hooks/useFeatureFlags'
+import { useConvertArticleType } from '@/hooks/useConvertArticleType'
+import { ConvertToArticleDialog } from '@/components/ConvertToArticleDialog'
+import { ConvertToTimelessDialog } from '@/components/ConvertToTimelessDialog'
 
 export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDialog }: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -64,7 +68,8 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
   const { repository } = useRegistry()
   const { data: session } = useSession()
   const { t } = useTranslation()
-  const featureFlags = useFeatureFlags(['hasPrint', 'hasHast'])
+  const featureFlags = useFeatureFlags(['hasPrint', 'hasHast', 'hasLooseSlugline'])
+  const { isConverting } = useConvertArticleType()
 
   const base = `meta.core/assignment[${index}]`
   const [assignment] = useYValue<Y.Map<unknown>>(ydoc.ele, base, true)
@@ -101,7 +106,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
   const [planningId] = getValueByYPath<string | undefined>(ydoc.ele, 'root.uuid')
 
   const documentId = articleId || flashId || editorialInfoId
-  const isDocument = assignmentType === 'flash' || assignmentType === 'text' || assignmentType === 'editorial-info'
+  const isDocument = assignmentType === 'flash' || assignmentType === 'text' || assignmentType === 'editorial-info' || assignmentType === 'timeless'
   const documentLabel = assignmentType
     ? t(`shared:assignmentTypes.${assignmentType}` as TranslationKey)
     : t('common:misc.unknown')
@@ -111,6 +116,9 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
 
   const assignmentTime = useMemo(() => {
     if (typeof assignmentType !== 'string') {
+      return undefined
+    }
+    if (assignmentType === 'timeless') {
       return undefined
     }
     const endAndStartAreNotEqual = endTime && startTime && endTime !== startTime
@@ -288,13 +296,55 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
             )
           }
         }]
+      : []),
+    ...(assignmentType === 'timeless' && documentId
+      ? [{
+          label: t('planning:assignment.convertToArticle'),
+          disabled: isConverting || articleStatus?.meta?.workflowState === 'used',
+          icon: RefreshCwIcon,
+          item: () => {
+            showModal(
+              <ConvertToArticleDialog
+                timelessId={documentId}
+                onClose={(result) => {
+                  hideModal()
+                  if (result?.articleId) {
+                    openArticle(undefined, { id: result.articleId })
+                  }
+                }}
+              />
+            )
+          }
+        }]
+      : []),
+    ...(assignmentType === 'text' && documentId
+      ? [{
+          label: t('planning:assignment.convertToTimeless'),
+          disabled: isConverting || articleStatus?.meta?.workflowState === 'used',
+          icon: RefreshCwIcon,
+          item: () => {
+            showModal(
+              <ConvertToTimelessDialog
+                articleId={documentId}
+                onClose={(result) => {
+                  hideModal()
+                  if (result?.timelessId) {
+                    openArticle(undefined, { id: result.timelessId })
+                  }
+                }}
+              />
+            )
+          }
+        }]
       : [])
   ]
   const selected = articleId && openDocuments.includes(articleId)
   const workflowState = articleStatus?.meta?.workflowState
+  const isUsedTimeless = assignmentType === 'timeless' && workflowState === 'used'
 
   useRepositoryEvents([
     'core/article',
+    'core/article#timeless',
     'core/flash',
     'core/editorial-info'
   ], (event) => {
@@ -350,7 +400,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
           />
           <AssigneeAvatars assignees={authors.map((author) => author.title)} />
 
-          <div className='hidden items-center @3xl/view:flex'>
+          <div className={cn('hidden items-center @3xl/view:flex', isUsedTimeless && 'opacity-60')}>
             <SluglineButton value={slugline} />
           </div>
         </div>
@@ -389,7 +439,14 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
             workflowState={workflowState}
           />
           <HastIndicator documentId={deliverableId} />
-          <span className='leading-relaxed group-hover/assrow:underline'>{title}</span>
+          <span
+            className={cn(
+              'leading-relaxed group-hover/assrow:underline',
+              isUsedTimeless && 'text-muted-foreground'
+            )}
+          >
+            {title}
+          </span>
         </div>
         <div className='flex items-center gap-2'>
           {/* FIXME: Disable until we have an idea of how this should be clear to end-user
@@ -436,7 +493,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
         />
       )}
 
-      {showCreateDialogPayload && !slugline && assignmentType !== 'flash' && (
+      {showCreateDialogPayload && !slugline && assignmentType !== 'flash' && !featureFlags.hasLooseSlugline && (
         <Prompt
           title={t('planning:prompts.slugMissing')}
           description={t('planning:prompts.slugMissingDescription')}
@@ -449,7 +506,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
         />
       )}
 
-      {showCreateDialogPayload && ydoc.provider?.document && (slugline || assignmentType === 'flash') && (
+      {showCreateDialogPayload && ydoc.provider?.document && (slugline || assignmentType === 'flash' || featureFlags.hasLooseSlugline) && (
         <CreateDeliverablePrompt
           ydoc={ydoc}
           payload={createPayload(ydoc.provider.document, index, assignmentType) || {}}
