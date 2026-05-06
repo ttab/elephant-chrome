@@ -21,15 +21,11 @@ interface FactboxData {
 
 export function factboxColumns<Ns extends Namespace>({ locale, timeZone, t }: { locale: LocaleData, timeZone: string, t: TFunction<Ns> }): Array<ColumnDef<Factbox>> {
   const handleDragStart = (event: React.DragEvent<HTMLDivElement>, row: Row<Factbox>) => {
-    const id = row.original.id.includes('embedded')
-      ? row.original.fields['_document_origin_id']?.values[0]
-      : row.original.id
-
     const factboxData: FactboxData = {
       title: row.getValue<string>('title'),
       text: row.original.fields['document.content.core_text.data.text'].values.join('\n'),
       modified: row.getValue<string>('edited'),
-      id,
+      id: row.original.id,
       created: row.original.fields?.['created']?.values.join(),
       version: row.original.fields.current_version.values[0]
     }
