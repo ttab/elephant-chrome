@@ -31,7 +31,8 @@
     "noPlanningHint": "Ingen opprinnelig plan ble funnet — en ny plan opprettes fra den tidløse."
   },
   "convertToTimeless": {
-    "description": "Velg kategori for den nye tidløse artikkelen. Den opprinnelige artikkelen er fortsatt tilgjengelig."
+    "description": "Velg kategori for den nye tidløse artikkelen. Den opprinnelige artikkelen er fortsatt tilgjengelig.",
+    "publishedDisabled": "Publiserte artikler kan ikke lagres som tidløse."
   },
   "removeHastPrompt": {
     "title": "Fjern HAST fra artikkelen",

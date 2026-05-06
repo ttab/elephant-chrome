@@ -31,7 +31,8 @@
     "noPlanningHint": "Ingen ursprunglig planering hittades — en ny planering skapas från tidlös."
   },
   "convertToTimeless": {
-    "description": "Välj kategori för den nya tidlösa artikeln. Den ursprungliga artikeln finns kvar."
+    "description": "Välj kategori för den nya tidlösa artikeln. Den ursprungliga artikeln finns kvar.",
+    "publishedDisabled": "Publicerade artiklar kan inte sparas som tidlösa."
   },
   "removeHastPrompt": {
     "title": "Ta bort HAST från artikeln",
