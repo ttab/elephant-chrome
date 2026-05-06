@@ -104,10 +104,12 @@ export const createFactboxConsume = (
   const payload = JSON.parse(input.data) as FactboxDragPayload
   const isEmbedded = EMBEDDED_ID_RE.test(payload.id)
 
+  let block: Block | undefined
   let children: TBElement[] | undefined
 
   if (repository && session?.accessToken) {
-    const block = await fetchFactboxBlock(payload, repository, session.accessToken)
+    block = await fetchFactboxBlock(payload, repository, session.accessToken)
+
     if (block) {
       const transformed = transformFactbox(block)
       children = transformed.children as TBElement[]
