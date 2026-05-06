@@ -87,7 +87,11 @@ export function toContentYXmlText(content: TBElement[]): Y.XmlText {
 export async function translateWireContent(
   wireContent: TBElement[],
   mode: 'standard' | 'personal',
-  personalPrefs?: string
+  options: {
+    ntbUrl: string
+    accessToken: string
+    personalPrefs?: string
+  }
 ): Promise<Y.XmlText> {
   const cloned = structuredClone(wireContent)
   const texts = collectTexts(cloned)
@@ -99,7 +103,10 @@ export async function translateWireContent(
       source_language: 'nb',
       target_language: 'nn',
       prefs_template: 'standard',
-      ...(mode === 'personal' && personalPrefs ? { prefs: parsePersonalPrefs(personalPrefs) } : {})
+      ...(mode === 'personal' && options.personalPrefs ? { prefs: parsePersonalPrefs(options.personalPrefs) } : {})
+    }, {
+      ntbUrl: options.ntbUrl,
+      accessToken: options.accessToken
     })
 
     if (result.texts?.values?.length !== texts.length) {

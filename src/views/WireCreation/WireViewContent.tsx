@@ -84,7 +84,7 @@ export const WireViewContent = (props: ViewProps & {
   const [title] = useYValue<Y.XmlText>(ydoc.ele, 'root.title', true)
   const documentAwareness = useRef<(value: boolean) => void>(null)
   const planningTitleRef = useRef<HTMLInputElement>(null)
-  const { index, locale, timeZone } = useRegistry()
+  const { index, locale, timeZone, server } = useRegistry()
   const sections = useSections()
   const [section, setSection] = useState<{
     type: string
@@ -374,7 +374,8 @@ export const WireViewContent = (props: ViewProps & {
                     contentSources: wireData.contentSources,
                     wireContent: wireDocument?.content,
                     translationMode: translationMode !== 'none' ? translationMode : undefined,
-                    personalPrefs: preferences.nynorskPrefs
+                    personalPrefs: preferences.nynorskPrefs,
+                    ntbUrl: server.ntbUrl?.href
                   })
                     .then(() => {
                       setShowVerifyDialog(false)

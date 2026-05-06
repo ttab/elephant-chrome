@@ -28,6 +28,7 @@ describe('GET /api/envs', () => {
       spellcheckUrl: 'https://spell.example.com',
       faroUrl: 'https://faro.example.com',
       baboonUrl: 'https://baboon.example.com',
+      ntbUrl: '',
       systemLanguage: 'nb-NO',
       hasPrint: 'true',
       hasHast: 'true',

@@ -10,6 +10,8 @@ interface ServerUrls {
   faroUrl: URL
   baboonUrl: URL
   imageSearchUrl: URL
+  /** Translation service. Optional — not all deployments have it configured. */
+  ntbUrl?: URL
 }
 
 interface ServerEnvs {
@@ -50,6 +52,16 @@ export async function getServerEnvs(): Promise<ServerConfig> {
       }
 
       urls[field] = new URL(value)
+    }
+
+    // Optional URLs — empty values mean the corresponding feature is not
+    // configured for this deployment, not a misconfiguration.
+    const optionalUrlAttributes = ['ntbUrl']
+    for (const field of optionalUrlAttributes) {
+      const value = data[field]
+      if (typeof value === 'string' && value !== '') {
+        urls[field] = new URL(value)
+      }
     }
 
     if (!data['systemLanguage'] || typeof data['systemLanguage'] !== 'string') {

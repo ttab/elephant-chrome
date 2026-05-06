@@ -42,6 +42,8 @@ export interface RegistryProviderState {
     userUrl: URL
     faroUrl: URL
     baboonUrl: URL
+    /** Translation service. Optional — not all deployments have it. */
+    ntbUrl?: URL
   }
   envs: {
     imageSearchProvider: string
