@@ -5,6 +5,7 @@ import type { Application, WebsocketRequestHandler } from 'express-ws'
 import type { Repository } from '@/shared/Repository.js'
 import type { CollaborationServer } from './collaboration/CollaborationServer.js'
 import type { Redis } from './utils/Redis.js'
+import type { ServiceUrlResolver } from './lib/serviceUrls.js'
 import logger from './lib/logger.js'
 
 import { raw as expressRaw } from 'express'
@@ -20,10 +21,11 @@ interface RouteInitContext {
   repository: Repository
   cache: Redis
   collaborationServer: CollaborationServer
+  serviceUrls: ServiceUrlResolver
   [key: string]: unknown
 }
 
-interface RouteContext extends RouteInitContext {
+export interface RouteContext extends RouteInitContext {
   res: Response
 }
 

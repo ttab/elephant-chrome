@@ -1,15 +1,14 @@
-export const GET = (): Promise<unknown> => {
+import type { RouteHandler } from '../../routes.js'
+
+export const GET: RouteHandler = (_req, { serviceUrls }) => {
   return Promise.resolve({
     payload: {
-      indexUrl: process.env.INDEX_PUBLIC_URL ?? process.env.INDEX_URL ?? '',
+      basePublicApiUrl: serviceUrls.getBasePublicApiUrl(),
+      servicePublicUrlOverrides: serviceUrls.getPublicUrlOverrides(),
       webSocketUrl: process.env.WS_URL ?? '',
-      repositoryUrl: process.env.REPOSITORY_PUBLIC_URL ?? process.env.REPOSITORY_URL ?? '',
-      userUrl: process.env.USER_PUBLIC_URL ?? process.env.USER_URL ?? '',
       imageSearchUrl: process.env.IMAGE_SEARCH_PUBLIC_URL ?? process.env.IMAGE_SEARCH_URL ?? '',
       imageSearchProvider: process.env.IMAGE_SEARCH_PROVIDER ?? '',
-      spellcheckUrl: process.env.SPELLCHECK_PUBLIC_URL ?? process.env.SPELLCHECK_URL ?? '',
       faroUrl: process.env.FARO_PUBLIC_URL ?? process.env.FARO_URL ?? '',
-      baboonUrl: process.env.BABOON_PUBLIC_URL ?? process.env.BABOON_URL ?? '',
       systemLanguage: process.env.SYSTEM_LANGUAGE ?? '',
       hasPrint: process.env.HAS_PRINT ?? '',
       hasHast: process.env.HAS_HAST ?? '',

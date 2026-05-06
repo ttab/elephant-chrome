@@ -18,7 +18,7 @@ export const CoreCategoryProvider = ({ children }: {
   children: React.ReactNode
 }): JSX.Element => {
   const documentType = 'core/category'
-  const { server: { indexUrl } } = useRegistry()
+  const indexUrl = useRegistry().server.resolveServiceUrl('index')
   const { data } = useSession()
   const [objects, setObjects] = useState<IDBCategory[]>([])
   const IDB = useIndexedDB()

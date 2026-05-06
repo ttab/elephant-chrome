@@ -18,7 +18,7 @@ export const CoreSectionProvider = ({ children }: {
   children: React.ReactNode
 }): JSX.Element => {
   const documentType = 'core/section'
-  const { server: { indexUrl } } = useRegistry()
+  const indexUrl = useRegistry().server.resolveServiceUrl('index')
   const { data } = useSession()
   const [objects, setObjects] = useState<IDBSection[]>([])
   const IDB = useIndexedDB()

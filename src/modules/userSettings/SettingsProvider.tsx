@@ -34,7 +34,7 @@ export const SettingsProvider = ({ application, children }: {
   if (!clientRef.current) {
     clientRef.current = new SettingsClient(
       new TwirpFetchTransport({
-        baseUrl: new URL('twirp', server.userUrl).toString(),
+        baseUrl: new URL('twirp', server.resolveServiceUrl('user')).toString(),
         sendJson: true,
         jsonOptions: {
           ignoreUnknownFields: true

@@ -34,14 +34,9 @@ export interface RegistryProviderState {
   featureFlags: FeatureFlags
   server: {
     webSocketUrl: URL
-    indexUrl: URL
-    repositoryEventsUrl: URL
-    repositoryUrl: URL
     imageSearchUrl: URL
-    spellcheckUrl: URL
-    userUrl: URL
     faroUrl: URL
-    baboonUrl: URL
+    resolveServiceUrl: (name: string) => URL
   }
   envs: {
     imageSearchProvider: string
@@ -69,14 +64,9 @@ export const initialState: RegistryProviderState = {
 
   server: {
     webSocketUrl: new URL('http://localhost'),
-    indexUrl: new URL('http://localhost'),
-    repositoryEventsUrl: new URL('http://localhost'),
-    repositoryUrl: new URL('http://localhost'),
     imageSearchUrl: new URL('http://localhost'),
-    spellcheckUrl: new URL('http://localhost'),
-    userUrl: new URL('http://localhost'),
     faroUrl: new URL('http://localhost'),
-    baboonUrl: new URL('http://localhost')
+    resolveServiceUrl: () => new URL('http://localhost')
   },
   envs: {
     imageSearchProvider: '',
@@ -101,18 +91,20 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
     const initialize = async () => {
       try {
         await initI18n()
-        const { urls: server, envs, featureFlags } = await getServerEnvs()
+        const { urls, envs, featureFlags, resolveServiceUrl } = await getServerEnvs()
         setSystemLanguage(envs.systemLanguage)
         setEnvironment(envs.environment)
 
         const locale = defaultLocale
 
-        const repository = new Repository(server.repositoryUrl.href)
-        const workflow = new Workflow(server.repositoryUrl.href)
-        const index = new Index(server.indexUrl.href)
-        const spellchecker = new Spellchecker(server.spellcheckUrl.href)
-        const user = new User(server.userUrl.href)
-        const baboon = new Baboon(server.baboonUrl.href)
+        const server = { ...urls, resolveServiceUrl }
+
+        const repository = new Repository(resolveServiceUrl('repository').href)
+        const workflow = new Workflow(resolveServiceUrl('repository').href)
+        const index = new Index(resolveServiceUrl('index').href)
+        const spellchecker = new Spellchecker(resolveServiceUrl('spell').href)
+        const user = new User(resolveServiceUrl('user').href)
+        const baboon = new Baboon(resolveServiceUrl('baboon').href)
         const ntb = envs.imageSearchProvider === 'ntb'
           ? new NTB(server.imageSearchUrl.href)
           : undefined

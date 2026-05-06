@@ -19,7 +19,7 @@ export const CoreAuthorProvider = ({ children }: {
   children: React.ReactNode
 }): JSX.Element => {
   const documentType = 'core/author'
-  const { server: { indexUrl } } = useRegistry()
+  const indexUrl = useRegistry().server.resolveServiceUrl('index')
   const { data } = useSession()
   const [objects, setObjects] = useState<IDBAuthor[]>([])
   const IDB = useIndexedDB()

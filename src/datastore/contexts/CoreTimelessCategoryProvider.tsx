@@ -18,7 +18,7 @@ export const CoreTimelessCategoryProvider = ({ children }: {
   children: React.ReactNode
 }): JSX.Element => {
   const documentType = 'core/timeless-category'
-  const { server: { indexUrl } } = useRegistry()
+  const indexUrl = useRegistry().server.resolveServiceUrl('index')
   const { data } = useSession()
   const [objects, setObjects] = useState<IDBTimelessCategory[]>([])
   const IDB = useIndexedDB()

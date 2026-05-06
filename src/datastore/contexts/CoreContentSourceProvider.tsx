@@ -18,7 +18,7 @@ export const CoreContentSourceProvider = ({ children }: {
   children: React.ReactNode
 }): JSX.Element => {
   const documentType = 'core/content-source'
-  const { server: { indexUrl } } = useRegistry()
+  const indexUrl = useRegistry().server.resolveServiceUrl('index')
   const { data } = useSession()
   const [objects, setObjects] = useState<IDBContentSource[]>([])
   const IDB = useIndexedDB()

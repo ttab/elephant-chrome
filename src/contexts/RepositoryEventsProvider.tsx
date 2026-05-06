@@ -1,4 +1,4 @@
-import { createContext, useCallback, useEffect, useRef, useState, type JSX } from 'react'
+import { createContext, useCallback, useEffect, useMemo, useRef, useState, type JSX } from 'react'
 import { useRegistry } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import { fetchEventSource } from '@microsoft/fetch-event-source'
@@ -25,7 +25,8 @@ export const RepositoryEventsContext = createContext<RepositoryEventsProviderSta
 export const RepositoryEventsProvider = ({ children }: {
   children: React.ReactNode
 }): JSX.Element => {
-  const { server: { repositoryEventsUrl } } = useRegistry()
+  const repositoryUrl = useRegistry().server.resolveServiceUrl('repository')
+  const repositoryEventsUrl = useMemo(() => new URL('/sse', repositoryUrl), [repositoryUrl])
   const { data } = useSession()
   const subscribers = useRef<Record<string, Array<(data: EventlogItem) => void>>>({})
   const IDB = useIndexedDB()

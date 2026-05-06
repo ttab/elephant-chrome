@@ -18,10 +18,10 @@ export const SupportedLanguagesProvider = ({ children }: {
   const { data: session } = useSession()
   const [languages, setLanguages] = useState<IDBLanguage[]>([])
   const IDB = useIndexedDB()
-  const { server: { spellcheckUrl } } = useRegistry()
+  const spellUrl = useRegistry().server.resolveServiceUrl('spell')
 
   const getOrRefreshCache = useCallback(async (): Promise<void> => {
-    if (!session?.accessToken || !spellcheckUrl || !IDB.isConnected) {
+    if (!session?.accessToken || !spellUrl || !IDB.isConnected) {
       return
     }
 
@@ -30,7 +30,7 @@ export const SupportedLanguagesProvider = ({ children }: {
     if (Array.isArray(cachedLanguages) && cachedLanguages.length) {
       setLanguages(cachedLanguages)
     } else {
-      const supportedLanguagesUrl = new URL('/twirp/elephant.spell.Dictionaries/SupportedLanguages', spellcheckUrl.href)
+      const supportedLanguagesUrl = new URL('/twirp/elephant.spell.Dictionaries/SupportedLanguages', spellUrl.href)
 
       const response = await fetch(supportedLanguagesUrl, {
         method: 'POST',
@@ -59,7 +59,7 @@ export const SupportedLanguagesProvider = ({ children }: {
         }
       }
     }
-  }, [IDB, session?.accessToken, spellcheckUrl])
+  }, [IDB, session?.accessToken, spellUrl])
 
   useEffect(() => {
     void getOrRefreshCache()

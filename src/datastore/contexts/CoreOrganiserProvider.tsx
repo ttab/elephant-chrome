@@ -18,7 +18,7 @@ export const CoreOrganiserProvider = ({ children }: {
   children: React.ReactNode
 }): JSX.Element => {
   const documentType = 'core/organiser'
-  const { server: { indexUrl } } = useRegistry()
+  const indexUrl = useRegistry().server.resolveServiceUrl('index')
   const { data } = useSession()
   const [objects, setObjects] = useState<IDBOrganiser[]>([])
   const IDB = useIndexedDB()

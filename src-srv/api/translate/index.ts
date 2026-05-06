@@ -4,13 +4,9 @@ import { getContextFromValidSession, isContext } from '../../lib/context.js'
 
 /**
  * Proxy translation requests to the NTB twirp service.
- * Reads NTB_URL from server environment.
  */
-export const POST: RouteHandler = async (req: Request, { res }) => {
-  const nynorskUrl = process.env.NTB_URL
-  if (!nynorskUrl) {
-    return { statusCode: 501, statusMessage: 'Translation service not configured' }
-  }
+export const POST: RouteHandler = async (req: Request, { res, serviceUrls }) => {
+  const nynorskUrl = serviceUrls.resolveServiceUrl('ntb', 'internal')
 
   const locals = res.locals as Record<string, unknown> | undefined
   const session = locals?.session as { accessToken?: string, user?: { sub: string } } | undefined

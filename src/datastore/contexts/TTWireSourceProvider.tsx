@@ -18,7 +18,7 @@ export const TTWireSourceProvider = ({ children }: {
   children: React.ReactNode
 }): JSX.Element => {
   const documentType = 'tt/wire-source'
-  const { server: { indexUrl } } = useRegistry()
+  const indexUrl = useRegistry().server.resolveServiceUrl('index')
   const { data } = useSession()
   const [objects, setObjects] = useState<IDBWireSource[]>([])
   const IDB = useIndexedDB()
