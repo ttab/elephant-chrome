@@ -121,10 +121,12 @@ export class Repository {
    * @param options - { uuids: string[], accessToken: string }
    * @returns Promise<BulkGetResponse | null>
    */
-  async getDocuments({ documents, accessToken, abort }: {
+  async getDocuments({ documents, accessToken, abort, subset = [] }: {
     documents: { uuid: string, version?: bigint }[]
     accessToken: string
     abort?: AbortSignal
+    /** Newsdoc-extractor expressions. `[]` (default) returns the full document. */
+    subset?: string[]
   }): Promise<BulkGetResponse | null> {
     if (!documents.length || !documents.filter((document) => isValidUUID(document.uuid)).length) {
       return null
@@ -135,7 +137,7 @@ export class Repository {
         documents: documents.filter((doc) => doc?.version !== -1n).map((document) => {
           return ({ uuid: document.uuid, version: document.version || 0n })
         }),
-        subset: []
+        subset
       }, meta(accessToken, abort))
 
       return response

@@ -1,7 +1,7 @@
 import { type JSX, useCallback, useMemo, useState } from 'react'
 import { CategoryPicker } from '@/components/TimelessCategory'
 import { useSession } from 'next-auth/react'
-import { useRegistry, useSections } from '@/hooks'
+import { useDocumentDefaults, useRegistry, useSections } from '@/hooks'
 import { useActiveAuthor } from '@/hooks/useActiveAuthor'
 import { useFeatureFlags } from '@/hooks/useFeatureFlags'
 import { toast } from 'sonner'
@@ -21,9 +21,8 @@ import { UserMessage } from '@/components/UserMessage'
 import { Newsvalues } from '@/defaults'
 import { convertToISOStringInTimeZone } from '@/shared/datetime'
 import { fetch as fetchPlannings } from '@/lib/index/fetch-plannings-twirp'
-import { addAssignmentWithDeliverable } from '@/lib/index/addAssignment'
 import type { DefaultValueOption } from '@/types'
-import { createNewTimelessArticle } from './lib/createNewTimelessArticle'
+import { submitTimeless } from './lib/submitTimeless'
 
 type PlanningOption = Omit<DefaultValueOption, 'payload'> & {
   payload: { slugline?: string, section?: string }
@@ -45,6 +44,7 @@ export const TimelessCreation = ({ id, onClose }: {
   const sections = useSections({ sort: 'title' })
   const activeAuthor = useActiveAuthor({ full: false })
   const { hasLooseSlugline } = useFeatureFlags(['hasLooseSlugline'])
+  const defaults = useDocumentDefaults()
 
   const [title, setTitle] = useState<string>('')
   const [selectedCategory, setSelectedCategory] = useState<Block | undefined>()
@@ -121,7 +121,7 @@ export const TimelessCreation = ({ id, onClose }: {
       : undefined
 
     try {
-      const newId = await createNewTimelessArticle({
+      const newId = await submitTimeless({
         repository,
         session,
         id,
@@ -129,29 +129,20 @@ export const TimelessCreation = ({ id, onClose }: {
         category: selectedCategory,
         newsvalue,
         slugline: timelessSlugline,
-        section: sectionBlock
-      })
-      const updatedPlanningId = await addAssignmentWithDeliverable({
-        ...planningContext,
-        type: 'timeless',
-        deliverableId: newId,
-        title: trimmedTitle,
-        publicVisibility: true,
+        section: sectionBlock,
+        language: defaults.language,
+        planningContext,
         localDate,
         isoDateTime,
         author: activeAuthor
           ? { id: activeAuthor.id, name: activeAuthor.name }
           : undefined
       })
-      if (!updatedPlanningId) {
-        throw new Error('Planning link failed')
-      }
       onClose(newId)
     } catch (ex) {
       const message = ex instanceof Error ? ex.message : t('errors:messages.unknown')
       console.error('Failed to create timeless article:', ex)
       toast.error(t('errors:toasts.creationFailed', { error: message }))
-      throw ex
     }
   }
 
@@ -292,12 +283,14 @@ export const TimelessCreation = ({ id, onClose }: {
             {isNewPlanning && (
               <Form.Group icon={TagIcon}>
                 {!hasLooseSlugline && (
-                  <Input
-                    className='pt-2 h-7 max-w-48 text-medium placeholder:text-[#5D709F] placeholder-shown:border-[#5D709F] placeholder-shown:bg-[#5D709F]/5'
-                    placeholder={`${t('common:actions.add')} ${t('core:labels.slugline').toLocaleLowerCase()}`}
-                    value={slugline}
-                    onChange={(event) => setSlugline(event.target.value)}
-                  />
+                  <>
+                    <Input
+                      className='pt-2 h-7 max-w-48 text-medium placeholder:text-[#5D709F] placeholder-shown:border-[#5D709F] placeholder-shown:bg-[#5D709F]/5'
+                      placeholder={`${t('common:actions.add')} ${t('core:labels.slugline').toLocaleLowerCase()}`}
+                      value={slugline}
+                      onChange={(event) => setSlugline(event.target.value)}
+                    />
+                  </>
                 )}
 
                 <ComboBox

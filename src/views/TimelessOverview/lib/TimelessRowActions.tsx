@@ -1,4 +1,4 @@
-import { type MouseEvent, type JSX } from 'react'
+import { useState, type MouseEvent, type JSX } from 'react'
 import { DotMenu, type DotDropdownMenuActionItem } from '@/components/ui/DotMenu'
 import { CalendarDaysIcon, RefreshCwIcon } from '@ttab/elephant-ui/icons'
 import { ConvertToArticleDialog } from '@/components/ConvertToArticleDialog'
@@ -20,9 +20,11 @@ export function TimelessRowActions({
   const { isConverting } = useConvertArticleType()
   const { t } = useTranslation(['views', 'common'])
   const { showModal, hideModal } = useModal()
-  const openEditor = useLink('Editor')
   const openPlanning = useLink('Planning')
-  const planningId = useDeliverableInfo(documentId)?.planningUuid ?? ''
+  // Defer the deliverable-info fetch until the menu is opened. Mounting the
+  // hook per row caused 50+ parallel fetches and an event-driven refetch storm.
+  const [hasOpened, setHasOpened] = useState(false)
+  const planningId = useDeliverableInfo(hasOpened ? documentId : '')?.planningUuid ?? ''
   const isUsed = status === 'used'
 
   const handleOpenPlanning = (event: MouseEvent<HTMLDivElement>) => {
@@ -41,8 +43,8 @@ export function TimelessRowActions({
         timelessId={documentId}
         onClose={(result) => {
           hideModal()
-          if (result?.articleId) {
-            openEditor(undefined, { id: result.articleId })
+          if (result?.planningId) {
+            openPlanning(undefined, { id: result.planningId })
           }
         }}
       />
@@ -64,5 +66,14 @@ export function TimelessRowActions({
     }
   ]
 
-  return <DotMenu items={menuItems} />
+  return (
+    <DotMenu
+      items={menuItems}
+      onOpenChange={(open) => {
+        if (open) {
+          setHasOpened(true)
+        }
+      }}
+    />
+  )
 }

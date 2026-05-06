@@ -9,7 +9,7 @@
     "unorderedList": "Lista",
     "orderedList": "Punktlista",
     "searchImages": "Sök bilder",
-    "factboxes": "Faktarutor"
+    "factboxes": "Sök faktarutor"
   },
   "numberOfChars": "Antal tecken",
   "spelling": {
@@ -18,7 +18,11 @@
   "factbox": {
     "headerTitle": "Redigera faktarutans original",
     "modifiedLabel": "Originalet är från",
-    "footerTitle": "Ändringar i faktarutans text sker endast för denna artikel"
+    "createdLabel": "Skapad",
+    "lastModifiedLabel": "Senast ändrad",
+    "footerTitle": "Ändringar i faktarutans text sker endast för denna artikel",
+    "factboxNewTitle": "Fakta",
+    "addSingleLabel": "Skapa faktaruta"
   },
   "image": {
     "captionLabel": "Text",
@@ -28,11 +32,13 @@
     "words": "Ord",
     "numberOfWords": "Antal ord: artikel (totalt)",
     "chars": "Tecken",
-    "numberOfChars": "Antal tecken: artikel (totalt)"
+    "numberOfChars": "Antal tecken: artikel (totalt)",
+    "language": "Artikelspråk"
   },
   "goToLatestVersion": "Gå till senaste versionen",
   "goToLatestVersionShort": "Senaste",
   "embargoActive": "Kan inte publiceras direkt — embargo gäller till {{time}}",
+  "embargoCheckUnavailable": "Kan inte verifiera embargo. Försök igen.",
   "addRoleInfo": {
     "editorial": "Lägg till redaktionell info",
     "internal": "Lägg till intern info"
@@ -40,7 +46,6 @@
   "removeInfoConfirm": "Är du säker på att du vill ta bort info?",
   "changeType": "Ändra typ",
   "changeTypeConfirm": "Är du säker på att du vill ändra typ av info?",
-  "derivedFrom": "Skapad från",
   "derivedFromTimelessLink": "tidlös",
   "derivedFromArticleLink": "artikel",
   "derivedFromConnector": "och",

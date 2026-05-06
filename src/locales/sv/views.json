@@ -57,7 +57,12 @@
     "title": "Faktarutor",
     "columnLabels": {
       "description": "Beskrivning",
-      "lastChanged": "Senast ändrad"
+      "lastChanged": "Senast ändrad",
+      "origin": "Ursprung"
+    },
+    "origin": {
+      "original": "Original",
+      "inArticle": "Från artikel"
     }
   },
   "search": {
@@ -92,17 +97,19 @@
     "actions": {
       "new": "Ny tidlös",
       "openPlanning": "Öppna ursprunglig planering",
-      "convertToArticle": "Konvertera till artikel"
+      "convertToArticle": "Planera som artikel"
     },
     "placeholders": {
       "addCategory": "Lägg till kategori"
     },
     "toasts": {
-      "convertedSuccess": "Tidlös konverterad",
-      "conversionFailed": "Konverteringen misslyckades: {{message}}",
+      "articlePlanned": "Artikel planerad",
+      "timelessSaved": "Tidlös sparad",
+      "conversionFailed": "Kunde inte skapa det nya dokumentet: {{message}}",
       "notAuthenticated": "Kan inte konvertera: inte inloggad",
       "documentNotFound": "Dokumentet hittades inte",
       "openArticle": "Öppna artikel",
+      "openTimeless": "Öppna tidlös",
       "openPlanning": "Öppna planering"
     }
   },

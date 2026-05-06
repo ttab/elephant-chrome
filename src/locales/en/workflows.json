@@ -2,6 +2,7 @@
   "base": {
     "article": "article",
     "flash": "flash",
+    "timeless": "timeless",
     "draft": {
       "title": "Draft",
       "description": "You are working on a draft of the {{label}}",
@@ -263,22 +264,44 @@
       "description": "You are working on a draft of the factbox",
       "transitions": {
         "usable": {
-          "title": "Publish",
-          "description": "Publish the factbox for use",
-          "promptTitle": "Publish factbox"
+          "verify": false,
+          "title": "Approve",
+          "description": "Approve the factbox for use"
+        },
+        "unpublished": {
+          "verify": false,
+          "title": "Discard",
+          "description": "Remove the factbox"
         }
       }
     },
     "usable": {
-      "title": "Usable",
+      "title": "Approved",
       "asSaveCTA": "Changed",
-      "asSaveTitle": "Publish new information",
-      "description": "The factbox is usable",
+      "asSaveTitle": "Update",
+      "description": "The factbox is approved",
+      "updateDescription": "Approve the changes",
       "transitions": {
         "draft": {
           "title": "To draft",
-          "description": "Revert the factbox to a draft",
-          "promptTitle": "Revert factbox to draft"
+          "description": "Revert the factbox to a draft"
+        },
+        "unpublished": {
+          "verify": false,
+          "title": "Discard",
+          "description": "Remove the factbox"
+        }
+      }
+    },
+    "unpublished": {
+      "title": "Discarded",
+      "description": "The factbox is not visible or usable",
+      "isWorkflow": false,
+      "transitions": {
+        "usable": {
+          "verify": false,
+          "title": "Approve",
+          "description": "Approve the factbox for use"
         }
       }
     }

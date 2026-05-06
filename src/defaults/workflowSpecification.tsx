@@ -9,6 +9,7 @@ import {
   CircleXIcon,
   type LucideIcon
 } from '@ttab/elephant-ui/icons'
+import { cn } from '@ttab/elephant-ui/utils'
 
 interface WorkflowItem {
   title: string
@@ -219,49 +220,82 @@ const baseDeliverable = (type: 'article' | 'flash'): WorkflowSpecification => {
   }
 }
 
-export const StatusSpecifications: Record<string, StatusSpecification> = {
-  draft: {
-    icon: CircleDotIcon,
-    className: ''
-  },
-  done: {
-    icon: CircleCheckIcon,
-    className: 'bg-done text-white fill-done rounded-full dark:text-black'
-  },
-  approved: {
-    icon: BadgeCheckIcon,
-    className: 'bg-approved text-white fill-approved rounded-full dark:text-black'
-  },
-  withheld: {
-    icon: CircleCheckIcon,
-    className: 'bg-withheld text-white fill-withheld rounded-full dark:text-black'
-  },
-  usable: {
-    icon: CircleCheckIcon,
-    className: 'bg-usable text-white fill-usable rounded-full dark:text-black'
-  },
-  unpublished: {
-    icon: CircleArrowLeftIcon,
-    className: 'bg-unpublished text-white fill-unpublished rounded-full dark:text-black'
-  },
-  print_done: {
-    icon: BadgeCheckIcon,
-    className: 'bg-approved text-white fill-approved rounded-full dark:text-black'
-  },
-  needs_proofreading: {
-    icon: CircleCheckIcon,
-    className: 'bg-done text-white fill-done rounded-full dark:text-black'
-  },
-  cancelled: {
-    icon: CircleXIcon,
-    className: 'bg-cancelled text-white fill-cancelled rounded-full dark:text-black'
-  },
-  used: {
-    icon: ArchiveIcon,
-    className: 'text-muted-foreground'
-  }
+export const getAllStatuses = (): string[] => {
+  return [
+    'draft',
+    'done',
+    'approved',
+    'withheld',
+    'usable',
+    'unpublished',
+    'print_done',
+    'needs_proofreading',
+    'cancelled'
+  ]
 }
 
+export const getStatusSpecifications = (status: string, documentType?: string): StatusSpecification => {
+  switch (status) {
+    case 'draft':
+      return {
+        icon: CircleDotIcon,
+        className: ''
+      }
+    case 'done':
+      return {
+        icon: CircleCheckIcon,
+        className: 'bg-done text-white fill-done rounded-full dark:text-black'
+      }
+    case 'approved':
+      return {
+        icon: BadgeCheckIcon,
+        className: 'bg-approved text-white fill-approved rounded-full dark:text-black'
+      }
+    case 'withheld':
+      return {
+        icon: CircleCheckIcon,
+        className: 'bg-withheld text-white fill-withheld rounded-full dark:text-black'
+      }
+    case 'usable':
+      return {
+        icon: CircleCheckIcon,
+        className: cn(
+          'text-white  rounded-full dark:text-black',
+          documentType === 'core/factbox' ? 'bg-done fill-done' : 'bg-usable fill-usable'
+        )
+      }
+    case 'unpublished':
+      return {
+        icon: CircleArrowLeftIcon,
+        className: 'bg-unpublished text-white fill-unpublished rounded-full dark:text-black'
+      }
+    case 'print_done':
+      return {
+        icon: BadgeCheckIcon,
+        className: 'bg-approved text-white fill-approved rounded-full dark:text-black'
+      }
+    case 'needs_proofreading':
+      return {
+        icon: CircleCheckIcon,
+        className: 'bg-done text-white fill-done rounded-full dark:text-black'
+      }
+    case 'cancelled':
+      return {
+        icon: CircleXIcon,
+        className: 'bg-cancelled text-white fill-cancelled rounded-full dark:text-black'
+      }
+    case 'used':
+      return {
+        icon: ArchiveIcon,
+        className: 'text-muted-foreground'
+      }
+    default:
+      return {
+        icon: CircleDotIcon,
+        className: ''
+      }
+  }
+}
 
 export function getWorkflowSpecifications(): Record<string, WorkflowSpecification> {
   return {
@@ -412,38 +446,38 @@ export function getWorkflowSpecifications(): Record<string, WorkflowSpecificatio
     'core/article': baseDeliverable('article'),
     'core/article#timeless': {
       draft: {
-        title: i18n.t('workflows:base.draft.title', { label: i18n.t('workflows:base.article') }),
-        description: i18n.t('workflows:base.draft.description', { label: i18n.t('workflows:base.article') }),
+        title: i18n.t('workflows:base.draft.title', { label: i18n.t('workflows:base.timeless') }),
+        description: i18n.t('workflows:base.draft.description', { label: i18n.t('workflows:base.timeless') }),
         isWorkflow: true,
         transitions: {
           done: {
             default: true,
             title: i18n.t('workflows:base.draft.transitions.done.title'),
-            description: i18n.t('workflows:base.draft.transitions.done.description', { label: i18n.t('workflows:base.article') })
+            description: i18n.t('workflows:base.draft.transitions.done.description', { label: i18n.t('workflows:base.timeless') })
           }
         }
       },
       done: {
         title: i18n.t('workflows:base.done.title'),
-        description: i18n.t('workflows:base.done.description', { label: i18n.t('workflows:base.article') }),
+        description: i18n.t('workflows:base.done.description', { label: i18n.t('workflows:base.timeless') }),
         isWorkflow: true,
         transitions: {
           draft: {
             default: true,
             title: i18n.t('workflows:base.done.transitions.draft.title'),
-            description: i18n.t('workflows:base.done.transitions.draft.description', { label: i18n.t('workflows:base.article') })
+            description: i18n.t('workflows:base.done.transitions.draft.description', { label: i18n.t('workflows:base.timeless') })
           }
         }
       },
       used: {
         title: i18n.t('workflows:base.used.title'),
-        description: i18n.t('workflows:base.used.description', { label: i18n.t('workflows:base.article') }),
+        description: i18n.t('workflows:base.used.description', { label: i18n.t('workflows:base.timeless') }),
         isWorkflow: false,
         transitions: {
           draft: {
             default: true,
             title: i18n.t('workflows:base.used.transitions.draft.title'),
-            description: i18n.t('workflows:base.used.transitions.draft.description', { label: i18n.t('workflows:base.article') })
+            description: i18n.t('workflows:base.used.transitions.draft.description', { label: i18n.t('workflows:base.timeless') })
           }
         }
       }
@@ -458,24 +492,33 @@ export function getWorkflowSpecifications(): Record<string, WorkflowSpecificatio
           usable: {
             verify: true,
             title: i18n.t('workflows:core/factbox.draft.transitions.usable.title'),
-            description: i18n.t('workflows:core/factbox.draft.transitions.usable.description'),
-            promptTitle: i18n.t('workflows:core/factbox.draft.transitions.usable.promptTitle')
+            description: i18n.t('workflows:core/factbox.draft.transitions.usable.description')
           }
         }
       },
       usable: {
         title: i18n.t('workflows:core/factbox.usable.title'),
-        asSaveCTA: i18n.t('workflows:core/factbox.usable.asSaveCTA'),
-        asSaveTitle: i18n.t('workflows:core/factbox.usable.asSaveTitle'),
+        asSaveCTA: i18n.t('workflows:core/factbox.usable.title'),
         description: i18n.t('workflows:core/factbox.usable.description'),
         isWorkflow: false,
-        asSave: true,
+        asSave: false,
         transitions: {
-          draft: {
+          unpublished: {
             verify: true,
-            title: i18n.t('workflows:core/factbox.usable.transitions.draft.title'),
-            description: i18n.t('workflows:core/factbox.usable.transitions.draft.description'),
-            promptTitle: i18n.t('workflows:core/factbox.usable.transitions.draft.promptTitle')
+            title: i18n.t('workflows:core/factbox.usable.transitions.unpublished.title'),
+            description: i18n.t('workflows:core/factbox.usable.transitions.unpublished.description')
+          }
+        }
+      },
+      unpublished: {
+        title: i18n.t('workflows:core/factbox.unpublished.title'),
+        description: i18n.t('workflows:core/factbox.unpublished.description'),
+        isWorkflow: false,
+        transitions: {
+          usable: {
+            verify: true,
+            title: i18n.t('workflows:core/factbox.unpublished.transitions.usable.title'),
+            description: i18n.t('workflows:core/factbox.unpublished.transitions.usable.description')
           }
         }
       }

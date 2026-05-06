@@ -19,7 +19,11 @@ import type { buttonVariants } from '@ttab/elephant-ui'
 import type { VariantProps } from 'class-variance-authority'
 import type { QueryParams } from '@/hooks/useQuery'
 import { useLink } from '@/hooks/useLink'
+import { useSession } from 'next-auth/react'
+import { createNewFactbox } from './lib/createNewFactbox'
+import { toast } from 'sonner'
 import { useRegistry } from '@/hooks/useRegistry'
+import { useDocumentDefaults } from '@/hooks/useDocumentDefaults'
 import { TimelessCreation } from '@/views/TimelessCreation'
 import { useTranslation } from 'react-i18next'
 import type { TFunction } from 'i18next'
@@ -65,10 +69,13 @@ const AddButton = ({
 
 export const AddButtonGroup = ({ docType = 'core/planning-item', query }: { type: View, query: QueryParams, docType?: string }) => {
   const { showModal, hideModal } = useModal()
-  const { featureFlags } = useRegistry()
+  const { repository, featureFlags } = useRegistry()
+  const openFactboxEditor = useLink('Factbox')
   const openEditor = useLink('Editor')
+  const { data: session } = useSession()
   const { t } = useTranslation()
   const hasHast = !!featureFlags.hasHast
+  const defaults = useDocumentDefaults()
 
   const views: ButtonView[] = addButtonTypes.map((type) => {
     const format = addButtonGroupValueFormat[type]
@@ -81,6 +88,16 @@ export const AddButtonGroup = ({ docType = 'core/planning-item', query }: { type
   const handleCreate = (view: ButtonView) => {
     const ViewDialog = Views[view.name]
     const id = crypto.randomUUID()
+
+    if (view.name === 'Factbox') {
+      createNewFactbox(repository, session, id)
+        .then((id) => openFactboxEditor(undefined, { id }, undefined))
+        .catch((error: unknown) => {
+          console.error('Error creating factbox:', error)
+          toast.error((error as Error).message)
+        })
+      return
+    }
 
     if (view.type === 'core/article#timeless' && showModal) {
       showModal(
@@ -95,7 +112,7 @@ export const AddButtonGroup = ({ docType = 'core/planning-item', query }: { type
         />
       )
     } else if (showModal) {
-      const initialDocument = getTemplateFromView(view.name, { useHast: hasHast })(id, { query })
+      const initialDocument = getTemplateFromView(view.name, { useHast: hasHast })(id, { ...defaults, query })
       showModal(
         <ViewDialog
           onDialogClose={hideModal}

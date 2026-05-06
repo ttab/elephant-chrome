@@ -22,7 +22,8 @@ export async function createNewTimelessArticle({
   category,
   newsvalue,
   slugline,
-  section
+  section,
+  language
 }: {
   repository: Repository | undefined
   session: Session | null
@@ -32,6 +33,7 @@ export async function createNewTimelessArticle({
   newsvalue: string
   slugline: string
   section: Block | undefined
+  language?: string
 }): Promise<string> {
   if (!session?.accessToken || !repository) {
     console.error('CreateTimelessArticle: Missing required dependencies', {
@@ -47,6 +49,7 @@ export async function createNewTimelessArticle({
     const contentSource = getContentSourceLink({ org: session.org, units: session.units })
     const document = timelessTemplate(id, {
       title,
+      ...(language ? { language } : {}),
       meta: {
         'core/newsvalue': [Block.create({ type: 'core/newsvalue', value: newsvalue })],
         ...(trimmedSlugline

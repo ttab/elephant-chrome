@@ -5,10 +5,11 @@
     "assignment": "oppdrag",
     "article": "artikkel",
     "flash": "Flash",
-    "quickArticle": "hurtigartikkel"
+    "quickArticle": "hurtigartikkel",
+    "factbox": "Faktaboks"
   },
   "labels": {
-    "newsvalue": "Nyhetesverdi",
+    "newsvalue": "Nyhetsverdi",
     "section": "Kategori",
     "assignee": "Oppdragstaker",
     "assignmentType": "Oppdragstype",
@@ -29,10 +30,10 @@
     "approved": "Godkjent",
     "usable": "Publisert",
     "unpublished": "Avpublisert",
-    "done": "Ferdig",
+    "done": "Klar",
     "used": "Brukt",
-    "print_done": "",
-    "needs_proofreading": "",
+    "print_done": "Klar",
+    "needs_proofreading": "Klar for korrektur",
     "withheld": "Planlagt",
     "cancelled": "Kastet",
     "changed": "Endret",
@@ -42,7 +43,7 @@
     "public": "Offentlig",
     "sent": "Sendt",
     "typeApproved": "{{type}} godkjent",
-    "typeDone": "{{type}} ferdig",
+    "typeDone": "{{type}} klar",
     "typeSaved": "{{type}} lagret",
     "typeSent": "{{type}} sendt"
   },
