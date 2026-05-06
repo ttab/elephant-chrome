@@ -1,4 +1,4 @@
-import type { TBConsumeFunction, TBElement, TBResource } from '@ttab/textbit'
+import type { TBConsumeFunction, TBElement } from '@ttab/textbit'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import type { Session } from 'next-auth'
 import type { Repository } from '@/shared/Repository'
@@ -68,6 +68,7 @@ const fetchFactboxBlock = async (
   if (!response?.document) return undefined
 
   const { document } = response
+
   return {
     id: document.uuid,
     uuid: document.uuid,
@@ -101,11 +102,14 @@ export const createFactboxConsume = (
   }
 
   const payload = JSON.parse(input.data) as FactboxDragPayload
+  const isEmbedded = EMBEDDED_ID_RE.test(payload.id)
 
+  let block: Block | undefined
   let children: TBElement[] | undefined
 
   if (repository && session?.accessToken) {
-    const block = await fetchFactboxBlock(payload, repository, session.accessToken)
+    block = await fetchFactboxBlock(payload, repository, session.accessToken)
+
     if (block) {
       const transformed = transformFactbox(block)
       children = transformed.children as TBElement[]
@@ -116,7 +120,12 @@ export const createFactboxConsume = (
     children = fallbackChildren(payload)
   }
 
-  const resource: TBResource = {
+  // Embedded payload.id is "articleId:embedded:N" - not a valid UUID for a source link.
+  const sourceId = isEmbedded
+    ? block?.links?.find((l) => l.rel === 'source')?.uuid
+    : payload.id
+
+  return {
     ...input,
     data: {
       id: crypto.randomUUID(),
@@ -125,19 +134,17 @@ export const createFactboxConsume = (
       properties: {
         title: payload.title,
         text: payload.text,
+        created: payload.created,
         modified: payload.modified,
-        id: payload.id,
-        original_id: payload.id,
+        id: sourceId,
+        original_id: sourceId,
         original_updated: payload.original_updated,
         original_version: payload.original_version,
         locally_changed: payload.locally_changed,
-        created: payload.created,
         rel: 'factbox',
         type: 'core/factbox'
       },
       children
     }
   }
-
-  return resource
 }
