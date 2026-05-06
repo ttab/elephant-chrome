@@ -1,4 +1,4 @@
-import { useCallback, useMemo, type JSX } from 'react'
+import { useMemo, type JSX } from 'react'
 import { useOrganisers, useQuery, useRegistry, useSections } from '@/hooks'
 import type { EventFields } from '@/shared/schemas/event'
 import { type Event, fields } from '@/shared/schemas/event'
@@ -41,15 +41,6 @@ export const EventsList = (): JSX.Element => {
 
   const columns = useMemo(() => eventTableColumns({ sections, organisers, locale }, t), [sections, organisers, locale, t])
 
-  const onRowSelected = useCallback((row?: Event) => {
-    if (row) {
-      console.info(`Selected planning item ${row.id}`)
-    } else {
-      console.info('Deselected row')
-    }
-    return row
-  }, [])
-
   if (error) {
     console.error('Error fetching event items:', error)
     toast.error(t('errors:toasts.getEventsFailed'))
@@ -59,7 +50,6 @@ export const EventsList = (): JSX.Element => {
     <Table
       type='Event'
       columns={columns}
-      onRowSelected={onRowSelected}
     />
   )
 }
