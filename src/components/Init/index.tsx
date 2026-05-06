@@ -29,7 +29,9 @@ interface InitState {
 
 export const Init = ({ children }: PropsWithChildren): JSX.Element => {
   const { data: session } = useSession()
-  const { repository, server: { faroUrl, indexUrl, webSocketUrl } } = useRegistry()
+  const { repository, server } = useRegistry()
+  const { faroUrl, webSocketUrl } = server
+  const indexUrl = server.resolveServiceUrl('index')
   const { t } = useTranslation()
   const [isInitialized, setIsInitialized] = useState<InitState>({
     faro: undefined,

@@ -18,7 +18,7 @@ export const TTEditorialInfoTypeProvider = ({ children }: {
   children: React.ReactNode
 }): JSX.Element => {
   const documentType = 'tt/editorial-info-type'
-  const { server: { indexUrl } } = useRegistry()
+  const indexUrl = useRegistry().server.resolveServiceUrl('index')
   const { data } = useSession()
   const [objects, setObjects] = useState<IDBEditorialInfoType[]>([])
   const IDB = useIndexedDB()

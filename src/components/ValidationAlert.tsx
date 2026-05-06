@@ -20,7 +20,8 @@ export const ValidationAlert = ({ validateStateRef }: {
 }): JSX.Element | null => {
   const [{ id: documentId }] = useQuery()
   const { data: session } = useSession()
-  const { server: { repositoryUrl }, repository } = useRegistry()
+  const { server, repository } = useRegistry()
+  const repositoryUrl = server.resolveServiceUrl('repository')
   const { provider, synced } = useCollaboration()
   const { t } = useTranslation('errors')
 

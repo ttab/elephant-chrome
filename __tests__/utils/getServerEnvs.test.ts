@@ -2,19 +2,16 @@ import { vi } from 'vitest'
 import { getServerEnvs } from '@/lib/getServerEnvs'
 
 const validPayload = {
-  indexUrl: 'https://index.example.com',
+  basePublicApiUrl: 'https://api.example.com',
+  servicePublicUrlOverrides: {},
   webSocketUrl: 'https://ws.example.com',
-  repositoryUrl: 'https://repo.example.com',
   imageSearchUrl: 'https://content.example.com',
-  spellcheckUrl: 'https://spell.example.com',
-  userUrl: 'https://user.example.com',
   faroUrl: 'https://faro.example.com',
-  baboonUrl: 'https://baboon.example.com',
   systemLanguage: 'nb-NO',
   environment: 'stage'
 }
 
-function mockFetch(payload: Record<string, string>, ok = true, status = 200) {
+function mockFetch(payload: Record<string, unknown>, ok = true, status = 200) {
   vi.mocked(fetch).mockResolvedValueOnce({
     ok,
     status,
@@ -27,29 +24,44 @@ describe('getServerEnvs', () => {
     vi.mocked(fetch).mockReset()
   })
 
-  it('returns urls and envs from a valid response', async () => {
+  it('returns non-derivable URLs and a working resolver', async () => {
     mockFetch(validPayload)
 
-    const { urls, envs } = await getServerEnvs()
+    const { urls, envs, resolveServiceUrl } = await getServerEnvs()
 
-    expect(urls.indexUrl.href).toBe('https://index.example.com/')
-    expect(urls.repositoryUrl.href).toBe('https://repo.example.com/')
     expect(urls.webSocketUrl.href).toBe('https://ws.example.com/')
     expect(urls.imageSearchUrl.href).toBe('https://content.example.com/')
-    expect(urls.spellcheckUrl.href).toBe('https://spell.example.com/')
-    expect(urls.userUrl.href).toBe('https://user.example.com/')
     expect(urls.faroUrl.href).toBe('https://faro.example.com/')
-    expect(urls.baboonUrl.href).toBe('https://baboon.example.com/')
     expect(envs.systemLanguage).toBe('nb-NO')
     expect(envs.environment).toBe('stage')
+
+    expect(resolveServiceUrl('repository').href).toBe('https://repository.api.example.com/')
+    expect(resolveServiceUrl('index').href).toBe('https://index.api.example.com/')
+    expect(resolveServiceUrl('ntb').href).toBe('https://ntb.api.example.com/')
   })
 
-  it('derives repositoryEventsUrl from repositoryUrl', async () => {
+  it('honors servicePublicUrlOverrides per service', async () => {
+    mockFetch({
+      ...validPayload,
+      servicePublicUrlOverrides: {
+        ntb: 'http://localhost:4380',
+        repository: 'https://repo-override.example.com'
+      }
+    })
+
+    const { resolveServiceUrl } = await getServerEnvs()
+
+    expect(resolveServiceUrl('ntb').href).toBe('http://localhost:4380/')
+    expect(resolveServiceUrl('repository').href).toBe('https://repo-override.example.com/')
+    expect(resolveServiceUrl('index').href).toBe('https://index.api.example.com/')
+  })
+
+  it('returns the same URL instance on repeated lookups', async () => {
     mockFetch(validPayload)
 
-    const { urls } = await getServerEnvs()
+    const { resolveServiceUrl } = await getServerEnvs()
 
-    expect(urls.repositoryEventsUrl.href).toBe('https://repo.example.com/sse')
+    expect(resolveServiceUrl('repository')).toBe(resolveServiceUrl('repository'))
   })
 
   it('throws on non-ok response', async () => {
@@ -58,14 +70,16 @@ describe('getServerEnvs', () => {
     await expect(getServerEnvs()).rejects.toThrow('Failed fetching server envs, got response 500')
   })
 
-  it('throws when a required URL is missing', async () => {
-    const { indexUrl: _, ...incomplete } = validPayload
-    mockFetch(incomplete as Record<string, string>)
+  it('throws when basePublicApiUrl is missing and no override fills the gap', async () => {
+    const { basePublicApiUrl: _, ...incomplete } = validPayload
+    mockFetch(incomplete)
 
-    await expect(getServerEnvs()).rejects.toThrow('Failed fetching server envs')
+    const { resolveServiceUrl } = await getServerEnvs()
+
+    expect(() => resolveServiceUrl('repository')).toThrow(/basePublicApiUrl is required/)
   })
 
-  it('throws when a required URL is empty', async () => {
+  it('throws when a non-derivable URL is empty', async () => {
     mockFetch({ ...validPayload, webSocketUrl: '' })
 
     await expect(getServerEnvs()).rejects.toThrow('Failed fetching server envs')
@@ -73,20 +87,14 @@ describe('getServerEnvs', () => {
 
   it('throws when systemLanguage is missing', async () => {
     const { systemLanguage: _, ...noLang } = validPayload
-    mockFetch(noLang as Record<string, string>)
+    mockFetch(noLang)
 
     await expect(getServerEnvs()).rejects.toThrow('Failed fetching server envs')
   })
 
   it('throws when environment is missing', async () => {
-    const { environment: _, ...noLang } = validPayload
-    mockFetch(noLang as Record<string, string>)
-
-    await expect(getServerEnvs()).rejects.toThrow('Failed fetching server envs')
-  })
-
-  it('throws when a URL value is malformed', async () => {
-    mockFetch({ ...validPayload, indexUrl: 'not-a-url' })
+    const { environment: _, ...noEnv } = validPayload
+    mockFetch(noEnv)
 
     await expect(getServerEnvs()).rejects.toThrow('Failed fetching server envs')
   })

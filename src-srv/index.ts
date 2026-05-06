@@ -24,6 +24,7 @@ import { createAuthInfo } from './utils/authConfig.js'
 import logger from './lib/logger.js'
 import { pinoHttp } from 'pino-http'
 import assertEnvs from './lib/assertEnvs.js'
+import { loadServiceUrlEnvironment } from './lib/serviceUrls.js'
 import { setSystemLanguage } from '@/shared/getSystemLanguage.js'
 import { authSessionMiddleware } from './utils/authSession.js'
 
@@ -40,10 +41,8 @@ const PORT = process.env.PORT ? parseInt(process.env.PORT) : 5183
 const TLS_CERT_PATH = process.env.TLS_CERT_PATH || ''
 const TLS_KEY_PATH = process.env.TLS_KEY_PATH || ''
 const TLS_PORT = process.env.TLS_PORT ? parseInt(process.env.TLS_PORT) : 1443
-const REPOSITORY_URL = process.env.REPOSITORY_URL || ''
 const REDIS_URL = process.env.REDIS_URL || ''
 const BASE_URL = process.env.BASE_URL || ''
-const USER_URL = process.env.USER_URL || ''
 const AUTH_KEYCLOAK_ISSUER = process.env.AUTH_KEYCLOAK_ISSUER
 const AUTH_KEYCLOAK_PROVIDER = process.env.AUTH_KEYCLOAK_PROVIDER ?? process.env.AUTH_KEYCLOAK_ISSUER ?? ''
 const AUTH_KEYCLOAK_ID = process.env.AUTH_KEYCLOAK_ID || ''
@@ -58,6 +57,7 @@ const PYROSCOPE_URL = process.env.PYROSCOPE_URL || ''
  */
 export async function runServer(): Promise<string> {
   assertEnvs()
+  const serviceUrls = loadServiceUrlEnvironment()
   setSystemLanguage(process.env.SYSTEM_LANGUAGE ?? '')
 
   if (TLS_CERT_PATH && !TLS_KEY_PATH) {
@@ -88,7 +88,7 @@ export async function runServer(): Promise<string> {
     throw new Error('configure authentication', { cause: e })
   })
 
-  const repository = new Repository(REPOSITORY_URL)
+  const repository = new Repository(serviceUrls.resolveServiceUrl('repository', 'internal'))
 
   const JWKS = createRemoteJWKSet(new URL(authInfo.oidcConfig.jwks_uri))
 
@@ -98,7 +98,7 @@ export async function runServer(): Promise<string> {
     ELEPHANT_CHROME_CLIENT_SECRET,
     'user'
   )
-  const user = new User(USER_URL, userTokenService)
+  const user = new User(serviceUrls.resolveServiceUrl('user', 'internal'), userTokenService)
 
   app.set('trust proxy', true)
   app.use(`${BASE_URL}/api/auth/*`, ExpressAuth(authInfo.authConfig) as RequestHandler)
@@ -151,7 +151,8 @@ export async function runServer(): Promise<string> {
   connectRouteHandlers(app, routes, {
     repository,
     cache: redis,
-    collaborationServer
+    collaborationServer,
+    serviceUrls
   })
 
 

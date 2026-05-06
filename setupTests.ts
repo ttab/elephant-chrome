@@ -30,16 +30,14 @@ function mockUrl(url: string): unknown {
   switch (url) {
     case `${BASE_URL}/api/envs`:
       return {
-        indexUrl: 'https://example.com/index',
+        basePublicApiUrl: 'https://api.example.com',
+        servicePublicUrlOverrides: {},
         webSocketUrl: 'https://example.com/websocket',
-        repositoryUrl: 'https://example.com/repository',
         imageSearchUrl: 'https://example.com/image-search',
         imageSearchProvider: 'tt',
-        spellcheckUrl: 'https://example.com/index',
-        userUrl: 'https://example.com/user',
         faroUrl: 'https://example.com/faro',
-        baboonUrl: 'https://example.com/baboon',
-        systemLanguage: TESTING_LANGUAGE
+        systemLanguage: TESTING_LANGUAGE,
+        environment: 'test'
       }
 
     case `${BASE_URL}/api/auth/session`:
