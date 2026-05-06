@@ -1,61 +1,95 @@
-import { describe, it, expect } from 'vitest'
-import { spawn } from 'child_process'
-import path from 'path'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { createFatalHandler } from '../../src-srv/lib/fatalHandlers.js'
 
-/**
- * Tests for process fatal handlers (uncaughtException, unhandledRejection).
- *
- * These tests spawn child processes that trigger fatal errors and verify:
- * 1. The process exits with code 1
- * 2. The correct log message is output
- * 3. Graceful shutdown is attempted before exit
- */
+describe('createFatalHandler', () => {
+  let exitSpy: ReturnType<typeof vi.spyOn>
+  let abortSpy: ReturnType<typeof vi.spyOn>
 
-const FIXTURE_DIR = path.join(__dirname, 'fixtures')
-
-function runFixture(name: string): Promise<{ code: number | null, stderr: string }> {
-  return new Promise((resolve) => {
-    const child = spawn('npx', ['tsx', path.join(FIXTURE_DIR, `${name}.ts`)], {
-      env: { ...process.env, NODE_ENV: 'test' },
-      stdio: ['ignore', 'ignore', 'pipe']
-    })
-
-    let stderr = ''
-    child.stderr.on('data', (data: Buffer) => {
-      stderr += data.toString()
-    })
-
-    child.on('close', (code) => {
-      resolve({ code, stderr })
-    })
-
-    // Safety timeout - force kill if test hangs
-    setTimeout(() => {
-      child.kill('SIGKILL')
-      resolve({ code: null, stderr: stderr + '\n[TEST TIMEOUT]' })
-    }, 5000)
-  })
-}
-
-describe('fatal handlers', () => {
-  it('uncaughtException exits with code 1 and logs "Uncaught exception"', async () => {
-    const { code, stderr } = await runFixture('uncaughtException')
-
-    expect(code).toBe(1)
-    expect(stderr).toContain('Uncaught exception')
+  beforeEach(() => {
+    exitSpy = vi.spyOn(process, 'exit').mockImplementation(((_code?: number) => undefined) as never)
+    abortSpy = vi.spyOn(process, 'abort').mockImplementation((() => undefined) as never)
   })
 
-  it('unhandledRejection exits with code 1 and logs "Unhandled rejection"', async () => {
-    const { code, stderr } = await runFixture('unhandledRejection')
-
-    expect(code).toBe(1)
-    expect(stderr).toContain('Unhandled rejection')
+  afterEach(() => {
+    vi.restoreAllMocks()
+    vi.useRealTimers()
   })
 
-  it('graceful shutdown is attempted before exit', async () => {
-    const { code, stderr } = await runFixture('uncaughtException')
+  it('logs fatal, closes collaboration server, exits with 1 on success', async () => {
+    const fatal = vi.fn()
+    const close = vi.fn().mockResolvedValue(undefined)
+    const handler = createFatalHandler('Uncaught exception', {
+      collaborationServer: { close },
+      logger: { fatal }
+    })
 
-    expect(code).toBe(1)
-    expect(stderr).toContain('close called')
+    const ex = new Error('boom')
+    handler(ex)
+
+    await new Promise((resolve) => setImmediate(resolve))
+
+    expect(fatal).toHaveBeenCalledWith({ err: ex }, 'Uncaught exception')
+    expect(close).toHaveBeenCalledOnce()
+    expect(exitSpy).toHaveBeenCalledWith(1)
+    expect(abortSpy).not.toHaveBeenCalled()
+  })
+
+  it('still exits with 1 when close rejects, logging the close failure', async () => {
+    const fatal = vi.fn()
+    const closeError = new Error('shutdown failed')
+    const close = vi.fn().mockRejectedValue(closeError)
+    const handler = createFatalHandler('Unhandled rejection', {
+      collaborationServer: { close },
+      logger: { fatal }
+    })
+
+    const ex = new Error('boom')
+    handler(ex)
+
+    await new Promise((resolve) => setImmediate(resolve))
+
+    expect(fatal).toHaveBeenNthCalledWith(1, { err: ex }, 'Unhandled rejection')
+    expect(fatal).toHaveBeenNthCalledWith(2, { err: closeError }, 'Failed to close collaboration server')
+    expect(exitSpy).toHaveBeenCalledWith(1)
+    expect(abortSpy).not.toHaveBeenCalled()
+  })
+
+  it('aborts when close hangs past the force-exit timeout', () => {
+    vi.useFakeTimers()
+    const fatal = vi.fn()
+    const close = vi.fn(() => new Promise<void>(() => {}))
+    const handler = createFatalHandler('Uncaught exception', {
+      collaborationServer: { close },
+      logger: { fatal },
+      forceExitMs: 500
+    })
+
+    handler(new Error('boom'))
+
+    expect(abortSpy).not.toHaveBeenCalled()
+    vi.advanceTimersByTime(500)
+    expect(abortSpy).toHaveBeenCalledOnce()
+  })
+
+  it('clears the force-exit timer when close resolves before timeout', async () => {
+    vi.useFakeTimers()
+    const fatal = vi.fn()
+    let resolveClose: () => void = () => {}
+    const close = vi.fn(() => new Promise<void>((resolve) => {
+      resolveClose = resolve
+    }))
+    const handler = createFatalHandler('Uncaught exception', {
+      collaborationServer: { close },
+      logger: { fatal },
+      forceExitMs: 1000
+    })
+
+    handler(new Error('boom'))
+    resolveClose()
+
+    await vi.runAllTimersAsync()
+
+    expect(exitSpy).toHaveBeenCalledWith(1)
+    expect(abortSpy).not.toHaveBeenCalled()
   })
 })
