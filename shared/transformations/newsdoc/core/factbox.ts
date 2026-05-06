@@ -5,8 +5,15 @@ import { toString } from '../../lib/toString.js'
 import { revertText } from './text.js'
 import { revertList } from './lists.js'
 
+const EMBEDDED_COMPOSITE = /:embedded:\d+$/
+
+const isValidSourceUuid = (uuid: string | undefined): uuid is string => {
+  return !!uuid && !EMBEDDED_COMPOSITE.test(uuid)
+}
+
 export const transformFactbox = (element: Block): TBElement => {
   const { id, data, title, content = [], links = [] } = element
+  const sourceUuid = links[0]?.uuid
 
   return {
     id: id || crypto.randomUUID(),
@@ -17,7 +24,7 @@ export const transformFactbox = (element: Block): TBElement => {
       ...(data?.text !== undefined && { text: toString(data.text) }),
       ...(data?.original_updated !== undefined && { original_updated: data.original_updated }),
       ...(data?.original_version !== undefined && { original_version: data.original_version }),
-      original_id: links[0]?.uuid
+      ...(isValidSourceUuid(sourceUuid) && { original_id: sourceUuid })
     },
     children: [
       {
@@ -83,16 +90,15 @@ export function revertFactbox(element: TBElement): Block {
     data.original_version = toString(properties?.original_version)
   }
 
+  const sourceUuid = properties?.original_id ? toString(properties.original_id) : undefined
+
   return Block.create({
     id,
     type: 'core/factbox',
     title: toString(title),
     data,
-    links: properties?.original_id
-      ? [{
-          rel: 'source',
-          uuid: toString(properties?.original_id)
-        }]
+    links: isValidSourceUuid(sourceUuid)
+      ? [{ rel: 'source', uuid: sourceUuid }]
       : [],
     content: body
   })
