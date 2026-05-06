@@ -66,18 +66,24 @@ export function fromYjsNewsDoc(yDoc: Y.Doc): EleDocumentResponse {
   const yEle = yDoc.getMap('ele')
 
   const root = yEle.get('root') as Y.Map<unknown> | undefined
-  if (!root) {
-    throw new Error('Cannot serialize incomplete document: ele.root is missing')
-  }
+  if (!root) throw new Error('Cannot serialize incomplete document: ele.root is missing')
+
+  const yMeta = yEle.get('meta') as Y.Map<unknown> | undefined
+  if (!yMeta) throw new Error('Cannot serialize incomplete document: ele.meta is missing')
+
+  const yLinks = yEle.get('links') as Y.Map<unknown> | undefined
+  if (!yLinks) throw new Error('Cannot serialize incomplete document: ele.links is missing')
+
+  const yContent = yEle.get('content') as Y.XmlText | undefined
+  if (!yContent) throw new Error('Cannot serialize incomplete document: ele.content is missing')
 
   const { uuid, type, uri, url, title, language } = root.toJSON() as Record<string, string>
 
-  const meta = transformYXmlTextNodes(yEle.get('meta') as Y.Map<unknown>) as Record<string, EleBlock[]>
+  const meta = transformYXmlTextNodes(yMeta) as Record<string, EleBlock[]>
 
-  const links = (yEle.get('links') as Y.Map<unknown>).toJSON() || {}
+  const links = yLinks.toJSON() || {}
 
   const isTextDocument = ['core/article', 'core/editorial-info', 'core/flash'].includes(type)
-  const yContent = yEle.get('content') as Y.XmlText
   const content = yContent.length
     ? removeConsecutiveEmptyTextNodes(yTextToSlateElement(yContent).children)
     : []
