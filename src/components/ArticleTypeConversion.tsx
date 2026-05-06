@@ -7,6 +7,7 @@ import type * as Y from 'yjs'
 import { useConvertArticleType } from '@/hooks/useConvertArticleType'
 import { useLink } from '@/hooks/useLink'
 import { useModal } from '@/components/Modal/useModal'
+import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
 import { ConvertToArticleDialog } from './ConvertToArticleDialog'
 import { ConvertToTimelessDialog } from './ConvertToTimelessDialog'
 
@@ -23,6 +24,8 @@ export const ArticleTypeConversion = ({ ydoc, documentType }: {
   const { isConverting } = useConvertArticleType()
   const { showModal, hideModal } = useModal()
   const openEditor = useLink('Editor')
+  const [status] = useWorkflowStatus({ documentId: ydoc.id })
+  const isPublished = status?.checkpoint === 'usable'
 
   if (documentType !== 'core/article' && documentType !== 'core/article#timeless') {
     return null
@@ -73,16 +76,21 @@ export const ArticleTypeConversion = ({ ydoc, documentType }: {
         </Button>
       )}
       {documentType === 'core/article' && (
-        <Button
-          variant='outline'
-          size='sm'
-          className='gap-1.5 text-muted-foreground'
-          disabled={isConverting}
-          onClick={openToTimeless}
+        <span
+          title={isPublished ? t('convertToTimeless.publishedDisabled') : undefined}
+          className='inline-flex'
         >
-          <RefreshCwIcon size={14} strokeWidth={1.75} className={iconClassName} />
-          {t('actions.convertToTimeless')}
-        </Button>
+          <Button
+            variant='outline'
+            size='sm'
+            className='gap-1.5 text-muted-foreground w-full'
+            disabled={isConverting || isPublished}
+            onClick={openToTimeless}
+          >
+            <RefreshCwIcon size={14} strokeWidth={1.75} className={iconClassName} />
+            {t('actions.convertToTimeless')}
+          </Button>
+        </span>
       )}
     </>
   )

@@ -7,6 +7,7 @@ import { ArticleTypeConversion } from '@/components/ArticleTypeConversion'
 import { useConvertArticleType } from '@/hooks/useConvertArticleType'
 import { useLink } from '@/hooks/useLink'
 import { useModal } from '@/components/Modal/useModal'
+import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
 import type * as Y from 'yjs'
 import type { YDocument } from '@/modules/yjs/hooks'
 
@@ -22,6 +23,10 @@ vi.mock('@/components/Modal/useModal', () => ({
   useModal: vi.fn()
 }))
 
+vi.mock('@/hooks/useWorkflowStatus', () => ({
+  useWorkflowStatus: vi.fn()
+}))
+
 vi.mock('@/components/ConvertToArticleDialog', () => ({
   ConvertToArticleDialog: () => null
 }))
@@ -33,6 +38,7 @@ vi.mock('@/components/ConvertToTimelessDialog', () => ({
 const mockUseConvertArticleType = vi.mocked(useConvertArticleType)
 const mockUseLink = vi.mocked(useLink)
 const mockUseModal = vi.mocked(useModal)
+const mockUseWorkflowStatus = vi.mocked(useWorkflowStatus)
 
 const mockYdoc = {
   id: 'doc-id',
@@ -53,6 +59,11 @@ function setup() {
   mockUseConvertArticleType.mockReturnValue({ isConverting: false } as never)
   mockUseLink.mockReturnValue(openEditor)
   mockUseModal.mockReturnValue({ showModal, hideModal } as never)
+  mockUseWorkflowStatus.mockReturnValue([
+    { name: 'draft', checkpoint: 'draft' },
+    vi.fn(),
+    vi.fn()
+  ] as never)
 
   return { openEditor, showModal, hideModal }
 }
@@ -132,8 +143,66 @@ describe('ArticleTypeConversion', () => {
     mockUseConvertArticleType.mockReturnValue({ isConverting: true } as never)
     mockUseLink.mockReturnValue(openEditor)
     mockUseModal.mockReturnValue({ showModal, hideModal } as never)
+    mockUseWorkflowStatus.mockReturnValue([
+      { name: 'draft', checkpoint: 'draft' },
+      vi.fn(),
+      vi.fn()
+    ] as never)
 
     render(<ArticleTypeConversion ydoc={mockYdoc} documentType='core/article#timeless' />)
     expect(screen.getByRole('button')).toBeDisabled()
   })
+
+  it('disables the convert-to-timeless button when the article has been published', () => {
+    setup()
+    mockUseWorkflowStatus.mockReturnValue([
+      { name: 'usable', checkpoint: 'usable' },
+      vi.fn(),
+      vi.fn()
+    ] as never)
+
+    render(<ArticleTypeConversion ydoc={mockYdoc} documentType='core/article' />)
+    expect(screen.getByRole('button', { name: /tidlös/i })).toBeDisabled()
+  })
+
+  it('disables the convert-to-timeless button for an unpublished article whose checkpoint reached usable', () => {
+    setup()
+    mockUseWorkflowStatus.mockReturnValue([
+      { name: 'unpublished', checkpoint: 'usable' },
+      vi.fn(),
+      vi.fn()
+    ] as never)
+
+    render(<ArticleTypeConversion ydoc={mockYdoc} documentType='core/article' />)
+    expect(screen.getByRole('button', { name: /tidlös/i })).toBeDisabled()
+  })
+
+  it('does not open the timeless dialog when the article has been published', async () => {
+    const { showModal } = setup()
+    mockUseWorkflowStatus.mockReturnValue([
+      { name: 'usable', checkpoint: 'usable' },
+      vi.fn(),
+      vi.fn()
+    ] as never)
+
+    render(<ArticleTypeConversion ydoc={mockYdoc} documentType='core/article' />)
+    await userEvent.click(screen.getByRole('button', { name: /tidlös/i }))
+
+    expect(showModal).not.toHaveBeenCalled()
+  })
+
+  it.each(['draft', 'done', 'approved'])(
+    'enables the convert-to-timeless button when checkpoint is %s',
+    (checkpoint) => {
+      setup()
+      mockUseWorkflowStatus.mockReturnValue([
+        { name: checkpoint, checkpoint },
+        vi.fn(),
+        vi.fn()
+      ] as never)
+
+      render(<ArticleTypeConversion ydoc={mockYdoc} documentType='core/article' />)
+      expect(screen.getByRole('button', { name: /tidlös/i })).toBeEnabled()
+    }
+  )
 })
