@@ -21,7 +21,7 @@ function runFixture(name: string): Promise<{ code: number | null, stderr: string
     })
 
     let stderr = ''
-    child.stderr.on('data', (data) => {
+    child.stderr.on('data', (data: Buffer) => {
       stderr += data.toString()
     })
 
