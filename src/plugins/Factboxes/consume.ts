@@ -102,6 +102,7 @@ export const createFactboxConsume = (
   }
 
   const payload = JSON.parse(input.data) as FactboxDragPayload
+  const isEmbedded = EMBEDDED_ID_RE.test(payload.id)
 
   let children: TBElement[] | undefined
 
