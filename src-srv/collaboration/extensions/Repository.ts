@@ -15,7 +15,7 @@ import type { Context } from '../../lib/context.js'
 import { isContext } from '../../lib/context.js'
 import type CollaborationServerErrorHandler from '../../lib/errorHandler.js'
 import { getErrorContext } from '../../lib/errorHandler.js'
-import { fromYjsNewsDoc, toYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc.js'
+import { fromYjsNewsDoc, toYjsNewsDoc, isCompleteYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc.js'
 import { fromGroupedNewsDoc, toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc.js'
 import type { EleDocumentResponse } from '@/shared/types/index.js'
 import { createDebounceMap } from '@/shared/leadingDebounce.js'
@@ -352,6 +352,11 @@ export class RepositoryExtension implements Extension {
 
     // Ignore in progress documents as they can be invalid or incomplete
     if (document.getMap('ctx').get('isInProgress')) {
+      return false
+    }
+
+    // Ignore documents with incomplete structure
+    if (!isCompleteYjsNewsDoc(document)) {
       return false
     }
 

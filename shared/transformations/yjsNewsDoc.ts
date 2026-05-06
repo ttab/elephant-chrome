@@ -44,12 +44,32 @@ export function toYjsNewsDoc(eleDoc: EleDocumentResponse, yDoc: Document | Y.Doc
 }
 
 /**
+ * Check if a Yjs document has the required structure for serialization.
+ * Returns true if ele.root, ele.meta, ele.links, and ele.content exist.
+ */
+export function isCompleteYjsNewsDoc(yDoc: Y.Doc): boolean {
+  const yEle = yDoc.getMap('ele')
+  if (yEle.size === 0) return false
+
+  const root = yEle.get('root')
+  const meta = yEle.get('meta')
+  const links = yEle.get('links')
+  const content = yEle.get('content')
+
+  return root !== undefined && meta !== undefined && links !== undefined && content !== undefined
+}
+
+/**
  * Convert a yjs structure to a grouped YDocumentResponse
  */
 export function fromYjsNewsDoc(yDoc: Y.Doc): EleDocumentResponse {
   const yEle = yDoc.getMap('ele')
 
-  const root = yEle.get('root') as Y.Map<unknown>
+  const root = yEle.get('root') as Y.Map<unknown> | undefined
+  if (!root) {
+    throw new Error('Cannot serialize incomplete document: ele.root is missing')
+  }
+
   const { uuid, type, uri, url, title, language } = root.toJSON() as Record<string, string>
 
   const meta = transformYXmlTextNodes(yEle.get('meta') as Y.Map<unknown>) as Record<string, EleBlock[]>
