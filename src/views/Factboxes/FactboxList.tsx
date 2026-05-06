@@ -36,7 +36,6 @@ export const FactboxList = ({ columns }: {
       <Table
         type='Factbox'
         columns={columns}
-        onRowSelected={() => undefined}
       />
       <Pagination />
     </>
