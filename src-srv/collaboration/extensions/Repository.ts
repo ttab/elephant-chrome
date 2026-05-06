@@ -355,8 +355,8 @@ export class RepositoryExtension implements Extension {
       return false
     }
 
-    // Ignore documents with incomplete structure
     if (!isCompleteYjsNewsDoc(document)) {
+      logger.warn({ documentName }, 'Skipping store of incomplete yjs document')
       return false
     }
 
