@@ -77,7 +77,7 @@ export async function fetch<T extends HitV1, F>({
   }
 
   if (options?.withArticleFactboxes) {
-    result = await withArticleFactboxes<T>({ hits: result, session, index, query, repository })
+    result = await withArticleFactboxes<T>({ hits: result, session, index, query, repository, page })
   }
 
 
