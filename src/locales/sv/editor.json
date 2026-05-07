@@ -13,7 +13,8 @@
   },
   "numberOfChars": "Antal tecken",
   "spelling": {
-    "noSuggestions": "Inga förslag"
+    "noSuggestions": "Inga förslag",
+    "loading": "Hämtar förslag..."
   },
   "factbox": {
     "headerTitle": "Redigera faktarutans original",

@@ -13,7 +13,8 @@
   },
   "numberOfChars": "Antall tegn",
   "spelling": {
-    "noSuggestions": "Ingen forslag"
+    "noSuggestions": "Ingen forslag",
+    "loading": "Henter forslag..."
   },
   "factbox": {
     "headerTitle": "Rediger originalen",
