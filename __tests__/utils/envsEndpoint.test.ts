@@ -15,6 +15,7 @@ describe('GET /api/envs', () => {
     process.env.HAS_PRINT = 'true'
     process.env.HAS_HAST = 'true'
     process.env.ENVIRONMENT = 'test'
+    process.env.NTB_URL = ''
 
     const result = await GET() as { payload: Record<string, string> }
 
