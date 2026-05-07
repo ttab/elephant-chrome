@@ -21,7 +21,7 @@ export const FactboxList = ({ columns }: {
     fields,
     query: constructQuery(filter),
     sort: [{ field: 'modified', desc: true }],
-    size: 100,
+    size: 50,
     page: currentPage,
     options: {
       subscribe: true,

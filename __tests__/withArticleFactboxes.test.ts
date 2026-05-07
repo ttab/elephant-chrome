@@ -355,5 +355,56 @@ describe('withArticleFactboxes', () => {
         'Older'
       ])
     })
+
+    it('caps merged result length, keeping the freshest items across both sources', async () => {
+      const standaloneOld = {
+        id: 'fb-old',
+        fields: {
+          'document.title': { values: ['Old standalone'] },
+          modified: { values: ['2026-01-01T00:00:00Z'] }
+        }
+      } as unknown as HitV1
+      const standaloneNew = {
+        id: 'fb-new',
+        fields: {
+          'document.title': { values: ['New standalone'] },
+          modified: { values: ['2026-05-10T00:00:00Z'] }
+        }
+      } as unknown as HitV1
+
+      vi.mocked(fetchMock).mockResolvedValue([
+        makeArticleHit('article', ['Article A', 'Article B'], '2026-05-01T00:00:00Z')
+      ] as unknown as HitV1[])
+      getDocumentsMock.mockResolvedValueOnce({
+        items: [makeBulkItem('article', [makeBlock(), makeBlock()])]
+      })
+
+      const out = await withArticleFactboxes<HitV1>({
+        hits: [standaloneOld, standaloneNew],
+        session,
+        index,
+        repository,
+        size: 2
+      })
+
+      expect(out).toHaveLength(2)
+      expect(out.map((r) => r.fields['document.title']?.values[0])).toEqual([
+        'New standalone',
+        'Article A'
+      ])
+    })
+
+    it('does not cap when cap is undefined', async () => {
+      vi.mocked(fetchMock).mockResolvedValue([
+        makeArticleHit('a', ['One', 'Two', 'Three'])
+      ] as unknown as HitV1[])
+      getDocumentsMock.mockResolvedValueOnce({
+        items: [makeBulkItem('a', [makeBlock(), makeBlock(), makeBlock()])]
+      })
+
+      const out = await withArticleFactboxes<HitV1>({ hits: [], session, index, repository })
+
+      expect(out).toHaveLength(3)
+    })
   })
 })

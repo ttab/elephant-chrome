@@ -163,13 +163,17 @@ const fetchFactboxData = async (
   return dataByRowId
 }
 
-export const withArticleFactboxes = async <T extends HitV1>({ hits, session, index, query, repository, page }: {
+export const withArticleFactboxes = async <T extends HitV1>({ hits, session, index, query, repository, page, size }: {
   hits: T[]
   session: Session | null
   index?: Index
   query?: QueryV1
   repository?: Repository
   page?: number
+  /** Caller's requested page size. Drives both the article-side fetch budget
+   * and the final cap after merging + sorting by `modified`. Without it the
+   * article fetch falls back to a baseline and the merged result is uncapped. */
+  size?: number
 }): Promise<T[]> => {
   if (!session || !index || !repository) return hits
 
@@ -182,11 +186,14 @@ export const withArticleFactboxes = async <T extends HitV1>({ hits, session, ind
     fields: { ...hit.fields, _document_origin: { values: ['core/factbox'] } }
   })) as T[]
 
+  // Article fetch size mirrors the caller's size so the top-N is correct even
+  // in the worst case where each article contributes one factbox block. Each
+  // article typically expands to several rows, so this is a safe over-fetch.
   const articles = await fetch<HitV1, typeof ARTICLE_FIELDS>({
     documentType: 'core/article',
     index,
     session,
-    size: 100,
+    size: size ?? 30,
     page,
     fields: [...ARTICLE_FIELDS],
     query: buildArticleQuery(searchTerm)
@@ -238,6 +245,10 @@ export const withArticleFactboxes = async <T extends HitV1>({ hits, session, ind
     const bTitle = b.fields['document.title']?.values[0] ?? ''
     return aTitle.localeCompare(bTitle)
   })
+
+  if (size !== undefined && result.length > size) {
+    result.length = size
+  }
 
   return result
 }
