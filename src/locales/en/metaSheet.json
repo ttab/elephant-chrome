@@ -31,7 +31,8 @@
     "noPlanningHint": "No original planning was found — a new planning will be created from the timeless."
   },
   "convertToTimeless": {
-    "description": "Pick a subject category for the new timeless. The article remains in place."
+    "description": "Pick a subject category for the new timeless. The article remains in place.",
+    "publishedDisabled": "Published articles cannot be saved as timeless."
   },
   "removeHastPrompt": {
     "title": "Remove HAST from article",

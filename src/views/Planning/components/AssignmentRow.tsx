@@ -320,7 +320,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
     ...(assignmentType === 'text' && documentId
       ? [{
           label: t('planning:assignment.convertToTimeless'),
-          disabled: isConverting || articleStatus?.meta?.workflowState === 'used',
+          disabled: isConverting || articleStatus?.meta?.workflowState === 'used' || isUsable,
           icon: RefreshCwIcon,
           item: () => {
             showModal(
