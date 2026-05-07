@@ -264,44 +264,22 @@
       "description": "You are working on a draft of the factbox",
       "transitions": {
         "usable": {
-          "verify": false,
-          "title": "Approve",
-          "description": "Approve the factbox for use"
-        },
-        "unpublished": {
-          "verify": false,
-          "title": "Discard",
-          "description": "Remove the factbox"
+          "title": "Publish",
+          "description": "Publish the factbox for use",
+          "promptTitle": "Publish factbox"
         }
       }
     },
     "usable": {
-      "title": "Approved",
+      "title": "Usable",
       "asSaveCTA": "Changed",
-      "asSaveTitle": "Update",
-      "description": "The factbox is approved",
-      "updateDescription": "Approve the changes",
+      "asSaveTitle": "Publish new information",
+      "description": "The factbox is usable",
       "transitions": {
         "draft": {
           "title": "To draft",
-          "description": "Revert the factbox to a draft"
-        },
-        "unpublished": {
-          "verify": false,
-          "title": "Discard",
-          "description": "Remove the factbox"
-        }
-      }
-    },
-    "unpublished": {
-      "title": "Discarded",
-      "description": "The factbox is not visible or usable",
-      "isWorkflow": false,
-      "transitions": {
-        "usable": {
-          "verify": false,
-          "title": "Approve",
-          "description": "Approve the factbox for use"
+          "description": "Revert the factbox to a draft",
+          "promptTitle": "Revert factbox to draft"
         }
       }
     }

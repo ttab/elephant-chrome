@@ -9,7 +9,6 @@ import {
   CircleXIcon,
   type LucideIcon
 } from '@ttab/elephant-ui/icons'
-import { cn } from '@ttab/elephant-ui/utils'
 
 interface WorkflowItem {
   title: string
@@ -234,7 +233,7 @@ export const getAllStatuses = (): string[] => {
   ]
 }
 
-export const getStatusSpecifications = (status: string, documentType?: string): StatusSpecification => {
+export const getStatusSpecifications = (status: string, _documentType?: string): StatusSpecification => {
   switch (status) {
     case 'draft':
       return {
@@ -259,10 +258,7 @@ export const getStatusSpecifications = (status: string, documentType?: string): 
     case 'usable':
       return {
         icon: CircleCheckIcon,
-        className: cn(
-          'text-white  rounded-full dark:text-black',
-          documentType === 'core/factbox' ? 'bg-done fill-done' : 'bg-usable fill-usable'
-        )
+        className: 'bg-usable text-white fill-usable rounded-full dark:text-black'
       }
     case 'unpublished':
       return {
@@ -492,33 +488,24 @@ export function getWorkflowSpecifications(): Record<string, WorkflowSpecificatio
           usable: {
             verify: true,
             title: i18n.t('workflows:core/factbox.draft.transitions.usable.title'),
-            description: i18n.t('workflows:core/factbox.draft.transitions.usable.description')
+            description: i18n.t('workflows:core/factbox.draft.transitions.usable.description'),
+            promptTitle: i18n.t('workflows:core/factbox.draft.transitions.usable.promptTitle')
           }
         }
       },
       usable: {
         title: i18n.t('workflows:core/factbox.usable.title'),
-        asSaveCTA: i18n.t('workflows:core/factbox.usable.title'),
+        asSaveCTA: i18n.t('workflows:core/factbox.usable.asSaveCTA'),
+        asSaveTitle: i18n.t('workflows:core/factbox.usable.asSaveTitle'),
         description: i18n.t('workflows:core/factbox.usable.description'),
         isWorkflow: false,
-        asSave: false,
+        asSave: true,
         transitions: {
-          unpublished: {
+          draft: {
             verify: true,
-            title: i18n.t('workflows:core/factbox.usable.transitions.unpublished.title'),
-            description: i18n.t('workflows:core/factbox.usable.transitions.unpublished.description')
-          }
-        }
-      },
-      unpublished: {
-        title: i18n.t('workflows:core/factbox.unpublished.title'),
-        description: i18n.t('workflows:core/factbox.unpublished.description'),
-        isWorkflow: false,
-        transitions: {
-          usable: {
-            verify: true,
-            title: i18n.t('workflows:core/factbox.unpublished.transitions.usable.title'),
-            description: i18n.t('workflows:core/factbox.unpublished.transitions.usable.description')
+            title: i18n.t('workflows:core/factbox.usable.transitions.draft.title'),
+            description: i18n.t('workflows:core/factbox.usable.transitions.draft.description'),
+            promptTitle: i18n.t('workflows:core/factbox.usable.transitions.draft.promptTitle')
           }
         }
       }

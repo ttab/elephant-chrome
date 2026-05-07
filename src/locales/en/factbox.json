@@ -1,17 +1,6 @@
 {
   "title": "Factbox",
-  "factboxDocument": "Factbox document",
-  "lockedToArticle": "Locked to article",
-  "fromPublished": "Locked to published",
-  "article": "article",
-  "original": "original",
   "action": {
-    "createFactbox": "Create factbox",
-    "open": "Open"
-  },
-  "usedInArticles": "Used in articles",
-  "prompts": {
-    "approveBeforeClose": "Do you want to approve the changes before closing?",
-    "savedButNotApproved": "Your changes are saved but the factbox is not approved."
+    "createFactbox": "Create factbox"
   }
 }

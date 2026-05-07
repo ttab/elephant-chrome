@@ -66,8 +66,7 @@
     "authorUpdateFailure": "Kunne ikke oppdatere forfatterdokumentet: {{errorMessage}}",
     "authorSaveFailure": "Kunne ikke lagre forfatterdokumentet: {{errorMessage}}",
     "authorCreateFailure": "Kunne ikke opprette forfatterdokument: Failed to create author doc",
-    "authorCreateUndefinedFailed": "Kunne ikke opprette forfatterdokument: Failed to fetch author document: undefined",
-    "couldNotOpenEmbeddedFactbox": "Kunne ikke åpne den faktaboksen. Vennligst naviger tilbake til oversikten og prøv igjen."
+    "authorCreateUndefinedFailed": "Kunne ikke opprette forfatterdokument: Failed to fetch author document: undefined"
   },
   "systemMessages": {
     "connectionFailed": "Kunne ikke koble til meldingstjenesten. Last inn vinduet på nytt."

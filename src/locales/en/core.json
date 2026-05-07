@@ -5,8 +5,7 @@
     "assignment": "assignment",
     "article": "article",
     "flash": "flash",
-    "quickArticle": "quick article",
-    "factbox": "Factbox"
+    "quickArticle": "quick article"
   },
   "labels": {
     "newsvalue": "News value",

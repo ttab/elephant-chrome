@@ -264,44 +264,22 @@
       "description": "Du jobber med et utkast av faktaboksen",
       "transitions": {
         "usable": {
-          "verify": false,
-          "title": "Godkjenn",
-          "description": "Godkjenn faktaboksen for bruk"
-        },
-        "unpublished": {
-          "verify": false,
-          "title": "Kast",
-          "description": "Fjern faktaboksen"
+          "title": "Publiser",
+          "description": "Publiser faktaboksen for bruk",
+          "promptTitle": "Publiser faktaboksen"
         }
       }
     },
     "usable": {
-      "title": "Godkjent",
+      "title": "Brukbar",
       "asSaveCTA": "Endret",
-      "asSaveTitle": "Oppdater",
-      "description": "Faktaboksen er godkjent",
-      "updateDescription": "Godkjenn endringene",
+      "asSaveTitle": "Publiser ny informasjon",
+      "description": "Faktaboksen er klar til bruk",
       "transitions": {
         "draft": {
           "title": "Til utkast",
-          "description": "Gjør om faktaboksen til et utkast igjen"
-        },
-        "unpublished": {
-          "verify": false,
-          "title": "Kast",
-          "description": "Fjern faktaboksen"
-        }
-      }
-    },
-    "unpublished": {
-      "title": "Kastet",
-      "description": "Faktaboksen er ikke synlig eller brukbar",
-      "isWorkflow": false,
-      "transitions": {
-        "usable": {
-          "verify": false,
-          "title": "Godkjenn",
-          "description": "Godkjenn faktaboksen for bruk"
+          "description": "Gjør om faktaboksen til et utkast igjen",
+          "promptTitle": "Gjør om faktaboksen til utkast"
         }
       }
     }

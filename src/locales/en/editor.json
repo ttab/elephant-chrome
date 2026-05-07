@@ -9,7 +9,7 @@
     "unorderedList": "List",
     "orderedList": "Numbered list",
     "searchImages": "Search images",
-    "factboxes": "Search factboxes"
+    "factboxes": "Factboxes"
   },
   "numberOfChars": "Number of characters",
   "spelling": {
@@ -18,11 +18,7 @@
   "factbox": {
     "headerTitle": "Edit factbox original",
     "modifiedLabel": "The original is from",
-    "createdLabel": "Created",
-    "lastModifiedLabel": "Last modified",
-    "footerTitle": "Changes to the factbox text only apply to this article",
-    "factboxNewTitle": "Facts",
-    "addSingleLabel": "Create factbox"
+    "footerTitle": "Changes to the factbox text only apply to this article"
   },
   "image": {
     "captionLabel": "Text",

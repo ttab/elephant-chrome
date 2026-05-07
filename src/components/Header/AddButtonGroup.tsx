@@ -19,9 +19,6 @@ import type { buttonVariants } from '@ttab/elephant-ui'
 import type { VariantProps } from 'class-variance-authority'
 import type { QueryParams } from '@/hooks/useQuery'
 import { useLink } from '@/hooks/useLink'
-import { useSession } from 'next-auth/react'
-import { createNewFactbox } from './lib/createNewFactbox'
-import { toast } from 'sonner'
 import { useRegistry } from '@/hooks/useRegistry'
 import { useDocumentDefaults } from '@/hooks/useDocumentDefaults'
 import { TimelessCreation } from '@/views/TimelessCreation'
@@ -69,10 +66,8 @@ const AddButton = ({
 
 export const AddButtonGroup = ({ docType = 'core/planning-item', query }: { type: View, query: QueryParams, docType?: string }) => {
   const { showModal, hideModal } = useModal()
-  const { repository, featureFlags } = useRegistry()
-  const openFactboxEditor = useLink('Factbox')
+  const { featureFlags } = useRegistry()
   const openEditor = useLink('Editor')
-  const { data: session } = useSession()
   const { t } = useTranslation()
   const hasHast = !!featureFlags.hasHast
   const defaults = useDocumentDefaults()
@@ -88,16 +83,6 @@ export const AddButtonGroup = ({ docType = 'core/planning-item', query }: { type
   const handleCreate = (view: ButtonView) => {
     const ViewDialog = Views[view.name]
     const id = crypto.randomUUID()
-
-    if (view.name === 'Factbox') {
-      createNewFactbox(repository, session, id)
-        .then((id) => openFactboxEditor(undefined, { id }, undefined))
-        .catch((error: unknown) => {
-          console.error('Error creating factbox:', error)
-          toast.error((error as Error).message)
-        })
-      return
-    }
 
     if (view.type === 'core/article#timeless' && showModal) {
       showModal(

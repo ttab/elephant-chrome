@@ -57,12 +57,7 @@
     "title": "Faktarutor",
     "columnLabels": {
       "description": "Beskrivning",
-      "lastChanged": "Senast ändrad",
-      "origin": "Ursprung"
-    },
-    "origin": {
-      "original": "Original",
-      "inArticle": "Från artikel"
+      "lastChanged": "Senast ändrad"
     }
   },
   "search": {

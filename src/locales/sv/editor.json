@@ -9,7 +9,7 @@
     "unorderedList": "Lista",
     "orderedList": "Punktlista",
     "searchImages": "Sök bilder",
-    "factboxes": "Sök faktarutor"
+    "factboxes": "Faktarutor"
   },
   "numberOfChars": "Antal tecken",
   "spelling": {
@@ -18,11 +18,7 @@
   "factbox": {
     "headerTitle": "Redigera faktarutans original",
     "modifiedLabel": "Originalet är från",
-    "createdLabel": "Skapad",
-    "lastModifiedLabel": "Senast ändrad",
-    "footerTitle": "Ändringar i faktarutans text sker endast för denna artikel",
-    "factboxNewTitle": "Fakta",
-    "addSingleLabel": "Skapa faktaruta"
+    "footerTitle": "Ändringar i faktarutans text sker endast för denna artikel"
   },
   "image": {
     "captionLabel": "Text",

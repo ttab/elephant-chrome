@@ -9,7 +9,6 @@ import type { Dispatch, SetStateAction } from 'react'
 import { asAssignments } from './asAssignments'
 import type { Assignment } from '@/shared/schemas/assignments'
 import { getDeliverableStatuses } from './getDeliverableStatuses'
-import { withArticleFactboxes } from './withArticleFactboxes'
 
 export async function fetch<T extends HitV1, F>({
   index,
@@ -75,11 +74,6 @@ export async function fetch<T extends HitV1, F>({
   if (options?.withPlannings) {
     result = await withPlannings<T>({ hits: result, session, index })
   }
-
-  if (options?.withArticleFactboxes) {
-    result = await withArticleFactboxes<T>({ hits: result, session, index, query, repository, page })
-  }
-
 
   return result
 }

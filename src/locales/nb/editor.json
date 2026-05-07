@@ -9,7 +9,7 @@
     "unorderedList": "Liste",
     "orderedList": "Punktliste",
     "searchImages": "Søk bilder",
-    "factboxes": "Søk faktabokser"
+    "factboxes": "Faktabokser"
   },
   "numberOfChars": "Antall tegn",
   "spelling": {
@@ -18,11 +18,7 @@
   "factbox": {
     "headerTitle": "Rediger originalen",
     "modifiedLabel": "Originalen er fra",
-    "createdLabel": "Opprettet",
-    "lastModifiedLabel": "Sist endret",
-    "footerTitle": "Endringer i faktaboksteksten gjelder kun for denne artikkelen",
-    "factboxNewTitle": "Fakta",
-    "addSingleLabel": "Opprett faktaboks"
+    "footerTitle": "Endringer i faktaboksteksten gjelder kun for denne artikkelen"
   },
   "image": {
     "captionLabel": "Tekst",

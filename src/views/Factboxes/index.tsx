@@ -59,6 +59,9 @@ export const Factboxes = (): JSX.Element => {
           <TabsContent value='list' className='mt-0'>
             <FactboxList columns={columns} />
           </TabsContent>
+
+          <TabsContent value='grid'>
+          </TabsContent>
         </View.Content>
       </TableProvider>
     </View.Root>

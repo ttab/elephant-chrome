@@ -1,17 +1,6 @@
 {
   "title": "Faktaruta",
-  "factboxDocument": "Faktarutedokument",
-  "lockedToArticle": "Låst till artikel",
-  "fromPublished": "Låst till publicerad",
-  "article": "artikel",
-  "original": "original",
   "action": {
-    "createFactbox": "Skapa faktaruta",
-    "open": "Öppna"
-  },
-  "usedInArticles": "Används i artiklar",
-  "prompts": {
-    "approveBeforeClose": "Vill du godkänna ändringarna innan du stänger?",
-    "savedButNotApproved": "Dina ändringar är sparade men dokumentet är inte satt som godkänt."
+    "createFactbox": "Skapa faktaruta"
   }
 }

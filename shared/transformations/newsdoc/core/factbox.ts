@@ -3,17 +3,9 @@ import { TextbitElement, type TBElement } from '@ttab/textbit'
 import { newsDocToSlate } from '../index.js'
 import { toString } from '../../lib/toString.js'
 import { revertText } from './text.js'
-import { revertList } from './lists.js'
-
-const EMBEDDED_COMPOSITE = /:embedded:\d+$/
-
-const isValidSourceUuid = (uuid: string | undefined): uuid is string => {
-  return !!uuid && !EMBEDDED_COMPOSITE.test(uuid)
-}
 
 export const transformFactbox = (element: Block): TBElement => {
   const { id, data, title, content = [], links = [] } = element
-  const sourceUuid = links[0]?.uuid
 
   return {
     id: id || crypto.randomUUID(),
@@ -24,7 +16,7 @@ export const transformFactbox = (element: Block): TBElement => {
       ...(data?.text !== undefined && { text: toString(data.text) }),
       ...(data?.original_updated !== undefined && { original_updated: data.original_updated }),
       ...(data?.original_version !== undefined && { original_version: data.original_version }),
-      ...(isValidSourceUuid(sourceUuid) && { original_id: sourceUuid })
+      original_id: links[0]?.uuid
     },
     children: [
       {
@@ -66,13 +58,8 @@ export function revertFactbox(element: TBElement): Block {
   })
 
   const title = (factboxTitle?.children as FactboxChild[] | undefined)?.[0]?.text ?? ''
-  const body = (factboxBody?.children as TBElement[] | undefined)
-    ?.map((child) => {
-      if (child.type === 'core/unordered-list' || child.type === 'core/ordered-list') {
-        return revertList(child)
-      }
-      return revertText(child)
-    })
+  const body = (factboxBody?.children as FactboxChild[] | undefined)
+    ?.map((child) => revertText(child as TBElement))
 
   const { id, properties } = element
 
@@ -90,15 +77,16 @@ export function revertFactbox(element: TBElement): Block {
     data.original_version = toString(properties?.original_version)
   }
 
-  const sourceUuid = properties?.original_id ? toString(properties.original_id) : undefined
-
   return Block.create({
     id,
     type: 'core/factbox',
     title: toString(title),
     data,
-    links: isValidSourceUuid(sourceUuid)
-      ? [{ rel: 'source', uuid: sourceUuid }]
+    links: properties?.original_id
+      ? [{
+          rel: 'source',
+          uuid: toString(properties?.original_id)
+        }]
       : [],
     content: body
   })
