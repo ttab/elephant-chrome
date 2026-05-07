@@ -193,7 +193,7 @@ export const withArticleFactboxes = async <T extends HitV1>({ hits, session, ind
     documentType: 'core/article',
     index,
     session,
-    size: size ?? 30,
+    size: size ?? 50,
     page,
     fields: [...ARTICLE_FIELDS],
     query: buildArticleQuery(searchTerm)

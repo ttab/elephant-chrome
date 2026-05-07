@@ -14,7 +14,19 @@ export const FactboxList = ({ columns }: {
 }): JSX.Element => {
   const [{ page }] = useQuery()
   const [filter] = useQuery(['query'])
+  const [{ documentOrigin }] = useQuery(['documentOrigin'])
   const currentPage = typeof page === 'string' ? parseInt(page) : 1
+
+  // Drive the fetch from the QuickFilter radio (synced to URL via TableProvider).
+  // Default (no value) shows both sources; selecting one skips the other fetch
+  // entirely instead of relying on a client-side row filter.
+  const origin = Array.isArray(documentOrigin) ? documentOrigin[0] : documentOrigin
+  const withArticleFactboxes: boolean | 'only'
+    = origin === 'core/factbox'
+      ? false
+      : origin === 'core/article'
+        ? 'only'
+        : true
 
   useDocuments<Factbox, FactboxFields>({
     documentType: 'core/factbox',
@@ -26,7 +38,7 @@ export const FactboxList = ({ columns }: {
     options: {
       subscribe: true,
       setTableData: true,
-      withArticleFactboxes: true
+      withArticleFactboxes
     }
   })
 
