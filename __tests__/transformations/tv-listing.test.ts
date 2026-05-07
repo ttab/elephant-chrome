@@ -101,7 +101,7 @@ describe('Handles tt/tv-listing', () => {
     })
 
     const slate = transformTvListing(newsDocNoLink)
-    expect(slate.properties?.uri).toBe('')
+    expect(slate.properties?.uri).toBeUndefined()
 
     const reverted = revertTvListing(slate)
     expect(reverted.links).toEqual([])
