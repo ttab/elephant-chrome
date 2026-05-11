@@ -40,26 +40,34 @@ export async function fetch<T extends HitV1, F>({
     throw new Error('Index or access token is missing')
   }
 
-  const { ok, hits, errorMessage, subscriptions } = await index.query<T, F>({
-    documentType,
-    fields,
-    accessToken: session.accessToken,
-    query,
-    size,
-    page,
-    sort,
-    options
-  })
+  // 'only' mode skips the standalone index query and returns article-embedded
+  // factboxes alone. No standalone hits, no standalone subscription.
+  const skipStandalone = options?.withArticleFactboxes === 'only'
 
-  if (!ok) {
-    throw new Error(errorMessage || 'Unknown error while fetching data')
+  let result: T[] = []
+
+  if (!skipStandalone) {
+    const { ok, hits, errorMessage, subscriptions } = await index.query<T, F>({
+      documentType,
+      fields,
+      accessToken: session.accessToken,
+      query,
+      size,
+      page,
+      sort,
+      options
+    })
+
+    if (!ok) {
+      throw new Error(errorMessage || 'Unknown error while fetching data')
+    }
+
+    if (subscriptions && subscriptions.length) {
+      setSubscriptions?.(subscriptions)
+    }
+
+    result = hits
   }
-
-  if (subscriptions && subscriptions.length) {
-    setSubscriptions?.(subscriptions)
-  }
-
-  let result = hits
 
   // Format planning result as assignments
   if (options?.asAssignments && query) {
@@ -77,7 +85,7 @@ export async function fetch<T extends HitV1, F>({
   }
 
   if (options?.withArticleFactboxes) {
-    result = await withArticleFactboxes<T>({ hits: result, session, index, query, repository, page })
+    result = await withArticleFactboxes<T>({ hits: result, session, index, query, repository, page, size })
   }
 
 

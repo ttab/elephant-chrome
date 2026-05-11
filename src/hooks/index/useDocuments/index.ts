@@ -21,6 +21,9 @@ import { useTranslation } from 'react-i18next'
  * @property {boolean} withPlannings - Append `_relatedPlannings` to the result.
  * @property {boolean} setTableData - Set the data in the table context.
  * @property {boolean} subscribe - Subscribe to document changes.
+ * @property {boolean | 'only'} withArticleFactboxes - Merge article-embedded
+ *   factboxes into the result. `true` runs both queries; `'only'` skips the
+ *   standalone fetch and returns article-side rows alone.
  */
 export interface useDocumentsFetchOptions {
   aggregatePages?: boolean
@@ -29,7 +32,7 @@ export interface useDocumentsFetchOptions {
   asAssignments?: boolean
   setTableData?: boolean
   subscribe?: boolean
-  withArticleFactboxes?: boolean
+  withArticleFactboxes?: boolean | 'only'
 }
 
 class AbortError extends Error { }
@@ -71,12 +74,17 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
   const optionsRef = useRef(options)
   const { t } = useTranslation('common')
 
+  // Options that change the fetch shape are part of the cache key so toggling
+  // them (e.g. the Factboxes "Original / From article" radio) refetches
+  // instead of reusing cached data filtered client-side.
+  const articleFactboxesMode = options?.withArticleFactboxes ?? false
   const key = useMemo(() => {
     if (disabled) return null
-    return query
+    const base = query
       ? `${documentType}/${JSON.stringify(query, (_, v: unknown) => typeof v === 'bigint' ? v.toString() : v)}${page ? `/${page}` : ''}`
       : documentType
-  }, [disabled, query, page, documentType])
+    return `${base}/${articleFactboxesMode}`
+  }, [disabled, query, page, documentType, articleFactboxesMode])
 
   // When the key changes, the old server-side subscription is no longer valid.
   // Clear subscriptions so the polling effect doesn't restart with stale references.
