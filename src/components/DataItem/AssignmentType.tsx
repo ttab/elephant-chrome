@@ -2,7 +2,7 @@ import { getAssignmentTypes } from '@/defaults'
 import { Button, Select, SelectContent, SelectItem, SelectTrigger } from '@ttab/elephant-ui'
 import { cn } from '@ttab/elephant-ui/utils'
 import { Block } from '@ttab/elephant-api/newsdoc'
-import { FilePenIcon, FilePlus2Icon } from '@ttab/elephant-ui/icons'
+import { BookmarkIcon, BookmarkPlusIcon, FilePenIcon, FilePlus2Icon } from '@ttab/elephant-ui/icons'
 import type { DefaultValueOption } from '@/types/index'
 import type { FormProps } from '../Form/Root'
 import { useYValue } from '@/modules/yjs/hooks'
@@ -117,12 +117,14 @@ export const AssignmentType = ({ assignment, editable = false, readOnly = false,
 }
 
 function getIcon(selectedOptions: Omit<DefaultValueOption, 'label'>[], editable: boolean, readOnly = false) {
-  if (selectedOptions[0]?.value !== 'text') {
-    return selectedOptions[0]?.icon
+  const value = selectedOptions[0]?.value
+
+  if (value === 'text' && readOnly) {
+    return editable ? FilePlus2Icon : FilePenIcon
   }
 
-  if (readOnly) {
-    return editable ? FilePlus2Icon : FilePenIcon
+  if (value === 'timeless' && readOnly) {
+    return editable ? BookmarkPlusIcon : BookmarkIcon
   }
 
   return selectedOptions[0]?.icon
