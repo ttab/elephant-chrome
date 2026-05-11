@@ -1,4 +1,4 @@
-import { useQuery, useRegistry } from '@/hooks'
+import { useQuery, useRegistry, useRepositoryEvents } from '@/hooks'
 import { type ViewProps, type ViewMetadata } from '@/types/index'
 import type * as Y from 'yjs'
 import { Bold, Italic, Text, OrderedList, UnorderedList, LocalizedQuotationMarks, Link } from '@ttab/textbit-plugins'
@@ -8,7 +8,7 @@ import { getValueByYPath } from '@/shared/yUtils'
 import { Form, UserMessage, View } from '@/components'
 import { FactboxHeader } from './FactboxHeader'
 import { Error as ErrorView } from '@/views/Error'
-import { useEffect, useMemo, useState, type JSX } from 'react'
+import { useCallback, useEffect, useMemo, useState, type JSX } from 'react'
 import { LinkedArticles } from './lib/LinkedArticles'
 import { getContentMenuLabels } from '@/defaults/contentMenuLabels'
 import { useYDocument, useYValue } from '@/modules/yjs/hooks'
@@ -270,7 +270,19 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
   const [factboxversion, setFactboxVersion] = useState<bigint | undefined>(undefined)
   const [documentState, setDocumentState] = useState<DocumentState | undefined>(undefined)
   const [currentVersion, setCurrentVersion] = useState<bigint | undefined>(undefined)
+  const [statusRefetchKey, setStatusRefetchKey] = useState(0)
   const environmentIsSane = ydoc.provider && status === 'authenticated'
+
+  const handleRepositoryEvent = useCallback(
+    (event: { uuid?: string, mainDocument?: string }) => {
+      if (event.uuid === props.documentId || event.mainDocument === props.documentId) {
+        setStatusRefetchKey((k) => k + 1)
+      }
+    },
+    [props.documentId]
+  )
+
+  useRepositoryEvents(['core/factbox', 'core/factbox+meta'], handleRepositoryEvent)
 
   useEffect(() => {
     if (!repository || !session?.accessToken) return
@@ -285,7 +297,7 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
         setDocumentState(getDocumentState(item))
       }
     })
-  }, [repository, session?.accessToken, props.documentId])
+  }, [repository, session?.accessToken, props.documentId, statusRefetchKey])
 
   const { t } = useTranslation('core')
   const configuredPlugins = useMemo(() => {
