@@ -19,7 +19,8 @@
     "addNote": "Legg til beskjed",
     "convertToArticle": "Planlegg som artikkel",
     "convertToTimeless": "Lagre som tidløs",
-    "removeHastFromArticle": "Fjern HAST fra artikkelen"
+    "removeHastFromArticle": "Fjern HAST fra artikkelen",
+    "removeHastFromTimeless": "Fjern HAST fra tidløs"
   },
   "convertToArticle": {
     "descriptionWithPlanning": "En ny plan opprettes fra den opprinnelige. Velg dato for den nye artikkelen. Den tidløse artikkelen er fortsatt tilgjengelig.",
@@ -38,6 +39,10 @@
     "title": "Fjern HAST fra artikkelen",
     "description": "Dette fjerner HAST og gjør den til en vanlig artikkel. Fremtidige versjoner sendes ikke som HAST med mindre du aktiverer det igjen.",
     "confirm": "Fjern"
+  },
+  "removeHastPromptTimeless": {
+    "title": "Fjern HAST fra tidløs",
+    "description": "Dette fjerner HAST og gjør den til en vanlig tidløs. Fremtidige versjoner sendes ikke som HAST med mindre du aktiverer det igjen."
   },
   "placeholders": {
     "addByline": "Legg til byline",

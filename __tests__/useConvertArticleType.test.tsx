@@ -5,6 +5,7 @@ import { toast } from 'sonner'
 
 import { useConvertArticleType } from '@/hooks/useConvertArticleType'
 import { useRegistry } from '@/hooks/useRegistry'
+import { snapshotDocument } from '@/lib/snapshotDocument'
 import {
   attachArticleAssignment,
   buildFallbackPlanning,
@@ -38,12 +39,17 @@ vi.mock('sonner', () => ({
   }
 }))
 
+vi.mock('@/lib/snapshotDocument', () => ({
+  snapshotDocument: vi.fn().mockResolvedValue(undefined)
+}))
+
 const mockUseRegistry = vi.mocked(useRegistry)
 const mockUseSession = vi.mocked(useSession)
 const mockPrepareArticleConversion = vi.mocked(prepareArticleConversion)
 const mockDeriveNewPlanning = vi.mocked(deriveNewPlanning)
 const mockBuildFallbackPlanning = vi.mocked(buildFallbackPlanning)
 const mockAttachArticleAssignment = vi.mocked(attachArticleAssignment)
+const mockSnapshotDocument = vi.mocked(snapshotDocument)
 
 const TIMELESS_ID = '11111111-1111-1111-8111-111111111111'
 const ARTICLE_ID = '22222222-2222-2222-8222-222222222222'
@@ -51,11 +57,12 @@ const PLANNING_ID = '33333333-3333-3333-8333-333333333333'
 const NEW_ARTICLE_UUID = '44444444-4444-4444-8444-444444444444'
 const NEW_PLANNING_UUID = '55555555-5555-5555-8555-555555555555'
 
-function planningReferencing(articleId: string) {
+function planningReferencing(articleId: string, assignmentMeta: unknown[] = []) {
   return {
     uuid: PLANNING_ID,
     meta: [{
       type: 'core/assignment',
+      meta: assignmentMeta,
       links: [{ type: 'core/article', rel: 'deliverable', uuid: articleId }]
     }]
   }
@@ -295,6 +302,89 @@ describe('useConvertArticleType', () => {
     expect(toast.success).toHaveBeenCalledWith(
       'Artikel planerad',
       expect.objectContaining<{ action: unknown }>({ action: expect.anything() })
+    )
+  })
+
+  it('flushes the timeless and source planning before reading them', async () => {
+    const { getDocument } = primeRegistryWithRepository()
+    getDocument.mockImplementation(({ uuid }: { uuid: string }) => {
+      if (uuid === TIMELESS_ID) {
+        return Promise.resolve({
+          document: { uuid: TIMELESS_ID, type: 'core/article#timeless', title: 'T' }
+        })
+      }
+      return Promise.resolve({ document: planningReferencing(TIMELESS_ID) })
+    })
+
+    const fakeDoc = {} as Parameters<typeof snapshotDocument>[2]
+
+    const { result } = renderHook(() => useConvertArticleType())
+    await act(async () => {
+      await result.current.convert(TIMELESS_ID, {
+        targetType: 'core/article',
+        targetDate: '2026-05-15',
+        sourcePlanningId: PLANNING_ID,
+        sourceDocument: fakeDoc
+      })
+    })
+
+    expect(mockSnapshotDocument).toHaveBeenCalledWith(TIMELESS_ID, undefined, fakeDoc)
+    expect(mockSnapshotDocument).toHaveBeenCalledWith(PLANNING_ID)
+  })
+
+  it('aborts conversion when a pre-read snapshot fails', async () => {
+    const { getDocument, createDerivedDocument } = primeRegistryWithRepository()
+    getDocument.mockResolvedValue({
+      document: { uuid: TIMELESS_ID, type: 'core/article#timeless' }
+    })
+    mockSnapshotDocument.mockRejectedValueOnce(new Error('snapshot down'))
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+
+    const { result } = renderHook(() => useConvertArticleType())
+    let outcome!: Awaited<ReturnType<typeof result.current.convert>>
+    await act(async () => {
+      outcome = await result.current.convert(TIMELESS_ID, {
+        targetType: 'core/article',
+        targetDate: '2026-05-15',
+        sourcePlanningId: PLANNING_ID
+      })
+    })
+
+    expect(outcome).toEqual({ success: false })
+    expect(toast.error).toHaveBeenCalledWith(expect.stringContaining('snapshot down'))
+    expect(createDerivedDocument).not.toHaveBeenCalled()
+  })
+
+  it('copies the source assignment internal description onto the new planning', async () => {
+    const { getDocument } = primeRegistryWithRepository()
+    getDocument.mockImplementation(({ uuid }: { uuid: string }) => {
+      if (uuid === TIMELESS_ID) {
+        return Promise.resolve({
+          document: { uuid: TIMELESS_ID, type: 'core/article#timeless', title: 'T' }
+        })
+      }
+      return Promise.resolve({
+        document: planningReferencing(TIMELESS_ID, [
+          { type: 'core/description', role: 'internal', data: { text: 'Carry me over' } },
+          { type: 'core/description', role: 'public', data: { text: 'Public' } }
+        ])
+      })
+    })
+
+    const { result } = renderHook(() => useConvertArticleType())
+
+    await act(async () => {
+      await result.current.convert(TIMELESS_ID, {
+        targetType: 'core/article',
+        targetDate: '2026-05-15',
+        sourcePlanningId: PLANNING_ID
+      })
+    })
+
+    expect(mockAttachArticleAssignment).toHaveBeenCalledWith(
+      expect.objectContaining<{ sourceAssignment: unknown }>({
+        sourceAssignment: expect.objectContaining<{ type: string }>({ type: 'core/assignment' })
+      })
     )
   })
 

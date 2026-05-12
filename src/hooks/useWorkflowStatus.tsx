@@ -134,7 +134,20 @@ export const useWorkflowStatus = ({ ydoc, documentId: docId }: {
     [session, documentId, ydoc?.provider?.document, repository, CACHE_KEY, t]
   )
 
-  return [documentStatus, setDocumentStatus, mutate]
+  // Factbox auto-flips from usable to draft on edit server-side, but only after
+  // the auto-save debounce. Reflect that locally so the menu matches the index-
+  // driven list view the moment the user types, instead of lagging by the debounce.
+  const isChanged = ydoc?.isChanged
+  const derivedDocumentStatus = useMemo(() => {
+    if (documentStatus?.type === 'core/factbox'
+      && documentStatus.name === 'usable'
+      && isChanged) {
+      return { ...documentStatus, name: 'draft' }
+    }
+    return documentStatus
+  }, [documentStatus, isChanged])
+
+  return [derivedDocumentStatus, setDocumentStatus, mutate]
 }
 
 async function setWireStatus<Ns extends Namespace>(newStatus: Status, repository: Repository, session: Session, t: TFunction<Ns>) {

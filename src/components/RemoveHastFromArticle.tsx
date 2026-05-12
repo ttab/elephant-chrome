@@ -12,13 +12,16 @@ import { toast } from 'sonner'
 import { mutate } from 'swr'
 import { Prompt } from '@/components/Prompt'
 
-export function RemoveHastFromArticle({ ydoc }: {
+export function RemoveHastFromArticle({ ydoc, documentType }: {
   ydoc: YDocument<Y.Map<unknown>>
+  documentType?: string
 }): JSX.Element | null {
   const { featureFlags } = useRegistry()
   const { t } = useTranslation()
   const [hast, setHast] = useYValue<Block | undefined>(ydoc.ele, 'meta.ntb/hast[0]')
   const [showPrompt, setShowPrompt] = useState(false)
+
+  const isTimeless = documentType === 'core/article#timeless'
 
   if (!featureFlags.hasHast || !hast) {
     return null
@@ -47,13 +50,19 @@ export function RemoveHastFromArticle({ ydoc }: {
         onClick={() => setShowPrompt(true)}
       >
         <ZapOffIcon size={15} strokeWidth={1.75} />
-        {t('metaSheet:actions.removeHastFromArticle')}
+        {isTimeless
+          ? t('metaSheet:actions.removeHastFromTimeless')
+          : t('metaSheet:actions.removeHastFromArticle')}
       </Button>
 
       {showPrompt && (
         <Prompt
-          title={t('metaSheet:removeHastPrompt.title')}
-          description={t('metaSheet:removeHastPrompt.description')}
+          title={isTimeless
+            ? t('metaSheet:removeHastPromptTimeless.title')
+            : t('metaSheet:removeHastPrompt.title')}
+          description={isTimeless
+            ? t('metaSheet:removeHastPromptTimeless.description')
+            : t('metaSheet:removeHastPrompt.description')}
           primaryLabel={t('metaSheet:removeHastPrompt.confirm')}
           cancelLabel={t('common:actions.abort')}
           onPrimary={() => void handleRemove()}

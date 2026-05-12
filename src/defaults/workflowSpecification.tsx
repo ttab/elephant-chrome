@@ -487,9 +487,10 @@ export function getWorkflowSpecifications(): Record<string, WorkflowSpecificatio
       draft: {
         title: i18n.t('workflows:core/factbox.draft.title'),
         description: i18n.t('workflows:core/factbox.draft.description'),
-        isWorkflow: false,
+        isWorkflow: true,
         transitions: {
           usable: {
+            default: true,
             verify: true,
             title: i18n.t('workflows:core/factbox.draft.transitions.usable.title'),
             description: i18n.t('workflows:core/factbox.draft.transitions.usable.description')
@@ -498,10 +499,8 @@ export function getWorkflowSpecifications(): Record<string, WorkflowSpecificatio
       },
       usable: {
         title: i18n.t('workflows:core/factbox.usable.title'),
-        asSaveCTA: i18n.t('workflows:core/factbox.usable.title'),
         description: i18n.t('workflows:core/factbox.usable.description'),
-        isWorkflow: false,
-        asSave: false,
+        isWorkflow: true,
         transitions: {
           unpublished: {
             verify: true,

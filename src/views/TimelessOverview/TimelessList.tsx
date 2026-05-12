@@ -1,4 +1,4 @@
-import { useEffect, type JSX } from 'react'
+import { useEffect, useMemo, type JSX } from 'react'
 import { useQuery, type QueryParams } from '@/hooks/useQuery'
 import { Table } from '@/components/Table'
 import { Pagination } from '@/components/Table/Pagination'
@@ -22,8 +22,13 @@ export const TimelessList = ({ columns }: {
     setSavedFilters(columnFilterToQuery(columnFilters))
   }, [columnFilters, setSavedFilters])
 
+  const status = useMemo(() => {
+    const found = columnFilters.find((f) => f.id === 'status')
+    return Array.isArray(found?.value) ? (found.value as string[]) : undefined
+  }, [columnFilters])
+
   useDocuments<TimelessArticle, TimelessArticleFields>({
-    ...timelessParams(filter),
+    ...timelessParams(status),
     page: typeof filter.page === 'string' ? parseInt(filter.page) : undefined,
     options: {
       subscribe: true,

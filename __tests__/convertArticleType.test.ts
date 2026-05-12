@@ -1,8 +1,10 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { Block, Document } from '@ttab/elephant-api/newsdoc'
 import {
+  attachArticleAssignment,
   buildFallbackPlanning,
   deriveNewPlanning,
+  findArticleAssignment,
   prepareArticleConversion
 } from '@/shared/convertArticleType'
 import type { Repository } from '@/shared/Repository'
@@ -358,5 +360,157 @@ describe('buildFallbackPlanning', () => {
     expect(result.meta.find((b) => b.type === 'tt/slugline')).toBeDefined()
     expect(result.meta.find((b) => b.type === 'core/newsvalue')).toBeDefined()
     expect(result.links).toHaveLength(0)
+  })
+})
+
+describe('attachArticleAssignment', () => {
+  const makePlanning = () =>
+    Document.create({
+      uuid: 'planning-uuid',
+      type: 'core/planning-item',
+      uri: 'core://newscoverage/planning-uuid',
+      language: 'sv-se',
+      title: 'Planning',
+      meta: [
+        Block.create({ type: 'tt/slugline', value: 'feature-x' }),
+        Block.create({ type: 'core/newsvalue', value: '3' })
+      ]
+    })
+
+  const makeSourceAssignment = (internalText: string) =>
+    Block.create({
+      type: 'core/assignment',
+      meta: [
+        Block.create({
+          type: 'core/description',
+          role: 'internal',
+          data: { text: internalText }
+        })
+      ]
+    })
+
+  const findAssignment = (doc: Document) =>
+    doc.meta.find((block) => block.type === 'core/assignment' && block.links.length > 0)
+
+  it('inherits the internal description from the source assignment', () => {
+    const result = attachArticleAssignment({
+      planning: makePlanning(),
+      articleId: 'article-uuid',
+      articleTitle: 'Test',
+      targetDate: '2026-05-15',
+      sourceAssignment: makeSourceAssignment('Carry me over')
+    })
+
+    const assignment = findAssignment(result)
+    const internal = assignment?.meta.find(
+      (m) => m.type === 'core/description' && m.role === 'internal'
+    )
+    expect(internal?.data.text).toBe('Carry me over')
+  })
+
+  it('drops the empty internal description placeholder when no source assignment provided', () => {
+    const result = attachArticleAssignment({
+      planning: makePlanning(),
+      articleId: 'article-uuid',
+      articleTitle: 'Test',
+      targetDate: '2026-05-15'
+    })
+
+    const assignment = findAssignment(result)
+    expect(assignment?.meta.find((m) => m.type === 'core/description')).toBeUndefined()
+  })
+
+  it('drops the placeholder when the source description is whitespace-only', () => {
+    const result = attachArticleAssignment({
+      planning: makePlanning(),
+      articleId: 'article-uuid',
+      articleTitle: 'Test',
+      targetDate: '2026-05-15',
+      sourceAssignment: makeSourceAssignment('   ')
+    })
+
+    const assignment = findAssignment(result)
+    expect(assignment?.meta.find((m) => m.type === 'core/description')).toBeUndefined()
+  })
+
+  it('drops the placeholder when the source assignment has no description block', () => {
+    const result = attachArticleAssignment({
+      planning: makePlanning(),
+      articleId: 'article-uuid',
+      articleTitle: 'Test',
+      targetDate: '2026-05-15',
+      sourceAssignment: Block.create({
+        type: 'core/assignment',
+        meta: [Block.create({ type: 'core/description', role: 'public', data: { text: 'Pub' } })]
+      })
+    })
+
+    const assignment = findAssignment(result)
+    expect(assignment?.meta.find((m) => m.type === 'core/description')).toBeUndefined()
+  })
+
+  it('trims whitespace from the inherited description', () => {
+    const result = attachArticleAssignment({
+      planning: makePlanning(),
+      articleId: 'article-uuid',
+      articleTitle: 'Test',
+      targetDate: '2026-05-15',
+      sourceAssignment: makeSourceAssignment('  padded  ')
+    })
+
+    const internal = findAssignment(result)?.meta.find(
+      (m) => m.type === 'core/description' && m.role === 'internal'
+    )
+    expect(internal?.data.text).toBe('padded')
+  })
+
+  it('attaches a deliverable link pointing at the article', () => {
+    const result = attachArticleAssignment({
+      planning: makePlanning(),
+      articleId: 'article-uuid',
+      articleTitle: 'Test',
+      targetDate: '2026-05-15'
+    })
+
+    const assignment = findAssignment(result)
+    expect(assignment?.links.find((l) => l.rel === 'deliverable')).toMatchObject({
+      type: 'core/article',
+      uuid: 'article-uuid'
+    })
+  })
+})
+
+describe('findArticleAssignment', () => {
+  it('returns the assignment whose deliverable points at the article', () => {
+    const planning = Document.create({
+      uuid: 'p',
+      type: 'core/planning-item',
+      uri: 'core://newscoverage/p',
+      meta: [
+        Block.create({
+          type: 'core/assignment',
+          id: 'a1',
+          links: [Block.create({ type: 'core/article', rel: 'deliverable', uuid: 'other' })]
+        }),
+        Block.create({
+          type: 'core/assignment',
+          id: 'a2',
+          links: [Block.create({ type: 'core/article', rel: 'deliverable', uuid: 'target' })]
+        })
+      ]
+    })
+
+    expect(findArticleAssignment(planning, 'target')?.id).toBe('a2')
+  })
+
+  it('returns undefined when no assignment matches', () => {
+    const planning = Document.create({
+      uuid: 'p',
+      type: 'core/planning-item',
+      uri: 'core://newscoverage/p',
+      meta: []
+    })
+
+    expect(findArticleAssignment(planning, 'missing')).toBeUndefined()
   })
 })

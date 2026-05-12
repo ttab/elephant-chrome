@@ -10,6 +10,7 @@ export const GET = (): Promise<unknown> => {
       spellcheckUrl: process.env.SPELLCHECK_PUBLIC_URL ?? process.env.SPELLCHECK_URL ?? '',
       faroUrl: process.env.FARO_PUBLIC_URL ?? process.env.FARO_URL ?? '',
       baboonUrl: process.env.BABOON_PUBLIC_URL ?? process.env.BABOON_URL ?? '',
+      ntbUrl: process.env.NTB_PUBLIC_URL ?? process.env.NTB_URL ?? '',
       systemLanguage: process.env.SYSTEM_LANGUAGE ?? '',
       hasPrint: process.env.HAS_PRINT ?? '',
       hasHast: process.env.HAS_HAST ?? '',

@@ -46,9 +46,25 @@ function nestedElements(): TBElement[] {
   ] as unknown as TBElement[]
 }
 
+const translateOpts = { ntbUrl: 'https://ntb.example/', accessToken: 'tok' }
+
 describe('translateWireContent', () => {
   beforeEach(() => {
     mockTranslate.mockReset()
+  })
+
+  it('forwards ntbUrl and accessToken to the underlying translate call', async () => {
+    mockTranslate.mockResolvedValue({
+      texts: { values: ['Hei'] },
+      guid: 'test'
+    })
+
+    await translateWireContent([paragraph('Hello')], 'standard', translateOpts)
+
+    expect(mockTranslate).toHaveBeenCalledOnce()
+    const opts = mockTranslate.mock.calls[0][1] as { ntbUrl: string, accessToken: string }
+    expect(opts.ntbUrl).toBe('https://ntb.example/')
+    expect(opts.accessToken).toBe('tok')
   })
 
   it('collects texts, translates, and replaces in correct order', async () => {
@@ -62,7 +78,7 @@ describe('translateWireContent', () => {
       paragraph('World')
     ]
 
-    const result = await translateWireContent(content, 'standard')
+    const result = await translateWireContent(content, 'standard', translateOpts)
 
     expect(mockTranslate).toHaveBeenCalledOnce()
     const req = mockTranslate.mock.calls[0][0] as TranslateRequest
@@ -81,7 +97,7 @@ describe('translateWireContent', () => {
     })
 
     const content = nestedElements()
-    await translateWireContent(content, 'standard')
+    await translateWireContent(content, 'standard', translateOpts)
 
     const req = mockTranslate.mock.calls[0][0] as TranslateRequest
     expect(req.texts.values).toEqual(['Hello', 'nested text'])
@@ -95,7 +111,7 @@ describe('translateWireContent', () => {
       children: [{ text: '' }]
     } as unknown as TBElement]
 
-    const result = await translateWireContent(content, 'standard')
+    const result = await translateWireContent(content, 'standard', translateOpts)
 
     expect(mockTranslate).not.toHaveBeenCalled()
     expect(result).toBeDefined()
@@ -107,7 +123,7 @@ describe('translateWireContent', () => {
       guid: 'test'
     })
 
-    await translateWireContent([paragraph('Hello')], 'personal', 'e_ending,split_inf')
+    await translateWireContent([paragraph('Hello')], 'personal', { ...translateOpts, personalPrefs: 'e_ending,split_inf' })
 
     const req = mockTranslate.mock.calls[0][0] as TranslateRequest
     expect(req.prefs).toEqual({
@@ -122,7 +138,7 @@ describe('translateWireContent', () => {
       guid: 'test'
     })
 
-    await translateWireContent([paragraph('Hello')], 'personal', ',key1,,key2,')
+    await translateWireContent([paragraph('Hello')], 'personal', { ...translateOpts, personalPrefs: ',key1,,key2,' })
 
     const req = mockTranslate.mock.calls[0][0] as TranslateRequest
     expect(req.prefs).toEqual({
@@ -137,7 +153,7 @@ describe('translateWireContent', () => {
       guid: 'test'
     })
 
-    await translateWireContent([paragraph('Hello')], 'standard', 'some_pref')
+    await translateWireContent([paragraph('Hello')], 'standard', { ...translateOpts, personalPrefs: 'some_pref' })
 
     const req = mockTranslate.mock.calls[0][0] as TranslateRequest
     expect(req.prefs).toBeUndefined()
@@ -150,7 +166,7 @@ describe('translateWireContent', () => {
     })
 
     await expect(
-      translateWireContent([paragraph('Hello'), paragraph('World')], 'standard')
+      translateWireContent([paragraph('Hello'), paragraph('World')], 'standard', translateOpts)
     ).rejects.toThrow('Translation returned 1 texts, expected 2')
   })
 
@@ -161,7 +177,7 @@ describe('translateWireContent', () => {
     })
 
     const content: TBElement[] = [paragraph('Original')]
-    await translateWireContent(content, 'standard')
+    await translateWireContent(content, 'standard', translateOpts)
 
     expect((content[0] as unknown as { children: Array<{ text: string }> }).children[0].text).toBe('Original')
   })

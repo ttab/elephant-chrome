@@ -19,6 +19,7 @@ import { toContentYXmlText, translateWireContent } from './translateWireContent'
 export async function createArticle({
   ydoc,
   status,
+  session,
   wires,
   planningId,
   planningTitle,
@@ -29,7 +30,8 @@ export async function createArticle({
   contentSources,
   wireContent,
   translationMode,
-  personalPrefs
+  personalPrefs,
+  ntbUrl
 }: {
   ydoc: YDocument<Y.Map<unknown>>
   status: string
@@ -48,6 +50,8 @@ export async function createArticle({
   wireContent?: TBElement[]
   translationMode?: 'standard' | 'personal'
   personalPrefs?: string
+  /** Translation service URL. Required when `translationMode` is set. */
+  ntbUrl?: string
 }): Promise<void> {
   const [documentId] = getValueByYPath<string>(ydoc.ele, 'root.uuid')
 
@@ -121,7 +125,14 @@ export async function createArticle({
   // the provider disconnects, so we use the captured yjsDocument reference.
   if (wireContent && translationMode) {
     try {
-      const translatedContent = await translateWireContent(wireContent, translationMode, personalPrefs)
+      if (!ntbUrl) {
+        throw new Error('Translation service is not configured for this deployment')
+      }
+      const translatedContent = await translateWireContent(wireContent, translationMode, {
+        ntbUrl,
+        accessToken: session.accessToken,
+        personalPrefs
+      })
       if (yjsDocument) {
         yjsDocument.getMap('ele').set('content', translatedContent)
       }

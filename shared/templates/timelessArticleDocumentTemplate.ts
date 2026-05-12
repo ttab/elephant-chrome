@@ -21,7 +21,7 @@ export function timelessArticleDocumentTemplate(
     content: [
       Block.create({
         type: 'core/text',
-        data: { text: '' },
+        data: { text: payload?.title ?? '' },
         role: 'heading-1'
       }),
       Block.create({
