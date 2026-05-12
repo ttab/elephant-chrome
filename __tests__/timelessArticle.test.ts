@@ -65,6 +65,28 @@ describe('timelessArticleDocumentTemplate', () => {
     expect(doc.links.some((l) => l.type === 'core/content-source')).toBe(false)
   })
 
+  it('pre-fills the heading-1 block with payload.title', () => {
+    const doc = timelessArticleDocumentTemplate('test-id', { title: 'My timeless' })
+
+    expect(doc.title).toBe('My timeless')
+    expect(doc.content[0].role).toBe('heading-1')
+    expect(doc.content[0].data.text).toBe('My timeless')
+  })
+
+  it('leaves the heading-1 block empty when no title is provided', () => {
+    const doc = timelessArticleDocumentTemplate('test-id')
+
+    expect(doc.content[0].role).toBe('heading-1')
+    expect(doc.content[0].data.text).toBe('')
+  })
+
+  it('preserves the exact title string (no trimming) in heading-1 and root title', () => {
+    const doc = timelessArticleDocumentTemplate('test-id', { title: '  spaced title  ' })
+
+    expect(doc.title).toBe('  spaced title  ')
+    expect(doc.content[0].data.text).toBe('  spaced title  ')
+  })
+
   it('includes meta from payload', () => {
     const doc = timelessArticleDocumentTemplate('test-id', {
       meta: {
