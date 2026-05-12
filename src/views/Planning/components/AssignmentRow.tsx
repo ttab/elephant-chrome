@@ -63,6 +63,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
 }): JSX.Element => {
   const openArticle = useLink('Editor')
   const openFlash = useLink('Flash')
+  const openPlanning = useLink('Planning')
 
   const openDocuments = useOpenDocuments({ idOnly: true, name: 'Editor' })
   const { repository } = useRegistry()
@@ -308,8 +309,8 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
                 timelessId={documentId}
                 onClose={(result) => {
                   hideModal()
-                  if (result?.articleId) {
-                    openArticle(undefined, { id: result.articleId })
+                  if (result?.planningId) {
+                    openPlanning(undefined, { id: result.planningId })
                   }
                 }}
               />
