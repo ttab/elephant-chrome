@@ -11,6 +11,16 @@ export interface ArticleConversionResult {
   errors: ValidationResult[]
 }
 
+// Repository rejects `tt/slugline` blocks whose value is empty. With the
+// `hasLooseSlugline` feature flag the editor leaves these blocks in the source
+// document, so we have to strip them before persisting anything derived from
+// it.
+const isEmptySlugline = (block: Block): boolean =>
+  block.type === 'tt/slugline' && !block.value?.trim()
+
+const withoutEmptySluglines = (blocks: Block[]): Block[] =>
+  blocks.filter((block) => !isEmptySlugline(block))
+
 /**
  * Prune the source document against the target type and build a new document
  * with a fresh UUID plus a rel='source' link back to the original. The caller
@@ -52,6 +62,7 @@ export async function prepareArticleConversion({
       ...prunedDoc,
       uuid: newUuid,
       uri: `core://article/${newUuid}`,
+      meta: withoutEmptySluglines(prunedDoc.meta),
       links: [
         ...prunedDoc.links,
         Block.create({
@@ -97,7 +108,7 @@ export function buildFallbackPlanning({
       }
     }),
     newsvalue ? Block.create({ ...newsvalue }) : Block.create({ type: 'core/newsvalue' }),
-    slugline ? Block.create({ ...slugline }) : Block.create({ type: 'tt/slugline' }),
+    ...(slugline && !isEmptySlugline(slugline) ? [Block.create({ ...slugline })] : []),
     Block.create({
       type: 'core/description',
       data: { text: '' },
@@ -136,7 +147,7 @@ export function deriveNewPlanning({
   newUuid: string
 }): Document {
   const updatedMeta = sourcePlanning.meta
-    .filter((block) => block.type !== 'core/assignment')
+    .filter((block) => block.type !== 'core/assignment' && !isEmptySlugline(block))
     .map((block) => {
       if (block.type !== 'core/planning-item') {
         return block
@@ -197,9 +208,13 @@ export function attachArticleAssignment({
 
   // bulkUpdate bypasses stripEmptyValidatedMetaBlocks, so drop the
   // template's empty internal description and re-add it only when we
-  // have text. Public descriptions and other meta blocks are left alone.
+  // have text. The template also always emits a `tt/slugline` block, so
+  // drop it when empty (hasLooseSlugline allows that). Public descriptions
+  // and other meta blocks are left alone.
   const metaWithoutInternal = assignment.meta.filter(
-    (block) => !(block.type === 'core/description' && block.role === 'internal')
+    (block) =>
+      !(block.type === 'core/description' && block.role === 'internal')
+      && !isEmptySlugline(block)
   )
   const internalDescription = inheritedInternalDescription
     ? [Block.create({

@@ -171,6 +171,62 @@ describe('prepareArticleConversion', () => {
     expect(result.newDocument.links.find((l) => l.rel === 'subject')?.uuid).toBe('story-uuid')
     expect(result.newDocument.links.find((l) => l.rel === 'source-document')?.uuid).toBe('source-uuid')
   })
+
+  it('strips empty slugline blocks from the pruned document meta', async () => {
+    const sourceDoc = Document.create({
+      uuid: 'timeless-uuid',
+      type: 'core/article#timeless',
+      uri: 'core://article/timeless-uuid',
+      language: 'sv-se',
+      title: 'Timeless',
+      meta: [
+        Block.create({ type: 'tt/slugline', value: '' }),
+        Block.create({ type: 'core/newsvalue', value: '3' })
+      ],
+      links: []
+    })
+
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    vi.mocked(mockRepository.pruneDocument).mockImplementation((doc) =>
+      Promise.resolve({ document: doc, errors: [] })
+    )
+
+    const result = await prepareArticleConversion({
+      sourceDocument: sourceDoc,
+      targetType: 'core/article',
+      repository: mockRepository,
+      accessToken: 'token'
+    })
+
+    expect(result.newDocument.meta.find((b) => b.type === 'tt/slugline')).toBeUndefined()
+    expect(result.newDocument.meta.find((b) => b.type === 'core/newsvalue')?.value).toBe('3')
+  })
+
+  it('keeps non-empty slugline blocks in the pruned document meta', async () => {
+    const sourceDoc = Document.create({
+      uuid: 'timeless-uuid',
+      type: 'core/article#timeless',
+      uri: 'core://article/timeless-uuid',
+      language: 'sv-se',
+      title: 'Timeless',
+      meta: [Block.create({ type: 'tt/slugline', value: 'kept' })],
+      links: []
+    })
+
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    vi.mocked(mockRepository.pruneDocument).mockImplementation((doc) =>
+      Promise.resolve({ document: doc, errors: [] })
+    )
+
+    const result = await prepareArticleConversion({
+      sourceDocument: sourceDoc,
+      targetType: 'core/article',
+      repository: mockRepository,
+      accessToken: 'token'
+    })
+
+    expect(result.newDocument.meta.find((b) => b.type === 'tt/slugline')?.value).toBe('kept')
+  })
 })
 
 describe('deriveNewPlanning', () => {
@@ -295,6 +351,28 @@ describe('deriveNewPlanning', () => {
     expect(result.links.find((l) => l.rel === 'story')?.uuid).toBe('story-uuid')
     expect(result.links).toHaveLength(2)
   })
+
+  it('strips empty slugline blocks from the source planning meta', () => {
+    const source = makeSourcePlanning({
+      meta: [
+        Block.create({
+          type: 'core/planning-item',
+          data: { start_date: '2026-04-01', end_date: '2026-04-01' }
+        }),
+        Block.create({ type: 'tt/slugline', value: '' }),
+        Block.create({ type: 'core/newsvalue', value: '3' })
+      ]
+    })
+
+    const result = deriveNewPlanning({
+      sourcePlanning: source,
+      targetDate: '2026-05-15',
+      newUuid: 'fresh-planning-uuid'
+    })
+
+    expect(result.meta.find((b) => b.type === 'tt/slugline')).toBeUndefined()
+    expect(result.meta.find((b) => b.type === 'core/newsvalue')?.value).toBe('3')
+  })
 })
 
 describe('buildFallbackPlanning', () => {
@@ -350,16 +428,31 @@ describe('buildFallbackPlanning', () => {
     expect(result.links[0]).toMatchObject({ type: 'core/section', uuid: 'section-uuid' })
   })
 
-  it('emits empty slugline/newsvalue when the timeless has none', () => {
+  it('omits the slugline block but emits an empty newsvalue when the timeless has none', () => {
     const result = buildFallbackPlanning({
       sourceTimeless: makeTimeless({ meta: [], links: [] }),
       targetDate: '2026-05-15',
       newUuid: 'fresh-uuid'
     })
 
-    expect(result.meta.find((b) => b.type === 'tt/slugline')).toBeDefined()
+    expect(result.meta.find((b) => b.type === 'tt/slugline')).toBeUndefined()
     expect(result.meta.find((b) => b.type === 'core/newsvalue')).toBeDefined()
     expect(result.links).toHaveLength(0)
+  })
+
+  it('omits the slugline block when the timeless slugline value is empty', () => {
+    const result = buildFallbackPlanning({
+      sourceTimeless: makeTimeless({
+        meta: [
+          Block.create({ type: 'tt/slugline', value: '' }),
+          Block.create({ type: 'core/newsvalue', value: '4' })
+        ]
+      }),
+      targetDate: '2026-05-15',
+      newUuid: 'fresh-uuid'
+    })
+
+    expect(result.meta.find((b) => b.type === 'tt/slugline')).toBeUndefined()
   })
 })
 
@@ -477,6 +570,60 @@ describe('attachArticleAssignment', () => {
       type: 'core/article',
       uuid: 'article-uuid'
     })
+  })
+
+  it('drops the slugline block when the planning slugline is empty', () => {
+    const planning = Document.create({
+      uuid: 'planning-uuid',
+      type: 'core/planning-item',
+      uri: 'core://newscoverage/planning-uuid',
+      language: 'sv-se',
+      title: 'Planning',
+      meta: [Block.create({ type: 'tt/slugline', value: '' })]
+    })
+
+    const result = attachArticleAssignment({
+      planning,
+      articleId: 'article-uuid',
+      articleTitle: 'Test',
+      targetDate: '2026-05-15'
+    })
+
+    const assignment = findAssignment(result)
+    expect(assignment?.meta.find((m) => m.type === 'tt/slugline')).toBeUndefined()
+  })
+
+  it('drops the slugline block when the planning has no slugline at all', () => {
+    const planning = Document.create({
+      uuid: 'planning-uuid',
+      type: 'core/planning-item',
+      uri: 'core://newscoverage/planning-uuid',
+      language: 'sv-se',
+      title: 'Planning',
+      meta: []
+    })
+
+    const result = attachArticleAssignment({
+      planning,
+      articleId: 'article-uuid',
+      articleTitle: 'Test',
+      targetDate: '2026-05-15'
+    })
+
+    const assignment = findAssignment(result)
+    expect(assignment?.meta.find((m) => m.type === 'tt/slugline')).toBeUndefined()
+  })
+
+  it('keeps the slugline block when the planning carries a value', () => {
+    const result = attachArticleAssignment({
+      planning: makePlanning(),
+      articleId: 'article-uuid',
+      articleTitle: 'Test',
+      targetDate: '2026-05-15'
+    })
+
+    const assignment = findAssignment(result)
+    expect(assignment?.meta.find((m) => m.type === 'tt/slugline')?.value).toBe('feature-x')
   })
 })
 
