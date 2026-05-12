@@ -1,10 +1,8 @@
-type FatalLogger = {
-  fatal: (obj: object, msg: string) => void
-}
+import type { Logger } from 'pino'
 
 type FatalHandlerDeps = {
   collaborationServer: { close: () => Promise<unknown> }
-  logger: FatalLogger
+  logger: Pick<Logger, 'fatal'>
   forceExitMs?: number
 }
 

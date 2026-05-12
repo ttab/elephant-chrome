@@ -43,14 +43,8 @@ export function toYjsNewsDoc(eleDoc: EleDocumentResponse, yDoc: Document | Y.Doc
   yCtx.set('hash', createHash(yEle))
 }
 
-/**
- * Check if a Yjs document has the required structure for serialization.
- * Returns true if ele.root, ele.meta, ele.links, and ele.content exist.
- */
 export function isCompleteYjsNewsDoc(yDoc: Y.Doc): boolean {
   const yEle = yDoc.getMap('ele')
-  if (yEle.size === 0) return false
-
   const root = yEle.get('root')
   const meta = yEle.get('meta')
   const links = yEle.get('links')
