@@ -17,6 +17,7 @@ import { useConvertArticleType } from '@/hooks/useConvertArticleType'
 import { useDocuments } from '@/hooks/index/useDocuments'
 import { useRegistry } from '@/hooks/useRegistry'
 import type { Planning, PlanningFields } from '@/shared/schemas/planning'
+import type * as Y from 'yjs'
 
 interface ConversionPayload {
   articleId: string
@@ -25,10 +26,11 @@ interface ConversionPayload {
 
 interface Props {
   timelessId: string
+  timelessDoc?: Y.Doc
   onClose: (result?: ConversionPayload) => void
 }
 
-export function ConvertToArticleDialog({ timelessId, onClose }: Props): JSX.Element {
+export function ConvertToArticleDialog({ timelessId, timelessDoc, onClose }: Props): JSX.Element {
   const { t } = useTranslation()
   const { locale } = useRegistry()
   const { convert, isConverting } = useConvertArticleType()
@@ -57,7 +59,8 @@ export function ConvertToArticleDialog({ timelessId, onClose }: Props): JSX.Elem
     void convert(timelessId, {
       targetType: 'core/article',
       targetDate: formattedTarget,
-      ...(sourcePlanningId ? { sourcePlanningId } : {})
+      sourcePlanningId,
+      sourceDocument: timelessDoc
     }).then((result) => {
       if (result.success && result.kind === 'article') {
         onClose({

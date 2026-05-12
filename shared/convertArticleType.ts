@@ -159,23 +159,26 @@ export function deriveNewPlanning({
 /**
  * Append a `core/assignment` block to the planning that owns the article as a
  * `rel='deliverable'`. Returns a new Document proto; does not mutate.
+ *
+ * When `sourceAssignment` is provided, the new assignment inherits its
+ * internal description so manually entered context survives conversion.
  */
 export function attachArticleAssignment({
   planning,
   articleId,
   articleTitle,
-  targetDate
+  targetDate,
+  sourceAssignment
 }: {
   planning: Document
   articleId: string
   articleTitle: string
   targetDate: string
+  sourceAssignment?: Block
 }): Document {
   const assignmentIso = `${targetDate}T09:00:00Z`
-  // Inherit the planning's slugline onto the assignment. If the planning has
-  // no slugline the Repository will reject — that's the correct failure mode,
-  // since every planning is supposed to carry one.
   const slugline = planning.meta.find((m) => m.type === 'tt/slugline')?.value
+  const inheritedInternalDescription = getInternalDescription(sourceAssignment)
 
   const assignment = assignmentPlanningTemplate({
     assignmentType: 'text',
@@ -192,12 +195,20 @@ export function attachArticleAssignment({
     }
   })
 
-  // The template seeds a blank core/description placeholder; Repository
-  // validation rejects empty text — strip it and let it be added later via
-  // the UI if needed.
-  const cleanedMeta = assignment.meta.filter((block) =>
-    !(block.type === 'core/description' && !block.data?.text?.trim())
+  // bulkUpdate bypasses stripEmptyValidatedMetaBlocks, so drop the
+  // template's empty internal description and re-add it only when we
+  // have text. Public descriptions and other meta blocks are left alone.
+  const metaWithoutInternal = assignment.meta.filter(
+    (block) => !(block.type === 'core/description' && block.role === 'internal')
   )
+  const internalDescription = inheritedInternalDescription
+    ? [Block.create({
+        type: 'core/description',
+        role: 'internal',
+        data: { text: inheritedInternalDescription }
+      })]
+    : []
+  const cleanedMeta = [...metaWithoutInternal, ...internalDescription]
 
   const assignmentWithDeliverable = Block.create({
     ...assignment,
@@ -219,12 +230,19 @@ export function attachArticleAssignment({
 }
 
 /**
- * Does this planning own `articleId` as a deliverable via any assignment?
+ * Find the assignment in `planning` that owns `articleId` as a deliverable.
  */
-export function planningReferencesArticle(planning: Document, articleId: string): boolean {
-  return planning.meta.some((block) =>
+export function findArticleAssignment(planning: Document, articleId: string): Block | undefined {
+  return planning.meta.find((block) =>
     block.type === 'core/assignment'
     && block.links.some((link) => link.rel === 'deliverable' && link.uuid === articleId)
   )
+}
+
+function getInternalDescription(block: Block | undefined): string | undefined {
+  const text = block?.meta
+    .find((m) => m.type === 'core/description' && m.role === 'internal')
+    ?.data?.text?.trim()
+  return text || undefined
 }
 
