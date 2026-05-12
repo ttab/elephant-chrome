@@ -134,6 +134,7 @@ function connectRouteHandler(app: Application, routePath: string, func: RouteHan
 
     func(req, context).then((response) => {
       if (res.headersSent) {
+        logger.warn({ routePath, method: req.method }, 'Route handler resolved after response was already sent')
         return
       }
 
@@ -168,6 +169,8 @@ function connectRouteHandler(app: Application, routePath: string, func: RouteHan
       logger.error(ex, 'RouteHandler error')
       if (!res.headersSent) {
         res.status(500).send('')
+      } else {
+        logger.warn({ routePath, method: req.method }, 'Skipping 500 fallback because response was already sent')
       }
     })
   }
