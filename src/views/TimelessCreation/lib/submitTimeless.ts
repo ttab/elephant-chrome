@@ -49,7 +49,7 @@ export async function submitTimeless(args: {
     type: 'timeless',
     deliverableId: newId,
     title: args.title,
-    publicVisibility: true,
+    publicVisibility: false,
     localDate: args.localDate,
     isoDateTime: args.isoDateTime,
     author: args.author

@@ -74,6 +74,7 @@ export const AssignmentType = ({ assignment, editable = false, readOnly = false,
             ])
             break
           case 'flash':
+          case 'timeless':
             setAssignmentType([Block.create({
               type: 'core/assignment-type',
               value: value
@@ -87,6 +88,7 @@ export const AssignmentType = ({ assignment, editable = false, readOnly = false,
               type: 'core/assignment-type',
               value: value
             })])
+            setAssignmentVisibility('true')
         }
       }}
     >

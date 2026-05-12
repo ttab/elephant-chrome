@@ -48,19 +48,22 @@ vi.mock('@/views/Planning/components/Assignment', () => ({
   )
 }))
 
-function buildInProgressAssignment(): Y.Map<unknown> {
+function buildInProgressAssignment(type = 'text'): Y.Map<unknown> {
   const assignment = new Y.Map<unknown>()
   const meta = new Y.Map<unknown>()
   const types = new Y.Array<unknown>()
   const typeBlock = new Y.Map<unknown>()
-  typeBlock.set('value', 'text')
+  typeBlock.set('value', type)
   types.push([typeBlock])
   meta.set('core/assignment-type', types)
   assignment.set('meta', meta)
   return assignment
 }
 
-function buildYdoc(isInProgress: boolean): YDocument<Y.Map<unknown>> {
+function buildYdoc(
+  isInProgress: boolean,
+  options: { assignmentType?: string, isChanged?: boolean, setIsChanged?: (v: boolean) => void } = {}
+): YDocument<Y.Map<unknown>> {
   const doc = new Y.Doc()
   const ele = doc.getMap('ele')
   const ctx = doc.getMap('ctx')
@@ -70,7 +73,7 @@ function buildYdoc(isInProgress: boolean): YDocument<Y.Map<unknown>> {
   ele.set('meta', meta)
 
   const slots = new Y.Map<unknown>()
-  slots.set('test-sub', buildInProgressAssignment())
+  slots.set('test-sub', buildInProgressAssignment(options.assignmentType))
   ctx.set('core/assignment', slots)
 
   return {
@@ -78,6 +81,8 @@ function buildYdoc(isInProgress: boolean): YDocument<Y.Map<unknown>> {
     ele,
     ctx,
     isInProgress,
+    isChanged: options.isChanged ?? false,
+    setIsChanged: options.setIsChanged ?? vi.fn(),
     provider: { document: doc }
   } as unknown as YDocument<Y.Map<unknown>>
 }
@@ -116,5 +121,51 @@ describe('AssignmentTable.handleClose — isInProgress gate', () => {
       { force: true },
       ydoc.provider?.document
     )
+  })
+})
+
+describe('AssignmentTable.handleClose - timeless isChanged reset', () => {
+  beforeEach(() => {
+    mockSnapshotDocument.mockReset()
+    mockSnapshotDocument.mockResolvedValue(undefined)
+  })
+
+  it('resets isChanged to false after adding a clean timeless assignment', async () => {
+    let assignmentCountAtReset: number | undefined
+    const ydoc = buildYdoc(false, { assignmentType: 'timeless', isChanged: false })
+    const rawAssignments = (ydoc.ele.get('meta') as Y.Map<unknown>).get('core/assignment') as Y.Array<unknown>
+    const setIsChanged = vi.fn((_v: boolean) => {
+      assignmentCountAtReset = rawAssignments.length
+    });
+    (ydoc as unknown as { setIsChanged: (v: boolean) => void }).setIsChanged = setIsChanged
+
+    render(<AssignmentTable ydoc={ydoc} documentId='planning-uuid' />)
+    await userEvent.click(screen.getByTestId('assignment-close'))
+
+    expect(setIsChanged).toHaveBeenCalledTimes(1)
+    expect(setIsChanged).toHaveBeenCalledWith(false)
+    // The reset must run after the push that the deep observer would react to;
+    // resetting before the push would be silently undone by the observer.
+    expect(assignmentCountAtReset).toBe(1)
+  })
+
+  it('preserves a pre-existing isChanged when adding a timeless assignment', async () => {
+    const setIsChanged = vi.fn()
+    const ydoc = buildYdoc(false, { assignmentType: 'timeless', isChanged: true, setIsChanged })
+
+    render(<AssignmentTable ydoc={ydoc} documentId='planning-uuid' />)
+    await userEvent.click(screen.getByTestId('assignment-close'))
+
+    expect(setIsChanged).not.toHaveBeenCalled()
+  })
+
+  it('does not reset isChanged when adding a non-timeless assignment', async () => {
+    const setIsChanged = vi.fn()
+    const ydoc = buildYdoc(false, { assignmentType: 'text', isChanged: false, setIsChanged })
+
+    render(<AssignmentTable ydoc={ydoc} documentId='planning-uuid' />)
+    await userEvent.click(screen.getByTestId('assignment-close'))
+
+    expect(setIsChanged).not.toHaveBeenCalled()
   })
 })

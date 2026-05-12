@@ -86,6 +86,22 @@ describe('assignmentPlanningTemplate', () => {
     expect(result.links.length).toBe(0)
   })
 
+  it.each([
+    ['text', 'true'],
+    ['picture', 'true'],
+    ['video', 'true'],
+    ['graphic', 'true'],
+    ['flash', 'false'],
+    ['timeless', 'false']
+  ])('sets data.public to %s for %s assignments', (assignmentType, expected) => {
+    const result = assignmentPlanningTemplate({
+      assignmentType,
+      planningDate: '2024-06-01',
+      assignee: null
+    })
+    expect(result.data.public).toBe(expected)
+  })
+
   it('matches snapshot with fixed date', () => {
     const fixedDate = new Date('2024-01-01T10:00:00.000Z')
     vi.setSystemTime(fixedDate)
