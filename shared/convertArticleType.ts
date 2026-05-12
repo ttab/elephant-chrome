@@ -196,16 +196,19 @@ export function attachArticleAssignment({
   })
 
   // bulkUpdate bypasses stripEmptyValidatedMetaBlocks, so drop the
-  // template's empty description and re-add it only when we have text.
-  const metaWithoutDescription = assignment.meta.filter((block) => block.type !== 'core/description')
-  const descriptionMeta = inheritedInternalDescription
+  // template's empty internal description and re-add it only when we
+  // have text. Public descriptions and other meta blocks are left alone.
+  const metaWithoutInternal = assignment.meta.filter(
+    (block) => !(block.type === 'core/description' && block.role === 'internal')
+  )
+  const internalDescription = inheritedInternalDescription
     ? [Block.create({
         type: 'core/description',
         role: 'internal',
         data: { text: inheritedInternalDescription }
       })]
     : []
-  const cleanedMeta = [...metaWithoutDescription, ...descriptionMeta]
+  const cleanedMeta = [...metaWithoutInternal, ...internalDescription]
 
   const assignmentWithDeliverable = Block.create({
     ...assignment,
