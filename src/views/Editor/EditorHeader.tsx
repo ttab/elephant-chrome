@@ -195,7 +195,7 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
               {!readOnly && <AddNote ydoc={ydoc} />}
               {!readOnly && documentType !== 'core/editorial-info'
                 && <Newsvalue ydoc={ydoc} path='meta.core/newsvalue[0].value' />}
-              {!readOnly && documentType === 'core/article' && (
+              {!readOnly && (documentType === 'core/article' || isTimeless) && (
                 <HastToggle
                   ydoc={ydoc}
                   usableId={workflowStatus?.usableId}
