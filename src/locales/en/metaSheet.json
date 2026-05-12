@@ -19,7 +19,8 @@
     "addNote": "Add note",
     "convertToArticle": "Plan as article",
     "convertToTimeless": "Save as timeless",
-    "removeHastFromArticle": "Remove HAST from article"
+    "removeHastFromArticle": "Remove HAST from article",
+    "removeHastFromTimeless": "Remove HAST from timeless"
   },
   "convertToArticle": {
     "descriptionWithPlanning": "A new planning will be created from the original. Pick a date for the new article. The timeless remains available.",
@@ -38,6 +39,10 @@
     "title": "Remove HAST from article",
     "description": "This removes HAST and makes it a normal article. Future versions will not be sent as HAST unless you enable it again.",
     "confirm": "Remove"
+  },
+  "removeHastPromptTimeless": {
+    "title": "Remove HAST from timeless",
+    "description": "This removes HAST and makes it a normal timeless. Future versions will not be sent as HAST unless you enable it again."
   },
   "placeholders": {
     "addByline": "Add byline",

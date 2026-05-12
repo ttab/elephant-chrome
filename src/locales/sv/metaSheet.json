@@ -19,7 +19,8 @@
     "addNote": "Lägg till notering",
     "convertToArticle": "Planera som artikel",
     "convertToTimeless": "Spara som tidlös",
-    "removeHastFromArticle": "Ta bort HAST från artikeln"
+    "removeHastFromArticle": "Ta bort HAST från artikeln",
+    "removeHastFromTimeless": "Ta bort HAST från tidlös"
   },
   "convertToArticle": {
     "descriptionWithPlanning": "En ny planering skapas från den ursprungliga. Välj datum för den nya artikeln. Den tidlösa artikeln finns kvar.",
@@ -38,6 +39,10 @@
     "title": "Ta bort HAST från artikeln",
     "description": "Detta tar bort HAST och gör det till en vanlig artikel. Framtida versioner skickas inte som HAST om du inte aktiverar det igen.",
     "confirm": "Ta bort"
+  },
+  "removeHastPromptTimeless": {
+    "title": "Ta bort HAST från tidlös",
+    "description": "Detta tar bort HAST och gör det till en vanlig tidlös. Framtida versioner skickas inte som HAST om du inte aktiverar det igen."
   },
   "placeholders": {
     "addByline": "Lägg till byline",
