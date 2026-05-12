@@ -88,6 +88,7 @@ export const AssignmentType = ({ assignment, editable = false, readOnly = false,
               type: 'core/assignment-type',
               value: value
             })])
+            setAssignmentVisibility('true')
         }
       }}
     >

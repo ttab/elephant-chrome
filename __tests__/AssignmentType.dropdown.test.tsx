@@ -67,9 +67,9 @@ describe('AssignmentType dropdown - data.public side effect', () => {
     expect(setAssignmentVisibilityMock).toHaveBeenCalledWith('false')
   })
 
-  it('does not touch data.public when text is selected', async () => {
+  it('restores data.public to "true" when switching to text', async () => {
     render(<AssignmentType assignment={mockAssignment} editable />)
     await userEvent.click(screen.getByTestId('pick-text'))
-    expect(setAssignmentVisibilityMock).not.toHaveBeenCalled()
+    expect(setAssignmentVisibilityMock).toHaveBeenCalledWith('true')
   })
 })

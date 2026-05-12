@@ -131,14 +131,22 @@ describe('AssignmentTable.handleClose - timeless isChanged reset', () => {
   })
 
   it('resets isChanged to false after adding a clean timeless assignment', async () => {
-    const setIsChanged = vi.fn()
-    const ydoc = buildYdoc(false, { assignmentType: 'timeless', isChanged: false, setIsChanged })
+    let assignmentCountAtReset: number | undefined
+    const ydoc = buildYdoc(false, { assignmentType: 'timeless', isChanged: false })
+    const rawAssignments = (ydoc.ele.get('meta') as Y.Map<unknown>).get('core/assignment') as Y.Array<unknown>
+    const setIsChanged = vi.fn((_v: boolean) => {
+      assignmentCountAtReset = rawAssignments.length
+    });
+    (ydoc as unknown as { setIsChanged: (v: boolean) => void }).setIsChanged = setIsChanged
 
     render(<AssignmentTable ydoc={ydoc} documentId='planning-uuid' />)
     await userEvent.click(screen.getByTestId('assignment-close'))
 
     expect(setIsChanged).toHaveBeenCalledTimes(1)
     expect(setIsChanged).toHaveBeenCalledWith(false)
+    // The reset must run after the push that the deep observer would react to;
+    // resetting before the push would be silently undone by the observer.
+    expect(assignmentCountAtReset).toBe(1)
   })
 
   it('preserves a pre-existing isChanged when adding a timeless assignment', async () => {
