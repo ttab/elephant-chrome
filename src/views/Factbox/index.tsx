@@ -273,6 +273,8 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
   const [statusRefetchKey, setStatusRefetchKey] = useState(0)
   const environmentIsSane = ydoc.provider && status === 'authenticated'
 
+  const eventTypes = useMemo(() => ['core/factbox', 'core/factbox+meta'], [])
+
   const handleRepositoryEvent = useCallback(
     (event: { uuid?: string, mainDocument?: string }) => {
       if (event.uuid === props.documentId || event.mainDocument === props.documentId) {
@@ -282,21 +284,35 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
     [props.documentId]
   )
 
-  useRepositoryEvents(['core/factbox', 'core/factbox+meta'], handleRepositoryEvent)
+  useRepositoryEvents(eventTypes, handleRepositoryEvent)
 
   useEffect(() => {
     if (!repository || !session?.accessToken) return
-    void repository.getStatuses({
-      uuids: [props.documentId],
-      statuses: ['usable', 'draft', 'unpublished'],
-      accessToken: session.accessToken
-    }).then((res) => {
-      const item = res?.items[0]
-      if (item) {
-        setCurrentVersion(item.version)
-        setDocumentState(getDocumentState(item))
+
+    let cancelled = false
+
+    void (async () => {
+      try {
+        const res = await repository.getStatuses({
+          uuids: [props.documentId],
+          statuses: ['usable', 'draft', 'unpublished'],
+          accessToken: session.accessToken
+        })
+        if (cancelled) return
+        const item = res?.items[0]
+        if (item) {
+          setCurrentVersion(item.version)
+          setDocumentState(getDocumentState(item))
+        }
+      } catch (error) {
+        if (cancelled) return
+        console.error(error)
       }
-    })
+    })()
+
+    return () => {
+      cancelled = true
+    }
   }, [repository, session?.accessToken, props.documentId, statusRefetchKey])
 
   const { t } = useTranslation('core')
