@@ -1,7 +1,8 @@
 import { useRegistry } from '@/hooks/useRegistry'
+import { useRepositoryEvents } from '@/hooks/useRepositoryEvents'
 import type { BulkGetItem } from '@ttab/elephant-api/repository'
 import { useSession } from 'next-auth/react'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { dateToReadableDateTime } from '@/shared/datetime'
 import { HistoryEntry } from './HistoryEntry'
 import type { DocumentState } from '@/lib/getDocumentState'
@@ -29,6 +30,23 @@ export const DocumentHistory = ({ uuid, currentVersion, onSelectVersion, selecte
   const [history, setHistory] = useState<VersionEntry[] | null>(null)
   const [documents, setDocuments] = useState<BulkGetItem[] | null>(null)
   const [showAll, setShowAll] = useState(false)
+  const [refetchKey, setRefetchKey] = useState(0)
+
+  const eventTypes = useMemo(
+    () => documentType ? [documentType, `${documentType}+meta`] : [],
+    [documentType]
+  )
+
+  const handleRepositoryEvent = useCallback(
+    (event: { uuid?: string, mainDocument?: string }) => {
+      if (event.uuid === uuid || event.mainDocument === uuid) {
+        setRefetchKey((k) => k + 1)
+      }
+    },
+    [uuid]
+  )
+
+  useRepositoryEvents(eventTypes, handleRepositoryEvent)
 
   useEffect(() => {
     if (!repository || !session?.accessToken) {
@@ -92,7 +110,7 @@ export const DocumentHistory = ({ uuid, currentVersion, onSelectVersion, selecte
       if (pending.history) c1.abort()
       if (pending.documents) c2.abort()
     }
-  }, [uuid, repository, session?.accessToken, withStatusOnly])
+  }, [uuid, repository, session?.accessToken, withStatusOnly, refetchKey])
 
   const isCollapsible = (history?.length ?? 0) > COLLAPSE_THRESHOLD
   const visibleHistory = history && isCollapsible && !showAll
