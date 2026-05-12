@@ -34,7 +34,7 @@ export const useWorkflowStatus = ({ ydoc, documentId: docId }: {
   /**
    * SWR callback that fetches current workflow status
    */
-  const { data: documentStatus, error, mutate } = useSWR<Status | undefined, Error>(
+  const { data: documentStatus, mutate } = useSWR<Status | undefined, Error>(
     (documentId && session && repository) ? [CACHE_KEY] : null,
     async () => {
       // Dont try to fetch if document is inProgress
@@ -65,13 +65,14 @@ export const useWorkflowStatus = ({ ydoc, documentId: docId }: {
       } catch (err) {
         console.error('Failed to get workflow specifications for type:', meta.type, 'state:', state, err, ydoc?.id, documentId)
       }
+    },
+    {
+      onError: (err) => {
+        console.error('Unable to get documentStatus', err)
+        toast.error(t('errors:toasts.fetchStatusFailed'))
+      }
     }
   )
-
-  if (error) {
-    console.error('Unable to get documentStatus', error)
-    toast.error(t('errors:toasts.fetchStatusFailed'))
-  }
 
   // Listen to repository events and revalidate if the current document is affected
   useRepositoryEvents([
