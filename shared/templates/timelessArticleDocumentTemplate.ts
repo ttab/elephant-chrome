@@ -4,7 +4,8 @@ import { getSystemLanguage } from '@/shared/getSystemLanguage.js'
 
 export function timelessArticleDocumentTemplate(
   id: string,
-  payload?: TemplatePayload
+  payload?: TemplatePayload,
+  options?: { hasVignette?: boolean }
 ): Document {
   delete payload?.meta?.['core/description']
 
@@ -24,11 +25,13 @@ export function timelessArticleDocumentTemplate(
         data: { text: payload?.title ?? '' },
         role: 'heading-1'
       }),
-      Block.create({
-        type: 'core/text',
-        data: { text: '' },
-        role: 'vignette'
-      }),
+      ...(options?.hasVignette
+        ? [Block.create({
+            type: 'core/text',
+            data: { text: '' },
+            role: 'vignette'
+          })]
+        : []),
       Block.create({
         type: 'core/text',
         data: { text: '' },
