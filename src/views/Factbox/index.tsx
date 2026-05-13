@@ -410,7 +410,7 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
                       )}
                     </div>
                   </div>
-                  <LinkedArticles documentId={props.documentId} />
+                  <LinkedArticles documentId={props.documentId} currentVersion={currentVersion?.toString()} />
                 </View.Content>
 
                 <View.Footer>
