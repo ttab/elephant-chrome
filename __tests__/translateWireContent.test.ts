@@ -7,13 +7,8 @@ vi.mock('@/shared/translate', () => ({
   translate: (...args: unknown[]) => mockTranslate(...args) as unknown
 }))
 
-vi.mock('@slate-yjs/core', () => ({
-  slateNodesToInsertDelta: (nodes: unknown[]) => nodes.map((n) => ({ insert: n }))
-}))
-
-import { translateWireContent, toContentYXmlText } from '@/views/WireCreation/lib/translateWireContent'
+import { translateWireContent } from '@/views/WireCreation/lib/translateWireContent'
 import type { TranslateRequest } from '@/shared/translate'
-import * as Y from 'yjs'
 
 function paragraph(text: string): TBElement {
   return {
@@ -46,6 +41,23 @@ function nestedElements(): TBElement[] {
   ] as unknown as TBElement[]
 }
 
+function textsIn(elements: TBElement[]): string[] {
+  const texts: string[] = []
+  function walk(node: unknown): void {
+    if (typeof node === 'object' && node !== null) {
+      if ('text' in node && typeof (node as { text: unknown }).text === 'string') {
+        texts.push((node as { text: string }).text)
+      }
+      if ('children' in node) {
+        const children = (node as { children: unknown[] }).children
+        if (Array.isArray(children)) children.forEach(walk)
+      }
+    }
+  }
+  elements.forEach(walk)
+  return texts
+}
+
 const translateOpts = { ntbUrl: 'https://ntb.example/', accessToken: 'tok' }
 
 describe('translateWireContent', () => {
@@ -67,7 +79,7 @@ describe('translateWireContent', () => {
     expect(opts.accessToken).toBe('tok')
   })
 
-  it('collects texts, translates, and replaces in correct order', async () => {
+  it('collects texts, translates, and returns translated TBElement tree', async () => {
     mockTranslate.mockResolvedValue({
       texts: { values: ['Hei', 'Verda'] },
       guid: 'test'
@@ -87,20 +99,24 @@ describe('translateWireContent', () => {
     expect(req.target_language).toBe('nn')
     expect(req.prefs_template).toBe('standard')
     expect(req.prefs).toBeUndefined()
-    expect(result).toBeDefined()
+    expect(textsIn(result)).toEqual(['Hei', 'Verda'])
   })
 
-  it('skips empty and whitespace-only text nodes', async () => {
+  it('skips empty and whitespace-only text nodes when collecting', async () => {
     mockTranslate.mockResolvedValue({
       texts: { values: ['Hei', 'nøsta tekst'] },
       guid: 'test'
     })
 
     const content = nestedElements()
-    await translateWireContent(content, 'standard', translateOpts)
+    const result = await translateWireContent(content, 'standard', translateOpts)
 
     const req = mockTranslate.mock.calls[0][0] as TranslateRequest
     expect(req.texts.values).toEqual(['Hello', 'nested text'])
+
+    // The empty/whitespace texts are preserved in the result, only non-empty
+    // ones are replaced.
+    expect(textsIn(result)).toEqual(['Hei', 'nøsta tekst', '', '  '])
   })
 
   it('skips translation when no text nodes exist', async () => {
@@ -180,13 +196,5 @@ describe('translateWireContent', () => {
     await translateWireContent(content, 'standard', translateOpts)
 
     expect((content[0] as unknown as { children: Array<{ text: string }> }).children[0].text).toBe('Original')
-  })
-})
-
-describe('toContentYXmlText', () => {
-  it('returns a Y.XmlText instance', () => {
-    const result = toContentYXmlText([paragraph('test')])
-    expect(result).toBeDefined()
-    expect(result).toBeInstanceOf(Y.XmlText)
   })
 })
