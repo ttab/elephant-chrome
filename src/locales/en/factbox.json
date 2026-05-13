@@ -10,6 +10,10 @@
     "open": "Open"
   },
   "usedInArticles": "Used in articles",
+  "outOfSync": "Has changed",
+  "outOfSyncTooltip": "The factbox in this article has been changed from the current version",
+  "inSync": "Matches",
+  "inSyncTooltip": "The factbox in this article matches the current version",
   "prompts": {
     "approveBeforeClose": "Do you want to approve the changes before closing?",
     "savedButNotApproved": "Your changes are saved but the factbox is not approved."

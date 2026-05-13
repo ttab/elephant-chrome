@@ -10,6 +10,10 @@
     "open": "Öppna"
   },
   "usedInArticles": "Används i artiklar",
+  "outOfSync": "Har ändrats",
+  "outOfSyncTooltip": "Faktarutan i den här artikeln har ändrats från den nuvarande versionen",
+  "inSync": "Matchar",
+  "inSyncTooltip": "Faktarutan i den här artikeln matchar den nuvarande versionen",
   "prompts": {
     "approveBeforeClose": "Vill du godkänna ändringarna innan du stänger?",
     "savedButNotApproved": "Dina ändringar är sparade men dokumentet är inte satt som godkänt."
