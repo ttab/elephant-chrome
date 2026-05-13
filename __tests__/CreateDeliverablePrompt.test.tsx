@@ -82,7 +82,8 @@ describe('CreateDeliverablePrompt', () => {
         saveDocument: mockSaveDocument,
         getMeta: vi.fn(),
         getDocument: vi.fn()
-      }
+      },
+      featureFlags: {}
     } as unknown as RegistryProviderState)
 
     // Reset useSession mock to return valid session
