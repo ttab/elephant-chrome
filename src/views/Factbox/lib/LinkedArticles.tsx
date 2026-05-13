@@ -1,11 +1,14 @@
-import { useMemo, type JSX } from 'react'
+import { useMemo, useState, type JSX } from 'react'
 import useSWR from 'swr'
 import { QueryV1, TermsQueryV1, type HitV1 } from '@ttab/elephant-api/index'
 import { fetch as fetchDocuments } from '@/hooks/index/useDocuments/lib/fetch'
 import { useRegistry, useLink } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import { useTranslation } from 'react-i18next'
-import { CheckIcon } from '@ttab/elephant-ui/icons'
+import { Button } from '@ttab/elephant-ui'
+import { CheckIcon, ChevronLeftIcon, ChevronRightIcon } from '@ttab/elephant-ui/icons'
+
+const PAGE_SIZE = 25
 
 const articleFields = [
   'document.title',
@@ -26,6 +29,7 @@ export const LinkedArticles = ({ documentId, currentVersion }: LinkedArticlesPro
   const { data: session } = useSession()
   const openArticle = useLink('Editor')
   const { t } = useTranslation('factbox')
+  const [page, setPage] = useState(1)
 
   const articleQuery = useMemo(() => QueryV1.create({
     conditions: {
@@ -38,7 +42,7 @@ export const LinkedArticles = ({ documentId, currentVersion }: LinkedArticlesPro
   }), [documentId])
 
   const { data } = useSWR(
-    session?.accessToken && index ? `linked-articles/${documentId}` : null,
+    session?.accessToken && index ? `linked-articles/${documentId}/${page}` : null,
     () => fetchDocuments<HitV1, typeof articleFields>({
       index: index!,
       session: session!,
@@ -46,7 +50,8 @@ export const LinkedArticles = ({ documentId, currentVersion }: LinkedArticlesPro
       fields: articleFields,
       query: articleQuery,
       sort: [{ field: 'modified', desc: true }],
-      size: 100
+      page,
+      size: PAGE_SIZE
     })
   )
 
@@ -71,15 +76,18 @@ export const LinkedArticles = ({ documentId, currentVersion }: LinkedArticlesPro
     return result
   }, [data, currentVersion])
 
-  if (!data?.length) {
+  if (page === 1 && !data?.length) {
     return null
   }
+
+  const hasPrev = page > 1
+  const hasNext = (data?.length ?? 0) === PAGE_SIZE
 
   return (
     <div className='mx-12 mt-4 mb-4 border rounded p-3'>
       <p className='text-sm font-semibold mb-2'>{t('usedInArticles')}</p>
       <ul className='flex flex-col gap-1'>
-        {data.map((article) => {
+        {data?.map((article) => {
           const title = article.fields['document.title']?.values[0] ?? article.id
           const modified = article.fields.modified?.values[0]
           const modifiedDate = new Date(modified)?.toLocaleDateString(undefined, {
@@ -126,6 +134,28 @@ export const LinkedArticles = ({ documentId, currentVersion }: LinkedArticlesPro
           )
         })}
       </ul>
+      {(hasPrev || hasNext) && (
+        <div className='flex justify-center gap-1 mt-2'>
+          <Button
+            variant='ghost'
+            size='sm'
+            disabled={!hasPrev}
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+          >
+            <ChevronLeftIcon size={16} />
+            <span className='text-xs'>{t('previousPage')}</span>
+          </Button>
+          <Button
+            variant='ghost'
+            size='sm'
+            disabled={!hasNext}
+            onClick={() => setPage((p) => p + 1)}
+          >
+            <span className='text-xs'>{t('nextPage')}</span>
+            <ChevronRightIcon size={16} />
+          </Button>
+        </div>
+      )}
     </div>
   )
 }
