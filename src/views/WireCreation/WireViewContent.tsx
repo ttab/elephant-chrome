@@ -360,10 +360,14 @@ export const WireViewContent = (props: ViewProps & {
                     return
                   }
 
-                  if (props?.onDialogClose) {
-                    props.onDialogClose(ydoc.id)
-                  }
-
+                  // Keep both the CreatePrompt and the main dialog open until
+                  // createArticle has fully landed (article saved AND linked to
+                  // planning). The CreatePrompt's built-in `isSubmitting` state
+                  // disables the primary button and shows a spinner during the
+                  // wait, so the user can't navigate away to a planning that
+                  // briefly references an article whose creation is still in
+                  // flight. Belt-and-braces alongside the save-then-link order
+                  // in createArticle.
                   createArticle({
                     ydoc,
                     articleId: props.articleId,
@@ -385,15 +389,17 @@ export const WireViewContent = (props: ViewProps & {
                   })
                     .then(() => {
                       setShowVerifyDialog(false)
+                      if (props?.onDialogClose) {
+                        props.onDialogClose(ydoc.id)
+                      }
                       props.onDocumentCreated?.()
                     })
                     .catch((ex: unknown) => {
-                      if (ex instanceof Error && ex.message === 'AssignmentRollbackError') {
-                        toast.error(t('creation.assignmentRollbackError'), {
-                          duration: Infinity,
-                          closeButton: true
-                        })
-                      } else if (ex instanceof Error && ex.message === 'CreateAssignmentError') {
+                      // Close the CreatePrompt so the user can retry or cancel
+                      // — without this the prompt's `isSubmitting` would lock
+                      // the primary button forever.
+                      setShowVerifyDialog(false)
+                      if (ex instanceof Error && ex.message === 'CreateAssignmentError') {
                         // Toast already shown by addAssignmentWithDeliverable
                       } else {
                         toast.error(t('creation.createError'))
