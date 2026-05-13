@@ -164,7 +164,7 @@ function EditorWrapper(props: ViewProps & {
       }),
       Text({
         countCharacters: hast ? ['heading-1', 'preamble'] : ['heading-1'],
-        hasVignette: hasVignette,
+        ...(hasVignette ? {} : { hiddenStyles: ['set-dateline'] }),
         ...getContentMenuLabels()
       }),
       (() => {
