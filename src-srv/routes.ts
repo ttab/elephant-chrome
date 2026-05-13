@@ -133,6 +133,11 @@ function connectRouteHandler(app: Application, routePath: string, func: RouteHan
     }
 
     func(req, context).then((response) => {
+      if (res.headersSent) {
+        logger.warn({ routePath, method: req.method }, 'Route handler resolved after response was already sent')
+        return
+      }
+
       if (ApiResponse.isContent(response)) {
         const { statusCode = 200, payload = '' } = response
 
@@ -162,9 +167,11 @@ function connectRouteHandler(app: Application, routePath: string, func: RouteHan
       }
     }).catch((ex: Error) => {
       logger.error(ex, 'RouteHandler error')
-      res.statusCode = 500
-      res.statusMessage = ex?.message || 'Unknown error'
-      res.send('')
+      if (!res.headersSent) {
+        res.status(500).send('')
+      } else {
+        logger.warn({ routePath, method: req.method }, 'Skipping 500 fallback because response was already sent')
+      }
     })
   }
 

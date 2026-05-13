@@ -171,7 +171,8 @@ export function withErrorHandler(extensions: Extension[], errorHandler: Collabor
           try {
             return await (original as (...args: unknown[]) => unknown).apply(target, args)
           } catch (ex) {
-            errorHandler?.error(ex)
+            errorHandler.error(ex)
+            throw ex
           }
         }
       }

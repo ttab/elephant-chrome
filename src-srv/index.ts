@@ -22,6 +22,7 @@ import { ExpressAuth } from '@auth/express'
 import { assertAuthenticatedUser } from './utils/assertAuthenticatedUser.js'
 import { createAuthInfo } from './utils/authConfig.js'
 import logger from './lib/logger.js'
+import { installFatalHandlers } from './lib/fatalHandlers.js'
 import { pinoHttp } from 'pino-http'
 import assertEnvs from './lib/assertEnvs.js'
 import { setSystemLanguage } from '@/shared/getSystemLanguage.js'
@@ -155,33 +156,7 @@ export async function runServer(): Promise<string> {
   })
 
 
-  process.on('uncaughtException', (ex: Error) => {
-    logger.fatal({ err: ex }, 'Unhandled exception')
-
-    collaborationServer.close().then(() => {
-      process.exit(1)
-    }).catch((ex) => logger.fatal(ex))
-
-    setTimeout(() => {
-      process.abort()
-    }, 1000).unref()
-
-    process.exit(1)
-  })
-
-  process.on('unhandledRejection', (ex: Error) => {
-    logger.fatal({ err: ex }, 'Unhandled rejection')
-
-    collaborationServer.close().then(() => {
-      process.exit(1)
-    }).catch((ex) => logger.fatal(ex))
-
-    setTimeout(() => {
-      process.abort()
-    }, 1000).unref()
-
-    process.exit(1)
-  })
+  installFatalHandlers({ collaborationServer, logger })
 
   // Run the Pyroscope profiler in push mode
   Pyroscope.SourceMapper.create(['.'])
