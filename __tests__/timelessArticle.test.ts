@@ -18,11 +18,8 @@ describe('timelessArticleDocumentTemplate', () => {
   it('creates article content structure', () => {
     const doc = timelessArticleDocumentTemplate('test-id')
 
-    expect(doc.content).toHaveLength(4)
-    expect(doc.content[0].role).toBe('heading-1')
-    expect(doc.content[1].role).toBe('vignette')
-    expect(doc.content[2].role).toBe('preamble')
-    expect(doc.content[3].role).toBe('')
+    expect(doc.content).toHaveLength(3)
+    expect(doc.content.map((b) => b.role)).toEqual(['heading-1', 'preamble', ''])
   })
 
   it('includes timeless-category link from payload', () => {
