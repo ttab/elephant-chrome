@@ -10,6 +10,8 @@
     "open": "Open"
   },
   "usedInArticles": "Used in articles",
+  "previousPage": "Previous",
+  "nextPage": "Next",
   "outOfSync": "Has changed",
   "outOfSyncTooltip": "The factbox in this article has been changed from the current version",
   "inSync": "Matches",

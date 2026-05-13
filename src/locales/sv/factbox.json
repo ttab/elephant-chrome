@@ -10,6 +10,8 @@
     "open": "Öppna"
   },
   "usedInArticles": "Används i artiklar",
+  "previousPage": "Föregående",
+  "nextPage": "Nästa",
   "outOfSync": "Har ändrats",
   "outOfSyncTooltip": "Faktarutan i den här artikeln har ändrats från den nuvarande versionen",
   "inSync": "Matchar",
