@@ -3,6 +3,7 @@ import { useRepositoryEvents } from '@/hooks/useRepositoryEvents'
 import type { BulkGetItem } from '@ttab/elephant-api/repository'
 import { useSession } from 'next-auth/react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { dateToReadableDateTime } from '@/shared/datetime'
 import { HistoryEntry } from './HistoryEntry'
 import type { DocumentState } from '@/lib/getDocumentState'
@@ -26,6 +27,7 @@ export const DocumentHistory = ({ uuid, currentVersion, onSelectVersion, selecte
   documentType?: string
 }) => {
   const { repository, locale, timeZone } = useRegistry()
+  const { i18n } = useTranslation()
   const { data: session } = useSession()
   const [history, setHistory] = useState<VersionEntry[] | null>(null)
   const [documents, setDocuments] = useState<BulkGetItem[] | null>(null)
@@ -124,7 +126,9 @@ export const DocumentHistory = ({ uuid, currentVersion, onSelectVersion, selecte
           && visibleHistory.map((item, index) => {
             const title = documents?.find((doc) => doc.version === item.version)?.document?.title
             const isCurrent = item.version === currentVersion
-            const status = documentType === 'core/factbox' && item.status === 'usable' ? 'done' : item.status
+            const status = documentType === 'core/factbox' && item.status === 'usable' && i18n.language !== 'nb'
+              ? 'done'
+              : item.status
 
             return (
               <div key={`${item.version}`} className='grid grid-cols-[1.5rem_auto_1fr] group rounded'>
