@@ -1,7 +1,6 @@
 import { useMemo, type JSX } from 'react'
 import useSWR from 'swr'
 import { QueryV1, TermsQueryV1, type HitV1 } from '@ttab/elephant-api/index'
-import type { Block } from '@ttab/elephant-api/newsdoc'
 import { fetch as fetchDocuments } from '@/hooks/index/useDocuments/lib/fetch'
 import { useRegistry, useLink } from '@/hooks'
 import { useSession } from 'next-auth/react'
@@ -11,27 +10,19 @@ import { CheckIcon } from '@ttab/elephant-ui/icons'
 const articleFields = [
   'document.title',
   'document.rel.section.title',
-  'modified'
+  'modified',
+  'document.content.core_factbox.data.original_version'
 ] as const
-
-const SUBSET_NAME = 'factbox'
-const SUBSET_DSL = `${SUBSET_NAME}=.content(type='core/factbox')`
-
-const extractTextNodes = (content: Block[] | undefined): string[] => {
-  return (content ?? [])
-    .filter((b) => b.type === 'core/text')
-    .map((b) => b.data?.text ?? '')
-}
 
 type SyncState = 'unknown' | 'inSync' | 'outOfSync'
 
 interface LinkedArticlesProps {
   documentId: string
-  sourceTexts: string[]
+  currentVersion: string | undefined
 }
 
-export const LinkedArticles = ({ documentId, sourceTexts }: LinkedArticlesProps): JSX.Element | null => {
-  const { index, repository } = useRegistry()
+export const LinkedArticles = ({ documentId, currentVersion }: LinkedArticlesProps): JSX.Element | null => {
+  const { index } = useRegistry()
   const { data: session } = useSession()
   const openArticle = useLink('Editor')
   const { t } = useTranslation('factbox')
@@ -59,59 +50,26 @@ export const LinkedArticles = ({ documentId, sourceTexts }: LinkedArticlesProps)
     })
   )
 
-  const articleIds = useMemo(
-    () => data?.map((a) => a.id).filter((id): id is string => !!id) ?? [],
-    [data]
-  )
-
-  const { data: blocksByArticle } = useSWR(
-    session?.accessToken && repository && articleIds.length
-      ? `linked-articles-blocks/${documentId}/${articleIds.join(',')}`
-      : null,
-    async () => {
-      const response = await repository!.getDocuments({
-        documents: articleIds.map((uuid) => ({ uuid })),
-        accessToken: session!.accessToken,
-        subset: [SUBSET_DSL]
-      })
-
-      const result = new Map<string, Block[]>()
-
-      for (const item of response?.items ?? []) {
-        if (!item.uuid) continue
-
-        const blocks: Block[] = (item.subset ?? [])
-          .map((entry) => entry.values?.[SUBSET_NAME]?.block)
-          .filter((b): b is Block => b !== undefined)
-
-        result.set(item.uuid, blocks)
-      }
-
-      return result
-    }
-  )
-
   const syncStateByArticle = useMemo(() => {
     const result = new Map<string, SyncState>()
-    if (!blocksByArticle) {
+    if (!data || !currentVersion) {
       return result
     }
 
-    const sourceJoined = sourceTexts.join('\n')
+    for (const article of data) {
+      if (!article.id) continue
 
-    for (const [articleId, blocks] of blocksByArticle) {
-      const matchingBlock = blocks.find((b) => b.links?.[0]?.uuid === documentId)
-      if (!matchingBlock) {
-        result.set(articleId, 'unknown')
+      const versions = article.fields['document.content.core_factbox.data.original_version']?.values ?? []
+      if (!versions.length) {
+        result.set(article.id, 'unknown')
         continue
       }
 
-      const embeddedJoined = extractTextNodes(matchingBlock.content).join('\n')
-      result.set(articleId, embeddedJoined === sourceJoined ? 'inSync' : 'outOfSync')
+      result.set(article.id, versions.includes(currentVersion) ? 'inSync' : 'outOfSync')
     }
 
     return result
-  }, [blocksByArticle, sourceTexts, documentId])
+  }, [data, currentVersion])
 
   if (!data?.length) {
     return null
