@@ -401,6 +401,8 @@ export const WireViewContent = (props: ViewProps & {
                       setShowVerifyDialog(false)
                       if (ex instanceof Error && ex.message === 'CreateAssignmentError') {
                         // Toast already shown by addAssignmentWithDeliverable
+                      } else if (ex instanceof Error && ex.message === 'TranslationError') {
+                        // Translation-specific toast already shown by createArticle
                       } else {
                         toast.error(t('creation.createError'))
                       }

@@ -129,8 +129,8 @@ export async function createArticle({
   const isoDateTime = `${new Date().toISOString().split('.')[0]}Z` // Remove ms, add Z back again
   const localDate = convertToISOStringInTimeZone(dt, timeZone).slice(0, 10)
 
-  // Translate before any persistence so the saved document always carries the
-  // final content. On failure, fall back to the original wire content.
+  // Translate before any persistence. If the user opted into translation and
+  // it fails, abort the whole flow.
   let articleContent: TBElement[] | undefined
   if (wireContent && translationMode) {
     try {
@@ -143,9 +143,9 @@ export async function createArticle({
         personalPrefs
       })
     } catch (ex) {
-      console.error('Translation failed, using original wire content', ex)
+      console.error('Translation failed, aborting article creation', ex)
       toast.error(i18n.t('wires:creation.translationError'))
-      articleContent = wireContent
+      throw new Error('TranslationError')
     }
   }
 
