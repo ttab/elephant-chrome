@@ -13,6 +13,7 @@ import { LinkedArticles } from './lib/LinkedArticles'
 import { getContentMenuLabels } from '@/defaults/contentMenuLabels'
 import { useYDocument, useYValue } from '@/modules/yjs/hooks'
 import { fromGroupedNewsDoc, toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
+import { fromYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc'
 import type { EleDocumentResponse } from '@/shared/types'
 import type { Document } from '@ttab/elephant-api/newsdoc'
 import { BaseEditor } from '@/components/Editor/BaseEditor'
@@ -330,6 +331,31 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
 
   const isOldVersion = factboxversion !== undefined && factboxversion !== currentVersion
 
+  const [sourceTexts, setSourceTexts] = useState<string[]>([])
+
+  useEffect(() => {
+    const yDoc = ydoc.ele.doc
+    if (!yDoc || !ydoc.synced) return
+
+    const compute = () => {
+      try {
+        const eleDoc = fromYjsNewsDoc(yDoc)
+        const { document: doc } = fromGroupedNewsDoc(eleDoc)
+        const next = doc.content
+          .filter((b) => b.type === 'core/text')
+          .map((b) => b.data?.text ?? '')
+
+        setSourceTexts((prev) => prev.join('\n') === next.join('\n') ? prev : next)
+      } catch {
+        // yjs state may briefly be incomplete during transitions
+      }
+    }
+
+    compute()
+    ydoc.ele.observeDeep(compute)
+    return () => ydoc.ele.unobserveDeep(compute)
+  }, [ydoc.ele, ydoc.synced])
+
   if (!ydoc.provider?.isSynced || !content) {
     return (
       <View.Root asDialog={props.asDialog} className={props.className}>
@@ -410,7 +436,7 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
                       )}
                     </div>
                   </div>
-                  <LinkedArticles documentId={props.documentId} />
+                  <LinkedArticles documentId={props.documentId} sourceTexts={sourceTexts} />
                 </View.Content>
 
                 <View.Footer>
