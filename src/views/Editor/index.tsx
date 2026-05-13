@@ -34,6 +34,7 @@ import {
   useRegistry,
   useWorkflowStatus
 } from '@/hooks'
+import { useFeatureFlags } from '@/hooks/useFeatureFlags'
 import type { ViewMetadata, ViewProps } from '@/types'
 import { EditorHeader } from './EditorHeader'
 import { Error as ErrorComponent } from '../Error'
@@ -133,6 +134,7 @@ function EditorWrapper(props: ViewProps & {
   const openFactboxes = useLink('Factboxes')
   const { t, i18n } = useTranslation()
   const { repository } = useRegistry()
+  const { hasVignette } = useFeatureFlags(['hasVignette'])
   const { data: session } = useSession()
 
   const activeLocale = i18n.resolvedLanguage
@@ -162,6 +164,7 @@ function EditorWrapper(props: ViewProps & {
       }),
       Text({
         countCharacters: hast ? ['heading-1', 'preamble'] : ['heading-1'],
+        hasVignette: hasVignette,
         ...getContentMenuLabels()
       }),
       (() => {
@@ -188,7 +191,7 @@ function EditorWrapper(props: ViewProps & {
         }
       })()
     ]
-  }, [openFactboxEditor, openFactboxes, openImageSearch, preview, t, activeLocale, repository, session, hast])
+  }, [openFactboxEditor, openFactboxes, openImageSearch, preview, t, activeLocale, repository, session, hast, hasVignette])
 
   if (!content) {
     return <View.Root />
