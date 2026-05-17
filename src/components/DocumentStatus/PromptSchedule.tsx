@@ -60,11 +60,18 @@ export const PromptSchedule = ({
 
     if (!publishDate) return
 
-    const formatedPublishDate = publishDate.toLocaleString()
-    const formatedNow = now.toLocaleString().slice(0, 10)
+    // Compare the day-of-publishDate against today using a locale-stable
+    // yyyy-MM-dd format. The previous implementation compared
+    // `publishDate.toLocaleString()` against the first 10 chars of
+    // `now.toLocaleString()`, which only happens to give the right answer
+    // when the host locale formats dates in an ISO-like form (e.g. sv-SE).
+    // In en-US the slice mixes single- and two-digit day components and
+    // sorts the past as future.
+    const publishDay = format(publishDate, 'yyyy-MM-dd')
+    const today = format(now, 'yyyy-MM-dd')
 
-    // only set to publish date if it's in the future, otherwise default to now
-    if (formatedPublishDate >= formatedNow) {
+    // only set to publish date if it's today or in the future, otherwise default to now
+    if (publishDay >= today) {
       const d = new Date(publishDate)
       d.setHours(now.getHours(), now.getMinutes(), 0, 0)
       setTime(d)
