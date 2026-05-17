@@ -94,9 +94,7 @@ export const Prompt = ({
           className={cn('z-50', 'max-w-lg')}
           style={{ ...dialogStyle, ...(anchorRect && anchorRect.width < 512 && { maxWidth: anchorRect.width }) }}
           onPointerDownOutside={() => {
-            if (onSecondary) {
-              onSecondary()
-            }
+            dismiss?.()
           }}
         >
           <DialogHeader>
