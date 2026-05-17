@@ -31,6 +31,8 @@ export const ConvertToTimelessDialog = ({ articleId, onClose }: Props): JSX.Elem
         return
       }
       setFailed(true)
+    }).catch(() => {
+      setFailed(true)
     })
   }
 

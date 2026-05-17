@@ -70,6 +70,8 @@ export function ConvertToArticleDialog({ timelessId, timelessDoc, onClose }: Pro
         return
       }
       setFailed(true)
+    }).catch(() => {
+      setFailed(true)
     })
   }
 

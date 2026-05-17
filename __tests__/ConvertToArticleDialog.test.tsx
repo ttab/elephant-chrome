@@ -134,6 +134,26 @@ describe('ConvertToArticleDialog', () => {
     expect(confirm).toBeDisabled()
   })
 
+  it('renders failure banner when convert rejects', async () => {
+    const convert = vi.fn().mockRejectedValue(new Error('network'))
+    mockUseConvertArticleType.mockReturnValue({ convert, isConverting: false } as never)
+    primeUseDocuments({ data: [{ id: PLANNING_ID }] })
+    const onClose = vi.fn()
+
+    render(<ConvertToArticleDialog timelessId={TIMELESS_ID} onClose={onClose} />)
+    await userEvent.click(screen.getByRole('button', { name: /^klar$/i }))
+
+    await waitFor(() => {
+      expect(convert).toHaveBeenCalled()
+    })
+    expect(onClose).not.toHaveBeenCalled()
+    await waitFor(() => {
+      expect(
+        screen.getByText(/kunde inte skapa det nya dokumentet/i)
+      ).toBeInTheDocument()
+    })
+  })
+
   it('clears the failure banner on a second submit', async () => {
     const convert = vi.fn()
       .mockResolvedValueOnce({ success: false })
