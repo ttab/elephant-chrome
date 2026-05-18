@@ -417,7 +417,7 @@ export class Repository {
       meta: {},
       ifMatch: -1n, // Only create if doesn't exist
       status: [],
-      acl: [{ uri: 'core://unit/redaktionen', permissions: ['r', 'w'] }],
+      acl: buildAcl(accessToken),
       updateMetaDocument: false,
       lockToken: '',
       ifWorkflowState: '',
