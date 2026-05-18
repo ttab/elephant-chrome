@@ -43,7 +43,7 @@ export const TimelessCreation = ({ id, onClose }: {
   const { t } = useTranslation()
   const sections = useSections({ sort: 'title' })
   const activeAuthor = useActiveAuthor({ full: false })
-  const { hasLooseSlugline } = useFeatureFlags(['hasLooseSlugline'])
+  const { hasLooseSlugline, hasVignette } = useFeatureFlags(['hasLooseSlugline', 'hasVignette'])
   const defaults = useDocumentDefaults()
 
   const [title, setTitle] = useState<string>('')
@@ -136,7 +136,8 @@ export const TimelessCreation = ({ id, onClose }: {
         isoDateTime,
         author: activeAuthor
           ? { id: activeAuthor.id, name: activeAuthor.name }
-          : undefined
+          : undefined,
+        hasVignette: !!hasVignette
       })
       onClose(newId)
     } catch (ex) {
