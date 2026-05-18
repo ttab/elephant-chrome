@@ -67,8 +67,8 @@ export const PromptSchedule = ({
     // when the host locale formats dates in an ISO-like form (e.g. sv-SE).
     // In en-US the slice mixes single- and two-digit day components and
     // sorts the past as future.
-    const publishDay = format(publishDate, 'yyyy-MM-dd')
-    const today = format(now, 'yyyy-MM-dd')
+    const publishDay = format(toZonedTime(publishDate, timeZone), 'yyyy-MM-dd')
+    const today = format(toZonedTime(now, timeZone), 'yyyy-MM-dd')
 
     // only set to publish date if it's today or in the future, otherwise default to now
     if (publishDay >= today) {
