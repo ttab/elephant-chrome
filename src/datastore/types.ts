@@ -75,4 +75,5 @@ export interface AllowedFeatureFlag {
   hasPrint?: boolean
   hasHast?: boolean
   hasLooseSlugline?: boolean
+  hasVignette?: boolean
 }

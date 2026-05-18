@@ -1,6 +1,4 @@
 import type { TBElement } from '@ttab/textbit'
-import * as Y from 'yjs'
-import { slateNodesToInsertDelta } from '@slate-yjs/core'
 import { translate } from '@/shared/translate'
 
 interface TextNode {
@@ -72,17 +70,9 @@ function parsePersonalPrefs(prefsString: string): Record<string, { enabled: bool
 }
 
 /**
- * Convert TBElement content to a Y.XmlText suitable for setting on a Y.Doc.
- */
-export function toContentYXmlText(content: TBElement[]): Y.XmlText {
-  const yContent = new Y.XmlText()
-  yContent.applyDelta(slateNodesToInsertDelta(content))
-  return yContent
-}
-
-/**
- * Translate wire content from bokmål to nynorsk and return a Y.XmlText
- * suitable for setting as article content on a Y.Doc.
+ * Translate wire content from bokmål to nynorsk. Returns a cloned TBElement
+ * tree with the same shape as the input, but with text nodes replaced by
+ * their translated versions. The original input is not mutated.
  */
 export async function translateWireContent(
   wireContent: TBElement[],
@@ -92,31 +82,30 @@ export async function translateWireContent(
     accessToken: string
     personalPrefs?: string
   }
-): Promise<Y.XmlText> {
+): Promise<TBElement[]> {
   const cloned = structuredClone(wireContent)
   const texts = collectTexts(cloned)
 
-  if (texts.length > 0) {
-    const result = await translate({
-      texts: { values: texts },
-      file_type: 'html',
-      source_language: 'nb',
-      target_language: 'nn',
-      prefs_template: 'standard',
-      ...(mode === 'personal' && options.personalPrefs ? { prefs: parsePersonalPrefs(options.personalPrefs) } : {})
-    }, {
-      ntbUrl: options.ntbUrl,
-      accessToken: options.accessToken
-    })
-
-    if (result.texts?.values?.length !== texts.length) {
-      throw new Error(`Translation returned ${result.texts?.values?.length ?? 0} texts, expected ${texts.length}`)
-    }
-
-    replaceTexts(cloned, result.texts.values)
+  if (texts.length === 0) {
+    return cloned
   }
 
-  const yContent = new Y.XmlText()
-  yContent.applyDelta(slateNodesToInsertDelta(cloned))
-  return yContent
+  const result = await translate({
+    texts: { values: texts },
+    file_type: 'html',
+    source_language: 'nb',
+    target_language: 'nn',
+    prefs_template: 'standard',
+    ...(mode === 'personal' && options.personalPrefs ? { prefs: parsePersonalPrefs(options.personalPrefs) } : {})
+  }, {
+    ntbUrl: options.ntbUrl,
+    accessToken: options.accessToken
+  })
+
+  if (result.texts?.values?.length !== texts.length) {
+    throw new Error(`Translation returned ${result.texts?.values?.length ?? 0} texts, expected ${texts.length}`)
+  }
+
+  replaceTexts(cloned, result.texts.values)
+  return cloned
 }
