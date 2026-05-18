@@ -121,6 +121,47 @@ describe('Redis', () => {
       expect(strategy(10)).not.toBeInstanceOf(Error)
       expect(strategy(11)).toBeInstanceOf(Error)
     })
+
+    test('reconnectStrategy fires onUnrecoverable once when retries exhausted', async () => {
+      vi.mocked(createClient).mockClear()
+      const onUnrecoverable = vi.fn()
+
+      const redis = new Redis('redis://cache:6379', onUnrecoverable)
+      await redis.connect()
+
+      const args = vi.mocked(createClient).mock.calls[0][0]
+      const strategy = (args!.socket as { reconnectStrategy: (n: number) => number | Error }).reconnectStrategy
+
+      // Within the budget - callback must not fire
+      strategy(5)
+      strategy(10)
+      await new Promise((resolve) => queueMicrotask(() => resolve(undefined)))
+      expect(onUnrecoverable).not.toHaveBeenCalled()
+
+      // Exhausted - callback fires (via queueMicrotask)
+      strategy(11)
+      await new Promise((resolve) => queueMicrotask(() => resolve(undefined)))
+      expect(onUnrecoverable).toHaveBeenCalledTimes(1)
+
+      // Subsequent exhausted calls do not fire it again
+      strategy(12)
+      strategy(13)
+      await new Promise((resolve) => queueMicrotask(() => resolve(undefined)))
+      expect(onUnrecoverable).toHaveBeenCalledTimes(1)
+    })
+
+    test('reconnectStrategy still returns Error when no callback provided', async () => {
+      vi.mocked(createClient).mockClear()
+
+      const redis = new Redis('redis://cache:6379')
+      await redis.connect()
+
+      const args = vi.mocked(createClient).mock.calls[0][0]
+      const strategy = (args!.socket as { reconnectStrategy: (n: number) => number | Error }).reconnectStrategy
+
+      expect(() => strategy(11)).not.toThrow()
+      expect(strategy(11)).toBeInstanceOf(Error)
+    })
   })
 
   describe('get', () => {
