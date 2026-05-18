@@ -54,6 +54,7 @@ function buildYdoc(opts: {
   title?: string
   slugline?: string
   newsvalue?: string
+  language?: string
 } = {}): YDocument<Y.Map<unknown>> {
   const doc = new Y.Doc()
   const ele = doc.getMap('ele')
@@ -61,6 +62,9 @@ function buildYdoc(opts: {
   doc.transact(() => {
     const root = new Y.Map<unknown>()
     root.set('title', opts.title ?? '')
+    if (opts.language !== undefined) {
+      root.set('language', opts.language)
+    }
     ele.set('root', root)
 
     const meta = new Y.Map<unknown>()
@@ -306,6 +310,30 @@ describe('createArticle', () => {
       const saved = repository.saveDocument.mock.calls[0][0] as Document
       expect(saved.uuid).toBe('a-fresh-article')
       expect(saved.uri).toBe('core://article/a-fresh-article')
+    })
+
+    // NPK's `useDocumentDefaults` seeds the form Y.Doc with `language: 'nn-no'`;
+    // the default (non-NPK / TT) path seeds it with `getSystemLanguage()`
+    // (e.g. `'sv-se'`). The saved article must propagate whichever is on the
+    // form, regardless of which path was taken — otherwise the Editor footer
+    // mis-labels the article's language.
+    it.each([
+      ['nn-no'], // NPK path
+      ['sv-se'], // default TT path
+      ['nb-no'] // hypothetical Bokmål deploy
+    ])('propagates root.language (%s) from the form Y.Doc onto the saved article', async (language) => {
+      const repository = buildRepository()
+
+      await createArticle({
+        ...baseArgs,
+        ydoc: buildYdoc({ language }),
+        repository,
+        session: buildSession(),
+        translationMode: undefined
+      })
+
+      const saved = repository.saveDocument.mock.calls[0][0] as Document
+      expect(saved.language).toBe(language)
     })
 
     it('propagates section, slugline and newsvalue onto the saved article', async () => {

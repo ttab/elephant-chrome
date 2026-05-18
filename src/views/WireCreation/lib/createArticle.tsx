@@ -125,6 +125,12 @@ export async function createArticle({
   const [ydocNewsValue] = getValueByYPath<string>(ydoc.ele, 'meta.core/newsvalue[0].value')
   const resolvedNewsValue = newsvalue ?? ydocNewsValue
 
+  // Read language from the form Y.Doc so NPK's `useDocumentDefaults` override
+  // (`language: 'nn-no'`) propagates onto the saved article. Without this, the
+  // article falls back to `getSystemLanguage()` (`'nb-no'` on TT/NTB deploys)
+  // and the Editor footer shows "Bokmål" for a translated-to-Nynorsk article.
+  const [articleLanguage] = getValueByYPath<string>(ydoc.ele, 'root.language')
+
   const dt = new Date()
   const isoDateTime = `${new Date().toISOString().split('.')[0]}Z` // Remove ms, add Z back again
   const localDate = convertToISOStringInTimeZone(dt, timeZone).slice(0, 10)
@@ -157,6 +163,7 @@ export async function createArticle({
   // submitTimeless.ts.
   const document = Templates.article(articleId, {
     title: assignmentTitle,
+    ...(articleLanguage ? { language: articleLanguage } : {}),
     meta: {
       ...(assignmentSlugline
         ? { 'tt/slugline': [Block.create({ type: 'tt/slugline', value: assignmentSlugline })] }
