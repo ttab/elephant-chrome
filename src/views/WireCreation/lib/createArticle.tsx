@@ -135,10 +135,15 @@ export async function createArticle({
   const isoDateTime = `${new Date().toISOString().split('.')[0]}Z` // Remove ms, add Z back again
   const localDate = convertToISOStringInTimeZone(dt, timeZone).slice(0, 10)
 
-  // Translate before any persistence. If the user opted into translation and
-  // it fails, abort the whole flow.
+  // Translate before any persistence; abort on failure so we never save
+  // an empty / untranslated article under a success toast.
   let articleContent: TBElement[] | undefined
-  if (wireContent && translationMode) {
+  if (translationMode) {
+    if (!wireContent || wireContent.length === 0) {
+      toast.error(i18n.t('wires:creation.translationError'))
+      throw new Error('TranslationError')
+    }
+
     try {
       if (!ntbUrl) {
         throw new Error('Translation service is not configured for this deployment')

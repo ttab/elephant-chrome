@@ -231,6 +231,24 @@ describe('createArticle', () => {
       expect(mockAddAssignment).not.toHaveBeenCalled()
     })
 
+    it('throws TranslationError and does NOT save when wireContent is missing', async () => {
+      const repository = buildRepository()
+
+      await expect(createArticle({
+        ...baseArgs,
+        ydoc: buildYdoc(),
+        repository,
+        session: buildSession(),
+        wireContent: undefined,
+        translationMode: 'standard',
+        ntbUrl: 'https://ntb.example/'
+      })).rejects.toThrow('TranslationError')
+
+      expect(repository.saveDocument).not.toHaveBeenCalled()
+      expect(mockAddAssignment).not.toHaveBeenCalled()
+      expect(mockTranslate).not.toHaveBeenCalled()
+    })
+
     it('throws TranslationError and does NOT save when ntbUrl is missing', async () => {
       const repository = buildRepository()
 

@@ -68,7 +68,7 @@ export const TimeSelectItem = ({ handleOnSelect, assignment, handleParentOpenCha
       key={timePickTypes[0].label}
       value={timePickTypes[0].label}
       onSelect={(item) => {
-        if (item === t('planning:assignment.chooseTime')) {
+        if (item === timePickTypes[0].label) {
           setOpen(!open)
         } else {
           handleParentOpenChange(false)
