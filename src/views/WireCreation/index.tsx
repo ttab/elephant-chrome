@@ -80,7 +80,7 @@ export const WireCreation = (props: ViewProps & {
 
   return (
     <>
-      {typeof formId === 'string' && typeof articleId === 'string' && props.wires
+      {props.wires
         ? (
             <WireViewContent {...
               {
