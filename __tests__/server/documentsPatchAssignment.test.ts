@@ -7,6 +7,7 @@ vi.mock('../../src-srv/lib/logger.js', () => ({
 }))
 
 import { PATCH } from '../../src-srv/api/documents/[id]/index.js'
+import type { RouteContext } from '../../src-srv/routes.js'
 import { toYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc.js'
 import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc.js'
 import { getValueByYPath } from '@/shared/yUtils.js'
@@ -22,15 +23,7 @@ function makePlanningYDoc(): Y.Doc {
   return yDoc
 }
 
-interface MockRouteContext {
-  collaborationServer: {
-    server: { openDirectConnection: ReturnType<typeof vi.fn> }
-    flushDocument: ReturnType<typeof vi.fn>
-  }
-  res: Response
-}
-
-function makeCollaborationServer(yDoc: Y.Doc, flushResult: { version?: bigint } = { version: 2n }) {
+function makeCollaborationServer(yDoc: Y.Doc, flushResult: { version: bigint } = { version: 2n }) {
   const transact = vi.fn().mockImplementation((cb: (doc: Y.Doc) => void) => {
     cb(yDoc)
     return Promise.resolve()
@@ -65,6 +58,14 @@ function makeRes(): Response {
   } as unknown as Response
 }
 
+function metaKeysContainingUndefined(yRoot: Y.Map<unknown>): string[] {
+  const meta = yRoot.get('meta') as Y.Map<unknown> | undefined
+  if (!meta) {
+    return []
+  }
+  return Array.from(meta.keys()).filter((k) => k.includes('[undefined]'))
+}
+
 describe('PATCH /api/documents/:id assignment lookup', () => {
   let yDoc: Y.Doc
 
@@ -91,25 +92,20 @@ describe('PATCH /api/documents/:id assignment lookup', () => {
       }
     })
 
-    const result = await PATCH(req, { collaborationServer, res } as unknown as MockRouteContext as never)
+    const result = await PATCH(req, { collaborationServer, res } as unknown as RouteContext)
 
-    expect(result).toMatchObject({ statusCode: 400 })
-    expect((result as { statusMessage: string }).statusMessage).toMatch(
-      new RegExp(`Assignment.*${UNKNOWN_DELIVERABLE}.*not found`)
-    )
+    expect(result).toEqual({ statusCode: 400, statusMessage: 'Assignment not found' })
     expect(transact).toHaveBeenCalledTimes(1)
     expect(disconnect).toHaveBeenCalledTimes(1)
     expect(flushDocument).not.toHaveBeenCalled()
 
-    // No write should have happened, and no garbage path ("[undefined]") should exist.
+    // Guard against the regression: malformed YPath segments leaking into the doc.
     const [publishAfter] = getValueByYPath<string | undefined>(
       yRoot,
       'meta.core/assignment[0].data.publish'
     )
     expect(publishAfter).toBe(publishBefore)
-
-    const meta = yRoot.get('meta') as Y.Map<unknown>
-    expect(meta.has('core/assignment[undefined]')).toBe(false)
+    expect(metaKeysContainingUndefined(yRoot)).toEqual([])
   })
 
   it('updates publish time and snapshots when the assignment exists and status is withheld', async () => {
@@ -128,7 +124,7 @@ describe('PATCH /api/documents/:id assignment lookup', () => {
       }
     })
 
-    const result = await PATCH(req, { collaborationServer, res } as unknown as MockRouteContext as never)
+    const result = await PATCH(req, { collaborationServer, res } as unknown as RouteContext)
 
     expect(result).toMatchObject({ statusCode: 200 })
     expect(transact).toHaveBeenCalledTimes(1)

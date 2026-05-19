@@ -212,9 +212,13 @@ export const PATCH: RouteHandler = async (req: Request, { collaborationServer, r
   })
 
   if (!assignmentFound) {
+    logger.warn(
+      { documentId: id, deliverableId, deliverableType },
+      'PATCH document: assignment not found for deliverable'
+    )
     return {
       statusCode: 400,
-      statusMessage: `Assignment with deliverable ${deliverableId} of type ${deliverableType} not found on document ${id}`
+      statusMessage: 'Assignment not found'
     }
   }
 
