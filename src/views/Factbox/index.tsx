@@ -271,7 +271,7 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
   const [documentState, setDocumentState] = useState<DocumentState | undefined>(undefined)
   const [currentVersion, setCurrentVersion] = useState<bigint | undefined>(undefined)
   const [statusRefetchKey, setStatusRefetchKey] = useState(0)
-  const [statusFetchState, setStatusFetchState] = useState<'idle' | 'loading' | 'error'>('idle')
+  const [statusFetchError, setStatusFetchError] = useState(false)
   const { t } = useTranslation('core')
   const environmentIsSane = ydoc.provider && status === 'authenticated'
 
@@ -294,7 +294,7 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
     }
 
     let cancelled = false
-    setStatusFetchState('loading')
+    setStatusFetchError(false)
 
     void (async () => {
       try {
@@ -313,15 +313,13 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
           setCurrentVersion(item.version)
           setDocumentState(getDocumentState(item))
         }
-
-        setStatusFetchState('idle')
       } catch (error) {
         if (cancelled) {
           return
         }
 
         console.error(error)
-        setStatusFetchState('error')
+        setStatusFetchError(true)
         toast.error(t('errors:toasts.fetchStatusFailed'))
       }
     })()
@@ -363,7 +361,7 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
       />
       <div className='flex-1 min-h-0 flex flex-col w-full max-w-[1000px] mx-auto'>
         <div className='border mx-12 mt-2 py-1.5 px-3 rounded'>
-          {statusFetchState === 'error'
+          {statusFetchError
             ? (
                 <button
                   type='button'
