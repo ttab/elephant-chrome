@@ -206,7 +206,7 @@ export const WireViewContent = (props: ViewProps & {
 
                         if (!sectionUuid || !sectionTitle) {
                           console.error('Selected planning is missing section data, cannot create article')
-                          toast.error('Vald planering saknar sektion och kan inte användas.', {
+                          toast.error(t('creation.planningMissingSection'), {
                             duration: Infinity,
                             closeButton: true
                           })
