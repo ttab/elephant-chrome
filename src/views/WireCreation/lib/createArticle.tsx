@@ -135,15 +135,11 @@ export async function createArticle({
   const isoDateTime = `${new Date().toISOString().split('.')[0]}Z` // Remove ms, add Z back again
   const localDate = convertToISOStringInTimeZone(dt, timeZone).slice(0, 10)
 
-  // Translate before any persistence. If the user opted into translation and
-  // it fails — including the case where the source wire content never loaded —
-  // abort the whole flow. Falling through silently (the previous behaviour
-  // when `wireContent` was undefined) would save an empty / source-language
-  // article alongside a success toast.
+  // Translate before any persistence; abort on failure so we never save
+  // an empty / untranslated article under a success toast.
   let articleContent: TBElement[] | undefined
   if (translationMode) {
     if (!wireContent) {
-      console.error('Translation requested but wire content is missing; aborting article creation')
       toast.error(i18n.t('wires:creation.translationError'))
       throw new Error('TranslationError')
     }

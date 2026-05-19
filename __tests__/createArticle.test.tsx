@@ -232,11 +232,6 @@ describe('createArticle', () => {
     })
 
     it('throws TranslationError and does NOT save when wireContent is missing', async () => {
-      // The bug this guards against: wireDocFetcher previously swallowed
-      // non-OK responses by returning undefined, leaving wireContent
-      // undefined. The translation gate then silently skipped translation
-      // and we'd save an empty article in the source language under a
-      // success toast. Translation requested implies wireContent required.
       const repository = buildRepository()
 
       await expect(createArticle({
