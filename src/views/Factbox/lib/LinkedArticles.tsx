@@ -7,6 +7,7 @@ import { useSession } from 'next-auth/react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@ttab/elephant-ui'
 import { CheckIcon, ChevronLeftIcon, ChevronRightIcon } from '@ttab/elephant-ui/icons'
+import { getSyncStateByArticle } from './getSyncStateByArticle'
 
 const PAGE_SIZE = 25
 
@@ -16,8 +17,6 @@ const articleFields = [
   'modified',
   'document.content.core_factbox.data.original_version'
 ] as const
-
-type SyncState = 'unknown' | 'inSync' | 'outOfSync'
 
 interface LinkedArticlesProps {
   documentId: string
@@ -55,26 +54,10 @@ export const LinkedArticles = ({ documentId, currentVersion }: LinkedArticlesPro
     })
   )
 
-  const syncStateByArticle = useMemo(() => {
-    const result = new Map<string, SyncState>()
-    if (!data || !currentVersion) {
-      return result
-    }
-
-    for (const article of data) {
-      if (!article.id) continue
-
-      const versions = article.fields['document.content.core_factbox.data.original_version']?.values ?? []
-      if (!versions.length) {
-        result.set(article.id, 'unknown')
-        continue
-      }
-
-      result.set(article.id, versions.includes(currentVersion) ? 'inSync' : 'outOfSync')
-    }
-
-    return result
-  }, [data, currentVersion])
+  const syncStateByArticle = useMemo(
+    () => getSyncStateByArticle(data, currentVersion),
+    [data, currentVersion]
+  )
 
   if (page === 1 && !data?.length) {
     return null
