@@ -9,6 +9,7 @@
     "nothingFound": "Nothing found",
     "articleMissingTitle": "Article document missing",
     "articleMissingDescription": "No article document has been specified. Navigate back to the overview and try again.",
+    "embeddedFactboxMissing": "The factbox could not be opened. Navigate back to the overview and try again.",
     "failedFetchingDocument": "Failed to fetch document.",
     "failedUpdatingListRetrying": "Failed to automatically update the list. Retrying in {{seconds}} seconds.",
     "noResultsFound": "No results found",

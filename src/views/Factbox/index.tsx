@@ -52,6 +52,7 @@ const Factbox = (props: ViewProps & { document?: Document }): JSX.Element => {
   const { repository } = useRegistry()
   const { data: session } = useSession()
   const [embeddedData, setEmbeddedData] = useState<EleDocumentResponse | undefined>(undefined)
+  const [embeddedError, setEmbeddedError] = useState(false)
   // Parse embedded id: "articleId:embedded:index"
   const embeddedMatch = typeof rawId === 'string' ? rawId.match(/^(.+):embedded:(\d+)$/) : null
   const articleId = embeddedMatch?.[1]
@@ -64,15 +65,19 @@ const Factbox = (props: ViewProps & { document?: Document }): JSX.Element => {
       return
     }
 
+    setEmbeddedError(false)
     void repository.getDocument({ uuid: articleId, accessToken: session.accessToken }).then((response) => {
       if (!response?.document) {
         toast.error(t('errors:toasts.couldNotOpenEmbeddedFactbox'))
+        setEmbeddedError(true)
         return
       }
       const factboxBlocks = response.document.content.filter((block) => block.type === 'core/factbox')
       const block = factboxBlocks[embeddedIndex]
 
       if (!block) {
+        toast.error(t('errors:toasts.couldNotOpenEmbeddedFactbox'))
+        setEmbeddedError(true)
         return
       }
 
@@ -94,6 +99,7 @@ const Factbox = (props: ViewProps & { document?: Document }): JSX.Element => {
     }).catch((error) => {
       console.error('Error fetching document for embedded factbox:', error)
       toast.error(t('errors:toasts.couldNotOpenEmbeddedFactbox'))
+      setEmbeddedError(true)
     })
   }, [articleId, embeddedIndex, repository, session?.accessToken, t])
 
@@ -120,7 +126,7 @@ const Factbox = (props: ViewProps & { document?: Document }): JSX.Element => {
 
   // Embedded factboxes are read-only — display without a YJS/HocusPocus connection
   if (embeddedMatch) {
-    return <EmbeddedFactboxView {...props} data={embeddedData} />
+    return <EmbeddedFactboxView {...props} data={embeddedData} hasError={embeddedError} />
   }
 
   return (
@@ -128,7 +134,9 @@ const Factbox = (props: ViewProps & { document?: Document }): JSX.Element => {
   )
 }
 
-const EmbeddedFactboxView = (props: ViewProps & { data?: EleDocumentResponse }): JSX.Element => {
+const EmbeddedFactboxView = (
+  props: ViewProps & { data?: EleDocumentResponse, hasError?: boolean }
+): JSX.Element => {
   const articleId = props?.data?.document?.uuid
   const originalId = props.data?.document?.links._?.[0]?.uuid
   const { t } = useTranslation('factbox')
@@ -186,6 +194,15 @@ const EmbeddedFactboxView = (props: ViewProps & { data?: EleDocumentResponse }):
     } finally {
       setIsOpeningOriginal(false)
     }
+  }
+
+  if (props.hasError) {
+    return (
+      <ErrorView
+        title={t('errors:toasts.couldNotOpenEmbeddedFactbox')}
+        message={t('errors:messages.embeddedFactboxMissing')}
+      />
+    )
   }
 
   if (!props.data?.document) {

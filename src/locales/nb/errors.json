@@ -9,6 +9,7 @@
     "nothingFound": "Ingenting ble funnet",
     "articleMissingTitle": "Artikkeldokumentet mangler",
     "articleMissingDescription": "Ingen artikkeldokument er oppgitt. Gå tilbake til oversikten og forsøk igjen.",
+    "embeddedFactboxMissing": "Faktaboksen kunne ikke oppnes. Gå tilbake til oversikten og forsøk igjen.",
     "failedFetchingDocument": "Kunne ikke hente dokument.",
     "failedUpdatingListRetrying": "Kunne ikke oppdatere listen automatisk. Prøver på nytt om {{seconds}} sekunder.",
     "noResultsFound": "Ingen resultater funnet",
