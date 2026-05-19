@@ -41,12 +41,15 @@ import { ClockIcon } from '@ttab/elephant-ui/icons'
 
 const BASE_URL = import.meta.env.BASE_URL || ''
 
-const wireDocFetcher = async (url: string): Promise<EleDocument | undefined> => {
+const wireDocFetcher = async (url: string): Promise<EleDocument> => {
   const response = await fetch(url)
   if (!response.ok) {
-    return undefined
+    throw new Error(`Failed to fetch wire document: ${response.status} ${response.statusText}`)
   }
   const result = await response.json() as EleDocumentResponse
+  if (!result.document) {
+    throw new Error('Wire document response had no document')
+  }
   return result.document
 }
 
@@ -63,9 +66,12 @@ export const WireViewContent = (props: ViewProps & {
   const ydoc = useYDocument<Y.Map<unknown>>(props.documentId, { data: props.data })
   const { status, data: session } = useSession()
 
-  // Fetch the first wire document to get embargo and content sources
+  // Fetch the first wire document to get embargo, content sources and the
+  // body to translate. Errors here MUST be surfaced — silently swallowing
+  // them previously caused the article to be saved without translated
+  // content, embargo or wire content-sources, all under a success toast.
   const primaryWireId = props.wires?.[0]?.id
-  const { data: wireDocument } = useSWR<EleDocument | undefined>(
+  const { data: wireDocument, error: wireError } = useSWR<EleDocument, Error>(
     primaryWireId ? `${BASE_URL}/api/documents/${primaryWireId}?direct=true` : null,
     wireDocFetcher,
     { revalidateOnFocus: false, revalidateOnReconnect: false }
@@ -357,6 +363,17 @@ export const WireViewContent = (props: ViewProps & {
 
                   if (!ydoc.connected || !ydoc.id || !session || !effectiveSection?.uuid) {
                     console.error('Environment is not sane, article cannot be created')
+                    return
+                  }
+
+                  // The wire document carries embargo, content-source links
+                  // and the body to translate. If it failed to load (or never
+                  // arrived), creating the article would silently drop all of
+                  // that — refuse and surface the error.
+                  if (primaryWireId && (wireError || !wireDocument)) {
+                    console.error('Wire document not available, article cannot be created', wireError)
+                    toast.error(t('creation.createError'))
+                    setShowVerifyDialog(false)
                     return
                   }
 
