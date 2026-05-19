@@ -4,11 +4,13 @@ import type { ColumnDef, Row } from '@tanstack/react-table'
 import type { ReactElement } from 'react'
 import i18n from 'i18next'
 
-type AccessorOf<T> = (data: T) => unknown
+type AccessorOf<T> = (data: T) => string | undefined
 type ColumnWithAccessor<T> = ColumnDef<T> & { accessorFn?: AccessorOf<T> }
+type DisplayFn = (value: string) => ReactElement
 
 import { createTimelessColumns } from '@/views/TimelessOverview/lib/createTimelessColumns'
 import type { TimelessArticle } from '@/shared/schemas/timelessArticle'
+import { dateToReadableDateTime } from '@/shared/datetime'
 import type { IDBTimelessCategory } from 'src/datastore/types'
 import type { LocaleData } from '@/types/index'
 
@@ -37,6 +39,10 @@ vi.mock('@/views/TimelessOverview/lib/TimelessRowActions', () => ({
 
 vi.mock('@/components/Commands/FacetedFilter', () => ({
   FacetedFilter: () => <div data-testid='faceted-filter-mock' />
+}))
+
+vi.mock('@/shared/datetime', () => ({
+  dateToReadableDateTime: vi.fn(() => 'mocked-date')
 }))
 
 const locale: LocaleData = {
@@ -127,6 +133,18 @@ describe('createTimelessColumns', () => {
       expect(accessor(data)).toBe('draft')
     })
 
+    it('accessorFn returns only the first value when several are present', () => {
+      const data = buildRow({ workflow_state: { values: ['draft', 'done'] } })
+      const accessor = (column() as ColumnWithAccessor<TimelessArticle>).accessorFn!
+      expect(accessor(data)).toBe('draft')
+    })
+
+    it('meta.display routes through t() so the label is translated', () => {
+      const display = (column().meta as { display: DisplayFn }).display
+      const { container } = render(display('draft'))
+      expect(container.textContent).toBe(i18n.t('core:status.draft'))
+    })
+
     it('cell renders DocumentStatus when the status is present', () => {
       const data = buildRow({ workflow_state: { values: ['done'] } })
       renderCell(column(), data)
@@ -162,17 +180,21 @@ describe('createTimelessColumns', () => {
       expect(accessor(data)).toBe('Hello world')
     })
 
+    it('accessorFn returns only the first value when several are present', () => {
+      const data = buildRow({ 'document.title': { values: ['First', 'Second'] } })
+      const accessor = (column() as ColumnWithAccessor<TimelessArticle>).accessorFn!
+      expect(accessor(data)).toBe('First')
+    })
+
     it('cell renders Title with the resolved value', () => {
       const data = buildRow({ 'document.title': { values: ['Hello world'] } })
       renderCell(column(), data)
       expect(screen.getByTestId('title-mock')).toHaveTextContent('Hello world')
     })
 
-    it('cell still renders Title (empty) when document.title is missing', () => {
+    it('cell renders Title with empty content when document.title is missing', () => {
       renderCell(column(), buildRow({}))
-      // The Title mock always renders; with a missing field the value is
-      // empty, so we just assert the mock was reached.
-      expect(screen.getByTestId('title-mock')).toBeInTheDocument()
+      expect(screen.getByTestId('title-mock').textContent).toBe('')
     })
   })
 
@@ -185,6 +207,26 @@ describe('createTimelessColumns', () => {
       })
       const accessor = (column() as ColumnWithAccessor<TimelessArticle>).accessorFn!
       expect(accessor(data)).toBe('cat-1')
+    })
+
+    it('accessorFn returns only the first value when several are present', () => {
+      const data = buildRow({
+        'document.rel.subject.uuid': { values: ['cat-1', 'cat-2'] }
+      })
+      const accessor = (column() as ColumnWithAccessor<TimelessArticle>).accessorFn!
+      expect(accessor(data)).toBe('cat-1')
+    })
+
+    it('meta.display renders the matching category title', () => {
+      const display = (column().meta as { display: DisplayFn }).display
+      render(display('cat-1'))
+      expect(screen.getByText('Sport')).toBeInTheDocument()
+    })
+
+    it('meta.display renders empty when the uuid is unknown', () => {
+      const display = (column().meta as { display: DisplayFn }).display
+      const { container } = render(display('cat-missing'))
+      expect(container.textContent).toBe('')
     })
 
     it('cell renders the matching category title', () => {
@@ -233,14 +275,18 @@ describe('createTimelessColumns', () => {
       expect(accessor(data)).toBe('2025-12-31T12:00:00Z')
     })
 
-    it('cell renders a formatted date when modified is present', () => {
+    it('cell formats modified via dateToReadableDateTime with locale, timezone, relative=true', () => {
+      vi.mocked(dateToReadableDateTime).mockClear()
       const data = buildRow({ modified: { values: ['2025-12-31T12:00:00Z'] } })
       renderCell(column(), data)
-      // We don't pin the exact locale output, only that it isn't the
-      // placeholder and contains a digit from the year/day.
-      expect(screen.queryByText('-')).not.toBeInTheDocument()
-      const node = screen.getByText(/\d/)
-      expect(node).toHaveClass('text-muted-foreground')
+      expect(dateToReadableDateTime).toHaveBeenCalledTimes(1)
+      const [date, code, tz, relative] = vi.mocked(dateToReadableDateTime).mock.calls[0]
+      expect(date).toBeInstanceOf(Date)
+      expect(date.toISOString()).toBe('2025-12-31T12:00:00.000Z')
+      expect(code).toBe('sv-SE')
+      expect(tz).toBe('Europe/Stockholm')
+      expect(relative).toBe(true)
+      expect(screen.getByText('mocked-date')).toHaveClass('text-muted-foreground')
     })
 
     it('cell renders "-" when modified is missing', () => {
