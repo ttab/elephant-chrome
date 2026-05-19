@@ -70,6 +70,9 @@ export function ConvertToArticleDialog({ timelessId, timelessDoc, onClose }: Pro
         return
       }
       setFailed(true)
+    }).catch((err: unknown) => {
+      console.error('ConvertToArticleDialog: convert rejected', err)
+      setFailed(true)
     })
   }
 
