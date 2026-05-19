@@ -365,7 +365,8 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
         <div className='border mx-12 mt-2 py-1.5 px-3 rounded'>
           {statusFetchState === 'error'
             ? (
-                <div
+                <button
+                  type='button'
                   onClick={() => setStatusRefetchKey((k) => k + 1)}
                   className='flex w-full items-baseline gap-2 text-left text-sm'
                 >
@@ -377,7 +378,7 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
                   <span className='flex-1 underline text-red-700 hover:text-red-900 dark:text-red-300 dark:hover:text-red-200'>
                     {t('errors:toasts.fetchStatusFailed')}
                   </span>
-                </div>
+                </button>
               )
             : (
                 <DocumentHistory
