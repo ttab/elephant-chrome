@@ -361,6 +361,8 @@ export const WireViewContent = (props: ViewProps & {
 
                   if (!ydoc.connected || !ydoc.id || !session || !effectiveSection?.uuid) {
                     console.error('Environment is not sane, article cannot be created')
+                    toast.error(t('creation.createError'))
+                    setShowVerifyDialog(false)
                     return
                   }
 
