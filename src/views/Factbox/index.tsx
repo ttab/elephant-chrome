@@ -8,7 +8,7 @@ import { getValueByYPath } from '@/shared/yUtils'
 import { Form, UserMessage, View } from '@/components'
 import { FactboxHeader } from './FactboxHeader'
 import { Error as ErrorView } from '@/views/Error'
-import { useCallback, useEffect, useMemo, useState, type JSX } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type JSX } from 'react'
 import { LinkedArticles } from './lib/LinkedArticles'
 import { getContentMenuLabels } from '@/defaults/contentMenuLabels'
 import { useYDocument, useYValue } from '@/modules/yjs/hooks'
@@ -270,64 +270,63 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
   const [factboxversion, setFactboxVersion] = useState<bigint | undefined>(undefined)
   const [documentState, setDocumentState] = useState<DocumentState | undefined>(undefined)
   const [currentVersion, setCurrentVersion] = useState<bigint | undefined>(undefined)
-  const [statusRefetchKey, setStatusRefetchKey] = useState(0)
   const [statusFetchError, setStatusFetchError] = useState(false)
   const { t } = useTranslation('core')
   const environmentIsSane = ydoc.provider && status === 'authenticated'
+
+  const requestSeqRef = useRef(0)
+
+  const refetchStatus = useCallback(async () => {
+    if (!repository || !session?.accessToken) {
+      return
+    }
+
+    const seq = ++requestSeqRef.current
+    setStatusFetchError(false)
+
+    try {
+      const res = await repository.getStatuses({
+        uuids: [props.documentId],
+        statuses: ['usable', 'draft', 'unpublished'],
+        accessToken: session.accessToken
+      })
+      if (seq !== requestSeqRef.current) {
+        return
+      }
+
+      const item = res?.items[0]
+
+      if (item) {
+        setCurrentVersion(item.version)
+        setDocumentState(getDocumentState(item))
+      }
+    } catch (error) {
+      if (seq !== requestSeqRef.current) {
+        return
+      }
+
+      console.error(error)
+      setStatusFetchError(true)
+      toast.error(t('errors:toasts.fetchStatusFailed'))
+    }
+  }, [repository, session?.accessToken, props.documentId, t])
 
   const eventTypes = useMemo(() => ['core/factbox', 'core/factbox+meta'], [])
 
   const handleRepositoryEvent = useCallback(
     (event: { uuid?: string, mainDocument?: string }) => {
       if (event.uuid === props.documentId || event.mainDocument === props.documentId) {
-        setStatusRefetchKey((k) => k + 1)
+        void refetchStatus()
       }
     },
-    [props.documentId]
+    [props.documentId, refetchStatus]
   )
 
   useRepositoryEvents(eventTypes, handleRepositoryEvent)
 
   useEffect(() => {
-    if (!repository || !session?.accessToken) {
-      return
-    }
-
-    let cancelled = false
-    setStatusFetchError(false)
-
-    void (async () => {
-      try {
-        const res = await repository.getStatuses({
-          uuids: [props.documentId],
-          statuses: ['usable', 'draft', 'unpublished'],
-          accessToken: session.accessToken
-        })
-        if (cancelled) {
-          return
-        }
-
-        const item = res?.items[0]
-
-        if (item) {
-          setCurrentVersion(item.version)
-          setDocumentState(getDocumentState(item))
-        }
-      } catch (error) {
-        if (cancelled) {
-          return
-        }
-
-        console.error(error)
-        setStatusFetchError(true)
-        toast.error(t('errors:toasts.fetchStatusFailed'))
-      }
-    })()
-
-    return () => {
-      cancelled = true
-    }
-  }, [repository, session?.accessToken, props.documentId, statusRefetchKey, t])
+    void refetchStatus()
+  }, [refetchStatus])
 
   const configuredPlugins = useMemo(() => {
     return [
@@ -365,7 +364,7 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
             ? (
                 <button
                   type='button'
-                  onClick={() => setStatusRefetchKey((k) => k + 1)}
+                  onClick={() => void refetchStatus()}
                   className='flex w-full items-baseline gap-2 text-left text-sm'
                 >
                   <TriangleAlertIcon
