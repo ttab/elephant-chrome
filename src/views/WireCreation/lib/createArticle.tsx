@@ -139,7 +139,7 @@ export async function createArticle({
   // an empty / untranslated article under a success toast.
   let articleContent: TBElement[] | undefined
   if (translationMode) {
-    if (!wireContent) {
+    if (!wireContent || wireContent.length === 0) {
       toast.error(i18n.t('wires:creation.translationError'))
       throw new Error('TranslationError')
     }
