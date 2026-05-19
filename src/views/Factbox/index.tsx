@@ -23,7 +23,7 @@ import { type DocumentState, getDocumentState } from '@/lib/getDocumentState'
 import { Editor as PlainEditor } from '@/components/PlainEditor'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import { BoxesIcon, FileLockIcon, LoaderIcon } from '@ttab/elephant-ui/icons'
+import { BoxesIcon, FileLockIcon, LoaderIcon, TriangleAlertIcon } from '@ttab/elephant-ui/icons'
 import { Link as TextLink } from '@/components'
 import { useLink } from '@/hooks/useLink'
 import { createNewFactbox } from '@/components/Header/lib/createNewFactbox'
@@ -271,6 +271,8 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
   const [documentState, setDocumentState] = useState<DocumentState | undefined>(undefined)
   const [currentVersion, setCurrentVersion] = useState<bigint | undefined>(undefined)
   const [statusRefetchKey, setStatusRefetchKey] = useState(0)
+  const [statusFetchState, setStatusFetchState] = useState<'idle' | 'loading' | 'error'>('idle')
+  const { t } = useTranslation('core')
   const environmentIsSane = ydoc.provider && status === 'authenticated'
 
   const eventTypes = useMemo(() => ['core/factbox', 'core/factbox+meta'], [])
@@ -287,9 +289,12 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
   useRepositoryEvents(eventTypes, handleRepositoryEvent)
 
   useEffect(() => {
-    if (!repository || !session?.accessToken) return
+    if (!repository || !session?.accessToken) {
+      return
+    }
 
     let cancelled = false
+    setStatusFetchState('loading')
 
     void (async () => {
       try {
@@ -298,24 +303,34 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
           statuses: ['usable', 'draft', 'unpublished'],
           accessToken: session.accessToken
         })
-        if (cancelled) return
+        if (cancelled) {
+          return
+        }
+
         const item = res?.items[0]
+
         if (item) {
           setCurrentVersion(item.version)
           setDocumentState(getDocumentState(item))
         }
+
+        setStatusFetchState('idle')
       } catch (error) {
-        if (cancelled) return
+        if (cancelled) {
+          return
+        }
+
         console.error(error)
+        setStatusFetchState('error')
+        toast.error(t('errors:toasts.fetchStatusFailed'))
       }
     })()
 
     return () => {
       cancelled = true
     }
-  }, [repository, session?.accessToken, props.documentId, statusRefetchKey])
+  }, [repository, session?.accessToken, props.documentId, statusRefetchKey, t])
 
-  const { t } = useTranslation('core')
   const configuredPlugins = useMemo(() => {
     return [
       UnorderedList(),
@@ -348,15 +363,33 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
       />
       <div className='flex-1 min-h-0 flex flex-col w-full max-w-[1000px] mx-auto'>
         <div className='border mx-12 mt-2 py-1.5 px-3 rounded'>
-          <DocumentHistory
-            uuid={props.documentId}
-            currentVersion={currentVersion}
-            documentState={documentState}
-            onSelectVersion={setFactboxVersion}
-            selectedVersion={factboxversion}
-            withStatusOnly={true}
-            documentType='core/factbox'
-          />
+          {statusFetchState === 'error'
+            ? (
+                <div
+                  onClick={() => setStatusRefetchKey((k) => k + 1)}
+                  className='flex w-full items-baseline gap-2 text-left text-sm'
+                >
+                  <TriangleAlertIcon
+                    size={16}
+                    strokeWidth={1.75}
+                    className='shrink-0 self-center text-red-500 dark:text-red-400'
+                  />
+                  <span className='flex-1 underline text-red-700 hover:text-red-900 dark:text-red-300 dark:hover:text-red-200'>
+                    {t('errors:toasts.fetchStatusFailed')}
+                  </span>
+                </div>
+              )
+            : (
+                <DocumentHistory
+                  uuid={props.documentId}
+                  currentVersion={currentVersion}
+                  documentState={documentState}
+                  onSelectVersion={setFactboxVersion}
+                  selectedVersion={factboxversion}
+                  withStatusOnly={true}
+                  documentType='core/factbox'
+                />
+              )}
         </div>
         {isOldVersion
           ? (
