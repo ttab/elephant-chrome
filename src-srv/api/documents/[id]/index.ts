@@ -178,12 +178,19 @@ export const PATCH: RouteHandler = async (req: Request, { collaborationServer, r
 
   const connection = await collaborationServer.server.openDirectConnection(id, context)
 
+  let assignmentFound = false
+
   // Make the change to the document in one transaction
   await connection.transact((document) => {
     const yRoot = document.getMap('ele')
-    const { index } = getAssignment(yRoot, deliverableId, deliverableType) || {}
+    const assignment = getAssignment(yRoot, deliverableId, deliverableType)
 
-    const base = `meta.core/assignment[${index}]`
+    if (!assignment) {
+      return
+    }
+    assignmentFound = true
+
+    const base = `meta.core/assignment[${assignment.index}]`
     const [assignmentType] = getValueByYPath<string | undefined>(yRoot, `${base}.meta.core/assignment-type[0].value`)
 
     if (status === 'withheld') {
@@ -204,6 +211,12 @@ export const PATCH: RouteHandler = async (req: Request, { collaborationServer, r
     logger.error(ex, 'Failed disconnecting after PATCH update')
   })
 
+  if (!assignmentFound) {
+    return {
+      statusCode: 400,
+      statusMessage: `Assignment with deliverable ${deliverableId} of type ${deliverableType} not found on document ${id}`
+    }
+  }
 
   return snapshot(
     collaborationServer,
