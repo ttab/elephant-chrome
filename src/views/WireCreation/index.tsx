@@ -1,7 +1,7 @@
 import type { ViewMetadata, ViewProps } from '@/types/index'
 import { WireViewContent } from './WireViewContent'
 import * as Templates from '@/shared/templates'
-import { useMemo, type JSX } from 'react'
+import { useMemo, useState, type JSX } from 'react'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import type { Wire as WireType } from '@/shared/schemas/wire'
 import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
@@ -31,16 +31,12 @@ export const WireCreation = (props: ViewProps & {
   const defaults = useDocumentDefaults()
   const { data: session } = useSession()
 
-  // Two UUIDs:
-  //  - formId backs the dialog's form Y.Doc (Yjs-bound title/slugline/awareness).
-  //    Throwaway: never referenced again after the dialog closes.
-  //  - articleId is the actual article. Generated here and only ever sent to
-  //    the repository via createArticle's direct saveDocument call. It is
-  //    intentionally NOT opened in Hocuspocus during the dialog, so its cache
-  //    starts clean when the Editor opens it later.
-  const [formId, articleId, data] = useMemo(() => {
-    const formId = crypto.randomUUID()
-    const articleId = crypto.randomUUID()
+  // Keep these stable for the dialog's lifetime.
+  // Regenerating mid dialog would orphan a partial save and write the retry to a fresh UUID.
+  const [formId] = useState(() => crypto.randomUUID())
+  const [articleId] = useState(() => crypto.randomUUID())
+
+  const data = useMemo(() => {
     const ttWireLinks = props.wires?.map((wire) => Block.create({
       type: 'tt/wire',
       uuid: wire.id,
@@ -65,14 +61,14 @@ export const WireCreation = (props: ViewProps & {
       }
     }
 
-    return [formId, articleId, toGroupedNewsDoc({
+    return toGroupedNewsDoc({
       version: 0n,
       isMetaDocument: false,
       mainDocument: '',
       subset: [],
       document: Templates.article(articleId, payload)
-    })]
-  }, [props.wires, defaults, session?.units, session?.org])
+    })
+  }, [props.wires, defaults, session?.units, session?.org, articleId])
 
   return (
     <>
