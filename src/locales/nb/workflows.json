@@ -265,8 +265,8 @@
       "transitions": {
         "usable": {
           "verify": false,
-          "title": "Godkjenn",
-          "description": "Godkjenn faktaboksen for bruk"
+          "title": "Publiser",
+          "description": "Publiser faktaboksen"
         },
         "unpublished": {
           "verify": false,
@@ -276,11 +276,11 @@
       }
     },
     "usable": {
-      "title": "Godkjent",
+      "title": "Publisert",
       "asSaveCTA": "Endret",
       "asSaveTitle": "Oppdater",
-      "description": "Faktaboksen er godkjent",
-      "updateDescription": "Godkjenn endringene",
+      "description": "Faktaboksen er publisert",
+      "updateDescription": "Publiser endringene",
       "transitions": {
         "draft": {
           "title": "Til utkast",
@@ -300,8 +300,8 @@
       "transitions": {
         "usable": {
           "verify": false,
-          "title": "Godkjenn",
-          "description": "Godkjenn faktaboksen for bruk"
+          "title": "Publiser",
+          "description": "Publiser faktaboksen"
         }
       }
     }
