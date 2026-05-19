@@ -1,7 +1,7 @@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@ttab/elephant-ui'
 import { useRef, useState, useEffect, useCallback } from 'react'
 import { useWorkflow } from '@/hooks/index/useWorkflow'
-import { getStatusSpecifications, getWorkflowSpecifications, type WorkflowTransition } from '@/defaults/workflowSpecification'
+import { getStatusSpecifications, getUnpublishTransitionFor, getWorkflowSpecifications, type WorkflowTransition } from '@/defaults/workflowSpecification'
 import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
 import { StatusOptions } from './StatusOptions'
 import { StatusMenuContext } from './StatusMenuContext'
@@ -152,7 +152,22 @@ export const StatusMenu = ({ ydoc, onBeforeStatusChange, planningId, embargoUnti
 
   const currentStatusName = documentStatus.name
   const currentStatusDef = statuses[currentStatusName] || getStatusSpecifications(currentStatusName, documentStatus.type)
-  const transitions = workflow[currentStatusName]?.transitions || {}
+  const baseTransitions = workflow[currentStatusName]?.transitions || {}
+
+  // Expose the unpublish action regardless of the current workflow state, so an
+  // accidentally-published document can be recovered without backend intervention.
+  const canInjectUnpublish = !!documentStatus.usableId
+    && currentStatusName !== 'unpublished'
+    && !baseTransitions.unpublished
+    && documentStatus.type !== 'tt/wire'
+
+  const injectedUnpublish = canInjectUnpublish
+    ? getUnpublishTransitionFor(documentStatus.type)
+    : undefined
+
+  const transitions: Record<string, WorkflowTransition> = injectedUnpublish
+    ? { ...baseTransitions, unpublished: injectedUnpublish }
+    : baseTransitions
 
   if (!Object.keys(transitions).length && currentStatusName !== 'unpublished') {
     return null
