@@ -319,6 +319,49 @@ describe('withArticleFactboxes', () => {
     })
   })
 
+  describe('batch failure handling', () => {
+    it('logs a warning with the batch\'s article ids when the bulk-get rejects', async () => {
+      vi.mocked(fetchMock).mockResolvedValue([
+        makeArticleHit('a1', ['Standalone-search hit']),
+        makeArticleHit('a2', ['Other'])
+      ] as unknown as HitV1[])
+
+      getDocumentsMock.mockRejectedValueOnce(new Error('repository down'))
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+
+      const out = await withArticleFactboxes<HitV1>({ hits: [], session, index, repository })
+
+      expect(warnSpy).toHaveBeenCalledTimes(1)
+      const payload = warnSpy.mock.calls[0][1] as { articleIds: string[], reason: Error }
+      expect(payload).toMatchObject({ articleIds: ['a1', 'a2'] })
+      expect(payload.reason).toBeInstanceOf(Error)
+      // Rows still emitted from indexed titles, just without text/source uuid.
+      expect(out).toHaveLength(2)
+      expect(out.every((r) => r.fields._document_origin_id?.values[0] === '')).toBe(true)
+
+      warnSpy.mockRestore()
+    })
+
+    it('logs a warning when the bulk-get resolves to null (silent-drop scenario)', async () => {
+      vi.mocked(fetchMock).mockResolvedValue([
+        makeArticleHit('a1', ['Only'])
+      ] as unknown as HitV1[])
+
+      getDocumentsMock.mockResolvedValueOnce(null)
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+
+      await withArticleFactboxes<HitV1>({ hits: [], session, index, repository })
+
+      expect(warnSpy).toHaveBeenCalledTimes(1)
+      expect(warnSpy.mock.calls[0][1]).toMatchObject({
+        articleIds: ['a1'],
+        reason: 'null response'
+      })
+
+      warnSpy.mockRestore()
+    })
+  })
+
   describe('result shape', () => {
     it('passes standalone hits through and tags origin', async () => {
       const standalone = { id: 'fb1', fields: {} } as unknown as HitV1
