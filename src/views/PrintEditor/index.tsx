@@ -135,8 +135,8 @@ function EditorWrapper(props: ViewProps & {
           const details = await repository!.getAttachmentDetails(uploadId, data?.accessToken || '')
           return details?.downloadLink ?? ''
         },
-        captionLabel: 'Text',
-        bylineLabel: 'Byline'
+        captionLabel: t('editor:image.captionLabel'),
+        bylineLabel: t('editor:image.bylineLabel')
       }),
       TVListing({
         channelComponent: () => ChannelComboBox()
@@ -149,7 +149,11 @@ function EditorWrapper(props: ViewProps & {
       Factbox({
         headerTitle: t('editor:factbox.headerTitle'),
         modifiedLabel: t('editor:factbox.modifiedLabel'),
+        createdLabel: t('editor:factbox.createdLabel'),
+        lastModifiedLabel: t('editor:factbox.lastModifiedLabel'),
         footerTitle: t('editor:factbox.footerTitle'),
+        factboxNewTitle: t('editor:factbox.factboxNewTitle'),
+        addSingleLabel: t('editor:factbox.addSingleLabel'),
         onEditOriginal: (id: string) => {
           openFactboxEditor(undefined, { id })
         },
