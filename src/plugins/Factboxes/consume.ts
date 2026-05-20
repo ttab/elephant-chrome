@@ -3,6 +3,8 @@ import type { Block } from '@ttab/elephant-api/newsdoc'
 import type { Session } from 'next-auth'
 import type { Repository } from '@/shared/Repository'
 import { transformFactbox } from '@/shared/transformations/newsdoc/core/factbox'
+import { toast } from 'sonner'
+import i18next from 'i18next'
 
 type FactboxDragPayload = {
   id: string
@@ -40,7 +42,9 @@ const fallbackChildren = (payload: FactboxDragPayload): TBElement[] => [
 /**
  * Returns the core/factbox Block for a dragged factbox, either the full
  * document (standalone factboxes) or the nth core/factbox block inside
- * an article (embedded factboxes). Returns undefined if anything fails.
+ * an article (embedded factboxes). Returns undefined if the document
+ * exists but the requested block is missing; throws if the fetch fails
+ * so the caller can refuse the insert and surface the error.
  */
 const fetchFactboxBlock = async (
   payload: FactboxDragPayload,
@@ -51,9 +55,7 @@ const fetchFactboxBlock = async (
 
   if (embedded) {
     const [, articleId, indexStr] = embedded
-    const response = await repository
-      .getDocument({ uuid: articleId, accessToken })
-      .catch(() => undefined)
+    const response = await repository.getDocument({ uuid: articleId, accessToken })
 
     const block = response?.document?.content
       .filter((b) => b.type === 'core/factbox')[parseInt(indexStr)]
@@ -61,11 +63,11 @@ const fetchFactboxBlock = async (
     return block
   }
 
-  const response = await repository
-    .getDocument({ uuid: payload.id, accessToken })
-    .catch(() => undefined)
+  const response = await repository.getDocument({ uuid: payload.id, accessToken })
 
-  if (!response?.document) return undefined
+  if (!response?.document) {
+    return undefined
+  }
 
   const { document } = response
 
@@ -108,7 +110,13 @@ export const createFactboxConsume = (
   let children: TBElement[] | undefined
 
   if (repository && session?.accessToken) {
-    block = await fetchFactboxBlock(payload, repository, session.accessToken)
+    try {
+      block = await fetchFactboxBlock(payload, repository, session.accessToken)
+    } catch (error) {
+      console.error('Failed to fetch factbox for drag-drop:', error)
+      toast.error(i18next.t('errors:toasts.couldNotLoadFactbox'))
+      return undefined
+    }
 
     if (block) {
       const transformed = transformFactbox(block)
