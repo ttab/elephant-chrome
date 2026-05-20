@@ -32,7 +32,8 @@
     "preview": "ttrun -- vite preview",
     "link:elephant-ui": "./tooling/link.sh ../elephant-ui",
     "unlink:elephant-ui": "./tooling/unlink.sh ../elephant-ui",
-    "lang:sync": "i18next-cli sync"
+    "lang:sync": "i18next-cli sync",
+    "postinstall": "patch-package"
   },
   "overrides": {
     "@grafana/faro-web-sdk": "$@grafana/faro-react",
@@ -115,6 +116,7 @@
     "fake-indexeddb": "^6.2.5",
     "i18next-cli": "^1.51.7",
     "jsdom": "^29.1.1",
+    "patch-package": "^8.0.1",
     "rollup-plugin-visualizer": "^7.0.0",
     "tailwindcss": "^4.2.1",
     "tsc-alias": "^1.8.17",

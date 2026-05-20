@@ -1,0 +1,54 @@
+diff --git a/node_modules/slate-react/dist/index.es.js b/node_modules/slate-react/dist/index.es.js
+index 9af0155..b0fea26 100644
+--- a/node_modules/slate-react/dist/index.es.js
++++ b/node_modules/slate-react/dist/index.es.js
+@@ -1150,11 +1150,19 @@ var useDecorations = (node, parentDecorations) => {
+   return useMemo(() => [...decorations, ...parentDecorations], [decorations, parentDecorations]);
+ };
+ var useDecorateContext = decorateProp => {
++  var [, forceUpdate] = useReducer(s => s + 1, 0);
+   var eventListeners = useRef(new Set());
+   var latestDecorate = useRef(decorateProp);
+   useIsomorphicLayoutEffect(() => {
+     latestDecorate.current = decorateProp;
+     eventListeners.current.forEach(listener => listener());
++    // Force Editable to re-render in the same batch as the text components
++    // notified above, so its selection-restoration layout effect runs after
++    // the decoration-induced DOM changes are committed. Without this, the
++    // text components restructure the DOM in a separate pass where
++    // Editable's layout effect never fires, potentially leaving the caret
++    // at a wrong position.
++    forceUpdate();
+   }, [decorateProp]);
+   var decorate = useCallback(entry => latestDecorate.current(entry), []);
+   var addEventListener = useCallback(callback => {
+diff --git a/node_modules/slate-react/dist/index.js b/node_modules/slate-react/dist/index.js
+index e30271c..41f86c9 100644
+--- a/node_modules/slate-react/dist/index.js
++++ b/node_modules/slate-react/dist/index.js
+@@ -1375,6 +1375,11 @@ var useDecorations = function useDecorations(node, parentDecorations) {
+   }, [decorations, parentDecorations]);
+ };
+ var useDecorateContext = function useDecorateContext(decorateProp) {
++  var _React$useReducer = React.useReducer(function (s) {
++      return s + 1;
++    }, 0),
++    _React$useReducer2 = _slicedToArray(_React$useReducer, 2),
++    forceUpdate = _React$useReducer2[1];
+   var eventListeners = React.useRef(new Set());
+   var latestDecorate = React.useRef(decorateProp);
+   useIsomorphicLayoutEffect(function () {
+@@ -1382,6 +1387,13 @@ var useDecorateContext = function useDecorateContext(decorateProp) {
+     eventListeners.current.forEach(function (listener) {
+       return listener();
+     });
++    // Force Editable to re-render in the same batch as the text components
++    // notified above, so its selection-restoration layout effect runs after
++    // the decoration-induced DOM changes are committed. Without this, the
++    // text components restructure the DOM in a separate pass where
++    // Editable's layout effect never fires, potentially leaving the caret
++    // at a wrong position.
++    forceUpdate();
+   }, [decorateProp]);
+   var decorate = React.useCallback(function (entry) {
+     return latestDecorate.current(entry);
