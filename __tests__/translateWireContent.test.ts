@@ -146,6 +146,22 @@ describe('translateWireContent', () => {
       e_ending: { enabled: true },
       split_inf: { enabled: true }
     })
+    // Must not also send `prefs_template`, or the named template overrides
+    // the explicit prefs server-side.
+    expect(req.prefs_template).toBeUndefined()
+  })
+
+  it('falls back to the standard template when mode is personal but no personalPrefs are set', async () => {
+    mockTranslate.mockResolvedValue({
+      texts: { values: ['Hei'] },
+      guid: 'test'
+    })
+
+    await translateWireContent([paragraph('Hello')], 'personal', translateOpts)
+
+    const req = mockTranslate.mock.calls[0][0] as TranslateRequest
+    expect(req.prefs).toBeUndefined()
+    expect(req.prefs_template).toBe('standard')
   })
 
   it('ignores empty keys in personal prefs string', async () => {

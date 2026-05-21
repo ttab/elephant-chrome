@@ -90,13 +90,18 @@ export async function translateWireContent(
     return cloned
   }
 
+  // `prefs_template` and `prefs` are alternatives in the NTB request - sending
+  // both lets the named template override the user's explicit prefs. Personal
+  // mode with no saved prefs falls back to the standard template.
+  const personalPrefs = mode === 'personal' ? options.personalPrefs : undefined
   const result = await translate({
     texts: { values: texts },
     file_type: 'html',
     source_language: 'nb',
     target_language: 'nn',
-    prefs_template: 'standard',
-    ...(mode === 'personal' && options.personalPrefs ? { prefs: parsePersonalPrefs(options.personalPrefs) } : {})
+    ...(personalPrefs
+      ? { prefs: parsePersonalPrefs(personalPrefs) }
+      : { prefs_template: 'standard' })
   }, {
     ntbUrl: options.ntbUrl,
     accessToken: options.accessToken
