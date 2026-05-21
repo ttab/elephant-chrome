@@ -16,14 +16,14 @@ interface Route {
   handlers?: RouteHandlers
 }
 
-interface RouteInitContext {
+export interface RouteInitContext {
   repository: Repository
   cache: Redis
   collaborationServer: CollaborationServer
   [key: string]: unknown
 }
 
-interface RouteContext extends RouteInitContext {
+export interface RouteContext extends RouteInitContext {
   res: Response
 }
 
