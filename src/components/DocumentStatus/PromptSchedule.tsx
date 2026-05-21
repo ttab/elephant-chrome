@@ -1,6 +1,5 @@
 import type { WorkflowTransition } from '@/defaults/workflowSpecification'
 import { Prompt } from '../Prompt'
-import { useRegistry } from '@/hooks/useRegistry'
 import { useEffect, useState } from 'react'
 import { Label } from '@ttab/elephant-ui'
 import { TimeInput } from '../TimeInput'
@@ -13,6 +12,7 @@ import { useCollaborationDocument } from '@/hooks/useCollaborationDocument'
 import type { YDocument } from '@/modules/yjs/hooks'
 import { useYValue } from '@/modules/yjs/hooks'
 import { HastToggle } from '@/components/HastToggle'
+import { DEFAULT_TIMEZONE } from '@/defaults/defaultTimezone'
 import type * as Y from 'yjs'
 
 export const PromptSchedule = ({
@@ -35,43 +35,32 @@ export const PromptSchedule = ({
   anchor?: HTMLElement | null
   typeIcon?: LucideIcon
 }) => {
-  const { timeZone } = useRegistry()
   const { loading, document } = useCollaborationDocument({ documentId: planningId })
   const ele = document ? document.getMap('ele') : undefined
   const [publishDate] = useYValue<Date>(ele, 'meta.core/planning-item[0].data.start_date') as Date[]
   const now = new Date()
   const embargoDate = embargoUntil ? new Date(embargoUntil) : undefined
   const embargoIsActive = embargoDate ? embargoDate > now : false
-  const [time, setTime] = useState(embargoIsActive && embargoDate ? embargoDate : now)
+  const [time, setTime] = useState<Date | undefined>(
+    embargoIsActive && embargoDate ? embargoDate : undefined
+  )
   const [cause, setCause] = useState<string | undefined>()
   const { t } = useTranslation()
 
-  // Check if selected time respects embargo
-  const timeViolatesEmbargo = embargoIsActive && embargoDate ? time < embargoDate : false
+  const timeViolatesEmbargo
+    = time !== undefined && embargoIsActive && embargoDate ? time < embargoDate : false
+  const timeInPast = time !== undefined && time < new Date()
 
   useEffect(() => {
     if (loading) return
-
-    // If embargo is active, use embargo time as minimum
     if (embargoIsActive && embargoDate) {
       setTime(embargoDate)
-      return
-    }
-
-    if (!publishDate) return
-
-    const formatedPublishDate = publishDate.toLocaleString()
-    const formatedNow = now.toLocaleString().slice(0, 10)
-
-    // only set to publish date if it's in the future, otherwise default to now
-    if (formatedPublishDate >= formatedNow) {
-      const d = new Date(publishDate)
-      d.setHours(now.getHours(), now.getMinutes(), 0, 0)
-      setTime(d)
     }
     // should only run when loading changes
     // eslint-disable-next-line
   }, [loading])
+
+  const displayDate = time ?? (publishDate ? new Date(publishDate) : now)
 
   return (
     <Prompt
@@ -80,6 +69,7 @@ export const PromptSchedule = ({
       primaryLabel={prompt.title}
       secondaryLabel={t('common:actions.abort')}
       onPrimary={() => {
+        if (!time) return
         showPrompt(undefined)
         void setStatus(
           prompt.status,
@@ -92,7 +82,7 @@ export const PromptSchedule = ({
       onSecondary={() => {
         showPrompt(undefined)
       }}
-      disablePrimary={(requireCause && !cause) || timeViolatesEmbargo}
+      disablePrimary={(requireCause && !cause) || !time || timeInPast || timeViolatesEmbargo}
       typeIcon={typeIcon}
     >
       <div className='flex flex-col items-start gap-6'>
@@ -101,7 +91,7 @@ export const PromptSchedule = ({
         {embargoIsActive && embargoDate && (
           <div className='text-sm text-orange-700 dark:text-orange-400'>
             {t('shared:status_menu.embargoMinTime', {
-              time: format(toZonedTime(embargoDate, timeZone), 'yyyy-MM-dd HH:mm')
+              time: format(toZonedTime(embargoDate, DEFAULT_TIMEZONE), 'yyyy-MM-dd HH:mm')
             })}
           </div>
         )}
@@ -114,15 +104,14 @@ export const PromptSchedule = ({
             <TimeInput
               id='ScheduledTime'
               autoFocus={true}
-              defaultTime={format(toZonedTime(time, timeZone), 'HH:mm')}
+              defaultTime={time ? format(toZonedTime(time, DEFAULT_TIMEZONE), 'HH:mm') : ''}
               handleOnChange={(value) => {
-                if (value) {
-                  const [hour, mins] = value.split(':').map(Number)
-                  const t = new Date(time)
-                  t.setHours(hour)
-                  t.setMinutes(mins)
-                  setTime(t)
-                }
+                if (!value) return
+                const [hour, mins] = value.split(':').map(Number)
+                const base = time ?? (publishDate ? new Date(publishDate) : new Date())
+                const next = new Date(base)
+                next.setHours(hour, mins, 0, 0)
+                setTime(next)
               }}
               handleOnSelect={() => { }}
               setOpen={() => { }}
@@ -138,7 +127,7 @@ export const PromptSchedule = ({
                 )
               : (
                   <span className='border py-2 px-3 h-8 text-sm rounded flex flex-row gap-4 items-center justify-between bg-muted'>
-                    {format(toZonedTime(time, timeZone), 'yyyy-MM-dd')}
+                    {format(toZonedTime(displayDate, DEFAULT_TIMEZONE), 'yyyy-MM-dd')}
                     <CalendarIcon size={14} strokeWidth={1.75} />
                   </span>
                 )}
