@@ -96,9 +96,9 @@ export const PromptSchedule = ({
           </div>
         )}
 
-        <div className='flex flex-row justify-items-start items-stretch gap-6 flex-wrap pt-2'>
+        <div className='flex flex-row justify-items-start items-start gap-6 flex-wrap pt-2'>
 
-          <div className='flex flex-col gap-2'>
+          <div className='flex flex-col items-start gap-2 w-28'>
             <Label htmlFor='ScheduledTime'>{t('shared:status_menu.setTime')}</Label>
 
             <TimeInput
@@ -115,17 +115,19 @@ export const PromptSchedule = ({
               }}
               handleOnSelect={() => { }}
               setOpen={() => { }}
-              className='border w-auto'
+              className='border w-full'
             />
-            {timeInPast && (
-              <div
-                role='alert'
-                className='flex flex-row items-center gap-1 text-sm text-red-600 dark:text-red-400'
-              >
-                <TriangleAlertIcon size={14} strokeWidth={1.75} />
-                {t('shared:status_menu.timeInPast')}
-              </div>
-            )}
+            <div className='relative min-h-5 w-full'>
+              {timeInPast && (
+                <div
+                  role='alert'
+                  className='absolute top-0 left-0 flex flex-row items-center gap-1 text-sm text-red-600 dark:text-red-400 whitespace-nowrap'
+                >
+                  <TriangleAlertIcon size={14} strokeWidth={1.75} />
+                  {t('shared:status_menu.timeInPast')}
+                </div>
+              )}
+            </div>
           </div>
 
           <div className='flex flex-col gap-2'>
