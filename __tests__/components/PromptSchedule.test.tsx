@@ -121,6 +121,19 @@ describe('PromptSchedule', () => {
     expect(getPrimaryButton()).toBeDisabled()
   })
 
+  it('shows a validation message when the picked time is in the past', () => {
+    renderSchedule()
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+
+    const past = new Date(Date.now() - 60 * 60 * 1000)
+    const hh = String(past.getHours()).padStart(2, '0')
+    const mm = String(past.getMinutes()).padStart(2, '0')
+
+    fireEvent.change(getTimeInput(), { target: { value: `${hh}:${mm}` } })
+
+    expect(screen.getByRole('alert')).toBeInTheDocument()
+  })
+
   it('prefills the time when an active embargo is provided', () => {
     const futureEmbargo = new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString()
     renderSchedule({ embargoUntil: futureEmbargo })

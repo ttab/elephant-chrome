@@ -5,7 +5,7 @@ import { Label } from '@ttab/elephant-ui'
 import { TimeInput } from '../TimeInput'
 import { toZonedTime } from 'date-fns-tz'
 import { format } from 'date-fns'
-import { CalendarIcon, LoaderIcon, type LucideIcon } from '@ttab/elephant-ui/icons'
+import { CalendarIcon, LoaderIcon, TriangleAlertIcon, type LucideIcon } from '@ttab/elephant-ui/icons'
 import { PromptCauseField } from './PromptCauseField'
 import { useTranslation } from 'react-i18next'
 import { useCollaborationDocument } from '@/hooks/useCollaborationDocument'
@@ -117,6 +117,15 @@ export const PromptSchedule = ({
               setOpen={() => { }}
               className='border w-auto'
             />
+            {timeInPast && (
+              <div
+                role='alert'
+                className='flex flex-row items-center gap-1 text-sm text-red-600 dark:text-red-400'
+              >
+                <TriangleAlertIcon size={14} strokeWidth={1.75} />
+                {t('shared:status_menu.timeInPast')}
+              </div>
+            )}
           </div>
 
           <div className='flex flex-col gap-2'>

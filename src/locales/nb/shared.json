@@ -36,6 +36,7 @@
     "setTime": "Skriv inn tid",
     "asSavePlaceholder": "Publiser ny informasjon",
     "embargoMinTime": "Embargo: kan ikke planlegges før {{time}}",
+    "timeInPast": "Tiden må være i fremtiden",
     "schedulingRequiresPlanning": "Planen er ikke tilgjengelig fordi dokumentet mangler en tilknyttet plan.",
     "causes": {
       "development_short": "UV",
