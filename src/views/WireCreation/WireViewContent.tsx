@@ -24,6 +24,7 @@ import { UserMessage } from '@/components/UserMessage'
 import { Form } from '@/components/Form'
 import { fetch as fetchPlannings } from '@/lib/index/fetch-plannings-twirp'
 import { createArticle } from './lib/createArticle'
+import { resolveTranslationMode, type TranslationMode } from './lib/resolveTranslationMode'
 import { SluglineEditable } from '@/components/DataItem/SluglineEditable'
 import type * as Y from 'yjs'
 import { CreatePrompt } from '@/components/CreatePrompt'
@@ -105,12 +106,11 @@ export const WireViewContent = (props: ViewProps & {
   const [, setNewsvalue] = useYValue<string | undefined>(ydoc.ele, 'meta.core/newsvalue[0].value')
   const isNpkUser = useHasUnit('/redaktionen-npk')
   const { preferences } = useUserPreferences()
-  const hasPersonalPrefs = !!preferences.nynorskPrefs?.trim()
+  const hasPersonalPrefs = !!preferences.nynorskPrefs
   // Null until the user explicitly picks a mode, so the default tracks
   // `nynorskPrefs` if it loads after the first render.
-  const [translationMode, setTranslationMode] = useState<'none' | 'standard' | 'personal' | null>(null)
-  const effectiveTranslationMode: 'none' | 'standard' | 'personal' = translationMode
-    ?? (isNpkUser ? (hasPersonalPrefs ? 'personal' : 'standard') : 'none')
+  const [translationMode, setTranslationMode] = useState<TranslationMode | null>(null)
+  const effectiveTranslationMode = resolveTranslationMode(translationMode, isNpkUser, hasPersonalPrefs)
   const wireHeadline = props.wires?.[0]?.fields['document.title']?.values?.[0] || ''
 
   const handleSubmit = (): void => {
@@ -326,7 +326,7 @@ export const WireViewContent = (props: ViewProps & {
                 </Label>
                 <Select
                   value={effectiveTranslationMode}
-                  onValueChange={(value: string) => { setTranslationMode(value as 'none' | 'standard' | 'personal') }}
+                  onValueChange={(value: string) => { setTranslationMode(value as TranslationMode) }}
                 >
                   <SelectTrigger className='h-7 w-auto min-w-32'>
                     <SelectValue />

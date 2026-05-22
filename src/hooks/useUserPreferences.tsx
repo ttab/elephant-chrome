@@ -27,8 +27,11 @@ export function useUserPreferences(): {
     }
 
     const nynorskBlock = meta.find((block) => block.type === NYNORSK_DOCUMENT_TYPE)
+    // Empty or whitespace-only rule_string is treated as "no prefs" so every
+    // caller can use `!!preferences.nynorskPrefs` without re-trimming.
+    const ruleString = nynorskBlock?.data?.rule_string?.trim()
     return {
-      nynorskPrefs: nynorskBlock?.data?.rule_string || undefined
+      nynorskPrefs: ruleString || undefined
     }
   }, [nynorskSettings])
 
