@@ -74,6 +74,9 @@ const getTimeInput = () =>
 const getPrimaryButton = () =>
   screen.getByRole('button', { name: usablePrompt.title })
 
+const toHHMM = (d: Date) =>
+  `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
+
 describe('PromptSchedule', () => {
   beforeEach(() => {
     mockPublishDate = undefined
@@ -102,12 +105,9 @@ describe('PromptSchedule', () => {
 
   it('enables the primary button once a future time is picked', () => {
     renderSchedule()
-    // Pick a date+time clearly in the future.
     const future = new Date(Date.now() + 60 * 60 * 1000)
-    const hh = String(future.getHours()).padStart(2, '0')
-    const mm = String(future.getMinutes()).padStart(2, '0')
 
-    fireEvent.change(getTimeInput(), { target: { value: `${hh}:${mm}` } })
+    fireEvent.change(getTimeInput(), { target: { value: toHHMM(future) } })
 
     expect(getPrimaryButton()).not.toBeDisabled()
   })
@@ -115,10 +115,8 @@ describe('PromptSchedule', () => {
   it('keeps the primary button disabled if the picked time is in the past', () => {
     renderSchedule()
     const past = new Date(Date.now() - 60 * 60 * 1000)
-    const hh = String(past.getHours()).padStart(2, '0')
-    const mm = String(past.getMinutes()).padStart(2, '0')
 
-    fireEvent.change(getTimeInput(), { target: { value: `${hh}:${mm}` } })
+    fireEvent.change(getTimeInput(), { target: { value: toHHMM(past) } })
 
     expect(getPrimaryButton()).toBeDisabled()
   })
@@ -128,10 +126,7 @@ describe('PromptSchedule', () => {
     expect(screen.queryByRole('alert')).not.toBeInTheDocument()
 
     const past = new Date(Date.now() - 60 * 60 * 1000)
-    const hh = String(past.getHours()).padStart(2, '0')
-    const mm = String(past.getMinutes()).padStart(2, '0')
-
-    fireEvent.change(getTimeInput(), { target: { value: `${hh}:${mm}` } })
+    fireEvent.change(getTimeInput(), { target: { value: toHHMM(past) } })
 
     expect(screen.getByRole('alert')).toBeInTheDocument()
   })
@@ -151,9 +146,7 @@ describe('PromptSchedule', () => {
     expect(screen.queryByRole('alert')).not.toBeInTheDocument()
 
     const before = new Date(embargo.getTime() - 60 * 1000)
-    const hh = String(before.getHours()).padStart(2, '0')
-    const mm = String(before.getMinutes()).padStart(2, '0')
-    fireEvent.change(getTimeInput(), { target: { value: `${hh}:${mm}` } })
+    fireEvent.change(getTimeInput(), { target: { value: toHHMM(before) } })
 
     expect(getPrimaryButton()).toBeDisabled()
     expect(screen.getByRole('alert')).toBeInTheDocument()
@@ -171,9 +164,7 @@ describe('PromptSchedule', () => {
     )
 
     const future = new Date(Date.now() + 60 * 60 * 1000)
-    const hh = String(future.getHours()).padStart(2, '0')
-    const mm = String(future.getMinutes()).padStart(2, '0')
-    fireEvent.change(getTimeInput(), { target: { value: `${hh}:${mm}` } })
+    fireEvent.change(getTimeInput(), { target: { value: toHHMM(future) } })
 
     fireEvent.click(screen.getByRole('button', { name: usablePrompt.title }))
 

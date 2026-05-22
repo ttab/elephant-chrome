@@ -45,26 +45,23 @@ export const PromptSchedule = ({
   typeIcon?: LucideIcon
 }) => {
   const { loading, document } = useCollaborationDocument({ documentId: planningId })
+  const { timeZone: userTimeZone } = useRegistry()
   const ele = document ? document.getMap('ele') : undefined
   const [publishDate] = useYValue<Date>(ele, 'meta.core/planning-item[0].data.start_date') as Date[]
   const now = new Date()
-  const embargoDate = embargoUntil ? new Date(embargoUntil) : undefined
-  const embargoIsActive = embargoDate ? embargoDate > now : false
-  const [time, setTime] = useState<Date | undefined>(
-    embargoIsActive && embargoDate ? embargoDate : undefined
-  )
+  const embargoCandidate = embargoUntil ? new Date(embargoUntil) : undefined
+  const activeEmbargo = embargoCandidate && embargoCandidate > now ? embargoCandidate : undefined
+  const [time, setTime] = useState<Date | undefined>(activeEmbargo)
   const [cause, setCause] = useState<string | undefined>()
   const { t } = useTranslation()
 
-  const timeViolatesEmbargo
-    = time !== undefined && embargoIsActive && embargoDate ? time < embargoDate : false
+  const timeViolatesEmbargo = time !== undefined && activeEmbargo ? time < activeEmbargo : false
   const timeInPast = time !== undefined && time < now
   const today = format(toZonedTime(now, DEFAULT_TIMEZONE), 'yyyy-MM-dd')
   const planningDate = publishDate
     ? format(toZonedTime(new Date(publishDate), DEFAULT_TIMEZONE), 'yyyy-MM-dd')
     : undefined
   const planningDateInPast = planningDate !== undefined && planningDate < today
-  const { timeZone: userTimeZone } = useRegistry()
   const offsetReference = time ?? now
   const offsetDiffMinutes = Math.round(
     (getTimezoneOffset(userTimeZone, offsetReference)
@@ -103,10 +100,10 @@ export const PromptSchedule = ({
       <div className='flex flex-col items-start gap-6'>
         {prompt.description}
 
-        {embargoIsActive && embargoDate && (
+        {activeEmbargo && (
           <div className='text-sm text-orange-700 dark:text-orange-400'>
             {t('shared:status_menu.embargoMinTime', {
-              time: format(toZonedTime(embargoDate, DEFAULT_TIMEZONE), 'yyyy-MM-dd HH:mm')
+              time: format(toZonedTime(activeEmbargo, DEFAULT_TIMEZONE), 'yyyy-MM-dd HH:mm')
             })}
           </div>
         )}
