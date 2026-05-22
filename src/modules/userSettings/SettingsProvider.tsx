@@ -145,6 +145,36 @@ export const SettingsProvider = ({ application, children }: {
     notifySubscribers(documentType, payload)
   }, [application, data?.accessToken, setState, notifySubscribers])
 
+  const deleteSettings = useCallback(async (documentType: string) => {
+    const client = clientRef.current
+    const accessToken = data?.accessToken
+    if (!client || !accessToken) {
+      throw new Error('Settings client not available')
+    }
+
+    try {
+      await client.deleteDocument(
+        {
+          owner: '',
+          application,
+          type: documentType,
+          key: 'current'
+        },
+        meta(accessToken)
+      )
+    } catch (error) {
+      // A 404 means there was nothing to delete; treat as success so callers
+      // can use deleteSettings idempotently to "ensure cleared".
+      if (!(error instanceof Error && 'code' in error && error.code === 'not_found')) {
+        console.error('Failed to delete settings:', error)
+        throw error
+      }
+    }
+
+    setState(documentType, { payload: undefined })
+    notifySubscribers(documentType, undefined)
+  }, [application, data?.accessToken, setState, notifySubscribers])
+
   const subscribe = useCallback((documentType: string, handler: SettingsEventHandler) => {
     const subscriber: Subscriber = { documentType, handler }
     subscribersRef.current.add(subscriber)
@@ -323,8 +353,9 @@ export const SettingsProvider = ({ application, children }: {
   const contextValue = useMemo(() => ({
     getSettings,
     updateSettings,
+    deleteSettings,
     subscribe
-  }), [getSettings, updateSettings, subscribe])
+  }), [getSettings, updateSettings, deleteSettings, subscribe])
 
   return (
     <SettingsContext.Provider value={contextValue}>
