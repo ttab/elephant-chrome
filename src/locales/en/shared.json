@@ -37,6 +37,7 @@
     "asSavePlaceholder": "Publish new information",
     "embargoMinTime": "Embargo: cannot schedule before {{time}}",
     "timeInPast": "Time must be in the future",
+    "planningInPast": "Cannot schedule onto a past planning date. Move the assignment to a current planning, or update the planning date.",
     "schedulingRequiresPlanning": "Scheduling is unavailable because this document has no associated planning.",
     "causes": {
       "development_short": "DEV",

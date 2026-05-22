@@ -140,4 +140,19 @@ describe('PromptSchedule', () => {
 
     expect(getTimeInput().value).not.toBe('')
   })
+
+  it('warns and blocks submit when the planning date is in the past', () => {
+    mockPublishDate = new Date('2024-01-01T12:00:00Z')
+    renderSchedule()
+
+    expect(screen.getByRole('alert')).toBeInTheDocument()
+    expect(getPrimaryButton()).toBeDisabled()
+  })
+
+  it('does not warn about past planning when the planning date is today or later', () => {
+    mockPublishDate = new Date(Date.now() + 24 * 60 * 60 * 1000)
+    renderSchedule()
+
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+  })
 })

@@ -37,6 +37,7 @@
     "asSavePlaceholder": "Publiser ny informasjon",
     "embargoMinTime": "Embargo: kan ikke planlegges før {{time}}",
     "timeInPast": "Tiden må være i fremtiden",
+    "planningInPast": "Kan ikke planlegge på en tidligere planleggingsdato. Flytt oppdraget til en gjeldende planlegging, eller oppdater planleggingsdatoen.",
     "schedulingRequiresPlanning": "Planen er ikke tilgjengelig fordi dokumentet mangler en tilknyttet plan.",
     "causes": {
       "development_short": "UV",

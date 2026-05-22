@@ -50,6 +50,11 @@ export const PromptSchedule = ({
   const timeViolatesEmbargo
     = time !== undefined && embargoIsActive && embargoDate ? time < embargoDate : false
   const timeInPast = time !== undefined && time < new Date()
+  const today = format(toZonedTime(now, DEFAULT_TIMEZONE), 'yyyy-MM-dd')
+  const planningDate = publishDate
+    ? format(toZonedTime(new Date(publishDate), DEFAULT_TIMEZONE), 'yyyy-MM-dd')
+    : undefined
+  const planningDateInPast = planningDate !== undefined && planningDate < today
 
   useEffect(() => {
     if (loading) return
@@ -82,7 +87,9 @@ export const PromptSchedule = ({
       onSecondary={() => {
         showPrompt(undefined)
       }}
-      disablePrimary={(requireCause && !cause) || !time || timeInPast || timeViolatesEmbargo}
+      disablePrimary={
+        (requireCause && !cause) || !time || timeInPast || timeViolatesEmbargo || planningDateInPast
+      }
       typeIcon={typeIcon}
     >
       <div className='flex flex-col items-start gap-6'>
@@ -93,6 +100,16 @@ export const PromptSchedule = ({
             {t('shared:status_menu.embargoMinTime', {
               time: format(toZonedTime(embargoDate, DEFAULT_TIMEZONE), 'yyyy-MM-dd HH:mm')
             })}
+          </div>
+        )}
+
+        {planningDateInPast && (
+          <div
+            role='alert'
+            className='flex flex-row items-center gap-1 text-sm text-red-600 dark:text-red-400'
+          >
+            <TriangleAlertIcon size={14} strokeWidth={1.75} />
+            {t('shared:status_menu.planningInPast')}
           </div>
         )}
 
@@ -118,7 +135,7 @@ export const PromptSchedule = ({
               className='border w-full'
             />
             <div className='relative min-h-5 w-full'>
-              {timeInPast && (
+              {timeInPast && !planningDateInPast && (
                 <div
                   role='alert'
                   className='absolute top-0 left-0 flex flex-row items-center gap-1 text-sm text-red-600 dark:text-red-400 whitespace-nowrap'

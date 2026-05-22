@@ -37,6 +37,7 @@
     "asSavePlaceholder": "Publicera ny information",
     "embargoMinTime": "Embargo: kan inte schemaläggas före {{time}}",
     "timeInPast": "Tiden måste vara i framtiden",
+    "planningInPast": "Kan inte schemalägga på ett tidigare planeringsdatum. Flytta uppdraget till en aktuell planering, eller uppdatera planeringsdatumet.",
     "schedulingRequiresPlanning": "Schemaläggning är inte tillgänglig eftersom dokumentet saknar en kopplad planering.",
     "causes": {
       "development_short": "UV",
