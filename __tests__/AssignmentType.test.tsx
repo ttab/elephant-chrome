@@ -63,4 +63,25 @@ describe('AssignmentType (readOnly icon swap)', () => {
     )
     expect(container.querySelector('svg.lucide-file-pen')).toBeInTheDocument()
   })
+
+  it('readOnly does not render the icon inside a button or hover surface', () => {
+    setType('flash')
+    const { container } = render(
+      <AssignmentType assignment={mockAssignment} editable={false} readOnly />
+    )
+
+    expect(container.querySelector('button')).toBeNull()
+
+    const hoverable = container.querySelector('[class*="hover:bg-"]')
+    expect(hoverable).toBeNull()
+  })
+
+  it('readOnly renders flash icon (ZapIcon) without button affordance', () => {
+    setType('flash')
+    const { container } = render(
+      <AssignmentType assignment={mockAssignment} editable={false} readOnly />
+    )
+    expect(container.querySelector('svg.lucide-zap')).toBeInTheDocument()
+    expect(container.querySelector('button')).toBeNull()
+  })
 })
