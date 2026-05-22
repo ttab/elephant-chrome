@@ -26,6 +26,7 @@ Element.prototype.scrollIntoView = vi.fn()
 HTMLElement.prototype.hasPointerCapture = vi.fn()
 
 let mockPublishDate: Date | undefined
+let mockUserTimeZone = 'Europe/Stockholm'
 
 vi.mock('@/modules/yjs/hooks', () => ({
   useYValue: () => [mockPublishDate]
@@ -42,7 +43,7 @@ vi.mock('@/hooks/useCollaborationDocument', () => ({
 }))
 
 vi.mock('@/hooks/useRegistry', () => ({
-  useRegistry: () => ({ timeZone: 'Europe/Stockholm' })
+  useRegistry: () => ({ timeZone: mockUserTimeZone })
 }))
 
 vi.mock('@/components/HastToggle', () => ({
@@ -76,6 +77,7 @@ const getPrimaryButton = () =>
 describe('PromptSchedule', () => {
   beforeEach(() => {
     mockPublishDate = undefined
+    mockUserTimeZone = 'Europe/Stockholm'
   })
 
   it('renders without throwing when planning has no start_date and no embargo', () => {
@@ -154,5 +156,26 @@ describe('PromptSchedule', () => {
     renderSchedule()
 
     expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+  })
+
+  it('shows a timezone notice with offset when the user timezone differs from the system', () => {
+    mockUserTimeZone = 'Asia/Kolkata'
+    renderSchedule()
+
+    expect(screen.getByText(/\+4h 30m|\+3h 30m/)).toBeInTheDocument()
+  })
+
+  it('does not show the timezone notice when the user is in the system timezone', () => {
+    mockUserTimeZone = 'Europe/Stockholm'
+    renderSchedule()
+
+    expect(screen.queryByText(/offset|skillnad|forskjell/i)).not.toBeInTheDocument()
+  })
+
+  it('does not show the timezone notice when the user timezone shares the system offset', () => {
+    mockUserTimeZone = 'Europe/Oslo'
+    renderSchedule()
+
+    expect(screen.queryByText(/offset|skillnad|forskjell/i)).not.toBeInTheDocument()
   })
 })

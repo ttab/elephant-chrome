@@ -3,17 +3,26 @@ import { Prompt } from '../Prompt'
 import { useEffect, useState } from 'react'
 import { Label } from '@ttab/elephant-ui'
 import { TimeInput } from '../TimeInput'
-import { toZonedTime } from 'date-fns-tz'
+import { getTimezoneOffset, toZonedTime } from 'date-fns-tz'
 import { format } from 'date-fns'
 import { CalendarIcon, LoaderIcon, TriangleAlertIcon, type LucideIcon } from '@ttab/elephant-ui/icons'
 import { PromptCauseField } from './PromptCauseField'
 import { useTranslation } from 'react-i18next'
 import { useCollaborationDocument } from '@/hooks/useCollaborationDocument'
+import { useRegistry } from '@/hooks/useRegistry'
 import type { YDocument } from '@/modules/yjs/hooks'
 import { useYValue } from '@/modules/yjs/hooks'
 import { HastToggle } from '@/components/HastToggle'
 import { DEFAULT_TIMEZONE } from '@/defaults/defaultTimezone'
 import type * as Y from 'yjs'
+
+function formatOffsetDiff(diffMinutes: number): string {
+  const sign = diffMinutes >= 0 ? '+' : '-'
+  const abs = Math.abs(diffMinutes)
+  const hours = Math.floor(abs / 60)
+  const mins = abs % 60
+  return mins === 0 ? `${sign}${hours}h` : `${sign}${hours}h ${mins}m`
+}
 
 export const PromptSchedule = ({
   prompt, planningId, setStatus, showPrompt, requireCause = false, anchor, typeIcon,
@@ -55,6 +64,14 @@ export const PromptSchedule = ({
     ? format(toZonedTime(new Date(publishDate), DEFAULT_TIMEZONE), 'yyyy-MM-dd')
     : undefined
   const planningDateInPast = planningDate !== undefined && planningDate < today
+  const { timeZone: userTimeZone } = useRegistry()
+  const offsetReference = time ?? now
+  const offsetDiffMinutes = Math.round(
+    (getTimezoneOffset(userTimeZone, offsetReference)
+      - getTimezoneOffset(DEFAULT_TIMEZONE, offsetReference)) / 60_000
+  )
+  const timeZoneMismatch = offsetDiffMinutes !== 0
+  const offsetLabel = formatOffsetDiff(offsetDiffMinutes)
 
   useEffect(() => {
     if (loading) return
@@ -100,6 +117,12 @@ export const PromptSchedule = ({
             {t('shared:status_menu.embargoMinTime', {
               time: format(toZonedTime(embargoDate, DEFAULT_TIMEZONE), 'yyyy-MM-dd HH:mm')
             })}
+          </div>
+        )}
+
+        {timeZoneMismatch && (
+          <div className='text-sm text-orange-700 dark:text-orange-400'>
+            {t('shared:status_menu.timezoneMismatch', { offset: offsetLabel })}
           </div>
         )}
 
