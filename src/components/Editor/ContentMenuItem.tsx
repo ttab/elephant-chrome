@@ -3,6 +3,7 @@ import {
   type TBPluginRegistryAction
 } from '@ttab/textbit'
 import type { JSX } from 'react'
+import { formatHotkey } from '@/lib/formatHotkey'
 
 export const ContentMenuItem = ({ action }: { action: TBPluginRegistryAction }): JSX.Element => {
   return (
@@ -12,7 +13,9 @@ export const ContentMenuItem = ({ action }: { action: TBPluginRegistryAction }):
     >
       <Menu.Icon className="flex justify-self-end self-center group-data-[state='active']:font-semibold" />
       <Menu.Label className="self-center text-sm group-data-[state='active']:font-semibold" />
-      <Menu.Hotkey className='justify-self-end self-center pl-6 pr-3 text-sm opacity-70' />
+      <Menu.Hotkey className='justify-self-end self-center pl-6 pr-3 text-sm opacity-70'>
+        {formatHotkey(action.hotkey)}
+      </Menu.Hotkey>
     </Menu.Item>
   )
 }

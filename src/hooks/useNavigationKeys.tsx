@@ -1,5 +1,6 @@
 import { useEffect, useCallback } from 'react'
 import { useView } from './useView'
+import { isMacOs } from '@/lib/isMacOs'
 
 type NavigationKey = 'alt+ArrowLeft' | 'ArrowLeft' | 'alt+ArrowRight' | 'ArrowRight' | 'ArrowUp' | 'ArrowDown' | 'Enter' | 'Escape' | ' ' | 's' | 'r' | 'c' | 'u'
 
@@ -117,24 +118,4 @@ function isEditableElement(element: Element | null): element is HTMLInputElement
   }
 
   return false
-}
-
-
-function isMacOs(): boolean {
-  const navigatorModernApi = navigator as Navigator & { userAgentData?: { platform?: string } }
-  let platform: string | undefined
-
-  if ('userAgentData' in navigatorModernApi && typeof navigatorModernApi.userAgentData?.platform === 'string') {
-    platform = navigatorModernApi.userAgentData.platform
-  }
-
-  if (!platform && typeof navigator.platform === 'string') {
-    platform = navigator.platform
-  }
-
-  if (!platform) {
-    platform = navigator.userAgent
-  }
-
-  return /\bmac/i.test(platform)
 }
