@@ -26,9 +26,7 @@ describe('PrintEditor getImageSrc', () => {
   })
 
   it('reads the access token at call time so rotated tokens are used', async () => {
-    // First call: cache holds an "old" session.
     getCachedSessionMock.mockResolvedValueOnce(session('OLD_TOKEN'))
-    // Second call (after rotation): cache holds the fresh session.
     getCachedSessionMock.mockResolvedValueOnce(session('NEW_TOKEN'))
 
     const getImageSrc = await importGetImageSrc()
@@ -78,12 +76,28 @@ describe('PrintEditor getImageSrc', () => {
     expect(src).toBe('')
   })
 
-  it('uses an empty bearer when there is no cached session', async () => {
+  it('skips the call and returns empty when there is no cached session', async () => {
     getCachedSessionMock.mockResolvedValue(null)
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
     const getImageSrc = await importGetImageSrc()
 
-    await getImageSrc({ uploadId: 'doc-1' }, repository)
+    const src = await getImageSrc({ uploadId: 'doc-1' }, repository)
 
-    expect(getAttachmentDetails).toHaveBeenCalledWith('doc-1', '')
+    expect(src).toBe('')
+    expect(getAttachmentDetails).not.toHaveBeenCalled()
+    expect(warn).toHaveBeenCalled()
+    warn.mockRestore()
+  })
+
+  it('propagates getAttachmentDetails rejections so the renderer can surface a broken image', async () => {
+    getCachedSessionMock.mockResolvedValue(session('TOK'))
+    const error = new Error('repository unavailable')
+    getAttachmentDetails.mockRejectedValueOnce(error)
+    const errorLog = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    const getImageSrc = await importGetImageSrc()
+
+    await expect(getImageSrc({ uploadId: 'doc-1' }, repository)).rejects.toBe(error)
+    expect(errorLog).toHaveBeenCalled()
+    errorLog.mockRestore()
   })
 })

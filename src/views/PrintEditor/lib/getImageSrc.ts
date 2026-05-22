@@ -4,11 +4,10 @@ import { getCachedSession } from '@/shared/getCachedSession'
 /**
  * Resolve the `<img>` src for a print-article image block.
  *
- * Called by textbit-plugins' Image renderer. Must read the session at call
- * time rather than capturing it in a closure - textbit freezes the plugin
- * registry at editor mount, so a captured token goes stale as soon as the
- * NextAuth session refreshes (~every 2.5 min), causing uploads to succeed
- * but render with an empty src until the window is reloaded.
+ * Must read the session at call time rather than capturing it in a closure:
+ * the textbit-plugins Image renderer is registered once at editor mount, so
+ * a captured token would go stale on the next NextAuth refresh and produce
+ * an empty src until the window is reloaded.
  */
 export const getImageSrc = async (
   properties: Record<string, unknown>,
@@ -20,6 +19,22 @@ export const getImageSrc = async (
   }
 
   const session = await getCachedSession()
-  const details = await repository.getAttachmentDetails(uploadId, session?.accessToken || '')
-  return details?.downloadLink ?? ''
+  if (!session?.accessToken) {
+    console.warn('getImageSrc: no cached session, cannot resolve attachment', { uploadId })
+    return ''
+  }
+
+  let details
+  try {
+    details = await repository.getAttachmentDetails(uploadId, session.accessToken)
+  } catch (ex) {
+    console.error('getImageSrc: getAttachmentDetails failed', { uploadId, ex })
+    throw ex
+  }
+
+  if (!details?.downloadLink) {
+    console.warn('getImageSrc: attachment has no downloadLink', { uploadId })
+    return ''
+  }
+  return details.downloadLink
 }
