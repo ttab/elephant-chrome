@@ -13,7 +13,12 @@ export function useUserPreferences(): {
   isLoading: boolean
   updateNynorskPrefs: (prefs: string) => Promise<void>
 } {
-  const { settings: nynorskSettings, isLoading, updateSettings: updateNynorskSettings } = useSettings(NYNORSK_DOCUMENT_TYPE)
+  const {
+    settings: nynorskSettings,
+    isLoading,
+    updateSettings: updateNynorskSettings,
+    deleteSettings: deleteNynorskSettings
+  } = useSettings(NYNORSK_DOCUMENT_TYPE)
 
   const preferences = useMemo<UserPreferences>(() => {
     const meta = nynorskSettings?.meta
@@ -22,16 +27,43 @@ export function useUserPreferences(): {
     }
 
     const nynorskBlock = meta.find((block) => block.type === NYNORSK_DOCUMENT_TYPE)
+    // Empty or whitespace-only rule_string is treated as "no prefs" so every
+    // caller can use `!!preferences.nynorskPrefs` without re-trimming.
+    const ruleString = nynorskBlock?.data?.rule_string?.trim()
     return {
-      nynorskPrefs: nynorskBlock?.data?.rule_string || undefined
+      nynorskPrefs: ruleString || undefined
     }
   }, [nynorskSettings])
 
   const updateNynorskPrefs = useCallback(async (prefs: string) => {
+    // Preserve any unrelated meta blocks that may live in the same document
+    // alongside the nynorsk block - we only own the block keyed by
+    // NYNORSK_DOCUMENT_TYPE.
+    const existing = Array.isArray(nynorskSettings?.meta) ? nynorskSettings.meta : []
+    const otherBlocks = existing.filter((block) => block.type !== NYNORSK_DOCUMENT_TYPE)
+
+    // The backend rejects an empty rule_string, so clearing prefs removes the
+    // nynorsk block entirely. If nothing else remains, delete the document.
+    if (!prefs.trim()) {
+      if (otherBlocks.length === 0) {
+        await deleteNynorskSettings()
+        return
+      }
+
+      const doc = Document.create({
+        title: 'Nynorsk translation preferences',
+        type: NYNORSK_DOCUMENT_TYPE,
+        meta: otherBlocks
+      })
+      await updateNynorskSettings(doc)
+      return
+    }
+
     const doc = Document.create({
       title: 'Nynorsk translation preferences',
       type: NYNORSK_DOCUMENT_TYPE,
       meta: [
+        ...otherBlocks,
         Block.create({
           type: NYNORSK_DOCUMENT_TYPE,
           data: {
@@ -42,7 +74,7 @@ export function useUserPreferences(): {
     })
 
     await updateNynorskSettings(doc)
-  }, [updateNynorskSettings])
+  }, [nynorskSettings, updateNynorskSettings, deleteNynorskSettings])
 
   return { preferences, isLoading, updateNynorskPrefs }
 }

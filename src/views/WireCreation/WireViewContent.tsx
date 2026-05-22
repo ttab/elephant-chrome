@@ -24,6 +24,7 @@ import { UserMessage } from '@/components/UserMessage'
 import { Form } from '@/components/Form'
 import { fetch as fetchPlannings } from '@/lib/index/fetch-plannings-twirp'
 import { createArticle } from './lib/createArticle'
+import { resolveTranslationMode, type TranslationMode } from './lib/resolveTranslationMode'
 import { SluglineEditable } from '@/components/DataItem/SluglineEditable'
 import type * as Y from 'yjs'
 import { CreatePrompt } from '@/components/CreatePrompt'
@@ -105,7 +106,11 @@ export const WireViewContent = (props: ViewProps & {
   const [, setNewsvalue] = useYValue<string | undefined>(ydoc.ele, 'meta.core/newsvalue[0].value')
   const isNpkUser = useHasUnit('/redaktionen-npk')
   const { preferences } = useUserPreferences()
-  const [translationMode, setTranslationMode] = useState<'none' | 'standard' | 'personal'>(isNpkUser ? 'standard' : 'none')
+  const hasPersonalPrefs = !!preferences.nynorskPrefs
+  // Null until the user explicitly picks a mode, so the default tracks
+  // `nynorskPrefs` if it loads after the first render.
+  const [translationMode, setTranslationMode] = useState<TranslationMode | null>(null)
+  const effectiveTranslationMode = resolveTranslationMode(translationMode, isNpkUser, hasPersonalPrefs)
   const wireHeadline = props.wires?.[0]?.fields['document.title']?.values?.[0] || ''
 
   const handleSubmit = (): void => {
@@ -320,8 +325,8 @@ export const WireViewContent = (props: ViewProps & {
                   {t('creation.translateToNynorsk')}
                 </Label>
                 <Select
-                  value={translationMode}
-                  onValueChange={(value: string) => { setTranslationMode(value as 'none' | 'standard' | 'personal') }}
+                  value={effectiveTranslationMode}
+                  onValueChange={(value: string) => { setTranslationMode(value as TranslationMode) }}
                 >
                   <SelectTrigger className='h-7 w-auto min-w-32'>
                     <SelectValue />
@@ -329,7 +334,9 @@ export const WireViewContent = (props: ViewProps & {
                   <SelectContent>
                     <SelectItem value='none'>{t('creation.translationNone')}</SelectItem>
                     <SelectItem value='standard'>{t('creation.translationStandard')}</SelectItem>
-                    <SelectItem value='personal'>{t('creation.translationPersonal')}</SelectItem>
+                    {hasPersonalPrefs && (
+                      <SelectItem value='personal'>{t('creation.translationPersonal')}</SelectItem>
+                    )}
                   </SelectContent>
                 </Select>
               </Form.Group>
@@ -398,7 +405,7 @@ export const WireViewContent = (props: ViewProps & {
                     embargoUntil: wireData.embargoUntil,
                     contentSources: wireData.contentSources,
                     wireContent: wireDocument?.content,
-                    translationMode: translationMode !== 'none' ? translationMode : undefined,
+                    translationMode: effectiveTranslationMode !== 'none' ? effectiveTranslationMode : undefined,
                     personalPrefs: preferences.nynorskPrefs,
                     ntbUrl: server.ntbUrl?.href
                   })
