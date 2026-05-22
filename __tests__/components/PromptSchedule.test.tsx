@@ -178,19 +178,29 @@ describe('PromptSchedule', () => {
     expect(payload.cause).toBeUndefined()
   })
 
-  it('warns and blocks submit when the planning date is in the past', () => {
+  it('schedules onto today when the planning start_date is in the past', () => {
+    const setStatus = vi.fn()
     mockPublishDate = new Date('2024-01-01T12:00:00Z')
-    renderSchedule()
+    render(
+      <PromptSchedule
+        prompt={usablePrompt}
+        planningId='planning-1'
+        setStatus={setStatus}
+        showPrompt={vi.fn()}
+      />
+    )
 
-    expect(screen.getByRole('alert')).toBeInTheDocument()
-    expect(getPrimaryButton()).toBeDisabled()
-  })
+    const future = new Date(Date.now() + 60 * 60 * 1000)
+    fireEvent.change(getTimeInput(), { target: { value: toHHMM(future) } })
 
-  it('does not warn about past planning when the planning date is today or later', () => {
-    mockPublishDate = new Date(Date.now() + 24 * 60 * 60 * 1000)
-    renderSchedule()
+    expect(getPrimaryButton()).not.toBeDisabled()
+    fireEvent.click(getPrimaryButton())
 
-    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+    const [, payload] = setStatus.mock.calls[0] as [string, { time: Date }]
+    const today = new Date()
+    expect(payload.time.getFullYear()).toBe(today.getFullYear())
+    expect(payload.time.getMonth()).toBe(today.getMonth())
+    expect(payload.time.getDate()).toBe(today.getDate())
   })
 
   it('shows a timezone notice with offset when the user timezone differs from the system', () => {

@@ -57,11 +57,6 @@ export const PromptSchedule = ({
 
   const timeViolatesEmbargo = time !== undefined && activeEmbargo ? time < activeEmbargo : false
   const timeInPast = time !== undefined && time < now
-  const today = format(toZonedTime(now, DEFAULT_TIMEZONE), 'yyyy-MM-dd')
-  const planningDate = publishDate
-    ? format(toZonedTime(new Date(publishDate), DEFAULT_TIMEZONE), 'yyyy-MM-dd')
-    : undefined
-  const planningDateInPast = planningDate !== undefined && planningDate < today
   const offsetReference = time ?? now
   const offsetDiffMinutes = Math.round(
     (getTimezoneOffset(userTimeZone, offsetReference)
@@ -70,7 +65,17 @@ export const PromptSchedule = ({
   const timeZoneMismatch = offsetDiffMinutes !== 0
   const offsetLabel = formatOffsetDiff(offsetDiffMinutes)
 
-  const displayDate = time ?? (publishDate ? new Date(publishDate) : now)
+  // Fall back to today when the planning's start_date is in the past, so the
+  // document can still be scheduled instead of inheriting an unusable date.
+  const todayInTz = format(toZonedTime(now, DEFAULT_TIMEZONE), 'yyyy-MM-dd')
+  const planningDateInTz = publishDate
+    ? format(toZonedTime(new Date(publishDate), DEFAULT_TIMEZONE), 'yyyy-MM-dd')
+    : undefined
+  const scheduleBase = publishDate && planningDateInTz && planningDateInTz >= todayInTz
+    ? new Date(publishDate)
+    : now
+
+  const displayDate = time ?? scheduleBase
 
   return (
     <Prompt
@@ -93,7 +98,7 @@ export const PromptSchedule = ({
         showPrompt(undefined)
       }}
       disablePrimary={
-        (requireCause && !cause) || !time || timeInPast || timeViolatesEmbargo || planningDateInPast
+        (requireCause && !cause) || !time || timeInPast || timeViolatesEmbargo
       }
       typeIcon={typeIcon}
     >
@@ -114,16 +119,6 @@ export const PromptSchedule = ({
           </div>
         )}
 
-        {planningDateInPast && (
-          <div
-            role='alert'
-            className='flex flex-row items-center gap-1 text-sm text-red-600 dark:text-red-400'
-          >
-            <TriangleAlertIcon size={14} strokeWidth={1.75} />
-            {t('shared:status_menu.planningInPast')}
-          </div>
-        )}
-
         <div className='flex flex-row justify-items-start items-start gap-6 flex-wrap pt-2'>
 
           <div className='flex flex-col items-start gap-2 w-28'>
@@ -136,7 +131,7 @@ export const PromptSchedule = ({
               handleOnChange={(value) => {
                 if (!value) return
                 const [hour, mins] = value.split(':').map(Number)
-                const base = time ?? (publishDate ? new Date(publishDate) : new Date())
+                const base = time ?? scheduleBase
                 const next = new Date(base)
                 next.setHours(hour, mins, 0, 0)
                 setTime(next)
@@ -146,7 +141,7 @@ export const PromptSchedule = ({
               className='border w-full'
             />
             <div className='relative min-h-5 w-full'>
-              {!planningDateInPast && (timeViolatesEmbargo || timeInPast) && (
+              {(timeViolatesEmbargo || timeInPast) && (
                 <div
                   role='alert'
                   className='absolute top-0 left-0 flex flex-row items-center gap-1 text-sm text-red-600 dark:text-red-400 whitespace-nowrap'

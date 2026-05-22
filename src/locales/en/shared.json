@@ -38,7 +38,6 @@
     "embargoMinTime": "Embargo: cannot schedule before {{time}}",
     "timeInPast": "Time must be in the future",
     "beforeEmbargo": "Time is before embargo",
-    "planningInPast": "Cannot schedule onto a past planning date. Move the assignment to a current planning, or update the planning date.",
     "timezoneMismatch": "Times use a different timezone than your device (offset {{offset}}).",
     "schedulingRequiresPlanning": "Scheduling is unavailable because this document has no associated planning.",
     "causes": {
