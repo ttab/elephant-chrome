@@ -31,7 +31,7 @@ export const CreateDeliverablePrompt = ({
   documentLabel: string
   onClose: (id?: string) => void
 }): JSX.Element => {
-  const { repository } = useRegistry()
+  const { repository, featureFlags } = useRegistry()
   const { data: session } = useSession()
   const [isCreating, setIsCreating] = useState(false)
   const { t } = useTranslation()
@@ -82,7 +82,9 @@ export const CreateDeliverablePrompt = ({
     }
 
     const id = crypto.randomUUID()
-    const template = getTemplateFromDeliverable(deliverableType)
+    const template = getTemplateFromDeliverable(deliverableType, {
+      hasVignette: !!featureFlags.hasVignette
+    })
     await repository.saveDocument(
       template(id, finalPayload),
       session.accessToken

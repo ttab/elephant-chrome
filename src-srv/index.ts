@@ -71,8 +71,13 @@ export async function runServer(): Promise<string> {
 
   const routes = await mapRoutes(apiDir)
 
-  // Connect to Redis
-  const redis = new RedisCache(REDIS_URL)
+  // Exit on cache reconnect exhaustion so Kubernetes restarts the pod. The
+  // cache is the durable backstop for the 15-120s repo debounce window;
+  // continuing to serve with a dead cache silently no-ops new writes.
+  const redis = new RedisCache(REDIS_URL, () => {
+    logger.fatal('redis cache reconnect attempts exhausted, exiting')
+    process.exit(1)
+  })
 
   await redis.connect().catch((ex) => {
     throw new Error('connect to redis cache', { cause: ex })

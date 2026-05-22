@@ -11,6 +11,16 @@ export interface ArticleConversionResult {
   errors: ValidationResult[]
 }
 
+// Repository rejects `tt/slugline` blocks whose value is empty. With the
+// `hasLooseSlugline` feature flag the editor leaves these blocks in the source
+// document, so we have to strip them before persisting anything derived from
+// it.
+const isEmptySlugline = (block: Block): boolean =>
+  block.type === 'tt/slugline' && !block.value?.trim()
+
+const withoutEmptySluglines = (blocks: Block[]): Block[] =>
+  blocks.filter((block) => !isEmptySlugline(block))
+
 /**
  * Prune the source document against the target type and build a new document
  * with a fresh UUID plus a rel='source' link back to the original. The caller
@@ -52,6 +62,7 @@ export async function prepareArticleConversion({
       ...prunedDoc,
       uuid: newUuid,
       uri: `core://article/${newUuid}`,
+      meta: withoutEmptySluglines(prunedDoc.meta),
       links: [
         ...prunedDoc.links,
         Block.create({
@@ -97,7 +108,7 @@ export function buildFallbackPlanning({
       }
     }),
     newsvalue ? Block.create({ ...newsvalue }) : Block.create({ type: 'core/newsvalue' }),
-    slugline ? Block.create({ ...slugline }) : Block.create({ type: 'tt/slugline' }),
+    ...(slugline && !isEmptySlugline(slugline) ? [Block.create({ ...slugline })] : []),
     Block.create({
       type: 'core/description',
       data: { text: '' },
@@ -136,7 +147,7 @@ export function deriveNewPlanning({
   newUuid: string
 }): Document {
   const updatedMeta = sourcePlanning.meta
-    .filter((block) => block.type !== 'core/assignment')
+    .filter((block) => block.type !== 'core/assignment' && !isEmptySlugline(block))
     .map((block) => {
       if (block.type !== 'core/planning-item') {
         return block
@@ -159,23 +170,26 @@ export function deriveNewPlanning({
 /**
  * Append a `core/assignment` block to the planning that owns the article as a
  * `rel='deliverable'`. Returns a new Document proto; does not mutate.
+ *
+ * When `sourceAssignment` is provided, the new assignment inherits its
+ * internal description so manually entered context survives conversion.
  */
 export function attachArticleAssignment({
   planning,
   articleId,
   articleTitle,
-  targetDate
+  targetDate,
+  sourceAssignment
 }: {
   planning: Document
   articleId: string
   articleTitle: string
   targetDate: string
+  sourceAssignment?: Block
 }): Document {
   const assignmentIso = `${targetDate}T09:00:00Z`
-  // Inherit the planning's slugline onto the assignment. If the planning has
-  // no slugline the Repository will reject — that's the correct failure mode,
-  // since every planning is supposed to carry one.
   const slugline = planning.meta.find((m) => m.type === 'tt/slugline')?.value
+  const inheritedInternalDescription = getInternalDescription(sourceAssignment)
 
   const assignment = assignmentPlanningTemplate({
     assignmentType: 'text',
@@ -192,12 +206,24 @@ export function attachArticleAssignment({
     }
   })
 
-  // The template seeds a blank core/description placeholder; Repository
-  // validation rejects empty text — strip it and let it be added later via
-  // the UI if needed.
-  const cleanedMeta = assignment.meta.filter((block) =>
-    !(block.type === 'core/description' && !block.data?.text?.trim())
+  // bulkUpdate bypasses stripEmptyValidatedMetaBlocks, so drop the
+  // template's empty internal description and re-add it only when we
+  // have text. The template also always emits a `tt/slugline` block, so
+  // drop it when empty (hasLooseSlugline allows that). Public descriptions
+  // and other meta blocks are left alone.
+  const metaWithoutInternal = assignment.meta.filter(
+    (block) =>
+      !(block.type === 'core/description' && block.role === 'internal')
+      && !isEmptySlugline(block)
   )
+  const internalDescription = inheritedInternalDescription
+    ? [Block.create({
+        type: 'core/description',
+        role: 'internal',
+        data: { text: inheritedInternalDescription }
+      })]
+    : []
+  const cleanedMeta = [...metaWithoutInternal, ...internalDescription]
 
   const assignmentWithDeliverable = Block.create({
     ...assignment,
@@ -219,12 +245,19 @@ export function attachArticleAssignment({
 }
 
 /**
- * Does this planning own `articleId` as a deliverable via any assignment?
+ * Find the assignment in `planning` that owns `articleId` as a deliverable.
  */
-export function planningReferencesArticle(planning: Document, articleId: string): boolean {
-  return planning.meta.some((block) =>
+export function findArticleAssignment(planning: Document, articleId: string): Block | undefined {
+  return planning.meta.find((block) =>
     block.type === 'core/assignment'
     && block.links.some((link) => link.rel === 'deliverable' && link.uuid === articleId)
   )
+}
+
+function getInternalDescription(block: Block | undefined): string | undefined {
+  const text = block?.meta
+    .find((m) => m.type === 'core/description' && m.role === 'internal')
+    ?.data?.text?.trim()
+  return text || undefined
 }
 

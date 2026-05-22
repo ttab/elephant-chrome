@@ -99,6 +99,11 @@ export const POST: RouteHandler = async (
           typeBlocks?.forEach((block) => {
             block.set('value', newAssignmentType)
           })
+
+          // Keep data.public consistent with the new type: timeless
+          // assignments are not part of the planning's published artifact.
+          const data = assignment.get('data') as Y.Map<unknown> | undefined
+          data?.set('public', newAssignmentType === 'timeless' ? 'false' : 'true')
         }
       })
     })

@@ -18,11 +18,8 @@ describe('timelessArticleDocumentTemplate', () => {
   it('creates article content structure', () => {
     const doc = timelessArticleDocumentTemplate('test-id')
 
-    expect(doc.content).toHaveLength(4)
-    expect(doc.content[0].role).toBe('heading-1')
-    expect(doc.content[1].role).toBe('vignette')
-    expect(doc.content[2].role).toBe('preamble')
-    expect(doc.content[3].role).toBe('')
+    expect(doc.content).toHaveLength(3)
+    expect(doc.content.map((b) => b.role)).toEqual(['heading-1', 'preamble', ''])
   })
 
   it('includes timeless-category link from payload', () => {
@@ -63,6 +60,28 @@ describe('timelessArticleDocumentTemplate', () => {
   it('omits content-source link when caller provides none', () => {
     const doc = timelessArticleDocumentTemplate('test-id')
     expect(doc.links.some((l) => l.type === 'core/content-source')).toBe(false)
+  })
+
+  it('pre-fills the heading-1 block with payload.title', () => {
+    const doc = timelessArticleDocumentTemplate('test-id', { title: 'My timeless' })
+
+    expect(doc.title).toBe('My timeless')
+    expect(doc.content[0].role).toBe('heading-1')
+    expect(doc.content[0].data.text).toBe('My timeless')
+  })
+
+  it('leaves the heading-1 block empty when no title is provided', () => {
+    const doc = timelessArticleDocumentTemplate('test-id')
+
+    expect(doc.content[0].role).toBe('heading-1')
+    expect(doc.content[0].data.text).toBe('')
+  })
+
+  it('preserves the exact title string (no trimming) in heading-1 and root title', () => {
+    const doc = timelessArticleDocumentTemplate('test-id', { title: '  spaced title  ' })
+
+    expect(doc.title).toBe('  spaced title  ')
+    expect(doc.content[0].data.text).toBe('  spaced title  ')
   })
 
   it('includes meta from payload', () => {

@@ -15,6 +15,7 @@ export const GET = (): Promise<unknown> => {
       hasPrint: process.env.HAS_PRINT ?? '',
       hasHast: process.env.HAS_HAST ?? '',
       hasLooseSlugline: process.env.HAS_LOOSE_SLUGLINE ?? '',
+      hasVignette: process.env.HAS_VIGNETTE ?? '',
       environment: process.env.ENVIRONMENT ?? ''
     }
   })

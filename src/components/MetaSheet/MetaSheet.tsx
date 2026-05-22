@@ -105,7 +105,7 @@ export function MetaSheet({ ydoc, readOnly, readOnlyVersion }: {
                       <div className='flex flex-col gap-2' id='actions'>
                         <AddNote ydoc={ydoc} text={t('actions.addNote')} />
                         <ArticleTypeConversion ydoc={ydoc} documentType={documentType} />
-                        <RemoveHastFromArticle ydoc={ydoc} />
+                        <RemoveHastFromArticle ydoc={ydoc} documentType={documentType} />
                       </div>
 
                       <Label htmlFor='content-source'>{t('labels.otherSources')}</Label>

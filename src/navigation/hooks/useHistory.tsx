@@ -24,24 +24,26 @@ export interface HistoryInterface {
 }
 
 
+const subscribe = (callback: () => void): (() => void) => {
+  window.addEventListener('popstate', callback)
+  return () => window.removeEventListener('popstate', callback)
+}
+
+const getSnapshot = (): HistoryState | null => {
+  return window.history.state as HistoryState | null
+}
+
+const getServerSnapshot = (): null => null
+
 /**
  * History hook for managing browser history state
  */
 export function useHistory(): HistoryInterface {
-  const subscribe = (callback: () => void): (() => void) => {
-    window.addEventListener('popstate', callback)
-    return () => window.removeEventListener('popstate', callback)
-  }
-
-  const getSnapshot = (): HistoryState | null => {
-    return window.history.state as HistoryState | null
-  }
-
   // Get the current state using useSyncExternalStore
   const state = useSyncExternalStore<HistoryState | null>(
     subscribe,
     getSnapshot,
-    () => null // Server-side snapshot
+    getServerSnapshot
   )
 
   const pushState = (url: string, newState: HistoryState): void => {

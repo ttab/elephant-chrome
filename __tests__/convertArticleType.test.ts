@@ -1,8 +1,10 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { Block, Document } from '@ttab/elephant-api/newsdoc'
 import {
+  attachArticleAssignment,
   buildFallbackPlanning,
   deriveNewPlanning,
+  findArticleAssignment,
   prepareArticleConversion
 } from '@/shared/convertArticleType'
 import type { Repository } from '@/shared/Repository'
@@ -169,6 +171,62 @@ describe('prepareArticleConversion', () => {
     expect(result.newDocument.links.find((l) => l.rel === 'subject')?.uuid).toBe('story-uuid')
     expect(result.newDocument.links.find((l) => l.rel === 'source-document')?.uuid).toBe('source-uuid')
   })
+
+  it('strips empty slugline blocks from the pruned document meta', async () => {
+    const sourceDoc = Document.create({
+      uuid: 'timeless-uuid',
+      type: 'core/article#timeless',
+      uri: 'core://article/timeless-uuid',
+      language: 'sv-se',
+      title: 'Timeless',
+      meta: [
+        Block.create({ type: 'tt/slugline', value: '' }),
+        Block.create({ type: 'core/newsvalue', value: '3' })
+      ],
+      links: []
+    })
+
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    vi.mocked(mockRepository.pruneDocument).mockImplementation((doc) =>
+      Promise.resolve({ document: doc, errors: [] })
+    )
+
+    const result = await prepareArticleConversion({
+      sourceDocument: sourceDoc,
+      targetType: 'core/article',
+      repository: mockRepository,
+      accessToken: 'token'
+    })
+
+    expect(result.newDocument.meta.find((b) => b.type === 'tt/slugline')).toBeUndefined()
+    expect(result.newDocument.meta.find((b) => b.type === 'core/newsvalue')?.value).toBe('3')
+  })
+
+  it('keeps non-empty slugline blocks in the pruned document meta', async () => {
+    const sourceDoc = Document.create({
+      uuid: 'timeless-uuid',
+      type: 'core/article#timeless',
+      uri: 'core://article/timeless-uuid',
+      language: 'sv-se',
+      title: 'Timeless',
+      meta: [Block.create({ type: 'tt/slugline', value: 'kept' })],
+      links: []
+    })
+
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    vi.mocked(mockRepository.pruneDocument).mockImplementation((doc) =>
+      Promise.resolve({ document: doc, errors: [] })
+    )
+
+    const result = await prepareArticleConversion({
+      sourceDocument: sourceDoc,
+      targetType: 'core/article',
+      repository: mockRepository,
+      accessToken: 'token'
+    })
+
+    expect(result.newDocument.meta.find((b) => b.type === 'tt/slugline')?.value).toBe('kept')
+  })
 })
 
 describe('deriveNewPlanning', () => {
@@ -293,6 +351,28 @@ describe('deriveNewPlanning', () => {
     expect(result.links.find((l) => l.rel === 'story')?.uuid).toBe('story-uuid')
     expect(result.links).toHaveLength(2)
   })
+
+  it('strips empty slugline blocks from the source planning meta', () => {
+    const source = makeSourcePlanning({
+      meta: [
+        Block.create({
+          type: 'core/planning-item',
+          data: { start_date: '2026-04-01', end_date: '2026-04-01' }
+        }),
+        Block.create({ type: 'tt/slugline', value: '' }),
+        Block.create({ type: 'core/newsvalue', value: '3' })
+      ]
+    })
+
+    const result = deriveNewPlanning({
+      sourcePlanning: source,
+      targetDate: '2026-05-15',
+      newUuid: 'fresh-planning-uuid'
+    })
+
+    expect(result.meta.find((b) => b.type === 'tt/slugline')).toBeUndefined()
+    expect(result.meta.find((b) => b.type === 'core/newsvalue')?.value).toBe('3')
+  })
 })
 
 describe('buildFallbackPlanning', () => {
@@ -348,15 +428,236 @@ describe('buildFallbackPlanning', () => {
     expect(result.links[0]).toMatchObject({ type: 'core/section', uuid: 'section-uuid' })
   })
 
-  it('emits empty slugline/newsvalue when the timeless has none', () => {
+  it('omits the slugline block but emits an empty newsvalue when the timeless has none', () => {
     const result = buildFallbackPlanning({
       sourceTimeless: makeTimeless({ meta: [], links: [] }),
       targetDate: '2026-05-15',
       newUuid: 'fresh-uuid'
     })
 
-    expect(result.meta.find((b) => b.type === 'tt/slugline')).toBeDefined()
+    expect(result.meta.find((b) => b.type === 'tt/slugline')).toBeUndefined()
     expect(result.meta.find((b) => b.type === 'core/newsvalue')).toBeDefined()
     expect(result.links).toHaveLength(0)
+  })
+
+  it('omits the slugline block when the timeless slugline value is empty', () => {
+    const result = buildFallbackPlanning({
+      sourceTimeless: makeTimeless({
+        meta: [
+          Block.create({ type: 'tt/slugline', value: '' }),
+          Block.create({ type: 'core/newsvalue', value: '4' })
+        ]
+      }),
+      targetDate: '2026-05-15',
+      newUuid: 'fresh-uuid'
+    })
+
+    expect(result.meta.find((b) => b.type === 'tt/slugline')).toBeUndefined()
+  })
+})
+
+describe('attachArticleAssignment', () => {
+  const makePlanning = () =>
+    Document.create({
+      uuid: 'planning-uuid',
+      type: 'core/planning-item',
+      uri: 'core://newscoverage/planning-uuid',
+      language: 'sv-se',
+      title: 'Planning',
+      meta: [
+        Block.create({ type: 'tt/slugline', value: 'feature-x' }),
+        Block.create({ type: 'core/newsvalue', value: '3' })
+      ]
+    })
+
+  const makeSourceAssignment = (internalText: string) =>
+    Block.create({
+      type: 'core/assignment',
+      meta: [
+        Block.create({
+          type: 'core/description',
+          role: 'internal',
+          data: { text: internalText }
+        })
+      ]
+    })
+
+  const findAssignment = (doc: Document) =>
+    doc.meta.find((block) => block.type === 'core/assignment' && block.links.length > 0)
+
+  it('inherits the internal description from the source assignment', () => {
+    const result = attachArticleAssignment({
+      planning: makePlanning(),
+      articleId: 'article-uuid',
+      articleTitle: 'Test',
+      targetDate: '2026-05-15',
+      sourceAssignment: makeSourceAssignment('Carry me over')
+    })
+
+    const assignment = findAssignment(result)
+    const internal = assignment?.meta.find(
+      (m) => m.type === 'core/description' && m.role === 'internal'
+    )
+    expect(internal?.data.text).toBe('Carry me over')
+  })
+
+  it('drops the empty internal description placeholder when no source assignment provided', () => {
+    const result = attachArticleAssignment({
+      planning: makePlanning(),
+      articleId: 'article-uuid',
+      articleTitle: 'Test',
+      targetDate: '2026-05-15'
+    })
+
+    const assignment = findAssignment(result)
+    expect(assignment?.meta.find((m) => m.type === 'core/description')).toBeUndefined()
+  })
+
+  it('drops the placeholder when the source description is whitespace-only', () => {
+    const result = attachArticleAssignment({
+      planning: makePlanning(),
+      articleId: 'article-uuid',
+      articleTitle: 'Test',
+      targetDate: '2026-05-15',
+      sourceAssignment: makeSourceAssignment('   ')
+    })
+
+    const assignment = findAssignment(result)
+    expect(assignment?.meta.find((m) => m.type === 'core/description')).toBeUndefined()
+  })
+
+  it('drops the placeholder when the source assignment has no description block', () => {
+    const result = attachArticleAssignment({
+      planning: makePlanning(),
+      articleId: 'article-uuid',
+      articleTitle: 'Test',
+      targetDate: '2026-05-15',
+      sourceAssignment: Block.create({
+        type: 'core/assignment',
+        meta: [Block.create({ type: 'core/description', role: 'public', data: { text: 'Pub' } })]
+      })
+    })
+
+    const assignment = findAssignment(result)
+    expect(assignment?.meta.find((m) => m.type === 'core/description')).toBeUndefined()
+  })
+
+  it('trims whitespace from the inherited description', () => {
+    const result = attachArticleAssignment({
+      planning: makePlanning(),
+      articleId: 'article-uuid',
+      articleTitle: 'Test',
+      targetDate: '2026-05-15',
+      sourceAssignment: makeSourceAssignment('  padded  ')
+    })
+
+    const internal = findAssignment(result)?.meta.find(
+      (m) => m.type === 'core/description' && m.role === 'internal'
+    )
+    expect(internal?.data.text).toBe('padded')
+  })
+
+  it('attaches a deliverable link pointing at the article', () => {
+    const result = attachArticleAssignment({
+      planning: makePlanning(),
+      articleId: 'article-uuid',
+      articleTitle: 'Test',
+      targetDate: '2026-05-15'
+    })
+
+    const assignment = findAssignment(result)
+    expect(assignment?.links.find((l) => l.rel === 'deliverable')).toMatchObject({
+      type: 'core/article',
+      uuid: 'article-uuid'
+    })
+  })
+
+  it('drops the slugline block when the planning slugline is empty', () => {
+    const planning = Document.create({
+      uuid: 'planning-uuid',
+      type: 'core/planning-item',
+      uri: 'core://newscoverage/planning-uuid',
+      language: 'sv-se',
+      title: 'Planning',
+      meta: [Block.create({ type: 'tt/slugline', value: '' })]
+    })
+
+    const result = attachArticleAssignment({
+      planning,
+      articleId: 'article-uuid',
+      articleTitle: 'Test',
+      targetDate: '2026-05-15'
+    })
+
+    const assignment = findAssignment(result)
+    expect(assignment?.meta.find((m) => m.type === 'tt/slugline')).toBeUndefined()
+  })
+
+  it('drops the slugline block when the planning has no slugline at all', () => {
+    const planning = Document.create({
+      uuid: 'planning-uuid',
+      type: 'core/planning-item',
+      uri: 'core://newscoverage/planning-uuid',
+      language: 'sv-se',
+      title: 'Planning',
+      meta: []
+    })
+
+    const result = attachArticleAssignment({
+      planning,
+      articleId: 'article-uuid',
+      articleTitle: 'Test',
+      targetDate: '2026-05-15'
+    })
+
+    const assignment = findAssignment(result)
+    expect(assignment?.meta.find((m) => m.type === 'tt/slugline')).toBeUndefined()
+  })
+
+  it('keeps the slugline block when the planning carries a value', () => {
+    const result = attachArticleAssignment({
+      planning: makePlanning(),
+      articleId: 'article-uuid',
+      articleTitle: 'Test',
+      targetDate: '2026-05-15'
+    })
+
+    const assignment = findAssignment(result)
+    expect(assignment?.meta.find((m) => m.type === 'tt/slugline')?.value).toBe('feature-x')
+  })
+})
+
+describe('findArticleAssignment', () => {
+  it('returns the assignment whose deliverable points at the article', () => {
+    const planning = Document.create({
+      uuid: 'p',
+      type: 'core/planning-item',
+      uri: 'core://newscoverage/p',
+      meta: [
+        Block.create({
+          type: 'core/assignment',
+          id: 'a1',
+          links: [Block.create({ type: 'core/article', rel: 'deliverable', uuid: 'other' })]
+        }),
+        Block.create({
+          type: 'core/assignment',
+          id: 'a2',
+          links: [Block.create({ type: 'core/article', rel: 'deliverable', uuid: 'target' })]
+        })
+      ]
+    })
+
+    expect(findArticleAssignment(planning, 'target')?.id).toBe('a2')
+  })
+
+  it('returns undefined when no assignment matches', () => {
+    const planning = Document.create({
+      uuid: 'p',
+      type: 'core/planning-item',
+      uri: 'core://newscoverage/p',
+      meta: []
+    })
+
+    expect(findArticleAssignment(planning, 'missing')).toBeUndefined()
   })
 })

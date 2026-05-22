@@ -81,7 +81,7 @@ export function factboxColumns<Ns extends Namespace>({ locale, timeZone, t }: { 
       meta: {
         name: t('core:labels.title'),
         columnIcon: BoxesIcon,
-        className: 'flex-none'
+        className: 'flex-1 w-[200px]'
       },
       accessorFn: (data) => data.fields['document.title'].values[0],
       cell: ({ row }) => {
@@ -89,6 +89,7 @@ export function factboxColumns<Ns extends Namespace>({ locale, timeZone, t }: { 
           <div
             draggable='true'
             onDragStart={(event) => handleDragStart(event, row)}
+            className='truncate'
           >
             <Title title={row.getValue<string>('title')} />
           </div>
@@ -101,7 +102,7 @@ export function factboxColumns<Ns extends Namespace>({ locale, timeZone, t }: { 
       meta: {
         name: t('factboxes.columnLabels.description'),
         columnIcon: BoxesIcon,
-        className: 'flex-1 w-[200px]'
+        className: 'flex-1 w-[200px] hidden @3xl/view:[display:revert]'
       },
       accessorFn: (data) => data.fields?.['document.content.core_text.data.text']?.values[0],
       cell: ({ row }) => {
@@ -109,7 +110,7 @@ export function factboxColumns<Ns extends Namespace>({ locale, timeZone, t }: { 
           <div
             draggable='true'
             onDragStart={(event) => handleDragStart(event, row)}
-            className='max-w-4xl font-thin text-sm text-muted-foreground truncate space-x-2 justify-start items-center'
+            className='font-thin text-sm text-muted-foreground truncate space-x-2 justify-start items-center'
           >
             {row.getValue<string>('description')}
           </div>
@@ -122,7 +123,7 @@ export function factboxColumns<Ns extends Namespace>({ locale, timeZone, t }: { 
       meta: {
         name: t('views:factboxes.columnLabels.origin'),
         columnIcon: BoxesIcon,
-        className: 'flex-none',
+        className: 'flex-none w-[40px]',
         options: [
           { label: t('factboxes.origin.inArticle'), value: 'core/article' },
           { label: t('factboxes.origin.original'), value: 'core/factbox' }
@@ -147,7 +148,7 @@ export function factboxColumns<Ns extends Namespace>({ locale, timeZone, t }: { 
       meta: {
         name: t('factboxes.columnLabels.lastChanged'),
         columnIcon: BoxesIcon,
-        className: 'flex-none'
+        className: 'flex-none w-[200px]'
       },
       accessorFn: (data) => data.fields.modified.values[0],
       cell: ({ row }) => {

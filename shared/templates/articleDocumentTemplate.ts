@@ -7,9 +7,15 @@ import { getSystemLanguage } from '@/shared/getSystemLanguage.js'
  *
  * @param {string} id - The unique identifier for the article.
  * @param {TemplatePayload} [payload] - Optional payload containing additional template data.
+ * @param {object} [options] - Optional template-shaping flags.
+ * @param {boolean} [options.hasVignette] - When true, include a vignette text block in the content.
  * @returns {Document} - The generated document template.
  */
-export function articleDocumentTemplate(id: string, payload?: TemplatePayload): Document {
+export function articleDocumentTemplate(
+  id: string,
+  payload?: TemplatePayload,
+  options?: { hasVignette?: boolean }
+): Document {
   // no descriptions in articles, remove those
   delete payload?.meta?.['core/description']
 
@@ -33,13 +39,15 @@ export function articleDocumentTemplate(id: string, payload?: TemplatePayload): 
         },
         role: 'heading-1'
       }),
-      Block.create({
-        type: 'core/text',
-        data: {
-          text: ''
-        },
-        role: 'vignette'
-      }),
+      ...(options?.hasVignette
+        ? [Block.create({
+            type: 'core/text',
+            data: {
+              text: ''
+            },
+            role: 'vignette'
+          })]
+        : []),
       Block.create({
         type: 'core/text',
         data: {

@@ -84,7 +84,9 @@ export function assignmentPlanningTemplate({
       ...(assignmentType === 'text' && { publish_slot: systemHour }),
       start_date: planningDate,
       start: startDateAndTime(assignmentType),
-      public: assignmentType === 'flash'
+      // Flash and timeless assignments are persisted but not part of the
+      // planning's published artifact.
+      public: assignmentType === 'flash' || assignmentType === 'timeless'
         ? 'false'
         : 'true'
     },

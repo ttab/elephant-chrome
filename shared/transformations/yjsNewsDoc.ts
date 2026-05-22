@@ -56,7 +56,7 @@ export function fromYjsNewsDoc(yDoc: Y.Doc): EleDocumentResponse {
 
   const links = (yEle.get('links') as Y.Map<unknown>).toJSON() || {}
 
-  const isTextDocument = ['core/article', 'core/editorial-info', 'core/flash'].includes(type)
+  const isTextDocument = ['core/article', 'core/article#timeless', 'core/editorial-info', 'core/flash'].includes(type)
   const yContent = yEle.get('content') as Y.XmlText
   const content = yContent.length
     ? removeConsecutiveEmptyTextNodes(yTextToSlateElement(yContent).children)

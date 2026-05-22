@@ -13,7 +13,8 @@
   },
   "numberOfChars": "Number of characters",
   "spelling": {
-    "noSuggestions": "No suggestions"
+    "noSuggestions": "No suggestions",
+    "loading": "Loading suggestions..."
   },
   "factbox": {
     "headerTitle": "Edit factbox original",

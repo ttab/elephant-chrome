@@ -31,6 +31,7 @@ export async function submitTimeless(args: {
   localDate: string
   isoDateTime: string
   author?: { id: string, name: string }
+  hasVignette?: boolean
 }): Promise<string> {
   const newId = await createNewTimelessArticle({
     repository: args.repository,
@@ -41,7 +42,8 @@ export async function submitTimeless(args: {
     newsvalue: args.newsvalue,
     slugline: args.slugline,
     section: args.section,
-    language: args.language
+    language: args.language,
+    hasVignette: args.hasVignette
   })
 
   const planningId = await addAssignmentWithDeliverable({
@@ -49,7 +51,7 @@ export async function submitTimeless(args: {
     type: 'timeless',
     deliverableId: newId,
     title: args.title,
-    publicVisibility: true,
+    publicVisibility: false,
     localDate: args.localDate,
     isoDateTime: args.isoDateTime,
     author: args.author

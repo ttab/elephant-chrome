@@ -122,4 +122,10 @@ describe('RemoveHastFromArticle', () => {
       expect(toast.error).toHaveBeenCalled()
     })
   })
+
+  it('shows timeless label when documentType is core/article#timeless', () => {
+    mockHastValue = Block.create({ type: 'ntb/hast', value: '1' })
+    render(<RemoveHastFromArticle ydoc={mockYdoc} documentType='core/article#timeless' />)
+    expect(screen.getByText('Ta bort HAST från tidlös')).toBeDefined()
+  })
 })

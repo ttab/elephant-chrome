@@ -47,22 +47,13 @@ export const Timeless = (): JSX.Element => {
     columns
   })
 
-  // Default: hide used timeless articles. Once the user opens the status
-  // filter in the toolbar they can include them explicitly.
-  const columnFilters = useMemo(() => {
-    if (savedFilters.length > 0) {
-      return savedFilters
-    }
-    return [{ id: 'status', value: ['draft', 'done'] }]
-  }, [savedFilters])
-
   return (
     <View.Root tab={currentTab} onTabChange={setCurrentTab}>
       <TableProvider<TimelessArticle>
         columns={columns}
         type={meta.name}
         initialState={{
-          columnFilters,
+          columnFilters: savedFilters,
           globalFilter: query.query
         }}
       >

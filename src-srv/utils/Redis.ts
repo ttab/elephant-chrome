@@ -6,10 +6,13 @@ const BASE_PREFIX = 'elc::hp'
 
 export class Redis {
   readonly #url: string
+  readonly #onUnrecoverable?: () => void
+  #unrecoverableFired = false
   #redisClient?: RedisClientType
 
-  constructor(url: string) {
+  constructor(url: string, onUnrecoverable?: () => void) {
     this.#url = url
+    this.#onUnrecoverable = onUnrecoverable
     this.#redisClient = undefined
   }
 
@@ -22,6 +25,10 @@ export class Redis {
       socket: {
         reconnectStrategy: (retries: number) => {
           if (retries > 10) {
+            if (!this.#unrecoverableFired) {
+              this.#unrecoverableFired = true
+              queueMicrotask(() => this.#onUnrecoverable?.())
+            }
             return new Error('Redis cache reconnect attempts exhausted')
           }
           return Math.min(retries * 100, 2000)

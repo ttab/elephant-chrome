@@ -34,6 +34,7 @@ describe('GET /api/envs', () => {
       hasPrint: 'true',
       hasHast: 'true',
       hasLooseSlugline: '',
+      hasVignette: '',
       environment: 'test'
     })
   })

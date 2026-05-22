@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import type { ReactElement } from 'react'
+import { useEffect, type ReactElement } from 'react'
 
 import { TimelessRowActions } from '@/views/TimelessOverview/lib/TimelessRowActions'
 import { useConvertArticleType } from '@/hooks/useConvertArticleType'
@@ -39,8 +39,11 @@ vi.mock('@/components/ui/DotMenu', () => ({
     onOpenChange?: (open: boolean) => void
   }) => {
     // Simulate the menu being opened so any lazy-mounted hooks inside the
-    // component flip to their "opened" state.
-    onOpenChange?.(true)
+    // component flip to their "opened" state. Fire after commit to avoid
+    // updating the parent during this component's render.
+    useEffect(() => {
+      onOpenChange?.(true)
+    }, [onOpenChange])
     return (
       <div>
         {items.map((item) => (

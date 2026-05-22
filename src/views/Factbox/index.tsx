@@ -1,4 +1,4 @@
-import { useQuery, useRegistry } from '@/hooks'
+import { useQuery, useRegistry, useRepositoryEvents } from '@/hooks'
 import { type ViewProps, type ViewMetadata } from '@/types/index'
 import type * as Y from 'yjs'
 import { Bold, Italic, Text, OrderedList, UnorderedList, LocalizedQuotationMarks, Link } from '@ttab/textbit-plugins'
@@ -8,7 +8,7 @@ import { getValueByYPath } from '@/shared/yUtils'
 import { Form, UserMessage, View } from '@/components'
 import { FactboxHeader } from './FactboxHeader'
 import { Error as ErrorView } from '@/views/Error'
-import { useEffect, useMemo, useState, type JSX } from 'react'
+import { useCallback, useEffect, useMemo, useState, type JSX } from 'react'
 import { LinkedArticles } from './lib/LinkedArticles'
 import { getContentMenuLabels } from '@/defaults/contentMenuLabels'
 import { useYDocument, useYValue } from '@/modules/yjs/hooks'
@@ -52,6 +52,7 @@ const Factbox = (props: ViewProps & { document?: Document }): JSX.Element => {
   const { repository } = useRegistry()
   const { data: session } = useSession()
   const [embeddedData, setEmbeddedData] = useState<EleDocumentResponse | undefined>(undefined)
+  const [embeddedError, setEmbeddedError] = useState(false)
   // Parse embedded id: "articleId:embedded:index"
   const embeddedMatch = typeof rawId === 'string' ? rawId.match(/^(.+):embedded:(\d+)$/) : null
   const articleId = embeddedMatch?.[1]
@@ -64,15 +65,19 @@ const Factbox = (props: ViewProps & { document?: Document }): JSX.Element => {
       return
     }
 
+    setEmbeddedError(false)
     void repository.getDocument({ uuid: articleId, accessToken: session.accessToken }).then((response) => {
       if (!response?.document) {
         toast.error(t('errors:toasts.couldNotOpenEmbeddedFactbox'))
+        setEmbeddedError(true)
         return
       }
       const factboxBlocks = response.document.content.filter((block) => block.type === 'core/factbox')
       const block = factboxBlocks[embeddedIndex]
 
       if (!block) {
+        toast.error(t('errors:toasts.couldNotOpenEmbeddedFactbox'))
+        setEmbeddedError(true)
         return
       }
 
@@ -94,6 +99,7 @@ const Factbox = (props: ViewProps & { document?: Document }): JSX.Element => {
     }).catch((error) => {
       console.error('Error fetching document for embedded factbox:', error)
       toast.error(t('errors:toasts.couldNotOpenEmbeddedFactbox'))
+      setEmbeddedError(true)
     })
   }, [articleId, embeddedIndex, repository, session?.accessToken, t])
 
@@ -120,7 +126,7 @@ const Factbox = (props: ViewProps & { document?: Document }): JSX.Element => {
 
   // Embedded factboxes are read-only — display without a YJS/HocusPocus connection
   if (embeddedMatch) {
-    return <EmbeddedFactboxView {...props} data={embeddedData} />
+    return <EmbeddedFactboxView {...props} data={embeddedData} hasError={embeddedError} />
   }
 
   return (
@@ -128,7 +134,9 @@ const Factbox = (props: ViewProps & { document?: Document }): JSX.Element => {
   )
 }
 
-const EmbeddedFactboxView = (props: ViewProps & { data?: EleDocumentResponse }): JSX.Element => {
+const EmbeddedFactboxView = (
+  props: ViewProps & { data?: EleDocumentResponse, hasError?: boolean }
+): JSX.Element => {
   const articleId = props?.data?.document?.uuid
   const originalId = props.data?.document?.links._?.[0]?.uuid
   const { t } = useTranslation('factbox')
@@ -186,6 +194,15 @@ const EmbeddedFactboxView = (props: ViewProps & { data?: EleDocumentResponse }):
     } finally {
       setIsOpeningOriginal(false)
     }
+  }
+
+  if (props.hasError) {
+    return (
+      <ErrorView
+        title={t('errors:toasts.couldNotOpenEmbeddedFactbox')}
+        message={t('errors:messages.embeddedFactboxMissing')}
+      />
+    )
   }
 
   if (!props.data?.document) {
@@ -270,22 +287,50 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
   const [factboxversion, setFactboxVersion] = useState<bigint | undefined>(undefined)
   const [documentState, setDocumentState] = useState<DocumentState | undefined>(undefined)
   const [currentVersion, setCurrentVersion] = useState<bigint | undefined>(undefined)
+  const [statusRefetchKey, setStatusRefetchKey] = useState(0)
   const environmentIsSane = ydoc.provider && status === 'authenticated'
+
+  const eventTypes = useMemo(() => ['core/factbox', 'core/factbox+meta'], [])
+
+  const handleRepositoryEvent = useCallback(
+    (event: { uuid?: string, mainDocument?: string }) => {
+      if (event.uuid === props.documentId || event.mainDocument === props.documentId) {
+        setStatusRefetchKey((k) => k + 1)
+      }
+    },
+    [props.documentId]
+  )
+
+  useRepositoryEvents(eventTypes, handleRepositoryEvent)
 
   useEffect(() => {
     if (!repository || !session?.accessToken) return
-    void repository.getStatuses({
-      uuids: [props.documentId],
-      statuses: ['usable', 'draft', 'unpublished'],
-      accessToken: session.accessToken
-    }).then((res) => {
-      const item = res?.items[0]
-      if (item) {
-        setCurrentVersion(item.version)
-        setDocumentState(getDocumentState(item))
+
+    let cancelled = false
+
+    void (async () => {
+      try {
+        const res = await repository.getStatuses({
+          uuids: [props.documentId],
+          statuses: ['usable', 'draft', 'unpublished'],
+          accessToken: session.accessToken
+        })
+        if (cancelled) return
+        const item = res?.items[0]
+        if (item) {
+          setCurrentVersion(item.version)
+          setDocumentState(getDocumentState(item))
+        }
+      } catch (error) {
+        if (cancelled) return
+        console.error(error)
       }
-    })
-  }, [repository, session?.accessToken, props.documentId])
+    })()
+
+    return () => {
+      cancelled = true
+    }
+  }, [repository, session?.accessToken, props.documentId, statusRefetchKey])
 
   const { t } = useTranslation('core')
   const configuredPlugins = useMemo(() => {

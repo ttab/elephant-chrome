@@ -23,7 +23,8 @@ export async function createNewTimelessArticle({
   newsvalue,
   slugline,
   section,
-  language
+  language,
+  hasVignette
 }: {
   repository: Repository | undefined
   session: Session | null
@@ -34,6 +35,7 @@ export async function createNewTimelessArticle({
   slugline: string
   section: Block | undefined
   language?: string
+  hasVignette?: boolean
 }): Promise<string> {
   if (!session?.accessToken || !repository) {
     console.error('CreateTimelessArticle: Missing required dependencies', {
@@ -61,7 +63,7 @@ export async function createNewTimelessArticle({
         ...(section ? { 'core/section': [section] } : {}),
         ...(contentSource ? { 'core/content-source': [contentSource] } : {})
       }
-    })
+    }, { hasVignette })
     await repository.saveDocument(document, session.accessToken)
     return id
   } catch (error) {

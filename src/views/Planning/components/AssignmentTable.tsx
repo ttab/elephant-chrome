@@ -101,12 +101,21 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId }: {
       deleteByYPath(assignment, ['meta', 'tt/slugline'])
     }
 
+    // Timeless assignments are persisted but never published, so adding one
+    // should not flip a clean planning into "unpublished changes". Capture
+    // the prior state so we can revert the flag the push observer will set.
+    const wasChanged = ydoc.isChanged
+
     rawAssignments?.push([
       toYStructure(
         fromYStructure(assignment)
       ) as Y.Map<unknown>
     ])
     deleteByYPath(ydoc.ctx, ['core/assignment', session?.user.sub])
+
+    if (assignmentType === 'timeless' && !wasChanged) {
+      ydoc.setIsChanged?.(false)
+    }
 
     if (documentId && ydoc.provider && !ydoc.isInProgress) {
       snapshotDocument(documentId, { force: true }, ydoc.provider.document)

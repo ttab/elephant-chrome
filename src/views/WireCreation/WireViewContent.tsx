@@ -41,27 +41,35 @@ import { ClockIcon } from '@ttab/elephant-ui/icons'
 
 const BASE_URL = import.meta.env.BASE_URL || ''
 
-const wireDocFetcher = async (url: string): Promise<EleDocument | undefined> => {
+const wireDocFetcher = async (url: string): Promise<EleDocument> => {
   const response = await fetch(url)
   if (!response.ok) {
-    return undefined
+    throw new Error(`Failed to fetch wire document: ${response.status} ${response.statusText}`)
   }
   const result = await response.json() as EleDocumentResponse
+  if (!result.document) {
+    throw new Error('Wire document response had no document')
+  }
   return result.document
 }
 
 export const WireViewContent = (props: ViewProps & {
+  /** Throwaway Y.Doc id backing the dialog form (title/slugline/awareness). */
   documentId: string
+  /** The eventual article's UUID. Never opened in Hocuspocus during the dialog. */
+  articleId: string
   data?: EleDocumentResponse
   wires: WireType[]
 }): JSX.Element | undefined => {
-  // Create article using supplied data
+  // Form-state Y.Doc only: the article is created via repository.saveDocument
+  // in createArticle, never via this Y.Doc.
   const ydoc = useYDocument<Y.Map<unknown>>(props.documentId, { data: props.data })
   const { status, data: session } = useSession()
 
-  // Fetch the first wire document to get embargo and content sources
+  // Fetch the first wire document to get embargo, content sources and the
+  // body to translate.
   const primaryWireId = props.wires?.[0]?.id
-  const { data: wireDocument } = useSWR<EleDocument | undefined>(
+  const { data: wireDocument, error: wireError } = useSWR<EleDocument, Error>(
     primaryWireId ? `${BASE_URL}/api/documents/${primaryWireId}?direct=true` : null,
     wireDocFetcher,
     { revalidateOnFocus: false, revalidateOnReconnect: false }
@@ -84,7 +92,7 @@ export const WireViewContent = (props: ViewProps & {
   const [title] = useYValue<Y.XmlText>(ydoc.ele, 'root.title', true)
   const documentAwareness = useRef<(value: boolean) => void>(null)
   const planningTitleRef = useRef<HTMLInputElement>(null)
-  const { index, locale, timeZone, server } = useRegistry()
+  const { index, locale, timeZone, server, repository } = useRegistry()
   const sections = useSections()
   const [section, setSection] = useState<{
     type: string
@@ -198,7 +206,7 @@ export const WireViewContent = (props: ViewProps & {
 
                         if (!sectionUuid || !sectionTitle) {
                           console.error('Selected planning is missing section data, cannot create article')
-                          toast.error('Vald planering saknar sektion och kan inte användas.', {
+                          toast.error(t('creation.planningMissingSection'), {
                             duration: Infinity,
                             closeButton: true
                           })
@@ -353,15 +361,32 @@ export const WireViewContent = (props: ViewProps & {
 
                   if (!ydoc.connected || !ydoc.id || !session || !effectiveSection?.uuid) {
                     console.error('Environment is not sane, article cannot be created')
+                    toast.error(t('creation.createError'))
+                    setShowVerifyDialog(false)
                     return
                   }
 
-                  if (props?.onDialogClose) {
-                    props.onDialogClose(ydoc.id)
+                  // Without the wire document we silently lose embargo,
+                  // content-source links and the translation source.
+                  if (primaryWireId && (wireError || !wireDocument)) {
+                    console.error('Wire document not available, article cannot be created', wireError)
+                    toast.error(t('creation.createError'))
+                    setShowVerifyDialog(false)
+                    return
                   }
 
+                  // Keep both the CreatePrompt and the main dialog open until
+                  // createArticle has fully landed (article saved AND linked to
+                  // planning). The CreatePrompt's built-in `isSubmitting` state
+                  // disables the primary button and shows a spinner during the
+                  // wait, so the user can't navigate away to a planning that
+                  // briefly references an article whose creation is still in
+                  // flight. Belt-and-braces alongside the save-then-link order
+                  // in createArticle.
                   createArticle({
                     ydoc,
+                    articleId: props.articleId,
+                    repository,
                     status,
                     session,
                     planningId: selectedPlanning?.value,
@@ -379,16 +404,20 @@ export const WireViewContent = (props: ViewProps & {
                   })
                     .then(() => {
                       setShowVerifyDialog(false)
+                      if (props?.onDialogClose) {
+                        props.onDialogClose(ydoc.id)
+                      }
                       props.onDocumentCreated?.()
                     })
                     .catch((ex: unknown) => {
-                      if (ex instanceof Error && ex.message === 'AssignmentRollbackError') {
-                        toast.error(t('creation.assignmentRollbackError'), {
-                          duration: Infinity,
-                          closeButton: true
-                        })
-                      } else if (ex instanceof Error && ex.message === 'CreateAssignmentError') {
+                      // Close the CreatePrompt so the user can retry or cancel
+                      // — without this the prompt's `isSubmitting` would lock
+                      // the primary button forever.
+                      setShowVerifyDialog(false)
+                      if (ex instanceof Error && ex.message === 'CreateAssignmentError') {
                         // Toast already shown by addAssignmentWithDeliverable
+                      } else if (ex instanceof Error && ex.message === 'TranslationError') {
+                        // Translation-specific toast already shown by createArticle
                       } else {
                         toast.error(t('creation.createError'))
                       }

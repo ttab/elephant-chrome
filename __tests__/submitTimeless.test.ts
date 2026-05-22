@@ -50,7 +50,8 @@ describe('submitTimeless', () => {
       expect.objectContaining({
         deliverableId: 'doc-1',
         type: 'timeless',
-        planningId: 'plan-1'
+        planningId: 'plan-1',
+        publicVisibility: false
       })
     )
   })

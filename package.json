@@ -2,7 +2,7 @@
   "name": "elephant-chrome",
   "private": false,
   "license": "MIT",
-  "version": "1.15.0-beta.12",
+  "version": "1.15.0",
   "type": "module",
   "os": [
     "darwin",
@@ -41,7 +41,7 @@
   "dependencies": {
     "@auth/express": "^0.9.0",
     "@date-fns/utc": "^2.1.1",
-    "@grafana/faro-react": "^2.5.0",
+    "@grafana/faro-react": "^2.6.3",
     "@hocuspocus/extension-logger": "^3.4.4",
     "@hocuspocus/extension-redis": "^3.4.4",
     "@hocuspocus/provider": "^3.4.4",
@@ -55,7 +55,7 @@
     "@ttab/api-client": "^2.11.1",
     "@ttab/elephant-api": "^0.22.1",
     "@ttab/elephant-tt-api": "^0.4.2",
-    "@ttab/elephant-ui": "^1.4.2",
+    "@ttab/elephant-ui": "^1.4.5",
     "@ttab/textbit": "^1.4.0",
     "@ttab/textbit-plugins": "^1.6.0",
     "class-variance-authority": "^0.7.1",

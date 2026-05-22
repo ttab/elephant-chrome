@@ -37,6 +37,7 @@ export const ArticleTypeConversion = ({ ydoc, documentType }: {
     showModal(
       <ConvertToArticleDialog
         timelessId={ydoc.id}
+        timelessDoc={ydoc.provider?.document}
         onClose={(result) => {
           hideModal()
           if (result?.articleId) {

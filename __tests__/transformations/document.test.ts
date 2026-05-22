@@ -237,3 +237,41 @@ describe('Description and slugline handling in planning', () => {
     })
   })
 })
+
+
+describe('document.title derived from heading-1 on serialize', () => {
+  function buildResponse(type: string): GetDocumentResponse {
+    if (!article.document) {
+      throw new Error('article fixture missing document')
+    }
+    return {
+      ...article,
+      document: {
+        ...article.document,
+        type,
+        title: 'stale title from creation',
+        content: article.document.content.map((block) => (
+          block.role === 'heading-1'
+            ? { ...block, data: { ...block.data, text: 'edited heading' } }
+            : block
+        ))
+      }
+    }
+  }
+
+  it('uses heading-1 text as title for core/article', () => {
+    const yDoc = new Y.Doc()
+    toYjsNewsDoc(toGroupedNewsDoc(buildResponse('core/article')), yDoc)
+
+    const { document } = fromYjsNewsDoc(yDoc)
+    expect(document?.title).toBe('edited heading')
+  })
+
+  it('uses heading-1 text as title for core/article#timeless', () => {
+    const yDoc = new Y.Doc()
+    toYjsNewsDoc(toGroupedNewsDoc(buildResponse('core/article#timeless')), yDoc)
+
+    const { document } = fromYjsNewsDoc(yDoc)
+    expect(document?.title).toBe('edited heading')
+  })
+})

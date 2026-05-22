@@ -102,7 +102,7 @@ describe('articleDocumentTemplate', () => {
     const fixedDate = new Date('2024-06-01T10:00:00.000Z')
     vi.setSystemTime(fixedDate)
 
-    const doc = articleDocumentTemplate('test-article-id')
+    const doc = articleDocumentTemplate('test-article-id', undefined, { hasVignette: true })
 
     expect(doc).toMatchInlineSnapshot(`
       {

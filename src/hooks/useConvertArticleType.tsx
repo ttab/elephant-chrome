@@ -5,17 +5,18 @@ import {
   attachArticleAssignment,
   buildFallbackPlanning,
   deriveNewPlanning,
-  planningReferencesArticle,
+  findArticleAssignment,
   prepareArticleConversion
 } from '@/shared/convertArticleType'
-import type { Document } from '@ttab/elephant-api/newsdoc'
+import type { Block, Document } from '@ttab/elephant-api/newsdoc'
 import { replaceDeliverable } from '@/lib/index/replaceDeliverable'
+import { snapshotDocument } from '@/lib/snapshotDocument'
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
 import { CalendarDaysIcon, PenBoxIcon } from '@ttab/elephant-ui/icons'
 import { ToastAction } from '@/components/ToastAction'
-import type { Block } from '@ttab/elephant-api/newsdoc'
 import type { ValidationResult } from '@ttab/elephant-api/repository'
+import type * as Y from 'yjs'
 
 function warnOnPruneErrors(errors: ValidationResult[]): void {
   if (!errors.length) {
@@ -31,6 +32,7 @@ export type ConvertArgs
       targetType: 'core/article'
       targetDate: string
       sourcePlanningId?: string
+      sourceDocument?: Y.Doc
     }
 
 export type ConversionResult
@@ -75,10 +77,21 @@ export function useConvertArticleType(): UseConvertArticleTypeResult {
 
     try {
       if (args.targetType === 'core/article') {
-        const sourceResponse = await repository.getDocument({
-          uuid: documentId,
-          accessToken
-        })
+        const snapshotJobs: Array<Promise<unknown>> = [
+          snapshotDocument(documentId, undefined, args.sourceDocument)
+        ]
+        if (args.sourcePlanningId) {
+          snapshotJobs.push(snapshotDocument(args.sourcePlanningId))
+        }
+        await Promise.all(snapshotJobs)
+
+        const [sourceResponse, planningResponse] = await Promise.all([
+          repository.getDocument({ uuid: documentId, accessToken }),
+          args.sourcePlanningId
+            ? repository.getDocument({ uuid: args.sourcePlanningId, accessToken })
+            : Promise.resolve(undefined)
+        ])
+
         if (!sourceResponse?.document) {
           toast.error(t('views:timeless.toasts.documentNotFound'))
           return { success: false }
@@ -92,18 +105,16 @@ export function useConvertArticleType(): UseConvertArticleTypeResult {
 
         const newPlanningUuid = crypto.randomUUID()
         let basePlanning: Document
+        let sourceAssignment: Block | undefined
         if (args.sourcePlanningId) {
-          const planningResponse = await repository.getDocument({
-            uuid: args.sourcePlanningId,
-            accessToken
-          })
           if (!planningResponse?.document) {
             toast.error(t('views:timeless.toasts.conversionFailed', {
               message: 'source planning not found'
             }))
             return { success: false }
           }
-          if (!planningReferencesArticle(planningResponse.document, documentId)) {
+          sourceAssignment = findArticleAssignment(planningResponse.document, documentId)
+          if (!sourceAssignment) {
             toast.error(t('views:timeless.toasts.conversionFailed', {
               message: 'source planning does not reference the timeless article'
             }))
@@ -134,7 +145,8 @@ export function useConvertArticleType(): UseConvertArticleTypeResult {
           planning: basePlanning,
           articleId: newArticle.uuid,
           articleTitle: sourceResponse.document.title ?? '',
-          targetDate: args.targetDate
+          targetDate: args.targetDate,
+          sourceAssignment
         })
 
         await repository.createDerivedDocument({
