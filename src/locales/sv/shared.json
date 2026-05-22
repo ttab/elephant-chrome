@@ -37,6 +37,7 @@
     "asSavePlaceholder": "Publicera ny information",
     "embargoMinTime": "Embargo: kan inte schemaläggas före {{time}}",
     "timeInPast": "Tiden måste vara i framtiden",
+    "beforeEmbargo": "Tiden är före embargo",
     "planningInPast": "Kan inte schemalägga på ett tidigare planeringsdatum. Flytta uppdraget till en aktuell planering, eller uppdatera planeringsdatumet.",
     "timezoneMismatch": "Tider använder en annan tidszon än din enhet (skillnad {{offset}}).",
     "schedulingRequiresPlanning": "Schemaläggning är inte tillgänglig eftersom dokumentet saknar en kopplad planering.",

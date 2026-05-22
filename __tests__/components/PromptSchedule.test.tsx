@@ -143,6 +143,50 @@ describe('PromptSchedule', () => {
     expect(getTimeInput().value).not.toBe('')
   })
 
+  it('disables submit and shows an alert when the picked time is before an active embargo', () => {
+    const embargo = new Date(Date.now() + 6 * 60 * 60 * 1000)
+    renderSchedule({ embargoUntil: embargo.toISOString() })
+
+    expect(getPrimaryButton()).not.toBeDisabled()
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+
+    const before = new Date(embargo.getTime() - 60 * 1000)
+    const hh = String(before.getHours()).padStart(2, '0')
+    const mm = String(before.getMinutes()).padStart(2, '0')
+    fireEvent.change(getTimeInput(), { target: { value: `${hh}:${mm}` } })
+
+    expect(getPrimaryButton()).toBeDisabled()
+    expect(screen.getByRole('alert')).toBeInTheDocument()
+  })
+
+  it('passes the picked time to setStatus when the primary button is clicked', () => {
+    const setStatus = vi.fn()
+    render(
+      <PromptSchedule
+        prompt={usablePrompt}
+        planningId='planning-1'
+        setStatus={setStatus}
+        showPrompt={vi.fn()}
+      />
+    )
+
+    const future = new Date(Date.now() + 60 * 60 * 1000)
+    const hh = String(future.getHours()).padStart(2, '0')
+    const mm = String(future.getMinutes()).padStart(2, '0')
+    fireEvent.change(getTimeInput(), { target: { value: `${hh}:${mm}` } })
+
+    fireEvent.click(screen.getByRole('button', { name: usablePrompt.title }))
+
+    expect(setStatus).toHaveBeenCalledTimes(1)
+    const [statusArg, payload]
+      = setStatus.mock.calls[0] as [string, { time: Date, cause: undefined }]
+    expect(statusArg).toBe(usablePrompt.status)
+    expect(payload.time).toBeInstanceOf(Date)
+    expect(payload.time.getHours()).toBe(future.getHours())
+    expect(payload.time.getMinutes()).toBe(future.getMinutes())
+    expect(payload.cause).toBeUndefined()
+  })
+
   it('warns and blocks submit when the planning date is in the past', () => {
     mockPublishDate = new Date('2024-01-01T12:00:00Z')
     renderSchedule()

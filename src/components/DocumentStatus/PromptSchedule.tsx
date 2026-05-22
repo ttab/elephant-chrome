@@ -1,6 +1,6 @@
 import type { WorkflowTransition } from '@/defaults/workflowSpecification'
 import { Prompt } from '../Prompt'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Label } from '@ttab/elephant-ui'
 import { TimeInput } from '../TimeInput'
 import { getTimezoneOffset, toZonedTime } from 'date-fns-tz'
@@ -58,7 +58,7 @@ export const PromptSchedule = ({
 
   const timeViolatesEmbargo
     = time !== undefined && embargoIsActive && embargoDate ? time < embargoDate : false
-  const timeInPast = time !== undefined && time < new Date()
+  const timeInPast = time !== undefined && time < now
   const today = format(toZonedTime(now, DEFAULT_TIMEZONE), 'yyyy-MM-dd')
   const planningDate = publishDate
     ? format(toZonedTime(new Date(publishDate), DEFAULT_TIMEZONE), 'yyyy-MM-dd')
@@ -72,15 +72,6 @@ export const PromptSchedule = ({
   )
   const timeZoneMismatch = offsetDiffMinutes !== 0
   const offsetLabel = formatOffsetDiff(offsetDiffMinutes)
-
-  useEffect(() => {
-    if (loading) return
-    if (embargoIsActive && embargoDate) {
-      setTime(embargoDate)
-    }
-    // should only run when loading changes
-    // eslint-disable-next-line
-  }, [loading])
 
   const displayDate = time ?? (publishDate ? new Date(publishDate) : now)
 
@@ -158,13 +149,17 @@ export const PromptSchedule = ({
               className='border w-full'
             />
             <div className='relative min-h-5 w-full'>
-              {timeInPast && !planningDateInPast && (
+              {!planningDateInPast && (timeViolatesEmbargo || timeInPast) && (
                 <div
                   role='alert'
                   className='absolute top-0 left-0 flex flex-row items-center gap-1 text-sm text-red-600 dark:text-red-400 whitespace-nowrap'
                 >
                   <TriangleAlertIcon size={14} strokeWidth={1.75} />
-                  {t('shared:status_menu.timeInPast')}
+                  {t(
+                    timeViolatesEmbargo
+                      ? 'shared:status_menu.beforeEmbargo'
+                      : 'shared:status_menu.timeInPast'
+                  )}
                 </div>
               )}
             </div>
