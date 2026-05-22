@@ -24,17 +24,15 @@ export const getImageSrc = async (
     return ''
   }
 
-  let details
   try {
-    details = await repository.getAttachmentDetails(uploadId, session.accessToken)
+    const details = await repository.getAttachmentDetails(uploadId, session.accessToken)
+    if (!details?.downloadLink) {
+      console.warn('getImageSrc: attachment has no downloadLink', { uploadId })
+      return ''
+    }
+    return details.downloadLink
   } catch (ex) {
     console.error('getImageSrc: getAttachmentDetails failed', { uploadId, ex })
     throw ex
   }
-
-  if (!details?.downloadLink) {
-    console.warn('getImageSrc: attachment has no downloadLink', { uploadId })
-    return ''
-  }
-  return details.downloadLink
 }
