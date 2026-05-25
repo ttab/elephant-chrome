@@ -9,6 +9,9 @@ export interface SettingsContextValue {
   /** Set current settings for a document type */
   updateSettings: (documentType: string, payload: SettingsDocumentPayload) => Promise<void>
 
+  /** Delete settings for a document type */
+  deleteSettings: (documentType: string) => Promise<void>
+
   /** Subscribe to settings changes for a document type */
   subscribe: (documentType: string, handler: SettingsEventHandler) => () => void
 }

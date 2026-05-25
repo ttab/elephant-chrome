@@ -1,19 +1,28 @@
 import type { WorkflowTransition } from '@/defaults/workflowSpecification'
 import { Prompt } from '../Prompt'
-import { useRegistry } from '@/hooks/useRegistry'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Label } from '@ttab/elephant-ui'
 import { TimeInput } from '../TimeInput'
-import { toZonedTime } from 'date-fns-tz'
+import { getTimezoneOffset, toZonedTime } from 'date-fns-tz'
 import { format } from 'date-fns'
-import { CalendarIcon, LoaderIcon, type LucideIcon } from '@ttab/elephant-ui/icons'
+import { CalendarIcon, LoaderIcon, TriangleAlertIcon, type LucideIcon } from '@ttab/elephant-ui/icons'
 import { PromptCauseField } from './PromptCauseField'
 import { useTranslation } from 'react-i18next'
 import { useCollaborationDocument } from '@/hooks/useCollaborationDocument'
+import { useRegistry } from '@/hooks/useRegistry'
 import type { YDocument } from '@/modules/yjs/hooks'
 import { useYValue } from '@/modules/yjs/hooks'
 import { HastToggle } from '@/components/HastToggle'
+import { DEFAULT_TIMEZONE } from '@/defaults/defaultTimezone'
 import type * as Y from 'yjs'
+
+function formatOffsetDiff(diffMinutes: number): string {
+  const sign = diffMinutes >= 0 ? '+' : '-'
+  const abs = Math.abs(diffMinutes)
+  const hours = Math.floor(abs / 60)
+  const mins = abs % 60
+  return mins === 0 ? `${sign}${hours}h` : `${sign}${hours}h ${mins}m`
+}
 
 export const PromptSchedule = ({
   prompt, planningId, setStatus, showPrompt, requireCause = false, anchor, typeIcon,
@@ -35,43 +44,38 @@ export const PromptSchedule = ({
   anchor?: HTMLElement | null
   typeIcon?: LucideIcon
 }) => {
-  const { timeZone } = useRegistry()
   const { loading, document } = useCollaborationDocument({ documentId: planningId })
+  const { timeZone: userTimeZone } = useRegistry()
   const ele = document ? document.getMap('ele') : undefined
   const [publishDate] = useYValue<Date>(ele, 'meta.core/planning-item[0].data.start_date') as Date[]
   const now = new Date()
-  const embargoDate = embargoUntil ? new Date(embargoUntil) : undefined
-  const embargoIsActive = embargoDate ? embargoDate > now : false
-  const [time, setTime] = useState(embargoIsActive && embargoDate ? embargoDate : now)
+  const embargoCandidate = embargoUntil ? new Date(embargoUntil) : undefined
+  const activeEmbargo = embargoCandidate && embargoCandidate > now ? embargoCandidate : undefined
+  const [time, setTime] = useState<Date | undefined>(activeEmbargo)
   const [cause, setCause] = useState<string | undefined>()
   const { t } = useTranslation()
 
-  // Check if selected time respects embargo
-  const timeViolatesEmbargo = embargoIsActive && embargoDate ? time < embargoDate : false
+  const timeViolatesEmbargo = time !== undefined && activeEmbargo ? time < activeEmbargo : false
+  const timeInPast = time !== undefined && time < now
+  const offsetReference = time ?? now
+  const offsetDiffMinutes = Math.round(
+    (getTimezoneOffset(userTimeZone, offsetReference)
+      - getTimezoneOffset(DEFAULT_TIMEZONE, offsetReference)) / 60_000
+  )
+  const timeZoneMismatch = offsetDiffMinutes !== 0
+  const offsetLabel = formatOffsetDiff(offsetDiffMinutes)
 
-  useEffect(() => {
-    if (loading) return
+  // Fall back to today when the planning's start_date is in the past, so the
+  // document can still be scheduled instead of inheriting an unusable date.
+  const todayInTz = format(toZonedTime(now, DEFAULT_TIMEZONE), 'yyyy-MM-dd')
+  const planningDateInTz = publishDate
+    ? format(toZonedTime(new Date(publishDate), DEFAULT_TIMEZONE), 'yyyy-MM-dd')
+    : undefined
+  const scheduleBase = publishDate && planningDateInTz && planningDateInTz >= todayInTz
+    ? new Date(publishDate)
+    : now
 
-    // If embargo is active, use embargo time as minimum
-    if (embargoIsActive && embargoDate) {
-      setTime(embargoDate)
-      return
-    }
-
-    if (!publishDate) return
-
-    const formatedPublishDate = publishDate.toLocaleString()
-    const formatedNow = now.toLocaleString().slice(0, 10)
-
-    // only set to publish date if it's in the future, otherwise default to now
-    if (formatedPublishDate >= formatedNow) {
-      const d = new Date(publishDate)
-      d.setHours(now.getHours(), now.getMinutes(), 0, 0)
-      setTime(d)
-    }
-    // should only run when loading changes
-    // eslint-disable-next-line
-  }, [loading])
+  const displayDate = time ?? scheduleBase
 
   return (
     <Prompt
@@ -80,6 +84,7 @@ export const PromptSchedule = ({
       primaryLabel={prompt.title}
       secondaryLabel={t('common:actions.abort')}
       onPrimary={() => {
+        if (!time) return
         showPrompt(undefined)
         void setStatus(
           prompt.status,
@@ -92,42 +97,64 @@ export const PromptSchedule = ({
       onSecondary={() => {
         showPrompt(undefined)
       }}
-      disablePrimary={(requireCause && !cause) || timeViolatesEmbargo}
+      disablePrimary={
+        (requireCause && !cause) || !time || timeInPast || timeViolatesEmbargo
+      }
       typeIcon={typeIcon}
     >
       <div className='flex flex-col items-start gap-6'>
         {prompt.description}
 
-        {embargoIsActive && embargoDate && (
+        {activeEmbargo && (
           <div className='text-sm text-orange-700 dark:text-orange-400'>
             {t('shared:status_menu.embargoMinTime', {
-              time: format(toZonedTime(embargoDate, timeZone), 'yyyy-MM-dd HH:mm')
+              time: format(toZonedTime(activeEmbargo, DEFAULT_TIMEZONE), 'yyyy-MM-dd HH:mm')
             })}
           </div>
         )}
 
-        <div className='flex flex-row justify-items-start items-stretch gap-6 flex-wrap pt-2'>
+        {timeZoneMismatch && (
+          <div className='text-sm text-orange-700 dark:text-orange-400'>
+            {t('shared:status_menu.timezoneMismatch', { offset: offsetLabel })}
+          </div>
+        )}
 
-          <div className='flex flex-col gap-2'>
+        <div className='flex flex-row justify-items-start items-start gap-6 flex-wrap pt-2'>
+
+          <div className='flex flex-col items-start gap-2 w-28'>
             <Label htmlFor='ScheduledTime'>{t('shared:status_menu.setTime')}</Label>
 
             <TimeInput
               id='ScheduledTime'
               autoFocus={true}
-              defaultTime={format(toZonedTime(time, timeZone), 'HH:mm')}
+              defaultTime={time ? format(toZonedTime(time, DEFAULT_TIMEZONE), 'HH:mm') : ''}
               handleOnChange={(value) => {
-                if (value) {
-                  const [hour, mins] = value.split(':').map(Number)
-                  const t = new Date(time)
-                  t.setHours(hour)
-                  t.setMinutes(mins)
-                  setTime(t)
-                }
+                if (!value) return
+                const [hour, mins] = value.split(':').map(Number)
+                const base = time ?? scheduleBase
+                const next = new Date(base)
+                next.setHours(hour, mins, 0, 0)
+                setTime(next)
               }}
               handleOnSelect={() => { }}
               setOpen={() => { }}
-              className='border w-auto'
+              className='border w-full'
             />
+            <div className='relative min-h-5 w-full'>
+              {(timeViolatesEmbargo || timeInPast) && (
+                <div
+                  role='alert'
+                  className='absolute top-0 left-0 flex flex-row items-center gap-1 text-sm text-red-600 dark:text-red-400 whitespace-nowrap'
+                >
+                  <TriangleAlertIcon size={14} strokeWidth={1.75} />
+                  {t(
+                    timeViolatesEmbargo
+                      ? 'shared:status_menu.beforeEmbargo'
+                      : 'shared:status_menu.timeInPast'
+                  )}
+                </div>
+              )}
+            </div>
           </div>
 
           <div className='flex flex-col gap-2'>
@@ -138,7 +165,7 @@ export const PromptSchedule = ({
                 )
               : (
                   <span className='border py-2 px-3 h-8 text-sm rounded flex flex-row gap-4 items-center justify-between bg-muted'>
-                    {format(toZonedTime(time, timeZone), 'yyyy-MM-dd')}
+                    {format(toZonedTime(displayDate, DEFAULT_TIMEZONE), 'yyyy-MM-dd')}
                     <CalendarIcon size={14} strokeWidth={1.75} />
                   </span>
                 )}
