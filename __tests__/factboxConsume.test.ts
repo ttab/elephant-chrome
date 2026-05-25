@@ -3,7 +3,10 @@ import { Block } from '@ttab/elephant-api/newsdoc'
 import type { TBElement, TBResource } from '@ttab/textbit'
 import type { Session } from 'next-auth'
 import type { Repository } from '@/shared/Repository'
+import { toast } from 'sonner'
 import { createFactboxConsume } from '../src/plugins/Factboxes/consume'
+
+vi.mock('sonner', () => ({ toast: { error: vi.fn() } }))
 
 type DragPayload = {
   id: string
@@ -256,10 +259,11 @@ describe('createFactboxConsume', () => {
   })
 
   describe('repository failure handling', () => {
-    it('treats a repository.getDocument rejection as no document and uses fallback children', async () => {
+    it('refuses the insert and surfaces a toast when getDocument rejects (standalone)', async () => {
       const { repo, getDocument } = makeRepo()
       getDocument.mockRejectedValue(new Error('boom'))
       const consume = createFactboxConsume(repo, session)
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
 
       const result = await runConsume(consume, {
         id: STANDALONE_ID,
@@ -267,12 +271,30 @@ describe('createFactboxConsume', () => {
         text: 'fallback body line 1\nfallback body line 2'
       })
 
-      // No transformFactbox path → fallbackChildren uses payload.text split on newlines.
-      const body = result?.data.children.find((c) => c.type === 'core/factbox/body')
-      const bodyTexts = (body?.children as TBElement[]).map(
-        (c) => (c.children as { text: string }[])[0].text
-      )
-      expect(bodyTexts).toEqual(['fallback body line 1', 'fallback body line 2'])
+      expect(result).toBeUndefined()
+      expect(toast.error).toHaveBeenCalledTimes(1)
+      expect(consoleError).toHaveBeenCalled()
+
+      consoleError.mockRestore()
+    })
+
+    it('refuses the insert and surfaces a toast when getDocument rejects (embedded)', async () => {
+      const { repo, getDocument } = makeRepo()
+      getDocument.mockRejectedValue(new Error('boom'))
+      const consume = createFactboxConsume(repo, session)
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
+
+      const result = await runConsume(consume, {
+        id: `${ARTICLE_ID}:embedded:0`,
+        title: 't',
+        text: ''
+      })
+
+      expect(result).toBeUndefined()
+      expect(toast.error).toHaveBeenCalledTimes(1)
+      expect(consoleError).toHaveBeenCalled()
+
+      consoleError.mockRestore()
     })
 
     it('returns a result even when getDocument resolves to null/undefined document (standalone)', async () => {
