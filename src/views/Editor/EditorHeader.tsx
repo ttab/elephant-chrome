@@ -163,6 +163,17 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
         ? data.time
         : new Date()
 
+      // DEV-ONLY: [SCHED] trace what EditorHeader hands to updateAssignmentTime.
+      console.log('[SCHED] EditorHeader.onBeforeStatusChange -> updateAssignmentTime', {
+        newStatus,
+        planningId,
+        deliverableId: ydoc.id,
+        newTime_UTC: newTime.toISOString(),
+        newTime_Stockholm: newTime.toLocaleString('sv-SE', { timeZone: 'Europe/Stockholm' }),
+        newTime_Sydney: newTime.toLocaleString('sv-SE', { timeZone: 'Australia/Sydney' }),
+        fellBackToNow: !(data?.time instanceof Date)
+      })
+
       await updateAssignmentTime(ydoc.id, planningId, newStatus, newTime, t)
     }
 

@@ -1,5 +1,8 @@
 import { fireEvent, render, screen } from '@testing-library/react'
+import { format } from 'date-fns'
+import { toZonedTime } from 'date-fns-tz'
 import { PromptSchedule } from '@/components/DocumentStatus/PromptSchedule'
+import { DEFAULT_TIMEZONE } from '@/defaults/defaultTimezone'
 import type { WorkflowTransition } from '@/defaults/workflowSpecification'
 
 Object.defineProperty(window, 'matchMedia', {
@@ -74,8 +77,10 @@ const getTimeInput = () =>
 const getPrimaryButton = () =>
   screen.getByRole('button', { name: usablePrompt.title })
 
+// Format in DEFAULT_TIMEZONE because that is what the picker now interprets
+// HH:mm in, regardless of the test runner's local timezone.
 const toHHMM = (d: Date) =>
-  `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
+  format(toZonedTime(d, DEFAULT_TIMEZONE), 'HH:mm')
 
 describe('PromptSchedule', () => {
   beforeEach(() => {
@@ -173,8 +178,10 @@ describe('PromptSchedule', () => {
       = setStatus.mock.calls[0] as [string, { time: Date, cause: undefined }]
     expect(statusArg).toBe(usablePrompt.status)
     expect(payload.time).toBeInstanceOf(Date)
-    expect(payload.time.getHours()).toBe(future.getHours())
-    expect(payload.time.getMinutes()).toBe(future.getMinutes())
+    // Stored instant must read as the picked HH:mm in DEFAULT_TIMEZONE,
+    // independent of the test runner's local timezone.
+    expect(format(toZonedTime(payload.time, DEFAULT_TIMEZONE), 'HH:mm'))
+      .toBe(toHHMM(future))
     expect(payload.cause).toBeUndefined()
   })
 
@@ -197,10 +204,11 @@ describe('PromptSchedule', () => {
     fireEvent.click(getPrimaryButton())
 
     const [, payload] = setStatus.mock.calls[0] as [string, { time: Date }]
-    const today = new Date()
-    expect(payload.time.getFullYear()).toBe(today.getFullYear())
-    expect(payload.time.getMonth()).toBe(today.getMonth())
-    expect(payload.time.getDate()).toBe(today.getDate())
+    // Compare calendar day in DEFAULT_TIMEZONE so the assertion is stable
+    // regardless of the test runner's local timezone.
+    const stockholmToday = format(toZonedTime(new Date(), DEFAULT_TIMEZONE), 'yyyy-MM-dd')
+    const stockholmStored = format(toZonedTime(payload.time, DEFAULT_TIMEZONE), 'yyyy-MM-dd')
+    expect(stockholmStored).toBe(stockholmToday)
   })
 
   it('shows a timezone notice with offset when the user timezone differs from the system', () => {
@@ -222,5 +230,42 @@ describe('PromptSchedule', () => {
     renderSchedule()
 
     expect(screen.queryByText(/offset|skillnad|forskjell/i)).not.toBeInTheDocument()
+  })
+
+  // Regression for the Sydney bureau case where browser-local setHours stored a
+  // Sydney-zoned instant for a Stockholm-labelled HH:mm, so material went out
+  // ~8h earlier than intended. The picker must interpret HH:mm in
+  // DEFAULT_TIMEZONE, never browser-local.
+  it('stores a Stockholm-zoned instant for picked HH:mm (Sydney bureau regression)', () => {
+    // Pin "now" to 2026-05-26 00:00 UTC = 02:00 Stockholm (CEST) = 10:00 Sydney (AEST).
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-05-26T00:00:00Z'))
+
+    try {
+      const setStatus = vi.fn()
+      render(
+        <PromptSchedule
+          prompt={usablePrompt}
+          planningId='planning-1'
+          setStatus={setStatus}
+          showPrompt={vi.fn()}
+        />
+      )
+
+      fireEvent.change(getTimeInput(), { target: { value: '15:00' } })
+      expect(getPrimaryButton()).not.toBeDisabled()
+      fireEvent.click(getPrimaryButton())
+
+      const [, payload] = setStatus.mock.calls[0] as [string, { time: Date }]
+
+      // Contract: 15:00 on 2026-05-26 in Stockholm (CEST) = 13:00 UTC.
+      expect(payload.time.toISOString()).toBe('2026-05-26T13:00:00.000Z')
+
+      // Regression: must not equal what browser-local setHours in Sydney (AEST,
+      // +10) would have produced, which is 15:00 Sydney = 05:00 UTC.
+      expect(payload.time.toISOString()).not.toBe('2026-05-26T05:00:00.000Z')
+    } finally {
+      vi.useRealTimers()
+    }
   })
 })

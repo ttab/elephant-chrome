@@ -6,6 +6,18 @@ const BASE_URL = import.meta.env.BASE_URL || ''
 export async function updateAssignmentTime<Ns extends Namespace>(
   deliverableId: string, planningId: string, newStatus: string, newTime: Date, t: TFunction<Ns>
 ) {
+  // DEV-ONLY: [SCHED] last hop before the backend; this is what the planning
+  // assignment will be updated to.
+  const isoTime = newTime?.toISOString()
+  console.log('[SCHED] updateAssignmentTime -> PATCH /api/documents/:planningId', {
+    deliverableId,
+    planningId,
+    newStatus,
+    isoTime,
+    asStockholm: newTime?.toLocaleString('sv-SE', { timeZone: 'Europe/Stockholm' }),
+    asSydney: newTime?.toLocaleString('sv-SE', { timeZone: 'Australia/Sydney' })
+  })
+
   try {
     const response = await fetch(`${BASE_URL}/api/documents/${planningId}`, {
       method: 'PATCH',
@@ -17,7 +29,7 @@ export async function updateAssignmentTime<Ns extends Namespace>(
           deliverableId,
           type: 'core/article',
           status: newStatus,
-          time: newTime?.toISOString()
+          time: isoTime
         }
       })
     })

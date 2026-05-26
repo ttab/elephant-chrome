@@ -3,7 +3,7 @@ import { Prompt } from '../Prompt'
 import { useState } from 'react'
 import { Label } from '@ttab/elephant-ui'
 import { TimeInput } from '../TimeInput'
-import { getTimezoneOffset, toZonedTime } from 'date-fns-tz'
+import { fromZonedTime, getTimezoneOffset, toZonedTime } from 'date-fns-tz'
 import { format } from 'date-fns'
 import { CalendarIcon, LoaderIcon, TriangleAlertIcon, type LucideIcon } from '@ttab/elephant-ui/icons'
 import { PromptCauseField } from './PromptCauseField'
@@ -85,6 +85,14 @@ export const PromptSchedule = ({
       secondaryLabel={t('common:actions.abort')}
       onPrimary={() => {
         if (!time) return
+        // DEV-ONLY: [SCHED] trace what leaves PromptSchedule.onPrimary.
+        console.log('[SCHED] PromptSchedule.onPrimary -> setStatus', {
+          status: prompt.status,
+          time_UTC: time.toISOString(),
+          time_Stockholm: format(toZonedTime(time, DEFAULT_TIMEZONE), 'yyyy-MM-dd HH:mm:ss'),
+          time_Sydney: format(toZonedTime(time, 'Australia/Sydney'), 'yyyy-MM-dd HH:mm:ss'),
+          cause
+        })
         showPrompt(undefined)
         void setStatus(
           prompt.status,
@@ -131,10 +139,33 @@ export const PromptSchedule = ({
               handleOnChange={(value) => {
                 if (!value) return
                 const [hour, mins] = value.split(':').map(Number)
+                // Interpret picker input in DEFAULT_TIMEZONE so the stored instant
+                // matches the time labelled in the dialog regardless of browser TZ.
                 const base = time ?? scheduleBase
-                const next = new Date(base)
-                next.setHours(hour, mins, 0, 0)
-                setTime(next)
+                const baseInTz = toZonedTime(base, DEFAULT_TIMEZONE)
+                baseInTz.setHours(hour, mins, 0, 0)
+                const stored = fromZonedTime(baseInTz, DEFAULT_TIMEZONE)
+
+                // DEV-ONLY: [SCHED] log fixed conversion alongside what the old
+                // browser-local setHours would have stored, so the divergence
+                // shows up live in the browser console.
+                const buggy = new Date(base)
+                buggy.setHours(hour, mins, 0, 0)
+                console.log('[SCHED] PromptSchedule.handleOnChange', {
+                  rawInput: value,
+                  parsed: { hour, mins },
+                  base_UTC: base.toISOString(),
+                  base_Stockholm: format(toZonedTime(base, DEFAULT_TIMEZONE), 'yyyy-MM-dd HH:mm:ss'),
+                  base_Sydney: format(toZonedTime(base, 'Australia/Sydney'), 'yyyy-MM-dd HH:mm:ss'),
+                  fixed_stored_UTC: stored.toISOString(),
+                  fixed_stored_Stockholm: format(toZonedTime(stored, DEFAULT_TIMEZONE), 'yyyy-MM-dd HH:mm:ss'),
+                  fixed_stored_Sydney: format(toZonedTime(stored, 'Australia/Sydney'), 'yyyy-MM-dd HH:mm:ss'),
+                  oldBuggy_stored_UTC: buggy.toISOString(),
+                  oldBuggy_stored_Stockholm: format(toZonedTime(buggy, DEFAULT_TIMEZONE), 'yyyy-MM-dd HH:mm:ss'),
+                  oldBuggy_stored_Sydney: format(toZonedTime(buggy, 'Australia/Sydney'), 'yyyy-MM-dd HH:mm:ss')
+                })
+
+                setTime(stored)
               }}
               handleOnSelect={() => { }}
               setOpen={() => { }}
