@@ -3,7 +3,7 @@ import { Prompt } from '../Prompt'
 import { useState } from 'react'
 import { Label } from '@ttab/elephant-ui'
 import { TimeInput } from '../TimeInput'
-import { getTimezoneOffset, toZonedTime } from 'date-fns-tz'
+import { fromZonedTime, getTimezoneOffset, toZonedTime } from 'date-fns-tz'
 import { format } from 'date-fns'
 import { CalendarIcon, LoaderIcon, TriangleAlertIcon, type LucideIcon } from '@ttab/elephant-ui/icons'
 import { PromptCauseField } from './PromptCauseField'
@@ -131,10 +131,11 @@ export const PromptSchedule = ({
               handleOnChange={(value) => {
                 if (!value) return
                 const [hour, mins] = value.split(':').map(Number)
-                const base = time ?? scheduleBase
-                const next = new Date(base)
-                next.setHours(hour, mins, 0, 0)
-                setTime(next)
+                // Interpret picker input in DEFAULT_TIMEZONE so the stored instant
+                // matches the time labelled in the dialog regardless of browser TZ.
+                const baseInTz = toZonedTime(time ?? scheduleBase, DEFAULT_TIMEZONE)
+                baseInTz.setHours(hour, mins, 0, 0)
+                setTime(fromZonedTime(baseInTz, DEFAULT_TIMEZONE))
               }}
               handleOnSelect={() => { }}
               setOpen={() => { }}
@@ -178,6 +179,22 @@ export const PromptSchedule = ({
           )}
 
         </div>
+
+        {time && timeZoneMismatch && (
+          <div className='text-sm flex flex-col gap-0.5'>
+            <div className='font-medium'>
+              {t('shared:status_menu.publishesInDefaultTz', {
+                time: format(toZonedTime(time, DEFAULT_TIMEZONE), 'yyyy-MM-dd HH:mm')
+              })}
+            </div>
+            <div className='text-muted-foreground'>
+              {t('shared:status_menu.publishesInUserTz', {
+                time: format(toZonedTime(time, userTimeZone), 'yyyy-MM-dd HH:mm'),
+                tz: userTimeZone
+              })}
+            </div>
+          </div>
+        )}
 
         {ydoc && documentType === 'core/article' && (
           <HastToggle ydoc={ydoc} usableId={usableId} variant='full' className='w-full' />
