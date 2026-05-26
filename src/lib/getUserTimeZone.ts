@@ -3,7 +3,6 @@ export const getUserTimeZone = (): string | undefined => {
   // user is in a non-Stockholm browser (mismatch banner, userTimeZone-driven
   // offset math). Remove this stub and restore the Intl-based detection below
   // before merging.
-  console.log('[SCHED] getUserTimeZone -> Australia/Sydney (DEV-ONLY override)')
   return 'Australia/Sydney'
 
   // const dateTimeFormat = new Intl.DateTimeFormat(undefined, { timeZoneName: 'long' })

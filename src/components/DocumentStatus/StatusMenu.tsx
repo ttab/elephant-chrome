@@ -73,14 +73,6 @@ export const StatusMenu = ({ ydoc, onBeforeStatusChange, planningId, embargoUnti
   // Callback function to set status. Will first call onBeforeStatusChange() if
   // provided by props, then proceed to change the status if allowed.
   const setStatus = useCallback(async (newStatus: string, data?: Record<string, unknown>) => {
-    // DEV-ONLY: [SCHED] entry log for status transitions.
-    console.log('[SCHED] StatusMenu.setStatus (entry)', {
-      newStatus,
-      hasPlanningId: !!planningId,
-      data,
-      data_time_UTC: data?.time instanceof Date ? data.time.toISOString() : null
-    })
-
     if (newStatus === 'withheld' && !planningId) {
       toast.error(t('shared:status_menu.schedulingRequiresPlanning'))
       return
@@ -90,22 +82,11 @@ export const StatusMenu = ({ ydoc, onBeforeStatusChange, planningId, embargoUnti
 
     try {
       if (onBeforeStatusChange) {
-        const allowed = await onBeforeStatusChange(newStatus, data)
-        // DEV-ONLY: [SCHED] surface onBeforeStatusChange outcome.
-        console.log('[SCHED] StatusMenu.setStatus onBeforeStatusChange ->', allowed)
-        if (allowed !== true) {
+        if (await onBeforeStatusChange(newStatus, data) !== true) {
           setIsTransitioning(false)
           return
         }
       }
-
-      // DEV-ONLY: [SCHED] note that `data.time` is intentionally dropped here —
-      // it was already consumed by onBeforeStatusChange (updateAssignmentTime).
-      console.log('[SCHED] StatusMenu.setStatus -> setDocumentStatus', {
-        newStatus,
-        cause: typeof data?.cause === 'string' ? data.cause : undefined,
-        droppedTime: data?.time instanceof Date ? data.time.toISOString() : null
-      })
 
       await setDocumentStatus(
         newStatus,
