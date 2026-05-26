@@ -120,12 +120,12 @@ export const ApprovalsCard = ({ trackedDocument, item, isSelected, isFocused, st
                 .find((s) => s.id === item._preprocessed.sectionUuid)
                 ?.title}
 
-              {item._preprocessed.metrics?.charCount !== undefined && (
+              {!!item._preprocessed.metrics?.charCount && (
                 <span>
                   <span className='pr-1'>
                     &middot;
                   </span>
-                  {item._preprocessed.metrics?.charCount || '0' }
+                  {item._preprocessed.metrics.charCount}
                   {' '}
                   {t('views:approvals.charactersShort')}
                 </span>
