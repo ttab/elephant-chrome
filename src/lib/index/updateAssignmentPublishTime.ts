@@ -17,7 +17,7 @@ export async function updateAssignmentTime<Ns extends Namespace>(
           deliverableId,
           type: 'core/article',
           status: newStatus,
-          time: isoTime
+          time: newTime?.toISOString()
         }
       })
     })

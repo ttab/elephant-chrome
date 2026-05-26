@@ -39,6 +39,8 @@
     "timeInPast": "Vald tid har passerat",
     "beforeEmbargo": "Tiden är före embargo",
     "timezoneMismatch": "Tider använder en annan tidszon än din enhet (skillnad {{offset}}).",
+    "publishesInDefaultTz": "Publiceras {{time}} (systemets tidszon)",
+    "publishesInUserTz": "= {{time}} i din tidszon ({{tz}})",
     "schedulingRequiresPlanning": "Schemaläggning är inte tillgänglig eftersom dokumentet saknar en kopplad planering.",
     "causes": {
       "development_short": "UV",

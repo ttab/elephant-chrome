@@ -232,6 +232,48 @@ describe('PromptSchedule', () => {
     expect(screen.queryByText(/offset|skillnad|forskjell/i)).not.toBeInTheDocument()
   })
 
+  // Sydney user picks a time labelled in Stockholm. The publish-time preview
+  // must spell out both the canonical Stockholm instant (what the backend
+  // schedules against) and the user's local equivalent (so they can tell
+  // whether the article lands in their workday).
+  it('shows the publish time in both default and user timezones when a time is picked', () => {
+    mockUserTimeZone = 'Australia/Sydney'
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-07-15T00:00:00Z'))
+
+    try {
+      renderSchedule()
+      fireEvent.change(getTimeInput(), { target: { value: '12:00' } })
+
+      // 12:00 Stockholm CEST = 10:00 UTC. The preview's system-timezone line
+      // is what gets PATCHed into the planning's assignment.time.
+      expect(screen.getByText(/2026-07-15 12:00.*system|systemets/i))
+        .toBeInTheDocument()
+
+      // Same UTC instant in Sydney AEST (UTC+10, no DST in July) = 20:00.
+      expect(screen.getByText(/2026-07-15 20:00.*Australia\/Sydney/))
+        .toBeInTheDocument()
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('does not show the publish-time preview when user timezone matches the default', () => {
+    mockUserTimeZone = 'Europe/Stockholm'
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-07-15T00:00:00Z'))
+
+    try {
+      renderSchedule()
+      fireEvent.change(getTimeInput(), { target: { value: '12:00' } })
+
+      expect(screen.queryByText(/Publishes at|Publiceras|Publiseres/i))
+        .not.toBeInTheDocument()
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
   // Regression for the Sydney bureau case where browser-local setHours stored a
   // Sydney-zoned instant for a Stockholm-labelled HH:mm, so material went out
   // ~8h earlier than intended. The picker must interpret HH:mm in
@@ -266,6 +308,66 @@ describe('PromptSchedule', () => {
       expect(payload.time.toISOString()).not.toBe('2026-05-26T05:00:00.000Z')
     } finally {
       vi.useRealTimers()
+    }
+  })
+
+  // Sydney user, browser TZ Australia/Sydney, picks a time labelled in the
+  // dialog as 12:00 (Europe/Stockholm, CEST). The picked instant is what gets
+  // serialised to `assignment.time` on the planning item by
+  // updateAssignmentTime (newTime.toISOString() in the PATCH body), so this
+  // test pins the contract end-to-end at that boundary.
+  it('Sydney user picking 12:00 sets the planning publish time to 12:00 CEST (= 10:00 UTC)', () => {
+    // Operate under Australia/Sydney for this test only. The fix makes the
+    // stored instant TZ-independent, so the assertion holds in any runner;
+    // pinning TZ here means a regression of the fix would fail this test under
+    // Node's Sydney TZ frame with the bug's exact signature.
+    const originalTZ = process.env.TZ
+    process.env.TZ = 'Australia/Sydney'
+
+    // Pin "now" to 2026-07-15 00:00 UTC = 02:00 Stockholm (CEST, +2) =
+    // 10:00 Sydney (AEST, +10 — no DST in Australian winter). 12:00 CEST is
+    // safely 10 hours in the future from that anchor, so timeInPast doesn't
+    // block the click.
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-07-15T00:00:00Z'))
+
+    try {
+      const setStatus = vi.fn()
+      render(
+        <PromptSchedule
+          prompt={usablePrompt}
+          planningId='planning-1'
+          setStatus={setStatus}
+          showPrompt={vi.fn()}
+        />
+      )
+
+      fireEvent.change(getTimeInput(), { target: { value: '12:00' } })
+      expect(getPrimaryButton()).not.toBeDisabled()
+      fireEvent.click(getPrimaryButton())
+
+      const [, payload] = setStatus.mock.calls[0] as [string, { time: Date }]
+
+      // 12:00 on 2026-07-15 in Europe/Stockholm during CEST (UTC+2) = 10:00 UTC.
+      // This Date flows verbatim into EditorHeader.onBeforeStatusChange and
+      // then into updateAssignmentTime, which writes
+      //   body.assignment.time = newTime.toISOString()
+      // so the planning item's publish time becomes '2026-07-15T10:00:00.000Z'.
+      expect(payload.time.toISOString()).toBe('2026-07-15T10:00:00.000Z')
+
+      // Make the Stockholm intent explicit in the assertion as well, in case
+      // the ISO comparison ever drifts.
+      expect(format(toZonedTime(payload.time, DEFAULT_TIMEZONE), 'yyyy-MM-dd HH:mm:ss'))
+        .toBe('2026-07-15 12:00:00')
+
+      // Regression guard: this is what the pre-fix browser-local setHours on
+      // a Sydney browser would have produced — 12:00 Sydney (AEST) = 02:00 UTC.
+      // That value matches the published incident pattern (publishes within
+      // seconds of submission because the scheduler sees a near-due time).
+      expect(payload.time.toISOString()).not.toBe('2026-07-15T02:00:00.000Z')
+    } finally {
+      vi.useRealTimers()
+      process.env.TZ = originalTZ
     }
   })
 })

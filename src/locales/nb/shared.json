@@ -39,6 +39,8 @@
     "timeInPast": "Valgt tid har passert",
     "beforeEmbargo": "Tiden er før embargo",
     "timezoneMismatch": "Tider bruker en annen tidssone enn enheten din (forskjell {{offset}}).",
+    "publishesInDefaultTz": "Publiseres {{time}} (systemets tidssone)",
+    "publishesInUserTz": "= {{time}} i din tidssone ({{tz}})",
     "schedulingRequiresPlanning": "Planen er ikke tilgjengelig fordi dokumentet mangler en tilknyttet plan.",
     "causes": {
       "development_short": "UV",

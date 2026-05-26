@@ -39,6 +39,8 @@
     "timeInPast": "Selected time has passed",
     "beforeEmbargo": "Time is before embargo",
     "timezoneMismatch": "Times use a different timezone than your device (offset {{offset}}).",
+    "publishesInDefaultTz": "Publishes at {{time}} (the system's timezone)",
+    "publishesInUserTz": "= {{time}} in your timezone ({{tz}})",
     "schedulingRequiresPlanning": "Scheduling is unavailable because this document has no associated planning.",
     "causes": {
       "development_short": "DEV",
