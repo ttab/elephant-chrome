@@ -152,11 +152,17 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
     }
 
     let repositorySocket: RepositorySocket | undefined
+    let cancelled = false
     void initialize().then((socket) => {
+      if (cancelled) {
+        socket?.disconnect()
+        return
+      }
       repositorySocket = socket
     })
 
     return () => {
+      cancelled = true
       repositorySocket?.disconnect()
     }
   }, [])
