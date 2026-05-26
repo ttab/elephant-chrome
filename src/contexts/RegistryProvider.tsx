@@ -16,6 +16,7 @@ import { Workflow } from '@/shared/Workflow'
 import { User } from '@/shared/User'
 import type { LocaleData } from '@/types'
 import { Baboon } from '@/shared/Baboon'
+import { RepositorySocket } from '@/shared/RepositorySocket'
 import { setSystemLanguage } from '@/shared/getSystemLanguage'
 import { initI18n } from '@/lib/i18n'
 import { useTranslation } from 'react-i18next'
@@ -56,6 +57,7 @@ export interface RegistryProviderState {
   user?: User
   baboon?: Baboon
   ntb?: NTB
+  repositorySocket?: RepositorySocket
   dispatch: React.Dispatch<Partial<RegistryProviderState>>
   userColor: string
 }
@@ -100,7 +102,7 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
   const [initError, setInitError] = useState<string | null>(null)
 
   useEffect(() => {
-    const initialize = async () => {
+    const initialize = async (): Promise<RepositorySocket | undefined> => {
       try {
         await initI18n()
         const { urls: server, envs, featureFlags } = await getServerEnvs()
@@ -119,6 +121,11 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
           ? new NTB(server.imageSearchUrl.href)
           : undefined
 
+        const repositorySocketUrl = new URL(server.repositoryUrl)
+        repositorySocketUrl.protocol = repositorySocketUrl.protocol === 'https:' ? 'wss:' : 'ws:'
+        repositorySocketUrl.pathname = '/websocket'
+        const repositorySocket = new RepositorySocket(repositorySocketUrl.href, repository)
+
         dispatch({
           server,
           envs,
@@ -130,17 +137,28 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
           spellchecker,
           user,
           baboon,
-          ntb
+          ntb,
+          repositorySocket
         })
         setIsInitialized(true)
+
+        return repositorySocket
       } catch (ex) {
         const message = ex instanceof Error ? ex.message : 'Unknown error'
         console.error(`Failed initializing RegistryProvider: ${message}`, ex)
         setInitError(message)
+        return undefined
       }
     }
 
-    void initialize()
+    let repositorySocket: RepositorySocket | undefined
+    void initialize().then((socket) => {
+      repositorySocket = socket
+    })
+
+    return () => {
+      repositorySocket?.disconnect()
+    }
   }, [])
 
   if (initError) {
@@ -185,7 +203,8 @@ const reducer = (state: RegistryProviderState, action: Partial<RegistryProviderS
     user,
     baboon,
     ntb,
-    envs
+    envs,
+    repositorySocket
   } = action
   const partialState: Partial<RegistryProviderState> = {}
 
@@ -227,6 +246,10 @@ const reducer = (state: RegistryProviderState, action: Partial<RegistryProviderS
 
   if (typeof ntb === 'object') {
     partialState.ntb = ntb
+  }
+
+  if (typeof repositorySocket === 'object') {
+    partialState.repositorySocket = repositorySocket
   }
 
   if (typeof featureFlags === 'object') {
