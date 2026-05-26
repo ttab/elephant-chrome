@@ -47,6 +47,10 @@ export const ApprovalsBeta = (): JSX.Element => {
       query?.from ? new Date(query.from as string) : new Date(),
       timeZone
     ), [query, timeZone])
+  const dateStr = useMemo(() => {
+    if (typeof query?.from === 'string') return query.from
+    return new Intl.DateTimeFormat('en-CA', { timeZone }).format(new Date())
+  }, [query, timeZone])
 
   const decorators = useMemo(() => {
     if (!repository) return []
@@ -83,8 +87,8 @@ export const ApprovalsBeta = (): JSX.Element => {
 
   // Transform socket data to preprocessed approval items
   const approvalItems = useMemo(() =>
-    preprocessApprovalData(data || []),
-  [data]
+    preprocessApprovalData(data || [], dateStr),
+  [data, dateStr]
   )
 
   // Apply filters

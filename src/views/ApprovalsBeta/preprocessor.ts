@@ -28,7 +28,9 @@ export const APPROVALS_SUBSET = [
   '.meta(type=\'core/assignment\').data{start}',
   '.meta(type=\'core/assignment\').data{publish_slot}',
   '.meta(type=\'core/assignment\').data{publish}',
-  '.meta(type=\'core/assignment\').meta(type=\'tt/slugline\')@{value}'
+  '.meta(type=\'core/assignment\').meta(type=\'tt/slugline\')@{value}',
+  '.meta(type=\'core/planning-item\').data{start_date}',
+  '.meta(type=\'core/assignment\').data{start_date}'
 ] as const
 
 const enum E {
@@ -41,7 +43,9 @@ const enum E {
   Start,
   PublishSlot,
   Publish,
-  Slugline
+  Slugline,
+  PlanningStartDate,
+  AssignmentStartDate
 }
 
 export type PreprocessedApprovalData = PreprocessedTableData<MetricsDecorator, {
@@ -70,6 +74,7 @@ interface ExtractedAssignment {
   id: string
   publishSlot?: string
   startTime?: string
+  startDate?: string
   publishTime?: string
   slugline?: string
   sectionUuid?: string
@@ -78,9 +83,14 @@ interface ExtractedAssignment {
 /**
  * Flatten planning documents into one row per assignment that has
  * a deliverable. Precomputes commonly accessed fields for rendering.
+ *
+ * Skips assignments where the planning is not on `dateStr` and the
+ * assignment is either slot-scheduled or also not on `dateStr`. Mirrors
+ * the rule in `src/hooks/index/lib/assignments/fetchAssignments.ts`.
  */
 export function preprocessApprovalData(
-  socketData: DocumentStateWithDecorators<MetricsDecorator>[]
+  socketData: DocumentStateWithDecorators<MetricsDecorator>[],
+  dateStr: string
 ): PreprocessedApprovalData[] {
   return socketData.flatMap((docState) => {
     const { subset } = docState
@@ -90,16 +100,26 @@ export function preprocessApprovalData(
     const planningTitle = fromSubset(subset, E.Title)
       ?? docState.document?.title ?? ''
 
+    const planningStartDate = subset?.length
+      ? fromSubset(subset, E.PlanningStartDate)
+      : getPlanningStartDate(docState.document)
+    const sameDay = planningStartDate === dateStr
+
     const items = subset?.length
       ? extractFromSubset(subset, planningId)
       : extractFromDocument(docState.document, planningId)
 
-    return items.map((item) => {
+    return items.flatMap((item) => {
+      const sameDayAssignment = item.startDate === dateStr
+      if (!sameDay && (!!item.publishSlot || !sameDayAssignment)) {
+        return []
+      }
+
       const deliverableState = findIncludedDocument(
         docState.includedDocuments, item.deliverableUuid
       )
 
-      return {
+      return [{
         ...docState,
         _assignment: item.assignment,
         _deliverable: buildDeliverable(
@@ -117,7 +137,7 @@ export function preprocessApprovalData(
           publishTime: item.publishTime,
           slugline: item.slugline
         }
-      }
+      }]
     })
   }).filter((item) => item._deliverable?.id)
 }
@@ -128,6 +148,7 @@ function extractFromSubset(
 ): ExtractedAssignment[] {
   const deliverableUuids = allFromSubset(subset, E.DeliverableUuids)
   const starts = allFromSubset(subset, E.Start)
+  const startDates = allFromSubset(subset, E.AssignmentStartDate)
   const publishSlots = allFromSubset(subset, E.PublishSlot)
   const publishes = allFromSubset(subset, E.Publish)
   const sluglines = allFromSubset(subset, E.Slugline)
@@ -138,6 +159,7 @@ function extractFromSubset(
     id: `${planningId}-assignment-${i}`,
     publishSlot: publishSlots[i],
     startTime: starts[i],
+    startDate: startDates[i],
     publishTime: publishes[i],
     slugline: sluglines[i],
     sectionUuid
@@ -157,11 +179,16 @@ function extractFromDocument(
     id: `${planningId}-${assignment.id}`,
     publishSlot: assignment.data?.publish_slot,
     startTime: assignment.data?.start,
+    startDate: assignment.data?.start_date,
     publishTime: assignment.data?.publish,
     slugline: assignment.meta
       .find((m) => m.type === 'tt/slugline')?.value,
     sectionUuid: planningSectionUuid
   }))
+}
+
+function getPlanningStartDate(planning: Document | undefined): string | undefined {
+  return planning?.meta.find((m) => m.type === 'core/planning-item')?.data?.start_date
 }
 
 function buildDeliverable(
