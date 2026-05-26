@@ -3,6 +3,7 @@ import { Avatar, Link } from '@/components/index'
 import type { PreprocessedApprovalData } from './preprocessor'
 import { useLink } from '@/hooks/useLink'
 import { CalendarDaysIcon, EyeIcon, FileWarningIcon, MessageSquarePlusIcon, ZapIcon } from '@ttab/elephant-ui/icons'
+import { useRegistry } from '@/hooks/useRegistry'
 import { useSections } from '@/hooks/useSections'
 import type { StatusSpecification } from '@/defaults/workflowSpecification'
 import { AvatarGroup } from '@/components/AvatarGroup'
@@ -27,11 +28,15 @@ export const ApprovalsCard = ({ trackedDocument, item, isSelected, isFocused, st
   const openFlash = useLink('Flash')
   const openType = (deliverableType: string) => deliverableType === 'core/flash' ? openFlash : openArticle
   const { t } = useTranslation()
+  const { featureFlags } = useRegistry()
 
   const internalInfo = item._deliverable?.document?.meta.find((block) => block.type === 'core/note' && block.role === 'internal')?.data?.text
   const newsvalue = getNewsvalue(item._deliverable?.document)
   const deliverableId = item._deliverable?.id
   const deliverableType = item._deliverable?.type
+  const isHast = !!featureFlags.hasHast && item._deliverable?.document?.meta.some(
+    (block) => block.type === 'ntb/hast'
+  )
 
   return (
     <Card.Root
@@ -61,7 +66,7 @@ export const ApprovalsCard = ({ trackedDocument, item, isSelected, isFocused, st
         <div className='flex flex-row gap-2 items-center'>
           {status.icon && <status.icon size={15} strokeWidth={1.75} className={status.className} />}
           <span className='bg-secondary inline-block px-1 rounded'>
-            {deliverableType === 'core/flash'
+            {deliverableType === 'core/flash' || isHast
               ? <ZapIcon strokeWidth={1.75} size={14} className='text-red-500' />
               : deliverableType === 'core/editorial-info'
                 ? <FileWarningIcon size={14} />
