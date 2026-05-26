@@ -61,6 +61,12 @@ export const getApplicationMenu = (featureFlags: AllowedFeatureFlag): Applicatio
           color: '#5E9F5D'
         },
         {
+          name: 'ApprovalsBeta',
+          label: 'Approvals (beta)',
+          icon: EarthIcon,
+          color: '#5E9F5D'
+        },
+        {
           name: 'Events',
           label: i18next.t('app:mainMenu.events'),
           icon: CalendarPlus2Icon,
