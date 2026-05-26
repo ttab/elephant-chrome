@@ -1,4 +1,4 @@
-import { createContext, useCallback, useEffect, useState } from 'react'
+import { createContext, useCallback, useEffect, useMemo, useState } from 'react'
 import { useIndexedDB } from '../hooks/useIndexedDB'
 import { useSession } from 'next-auth/react'
 import { useRegistry } from '@/hooks/useRegistry'
@@ -6,10 +6,15 @@ import { type IDBLanguage, type SupportedLanguage } from '../types'
 
 interface SupportedLanguagesProviderState {
   languages: IDBLanguage[]
+  // Pre-computed list of language codes. Kept on the context so consumers
+  // share a single stable reference - re-mapping in the hook would hand
+  // every textbit a fresh array on every render.
+  languageCodes: string[]
 }
 
 export const SupportedLanguagesContext = createContext<SupportedLanguagesProviderState>({
-  languages: []
+  languages: [],
+  languageCodes: []
 })
 
 export const SupportedLanguagesProvider = ({ children }: {
@@ -65,8 +70,11 @@ export const SupportedLanguagesProvider = ({ children }: {
     void getOrRefreshCache()
   }, [getOrRefreshCache])
 
+  const languageCodes = useMemo(() => languages.map((l) => l.id), [languages])
+  const value = useMemo(() => ({ languages, languageCodes }), [languages, languageCodes])
+
   return (
-    <SupportedLanguagesContext.Provider value={{ languages }}>
+    <SupportedLanguagesContext.Provider value={value}>
       {children}
     </SupportedLanguagesContext.Provider>
   )
