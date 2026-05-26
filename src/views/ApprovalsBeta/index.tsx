@@ -17,6 +17,7 @@ import { preprocessApprovalData, APPROVALS_SUBSET } from './preprocessor'
 import { timesSlots as Slots } from '@/defaults/assignmentTimeslots'
 import type { Planning } from '@/shared/schemas/planning'
 import { createMetricsDecorator, type MetricsDecorator } from '@/hooks/useRepositorySocket/decorators/metrics'
+import { SocketBanner } from '@/hooks/useRepositorySocket/components/SocketBanner'
 import { getUTCDateRange } from '@/shared/datetime'
 import { useTranslation } from 'react-i18next'
 
@@ -223,6 +224,9 @@ export const ApprovalsBeta = (): JSX.Element => {
       </ViewHeader.Root>
 
       <Toolbar facets={facets} />
+      <View.Banner>
+        <SocketBanner />
+      </View.Banner>
       <View.Content variant='grid' columns={slots.length}>
         {slots.map((slot, colN) => (
           <View.Column key={slot.key}>
