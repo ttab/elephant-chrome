@@ -1,6 +1,6 @@
 import { Link } from '@/components/index'
 import { type ApplicationMenuItem } from '@/defaults/applicationMenuItems'
-import { SheetClose } from '@ttab/elephant-ui'
+import { Badge, SheetClose } from '@ttab/elephant-ui'
 import { useModal } from '../Modal/useModal'
 import * as Views from '@/views'
 import type { JSX } from 'react'
@@ -26,7 +26,14 @@ const MenuItemViewOpener = ({ menuItem }: {
         <div className='flex items-center justify-center opacity-80 pr-2'>
           <menuItem.icon strokeWidth={1.75} size={18} color={menuItem.color} />
         </div>
-        <div>{menuItem.label}</div>
+        <div className='flex items-center gap-2'>
+          {menuItem.label}
+          {menuItem.badge && (
+            <Badge variant='outline' className='text-[10px] px-1.5 py-0 leading-4 uppercase'>
+              {menuItem.badge}
+            </Badge>
+          )}
+        </div>
       </Link>
     </SheetClose>
   )
@@ -51,7 +58,14 @@ const MenuItemDialogOpener = ({ menuItem }: {
       <div className='flex items-center justify-center opacity-80 pr-2'>
         <menuItem.icon strokeWidth={1.75} size={18} color={menuItem.color} />
       </div>
-      <div>{menuItem.label}</div>
+      <div className='flex items-center gap-2'>
+        {menuItem.label}
+        {menuItem.badge && (
+          <Badge variant='outline' className='text-[10px] px-1.5 py-0 leading-4 uppercase'>
+            {menuItem.badge}
+          </Badge>
+        )}
+      </div>
     </SheetClose>
   )
 }

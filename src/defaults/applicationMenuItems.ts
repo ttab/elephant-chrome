@@ -41,6 +41,7 @@ export interface ApplicationMenuItem {
   target?: 'view' | 'dialog' | 'sheet'
   color?: string
   props?: ViewProps
+  badge?: string
 }
 
 export const getApplicationMenu = (featureFlags: AllowedFeatureFlag): ApplicationMenu => ({
@@ -62,9 +63,10 @@ export const getApplicationMenu = (featureFlags: AllowedFeatureFlag): Applicatio
         },
         {
           name: 'ApprovalsBeta',
-          label: 'Approvals (beta)',
+          label: i18next.t('app:mainMenu.approvals'),
           icon: EarthIcon,
-          color: '#5E9F5D'
+          color: '#5E9F5D',
+          badge: 'beta'
         },
         {
           name: 'Events',
