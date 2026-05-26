@@ -16,7 +16,7 @@ export const SubtitleCard = ({ item }: { item: PreprocessedApprovalData }) => {
   return (
     <div className='text-xs font-normal opacity-60 flex gap-1'>
       {slugline && <div>{slugline}</div>}
-      {versionLabel && <div>{versionLabel}</div>}
+      {versionLabel && <div>{slugline ? `- ${versionLabel}` : versionLabel}</div>}
       {cause && <div>{`- ${cause}`}</div>}
     </div>
   )
@@ -32,5 +32,5 @@ function getVersionLabel(item: PreprocessedApprovalData): string | undefined {
   if (meta.workflowState === 'usable' && order === 1) return undefined
 
   const version = meta.workflowState !== 'usable' ? order + 1 : order
-  return `- v${version}`
+  return `v${version}`
 }
