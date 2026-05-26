@@ -81,7 +81,7 @@
     "missingAccessToken": "Tilgangstoken mangler, kan ikke koble til.",
     "maxReconnectAttempts": "Maksimalt antall gjentilkoblingsforsøk ({{max}}) nådd.",
     "reconnectFailed": "Kunne ikke koble til på nytt.",
-    "networkOffline": "Nettverket er nede, venter på tilkobling...",
+    "networkOffline": "Tilkoblingen er nede, venter på ny tilkobling...",
     "reconnecting": "Kobler til på nytt...",
     "notRealtime": "Visningen oppdateres ikke i sanntid."
   }

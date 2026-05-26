@@ -81,7 +81,7 @@
     "missingAccessToken": "Access token missing, cannot connect.",
     "maxReconnectAttempts": "Maximum reconnect attempts ({{max}}) reached.",
     "reconnectFailed": "Could not reconnect.",
-    "networkOffline": "Network is down, waiting for connection...",
+    "networkOffline": "Connection is down, waiting to reconnect...",
     "reconnecting": "Reconnecting...",
     "notRealtime": "The view is not updating in real time."
   }

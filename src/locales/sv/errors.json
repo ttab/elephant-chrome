@@ -81,7 +81,7 @@
     "missingAccessToken": "Accesstoken saknas, kan inte ansluta.",
     "maxReconnectAttempts": "Max antal återanslutningsförsök ({{max}}) nåddes.",
     "reconnectFailed": "Kunde inte återansluta.",
-    "networkOffline": "Nätverket är nere, väntar på anslutning...",
+    "networkOffline": "Anslutningen är nere, väntar på återanslutning...",
     "reconnecting": "Återansluter...",
     "notRealtime": "Vyn uppdateras inte i realtid."
   }
