@@ -662,4 +662,16 @@ export class Repository {
       throw new Error(`Unable to prune document: ${(err as Error)?.message || 'Unknown error'}`)
     }
   }
+
+  /**
+   * Get a token for WebSocket authentication.
+   */
+  async getSocketToken(accessToken: string): Promise<string> {
+    try {
+      const { response } = await this.#client.getSocketToken({}, meta(accessToken))
+      return response.token
+    } catch (err: unknown) {
+      throw new Error(`Unable to get socket token: ${(err as Error)?.message || 'Unknown error'}`)
+    }
+  }
 }
