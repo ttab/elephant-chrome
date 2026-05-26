@@ -3,7 +3,8 @@ import { CAUSE_KEYS } from '@/defaults/causekeys'
 import { getStatusFromMeta } from '@/lib/getStatusFromMeta'
 
 export const SubtitleCard = ({ item }: { item: PreprocessedApprovalData }) => {
-  const statusFromMeta = item.meta ? getStatusFromMeta(item.meta, true) : undefined
+  const deliverableMeta = item._deliverable?.meta
+  const statusFromMeta = deliverableMeta ? getStatusFromMeta(deliverableMeta, true) : undefined
 
   const slugline = item._preprocessed.slugline
   const versionLabel = getVersionLabel(item)
