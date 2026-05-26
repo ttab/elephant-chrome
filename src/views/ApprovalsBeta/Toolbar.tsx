@@ -1,0 +1,171 @@
+import { SaveIcon, UserCogIcon, XIcon } from '@ttab/elephant-ui/icons'
+import { Button, ToggleGroup, ToggleGroupItem } from '@ttab/elephant-ui'
+import { SelectedFilters } from '@/components/Filter/SelectedFilters'
+import { useSections } from '@/hooks/useSections'
+import { DotMenu } from '@/components/ui/DotMenu'
+import { useUserTracker } from '@/hooks/useUserTracker'
+import { toast } from 'sonner'
+import { useQuery, type QueryParams } from '@/hooks/useQuery'
+import { Filter } from '@/components/Filter'
+import type { Facets } from './lib/filterAssignments'
+import { Commands } from './Commands'
+import { useCallback, useState, type JSX } from 'react'
+import { useTranslation } from 'react-i18next'
+
+export const Toolbar = ({ facets }: { facets: Facets }): JSX.Element => {
+  const [filters, setFilters] = useQuery(['status', 'section'])
+  const isFiltered = Object.values(filters).some((value) => value?.length)
+  const [userFilters, setUserFilters] = useUserTracker<QueryParams | undefined>(`filters.Approvals.user`)
+  const [, setCurrentFilters] = useUserTracker<QueryParams | undefined>(`filters.Approvals.current`)
+  const { t } = useTranslation()
+
+  const [pages, setPages] = useState<string[]>([])
+  const [search, setSearch] = useState<string | undefined>('')
+
+  const isUserFilter = (savedUserFilter: QueryParams | undefined, currentFilter: QueryParams): boolean => {
+    if (savedUserFilter === undefined) {
+      return false
+    }
+    return JSON.stringify(savedUserFilter, Object.keys(savedUserFilter).sort()) === JSON.stringify(currentFilter, Object.keys(currentFilter).sort())
+  }
+  const allSections = useSections()
+
+  const handleResetFilters = () => {
+    setFilters({})
+    setCurrentFilters({})
+  }
+
+  const handleSaveUserFilter = () => {
+    setUserFilters(filters)
+
+    toast.success(t('shared:operations.savedFilter'))
+  }
+
+  const handleToggleGroupValue = useCallback(() => {
+    if (isUserFilter(userFilters, filters)) {
+      return 'user'
+    }
+
+    return Array.isArray(filters.section) && filters.section.length === 1
+      ? filters.section[0]
+      : ''
+  }, [filters, userFilters])
+
+  const handleToggleValueChange = (value: string | undefined) => {
+    // Set userFilter
+    if (value === 'user') {
+      setFilters(userFilters || {})
+      setCurrentFilters((userFilters))
+      return
+    }
+
+    // If current filter is userFilter, reset all filters
+    if (value === '' && isUserFilter(userFilters, filters)) {
+      setFilters({})
+      setCurrentFilters({})
+      return
+    }
+
+    // Toggle section filter
+    setFilters({ ...filters, section: value ? [value] : undefined })
+    setCurrentFilters({ ...filters, section: value ? [value] : undefined })
+  }
+
+  const page = pages[pages.length - 1] || ''
+
+  return (
+    <div className='flex flex-wrap grow items-center space-x-2 px-4 border-b py-1 pr-2.5'>
+      <Filter page={page} pages={pages} setPages={setPages} search={search} setSearch={setSearch}>
+        <Commands
+          page={page}
+          pages={pages}
+          setPages={setPages}
+          search={search}
+          setSearch={setSearch}
+          facets={facets}
+        />
+      </Filter>
+      <SelectedFilters />
+      {isFiltered && (
+        <Button
+          variant='ghost'
+          onClick={handleResetFilters}
+          className='h-8 px-2 lg:px-3'
+        >
+          {t('shared:toolbar.clearFilters')}
+          <XIcon size={18} strokeWidth={1.75} className='ml-2' />
+        </Button>
+      )}
+      <div className='flex flex-row grow flex-wrap items-center'>
+        <div className='grow'></div>
+        <div className='hidden @2xl/view:flex'>
+          <ToggleGroup
+            type='single'
+            size='xs'
+            value={(() => handleToggleGroupValue())()}
+            onValueChange={handleToggleValueChange}
+            className='px-1'
+          >
+            {allSections.map((section) => (
+              <ToggleGroupItem
+                key={section.id}
+                value={section.id}
+                aria-label={`Toggle ${section.title}`}
+                className='border data-[state=off]:text-muted-foreground'
+              >
+                {section.title}
+              </ToggleGroupItem>
+            ))}
+            <ToggleGroupItem
+              value='user'
+              disabled={!userFilters}
+              aria-label='Toggle user'
+              className='border data-[state=off]:text-muted-foreground'
+            >
+              <UserCogIcon size={18} strokeWidth={1.75} />
+            </ToggleGroupItem>
+          </ToggleGroup>
+        </div>
+        <div className='hidden @2xl/view:flex justify-end'>
+          <DotMenu
+            trigger='vertical'
+            items={[
+              {
+                label: t('shared:toolbar.savePersonalFilter'),
+                icon: SaveIcon,
+                item: handleSaveUserFilter
+              }
+            ]}
+          />
+        </div>
+        <div className='flex justify-end @2xl/view:hidden'>
+          <DotMenu
+            trigger='vertical'
+            items={[
+              ...allSections.map((section) => ({
+                label: section.title,
+                item: () => {
+                  handleToggleValueChange(section.id)
+                }
+              })),
+              {
+                label: t('shared:toolbar.personalFilter'),
+                icon: UserCogIcon,
+                item: () => {
+                  if (userFilters) {
+                    setFilters(userFilters)
+                  }
+                }
+              },
+              {
+                label: t('shared:toolbar.savePersonalFilter'),
+                icon: SaveIcon,
+                item: handleSaveUserFilter
+              }
+            ]}
+          />
+        </div>
+      </div>
+    </div>
+  )
+}

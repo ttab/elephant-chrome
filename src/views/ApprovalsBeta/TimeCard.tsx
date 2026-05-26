@@ -1,0 +1,135 @@
+import { Popover, PopoverTrigger, Tooltip, PopoverContent } from '@ttab/elephant-ui'
+import { ClockIcon } from '@/components/ClockIcon'
+import { format, isValid, parseISO } from 'date-fns'
+import { toZonedTime } from 'date-fns-tz'
+import { dateInTimestampOrShortMonthDayTimestamp, newLocalDate, parseDate } from '@/shared/datetime'
+import { DEFAULT_TIMEZONE } from '@/defaults/defaultTimezone'
+import { useQuery } from '@/hooks/useQuery'
+import type { PreprocessedApprovalData } from './preprocessor'
+import { useRegistry } from '@/hooks/useRegistry'
+import { useMemo } from 'react'
+import { timesSlots } from '@/defaults/assignmentTimeslots'
+import type { LocaleData } from '@/types/index'
+import type { DocumentMeta } from '@ttab/elephant-api/repository'
+import { useTranslation } from 'react-i18next'
+import { showTranslatedText } from '@/lib/showTranslatedText'
+import type { TFunction } from 'i18next'
+
+export const TimeCard = ({ item }: { item: PreprocessedApprovalData }) => {
+  const [query] = useQuery()
+  const { timeZone, locale } = useRegistry()
+  const { t } = useTranslation()
+
+  const compareDate = useMemo(() => (
+    typeof query?.from === 'string'
+      ? parseDate(query.from)
+      : newLocalDate(DEFAULT_TIMEZONE)
+  ), [query?.from])
+
+  const deliverableMeta = item._deliverable?.meta || null
+
+  const time = useMemo(() =>
+    getAssignmentTime({ item, timeZone, locale, deliverableMeta, compareDate, t }),
+  [item, timeZone, locale, deliverableMeta, compareDate, t]
+  )
+
+  const timeTooltip = useMemo(() =>
+    getTimeTooltip({ item, deliverableMeta, timeZone, locale, compareDate, t }),
+  [item, deliverableMeta, timeZone, locale, compareDate, t]
+  )
+
+  return (
+    <Popover>
+      <PopoverTrigger onClick={(e) => e.stopPropagation()}>
+        <Tooltip content={timeTooltip}>
+          <div className='flex flex-row gap-1 items-center'>
+            <ClockIcon hour={time ? parseInt(time.slice(0, 2)) : undefined} size={14} className='opacity-50' />
+            <time>{time}</time>
+          </div>
+        </Tooltip>
+      </PopoverTrigger>
+      <PopoverContent className='lg:hidden'>
+        {timeTooltip}
+      </PopoverContent>
+    </Popover>
+  )
+}
+
+function formatTime(dateStr: string, timeZone: string): string | undefined {
+  const parsed = parseISO(dateStr)
+  if (!isValid(parsed)) return undefined
+  return format(toZonedTime(parsed, timeZone), 'HH:mm')
+}
+
+function getAssignmentTime({ item, timeZone, locale, deliverableMeta, compareDate, t }: {
+  item: PreprocessedApprovalData
+  timeZone: string
+  locale: LocaleData
+  deliverableMeta: DocumentMeta | null
+  compareDate?: Date
+  t: TFunction
+}): string | undefined {
+  const deliverableStatus = item._deliverable?.status
+  const publishSlot = item._preprocessed.publishSlot
+  const publish = item._preprocessed.publishTime
+  const start = item._preprocessed.startTime
+
+  if (
+    deliverableStatus === 'draft'
+    && !deliverableMeta?.workflowCheckpoint
+    && publishSlot
+  ) {
+    return getTimeslotLabel(parseInt(publishSlot), t)
+  }
+
+  if (publish && ['withheld', 'usable'].includes(deliverableStatus || '')) {
+    return formatTime(publish, timeZone)
+  }
+
+  if (deliverableMeta?.modified) {
+    return compareDate
+      ? dateInTimestampOrShortMonthDayTimestamp(deliverableMeta.modified, locale.code.full, timeZone, compareDate)
+      : formatTime(deliverableMeta.modified, timeZone)
+  }
+
+  if (start) {
+    return formatTime(start, timeZone)
+  }
+
+  return undefined
+}
+
+export function getTimeslotLabel(hour: number, t: TFunction): string | undefined {
+  for (const key in timesSlots) {
+    if (timesSlots[key].slots.includes(hour)) {
+      return showTranslatedText(timesSlots[key].label, t)
+    }
+  }
+  return undefined
+}
+
+function getTimeTooltip({ item, deliverableMeta, timeZone, locale, compareDate, t }: {
+  item: PreprocessedApprovalData
+  deliverableMeta: DocumentMeta | null
+  timeZone: string
+  locale: LocaleData
+  compareDate?: Date
+  t: TFunction
+}): string {
+  const deliverableStatus = item._deliverable?.status
+  const publish = item._preprocessed.publishTime
+
+  if (publish && ['withheld', 'usable'].includes(deliverableStatus || '')) {
+    const label = deliverableStatus === 'withheld' ? t('core:status.withheld') : t('core:status.usable')
+    const time = formatTime(publish, timeZone)
+    if (time) return `${label} ${time}`
+  }
+  if (deliverableMeta?.modified) {
+    if (compareDate) {
+      return `${t('views:approvals.tooltips.lastChanged')} ${dateInTimestampOrShortMonthDayTimestamp(deliverableMeta.modified, locale.code.full, timeZone, compareDate)}`
+    }
+    const time = formatTime(deliverableMeta.modified, timeZone)
+    if (time) return `${t('views:approvals.tooltips.lastChanged')} ${time}`
+  }
+  return t('views:approvals.tooltips.lastChanged')
+}
