@@ -32,7 +32,7 @@
   "status_menu": {
     "cause": "Cause",
     "pickCause": "Choose cause...",
-    "planningDate": "Date in planning",
+    "planningDate": "Date",
     "setTime": "Set time",
     "asSavePlaceholder": "Publish new information",
     "embargoMinTime": "Embargo: cannot schedule before {{time}}",

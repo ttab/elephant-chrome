@@ -32,7 +32,7 @@
   "status_menu": {
     "cause": "Anledning",
     "pickCause": "Välj anledning...",
-    "planningDate": "Datum i planeringen",
+    "planningDate": "Datum",
     "setTime": "Ange tid",
     "asSavePlaceholder": "Publicera ny information",
     "embargoMinTime": "Embargo: kan inte schemaläggas före {{time}}",

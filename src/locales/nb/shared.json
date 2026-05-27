@@ -32,7 +32,7 @@
   "status_menu": {
     "cause": "Grunn",
     "pickCause": "Velg en grunn...",
-    "planningDate": "Dato i planen",
+    "planningDate": "Dato",
     "setTime": "Skriv inn tid",
     "asSavePlaceholder": "Publiser ny informasjon",
     "embargoMinTime": "Embargo: kan ikke planlegges før {{time}}",
