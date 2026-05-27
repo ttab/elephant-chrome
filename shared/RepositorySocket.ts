@@ -56,6 +56,7 @@ export class RepositorySocket {
   #connectingPromise: Promise<void> | null = null
   #authenticatingPromise: Promise<void> | null = null
   #statusListeners = new Set<(status: SocketStatus | null) => void>()
+  #currentStatus: SocketStatus | null = null
   #offlineHandler: (() => void) | null = null
   #onlineHandler: (() => void) | null = null
 
@@ -339,7 +340,12 @@ export class RepositorySocket {
     }
   }
 
+  get currentStatus(): SocketStatus | null {
+    return this.#currentStatus
+  }
+
   #emitStatus(status: SocketStatus | null): void {
+    this.#currentStatus = status
     for (const listener of this.#statusListeners) {
       listener(status)
     }
