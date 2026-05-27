@@ -247,7 +247,7 @@ describe('PromptSchedule', () => {
 
       // 12:00 Stockholm CEST = 10:00 UTC. The preview's system-timezone line
       // is what gets PATCHed into the planning's assignment.time.
-      expect(screen.getByText(/2026-07-15 12:00.*system|systemets/i))
+      expect(screen.getByText(/2026-07-15 12:00.*(system|systemets)/i))
         .toBeInTheDocument()
 
       // Same UTC instant in Sydney AEST (UTC+10, no DST in July) = 20:00.
