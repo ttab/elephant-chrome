@@ -62,13 +62,6 @@ export const getApplicationMenu = (featureFlags: AllowedFeatureFlag): Applicatio
           color: '#5E9F5D'
         },
         {
-          name: 'ApprovalsBeta',
-          label: i18next.t('app:mainMenu.approvals'),
-          icon: EarthIcon,
-          color: '#5E9F5D',
-          badge: 'beta'
-        },
-        {
           name: 'Events',
           label: i18next.t('app:mainMenu.events'),
           icon: CalendarPlus2Icon,
@@ -104,7 +97,21 @@ export const getApplicationMenu = (featureFlags: AllowedFeatureFlag): Applicatio
           label: i18next.t('app:mainMenu.timeless'),
           icon: BookmarkIcon,
           color: '#7C6F9C'
-        }
+        },
+        {
+          name: 'Search',
+          label: i18next.t('app:mainMenu.search'),
+          icon: SearchIcon,
+          color: '#F06F21'
+        },
+        ...(featureFlags.hasPrint
+          ? [{
+              name: 'Print' as View,
+              label: i18next.t('app:mainMenu.print'),
+              icon: LibraryIcon,
+              color: '#006bb3'
+            }]
+          : [])
       ]
     },
     {
@@ -118,12 +125,6 @@ export const getApplicationMenu = (featureFlags: AllowedFeatureFlag): Applicatio
           target: 'dialog'
         },
         {
-          name: 'Search',
-          label: i18next.t('app:mainMenu.search'),
-          icon: SearchIcon,
-          color: '#F06F21'
-        },
-        {
           name: 'QuickArticle',
           label: i18next.t('app:mainMenu.quickarticle'),
           icon: NewspaperIcon,
@@ -132,18 +133,17 @@ export const getApplicationMenu = (featureFlags: AllowedFeatureFlag): Applicatio
         }
       ]
     },
-    ...(featureFlags.hasPrint
-      ? [{
-          name: 'Print',
-          items: [
-            {
-              name: 'Print' as View,
-              label: i18next.t('app:mainMenu.print'),
-              icon: LibraryIcon,
-              color: '#006bb3'
-            }
-          ]
-        }]
-      : [])
+    {
+      name: 'beta',
+      items: [
+        {
+          name: 'ApprovalsBeta',
+          label: i18next.t('app:mainMenu.approvals'),
+          icon: EarthIcon,
+          color: '#5E9F5D',
+          badge: 'beta'
+        }
+      ]
+    }
   ]
 })
