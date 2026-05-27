@@ -102,7 +102,7 @@ export function preprocessApprovalData(
 
     const planningStartDate = subset?.length
       ? fromSubset(subset, E.PlanningStartDate)
-      : getPlanningStartDate(docState.document)
+      : docState.document?.meta.find((m) => m.type === 'core/planning-item')?.data?.start_date
     const sameDay = planningStartDate === dateStr
 
     const items = subset?.length
@@ -185,10 +185,6 @@ function extractFromDocument(
       .find((m) => m.type === 'tt/slugline')?.value,
     sectionUuid: planningSectionUuid
   }))
-}
-
-function getPlanningStartDate(planning: Document | undefined): string | undefined {
-  return planning?.meta.find((m) => m.type === 'core/planning-item')?.data?.start_date
 }
 
 function buildDeliverable(

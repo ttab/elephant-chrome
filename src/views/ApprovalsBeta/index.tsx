@@ -18,7 +18,8 @@ import { timesSlots as Slots } from '@/defaults/assignmentTimeslots'
 import type { Planning } from '@/shared/schemas/planning'
 import { createMetricsDecorator, type MetricsDecorator } from '@/hooks/useRepositorySocket/decorators/metrics'
 import { SocketBanner } from '@/hooks/useRepositorySocket/components/SocketBanner'
-import { getUTCDateRange } from '@/shared/datetime'
+import { getUTCDateRange, newLocalDate } from '@/shared/datetime'
+import { format } from 'date-fns'
 import { useTranslation } from 'react-i18next'
 
 const meta: ViewMetadata = {
@@ -49,7 +50,7 @@ export const ApprovalsBeta = (): JSX.Element => {
     ), [query, timeZone])
   const dateStr = useMemo(() => {
     if (typeof query?.from === 'string') return query.from
-    return new Intl.DateTimeFormat('en-CA', { timeZone }).format(new Date())
+    return format(newLocalDate(timeZone), 'yyyy-MM-dd')
   }, [query, timeZone])
 
   const decorators = useMemo(() => {
