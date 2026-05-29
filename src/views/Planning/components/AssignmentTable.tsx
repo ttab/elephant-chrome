@@ -151,24 +151,15 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId }: {
         <div className='pl-2'>
           <Button
             ref={addButtonRef}
+            size='sm'
+            className='h-8 pr-4'
             disabled={newAssignment !== undefined || !ydoc.connected}
-            variant='ghost'
             onKeyDown={(event: KeyboardEvent<HTMLButtonElement>) => event.key === 'Enter'
               && handleNewAssignment(event)}
             onClick={(event: MouseEvent<HTMLButtonElement>) => handleNewAssignment(event)}
-            className='hover:bg-slate-200 dark:hover:bg-table-focused'
           >
-
-            <div className='flex flex-row items-center gap-2'>
-              <div className='bg-primary rounded-full w-5 h-5 relative'>
-                <PlusIcon
-                  size={15}
-                  strokeWidth={2.25}
-                  className='text-white dark:text-black absolute inset-0 m-auto'
-                />
-              </div>
-              {t('planning:assignment.actions.addAssignment')}
-            </div>
+            <PlusIcon size={18} strokeWidth={1.75} />
+            <span className='pl-0.5'>{t('planning:assignment.actions.addAssignment')}</span>
           </Button>
         </div>
 
