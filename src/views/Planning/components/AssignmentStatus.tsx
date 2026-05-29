@@ -105,6 +105,38 @@ function stopRowClick(event: React.PointerEvent | React.MouseEvent) {
   event.stopPropagation()
 }
 
+/**
+ * Maps an assignment's status to a Tailwind border-l-* color class so the
+ * card's thick left border can mirror the status pill colour. Pure derivation
+ * from existing status tokens - no new colours introduced.
+ */
+export function getAssignmentStatusBorderClass({
+  isVisual,
+  visualStatus,
+  workflowState
+}: {
+  isVisual: boolean
+  visualStatus?: string
+  workflowState?: string
+}): string {
+  if (isVisual) {
+    switch (visualStatus) {
+      case 'started': return 'border-l-done'
+      case 'done': return 'border-l-usable'
+      default: return 'border-l-border'
+    }
+  }
+
+  switch (workflowState) {
+    case 'usable': return 'border-l-usable'
+    case 'withheld': return 'border-l-withheld'
+    case 'done': return 'border-l-done'
+    case 'approved': return 'border-l-approved'
+    case 'unpublished': return 'border-l-cancelled'
+    default: return 'border-l-border'
+  }
+}
+
 export const selectableStatuses: DefaultValueOption[] = [
   {
     value: 'todo',

@@ -231,9 +231,9 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId }: {
       )}
 
       {!!assignments?.length && (
-        <div className='border rounded-md'>
+        <div className='flex flex-col gap-2'>
           {assignments.map((assignment, index: number) => (
-            <div key={`${assignment.id}`} className='border-b last:border-0'>
+            <div key={`${assignment.id}`}>
               {selectedAssignment?.get('id') === assignment.id
                 ? (
                     <Assignment

@@ -215,40 +215,46 @@ const PlanningViewContent = (props: ViewProps & {
               />
             </Form.Title>
 
-            <TextBox
-              ydoc={ydoc}
-              value={publicDescription}
-              icon={<TextIcon size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />}
-              placeholder={t('planning:description.public')}
-            />
-
-            <TextBox
-              ydoc={ydoc}
-              value={internalDescription}
-              icon={<MessageCircleMoreIcon size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />}
-              placeholder={t('planning:description.internal')}
-            />
-
-            <Form.Group icon={CalendarIcon}>
-              <PlanDate ydoc={ydoc} asDialog={!!props.asDialog} />
-            </Form.Group>
-
-            <Form.Group icon={TagsIcon}>
-              {!hasLooseSlugline && (
-                <SluglineEditable
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4'>
+              <div className='flex flex-col gap-4'>
+                <TextBox
                   ydoc={ydoc}
-                  value={slugline}
-                  documentStatus={documentStatus?.name}
+                  value={publicDescription}
+                  icon={<TextIcon size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />}
+                  placeholder={t('planning:description.public')}
                 />
-              )}
 
-              <Newsvalue ydoc={ydoc} path='meta.core/newsvalue[0].value' />
-            </Form.Group>
+                <TextBox
+                  ydoc={ydoc}
+                  value={internalDescription}
+                  icon={<MessageCircleMoreIcon size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />}
+                  placeholder={t('planning:description.internal')}
+                />
+              </div>
 
-            <Form.Group icon={TagsIcon}>
-              <Section ydoc={ydoc} path='links.core/section[0]' />
-              <Story ydoc={ydoc} path='links.core/story[0]' />
-            </Form.Group>
+              <div className='flex flex-col gap-4'>
+                <Form.Group icon={CalendarIcon}>
+                  <PlanDate ydoc={ydoc} asDialog={!!props.asDialog} />
+                </Form.Group>
+
+                <Form.Group icon={TagsIcon}>
+                  {!hasLooseSlugline && (
+                    <SluglineEditable
+                      ydoc={ydoc}
+                      value={slugline}
+                      documentStatus={documentStatus?.name}
+                    />
+                  )}
+
+                  <Newsvalue ydoc={ydoc} path='meta.core/newsvalue[0].value' />
+                </Form.Group>
+
+                <Form.Group icon={TagsIcon}>
+                  <Section ydoc={ydoc} path='links.core/section[0]' />
+                  <Story ydoc={ydoc} path='links.core/story[0]' />
+                </Form.Group>
+              </div>
+            </div>
           </Form.Content>
 
           <Form.Table>
