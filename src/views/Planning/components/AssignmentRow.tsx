@@ -369,7 +369,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
       ref={rowRef}
       tabIndex={0}
       className={cn(
-        'group/assrow rounded-md border border-l-4 bg-card text-card-foreground',
+        'group/assrow @container/card rounded-md border border-l-4 bg-card text-card-foreground',
         'flex flex-col gap-2 text-sm p-3 transition-colors',
         'hover:bg-muted dark:hover:bg-table-focused hover:border-l-amber-400',
         'focus:outline-none focus-visible:ring-2 focus-visible:ring-table-selected',
@@ -418,9 +418,11 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
           )}
         </div>
 
-        {/* Main content column: title, meta line, description, visual status */}
+        {/* Main content column: title, meta line, description, visual status.
+            Stacks vertically below the title group on narrow cards, sits to the
+            right on wider cards. */}
         <div className='flex-1 min-w-0'>
-          <div className='flex items-start justify-between gap-3'>
+          <div className='flex flex-col gap-3 @md/card:flex-row @md/card:items-start @md/card:justify-between'>
             <div className='min-w-0 flex-1'>
               <div className='flex items-center gap-2'>
                 <HastIndicator documentId={deliverableId} />
