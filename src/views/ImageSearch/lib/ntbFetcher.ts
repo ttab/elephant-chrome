@@ -3,13 +3,27 @@ import { toast } from 'sonner'
 import type { NTB } from '@/shared/NTB'
 import { PreviewType, SearchRequest, type MediaItem } from '@ttab/elephant-tt-api/ntb'
 
+export const NPK_DISTRIBUTOR = 'NPK'
+
+/**
+ * Distributors whose catalogue sits outside the normal subscription. Selecting
+ * one forces `outsideSubscription` on, since those items are otherwise filtered
+ * out of the results.
+ */
+export const NTB_DISTRIBUTORS = [NPK_DISTRIBUTOR, 'NTB tema'] as const
+
+export type NTBDistributor = (typeof NTB_DISTRIBUTORS)[number]
+
+/** Keycloak unit marking a user as belonging to NPK (Nynorsk Pressekontor). */
+export const NPK_UNIT = '/redaktionen-npk'
+
 interface NTBPreview {
   width: number
   height: number
   url: string
   type: PreviewType
 }
-import type { ImageSearchHit, ImageSearchResult } from './types'
+import type { ImageSearchHit, ImageSearchKey, ImageSearchResult } from './types'
 
 function findPreviewByWidth(
   previews: NTBPreview[],
@@ -77,7 +91,7 @@ export const createNTBFetcher = (
   session: Session | null,
   archive: string
 ) =>
-  async ([queryString, index, SIZE]: [string, number, number]
+  async ([queryString, index, SIZE, , distributorNames = []]: ImageSearchKey
   ): Promise<ImageSearchResult> => {
     if (!session) {
       toast.error('Kan inte autentisera mot bildtjänsten')
@@ -91,7 +105,9 @@ export const createNTBFetcher = (
             archive,
             query: queryString,
             limit: SIZE,
-            offset: index * SIZE
+            offset: index * SIZE,
+            distributorNames,
+            outsideSubscription: distributorNames.length > 0
           }),
           session.accessToken
         )

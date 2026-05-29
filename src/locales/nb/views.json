@@ -117,6 +117,8 @@
     "title": "Bilder",
     "labels": {
       "mediaType": "Medietype",
+      "distributor": "Distributør",
+      "allDistributors": "Alle distributører",
       "image": "Bild",
       "graphic": "Grafikk",
       "close": "Lukk",

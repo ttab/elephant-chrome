@@ -117,6 +117,8 @@
     "title": "Bilder",
     "labels": {
       "mediaType": "Medietyp",
+      "distributor": "Distributör",
+      "allDistributors": "Alla distributörer",
       "image": "Bild",
       "graphic": "Grafik",
       "close": "Stäng",
