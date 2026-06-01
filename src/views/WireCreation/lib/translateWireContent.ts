@@ -55,16 +55,31 @@ function replaceTexts(elements: TBElement[], translated: string[]): void {
   elements.forEach(walk)
 }
 
+type PrefValue = { enabled: boolean } | { words: { values: string[] } }
+
 /**
  * Convert the comma-separated personal prefs string to the map format
- * expected by the Nynorsk API: { "form_name": { "enabled": true } }
+ * expected by the Nynorsk API. Two entry shapes are supported:
+ *   `rule_key`            -> { enabled: true }
+ *   `rule_key=w1:w2:w3`   -> { words: { values: ['w1', 'w2', 'w3'] } }
  */
-function parsePersonalPrefs(prefsString: string): Record<string, { enabled: boolean }> {
-  const prefs: Record<string, { enabled: boolean }> = {}
-  for (const key of prefsString.split(',')) {
-    if (key) {
-      prefs[key] = { enabled: true }
+function parsePersonalPrefs(prefsString: string): Record<string, PrefValue> {
+  const prefs: Record<string, PrefValue> = {}
+  for (const raw of prefsString.split(',')) {
+    const chunk = raw.trim()
+    if (!chunk) continue
+
+    const eq = chunk.indexOf('=')
+    if (eq === -1) {
+      prefs[chunk] = { enabled: true }
+      continue
     }
+
+    const key = chunk.slice(0, eq).trim()
+    if (!key) continue
+
+    const values = chunk.slice(eq + 1).split(':').map((v) => v.trim()).filter(Boolean)
+    prefs[key] = { words: { values } }
   }
   return prefs
 }
