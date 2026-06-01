@@ -4,7 +4,7 @@ export interface TranslateRequest {
   source_language: string
   target_language: string
   prefs_template?: string
-  prefs?: Record<string, { enabled: boolean }>
+  prefs?: Record<string, { enabled: boolean } | { words: { values: string[] } }>
 }
 
 export interface TranslateResponse {

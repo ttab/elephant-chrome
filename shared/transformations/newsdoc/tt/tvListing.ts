@@ -6,7 +6,7 @@ export const transformTvListing = (element: Block): TBElement => {
   const properties: Record<string, string> = {}
   const children: TBElement[] = []
   const fields = ['title', 'channel', 'day', 'time', 'end_time']
-  const mandatoryFields = new Set(['channel', 'time'])
+  const mandatoryFields = new Set(['channel'])
 
   for (const field of fields) {
     const value = data?.[field]
