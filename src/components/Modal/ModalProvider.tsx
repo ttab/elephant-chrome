@@ -37,7 +37,7 @@ export const ModalProvider = ({ children }: PropsWithChildren): JSX.Element => {
     <ModalContext.Provider value={{ showModal, hideModal, currentModal }}>
       {children}
       { modalType === 'dialog' && (
-        <ModalDialog isVisible={isVisible}>
+        <ModalDialog isVisible={isVisible} onDismiss={hideModal}>
           {modalContent}
         </ModalDialog>
       )}
