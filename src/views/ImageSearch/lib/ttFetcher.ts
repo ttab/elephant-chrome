@@ -4,7 +4,7 @@ import type { Session } from 'next-auth'
 import { toast } from 'sonner'
 import { productCodes } from './productCodes'
 import type { MediaTypes } from '..'
-import type { ImageSearchHit, ImageSearchResult } from './types'
+import type { ImageSearchHit, ImageSearchKey, ImageSearchResult } from './types'
 import { findRenditionByUsageAndVariant, type renditions } from './find-rendition'
 
 const BASE_URL = import.meta.env.BASE_URL || ''
@@ -59,7 +59,7 @@ export const createTTFetcher = (
   session: Session | null,
   mediaType: MediaTypes
 ) =>
-  async ([queryString, index, SIZE]: [string, number, number]): Promise<ImageSearchResult> => {
+  async ([queryString, index, SIZE]: ImageSearchKey): Promise<ImageSearchResult> => {
     if (!session) {
       toast.error('Kan inte autentisera mot bildtjänsten')
       throw new Error('ImageSearch Error: No session for user')
