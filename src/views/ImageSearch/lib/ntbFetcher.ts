@@ -10,7 +10,7 @@ export const NPK_DISTRIBUTOR = 'NPK'
  * one forces `outsideSubscription` on, since those items are otherwise filtered
  * out of the results.
  */
-export const NTB_DISTRIBUTORS = [NPK_DISTRIBUTOR, 'NTB tema'] as const
+export const NTB_DISTRIBUTORS = [NPK_DISTRIBUTOR, 'NTB Tema'] as const
 
 export type NTBDistributor = (typeof NTB_DISTRIBUTORS)[number]
 
