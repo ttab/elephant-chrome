@@ -45,7 +45,6 @@ export const TimeInput = ({
       onKeyDown={(e) => {
         if (e.key === 'Escape') {
           e.preventDefault()
-          e.stopPropagation()
           setOpen(false)
         }
         if (e.key === 'Enter') {
