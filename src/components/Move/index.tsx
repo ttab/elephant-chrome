@@ -217,12 +217,10 @@ export const Move = ({ ydoc, ...props }: ViewProps & {
                   <>
                     <Button
                       variant='ghost'
-                      asChild
                       className='text-muted-foreground flex size-4 p-0 data-[state=open]:bg-muted hover:bg-accent2'
                       onClick={handleClearPlanning}
-                    >
-                      <CircleXIcon size={18} strokeWidth={1.75} />
-                    </Button>
+                      render={<CircleXIcon size={18} strokeWidth={1.75} />}
+                    />
                   </>
                 )}
               <>

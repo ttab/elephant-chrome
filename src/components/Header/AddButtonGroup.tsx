@@ -135,13 +135,14 @@ export const AddButtonGroup = ({ docType = 'core/planning-item', query }: { type
       <DropdownMenu>
         <div>
           <DropdownMenuTrigger
-            asChild
+            nativeButton={false}
             className='h-full rounded-br-md rounded-tr-md bg-primary hover:bg-primary/90 cursor-pointer transition-all'
-          >
-            <div className='px-1.5'>
-              <ChevronDownIcon size={14} strokeWidth={1.75} className='self-center h-full text-white dark:text-black' />
-            </div>
-          </DropdownMenuTrigger>
+            render={(
+              <div className='px-1.5'>
+                <ChevronDownIcon size={14} strokeWidth={1.75} className='self-center h-full text-white dark:text-black' />
+              </div>
+            )}
+          />
         </div>
         <DropdownMenuContent>
           {firstItem?.type && (

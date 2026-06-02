@@ -259,15 +259,13 @@ export const TimelessCreation = ({ id, onClose }: {
                 {!!selectedPlanning && (
                   <Button
                     variant='ghost'
-                    asChild
                     className='text-muted-foreground flex size-4 p-0 data-[state=open]:bg-muted hover:bg-accent2'
                     onClick={(e) => {
                       e.preventDefault()
                       setSelectedPlanning(undefined)
                     }}
-                  >
-                    <CircleXIcon size={18} strokeWidth={1.75} />
-                  </Button>
+                    render={<CircleXIcon size={18} strokeWidth={1.75} />}
+                  />
                 )}
 
                 <Checkbox

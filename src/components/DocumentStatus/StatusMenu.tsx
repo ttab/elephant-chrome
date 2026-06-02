@@ -163,16 +163,18 @@ export const StatusMenu = ({ ydoc, onBeforeStatusChange, planningId, embargoUnti
       <div className='flex items-center' ref={containerRef}>
 
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <StatusButton
-              documentStatus={documentStatus}
-              workflow={workflow}
-              currentStatusName={currentStatusName}
-              currentStatusDef={currentStatusDef}
-              asSave={asSave}
-              isTransitioning={isTransitioning}
-            />
-          </DropdownMenuTrigger>
+          <DropdownMenuTrigger
+            render={(
+              <StatusButton
+                documentStatus={documentStatus}
+                workflow={workflow}
+                currentStatusName={currentStatusName}
+                currentStatusDef={currentStatusDef}
+                asSave={asSave}
+                isTransitioning={isTransitioning}
+              />
+            )}
+          />
 
           <DropdownMenuContent
             className='max-w-[340px] p-0 mt-1'

@@ -76,22 +76,23 @@ export const DatePicker = ({ date, changeDate, setDate, resetToday, forceYear = 
 
   return (
     <Popover modal={true} open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant='outline'
-          size='xs'
-          className={cn('justify-center text-center font-normal text-sm whitespace-nowrap px-2', buttonWidth({ forceYear }))}
-          onKeyDown={(event) => {
-            if (event.key !== 'Escape') {
-              event?.stopPropagation()
-            }
-          }}
-        >
-          <span className={cn(defaultDate({ forceYear }))}>{formattedDate}</span>
-          <span className={cn(longDate({ forceYear }))}>{longFormattedDate}</span>
-        </Button>
-
-      </PopoverTrigger>
+      <PopoverTrigger
+        render={(
+          <Button
+            variant='outline'
+            size='xs'
+            className={cn('justify-center text-center font-normal text-sm whitespace-nowrap px-2', buttonWidth({ forceYear }))}
+            onKeyDown={(event) => {
+              if (event.key !== 'Escape') {
+                event?.stopPropagation()
+              }
+            }}
+          >
+            <span className={cn(defaultDate({ forceYear }))}>{formattedDate}</span>
+            <span className={cn(longDate({ forceYear }))}>{longFormattedDate}</span>
+          </Button>
+        )}
+      />
       <PopoverContent
         className='w-auto p-0'
         onEscapeKeyDown={(event) => event?.stopPropagation()}

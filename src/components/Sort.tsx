@@ -45,19 +45,21 @@ export const Sort = <TData,>() => {
 
   return (
     <Popover open={open} onOpenChange={setOpen} modal>
-      <PopoverTrigger asChild>
-        <Button
-          variant='ghost'
-          size='xs'
-          role='combobox'
-          aria-expanded={open}
-        >
-          <ArrowUpDownIcon
-            size={18}
-            strokeWidth={1.75}
-          />
-        </Button>
-      </PopoverTrigger>
+      <PopoverTrigger
+        render={(
+          <Button
+            variant='ghost'
+            size='xs'
+            role='combobox'
+            aria-expanded={open}
+          >
+            <ArrowUpDownIcon
+              size={18}
+              strokeWidth={1.75}
+            />
+          </Button>
+        )}
+      />
       <PopoverContent className='' align='start'>
         <div className='flex flex-col gap-4'>
           <div className='flex flex-row gap-4 items-center'>

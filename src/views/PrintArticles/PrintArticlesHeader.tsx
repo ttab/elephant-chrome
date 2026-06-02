@@ -29,12 +29,14 @@ export const PrintArticlesHeader = (): JSX.Element => {
       <div className='flex flex-row gap-4 items-center justify-start'>
         <ViewHeader.Title title={t('articles.title')} name='Print' />
         <Popover>
-          <PopoverTrigger asChild>
-            <Button title={t('articles.header.createNew')} size='sm' className='gap-1 px-2 py-0'>
-              <PlusIcon strokeWidth={1.75} size={16} />
-              {t('articles.header.new')}
-            </Button>
-          </PopoverTrigger>
+          <PopoverTrigger
+            render={(
+              <Button title={t('articles.header.createNew')} size='sm' className='gap-1 px-2 py-0'>
+                <PlusIcon strokeWidth={1.75} size={16} />
+                {t('articles.header.new')}
+              </Button>
+            )}
+          />
           <PopoverContent className='flex flex-col gap-2'>
             <Button
               title={t('articles.header.newArticleTooltip')}

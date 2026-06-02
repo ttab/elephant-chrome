@@ -34,32 +34,37 @@ export const UserInfo = ({ user, data }: {
       </div>
 
       <div className='flex gap-2'>
-        <SheetClose asChild>
-          <Link
-            to='UserPreferences'
-            className='inline-flex items-center gap-2 rounded-md border bg-background px-3 h-9 text-sm hover:bg-accent'
-          >
-            <SettingsIcon strokeWidth={1.75} size={16} />
-            {t('app:settings.settingsButton')}
-          </Link>
-        </SheetClose>
+        <SheetClose
+          nativeButton={false}
+          render={(
+            <Link
+              to='UserPreferences'
+              className='inline-flex items-center gap-2 rounded-md border bg-background px-3 h-9 text-sm hover:bg-accent'
+            >
+              <SettingsIcon strokeWidth={1.75} size={16} />
+              {t('app:settings.settingsButton')}
+            </Link>
+          )}
+        />
 
-        <SheetClose asChild>
-          <Button
-            variant='outline'
-            onClick={(event) => {
-              event.preventDefault()
+        <SheetClose
+          render={(
+            <Button
+              variant='outline'
+              onClick={(event) => {
+                event.preventDefault()
 
-              signOut({ redirectTo: `${BASE_URL}/api/signout`, redirect: true })
-                .catch((error) => console.error(error))
-              localStorage.removeItem('trustGoogle')
-            }}
-            className='inline-flex items-center gap-2 rounded-md border bg-background px-3 h-9 text-sm hover:bg-accent'
-          >
-            <LogOutIcon strokeWidth={1.75} size={16} />
-            {t('app:mainMenu.logout')}
-          </Button>
-        </SheetClose>
+                signOut({ redirectTo: `${BASE_URL}/api/signout`, redirect: true })
+                  .catch((error) => console.error(error))
+                localStorage.removeItem('trustGoogle')
+              }}
+              className='inline-flex items-center gap-2 rounded-md border bg-background px-3 h-9 text-sm hover:bg-accent'
+            >
+              <LogOutIcon strokeWidth={1.75} size={16} />
+              {t('app:mainMenu.logout')}
+            </Button>
+          )}
+        />
       </div>
     </div>
   )

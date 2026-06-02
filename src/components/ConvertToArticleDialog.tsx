@@ -103,12 +103,14 @@ export function ConvertToArticleDialog({ timelessId, timelessDoc, onClose }: Pro
     >
       <div className='flex flex-col gap-2 pt-2'>
         <Popover>
-          <PopoverTrigger asChild>
-            <Button variant='outline' className='w-full justify-start gap-2'>
-              <CalendarIcon size={16} strokeWidth={1.75} />
-              {format(targetDate, 'EEEE yyyy-MM-dd', { locale: locale.module })}
-            </Button>
-          </PopoverTrigger>
+          <PopoverTrigger
+            render={(
+              <Button variant='outline' className='w-full justify-start gap-2'>
+                <CalendarIcon size={16} strokeWidth={1.75} />
+                {format(targetDate, 'EEEE yyyy-MM-dd', { locale: locale.module })}
+              </Button>
+            )}
+          />
           <PopoverContent className='w-auto p-0' align='start'>
             <Calendar
               mode='single'
