@@ -18,7 +18,7 @@ export const Sort = <TData,>() => {
   const { table } = useTable<TData>()
   const [open, setOpen] = useState(false)
   const [order, setOrder] = useState('asc')
-  const [quickSort, setQuickSort] = useState('')
+  const [quickSort, setQuickSort] = useState<string[]>([])
   const { t } = useTranslation()
 
   const { grouping, sorting } = table.getState()
@@ -31,16 +31,17 @@ export const Sort = <TData,>() => {
     table.getAllColumns()
       .filter((column) => column.getCanSort()), [table])
 
-  const handleQuickSortChange = (value: string) => {
+  const handleQuickSortChange = (values: string[]) => {
+    const value = values[0] ?? ''
     if (value === '') {
       table.setGrouping(['newsvalue'])
       table.setSorting([])
-      setQuickSort('')
+      setQuickSort([])
       return
     }
     table.setGrouping([value])
     table.setSorting([{ id: value, desc: value !== 'startTime' }])
-    setQuickSort(value)
+    setQuickSort([value])
   }
 
   return (
@@ -108,7 +109,7 @@ export const Sort = <TData,>() => {
           <Select
             value={grouping[0]}
             onValueChange={(option) => {
-              setQuickSort('')
+              setQuickSort([])
 
               if (option === 'none') {
                 table.setGrouping([])
@@ -133,7 +134,7 @@ export const Sort = <TData,>() => {
             <Select
               value={sorting[0]?.id || 'none'}
               onValueChange={(option) => {
-                setQuickSort('')
+                setQuickSort([])
 
                 if (option === 'none') {
                   table.setSorting([])

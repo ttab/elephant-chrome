@@ -59,21 +59,27 @@ export const QuickFilter = <TData,>(): JSX.Element => {
 
   const currentQuickFilterValue = quickFilterColumn?.getFilterValue()
 
-  const toggleGroupValue = useMemo(() => {
-    if (isUserFilterActive) return 'user'
+  const toggleGroupValue = useMemo<string[]>(() => {
+    if (isUserFilterActive) {
+      return ['user']
+    }
 
-    return Array.isArray(currentQuickFilterValue) && currentQuickFilterValue.length === 1
-      ? currentQuickFilterValue[0] as string
-      : ''
+    if (Array.isArray(currentQuickFilterValue) && currentQuickFilterValue.length === 1) {
+      return [currentQuickFilterValue[0] as string]
+    }
+
+    return []
   }, [currentQuickFilterValue, isUserFilterActive])
 
-  const handleToggleValueChange = useCallback((value: string | undefined) => {
+  const handleToggleValueChange = useCallback((values: string[]) => {
+    const value = values[0]
+
     if (value === 'user' && savedUserFilters) {
       table.setColumnFilters(savedUserFilters)
       return
     }
 
-    if (value === '' && isUserFilterActive) {
+    if (value === undefined && isUserFilterActive) {
       table.resetColumnFilters()
       return
     }
