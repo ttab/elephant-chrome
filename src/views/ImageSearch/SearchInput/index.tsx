@@ -2,7 +2,7 @@ import { SearchInput } from '@/components/SearchInput'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@ttab/elephant-ui'
 import React, { useState, type Dispatch, type SetStateAction, type JSX } from 'react'
 import type { MediaTypes } from '..'
-import { NTB_DISTRIBUTORS, type NTBDistributor } from '../lib/ntbFetcher'
+import { NTB_DISTRIBUTORS, getDistributorLabel, type NTBDistributor } from '../lib/ntbFetcher'
 import { useTranslation } from 'react-i18next'
 
 const ALL_DISTRIBUTORS = 'all'
@@ -55,7 +55,7 @@ export const ImageSearchInput = ({
                 </SelectItem>
                 {NTB_DISTRIBUTORS.map((distributor) => (
                   <SelectItem key={distributor} value={distributor}>
-                    {distributor}
+                    {getDistributorLabel(distributor)}
                   </SelectItem>
                 ))}
               </SelectContent>

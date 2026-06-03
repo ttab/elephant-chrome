@@ -10,9 +10,21 @@ export const NPK_DISTRIBUTOR = 'NPK'
  * one forces `outsideSubscription` on, since those items are otherwise filtered
  * out of the results.
  */
-export const NTB_DISTRIBUTORS = [NPK_DISTRIBUTOR, 'NTB tema'] as const
+export const NTB_DISTRIBUTORS = [NPK_DISTRIBUTOR, 'NTB Tema'] as const
 
 export type NTBDistributor = (typeof NTB_DISTRIBUTORS)[number]
+
+/**
+ * Display names shown in the UI for distributors whose backend identifier
+ * differs from their public/brand name. The map key stays the API value;
+ * distributors not listed here are shown verbatim.
+ */
+const DISTRIBUTOR_LABELS: Partial<Record<NTBDistributor, string>> = {
+  'NTB Tema': 'Jubilant'
+}
+
+export const getDistributorLabel = (distributor: NTBDistributor): string =>
+  DISTRIBUTOR_LABELS[distributor] ?? distributor
 
 /** Keycloak unit marking a user as belonging to NPK (Nynorsk Pressekontor). */
 export const NPK_UNIT = '/redaktionen-npk'
