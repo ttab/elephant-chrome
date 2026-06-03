@@ -95,7 +95,6 @@ export const DatePicker = ({ date, changeDate, setDate, resetToday, forceYear = 
       />
       <PopoverContent
         className='w-auto p-0'
-        onEscapeKeyDown={(event) => event?.stopPropagation()}
         allowPropagationForKeys={['Escape', 'ArrowDown', 'ArrowUp']}
       >
         <Calendar

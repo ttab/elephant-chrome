@@ -61,7 +61,6 @@ export const TimeDeliveryMenu = ({
       <PopoverContent
         className='p-0'
         align='start'
-        onEscapeKeyDown={(event) => event?.stopPropagation()}
       >
         <Command>
           <CommandInput placeholder='' />
