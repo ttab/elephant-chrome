@@ -215,7 +215,7 @@ const PlanningViewContent = (props: ViewProps & {
               />
             </Form.Title>
 
-            <div className='grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4'>
+            <div className='w-full grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-x-6 gap-y-4'>
               <div className='flex flex-col gap-4'>
                 <TextBox
                   ydoc={ydoc}

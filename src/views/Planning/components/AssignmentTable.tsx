@@ -6,7 +6,7 @@ import { useFeatureFlags } from '@/hooks/useFeatureFlags'
 import { Assignment } from './Assignment'
 import type { MouseEvent, KeyboardEvent } from 'react'
 import { useMemo, useRef, useState, type JSX } from 'react'
-import { Button } from '@ttab/elephant-ui'
+import { Button, Separator } from '@ttab/elephant-ui'
 import { useActiveAuthor } from '@/hooks/useActiveAuthor'
 import { snapshotDocument } from '@/lib/snapshotDocument'
 import { toast } from 'sonner'
@@ -147,7 +147,8 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId }: {
 
   return (
     <>
-      <div className='flex flex-col pt-2 text-primary pb-4'>
+      <Separator className='my-6' />
+      <div className='flex flex-col text-primary pb-4'>
         <div className='pl-2'>
           <Button
             ref={addButtonRef}
