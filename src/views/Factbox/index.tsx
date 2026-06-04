@@ -348,14 +348,14 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
   const configuredPlugins = useMemo(() => {
     return [
       UnorderedList(),
-      Link(),
+      Link({ linkWarningLabel: t('editor:linkWarningLabel') }),
       OrderedList(),
       Bold(),
       Italic(),
       LocalizedQuotationMarks(),
       Text({ ...getContentMenuLabels() })
     ]
-  }, [])
+  }, [t])
 
   const isOldVersion = factboxversion !== undefined && factboxversion !== currentVersion
 
