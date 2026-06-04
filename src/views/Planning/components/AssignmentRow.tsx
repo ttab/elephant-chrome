@@ -453,23 +453,24 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
                 </div>
               )}
 
-              {isVisualType && (
-                <div className='mt-2'>
+              <RelatedWires wires={wires} />
+            </div>
+
+            {(assignmentTime || isVisualType) && (
+              <div className='shrink-0 flex flex-col gap-2 @md/card:w-32'>
+                {assignmentTime && (
+                  <div className='whitespace-nowrap'>
+                    <AssignmentTimeDisplay date={assignmentTime} icon={TimeIcon} />
+                  </div>
+                )}
+                {isVisualType && (
                   <AssignmentStatus
                     isVisualAssignment
                     ydoc={ydoc}
                     path={`meta.core/assignment[${index}].data.status`}
                     workflowState={workflowState}
                   />
-                </div>
-              )}
-
-              <RelatedWires wires={wires} />
-            </div>
-
-            {assignmentTime && (
-              <div className='shrink-0 whitespace-nowrap @md/card:w-32'>
-                <AssignmentTimeDisplay date={assignmentTime} icon={TimeIcon} />
+                )}
               </div>
             )}
           </div>
