@@ -26,8 +26,8 @@ export const AssignmentTimeDisplay = ({ date, className, icon }: { date: Time, c
   }
 
   return (
-    <div className='flex flex-col text-right'>
-      <div className={cn('font-medium text-sm select-none flex gap-1 items-center justify-between w-full', className)}>
+    <div className='flex flex-col text-left'>
+      <div className={cn('font-medium text-sm select-none flex gap-1 items-center justify-start', className)}>
         {date?.type && ['picture', 'video'].includes(date.type) && <span>{displayDay(date.time)}</span>}
         {date?.time.map((timestamp, index) => (
           <span key={date.time.join('') + date.tooltip + index}>

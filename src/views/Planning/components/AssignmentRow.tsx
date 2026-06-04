@@ -468,7 +468,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
             </div>
 
             {assignmentTime && (
-              <div className='shrink-0 whitespace-nowrap'>
+              <div className='shrink-0 whitespace-nowrap @md/card:w-32'>
                 <AssignmentTimeDisplay date={assignmentTime} icon={TimeIcon} />
               </div>
             )}
