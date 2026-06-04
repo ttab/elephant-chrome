@@ -50,5 +50,6 @@
   "derivedFromTimelessLink": "timeless",
   "derivedFromArticleLink": "article",
   "derivedFromConnector": "and",
-  "derivedFromPlanningLink": "planning"
+  "derivedFromPlanningLink": "planning",
+  "linkWarningLabel": "Open link in a new tab? Continue only if you trust the source!"
 }

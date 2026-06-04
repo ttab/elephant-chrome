@@ -144,7 +144,7 @@ function EditorWrapper(props: ViewProps & {
     return [
       Bold(),
       Italic(),
-      Link(),
+      Link({ linkWarningLabel: t('editor:linkWarningLabel') }),
       ImageSearchPlugin({ openImageSearch }),
       FactboxPlugin({ openFactboxes }),
       Table(),
