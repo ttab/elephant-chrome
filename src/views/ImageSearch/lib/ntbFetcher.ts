@@ -3,13 +3,39 @@ import { toast } from 'sonner'
 import type { NTB } from '@/shared/NTB'
 import { PreviewType, SearchRequest, type MediaItem } from '@ttab/elephant-tt-api/ntb'
 
+export const NPK_DISTRIBUTOR = 'NPK'
+
+/**
+ * Distributors whose catalogue sits outside the normal subscription. Selecting
+ * one forces `outsideSubscription` on, since those items are otherwise filtered
+ * out of the results.
+ */
+export const NTB_DISTRIBUTORS = [NPK_DISTRIBUTOR, 'NTB Tema'] as const
+
+export type NTBDistributor = (typeof NTB_DISTRIBUTORS)[number]
+
+/**
+ * Display names shown in the UI for distributors whose backend identifier
+ * differs from their public/brand name. The map key stays the API value;
+ * distributors not listed here are shown verbatim.
+ */
+const DISTRIBUTOR_LABELS: Partial<Record<NTBDistributor, string>> = {
+  'NTB Tema': 'Jubilant'
+}
+
+export const getDistributorLabel = (distributor: NTBDistributor): string =>
+  DISTRIBUTOR_LABELS[distributor] ?? distributor
+
+/** Keycloak unit marking a user as belonging to NPK (Nynorsk Pressekontor). */
+export const NPK_UNIT = '/redaktionen-npk'
+
 interface NTBPreview {
   width: number
   height: number
   url: string
   type: PreviewType
 }
-import type { ImageSearchHit, ImageSearchResult } from './types'
+import type { ImageSearchHit, ImageSearchKey, ImageSearchResult } from './types'
 
 function findPreviewByWidth(
   previews: NTBPreview[],
@@ -77,7 +103,7 @@ export const createNTBFetcher = (
   session: Session | null,
   archive: string
 ) =>
-  async ([queryString, index, SIZE]: [string, number, number]
+  async ([queryString, index, SIZE, , distributorNames = []]: ImageSearchKey
   ): Promise<ImageSearchResult> => {
     if (!session) {
       toast.error('Kan inte autentisera mot bildtjänsten')
@@ -91,7 +117,9 @@ export const createNTBFetcher = (
             archive,
             query: queryString,
             limit: SIZE,
-            offset: index * SIZE
+            offset: index * SIZE,
+            distributorNames,
+            outsideSubscription: distributorNames.length > 0
           }),
           session.accessToken
         )

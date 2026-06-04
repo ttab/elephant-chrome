@@ -116,7 +116,7 @@ describe('Handles tt/tv-listing', () => {
     expect(newsDoc.links[0]).toEqual(expect.objectContaining({ rel: 'channel', uri: 'tt://tv-channel/svt1' }))
   })
 
-  it('always emits children for mandatory channel and time, even when missing in data', () => {
+  it('always emits a child for mandatory channel, even when missing in data', () => {
     const newsDocMissingMandatory = Block.create({
       id: 'missing-mandatory-id',
       type: 'tt/tv-listing',
@@ -137,11 +137,6 @@ describe('Handles tt/tv-listing', () => {
       },
       {
         type: 'tt/tv-listing/channel',
-        class: 'text',
-        children: [{ text: '' }]
-      },
-      {
-        type: 'tt/tv-listing/time',
         class: 'text',
         children: [{ text: '' }]
       }

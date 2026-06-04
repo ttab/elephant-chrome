@@ -117,6 +117,8 @@
     "title": "Images",
     "labels": {
       "mediaType": "Media type",
+      "distributor": "Distributor",
+      "allDistributors": "All distributors",
       "image": "Image",
       "graphic": "Graphic",
       "close": "Close",
