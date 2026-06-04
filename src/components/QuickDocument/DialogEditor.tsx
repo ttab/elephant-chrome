@@ -15,7 +15,7 @@ export const DialogEditor = ({ ydoc, setTitle, onValidation, validateStateRef, t
   setTitle: (value: string | undefined) => void
   type: 'article' | 'flash' | 'hast'
 } & FormProps): JSX.Element => {
-  const plugins = [UnorderedList, OrderedList, Bold, Italic, LocalizedQuotationMarks]
+  const plugins = [Bold, Italic, LocalizedQuotationMarks]
   const [content] = getValueByYPath<Y.XmlText>(ydoc.ele, 'content', true)
   const [documentLanguage] = getValueByYPath<string>(ydoc.ele, 'root.language')
   const { t } = useTranslation('flash')
@@ -51,6 +51,8 @@ export const DialogEditor = ({ ydoc, setTitle, onValidation, validateStateRef, t
         content={content}
         lang={documentLanguage}
         plugins={[
+          UnorderedList({ title: t('editor:contentMenu.unorderedList') }),
+          OrderedList({ title: t('editor:contentMenu.orderedList') }),
           ...plugins.map((initPlugin) => initPlugin()),
           Text({
             countCharacters,

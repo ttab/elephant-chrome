@@ -149,8 +149,8 @@ function EditorWrapper(props: ViewProps & {
       FactboxPlugin({ openFactboxes }),
       Table(),
       LocalizedQuotationMarks(),
-      OrderedList(),
-      UnorderedList(),
+      OrderedList({ title: t('editor:contentMenu.orderedList') }),
+      UnorderedList({ title: t('editor:contentMenu.unorderedList') }),
       TTVisual({
         captionLabel: t('editor:image.captionLabel'),
         bylineLabel: t('editor:image.bylineLabel'),
