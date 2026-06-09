@@ -348,7 +348,7 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
   const configuredPlugins = useMemo(() => {
     return [
       UnorderedList(),
-      Link({ linkWarningLabel: t('editor:linkWarningLabel') }),
+      Link(),
       OrderedList(),
       Bold(),
       Italic(),
