@@ -97,50 +97,52 @@ export const PlanningTable = ({ ydoc, asDialog }: {
   return (
     <div className='flex flex-col items-start'>
       <Dialog open={nestedDialogOpen}>
-        <DialogTrigger asChild>
-          <Button
-            variant='ghost'
-            className='flex flex-start items-center text-sm gap-2 p-2 -ml-2 rounded-sm hover:bg-gray-100 dark:hover:bg-table-focused'
-            onClick={(e) => {
-              setNestedOpen(true)
-              e.stopPropagation()
-              const eventData = ydoc.provider?.document
-                ? createPayload(ydoc.provider.document)
-                : undefined
+        <DialogTrigger
+          render={(
+            <Button
+              variant='ghost'
+              className='flex flex-start items-center text-sm gap-2 p-2 -ml-2 rounded-sm hover:bg-gray-100 dark:hover:bg-table-focused'
+              onClick={(e) => {
+                setNestedOpen(true)
+                e.stopPropagation()
+                const eventData = ydoc.provider?.document
+                  ? createPayload(ydoc.provider.document)
+                  : undefined
 
 
-              const payload = {
-                ...defaults,
-                ...eventData || {},
-                links: {
-                  ...eventData?.links,
-                  'core/event': [Block.create({
-                    type: 'core/event',
-                    uuid: ydoc.id,
-                    title: eventData?.title || t('common:misc.titleMissing'),
-                    rel: 'event'
-                  })]
+                const payload = {
+                  ...defaults,
+                  ...eventData || {},
+                  links: {
+                    ...eventData?.links,
+                    'core/event': [Block.create({
+                      type: 'core/event',
+                      uuid: ydoc.id,
+                      title: eventData?.title || t('common:misc.titleMissing'),
+                      rel: 'event'
+                    })]
+                  }
                 }
-              }
 
-              const id = crypto.randomUUID()
+                const id = crypto.randomUUID()
 
-              createdDocumentRef.current = [
-                id,
-                getTemplateFromView('Planning')(id, payload)
-              ]
-            }}
-          >
-            <div className='bg-primary rounded-full w-5 h-5 relative'>
-              <PlusIcon
-                size={15}
-                strokeWidth={2.25}
-                className='text-white dark:text-black absolute inset-0 m-auto'
-              />
-            </div>
-            {t('event:buttons.addPlanning')}
-          </Button>
-        </DialogTrigger>
+                createdDocumentRef.current = [
+                  id,
+                  getTemplateFromView('Planning')(id, payload)
+                ]
+              }}
+            >
+              <div className='bg-primary rounded-full w-5 h-5 relative'>
+                <PlusIcon
+                  size={15}
+                  strokeWidth={2.25}
+                  className='text-white dark:text-black absolute inset-0 m-auto'
+                />
+              </div>
+              {t('event:buttons.addPlanning')}
+            </Button>
+          )}
+        />
         <DialogContent className='gap-0 p-0'>
           <DialogDescription />
           <DialogTitle />

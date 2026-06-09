@@ -45,15 +45,16 @@ export const RelatedWires = ({ wires = [], inline = false, onNavigate }: {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger
-        asChild
+        nativeButton={false}
         onMouseEnter={() => setOpen(true)}
         onMouseLeave={() => setOpen(false)}
-      >
-        <div className='flex w-fit items-center gap-1.5 px-2 py-1 text-xs text-muted-foreground cursor-default select-none'>
-          <CableIcon size={13} strokeWidth={1.75} />
-          <span>{wires.length === 1 ? t('sources.sourceWires') : `${t('sources.sourceWires')} (${wires.length})`}</span>
-        </div>
-      </PopoverTrigger>
+        render={(
+          <div className='flex w-fit items-center gap-1.5 px-2 py-1 text-xs text-muted-foreground cursor-default select-none'>
+            <CableIcon size={13} strokeWidth={1.75} />
+            <span>{wires.length === 1 ? t('sources.sourceWires') : `${t('sources.sourceWires')} (${wires.length})`}</span>
+          </div>
+        )}
+      />
 
       <PopoverContent
         className='w-auto max-w-80 p-2'
@@ -61,8 +62,6 @@ export const RelatedWires = ({ wires = [], inline = false, onNavigate }: {
         align='start'
         onMouseEnter={() => setOpen(true)}
         onMouseLeave={() => setOpen(false)}
-        onOpenAutoFocus={(e) => e.preventDefault()}
-        onCloseAutoFocus={(e) => e.preventDefault()}
       >
         <WireList wires={wires} />
       </PopoverContent>

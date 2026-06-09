@@ -41,25 +41,26 @@ export const TimeDeliveryMenu = ({
 
   return (
     <Popover open={open} onOpenChange={handleOpenChange}>
-      <PopoverTrigger asChild>
-        <Button
-          size='sm'
-          variant='ghost'
-          className='h-9 font-sans font-normal whitespace-nowrap p-0'
-          onKeyDown={(event) => {
-            if (event.key !== 'Escape') {
-              event?.stopPropagation()
-            }
-          }}
-        >
-          {children}
-        </Button>
-      </PopoverTrigger>
+      <PopoverTrigger
+        render={(
+          <Button
+            size='sm'
+            variant='ghost'
+            className='h-9 font-sans font-normal whitespace-nowrap p-0'
+            onKeyDown={(event) => {
+              if (event.key !== 'Escape') {
+                event?.stopPropagation()
+              }
+            }}
+          >
+            {children}
+          </Button>
+        )}
+      />
 
       <PopoverContent
         className='p-0'
         align='start'
-        onEscapeKeyDown={(event) => event?.stopPropagation()}
       >
         <Command>
           <CommandInput placeholder='' />

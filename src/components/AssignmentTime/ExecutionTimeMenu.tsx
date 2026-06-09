@@ -164,16 +164,19 @@ export const ExecutionTimeMenu = ({ handleOnSelect, assignment, startDate }: Exe
 
   return (
     <Popover open={open} onOpenChange={handleOpenChange}>
-      <PopoverTrigger asChild>
-        <div className='flex flex-row space-x-2 items-center align-middle cursor-pointer'>
-          {timePickType.icon && <timePickType.icon {...timePickType.iconProps} />}
-          {
-            hasEndTime
-              ? <FromToDateTimeLabel fromDate={startDateValue} toDate={endDateValue} locale={locale.code.full} timeZone={timeZone} />
-              : <FromDateTimeLabel fromDate={startDateValue} locale={locale.code.full} timeZone={timeZone} />
-          }
-        </div>
-      </PopoverTrigger>
+      <PopoverTrigger
+        nativeButton={false}
+        render={(
+          <div className='flex flex-row space-x-2 items-center align-middle cursor-pointer'>
+            {timePickType.icon && <timePickType.icon {...timePickType.iconProps} />}
+            {
+              hasEndTime
+                ? <FromToDateTimeLabel fromDate={startDateValue} toDate={endDateValue} locale={locale.code.full} timeZone={timeZone} />
+                : <FromDateTimeLabel fromDate={startDateValue} locale={locale.code.full} timeZone={timeZone} />
+            }
+          </div>
+        )}
+      />
       <PopoverContent>
         <div>
           <Calendar

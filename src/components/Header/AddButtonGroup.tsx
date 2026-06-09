@@ -135,20 +135,21 @@ export const AddButtonGroup = ({ docType = 'core/planning-item', query }: { type
       <DropdownMenu>
         <div>
           <DropdownMenuTrigger
-            asChild
+            nativeButton={false}
             className='h-full rounded-br-md rounded-tr-md bg-primary hover:bg-primary/90 cursor-pointer transition-all'
-          >
-            <div className='px-1.5'>
-              <ChevronDownIcon size={14} strokeWidth={1.75} className='self-center h-full text-white dark:text-black' />
-            </div>
-          </DropdownMenuTrigger>
+            render={(
+              <div className='px-1.5'>
+                <ChevronDownIcon size={14} strokeWidth={1.75} className='self-center h-full text-white dark:text-black' />
+              </div>
+            )}
+          />
         </div>
         <DropdownMenuContent>
           {firstItem?.type && (
             <DropdownMenuItem
               inset={false}
               className='py-1.5 px-2 cursor-pointer'
-              onSelect={() => handleCreate(firstItem)}
+              onClick={() => handleCreate(firstItem)}
             >
               {ItemIcon?.icon && <ItemIcon.icon strokeWidth={1.75} size={18} color={ItemIcon.color} />}
               <span className='pl-4'>{getViewLabel(firstItem, hasHast)}</span>
@@ -163,7 +164,7 @@ export const AddButtonGroup = ({ docType = 'core/planning-item', query }: { type
                 inset={false}
                 className='py-1.5 px-2 cursor-pointer'
                 key={view.name}
-                onSelect={() => handleCreate(view)}
+                onClick={() => handleCreate(view)}
               >
                 {ViewIcon?.icon && <ViewIcon.icon strokeWidth={1.75} size={18} color={ViewIcon.color} />}
                 <span className='pl-4'>{getViewLabel(view, hasHast)}</span>

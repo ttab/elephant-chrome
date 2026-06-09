@@ -74,11 +74,14 @@ export const Menu = (): JSX.Element => {
                   <XIcon strokeWidth={2.25} />
                 </SheetClose>
 
-                <SheetClose asChild>
-                  <Link to='Plannings' className='leading-9 md:px-3 rounded-md'>
-                    <Logo className='w-full h-6' />
-                  </Link>
-                </SheetClose>
+                <SheetClose
+                  nativeButton={false}
+                  render={(
+                    <Link to='Plannings' className='leading-9 md:px-3 rounded-md'>
+                      <Logo className='w-full h-6' />
+                    </Link>
+                  )}
+                />
                 <div className='flex gap-1 md:gap-1.5'>
                   <LanguageSelector />
                   <ThemeSwitcher />

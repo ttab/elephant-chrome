@@ -1,5 +1,4 @@
 import { useEffect, useState, type PropsWithChildren, type JSX, type ReactNode, useLayoutEffect } from 'react'
-import { useKeydownGlobal } from '@/hooks/useKeydownGlobal'
 import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@ttab/elephant-ui'
 import type { MouseEvent } from 'react'
 import { createPortal } from 'react-dom'
@@ -42,12 +41,6 @@ export const Prompt = ({
 
   const [open, setOpen] = useState<boolean>(true)
 
-  useKeydownGlobal((event) => {
-    if (event.key === 'Escape' && dismiss) {
-      setOpen(false)
-      dismiss()
-    }
-  })
   const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null)
 
   useLayoutEffect(() => {
@@ -89,7 +82,16 @@ export const Prompt = ({
         />,
         document.body
       )}
-      <Dialog open={open} onOpenChange={setOpen} modal={true}>
+      <Dialog
+        open={open}
+        onOpenChange={(nextOpen) => {
+          setOpen(nextOpen)
+          if (!nextOpen) {
+            dismiss?.()
+          }
+        }}
+        modal={true}
+      >
         <DialogContent
           className={cn('z-50', 'max-w-lg')}
           style={{ ...dialogStyle, ...(anchorRect && anchorRect.width < 512 && { maxWidth: anchorRect.width }) }}

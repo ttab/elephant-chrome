@@ -1,4 +1,3 @@
-import { useKeydownGlobal } from '@/hooks/useKeydownGlobal'
 import type { HocuspocusProvider } from '@hocuspocus/provider'
 import {
   Button,
@@ -37,12 +36,6 @@ export const DuplicatePrompt = ({
   duplicateDate: { from: Date, to?: Date | undefined }
   type: 'Planning' | 'Event'
 }): JSX.Element => {
-  useKeydownGlobal((event) => {
-    if (event.key === 'Escape' && secondaryLabel && onSecondary) {
-      onSecondary(event as unknown as React.KeyboardEvent<HTMLButtonElement>)
-    }
-  })
-
   const { t } = useTranslation()
 
   function mergeDateWithTime(date1ISO: string | undefined, date2ISO: string | undefined) {
@@ -143,7 +136,14 @@ export const DuplicatePrompt = ({
   const { documentId: duplicateId, initialDocument: duplicatedDocument } = payload
 
   return (
-    <Dialog open={true}>
+    <Dialog
+      open={true}
+      onOpenChange={(open) => {
+        if (!open && onSecondary) {
+          onSecondary(new KeyboardEvent('keydown', { key: 'Escape' }))
+        }
+      }}
+    >
       <DialogContent
         onOpenAutoFocus={(event) => event.preventDefault()}
       >

@@ -150,7 +150,7 @@ export const Duplicate = ({ provider, title, session, status, type, dataInfo }: 
             <CopyPlusIcon size={20} strokeWidth={1.75} />
           </div>
         </PopoverTrigger>
-        <PopoverContent onEscapeKeyDown={(event) => event?.stopPropagation()}>
+        <PopoverContent>
           <SingleOrRangedCalendar
             dataInfo={dataInfo}
             granularity={granularity}

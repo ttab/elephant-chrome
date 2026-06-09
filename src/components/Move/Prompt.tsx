@@ -100,7 +100,14 @@ export const MovePrompt = ({
   }
 
   return (
-    <Dialog open={true}>
+    <Dialog
+      open={true}
+      onOpenChange={(open) => {
+        if (!open && onSecondary) {
+          onSecondary()
+        }
+      }}
+    >
       <DialogContent
         onOpenAutoFocus={(event) => event.preventDefault()}
         onPointerDownOutside={() => {

@@ -25,21 +25,23 @@ export const Filter = ({ pages, setPages, setSearch, children, search }:
 
   return (
     <Popover open={open} onOpenChange={onOpenChange} modal>
-      <PopoverTrigger asChild>
-        <Button
-          variant='ghost'
-          size='xs'
-          role='combobox'
-          aria-expanded={open}
-          className='h-9 w-9'
-        >
-          <ListFilterIcon
-            size={18}
-            strokeWidth={1.75}
-            className='@3xl/view:shrink-0'
-          />
-        </Button>
-      </PopoverTrigger>
+      <PopoverTrigger
+        render={(
+          <Button
+            variant='ghost'
+            size='xs'
+            role='combobox'
+            aria-expanded={open}
+            className='h-9 w-9'
+          >
+            <ListFilterIcon
+              size={18}
+              strokeWidth={1.75}
+              className='@3xl/view:shrink-0'
+            />
+          </Button>
+        )}
+      />
       <PopoverContent className='w-[200px] p-0' align='start'>
         <Command
           shouldFilter={pages.length > 1 ? true : false}

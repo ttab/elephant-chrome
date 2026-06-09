@@ -41,17 +41,21 @@ export const Toolbar = ({ facets }: { facets: Facets }): JSX.Element => {
     toast.success(t('shared:operations.savedFilter'))
   }
 
-  const handleToggleGroupValue = useCallback(() => {
+  const handleToggleGroupValue = useCallback<() => string[]>(() => {
     if (isUserFilter(userFilters, filters)) {
-      return 'user'
+      return ['user']
     }
 
-    return Array.isArray(filters.section) && filters.section.length === 1
-      ? filters.section[0]
-      : ''
+    if (Array.isArray(filters.section) && filters.section.length === 1) {
+      return [filters.section[0]]
+    }
+
+    return []
   }, [filters, userFilters])
 
-  const handleToggleValueChange = (value: string | undefined) => {
+  const handleToggleValueChange = (values: string[]) => {
+    const value = values[0]
+
     // Set userFilter
     if (value === 'user') {
       setFilters(userFilters || {})
@@ -60,7 +64,7 @@ export const Toolbar = ({ facets }: { facets: Facets }): JSX.Element => {
     }
 
     // If current filter is userFilter, reset all filters
-    if (value === '' && isUserFilter(userFilters, filters)) {
+    if (value === undefined && isUserFilter(userFilters, filters)) {
       setFilters({})
       setCurrentFilters({})
       return
@@ -102,7 +106,7 @@ export const Toolbar = ({ facets }: { facets: Facets }): JSX.Element => {
           <ToggleGroup
             type='single'
             size='xs'
-            value={(() => handleToggleGroupValue())()}
+            value={handleToggleGroupValue()}
             onValueChange={handleToggleValueChange}
             className='px-1'
           >
@@ -145,7 +149,7 @@ export const Toolbar = ({ facets }: { facets: Facets }): JSX.Element => {
               ...allSections.map((section) => ({
                 label: section.title,
                 item: () => {
-                  handleToggleValueChange(section.id)
+                  handleToggleValueChange([section.id])
                 }
               })),
               {

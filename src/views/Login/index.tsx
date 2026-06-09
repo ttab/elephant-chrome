@@ -65,7 +65,7 @@ const LoginForm = ({ callbackUrl }: {
         <div className='flex items-center space-x-2'>
           <Checkbox
             id='remember'
-            defaultChecked={trustGoogle}
+            defaultChecked={!!trustGoogle}
             onCheckedChange={(state) => {
               localStorage.setItem('trustGoogle', state ? 'true' : 'false')
               setTrustGoogle(state)

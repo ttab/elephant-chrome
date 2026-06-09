@@ -68,6 +68,13 @@ export const useNavigationKeys = (
       return
     }
 
+    // Don't override Enter / Space when a button has focus - native button
+    // activation must run, and Base UI's div-based buttons handle these keys
+    // internally via useButton.
+    if ((event.key === 'Enter' || event.key === ' ') && isButtonLikeElement(target)) {
+      return
+    }
+
     // If key is a navigation key
     if (keys.some((key) => keyCombination === key)) {
       if (skipIfHandled && event.defaultPrevented) {
@@ -101,6 +108,17 @@ export const useNavigationKeys = (
     document.addEventListener('keydown', handleKeyDown, { capture })
     return () => document.removeEventListener('keydown', handleKeyDown, { capture })
   }, [enabled, handleKeyDown, capture])
+}
+
+function isButtonLikeElement(element: Element | null): boolean {
+  if (!element) {
+    return false
+  }
+  if (element instanceof HTMLButtonElement) {
+    return true
+  }
+  const role = element.getAttribute('role')
+  return role === 'button' || role === 'menuitem' || role === 'option'
 }
 
 function isEditableElement(element: Element | null): element is HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | HTMLElement {
