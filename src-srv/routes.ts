@@ -178,7 +178,7 @@ function connectRouteHandler(app: Application, routePath: string, func: RouteHan
           routePath,
           (req, res, next) => {
             if (req.is('application/octet-stream')) {
-              return expressRaw({ type: 'application/octet-stream' })(req, res, next)
+              return expressRaw({ type: 'application/octet-stream', limit: '1mb' })(req, res, next)
             }
             next()
           },

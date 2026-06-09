@@ -119,7 +119,7 @@ export async function runServer(): Promise<string> {
     origin: `${PROTOCOL}://${HOST}:${PORT}`
 
   }))
-  app.use(BASE_URL, express.json())
+  app.use(BASE_URL, express.json({ limit: '1mb' }))
   app.use(authSessionMiddleware(BASE_URL, authInfo.authConfig))
 
   app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
