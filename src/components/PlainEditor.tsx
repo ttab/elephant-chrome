@@ -26,10 +26,9 @@ export const Editor = ({ id, version, textOnly = false, direct, versionStatusHis
   const activeLocale = i18n.resolvedLanguage
 
   const getPlugins = () => {
-    const basePlugins = [Text, UnorderedList, OrderedList, Bold, Italic, Table]
+    const basePlugins = [Text, UnorderedList, OrderedList, Bold, Italic, Table, Link]
     return [
       ...basePlugins.map((initPlugin) => initPlugin()),
-      Link({ linkWarningLabel: t('linkWarningLabel') }),
       TTVisual({
         captionLabel: t('image.captionLabel'),
         bylineLabel: t('image.bylineLabel'),
