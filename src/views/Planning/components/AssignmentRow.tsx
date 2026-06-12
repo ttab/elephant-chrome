@@ -369,8 +369,8 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
       ref={rowRef}
       tabIndex={0}
       className={cn(
-        'group/assrow @container/card rounded-md border border-l-[6px] bg-card text-card-foreground',
-        'flex flex-col gap-2 text-sm p-3 transition-colors',
+        'group/assrow @container/card rounded-md border border-s-[6px] bg-card text-card-foreground',
+        'flex flex-col gap-2 text-sm py-3 pl-2 pr-3 transition-colors',
         'hover:bg-muted dark:hover:bg-table-focused',
         'focus:outline-none focus-visible:ring-2 focus-visible:ring-table-selected',
         'focus-visible:ring-offset-2 focus-visible:ring-offset-background',

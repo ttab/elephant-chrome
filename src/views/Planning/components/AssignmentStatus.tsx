@@ -106,9 +106,9 @@ function stopRowClick(event: React.PointerEvent | React.MouseEvent) {
 }
 
 /**
- * Maps an assignment's status to a Tailwind border-l-* color class so the
- * card's thick left border can mirror the status pill colour. Pure derivation
- * from existing status tokens - no new colours introduced.
+ * Maps an assignment's status to a Tailwind border-s-* color class so the
+ * card's thick inline-start border can mirror the status pill colour. Pure
+ * derivation from existing status tokens - no new colours introduced.
  */
 export function getAssignmentStatusBorderClass({
   isVisual,
@@ -121,19 +121,19 @@ export function getAssignmentStatusBorderClass({
 }): string {
   if (isVisual) {
     switch (visualStatus) {
-      case 'started': return 'border-l-done'
-      case 'done': return 'border-l-usable'
-      default: return 'border-l-border'
+      case 'started': return 'border-s-done'
+      case 'done': return 'border-s-usable'
+      default: return 'border-s-border'
     }
   }
 
   switch (workflowState) {
-    case 'usable': return 'border-l-usable'
-    case 'withheld': return 'border-l-withheld'
-    case 'done': return 'border-l-done'
-    case 'approved': return 'border-l-approved'
-    case 'unpublished': return 'border-l-cancelled'
-    default: return 'border-l-border'
+    case 'usable': return 'border-s-usable'
+    case 'withheld': return 'border-s-withheld'
+    case 'done': return 'border-s-done'
+    case 'approved': return 'border-s-approved'
+    case 'unpublished': return 'border-s-cancelled'
+    default: return 'border-s-border'
   }
 }
 

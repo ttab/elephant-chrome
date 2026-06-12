@@ -37,7 +37,7 @@ export const AssignmentTimeDisplay = ({ date, className, icon }: { date: Time, c
         ))}
         <Icon size={18} />
       </div>
-      <span className='text-xs'>{date?.tooltip}</span>
+      <span className='text-xs text-foreground/70'>{date?.tooltip}</span>
     </div>
   )
 }

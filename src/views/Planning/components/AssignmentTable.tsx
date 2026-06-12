@@ -150,7 +150,7 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId }: {
       <Separator className='mt-4 mb-10' />
 
       <div className='flex flex-col text-primary pb-4'>
-        <div className='pl-2'>
+        <div>
           <Button
             ref={addButtonRef}
             size='sm'
