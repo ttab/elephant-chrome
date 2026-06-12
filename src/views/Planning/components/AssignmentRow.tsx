@@ -19,7 +19,7 @@ import {
 import { type MouseEvent, useMemo, useState, useCallback, useEffect, useRef, type JSX } from 'react'
 import { useLink } from '@/hooks/useLink'
 import { Prompt } from '@/components'
-import { Button } from '@ttab/elephant-ui'
+import { Button, Tooltip } from '@ttab/elephant-ui'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { deleteByYPath, getValueByYPath } from '@/shared/yUtils'
 import { useOpenDocuments } from '@/hooks/useOpenDocuments'
@@ -437,14 +437,25 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
               </div>
 
               {(slugline || authors.length > 0) && (
-                <div
-                  className={cn(
-                    'mt-1 text-sm text-muted-foreground truncate',
-                    isUsedTimeless && 'opacity-60'
+                <Tooltip
+                  content={(
+                    <div className='flex flex-col gap-0.5'>
+                      {slugline && <div>{slugline}</div>}
+                      {authors.map((a) => (
+                        <div key={a.uuid || a.title}>{a.title}</div>
+                      ))}
+                    </div>
                   )}
                 >
-                  {[slugline, ...authors.map((a) => a.title)].filter(Boolean).join(' · ')}
-                </div>
+                  <div
+                    className={cn(
+                      'mt-1 text-sm text-muted-foreground truncate',
+                      isUsedTimeless && 'opacity-60'
+                    )}
+                  >
+                    {[slugline, ...authors.map((a) => a.title)].filter(Boolean).join(' · ')}
+                  </div>
+                </Tooltip>
               )}
 
               {!!description && (
