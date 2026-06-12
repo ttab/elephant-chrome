@@ -397,11 +397,6 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
       }}
     >
       <div className='flex flex-row gap-3 items-start'>
-        {/* Type icon. Non-visual assignments get a small workflow-status badge
-            superscripted on the top-right; visual assignments expose status as
-            an interactive dropdown inside the body. The wrapper is marked
-            pointer-events-none so the icon's own button hover never fires and
-            clicks fall through to the card's row handler. */}
         <div className='flex flex-col items-center gap-1 shrink-0'>
           <div className='relative pointer-events-none'>
             <AssignmentType
@@ -421,9 +416,6 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
           <HastIndicator className='-mt-2.5' documentId={deliverableId} size={16} />
         </div>
 
-        {/* Main content column: title, meta line, description, visual status.
-            Stacks vertically below the title group on narrow cards, sits to the
-            right on wider cards. */}
         <div className='flex-1 min-w-0'>
           <div className='flex flex-col gap-3 @md/card:flex-row @md/card:items-start @md/card:justify-between'>
             <div className='min-w-0 flex-1'>
