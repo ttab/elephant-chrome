@@ -39,9 +39,10 @@ function getHastState(
  * but is consumed or disabled (value=0), orange on fetch error,
  * hidden when no hast block or session unavailable.
  */
-export const HastIndicator = ({ documentId, size = 14 }: {
+export const HastIndicator = ({ documentId, size = 14, className }: {
   documentId?: string
   size?: number
+  className?: string
 }): JSX.Element | null => {
   const featureFlags = useFeatureFlags(['hasHast'])
   const { repository } = useRegistry()
@@ -119,7 +120,8 @@ export const HastIndicator = ({ documentId, size = 14 }: {
       strokeWidth={1.75}
       size={size}
       className={cn(
-        hastState === 'active' ? 'text-red-500' : 'text-muted-foreground'
+        hastState === 'active' ? 'text-red-500' : 'text-muted-foreground',
+        className
       )}
     />
   )
