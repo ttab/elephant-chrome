@@ -120,7 +120,9 @@ export const HastIndicator = ({ documentId, size = 14, className }: {
       strokeWidth={1.75}
       size={size}
       className={cn(
-        hastState === 'active' ? 'text-red-500' : 'text-muted-foreground',
+        hastState === 'active'
+          ? 'text-red-500 dark:text-red-400'
+          : 'text-muted-foreground dark:text-zinc-300',
         className
       )}
     />

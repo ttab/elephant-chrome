@@ -43,7 +43,7 @@ import useSWR from 'swr'
 import { useRepositoryEvents } from '@/hooks/useRepositoryEvents'
 import { type YDocument, useYValue } from '@/modules/yjs/hooks'
 import { toast } from 'sonner'
-import { AssignmentStatus, getAssignmentStatusBorderClass } from './AssignmentStatus'
+import { AssignmentStatus, getAssignmentStatusBorderClass, getAssignmentStatusBadgeBorderClass } from './AssignmentStatus'
 import { getDocumentStatuses } from '@/defaults/documentStatuses'
 import { useTranslation } from 'react-i18next'
 import type { TranslationKey } from '@/types/i18next.d'
@@ -369,7 +369,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
       ref={rowRef}
       tabIndex={0}
       className={cn(
-        'group/assrow @container/card rounded-md border border-s-[6px] bg-card text-card-foreground',
+        'group/assrow @container/card relative rounded-md border border-s-[6px] bg-card text-card-foreground',
         'flex flex-col gap-2 text-sm py-3 pl-2 pr-3 transition-colors',
         'hover:bg-muted dark:hover:bg-table-focused',
         'focus:outline-none focus-visible:ring-2 focus-visible:ring-table-selected',
@@ -396,24 +396,33 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
         }
       }}
     >
+      <div className={cn(
+        'absolute -top-2 -left-3 empty:hidden rounded-full leading-none bg-background border p-0.5 pointer-events-none',
+        getAssignmentStatusBadgeBorderClass({
+          isVisual: isVisualType,
+          visualStatus,
+          workflowState
+        })
+      )}
+      >
+        <HastIndicator documentId={deliverableId} size={14} />
+      </div>
+
       <div className='flex flex-row gap-3 items-start'>
-        <div className='flex flex-col items-center gap-1 shrink-0'>
-          <div className='relative pointer-events-none'>
-            <AssignmentType
-              assignment={assignment}
-              editable={!documentId}
-              readOnly
-            />
-            {workflowStatusBadge?.icon && (
-              <div className='absolute top-0 right-0 rounded-full leading-none bg-background border border-foreground/30'>
-                <workflowStatusBadge.icon
-                  {...workflowStatusBadge.iconProps}
-                  size={14}
-                />
-              </div>
-            )}
-          </div>
-          <HastIndicator className='-mt-2.5' documentId={deliverableId} size={16} />
+        <div className='relative shrink-0 pointer-events-none'>
+          <AssignmentType
+            assignment={assignment}
+            editable={!documentId}
+            readOnly
+          />
+          {workflowStatusBadge?.icon && (
+            <div className='absolute top-0 right-0 rounded-full leading-none bg-background border border-foreground/30'>
+              <workflowStatusBadge.icon
+                {...workflowStatusBadge.iconProps}
+                size={14}
+              />
+            </div>
+          )}
         </div>
 
         <div className='flex-1 min-w-0'>

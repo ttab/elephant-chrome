@@ -137,6 +137,38 @@ export function getAssignmentStatusBorderClass({
   }
 }
 
+/**
+ * Same status colour as getAssignmentStatusBorderClass but as a full-border
+ * class for use on the round HAST badge sitting on the card edge. Kept in
+ * lockstep with the inline-start version above.
+ */
+export function getAssignmentStatusBadgeBorderClass({
+  isVisual,
+  visualStatus,
+  workflowState
+}: {
+  isVisual: boolean
+  visualStatus?: string
+  workflowState?: string
+}): string {
+  if (isVisual) {
+    switch (visualStatus) {
+      case 'started': return 'border-done'
+      case 'done': return 'border-usable'
+      default: return 'border-foreground/30'
+    }
+  }
+
+  switch (workflowState) {
+    case 'usable': return 'border-usable'
+    case 'withheld': return 'border-withheld'
+    case 'done': return 'border-done'
+    case 'approved': return 'border-approved'
+    case 'unpublished': return 'border-cancelled'
+    default: return 'border-foreground/30'
+  }
+}
+
 export const selectableStatuses: DefaultValueOption[] = [
   {
     value: 'todo',
