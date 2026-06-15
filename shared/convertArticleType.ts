@@ -172,7 +172,8 @@ export function deriveNewPlanning({
  * `rel='deliverable'`. Returns a new Document proto; does not mutate.
  *
  * When `sourceAssignment` is provided, the new assignment inherits its
- * internal description so manually entered context survives conversion.
+ * internal description and any `core/author` `rel='assignee'` links so
+ * manually entered context and assignees survive conversion.
  */
 export function attachArticleAssignment({
   planning,
@@ -199,6 +200,8 @@ export function attachArticleAssignment({
     planningDate: targetDate,
     title: articleTitle,
     slugLine: slugline,
+    // Assignees are appended directly below — the template only supports a
+    // single assignee but a source assignment can carry several authors.
     assignee: null,
     assignmentData: {
       public: 'true',
