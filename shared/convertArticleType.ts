@@ -190,6 +190,9 @@ export function attachArticleAssignment({
   const assignmentIso = `${targetDate}T09:00:00Z`
   const slugline = planning.meta.find((m) => m.type === 'tt/slugline')?.value
   const inheritedInternalDescription = getInternalDescription(sourceAssignment)
+  const inheritedAssignees = (sourceAssignment?.links ?? [])
+    .filter((link) => link.type === 'core/author' && link.rel === 'assignee')
+    .map((link) => Block.create({ ...link }))
 
   const assignment = assignmentPlanningTemplate({
     assignmentType: 'text',
@@ -230,6 +233,7 @@ export function attachArticleAssignment({
     meta: cleanedMeta,
     links: [
       ...assignment.links,
+      ...inheritedAssignees,
       Block.create({
         type: 'core/article',
         uuid: articleId,
