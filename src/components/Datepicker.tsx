@@ -15,7 +15,7 @@ import { type ViewProps } from '../types'
 import { newLocalDate } from '@/shared/datetime'
 import { useTranslation } from 'react-i18next'
 
-export const DatePicker = ({ date, changeDate, setDate, resetToday, forceYear = false, disabled = false, asDialog }: {
+export const DatePicker = ({ date, changeDate, setDate, resetToday, forceYear = false, disabled = false }: {
   date: Date
   changeDate?: (event: MouseEvent<Element> | KeyboardEvent | undefined, props: ViewProps, target?: 'self') => void
   setDate?: (arg: string) => void
@@ -105,7 +105,7 @@ export const DatePicker = ({ date, changeDate, setDate, resetToday, forceYear = 
                 <Button
                   variant='outline'
                   onClick={() => {
-                    if (asDialog && resetToday) {
+                    if (resetToday) {
                       resetToday?.()
                       return
                     }
