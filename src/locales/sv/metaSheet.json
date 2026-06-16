@@ -23,13 +23,15 @@
     "removeHastFromTimeless": "Ta bort HAST från tidlös"
   },
   "convertToArticle": {
+    "descriptionPickPlanning": "Välj planeringen artikeln ska hamna i, eller lämna tom för att skapa en ny. Välj datum för artikeln. Den tidlösa artikeln finns kvar.",
     "descriptionWithPlanning": "En ny planering skapas från den ursprungliga. Välj datum för den nya artikeln. Den tidlösa artikeln finns kvar.",
     "descriptionNoPlanning": "Välj datum för den nya artikeln. Den tidlösa artikeln finns kvar.",
     "loadingPlanning": "Letar efter den ursprungliga planeringen…",
     "targetDateLabel": "Datum",
     "converting": "Sparar…",
     "failed": "Kunde inte skapa det nya dokumentet. Försök igen eller avbryt.",
-    "noPlanningHint": "Ingen ursprunglig planering hittades — en ny planering skapas från tidlös."
+    "noPlanningHint": "Ingen ursprunglig planering hittades — en ny planering skapas från tidlös.",
+    "clearPlanning": "Ta bort planering"
   },
   "convertToTimeless": {
     "description": "Välj kategori för den nya tidlösa artikeln. Den ursprungliga artikeln finns kvar.",
