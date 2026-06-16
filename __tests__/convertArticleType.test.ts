@@ -625,6 +625,128 @@ describe('attachArticleAssignment', () => {
     const assignment = findAssignment(result)
     expect(assignment?.meta.find((m) => m.type === 'tt/slugline')?.value).toBe('feature-x')
   })
+
+  it('copies assignee links from the source assignment to the new assignment', () => {
+    const sourceAssignment = Block.create({
+      type: 'core/assignment',
+      links: [
+        Block.create({
+          type: 'core/author',
+          uuid: 'author-1',
+          rel: 'assignee',
+          role: 'primary',
+          title: 'Alice'
+        }),
+        Block.create({
+          type: 'core/author',
+          uuid: 'author-2',
+          rel: 'assignee',
+          role: 'secondary',
+          title: 'Bob'
+        })
+      ]
+    })
+
+    const result = attachArticleAssignment({
+      planning: makePlanning(),
+      articleId: 'article-uuid',
+      articleTitle: 'Test',
+      targetDate: '2026-05-15',
+      sourceAssignment
+    })
+
+    const assignment = findAssignment(result)
+    const assignees = assignment?.links.filter(
+      (l) => l.type === 'core/author' && l.rel === 'assignee'
+    )
+    expect(assignees).toHaveLength(2)
+    expect(assignees?.find((a) => a.uuid === 'author-1')).toMatchObject({
+      role: 'primary',
+      title: 'Alice'
+    })
+    expect(assignees?.find((a) => a.uuid === 'author-2')).toMatchObject({
+      role: 'secondary',
+      title: 'Bob'
+    })
+  })
+
+  it('produces no assignee links when no source assignment is provided', () => {
+    const result = attachArticleAssignment({
+      planning: makePlanning(),
+      articleId: 'article-uuid',
+      articleTitle: 'Test',
+      targetDate: '2026-05-15'
+    })
+
+    const assignment = findAssignment(result)
+    expect(
+      assignment?.links.find((l) => l.type === 'core/author' && l.rel === 'assignee')
+    ).toBeUndefined()
+  })
+
+  it('does not carry over non-assignee links from the source assignment', () => {
+    const sourceAssignment = Block.create({
+      type: 'core/assignment',
+      links: [
+        Block.create({
+          type: 'tt/wire',
+          uuid: 'wire-uuid',
+          rel: 'source-document',
+          title: 'Some wire'
+        }),
+        Block.create({
+          type: 'core/author',
+          uuid: 'author-1',
+          rel: 'assignee',
+          role: 'primary',
+          title: 'Alice'
+        })
+      ]
+    })
+
+    const result = attachArticleAssignment({
+      planning: makePlanning(),
+      articleId: 'article-uuid',
+      articleTitle: 'Test',
+      targetDate: '2026-05-15',
+      sourceAssignment
+    })
+
+    const assignment = findAssignment(result)
+    expect(assignment?.links.find((l) => l.type === 'tt/wire')).toBeUndefined()
+    expect(
+      assignment?.links.find((l) => l.type === 'core/author' && l.rel === 'assignee')?.uuid
+    ).toBe('author-1')
+  })
+
+  it('still attaches the deliverable link alongside inherited assignees', () => {
+    const sourceAssignment = Block.create({
+      type: 'core/assignment',
+      links: [
+        Block.create({
+          type: 'core/author',
+          uuid: 'author-1',
+          rel: 'assignee',
+          role: 'primary',
+          title: 'Alice'
+        })
+      ]
+    })
+
+    const result = attachArticleAssignment({
+      planning: makePlanning(),
+      articleId: 'article-uuid',
+      articleTitle: 'Test',
+      targetDate: '2026-05-15',
+      sourceAssignment
+    })
+
+    const assignment = findAssignment(result)
+    expect(assignment?.links.find((l) => l.rel === 'deliverable')).toMatchObject({
+      type: 'core/article',
+      uuid: 'article-uuid'
+    })
+  })
 })
 
 describe('findArticleAssignment', () => {
