@@ -24,10 +24,6 @@ describe('useInitFilters', () => {
   const mockSetQuery = vi.fn()
 
   beforeEach(() => {
-    // needed to reset previous use of useQuery otherwise it can not be mocked
-    vi.hoisted(() => {
-      vi.resetModules()
-    })
     vi.clearAllMocks()
   })
 

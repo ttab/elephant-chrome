@@ -34,7 +34,7 @@ export const useWorkflowStatus = ({ ydoc, documentId: docId }: {
   /**
    * SWR callback that fetches current workflow status
    */
-  const { data: documentStatus, error, mutate } = useSWR<Status | undefined, Error>(
+  const { data: documentStatus, mutate } = useSWR<Status | undefined, Error>(
     (documentId && session && repository) ? [CACHE_KEY] : null,
     async () => {
       // Dont try to fetch if document is inProgress
@@ -65,18 +65,21 @@ export const useWorkflowStatus = ({ ydoc, documentId: docId }: {
       } catch (err) {
         console.error('Failed to get workflow specifications for type:', meta.type, 'state:', state, err, ydoc?.id, documentId)
       }
+    },
+    {
+      onError: (err) => {
+        console.error('Unable to get documentStatus', err)
+        toast.error(t('errors:toasts.fetchStatusFailed'))
+      }
     }
   )
-
-  if (error) {
-    console.error('Unable to get documentStatus', error)
-    toast.error(t('errors:toasts.fetchStatusFailed'))
-  }
 
   // Listen to repository events and revalidate if the current document is affected
   useRepositoryEvents([
     'core/article',
     'core/article+meta',
+    'core/article#timeless',
+    'core/article#timeless+meta',
     'core/flash',
     'core/flash+meta',
     'core/editorial-info',
@@ -84,7 +87,9 @@ export const useWorkflowStatus = ({ ydoc, documentId: docId }: {
     'tt/print-article',
     'tt/print-article+meta',
     'core/planning-item',
-    'core/planning-item+meta'
+    'core/planning-item+meta',
+    'core/factbox',
+    'core/factbox+meta'
 
   ], (event) => {
     if (event.uuid === documentId || event.mainDocument === documentId) {
@@ -130,7 +135,20 @@ export const useWorkflowStatus = ({ ydoc, documentId: docId }: {
     [session, documentId, ydoc?.provider?.document, repository, CACHE_KEY, t]
   )
 
-  return [documentStatus, setDocumentStatus, mutate]
+  // Factbox auto-flips from usable to draft on edit server-side, but only after
+  // the auto-save debounce. Reflect that locally so the menu matches the index-
+  // driven list view the moment the user types, instead of lagging by the debounce.
+  const isChanged = ydoc?.isChanged
+  const derivedDocumentStatus = useMemo(() => {
+    if (documentStatus?.type === 'core/factbox'
+      && documentStatus.name === 'usable'
+      && isChanged) {
+      return { ...documentStatus, name: 'draft' }
+    }
+    return documentStatus
+  }, [documentStatus, isChanged])
+
+  return [derivedDocumentStatus, setDocumentStatus, mutate]
 }
 
 async function setWireStatus<Ns extends Namespace>(newStatus: Status, repository: Repository, session: Session, t: TFunction<Ns>) {

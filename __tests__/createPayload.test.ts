@@ -62,4 +62,33 @@ describe('createPayload', () => {
     expect(result?.links?.['core/section']).toHaveLength(1)
     expect(result?.links?.['core/section']?.[0].title).toBe('Sport')
   })
+
+  it('filters out an empty-value slugline block from the assignment', () => {
+    const docWithEmptyAssignmentSlugline = new Y.Doc()
+    const fixture = structuredClone(planning)
+    const assignment = fixture.document?.meta.find((b) => b.type === 'core/assignment')
+    const sluglineBlock = assignment?.meta.find((b) => b.type === 'tt/slugline')
+    if (sluglineBlock) {
+      sluglineBlock.value = '   '
+    }
+    toYjsNewsDoc(toGroupedNewsDoc(fixture), docWithEmptyAssignmentSlugline)
+
+    const result = createPayload(docWithEmptyAssignmentSlugline, 0)
+
+    expect(result?.meta?.['tt/slugline']).toEqual([])
+  })
+
+  it('filters out an empty-value slugline block from the planning root', () => {
+    const docWithEmptyPlanningSlugline = new Y.Doc()
+    const fixture = structuredClone(planning)
+    const sluglineBlock = fixture.document?.meta.find((b) => b.type === 'tt/slugline')
+    if (sluglineBlock) {
+      sluglineBlock.value = ''
+    }
+    toYjsNewsDoc(toGroupedNewsDoc(fixture), docWithEmptyPlanningSlugline)
+
+    const result = createPayload(docWithEmptyPlanningSlugline)
+
+    expect(result?.meta?.['tt/slugline']).toEqual([])
+  })
 })

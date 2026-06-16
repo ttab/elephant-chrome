@@ -71,15 +71,17 @@ export const useQuery = (keys?: string[], allParams?: boolean): [QueryParams, (p
 
   const [queryParams, setQueryParams] = useState<QueryParams>(parseQueryString)
 
-  // Update queryParams state when historyState changes
+  // Update queryParams state when historyState changes. Gate on isActive
+  // rather than historyState.viewId so the active view doesn't depend on
+  // the cached history snapshot, which lags behind silent setActiveView.
   useEffect(() => {
-    if (historyState?.viewId === viewId) {
+    if (isActive) {
       setQueryParams(parseQueryString())
     }
-  }, [historyState, viewId, parseQueryString])
+  }, [historyState, isActive, parseQueryString])
 
   const setQueryString = useCallback((params: QueryParams): void => {
-    if (!historyState?.contentState || historyState.viewId !== viewId) {
+    if (!historyState?.contentState || !isActive) {
       return
     }
 
@@ -107,7 +109,7 @@ export const useQuery = (keys?: string[], allParams?: boolean): [QueryParams, (p
 
     const newHistoryState = { ...historyState }
     newHistoryState.contentState.forEach((cs) => {
-      if (historyState.viewId !== cs.viewId) {
+      if (viewId !== cs.viewId) {
         return
       }
 
@@ -124,7 +126,7 @@ export const useQuery = (keys?: string[], allParams?: boolean): [QueryParams, (p
 
     replaceState(newUrl.href, newHistoryState)
     setQueryParams(parseQueryString())
-  }, [historyState, replaceState, viewId, parseQueryString])
+  }, [historyState, isActive, replaceState, viewId, parseQueryString])
 
   if (allParams && keys?.length) {
     const allQueries = historyState?.contentState.filter((c) => {

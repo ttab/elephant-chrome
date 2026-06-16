@@ -1,8 +1,9 @@
 import { useMemo, type JSX } from 'react'
-import { useTextbit } from '@ttab/textbit'
+import { useTextbit, type TBResource } from '@ttab/textbit'
 import {
   Bold,
   Italic,
+  Image,
   Text,
   TTVisual,
   Factbox,
@@ -27,9 +28,10 @@ import { getValueByYPath } from '@/shared/yUtils'
 import { getContentMenuLabels } from '@/defaults/contentMenuLabels'
 import { ScrollArea } from '@ttab/elephant-ui'
 import { Layouts } from './components/Layouts'
-import { useSession } from 'next-auth/react'
 import type * as Y from 'yjs'
-import { ImagePlugin } from './ImagePlugin'
+import { imageConsume } from './lib/imageConsume'
+import { imageConsumes } from './lib/imageConsumes'
+import { getImageSrc } from './lib/getImageSrc'
 import { ChannelComboBox } from './components/ChannelComboBox'
 import { useYDocument, useYValue, type YDocument } from '@/modules/yjs/hooks'
 import { View } from '@/components/View'
@@ -98,7 +100,6 @@ function EditorWrapper(props: ViewProps & {
   const [documentLanguage] = getValueByYPath<string>(ydoc.ele, 'root.language')
   const [content] = getValueByYPath<Y.XmlText>(ydoc.ele, 'content', true)
 
-  const { data } = useSession()
   const { repository } = useRegistry()
   const openFactboxEditor = useLink('Factbox')
   const openImageSearch = useLink('ImageSearch')
@@ -121,9 +122,16 @@ function EditorWrapper(props: ViewProps & {
         countCharacters: ['heading-1'],
         ...getContentMenuLabels()
       }),
-      ImagePlugin({
-        repository,
-        accessToken: data?.accessToken || ''
+      Image({
+        consume: ({ input }: { input: TBResource | TBResource[] }) =>
+          imageConsume(input, repository!),
+        consumes: imageConsumes,
+        removable: true,
+        enableCrop: true,
+        getImageSrc: (properties: Record<string, unknown>) =>
+          getImageSrc(properties, repository!),
+        captionLabel: t('editor:image.captionLabel'),
+        bylineLabel: t('editor:image.bylineLabel')
       }),
       TVListing({
         channelComponent: () => ChannelComboBox()
@@ -136,7 +144,11 @@ function EditorWrapper(props: ViewProps & {
       Factbox({
         headerTitle: t('editor:factbox.headerTitle'),
         modifiedLabel: t('editor:factbox.modifiedLabel'),
+        createdLabel: t('editor:factbox.createdLabel'),
+        lastModifiedLabel: t('editor:factbox.lastModifiedLabel'),
         footerTitle: t('editor:factbox.footerTitle'),
+        factboxNewTitle: t('editor:factbox.factboxNewTitle'),
+        addSingleLabel: t('editor:factbox.addSingleLabel'),
         onEditOriginal: (id: string) => {
           openFactboxEditor(undefined, { id })
         },
@@ -145,7 +157,7 @@ function EditorWrapper(props: ViewProps & {
         ...getContentMenuLabels()
       })
     ]
-  }, [openFactboxEditor, data, repository, openFactboxes, openImageSearch, t, activeLanguage])
+  }, [openFactboxEditor, repository, openFactboxes, openImageSearch, t, activeLanguage])
 
   if (!content) {
     return <View.Root />

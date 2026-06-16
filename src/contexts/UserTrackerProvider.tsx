@@ -10,6 +10,7 @@ import {
 import { HocuspocusProvider } from '@hocuspocus/provider'
 import { useSession } from 'next-auth/react'
 import { useWebSocket } from '@/modules/yjs/hooks'
+import { extractUserIdFromUri } from '@/shared/userUri'
 
 interface UserTrackerProviderState {
   provider?: HocuspocusProvider
@@ -48,7 +49,7 @@ export const UserTrackerProvider = ({ children }: PropsWithChildren): JSX.Elemen
 
     return new HocuspocusProvider({
       websocketProvider: webSocketProvider,
-      name: data.user.sub.replace('core://user/', ''),
+      name: extractUserIdFromUri(data.user.sub) ?? data.user.sub,
       token: () => accessTokenRef.current,
       onConnect: () => {
         setConnected(true)

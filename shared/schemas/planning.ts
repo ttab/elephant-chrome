@@ -45,7 +45,7 @@ export type PlanningFieldsObject = z.infer<typeof _schema>
 /**
  * Type inferred from fields
  */
-export type PlanningFields = Array<keyof typeof _fields>
+export type PlanningFields = readonly (typeof _fields)[number][]
 
 /**
  * Interface extending HitV1 with a fields property of type PlanningFields
@@ -57,4 +57,4 @@ export interface Planning extends HitV1 {
 /**
  * Export fields and cast it as PlanningFields
  */
-export const fields = _fields as unknown as PlanningFields
+export const fields: PlanningFields = _fields

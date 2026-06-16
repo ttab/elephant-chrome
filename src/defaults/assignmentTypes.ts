@@ -6,7 +6,8 @@ import {
   ApertureIcon,
   ZapIcon,
   FileWarningIcon,
-  ChartPieIcon
+  ChartPieIcon,
+  BookmarkIcon
 } from '@ttab/elephant-ui/icons'
 import i18next from 'i18next'
 
@@ -58,6 +59,12 @@ export function getAssignmentTypes(): DefaultValueOption[] {
       value: 'picture/video',
       label: i18next.t('shared:assignmentTypes.picture/video'),
       icon: ApertureIcon,
+      iconProps
+    },
+    {
+      value: 'timeless',
+      label: i18next.t('shared:assignmentTypes.timeless'),
+      icon: BookmarkIcon,
       iconProps
     }
   ]

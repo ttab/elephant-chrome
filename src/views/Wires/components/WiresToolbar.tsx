@@ -82,7 +82,7 @@ export const WiresToolbar = ({ disabled = false, onAddStream, onSaveStreams, onA
             className='w-9 h-9 px-0 hover:bg-usable-background'
             disabled={disabled}
           >
-            <CheckIcon size={16} fill='oklch(95.05% 0.022 263.19)' />
+            <CheckIcon size={16} />
           </Button>
         </Tooltip>
 

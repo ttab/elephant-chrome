@@ -1,0 +1,171 @@
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import * as Y from 'yjs'
+import { AssignmentTable } from '@/views/Planning/components/AssignmentTable'
+import type { YDocument } from '@/modules/yjs/hooks'
+
+const mockSnapshotDocument = vi.fn()
+
+vi.mock('@/lib/snapshotDocument', () => ({
+  snapshotDocument: (...args: unknown[]) => mockSnapshotDocument(...args) as unknown
+}))
+
+vi.mock('next-auth/react', () => ({
+  useSession: () => ({ data: { user: { sub: 'test-sub' } }, status: 'authenticated' })
+}))
+
+vi.mock('@/hooks/useRegistry', () => ({
+  useRegistry: () => ({ featureFlags: { hasLooseSlugline: false } })
+}))
+
+vi.mock('@/hooks', () => ({
+  useAuthors: () => [],
+  useNavigationKeys: () => undefined,
+  useRegistry: () => ({ featureFlags: { hasLooseSlugline: false } })
+}))
+
+vi.mock('@/hooks/useActiveAuthor', () => ({
+  useActiveAuthor: () => undefined
+}))
+
+vi.mock('@/lib/getAuthorBySub', () => ({
+  getAuthorBySub: () => undefined
+}))
+
+vi.mock('sonner', () => ({
+  toast: { error: vi.fn(), success: vi.fn() }
+}))
+
+// We do not exercise AssignmentRow in this test.
+vi.mock('@/views/Planning/components/AssignmentRow', () => ({
+  AssignmentRow: () => null
+}))
+
+// Stand-in for the inline Assignment editor: exposes onClose via a button.
+vi.mock('@/views/Planning/components/Assignment', () => ({
+  Assignment: ({ onClose }: { onClose?: () => void }) => (
+    <button data-testid='assignment-close' onClick={onClose}>close</button>
+  )
+}))
+
+function buildInProgressAssignment(type = 'text'): Y.Map<unknown> {
+  const assignment = new Y.Map<unknown>()
+  const meta = new Y.Map<unknown>()
+  const types = new Y.Array<unknown>()
+  const typeBlock = new Y.Map<unknown>()
+  typeBlock.set('value', type)
+  types.push([typeBlock])
+  meta.set('core/assignment-type', types)
+  assignment.set('meta', meta)
+  return assignment
+}
+
+function buildYdoc(
+  isInProgress: boolean,
+  options: { assignmentType?: string, isChanged?: boolean, setIsChanged?: (v: boolean) => void } = {}
+): YDocument<Y.Map<unknown>> {
+  const doc = new Y.Doc()
+  const ele = doc.getMap('ele')
+  const ctx = doc.getMap('ctx')
+
+  const meta = new Y.Map<unknown>()
+  meta.set('core/assignment', new Y.Array<unknown>())
+  ele.set('meta', meta)
+
+  const slots = new Y.Map<unknown>()
+  slots.set('test-sub', buildInProgressAssignment(options.assignmentType))
+  ctx.set('core/assignment', slots)
+
+  return {
+    id: 'planning-uuid',
+    ele,
+    ctx,
+    isInProgress,
+    isChanged: options.isChanged ?? false,
+    setIsChanged: options.setIsChanged ?? vi.fn(),
+    provider: { document: doc }
+  } as unknown as YDocument<Y.Map<unknown>>
+}
+
+describe('AssignmentTable.handleClose — isInProgress gate', () => {
+  beforeEach(() => {
+    mockSnapshotDocument.mockReset()
+    mockSnapshotDocument.mockResolvedValue(undefined)
+  })
+
+  it('skips snapshotDocument when the planning is still in-progress', async () => {
+    const ydoc = buildYdoc(true)
+    const rawAssignments = (ydoc.ele.get('meta') as Y.Map<unknown>).get('core/assignment') as Y.Array<unknown>
+    const slots = ydoc.ctx.get('core/assignment') as Y.Map<unknown>
+
+    render(<AssignmentTable ydoc={ydoc} documentId='planning-uuid' />)
+
+    await userEvent.click(screen.getByTestId('assignment-close'))
+
+    expect(mockSnapshotDocument).not.toHaveBeenCalled()
+    // Local mutations still happen so the assignment is part of the Y.Doc.
+    expect(rawAssignments.length).toBe(1)
+    expect(slots.get('test-sub')).toBeUndefined()
+  })
+
+  it('calls snapshotDocument when the planning is already persisted', async () => {
+    const ydoc = buildYdoc(false)
+
+    render(<AssignmentTable ydoc={ydoc} documentId='planning-uuid' />)
+
+    await userEvent.click(screen.getByTestId('assignment-close'))
+
+    expect(mockSnapshotDocument).toHaveBeenCalledTimes(1)
+    expect(mockSnapshotDocument).toHaveBeenCalledWith(
+      'planning-uuid',
+      { force: true },
+      ydoc.provider?.document
+    )
+  })
+})
+
+describe('AssignmentTable.handleClose - timeless isChanged reset', () => {
+  beforeEach(() => {
+    mockSnapshotDocument.mockReset()
+    mockSnapshotDocument.mockResolvedValue(undefined)
+  })
+
+  it('resets isChanged to false after adding a clean timeless assignment', async () => {
+    let assignmentCountAtReset: number | undefined
+    const ydoc = buildYdoc(false, { assignmentType: 'timeless', isChanged: false })
+    const rawAssignments = (ydoc.ele.get('meta') as Y.Map<unknown>).get('core/assignment') as Y.Array<unknown>
+    const setIsChanged = vi.fn((_v: boolean) => {
+      assignmentCountAtReset = rawAssignments.length
+    });
+    (ydoc as unknown as { setIsChanged: (v: boolean) => void }).setIsChanged = setIsChanged
+
+    render(<AssignmentTable ydoc={ydoc} documentId='planning-uuid' />)
+    await userEvent.click(screen.getByTestId('assignment-close'))
+
+    expect(setIsChanged).toHaveBeenCalledTimes(1)
+    expect(setIsChanged).toHaveBeenCalledWith(false)
+    // The reset must run after the push that the deep observer would react to;
+    // resetting before the push would be silently undone by the observer.
+    expect(assignmentCountAtReset).toBe(1)
+  })
+
+  it('preserves a pre-existing isChanged when adding a timeless assignment', async () => {
+    const setIsChanged = vi.fn()
+    const ydoc = buildYdoc(false, { assignmentType: 'timeless', isChanged: true, setIsChanged })
+
+    render(<AssignmentTable ydoc={ydoc} documentId='planning-uuid' />)
+    await userEvent.click(screen.getByTestId('assignment-close'))
+
+    expect(setIsChanged).not.toHaveBeenCalled()
+  })
+
+  it('does not reset isChanged when adding a non-timeless assignment', async () => {
+    const setIsChanged = vi.fn()
+    const ydoc = buildYdoc(false, { assignmentType: 'text', isChanged: false, setIsChanged })
+
+    render(<AssignmentTable ydoc={ydoc} documentId='planning-uuid' />)
+    await userEvent.click(screen.getByTestId('assignment-close'))
+
+    expect(setIsChanged).not.toHaveBeenCalled()
+  })
+})

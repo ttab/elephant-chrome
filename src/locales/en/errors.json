@@ -9,6 +9,7 @@
     "nothingFound": "Nothing found",
     "articleMissingTitle": "Article document missing",
     "articleMissingDescription": "No article document has been specified. Navigate back to the overview and try again.",
+    "embeddedFactboxMissing": "The factbox could not be opened. Navigate back to the overview and try again.",
     "failedFetchingDocument": "Failed to fetch document.",
     "failedUpdatingListRetrying": "Failed to automatically update the list. Retrying in {{seconds}} seconds.",
     "noResultsFound": "No results found",
@@ -28,7 +29,9 @@
     "createDeliverableError": "Cannot create deliverable",
     "changeStatusError": "Could not change the status. The assignment's publishing time could not be changed in the linked planning.",
     "loadFailed": "Could not load",
-    "noDeliverables": "No deliverables"
+    "noDeliverables": "No deliverables",
+    "documentCreationFailed": "{{type}} could not be created.",
+    "documentCreatedAssignmentFailed": "{{type}} has been created. Unfortunately it could not be linked to a planning."
   },
   "toasts": {
     "couldNotCreateNewEvent": "Could not create new event!",
@@ -38,6 +41,7 @@
     "saveError": "Could not save the planning",
     "saveChangeError": "Could not save the change",
     "missingMetadata": "Missing news value or section",
+    "missingTimelessCategory": "Missing timeless category",
     "assignmentMoveError": "The assignment could not be moved",
     "assignmentMoveErrorNotLoggedIn": "The assignment could not be moved. You are not logged in.",
     "assignmentMoveErrorTryAgain": "The assignment could not be moved. Please try again.",
@@ -63,7 +67,9 @@
     "authorUpdateFailure": "Could not update author document: {{errorMessage}}",
     "authorSaveFailure": "Could not save author document: {{errorMessage}}",
     "authorCreateFailure": "Could not create author document: Failed to create author doc",
-    "authorCreateUndefinedFailed": "Could not create author document: Failed to fetch author document: undefined"
+    "authorCreateUndefinedFailed": "Could not create author document: Failed to fetch author document: undefined",
+    "couldNotOpenEmbeddedFactbox": "Could not open the factbox. Please navigate back to the overview and try again.",
+    "couldNotLoadFactbox": "Could not load factbox. Please try again."
   },
   "systemMessages": {
     "connectionFailed": "Failed to connect to the messaging service, please reload the window."

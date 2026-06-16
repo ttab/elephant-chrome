@@ -8,14 +8,14 @@ import type { Session } from 'next-auth'
 import { parseISO } from 'date-fns'
 import { getAssignmentsFromDocument } from './getAssignmentsFromDocument'
 import type { AssignmentInterface } from './types'
-import { StatusSpecifications } from '@/defaults/workflowSpecification'
+import { getAllStatuses } from '@/defaults/workflowSpecification'
 import { getUTCDateRange } from '@/shared/datetime'
 import { format } from 'date-fns'
 import { getStatusFromMeta } from '@/lib/getStatusFromMeta'
 
 // We want to fetch all known statuses for deliverables and then
 // filter them using the supplied "statuses" prop.
-const knownStatuses = Object.keys(StatusSpecifications)
+const knownStatuses = getAllStatuses()
 
 /**
  * Fetches assignments from the index and augments them with deliverable statuses

@@ -20,6 +20,10 @@ export const ViewDialogClose = ({ ydoc, onClick, Icon = XIcon, asDialog }: {
 }): JSX.Element => {
   const [showVerifyDialog, setShowVerifyDialog] = useState(false)
   const [documentStatus] = useWorkflowStatus({ documentId: ydoc?.id })
+  const root = ydoc?.ele.get('root') as Y.Map<unknown>
+  const documentType = root?.get('type')
+
+
   const { t } = useTranslation('shared')
   const asSave = (documentStatus?.type
     ? getWorkflowSpecifications()[documentStatus.type][documentStatus.name].asSave && ydoc?.isChanged
@@ -56,8 +60,8 @@ export const ViewDialogClose = ({ ydoc, onClick, Icon = XIcon, asDialog }: {
       </Button>
       {showVerifyDialog && (
         <Prompt
-          title={t('prompts.publishBeforeClose')}
-          description={t('prompts.savedButNotPublished')}
+          title={documentType === 'core/factbox' ? t('factbox:prompts.approveBeforeClose') : t('prompts.publishBeforeClose')}
+          description={documentType === 'core/factbox' ? t('factbox:prompts.savedButNotApproved') : t('prompts.savedButNotPublished')}
           onPrimary={() => {
             if (ydoc) {
               snapshotDocument(ydoc?.id, {

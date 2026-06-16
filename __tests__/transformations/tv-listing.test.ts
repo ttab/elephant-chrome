@@ -101,7 +101,7 @@ describe('Handles tt/tv-listing', () => {
     })
 
     const slate = transformTvListing(newsDocNoLink)
-    expect(slate.properties?.uri).toBe('')
+    expect(slate.properties?.uri).toBeUndefined()
 
     const reverted = revertTvListing(slate)
     expect(reverted.links).toEqual([])
@@ -114,5 +114,32 @@ describe('Handles tt/tv-listing', () => {
     const newsDoc = revertTvListing(slate)
     expect(newsDoc.links).toHaveLength(1)
     expect(newsDoc.links[0]).toEqual(expect.objectContaining({ rel: 'channel', uri: 'tt://tv-channel/svt1' }))
+  })
+
+  it('always emits a child for mandatory channel, even when missing in data', () => {
+    const newsDocMissingMandatory = Block.create({
+      id: 'missing-mandatory-id',
+      type: 'tt/tv-listing',
+      links: [],
+      data: {
+        title: 'Melodifestivalen'
+      }
+    })
+
+    const slate = transformTvListing(newsDocMissingMandatory)
+
+    expect(slate.properties).toEqual({ title: 'Melodifestivalen' })
+    expect(slate.children).toEqual([
+      {
+        type: 'tt/tv-listing/title',
+        class: 'text',
+        children: [{ text: 'Melodifestivalen' }]
+      },
+      {
+        type: 'tt/tv-listing/channel',
+        class: 'text',
+        children: [{ text: '' }]
+      }
+    ])
   })
 })

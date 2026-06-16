@@ -6,7 +6,7 @@ import type { YDocument } from '@/modules/yjs/hooks/useYDocument'
 import { Label, Checkbox } from '@ttab/elephant-ui'
 import type * as Y from 'yjs'
 import { Block, type Document } from '@ttab/elephant-api/newsdoc'
-import { LoaderIcon } from 'lucide-react'
+import { LoaderIcon } from '@ttab/elephant-ui/icons'
 
 export const Additionals = ({ ydoc, basePath, layout }: {
   ydoc: YDocument<Y.Map<unknown>>

@@ -7,9 +7,15 @@ import { getSystemLanguage } from '@/shared/getSystemLanguage.js'
  *
  * @param {string} id - The unique identifier for the article.
  * @param {TemplatePayload} [payload] - Optional payload containing additional template data.
+ * @param {object} [options] - Optional template-shaping flags.
+ * @param {boolean} [options.hasVignette] - When true, include a vignette text block in the content.
  * @returns {Document} - The generated document template.
  */
-export function articleDocumentTemplate(id: string, payload?: TemplatePayload): Document {
+export function articleDocumentTemplate(
+  id: string,
+  payload?: TemplatePayload,
+  options?: { hasVignette?: boolean }
+): Document {
   // no descriptions in articles, remove those
   delete payload?.meta?.['core/description']
 
@@ -23,7 +29,7 @@ export function articleDocumentTemplate(id: string, payload?: TemplatePayload): 
     uuid: id,
     type: 'core/article',
     uri: `core://article/${id}`,
-    language: getSystemLanguage(),
+    language: payload?.language ?? getSystemLanguage(),
     title: payload?.title,
     content: [
       Block.create({
@@ -33,13 +39,15 @@ export function articleDocumentTemplate(id: string, payload?: TemplatePayload): 
         },
         role: 'heading-1'
       }),
-      Block.create({
-        type: 'core/text',
-        data: {
-          text: ''
-        },
-        role: 'vignette'
-      }),
+      ...(options?.hasVignette
+        ? [Block.create({
+            type: 'core/text',
+            data: {
+              text: ''
+            },
+            role: 'vignette'
+          })]
+        : []),
       Block.create({
         type: 'core/text',
         data: {
@@ -58,13 +66,7 @@ export function articleDocumentTemplate(id: string, payload?: TemplatePayload): 
       ...Object.values(payload?.meta ?? {}).flat()
     ],
     links: [
-      ...Object.values(payload?.links ?? {}).flat(),
-      Block.create({
-        uri: 'tt://content-source/tt',
-        type: 'core/content-source',
-        title: 'TT',
-        rel: 'source'
-      })
+      ...Object.values(payload?.links ?? {}).flat()
     ]
   })
 }

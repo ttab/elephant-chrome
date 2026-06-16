@@ -57,7 +57,12 @@
     "title": "Factboxes",
     "columnLabels": {
       "description": "Description",
-      "lastChanged": "Last changed"
+      "lastChanged": "Last changed",
+      "origin": "Origin"
+    },
+    "origin": {
+      "original": "Original",
+      "inArticle": "From article"
     }
   },
   "search": {
@@ -79,12 +84,47 @@
     "rememberMe": "Remember me next time",
     "loggingIn": "Logging in..."
   },
+  "timeless": {
+    "title": "Timeless",
+    "columnLabels": {
+      "category": "Category",
+      "lastChanged": "Last changed",
+      "actions": "Actions"
+    },
+    "toolbar": {
+      "allCategories": "All categories"
+    },
+    "actions": {
+      "new": "New timeless",
+      "openPlanning": "Open original planning",
+      "convertToArticle": "Plan as article"
+    },
+    "placeholders": {
+      "addCategory": "Add category"
+    },
+    "toasts": {
+      "articlePlanned": "Article planned",
+      "timelessSaved": "Timeless saved",
+      "conversionFailed": "Could not create the new document: {{message}}",
+      "notAuthenticated": "Unable to convert: not authenticated",
+      "documentNotFound": "Document not found",
+      "openArticle": "Open article",
+      "openTimeless": "Open timeless",
+      "openPlanning": "Open planning"
+    }
+  },
   "imageSearch": {
     "title": "Images",
     "labels": {
       "mediaType": "Media type",
+      "distributor": "Distributor",
+      "allDistributors": "All distributors",
       "image": "Image",
-      "graphic": "Graphic"
+      "graphic": "Graphic",
+      "close": "Close",
+      "searchFailed": "Image search failed",
+      "retry": "Try again",
+      "noResults": "No results"
     }
   }
 }

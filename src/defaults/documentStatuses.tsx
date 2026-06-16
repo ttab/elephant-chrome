@@ -1,5 +1,6 @@
 import { type DefaultValueOption } from '@/types'
 import {
+  ArchiveIcon,
   CircleCheckIcon,
   CircleDotIcon,
   CircleXIcon,
@@ -65,6 +66,16 @@ export const getDocumentStatuses = (): DefaultValueOption[] => [
     icon: CircleArrowLeftIcon,
     iconProps: {
       className: 'bg-cancelled fill-cancelled rounded-full text-white dark:text-black',
+      size: 18,
+      strokeWidth: 1.75
+    }
+  },
+  {
+    value: 'used',
+    label: i18n.t('core:status.used'),
+    icon: ArchiveIcon,
+    iconProps: {
+      className: 'text-muted-foreground',
       size: 18,
       strokeWidth: 1.75
     }

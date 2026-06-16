@@ -9,6 +9,7 @@ export interface Context {
   agent: string
   accessToken: string
   user: User
+  units: string[]
   type?: string
   invisible?: boolean
 
@@ -36,6 +37,7 @@ export const getContextFromValidSession = (session: unknown): Context | {
   const context: Context = {
     accessToken: session.accessToken,
     user: session.user,
+    units: session.units || [],
     agent: 'server'
   }
 
@@ -78,6 +80,7 @@ export function isContext(context: unknown): context is Context {
 export const isSession = (value: unknown): value is {
   accessToken: string
   user: Context['user']
+  units?: string[]
 } => {
   return !!value
     && typeof value === 'object'

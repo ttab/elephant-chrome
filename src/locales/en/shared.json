@@ -15,7 +15,8 @@
     "graphic": "Graphic",
     "picture": "Picture",
     "video": "Video",
-    "picture/video": "Picture/Video"
+    "picture/video": "Picture/Video",
+    "timeless": "Timeless"
   },
   "toolbar": {
     "clearFilters": "Clear",
@@ -31,9 +32,16 @@
   "status_menu": {
     "cause": "Cause",
     "pickCause": "Choose cause...",
-    "planningDate": "Date in planning",
+    "planningDate": "Date",
     "setTime": "Set time",
     "asSavePlaceholder": "Publish new information",
+    "embargoMinTime": "Embargo: cannot schedule before {{time}}",
+    "timeInPast": "Selected time has passed",
+    "beforeEmbargo": "Time is before embargo",
+    "timezoneMismatch": "Your device is set to a different timezone than the one used by the system. Enter publication time in the system's timezone (offset {{offset}}).",
+    "publishesInDefaultTz": "Publishes at {{time}} (the system's timezone)",
+    "publishesInUserTz": "= {{time}} in your timezone ({{tz}})",
+    "schedulingRequiresPlanning": "Scheduling is unavailable because this document has no associated planning.",
     "causes": {
       "development_short": "DEV",
       "development_long": "Development",
@@ -58,7 +66,8 @@
     "authorCreateSuccess": "Author document has been created",
     "authorUpdateSuccess": "Author document has been updated",
     "authorSaveSuccess": "Author document has been saved",
-    "savedFilter": "Your filter has been saved"
+    "savedFilter": "Your filter has been saved",
+    "documentSaveSuccess": "Document saved"
   },
   "prompts": {
     "publishBeforeClose": "Do you want to publish the changes before closing?",

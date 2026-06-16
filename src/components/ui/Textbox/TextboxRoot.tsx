@@ -25,7 +25,7 @@ export const TextboxRoot = ({
   disabled?: boolean
   placeholder?: string
   singleLine?: boolean
-  autoFocus?: boolean
+  autoFocus?: boolean | 'start' | 'end'
   countCharacters?: boolean
   spellcheck?: boolean
   onBlur: React.FocusEventHandler<HTMLDivElement>

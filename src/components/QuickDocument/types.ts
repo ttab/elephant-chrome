@@ -13,12 +13,12 @@ interface ViewConfig {
   statusErrorText: string
 }
 
-export const getViewMap = (): Record<DocumentView, ViewConfig> => ({
+export const getViewMap = (hasHast?: boolean): Record<DocumentView, ViewConfig> => ({
   Flash: {
     icon: ZapIcon,
     readOnlyIcon: ZapOffIcon,
     baseTitle: i18next.t('flash:title'),
-    newDialogTitle: i18next.t('flash:titles.newFlashTitle'),
+    newDialogTitle: hasHast ? i18next.t('flash:titles.newHastTitle') : i18next.t('flash:titles.newFlashTitle'),
     iconColor: '#FF5150',
     linkTarget: 'Flash',
     statusErrorText: i18next.t('errors:messages.statusChangeforDocumentTypeFailed', { documentType: i18next.t('flash:title') })

@@ -35,6 +35,12 @@ export interface IDBCategory {
   title: string
 }
 
+/** Timeless category structure in indexedDB objectStore */
+export interface IDBTimelessCategory {
+  id: string
+  title: string
+}
+
 /** Organiser structure in indexedDB objectStore */
 export interface IDBOrganiser {
   id: string
@@ -67,4 +73,7 @@ export interface SupportedLanguage {
 
 export interface AllowedFeatureFlag {
   hasPrint?: boolean
+  hasHast?: boolean
+  hasLooseSlugline?: boolean
+  hasVignette?: boolean
 }

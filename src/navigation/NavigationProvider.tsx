@@ -1,6 +1,5 @@
 import {
   useReducer,
-  useLayoutEffect,
   type PropsWithChildren,
   useEffect,
   type JSX
@@ -14,7 +13,7 @@ import {
   initializeNavigationState
 } from '@/navigation/lib'
 import { NavigationContext } from './NavigationContext'
-import type { HistoryEvent } from './hooks/useHistory'
+import type { HistoryEvent, HistoryState } from './hooks/useHistory'
 
 const initialState = initializeNavigationState()
 
@@ -24,20 +23,30 @@ export const NavigationProvider = ({ children }: PropsWithChildren & {
   const history = useHistory()
 
   /*
-   * Handle user navigating browser history back and forth
+   * Sync the reducer with window.history on real navigation events
+   * (browser back/forward, plus the synthetic popstate dispatched by
+   * pushState / non-silent replaceState). Silent replaceState - used by
+   * setActiveView to update the URL without a navigation - intentionally
+   * does not dispatch popstate; the activeview listener below handles it.
    */
-  useLayoutEffect(() => {
-    if (history.state) {
-      dispatch({
-        type: NavigationActionType.SET,
-        active: history.state.viewId,
-        content: history.state.contentState
-      })
+  useEffect(() => {
+    const handlePopState = (): void => {
+      const state = window.history.state as HistoryState | null
+      if (state) {
+        dispatch({
+          type: NavigationActionType.SET,
+          active: state.viewId,
+          content: state.contentState
+        })
+      }
     }
-  }, [history.state])
+
+    window.addEventListener('popstate', handlePopState)
+    return () => window.removeEventListener('popstate', handlePopState)
+  }, [])
 
   /*
-   * Handle swith between active views
+   * Handle switch between active views
    */
   useEffect(() => {
     const handleSetActive = (e: HistoryEvent): void => {

@@ -5,12 +5,13 @@ const validPayload = {
   indexUrl: 'https://index.example.com',
   webSocketUrl: 'https://ws.example.com',
   repositoryUrl: 'https://repo.example.com',
-  contentApiUrl: 'https://content.example.com',
+  imageSearchUrl: 'https://content.example.com',
   spellcheckUrl: 'https://spell.example.com',
   userUrl: 'https://user.example.com',
   faroUrl: 'https://faro.example.com',
   baboonUrl: 'https://baboon.example.com',
-  systemLanguage: 'nb-NO'
+  systemLanguage: 'nb-NO',
+  environment: 'stage'
 }
 
 function mockFetch(payload: Record<string, string>, ok = true, status = 200) {
@@ -34,12 +35,13 @@ describe('getServerEnvs', () => {
     expect(urls.indexUrl.href).toBe('https://index.example.com/')
     expect(urls.repositoryUrl.href).toBe('https://repo.example.com/')
     expect(urls.webSocketUrl.href).toBe('https://ws.example.com/')
-    expect(urls.contentApiUrl.href).toBe('https://content.example.com/')
+    expect(urls.imageSearchUrl.href).toBe('https://content.example.com/')
     expect(urls.spellcheckUrl.href).toBe('https://spell.example.com/')
     expect(urls.userUrl.href).toBe('https://user.example.com/')
     expect(urls.faroUrl.href).toBe('https://faro.example.com/')
     expect(urls.baboonUrl.href).toBe('https://baboon.example.com/')
     expect(envs.systemLanguage).toBe('nb-NO')
+    expect(envs.environment).toBe('stage')
   })
 
   it('derives repositoryEventsUrl from repositoryUrl', async () => {
@@ -71,6 +73,13 @@ describe('getServerEnvs', () => {
 
   it('throws when systemLanguage is missing', async () => {
     const { systemLanguage: _, ...noLang } = validPayload
+    mockFetch(noLang as Record<string, string>)
+
+    await expect(getServerEnvs()).rejects.toThrow('Failed fetching server envs')
+  })
+
+  it('throws when environment is missing', async () => {
+    const { environment: _, ...noLang } = validPayload
     mockFetch(noLang as Record<string, string>)
 
     await expect(getServerEnvs()).rejects.toThrow('Failed fetching server envs')

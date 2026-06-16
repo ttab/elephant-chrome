@@ -7,6 +7,7 @@ import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
 import type { Document } from '@ttab/elephant-api/newsdoc'
 import { QuickArticleDialog } from './QuickArticleDialog'
 import { useTranslation } from 'react-i18next'
+import { useDocumentDefaults } from '@/hooks/useDocumentDefaults'
 
 const meta: ViewMetadata = {
   name: 'QuickArticle',
@@ -29,6 +30,7 @@ export const QuickArticle = (props: ViewProps & {
 }): JSX.Element => {
   const [query] = useQuery()
   const { t } = useTranslation('quickArticle')
+  const defaults = useDocumentDefaults()
 
   const persistentDocumentId = useRef<string>('')
   if (!persistentDocumentId.current) {
@@ -48,9 +50,12 @@ export const QuickArticle = (props: ViewProps & {
       isMetaDocument: false,
       mainDocument: '',
       subset: [],
-      document: props.document || getTemplateFromView('QuickArticle')(documentId)
+      document: props.document || getTemplateFromView('QuickArticle')(
+        documentId,
+        { ...defaults }
+      )
     })
-  }, [documentId, props.document])
+  }, [documentId, props.document, defaults])
 
   // Error handling for missing document
   if ((!props.asDialog && !documentId) || typeof documentId !== 'string') {

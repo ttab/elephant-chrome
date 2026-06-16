@@ -20,6 +20,11 @@
     "noTitle": "No title",
     "deselectHint": "to deselect selected wires"
   },
+  "banner": {
+    "offline": "You are offline — wire streams will resume when reconnected",
+    "streamErrors": "{{count}} stream failed to update",
+    "streamErrors_other": "{{count}} wire streams failed to update"
+  },
   "filter": {
     "freeText": "Free text",
     "searchOptions": "Search options",
@@ -53,9 +58,16 @@
     "articleCreated": "Article created",
     "createError": "Could not create an article!",
     "createError2": "Could not create new article!",
+    "planningMissingSection": "Selected planning is missing a section and cannot be used.",
     "assignmentRollbackError": "The article couldn't be confirmed as saved and the assignment couldn't be removed. Please check the planning manually.",
     "markUsed": "Mark as used",
-    "createButton": "Create article"
+    "createButton": "Create article",
+    "embargo": "Embargo until",
+    "translateToNynorsk": "Translation",
+    "translationNone": "None",
+    "translationStandard": "Standard",
+    "translationPersonal": "Personal preferences",
+    "translationError": "Translation failed. Article created without translation."
   },
   "sources": {
     "title": "Sources",

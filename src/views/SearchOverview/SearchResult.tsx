@@ -1,4 +1,4 @@
-import { useCallback, useMemo, type JSX } from 'react'
+import { useMemo, type JSX } from 'react'
 import { Table } from '@/components/Table'
 import { useRegistry } from '@/hooks/useRegistry'
 import { useSections } from '@/hooks/useSections'
@@ -30,15 +30,6 @@ export const SearchResult = ({ searchType, page }: {
   const { locale, timeZone } = useRegistry()
 
   const getType = (searchType: SearchKeys) => searchType === 'events' ? 'Event' : searchType === 'articles' ? 'Editor' : 'Planning'
-
-  const onRowSelected = useCallback((row?: Planning | Event) => {
-    if (row) {
-      console.info(`Selected planning item ${row.id}`)
-    } else {
-      console.info('Deselected row')
-    }
-    return row
-  }, [])
 
   const searchParams = search[searchType].params(filter)
 
@@ -78,7 +69,6 @@ export const SearchResult = ({ searchType, page }: {
                 type='Search'
                 searchType={getType(searchType)}
                 columns={columns as ColumnDef<Planning | Event>[]}
-                onRowSelected={onRowSelected}
               />
             </>
           )}

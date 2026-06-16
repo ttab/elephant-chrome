@@ -1,18 +1,54 @@
 import {
   ContextMenu as TextbitContextMenu,
-  useContextMenuHints
+  useContextMenuHints,
+  useTextbit
 } from '@ttab/textbit'
 import { ContextMenuItem } from './ContextMenuItem'
 import { ContextMenuGroup } from './ContextMenuGroup'
 import { cn } from '@ttab/elephant-ui/utils'
-import type { JSX } from 'react'
+import { useEffect, useRef, useState, type JSX } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useOnSuggestions } from '@/hooks/useOnSuggestions'
+
+type Suggestion = {
+  text: string
+  description?: string
+}
 
 export const ContextMenu = ({ className }: { className?: string }): JSX.Element => {
   const { spelling } = useContextMenuHints()
+  const { lang } = useTextbit()
   const { t } = useTranslation()
+  const onSuggestions = useOnSuggestions(lang)
+  const onSuggestionsRef = useRef(onSuggestions)
+  onSuggestionsRef.current = onSuggestions
+  const [suggestions, setSuggestions] = useState<Suggestion[] | undefined>(undefined)
 
-  if (!spelling?.suggestions) {
+  const targetText = spelling?.text
+
+  useEffect(() => {
+    if (!targetText) {
+      setSuggestions(undefined)
+      return
+    }
+
+    let cancelled = false
+    setSuggestions(undefined)
+
+    void (async () => {
+      const result = await onSuggestionsRef.current(targetText)
+
+      if (!cancelled) {
+        setSuggestions(result)
+      }
+    })()
+
+    return () => {
+      cancelled = true
+    }
+  }, [targetText])
+
+  if (!spelling) {
     return <></>
   }
 
@@ -37,11 +73,15 @@ export const ContextMenu = ({ className }: { className?: string }): JSX.Element 
     >
       <ContextMenuGroup>
         <>
-          {spelling.suggestions.length === 0
+          {suggestions === undefined
+            && <ContextMenuItem apply={() => { }}>{t('editor:spelling.loading')}</ContextMenuItem>}
+        </>
+        <>
+          {suggestions?.length === 0
             && <ContextMenuItem apply={() => { }}>{t('editor:spelling.noSuggestions')}</ContextMenuItem>}
         </>
         <>
-          {spelling.suggestions.map((suggestion) => (
+          {suggestions?.map((suggestion) => (
             <ContextMenuItem key={suggestion.text} apply={() => { spelling.apply(suggestion.text) }}>
               {suggestion.text}
               {!!suggestion.description

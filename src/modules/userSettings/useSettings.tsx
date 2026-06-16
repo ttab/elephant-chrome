@@ -16,6 +16,7 @@ export function useSettings(documentType: string): {
   settings: SettingsDocumentPayload
   isLoading: boolean
   updateSettings: (payload: SettingsDocumentPayload) => Promise<void>
+  deleteSettings: () => Promise<void>
 } {
   const context = useContext(SettingsContext)
   if (!context) {
@@ -45,5 +46,9 @@ export function useSettings(documentType: string): {
     return context.updateSettings(documentType, updated)
   }, [context, documentType])
 
-  return { settings, isLoading, updateSettings }
+  const deleteSettings = useCallback(async () => {
+    return context.deleteSettings(documentType)
+  }, [context, documentType])
+
+  return { settings, isLoading, updateSettings, deleteSettings }
 }

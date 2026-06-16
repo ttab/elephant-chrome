@@ -4,6 +4,7 @@ import type * as Y from 'yjs'
 import { StatusMenuLogic } from './StatusMenu' // Import the logic component
 import type { DocumentView } from './types'
 import { getViewMap } from './types'
+import { useRegistry } from '@/hooks/useRegistry'
 
 export const DocumentHeader = ({
   ydoc,
@@ -22,7 +23,8 @@ export const DocumentHeader = ({
   planningId?: string | null
   view: DocumentView
 }) => {
-  const config = getViewMap()[view]
+  const { featureFlags } = useRegistry()
+  const config = getViewMap(featureFlags.hasHast)[view]
   const HeaderIcon = (readOnly && config.readOnlyIcon) ? config.readOnlyIcon : config.icon
   const TitleIcon = config.icon
 

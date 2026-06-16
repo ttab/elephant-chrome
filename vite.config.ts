@@ -104,9 +104,8 @@ export default defineConfig(({ mode }) => {
             vendor: ['react', 'react-dom'],
             slate: ['slate', 'slate-react', 'slate-history'],
             yjs: ['yjs', 'y-indexeddb', '@slate-yjs/core', '@slate-yjs/react'],
-            tt: ['@ttab/elephant-ui', '@ttab/api-client'],
+            tt: ['@ttab/elephant-ui', '@ttab/elephant-ui/icons', '@ttab/api-client'],
             textbit: ['@ttab/textbit', '@ttab/textbit-plugins'],
-            icons: ['lucide-react'],
             dateFns: ['date-fns', 'date-fns-tz', '@date-fns/utc'],
             misc: ['sonner', 'zod']
           },

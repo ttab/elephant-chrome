@@ -9,11 +9,13 @@ import { FlashView } from './FlashView'
 import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
 import { Editor as PlainEditor } from '@/components/PlainEditor'
 import { getTemplateFromView } from '@/shared/templates/lib/getTemplateFromView'
+import { useRegistry } from '@/hooks/useRegistry'
+import { useDocumentDefaults } from '@/hooks/useDocumentDefaults'
 import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type { Document } from '@ttab/elephant-api/newsdoc'
 import { DocumentHeader } from '@/components/QuickDocument/DocumentHeader'
-import { useDeliverablePlanningId } from '@/hooks/index/useDeliverablePlanningId'
+import { useDeliverableInfo } from '@/hooks/useDeliverableInfo'
 import { useTranslation } from 'react-i18next'
 
 const meta: ViewMetadata = {
@@ -37,7 +39,10 @@ export const Flash = (props: ViewProps & {
 }): JSX.Element => {
   const [query] = useQuery()
   const [workflowStatus] = useWorkflowStatus({ documentId: props.id || undefined })
+  const { featureFlags } = useRegistry()
   const { t } = useTranslation('flash')
+  const hasHast = !!featureFlags.hasHast
+  const defaults = useDocumentDefaults()
 
   const persistentDocumentId = useRef<string>('')
   if (!persistentDocumentId.current) {
@@ -46,7 +51,7 @@ export const Flash = (props: ViewProps & {
 
   // We must not read query.id if we are in a dialog or we pick up other documents ids
   const documentId = props.id || (!props.asDialog && query.id) || persistentDocumentId.current
-  const planningId = useDeliverablePlanningId(documentId as string || '')
+  const planningId = useDeliverableInfo(documentId as string || '')?.planningUuid ?? ''
 
   const data = useMemo(() => {
     if (!documentId || typeof documentId !== 'string') {
@@ -58,9 +63,12 @@ export const Flash = (props: ViewProps & {
       isMetaDocument: false,
       mainDocument: '',
       subset: [],
-      document: props.document || getTemplateFromView('Flash')(documentId)
+      document: props.document || getTemplateFromView('Flash', { useHast: hasHast })(
+        documentId,
+        { ...defaults }
+      )
     })
-  }, [documentId, props.document])
+  }, [documentId, props.document, hasHast, defaults])
 
   // Error handling for missing document
   if ((!props.asDialog && !documentId) || typeof documentId !== 'string') {
@@ -94,7 +102,7 @@ export const Flash = (props: ViewProps & {
   return (
     <>
       {props.asDialog
-        ? <FlashDialog {...props} documentId={documentId} data={data} />
+        ? <FlashDialog {...props} documentId={documentId} data={data} mode={hasHast ? 'hast' : 'flash'} />
         : <FlashView {...{ ...props, documentId, data }} />}
     </>
   )

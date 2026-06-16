@@ -36,7 +36,8 @@ vi.mock('@/hooks/useView', () => ({
 }))
 
 vi.mocked(useView).mockReturnValue({
-  viewId: 'eddbfe39-57d4-4b32-b9a1-a555e39139ea'
+  viewId: 'eddbfe39-57d4-4b32-b9a1-a555e39139ea',
+  isActive: true
 } as ViewProviderState)
 
 describe('useQuery hook', () => {

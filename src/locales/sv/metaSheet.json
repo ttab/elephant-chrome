@@ -1,31 +1,59 @@
 {
-    "title": "Metadata",
-    "labels": {
-        "properties": "Egenskaper",
-        "tags": "Etiketter",
-        "byline": "Byline",
-        "actions": "Åtgärder",
-        "otherSources": "Externa källor",
-        "source": "Källa",
-        "extraInformation": "Extra information",
-        "versions": "Versioner",
-        "version": "Version",
-        "editorialInfoType": "Redaktionell info, typ",
-        "slugline": "Slugg"
-    },
-    "actions": {
-        "addNote": "Lägg till notering"
-    },
-    "placeholders": {
-        "addByline": "Lägg till byline",
-        "addSource": "Lägg till källa"
-    },
-    "dropDownMenuItems": {
-        "internalNote": "Intern notering",
-        "infoToCustomer": "Info till kund"
-    },
-    "misc": {
-        "lastUpdated": "Senast uppdaterad: {{date}}",
-        "noType": "Ingen typ"
-    }
+  "title": "Metadata",
+  "labels": {
+    "properties": "Egenskaper",
+    "tags": "Etiketter",
+    "byline": "Byline",
+    "actions": "Åtgärder",
+    "otherSources": "Externa källor",
+    "origin": "Skapad från",
+    "source": "Källa",
+    "extraInformation": "Extra information",
+    "versions": "Versioner",
+    "version": "Version",
+    "editorialInfoType": "Redaktionell info, typ",
+    "slugline": "Slugg",
+    "category": "Kategori"
+  },
+  "actions": {
+    "addNote": "Lägg till notering",
+    "convertToArticle": "Planera som artikel",
+    "convertToTimeless": "Spara som tidlös",
+    "removeHastFromArticle": "Ta bort HAST från artikeln",
+    "removeHastFromTimeless": "Ta bort HAST från tidlös"
+  },
+  "convertToArticle": {
+    "descriptionWithPlanning": "En ny planering skapas från den ursprungliga. Välj datum för den nya artikeln. Den tidlösa artikeln finns kvar.",
+    "descriptionNoPlanning": "Välj datum för den nya artikeln. Den tidlösa artikeln finns kvar.",
+    "loadingPlanning": "Letar efter den ursprungliga planeringen…",
+    "targetDateLabel": "Datum",
+    "converting": "Sparar…",
+    "failed": "Kunde inte skapa det nya dokumentet. Försök igen eller avbryt.",
+    "noPlanningHint": "Ingen ursprunglig planering hittades — en ny planering skapas från tidlös."
+  },
+  "convertToTimeless": {
+    "description": "Välj kategori för den nya tidlösa artikeln. Den ursprungliga artikeln finns kvar.",
+    "publishedDisabled": "Publicerade artiklar kan inte sparas som tidlösa."
+  },
+  "removeHastPrompt": {
+    "title": "Ta bort HAST från artikeln",
+    "description": "Detta tar bort HAST och gör det till en vanlig artikel. Framtida versioner skickas inte som HAST om du inte aktiverar det igen.",
+    "confirm": "Ta bort"
+  },
+  "removeHastPromptTimeless": {
+    "title": "Ta bort HAST från tidlös",
+    "description": "Detta tar bort HAST och gör det till en vanlig tidlös. Framtida versioner skickas inte som HAST om du inte aktiverar det igen."
+  },
+  "placeholders": {
+    "addByline": "Lägg till byline",
+    "addSource": "Lägg till källa"
+  },
+  "dropDownMenuItems": {
+    "internalNote": "Intern notering",
+    "infoToCustomer": "Info till kund"
+  },
+  "misc": {
+    "lastUpdated": "Senast uppdaterad: {{date}}",
+    "noType": "Ingen typ"
+  }
 }

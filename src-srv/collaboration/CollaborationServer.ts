@@ -3,6 +3,7 @@ import { Logger } from '@hocuspocus/extension-logger'
 import { Redis as PubsubExtension } from '@hocuspocus/extension-redis'
 
 import type { Redis } from '../utils/Redis.js'
+import { createRedisClient } from './createRedisClient.js'
 import type { Repository } from '@/shared/Repository.js'
 import type { User } from '@/shared/User.js'
 
@@ -60,13 +61,7 @@ export class CollaborationServer {
       redis: configuration.redis
     })
 
-    const {
-      host: redisHost,
-      port: redisPort,
-      username: redisUsername,
-      password: redisPassword,
-      protocol: redisProtocol
-    } = new URL(configuration.redisUrl)
+    const redisUrl = new URL(configuration.redisUrl)
 
     this.server = new Hocuspocus({
       name: crypto.randomUUID(), // We need a server instance id to be able to acquire locks
@@ -83,13 +78,7 @@ export class CollaborationServer {
         }),
         new PubsubExtension({
           prefix: 'elc::hp',
-          host: redisHost,
-          port: parseInt(redisPort, 10),
-          options: {
-            username: redisUsername,
-            password: redisPassword,
-            ...(redisProtocol === 'rediss:' ? { tls: { rejectUnauthorized: true } } : {})
-          }
+          createClient: () => createRedisClient(redisUrl)
         }),
         this.#openDocuments,
         new CacheExtension({

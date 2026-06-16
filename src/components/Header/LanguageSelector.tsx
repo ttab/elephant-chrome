@@ -1,6 +1,6 @@
 import { supportedUILanguages } from '@/shared/getSystemLanguage'
 import { Select, SelectContent, SelectItem, SelectTrigger } from '@ttab/elephant-ui'
-import { LanguagesIcon } from 'lucide-react'
+import { LanguagesIcon } from '@ttab/elephant-ui/icons'
 import { type JSX } from 'react'
 import { useTranslation } from 'react-i18next'
 

@@ -6,7 +6,6 @@ import type { DeliverableType } from '@/shared/templates/lib/getDeliverableType.
 import { group, toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc.js'
 import { toYMap } from '@/shared/transformations/toYMap.js'
 import { toYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc.js'
-import type { IDBAuthor } from '../src/datastore/types.js'
 
 /**
 * General function to create a new document as Y.Doc from a template
@@ -67,8 +66,8 @@ export function createDocument<T>({
 */
 export function appendAssignment(options: {
   document: Y.Doc
-  assignee?: IDBAuthor | null | undefined
-  type: 'text' | 'flash' | 'graphic' | 'picture' | 'video' | 'picture/video'
+  assignee?: { id: string, name: string } | null | undefined
+  type: 'text' | 'flash' | 'graphic' | 'picture' | 'video' | 'picture/video' | 'timeless'
   slugLine?: string
   title?: string
   wires?: Wire[]
@@ -100,8 +99,8 @@ export function createNewAssignment({
   assignmentData
 }: {
   document: Y.Doc
-  assignee?: IDBAuthor | null | undefined
-  type: 'text' | 'flash' | 'graphic' | 'picture' | 'video' | 'picture/video'
+  assignee?: { id: string, name: string } | null | undefined
+  type: 'text' | 'flash' | 'graphic' | 'picture' | 'video' | 'picture/video' | 'timeless'
   slugLine?: string
   title?: string
   wires?: Wire[]
@@ -145,6 +144,14 @@ export function createNewAssignment({
 }
 
 /**
+ * Map deliverable type to the link type used in assignment blocks.
+ * Timeless articles are article variants and use core/article links.
+ */
+function getLinkType(type: DeliverableType): string {
+  return type === 'timeless' ? 'core/article' : `core/${type}`
+}
+
+/**
 * Specific function to create a new article in Y.Doc as Y.Map from a template
 */
 export function appendDocumentToAssignment({ document, id, index, slug, type }: {
@@ -154,6 +161,8 @@ export function appendDocumentToAssignment({ document, id, index, slug, type }: 
   slug?: string
   type: DeliverableType
 }): void {
+  const linkType = getLinkType(type)
+
   // Get meta yMap
   const meta = document.getMap('ele').get('meta') as Y.Map<unknown>
 
@@ -164,22 +173,22 @@ export function appendDocumentToAssignment({ document, id, index, slug, type }: 
     .get('links') as Y.Map<unknown>
 
   // Check if deliverableType exists
-  if (!assignmentLinks.has(`core/${type}`)) {
-    assignmentLinks.set(`core/${type}`, new Y.Array())
+  if (!assignmentLinks.has(linkType)) {
+    assignmentLinks.set(linkType, new Y.Array())
   }
   // Get existing articles
-  const yDeliverables = assignmentLinks.get(`core/${type}`) as Y.Array<unknown>
+  const yDeliverables = assignmentLinks.get(linkType) as Y.Array<unknown>
 
   // Create new deliverable from template
   const deliverable = Block.create({
-    type: `core/${type}`,
+    type: linkType,
     uuid: id,
     rel: 'deliverable',
     title: slug
   })
 
   // Group deliverable
-  const [groupedDeliverable] = group([deliverable], 'type')[`core/${type}`]
+  const [groupedDeliverable] = group([deliverable], 'type')[linkType]
 
   // Convert to YMap
   const yDeliverable = toYMap(

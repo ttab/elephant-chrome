@@ -8,7 +8,7 @@ import { toast } from 'sonner'
 import { ViewHeader } from '@/components/View/ViewHeader'
 import { View } from '@/components/View'
 import type { ViewProps } from '@/types/index'
-import { LibraryIcon, TagIcon } from '@ttab/elephant-ui/icons'
+import { TagIcon } from '@ttab/elephant-ui/icons'
 import { Form } from '@/components/Form'
 import { LoadingText } from '@/components/LoadingText'
 import { parseDate } from '@/shared/datetime'
@@ -17,6 +17,7 @@ import { useQuery } from '@/hooks/useQuery'
 import { format } from 'date-fns'
 import { useLink } from '@/hooks/useLink'
 import { useTranslation } from 'react-i18next'
+import { documentTypeValueFormat } from '@/defaults/documentTypeFormats'
 
 /**
  * PrintFlows component.
@@ -51,6 +52,7 @@ export const PrintFlows = ({ asDialog, onDialogClose, className, action }: ViewP
   const [printFlow, setPrintFlow] = useState<string>()
   const { baboon } = useRegistry()
   const { data: session } = useSession()
+  const icon = documentTypeValueFormat['tt/print-article'].icon
   const date = !filter?.from ? fallbackDate : parseDate(filter?.from?.[0] || '')
   const allPrintFlows = data?.map((hit) => ({
     value: hit.id,
@@ -137,7 +139,7 @@ export const PrintFlows = ({ asDialog, onDialogClose, className, action }: ViewP
               <ViewHeader.Title
                 name='printheader'
                 title={action === 'createArticle' ? t('flow.title.createArticle') : t('flow.title.createFlow')}
-                icon={LibraryIcon}
+                icon={icon}
                 iconColor='#006bb3'
                 asDialog={asDialog}
               />

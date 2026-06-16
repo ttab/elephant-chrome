@@ -20,7 +20,7 @@ export const TextInput = ({
   value: Y.XmlText | undefined
   rootMap?: Y.Map<unknown>
   label: string
-  autoFocus?: boolean
+  autoFocus?: boolean | 'start' | 'end'
   placeholder: string
   className?: string
 } & FormProps): JSX.Element => {

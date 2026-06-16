@@ -11,6 +11,7 @@ import {
   useQuery,
   useWorkflowStatus
 } from '@/hooks'
+import { useFeatureFlags } from '@/hooks/useFeatureFlags'
 import { PlanDate } from './components/PlanDate'
 import { AssignmentTable } from './components/AssignmentTable'
 
@@ -135,6 +136,7 @@ const PlanningViewContent = (props: ViewProps & {
 
   const [title] = useYValue<Y.XmlText>(document, 'root.title', true)
   const [slugline] = useYValue<Y.XmlText>(document, 'meta.tt/slugline[0].value', true)
+  const { hasLooseSlugline } = useFeatureFlags(['hasLooseSlugline'])
   const pubIndex = useDescriptionIndex(document, 'public')
   const intIndex = useDescriptionIndex(document, 'internal')
   const [publicDescription] = useYValue<Y.XmlText>(document, `meta.core/description[${pubIndex}].data.text`, true)
@@ -213,38 +215,48 @@ const PlanningViewContent = (props: ViewProps & {
               />
             </Form.Title>
 
-            <TextBox
-              ydoc={ydoc}
-              value={publicDescription}
-              icon={<TextIcon size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />}
-              placeholder={t('planning:description.public')}
-            />
+            <div className='@container w-full'>
+              <div className='grid grid-cols-1 @3xl:grid-cols-[minmax(0,1fr)_auto] gap-x-6 gap-y-4'>
+                <div className='flex flex-col gap-4'>
+                  <TextBox
+                    ydoc={ydoc}
+                    value={publicDescription}
+                    icon={<TextIcon size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />}
+                    placeholder={t('planning:description.public')}
+                  />
 
-            <TextBox
-              ydoc={ydoc}
-              value={internalDescription}
-              icon={<MessageCircleMoreIcon size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />}
-              placeholder={t('planning:description.internal')}
-            />
+                  <TextBox
+                    ydoc={ydoc}
+                    value={internalDescription}
+                    icon={<MessageCircleMoreIcon size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />}
+                    placeholder={t('planning:description.internal')}
+                  />
+                </div>
 
-            <Form.Group icon={CalendarIcon}>
-              <PlanDate ydoc={ydoc} asDialog={!!props.asDialog} />
-            </Form.Group>
+                <div className='flex flex-col gap-4'>
+                  <Form.Group icon={CalendarIcon}>
+                    <PlanDate ydoc={ydoc} asDialog={!!props.asDialog} />
+                  </Form.Group>
 
-            <Form.Group icon={TagsIcon}>
-              <SluglineEditable
-                ydoc={ydoc}
-                value={slugline}
-                documentStatus={documentStatus?.name}
-              />
+                  <Form.Group icon={TagsIcon}>
+                    {!hasLooseSlugline && (
+                      <SluglineEditable
+                        ydoc={ydoc}
+                        value={slugline}
+                        documentStatus={documentStatus?.name}
+                      />
+                    )}
 
-              <Newsvalue ydoc={ydoc} path='meta.core/newsvalue[0].value' />
-            </Form.Group>
+                    <Newsvalue ydoc={ydoc} path='meta.core/newsvalue[0].value' />
+                  </Form.Group>
 
-            <Form.Group icon={TagsIcon}>
-              <Section ydoc={ydoc} path='links.core/section[0]' />
-              <Story ydoc={ydoc} path='links.core/story[0]' />
-            </Form.Group>
+                  <Form.Group icon={TagsIcon}>
+                    <Section ydoc={ydoc} path='links.core/section[0]' />
+                    <Story ydoc={ydoc} path='links.core/story[0]' />
+                  </Form.Group>
+                </div>
+              </div>
+            </div>
           </Form.Content>
 
           <Form.Table>

@@ -46,13 +46,8 @@ export const DuplicatesTable = ({ documentId, type }: {
 
   useRepositoryEvents(type, (event) => {
     if (createdDocumentIdRef.current === event.uuid && event.type === 'document') {
-      void (async () => {
-        try {
-          await mutate()
-        } catch (error) {
-          console.warn('Failed to update event item', error)
-        }
-      })()
+      mutate()
+        .catch((error) => console.warn('Failed to update event item', error))
     }
   })
 

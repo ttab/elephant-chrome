@@ -58,7 +58,7 @@ export const Assignment = ({ ydoc, assignment, onAbort, onClose }: {
   }
 
   return (
-    <div className='flex flex-col rounded-md border shadow-xl -mx-1 -my-1 z-10 bg-background dark:bg-table-focused' ref={formRef}>
+    <div className='@container/assform flex flex-col rounded-md border shadow-xl -mx-1 -my-1 z-10 bg-background dark:bg-table-focused' ref={formRef}>
       <Form.Root asDialog={true}>
         <Form.Content>
           <Form.Title>
@@ -84,7 +84,7 @@ export const Assignment = ({ ydoc, assignment, onAbort, onClose }: {
             )}
           />
 
-          {(assignmentType === 'text' || assignmentType === 'editorial-info')
+          {(assignmentType === 'text' || assignmentType === 'editorial-info' || assignmentType === 'timeless')
             && (
               <Form.Group icon={TagsIcon}>
                 <SluglineEditable
@@ -97,7 +97,7 @@ export const Assignment = ({ ydoc, assignment, onAbort, onClose }: {
             )}
 
 
-          <Form.Group>
+          <Form.Group className='[&>div]:flex-wrap [&>div]:items-start @md/assform:[&>div]:flex-nowrap @md/assform:[&>div]:items-center'>
             <AssignmentType
               assignment={assignment}
               editable={!articleId && !flashId}
@@ -108,7 +108,9 @@ export const Assignment = ({ ydoc, assignment, onAbort, onClose }: {
               path={`${path}.links.core/author`}
               placeholder={t('planning:assignment.actions.addAssignee')}
             />
-            <AssignmentTime assignment={assignment} />
+            {assignmentType !== 'timeless' && (
+              <AssignmentTime assignment={assignment} />
+            )}
 
             {/* FIXME: Disable until we have an idea of how this should be clear to end-user
             <AssignmentVisibility

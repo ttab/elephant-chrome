@@ -24,24 +24,40 @@ export interface HistoryInterface {
 }
 
 
+// Cache the snapshot so React only observes history changes from real
+// popstate events (native back/forward, or synthetic events dispatched by
+// pushState / replaceState). Reading window.history.state on every render
+// would otherwise leak silent replaceState mutations (e.g. setActiveView)
+// into useSyncExternalStore and trigger extra renders.
+//
+// The cache is refreshed on subscribe to catch direct window.history.state
+// mutations that happen before React mounts the hook - notably
+// initializeNavigationState's replaceState during module init.
+let cachedSnapshot: HistoryState | null = (window.history.state as HistoryState | null) ?? null
+
+const subscribe = (callback: () => void): (() => void) => {
+  cachedSnapshot = (window.history.state as HistoryState | null) ?? null
+  const handler = (): void => {
+    cachedSnapshot = (window.history.state as HistoryState | null) ?? null
+    callback()
+  }
+  window.addEventListener('popstate', handler)
+  return () => window.removeEventListener('popstate', handler)
+}
+
+const getSnapshot = (): HistoryState | null => cachedSnapshot
+
+const getServerSnapshot = (): null => null
+
 /**
  * History hook for managing browser history state
  */
 export function useHistory(): HistoryInterface {
-  const subscribe = (callback: () => void): (() => void) => {
-    window.addEventListener('popstate', callback)
-    return () => window.removeEventListener('popstate', callback)
-  }
-
-  const getSnapshot = (): HistoryState | null => {
-    return window.history.state as HistoryState | null
-  }
-
   // Get the current state using useSyncExternalStore
   const state = useSyncExternalStore<HistoryState | null>(
     subscribe,
     getSnapshot,
-    () => null // Server-side snapshot
+    getServerSnapshot
   )
 
   const pushState = (url: string, newState: HistoryState): void => {

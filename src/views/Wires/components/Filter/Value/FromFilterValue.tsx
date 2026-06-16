@@ -1,4 +1,4 @@
-import { CalendarIcon } from 'lucide-react'
+import { CalendarIcon } from '@ttab/elephant-ui/icons'
 import { FilterBadge } from '../FilterBadge'
 import { useTranslation } from 'react-i18next'
 

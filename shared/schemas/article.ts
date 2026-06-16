@@ -37,7 +37,7 @@ const _schema = z.object(schemaShape)
 /**
  * Type inferred from fields
  */
-export type ArticleFields = Array<keyof typeof _fields>
+export type ArticleFields = readonly (typeof _fields)[number][]
 
 /**
  * Type inferred from the articleSchema.
@@ -55,4 +55,4 @@ export interface Article extends HitV1 {
 /**
  * Export fields and cast it as articleFields
  */
-export const fields = _fields as unknown as ArticleFields
+export const fields: ArticleFields = _fields

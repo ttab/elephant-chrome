@@ -2,10 +2,11 @@ import { InfoIcon, PlusIcon } from '@ttab/elephant-ui/icons'
 import { AssignmentRow } from './AssignmentRow'
 import { createNewAssignment } from '@/shared/createYItem'
 import { useAuthors, useNavigationKeys } from '@/hooks'
+import { useFeatureFlags } from '@/hooks/useFeatureFlags'
 import { Assignment } from './Assignment'
 import type { MouseEvent, KeyboardEvent } from 'react'
-import { useMemo, useState, type JSX } from 'react'
-import { Button } from '@ttab/elephant-ui'
+import { useMemo, useRef, useState, type JSX } from 'react'
+import { Button, Separator } from '@ttab/elephant-ui'
 import { useActiveAuthor } from '@/hooks/useActiveAuthor'
 import { snapshotDocument } from '@/lib/snapshotDocument'
 import { toast } from 'sonner'
@@ -36,9 +37,11 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId }: {
   const [selectedId, setSelectedId] = useState<string | undefined>(undefined)
   const [newAssignment] = useYValue<EleBlock>(ydoc.ctx, `core/assignment.${session?.user.sub || ''}`)
   const [focusedRowIndex, setFocusedRowIndex] = useState<number | undefined>()
+  const addButtonRef = useRef<HTMLButtonElement>(null)
   const author = useActiveAuthor({ full: false })
   const authors = useAuthors()
   const { t } = useTranslation()
+  const { hasLooseSlugline } = useFeatureFlags(['hasLooseSlugline'])
 
   const selectedAssignment = useMemo(() => {
     if (!selectedId) return undefined
@@ -77,9 +80,11 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId }: {
       createNewAssignment({
         document: ydoc.provider.document,
         assignee: author,
-        slugLine: (!slugLines?.includes(planningSlugLine || ''))
-          ? planningSlugLine
-          : undefined,
+        slugLine: hasLooseSlugline
+          ? undefined
+          : ((!slugLines?.includes(planningSlugLine || ''))
+              ? planningSlugLine
+              : undefined),
         type: 'text'
       })
     )
@@ -92,9 +97,14 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId }: {
     if (!assignment) return
 
     const [assignmentType] = getValueByYPath<string>(assignment, ['meta', 'core/assignment-type', 0, 'value'])
-    if (assignmentType && !['text', 'editorial-info'].includes(assignmentType)) {
+    if (assignmentType && !['text', 'editorial-info', 'timeless'].includes(assignmentType)) {
       deleteByYPath(assignment, ['meta', 'tt/slugline'])
     }
+
+    // Timeless assignments are persisted but never published, so adding one
+    // should not flip a clean planning into "unpublished changes". Capture
+    // the prior state so we can revert the flag the push observer will set.
+    const wasChanged = ydoc.isChanged
 
     rawAssignments?.push([
       toYStructure(
@@ -103,18 +113,25 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId }: {
     ])
     deleteByYPath(ydoc.ctx, ['core/assignment', session?.user.sub])
 
-    if (documentId && ydoc.provider) {
+    if (assignmentType === 'timeless' && !wasChanged) {
+      ydoc.setIsChanged?.(false)
+    }
+
+    if (documentId && ydoc.provider && !ydoc.isInProgress) {
       snapshotDocument(documentId, { force: true }, ydoc.provider.document)
         .catch((ex) => {
           console.error('Error closing assignment:', ex)
           toast.error(t('errors:messages.saveAssignmentError'))
         })
     }
+
+    requestAnimationFrame(() => addButtonRef.current?.focus())
   }
 
   const handleAbort = () => {
     if (!session) return
     (ydoc.ctx.get('core/assignment') as Y.Map<unknown>).delete(session.user.sub)
+    requestAnimationFrame(() => addButtonRef.current?.focus())
   }
 
   useNavigationKeys({
@@ -130,27 +147,21 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId }: {
 
   return (
     <>
-      <div className='flex flex-col pt-2 text-primary pb-4'>
-        <div className='pl-2'>
+      <Separator className='mt-4 mb-10' />
+
+      <div className='flex flex-col text-primary pb-4'>
+        <div>
           <Button
+            ref={addButtonRef}
+            size='sm'
+            className='h-8 pr-4'
             disabled={newAssignment !== undefined || !ydoc.connected}
-            variant='ghost'
             onKeyDown={(event: KeyboardEvent<HTMLButtonElement>) => event.key === 'Enter'
               && handleNewAssignment(event)}
             onClick={(event: MouseEvent<HTMLButtonElement>) => handleNewAssignment(event)}
-            className='hover:bg-slate-200 dark:hover:bg-table-focused'
           >
-
-            <div className='flex flex-row items-center gap-2'>
-              <div className='bg-primary rounded-full w-5 h-5 relative'>
-                <PlusIcon
-                  size={15}
-                  strokeWidth={2.25}
-                  className='text-white dark:text-black absolute inset-0 m-auto'
-                />
-              </div>
-              {t('planning:assignment.actions.addAssignment')}
-            </div>
+            <PlusIcon size={18} strokeWidth={1.75} />
+            <span className='pl-0.5'>{t('planning:assignment.actions.addAssignment')}</span>
           </Button>
         </div>
 
@@ -213,9 +224,9 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId }: {
       )}
 
       {!!assignments?.length && (
-        <div className='border rounded-md'>
+        <div className='flex flex-col gap-2'>
           {assignments.map((assignment, index: number) => (
-            <div key={`${assignment.id}`} className='border-b last:border-0'>
+            <div key={`${assignment.id}`}>
               {selectedAssignment?.get('id') === assignment.id
                 ? (
                     <Assignment

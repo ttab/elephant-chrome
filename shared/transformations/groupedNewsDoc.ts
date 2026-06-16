@@ -59,9 +59,11 @@ export const fromGroupedNewsDoc = (payload: EleDocumentResponse): { document: Do
     links: ungroup(document.links)
   }
 
-  if (document.type === 'core/planning-item') {
-    assertPlanningHasNoEmptyProperties(newsDocument)
-  }
+  // Repo validator rejects empty tt/slugline and core/description blocks.
+  // Strip them on the way out regardless of document type — articles created
+  // from wires inherit an empty slugline from the selected planning, and the
+  // article path bypassed cleanup before this guard was widened.
+  stripEmptyValidatedMetaBlocks(newsDocument)
 
   return {
     version: BigInt(version),
@@ -143,13 +145,16 @@ export function ungroup(obj: EleBlockGroup): Block[] {
 }
 
 /**
- *  Assert that we don't leave empty sluglines or descriptions on planning documents
+ * Strip blocks the repo validator considers structurally invalid: tt/slugline
+ * with empty value, core/description with empty text. The rule is "either
+ * filled or absent" — the block must not exist with an empty value. Recurses
+ * into core/assignment so nested assignment meta is cleaned the same way.
  */
-function assertPlanningHasNoEmptyProperties(obj: Document | Block): void {
+function stripEmptyValidatedMetaBlocks(obj: Document | Block): void {
   obj.meta = obj.meta.filter((block) => {
-    if (block.type === 'core/description' && !block.data.text) {
+    if (block.type === 'core/description' && !block.data?.text) {
       return false
-    } else if (block.type === 'tt/slugline' && !block.value) {
+    } else if (block.type === 'tt/slugline' && (typeof block.value !== 'string' || !block.value.trim())) {
       return false
     }
 
@@ -158,7 +163,7 @@ function assertPlanningHasNoEmptyProperties(obj: Document | Block): void {
 
   obj.meta.forEach((block) => {
     if (block.type === 'core/assignment') {
-      assertPlanningHasNoEmptyProperties(block)
+      stripEmptyValidatedMetaBlocks(block)
     }
   })
 }

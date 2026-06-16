@@ -11,7 +11,7 @@ import { useAuthors } from '@/hooks/useAuthors'
 import { useRegistry } from '@/hooks/useRegistry'
 import { useSession } from 'next-auth/react'
 import { type ViewMetadata } from '@/types'
-import { type IDBAuthor } from 'src/datastore/types'
+import { getAuthorBySub } from '@/lib/getAuthorBySub'
 import { useQuery } from '@/hooks/useQuery'
 import { newLocalDate } from '@/shared/datetime'
 import { useSections } from '@/hooks/useSections'
@@ -44,15 +44,10 @@ export const Assignments = (): JSX.Element => {
   const sections = useSections()
   const { t } = useTranslation()
 
-  const assigneeId = useMemo(() => {
-    const userSub = session?.user?.sub
-    const subId = userSub?.slice(userSub?.lastIndexOf('/') + 1)
-    const author = authors?.find((a: IDBAuthor) => {
-      return a.sub.slice(a?.sub.lastIndexOf('/') + 1) === subId
-    })
-
-    return author?.id
-  }, [authors, session?.user?.sub])
+  const assigneeId = useMemo(
+    () => getAuthorBySub(authors, session?.user?.sub)?.id,
+    [authors, session?.user?.sub]
+  )
 
   const date = useMemo(() => {
     return (typeof query.from === 'string')

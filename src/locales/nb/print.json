@@ -20,7 +20,7 @@
     "status": {
       "draft": "Utkast",
       "needsProofreading": "Klar for korrektur",
-      "done": "Ferdig",
+      "done": "Klar",
       "exported": "Eksportert",
       "suspended": "Avlyst",
       "cancelled": "Forkastet"

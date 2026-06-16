@@ -7,7 +7,7 @@ import {
 } from '@/components'
 import type { ViewProps } from '@/types'
 import type { DefaultValueOption } from '@ttab/elephant-ui'
-import { Button, Checkbox, ComboBox, Input, Label } from '@ttab/elephant-ui'
+import { Button, Checkbox, ComboBox, Input, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@ttab/elephant-ui'
 import {
   CircleXIcon,
   TagsIcon,
@@ -16,14 +16,15 @@ import {
   BriefcaseBusinessIcon,
   TagIcon
 } from '@ttab/elephant-ui/icons'
-import { useRegistry, useSections } from '@/hooks'
+import { useRegistry, useSections, useHasUnit, useUserPreferences } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import type { JSX } from 'react'
-import { Fragment, useRef, useState } from 'react'
+import { Fragment, useMemo, useRef, useState } from 'react'
 import { UserMessage } from '@/components/UserMessage'
 import { Form } from '@/components/Form'
-import { fetch } from '@/lib/index/fetch-plannings-twirp'
+import { fetch as fetchPlannings } from '@/lib/index/fetch-plannings-twirp'
 import { createArticle } from './lib/createArticle'
+import { resolveTranslationMode, type TranslationMode } from './lib/resolveTranslationMode'
 import { SluglineEditable } from '@/components/DataItem/SluglineEditable'
 import type * as Y from 'yjs'
 import { CreatePrompt } from '@/components/CreatePrompt'
@@ -32,26 +33,67 @@ import { toSlateYXmlText } from '@/shared/yUtils'
 import { useYDocument } from '@/modules/yjs/hooks'
 import { useYValue } from '@/modules/yjs/hooks/useYValue'
 import { TextInput } from '@/components/ui/TextInput'
-import type { EleDocumentResponse } from '@/shared/types'
+import type { EleDocument, EleDocumentResponse } from '@/shared/types'
 import { ValidateNow } from '@/components/ValidateNow'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
+import useSWR from 'swr'
+import { ClockIcon } from '@ttab/elephant-ui/icons'
+
+const BASE_URL = import.meta.env.BASE_URL || ''
+
+const wireDocFetcher = async (url: string): Promise<EleDocument> => {
+  const response = await fetch(url)
+  if (!response.ok) {
+    throw new Error(`Failed to fetch wire document: ${response.status} ${response.statusText}`)
+  }
+  const result = await response.json() as EleDocumentResponse
+  if (!result.document) {
+    throw new Error('Wire document response had no document')
+  }
+  return result.document
+}
 
 export const WireViewContent = (props: ViewProps & {
+  /** Throwaway Y.Doc id backing the dialog form (title/slugline/awareness). */
   documentId: string
+  /** The eventual article's UUID. Never opened in Hocuspocus during the dialog. */
+  articleId: string
   data?: EleDocumentResponse
   wires: WireType[]
 }): JSX.Element | undefined => {
-  // Create article using supplied data
+  // Form-state Y.Doc only: the article is created via repository.saveDocument
+  // in createArticle, never via this Y.Doc.
   const ydoc = useYDocument<Y.Map<unknown>>(props.documentId, { data: props.data })
   const { status, data: session } = useSession()
+
+  // Fetch the first wire document to get embargo, content sources and the
+  // body to translate.
+  const primaryWireId = props.wires?.[0]?.id
+  const { data: wireDocument, error: wireError } = useSWR<EleDocument, Error>(
+    primaryWireId ? `${BASE_URL}/api/documents/${primaryWireId}?direct=true` : null,
+    wireDocFetcher,
+    { revalidateOnFocus: false, revalidateOnReconnect: false }
+  )
+
+  const wireData = useMemo(() => {
+    if (!wireDocument) {
+      return { embargoUntil: undefined, contentSources: undefined }
+    }
+
+    const embargoUntil = wireDocument.meta?.['tt/wire']?.[0]?.data?.embargo_until as string | undefined
+    const contentSources = wireDocument.links?.['core/content-source']
+
+    return { embargoUntil, contentSources }
+  }, [wireDocument])
+
   const [showVerifyDialog, setShowVerifyDialog] = useState(false)
   const [searchOlder, setSearchOlder] = useState(false)
   const [selectedPlanning, setSelectedPlanning] = useState<DefaultValueOption & { payload: { slugline?: string, sluglines?: string[], newsvalue?: string, sectionUuid: string, sectionTitle: string } } | undefined>(undefined)
   const [title] = useYValue<Y.XmlText>(ydoc.ele, 'root.title', true)
   const documentAwareness = useRef<(value: boolean) => void>(null)
   const planningTitleRef = useRef<HTMLInputElement>(null)
-  const { index, locale, timeZone } = useRegistry()
+  const { index, locale, timeZone, server, repository } = useRegistry()
   const sections = useSections()
   const [section, setSection] = useState<{
     type: string
@@ -62,6 +104,14 @@ export const WireViewContent = (props: ViewProps & {
   const [slugline, setSlugline] = useYValue<Y.XmlText>(ydoc.ele, 'meta.tt/slugline[0].value', true)
   const { t } = useTranslation('wires')
   const [, setNewsvalue] = useYValue<string | undefined>(ydoc.ele, 'meta.core/newsvalue[0].value')
+  const isNpkUser = useHasUnit('/redaktionen-npk')
+  const { preferences } = useUserPreferences()
+  const hasPersonalPrefs = !!preferences.nynorskPrefs
+  // Null until the user explicitly picks a mode, so the default tracks
+  // `nynorskPrefs` if it loads after the first render.
+  const [translationMode, setTranslationMode] = useState<TranslationMode | null>(null)
+  const effectiveTranslationMode = resolveTranslationMode(translationMode, isNpkUser, hasPersonalPrefs)
+  const wireHeadline = props.wires?.[0]?.fields['document.title']?.values?.[0] || ''
 
   const handleSubmit = (): void => {
     setShowVerifyDialog(true)
@@ -118,6 +168,18 @@ export const WireViewContent = (props: ViewProps & {
               </div>
             )}
 
+            {!!wireData.embargoUntil && (
+              <Form.Group icon={ClockIcon}>
+                <div className='flex items-center gap-2 text-sm text-orange-700 dark:text-orange-400'>
+                  <span className='font-medium'>
+                    {t('creation.embargo')}
+                    {': '}
+                  </span>
+                  <span>{new Date(wireData.embargoUntil).toLocaleString(locale.code.full)}</span>
+                </div>
+              </Form.Group>
+            )}
+
             <Form.Group icon={GanttChartSquareIcon}>
               <Awareness path='wirePlanningItem' ref={documentAwareness} ydoc={ydoc}>
                 <ComboBox
@@ -132,7 +194,7 @@ export const WireViewContent = (props: ViewProps & {
                       documentAwareness.current(isOpen)
                     }
                   }}
-                  fetch={(query) => fetch(query, session, t, index, locale, timeZone, {
+                  fetch={(query) => fetchPlannings(query, session, t, index, locale, timeZone, {
                     searchOlder,
                     sluglines: true
                   })}
@@ -149,7 +211,7 @@ export const WireViewContent = (props: ViewProps & {
 
                         if (!sectionUuid || !sectionTitle) {
                           console.error('Selected planning is missing section data, cannot create article')
-                          toast.error('Vald planering saknar sektion och kan inte användas.', {
+                          toast.error(t('creation.planningMissingSection'), {
                             duration: Infinity,
                             closeButton: true
                           })
@@ -220,6 +282,7 @@ export const WireViewContent = (props: ViewProps & {
                   <Input
                     className='pt-2 h-7 text-medium placeholder:text-[#5D709F] placeholder-shown:border-[#5D709F]'
                     placeholder={t('creation.planningTitle')}
+                    defaultValue={isNpkUser ? wireHeadline : undefined}
                     ref={planningTitleRef}
                   />
                 </>
@@ -255,6 +318,30 @@ export const WireViewContent = (props: ViewProps & {
                 />
               )}
             </Form.Group>
+
+            {isNpkUser && (
+              <Form.Group icon={CableIcon}>
+                <Label className='text-muted-foreground text-sm'>
+                  {t('creation.translateToNynorsk')}
+                </Label>
+                <Select
+                  value={effectiveTranslationMode}
+                  onValueChange={(value: string) => { setTranslationMode(value as TranslationMode) }}
+                >
+                  <SelectTrigger className='h-7 w-auto min-w-32'>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value='none'>{t('creation.translationNone')}</SelectItem>
+                    <SelectItem value='standard'>{t('creation.translationStandard')}</SelectItem>
+                    {hasPersonalPrefs && (
+                      <SelectItem value='personal'>{t('creation.translationPersonal')}</SelectItem>
+                    )}
+                  </SelectContent>
+                </Select>
+              </Form.Group>
+            )}
+
             <>
               <UserMessage asDialog={!!props?.asDialog}>
                 {!selectedPlanning
@@ -281,15 +368,32 @@ export const WireViewContent = (props: ViewProps & {
 
                   if (!ydoc.connected || !ydoc.id || !session || !effectiveSection?.uuid) {
                     console.error('Environment is not sane, article cannot be created')
+                    toast.error(t('creation.createError'))
+                    setShowVerifyDialog(false)
                     return
                   }
 
-                  if (props?.onDialogClose) {
-                    props.onDialogClose(ydoc.id)
+                  // Without the wire document we silently lose embargo,
+                  // content-source links and the translation source.
+                  if (primaryWireId && (wireError || !wireDocument)) {
+                    console.error('Wire document not available, article cannot be created', wireError)
+                    toast.error(t('creation.createError'))
+                    setShowVerifyDialog(false)
+                    return
                   }
 
+                  // Keep both the CreatePrompt and the main dialog open until
+                  // createArticle has fully landed (article saved AND linked to
+                  // planning). The CreatePrompt's built-in `isSubmitting` state
+                  // disables the primary button and shows a spinner during the
+                  // wait, so the user can't navigate away to a planning that
+                  // briefly references an article whose creation is still in
+                  // flight. Belt-and-braces alongside the save-then-link order
+                  // in createArticle.
                   createArticle({
                     ydoc,
+                    articleId: props.articleId,
+                    repository,
                     status,
                     session,
                     planningId: selectedPlanning?.value,
@@ -297,20 +401,30 @@ export const WireViewContent = (props: ViewProps & {
                     newsvalue: selectedPlanning?.payload?.newsvalue,
                     wires: props.wires,
                     section: effectiveSection,
-                    timeZone
+                    timeZone,
+                    embargoUntil: wireData.embargoUntil,
+                    contentSources: wireData.contentSources,
+                    wireContent: wireDocument?.content,
+                    translationMode: effectiveTranslationMode !== 'none' ? effectiveTranslationMode : undefined,
+                    personalPrefs: preferences.nynorskPrefs,
+                    ntbUrl: server.ntbUrl?.href
                   })
                     .then(() => {
                       setShowVerifyDialog(false)
+                      if (props?.onDialogClose) {
+                        props.onDialogClose(ydoc.id)
+                      }
                       props.onDocumentCreated?.()
                     })
                     .catch((ex: unknown) => {
-                      if (ex instanceof Error && ex.message === 'AssignmentRollbackError') {
-                        toast.error(t('creation.assignmentRollbackError'), {
-                          duration: Infinity,
-                          closeButton: true
-                        })
-                      } else if (ex instanceof Error && ex.message === 'CreateAssignmentError') {
+                      // Close the CreatePrompt so the user can retry or cancel
+                      // — without this the prompt's `isSubmitting` would lock
+                      // the primary button forever.
+                      setShowVerifyDialog(false)
+                      if (ex instanceof Error && ex.message === 'CreateAssignmentError') {
                         // Toast already shown by addAssignmentWithDeliverable
+                      } else if (ex instanceof Error && ex.message === 'TranslationError') {
+                        // Translation-specific toast already shown by createArticle
                       } else {
                         toast.error(t('creation.createError'))
                       }

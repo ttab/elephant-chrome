@@ -36,7 +36,7 @@ export const FilterValue = ({ type, values, onClearFilter }: {
   )
 }
 
-const SpecificFilterValue = ({ type, values }: {
+export const SpecificFilterValue = ({ type, values }: {
   type: string
   values: string[]
 }) => {

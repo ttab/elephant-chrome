@@ -13,9 +13,9 @@ import { useTranslation } from 'react-i18next'
 export const DialogEditor = ({ ydoc, setTitle, onValidation, validateStateRef, type }: {
   ydoc: YDocument<Y.Map<unknown>>
   setTitle: (value: string | undefined) => void
-  type: 'article' | 'flash'
+  type: 'article' | 'flash' | 'hast'
 } & FormProps): JSX.Element => {
-  const plugins = [UnorderedList, OrderedList, Bold, Italic, LocalizedQuotationMarks]
+  const plugins = [Bold, Italic, LocalizedQuotationMarks]
   const [content] = getValueByYPath<Y.XmlText>(ydoc.ele, 'content', true)
   const [documentLanguage] = getValueByYPath<string>(ydoc.ele, 'root.language')
   const { t } = useTranslation('flash')
@@ -35,7 +35,7 @@ export const DialogEditor = ({ ydoc, setTitle, onValidation, validateStateRef, t
     return <></>
   }
 
-  const countCharacters = type === 'flash' ? ['heading-1', 'body'] : ['heading-1']
+  const countCharacters = ['heading-1', 'preamble', 'body']
 
   return (
     <Validation
@@ -51,12 +51,18 @@ export const DialogEditor = ({ ydoc, setTitle, onValidation, validateStateRef, t
         content={content}
         lang={documentLanguage}
         plugins={[
+          UnorderedList({ title: t('editor:contentMenu.unorderedList') }),
+          OrderedList({ title: t('editor:contentMenu.orderedList') }),
           ...plugins.map((initPlugin) => initPlugin()),
           Text({
             countCharacters,
             preventHotkeys: ['heading-1', 'heading-2', 'preamble'],
             ...getContentMenuLabels(),
-            titleLabel: type === 'flash' ? t('placeholders.flashTitle') : t('editor:contentMenu.title')
+            titleLabel: type === 'flash'
+              ? t('placeholders.flashTitle')
+              : type === 'hast'
+                ? t('placeholders.hastTitle')
+                : t('editor:contentMenu.title')
           })
         ]}
         className='h-auto min-h-auto rounded-md border'

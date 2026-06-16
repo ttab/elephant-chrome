@@ -13,7 +13,11 @@ export const _fields = [
   'document.language',
   'document.uri',
   'document.url',
-  'text'
+  'text',
+  'heads.usable.version',
+  '_document_origin',
+  '_document_origin_id',
+  'workflow_state'
 ] as const
 
 /**
@@ -37,7 +41,7 @@ type FactboxFieldsObject = z.infer<typeof _schema>
 /**
  * Type inferred from fields
  */
-export type FactboxFields = Array<keyof typeof _fields>
+export type FactboxFields = readonly (typeof _fields)[number][]
 
 /**
  * Interface extending HitV1 with a fields property of type FactboxSchema.
@@ -49,4 +53,4 @@ export interface Factbox extends HitV1 {
 /**
  * Export fields and cast it as FactboxFields
  */
-export const fields = _fields as unknown as FactboxFields
+export const fields: FactboxFields = _fields

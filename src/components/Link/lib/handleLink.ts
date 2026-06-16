@@ -7,7 +7,7 @@ import {
   NavigationActionType
 } from '@/types'
 import { toQueryString } from './toQueryString'
-import type { HistoryInterface } from '@/navigation/hooks/useHistory'
+import type { HistoryInterface, HistoryState } from '@/navigation/hooks/useHistory'
 
 export type Target = 'self' | 'blank' | 'last'
 interface LinkClick {
@@ -45,10 +45,13 @@ export function handleLink({
   event?.preventDefault()
   event?.stopPropagation()
 
-  // Get current state from history
-  const content: ContentState[] = [...history.state?.contentState || []]
-  const currentViewId = history.state?.viewId
-  const currentPath = history.state?.contentState.find((c) => c.viewId === currentViewId)
+  // Read from window.history.state directly: setActiveView updates the URL
+  // and viewId via a silent replaceState (no popstate), so the React-tracked
+  // history.state may briefly lag here. window.history.state is always fresh.
+  const liveHistoryState = window.history.state as HistoryState | null
+  const content: ContentState[] = [...liveHistoryState?.contentState || []]
+  const currentViewId = liveHistoryState?.viewId
+  const currentPath = liveHistoryState?.contentState.find((c) => c.viewId === currentViewId)
 
   // Create next (wanted) content state (props can not be functions!)
   const newContent: ContentState = {

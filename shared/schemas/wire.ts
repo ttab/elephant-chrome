@@ -6,7 +6,9 @@ import type { FieldValuesV1, HitV1 } from '@ttab/elephant-api/index'
  */
 const _fields = [
   'document.rel.source.uri',
+  'document.rel.source.title',
   'document.rel.provider.uri',
+  'document.rel.provider.title',
   'modified',
   'document.meta.core_newsvalue.value',
   'document.title',
@@ -46,7 +48,7 @@ export type WireFieldsObject = z.infer<typeof _schema>
 /**
  * Type inferred from fields
  */
-export type WireFields = Array<keyof typeof _fields>
+export type WireFields = readonly (typeof _fields)[number][]
 
 /**
  * Interface extending HitV1 with a fields property of type WireSchema.
@@ -58,4 +60,4 @@ export interface Wire extends HitV1 {
 /**
  * Export fields and cast it as PlanningFields
  */
-export const fields = _fields as unknown as WireFields
+export const fields: WireFields = _fields

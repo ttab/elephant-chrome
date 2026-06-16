@@ -1,0 +1,166 @@
+import { useRegistry } from '@/hooks/useRegistry'
+import { useRepositoryEvents } from '@/hooks/useRepositoryEvents'
+import type { BulkGetItem } from '@ttab/elephant-api/repository'
+import { useSession } from 'next-auth/react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { dateToReadableDateTime } from '@/shared/datetime'
+import { HistoryEntry } from './HistoryEntry'
+import type { DocumentState } from '@/lib/getDocumentState'
+
+interface VersionEntry {
+  version: bigint
+  created: string
+  status: string
+}
+
+const COLLAPSED_MAX = 4
+const COLLAPSE_THRESHOLD = 5
+
+export const DocumentHistory = ({ uuid, currentVersion, onSelectVersion, selectedVersion, withStatusOnly = false, documentType }: {
+  uuid: string
+  currentVersion?: bigint
+  documentState?: DocumentState
+  onSelectVersion: (version: bigint) => void
+  selectedVersion: bigint | undefined
+  withStatusOnly?: boolean
+  documentType?: string
+}) => {
+  const { repository, locale, timeZone } = useRegistry()
+  const { i18n } = useTranslation()
+  const { data: session } = useSession()
+  const [history, setHistory] = useState<VersionEntry[] | null>(null)
+  const [documents, setDocuments] = useState<BulkGetItem[] | null>(null)
+  const [showAll, setShowAll] = useState(false)
+  const [refetchKey, setRefetchKey] = useState(0)
+
+  const eventTypes = useMemo(
+    () => documentType ? [documentType, `${documentType}+meta`] : [],
+    [documentType]
+  )
+
+  const handleRepositoryEvent = useCallback(
+    (event: { uuid?: string, mainDocument?: string }) => {
+      if (event.uuid === uuid || event.mainDocument === uuid) {
+        setRefetchKey((k) => k + 1)
+      }
+    },
+    [uuid]
+  )
+
+  useRepositoryEvents(eventTypes, handleRepositoryEvent)
+
+  useEffect(() => {
+    if (!repository || !session?.accessToken) {
+      return
+    }
+
+    const c1 = new AbortController()
+    const c2 = new AbortController()
+    const pending = {
+      history: true,
+      documents: false
+    }
+
+    const fetchData = async () => {
+      try {
+        const result = await repository.getHistory({
+          accessToken: session.accessToken,
+          uuid,
+          abort: c1.signal
+        })
+
+        pending.history = false
+
+        if (!result?.versions?.length) {
+          setHistory(null)
+          setDocuments(null)
+          return
+        }
+
+        // One entry per version, newest first
+        let history: VersionEntry[] = [...result.versions]
+          .sort((a, b) => (a.version < b.version ? 1 : a.version > b.version ? -1 : 0))
+          .map((v) => ({ version: v.version, created: v.created, status: Object.keys(v.statuses)[0] }))
+
+        if (withStatusOnly) {
+          history = history.filter((version, i) => i === 0 || version.status !== undefined)
+        }
+
+        pending.documents = true
+        const documents = await repository.getDocuments({
+          documents: history.map((entry) => ({ uuid, version: entry.version })),
+          accessToken: session.accessToken,
+          abort: c2.signal
+        })
+
+        pending.documents = false
+
+        setHistory(history)
+        setDocuments(documents?.items ?? null)
+      } catch (error) {
+        pending.history = false
+        pending.documents = false
+        if (c1.signal.aborted || c2.signal.aborted) return
+        console.error(error)
+      }
+    }
+
+    void fetchData()
+
+    return () => {
+      if (pending.history) c1.abort()
+      if (pending.documents) c2.abort()
+    }
+  }, [uuid, repository, session?.accessToken, withStatusOnly, refetchKey])
+
+  const isCollapsible = (history?.length ?? 0) > COLLAPSE_THRESHOLD
+  const visibleHistory = history && isCollapsible && !showAll
+    ? history.slice(0, COLLAPSED_MAX)
+    : history
+
+  return (
+    <div className='flex flex-col gap-0 text-sm text-muted-foreground'>
+      <div className='flex flex-col'>
+        {visibleHistory?.length
+          && visibleHistory.map((item, index) => {
+            const title = documents?.find((doc) => doc.version === item.version)?.document?.title
+            const isCurrent = item.version === currentVersion
+            const status = documentType === 'core/factbox' && item.status === 'usable' && i18n.language !== 'nb'
+              ? 'done'
+              : item.status
+
+            return (
+              <div key={`${item.version}`} className='grid grid-cols-[1.5rem_auto_1fr] group rounded'>
+                <HistoryEntry
+                  version={item.version}
+                  status={status}
+                  title={title}
+                  isLast={index === visibleHistory.length - 1}
+                  isCurrent={isCurrent}
+                  time={dateToReadableDateTime(new Date(item.created), locale.code.short, timeZone)}
+                  onSelect={onSelectVersion}
+                  selected={selectedVersion === item.version || (!selectedVersion && isCurrent)}
+                />
+              </div>
+            )
+          })}
+      </div>
+
+      {isCollapsible && (
+        <button
+          type='button'
+          onMouseDownCapture={(event) => {
+            event.preventDefault()
+            setShowAll((prev) => !prev)
+          }}
+          className='mt-1 text-xs text-muted-foreground/70 hover:text-foreground transition-colors text-left cursor-pointer'
+        >
+          {showAll
+            ? 'Visa färre'
+            : `Visa alla ${history?.length ?? 0}...`}
+        </button>
+      )}
+    </div>
+  )
+}

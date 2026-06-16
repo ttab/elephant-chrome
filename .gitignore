@@ -44,3 +44,5 @@ bundle-analysis.html
 
 # Worktrees
 .worktrees
+
+.certs

@@ -1,4 +1,4 @@
-import { StatusSpecifications } from '@/defaults/workflowSpecification'
+import { getAllStatuses } from '@/defaults/workflowSpecification'
 import type { Repository } from '@/shared/Repository'
 import type { HitV1 } from '@ttab/elephant-api/index'
 import type { Session } from 'next-auth'
@@ -8,7 +8,7 @@ export const getDeliverableStatuses = async ({ result, repository, session }: { 
     return { items: [] }
   }
 
-  const knownStatuses = Object.keys(StatusSpecifications)
+  const knownStatuses = getAllStatuses()
   const uuids: string[] = result.reduce((all: string[], current) => {
     const allowedTypes = ['text', 'flash', 'editorial-info']
 

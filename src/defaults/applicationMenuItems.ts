@@ -1,4 +1,5 @@
 import {
+  BookmarkIcon,
   CableIcon,
   BriefcaseBusinessIcon,
   CalendarDaysIcon,
@@ -89,6 +90,12 @@ export const getApplicationMenu = (featureFlags: AllowedFeatureFlag): Applicatio
           label: i18next.t('app:mainMenu.factboxes'),
           icon: BoxesIcon,
           color: '#99c5c4'
+        },
+        {
+          name: 'Timeless',
+          label: i18next.t('app:mainMenu.timeless'),
+          icon: BookmarkIcon,
+          color: '#7C6F9C'
         }
       ]
     },
@@ -97,7 +104,7 @@ export const getApplicationMenu = (featureFlags: AllowedFeatureFlag): Applicatio
       items: [
         {
           name: 'Flash',
-          label: i18next.t('app:mainMenu.flash'),
+          label: i18next.t('app:mainMenu.flash', { type: featureFlags.hasHast ? i18next.t('flash:hastLabel') : i18next.t('flash:title') }),
           icon: ZapIcon,
           color: '#FF5150',
           target: 'dialog'

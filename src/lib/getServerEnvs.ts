@@ -5,15 +5,19 @@ interface ServerUrls {
   indexUrl: URL
   repositoryUrl: URL
   repositoryEventsUrl: URL
-  contentApiUrl: URL
   spellcheckUrl: URL
   userUrl: URL
   faroUrl: URL
   baboonUrl: URL
+  imageSearchUrl: URL
+  /** Translation service. Optional — not all deployments have it configured. */
+  ntbUrl?: URL
 }
 
 interface ServerEnvs {
   systemLanguage: string
+  imageSearchProvider: string
+  environment: string
 }
 
 type FeatureFlags = Record<string, boolean>
@@ -34,7 +38,7 @@ export async function getServerEnvs(): Promise<ServerConfig> {
   try {
     const data = await response.json() as Record<string, unknown>
     const urlAttributes = [
-      'webSocketUrl', 'indexUrl', 'repositoryUrl', 'contentApiUrl',
+      'webSocketUrl', 'indexUrl', 'repositoryUrl', 'imageSearchUrl',
       'spellcheckUrl', 'userUrl', 'faroUrl', 'baboonUrl'
     ]
 
@@ -50,8 +54,22 @@ export async function getServerEnvs(): Promise<ServerConfig> {
       urls[field] = new URL(value)
     }
 
+    // Optional URLs — empty values mean the corresponding feature is not
+    // configured for this deployment, not a misconfiguration.
+    const optionalUrlAttributes = ['ntbUrl']
+    for (const field of optionalUrlAttributes) {
+      const value = data[field]
+      if (typeof value === 'string' && value !== '') {
+        urls[field] = new URL(value)
+      }
+    }
+
     if (!data['systemLanguage'] || typeof data['systemLanguage'] !== 'string') {
       throw new Error('missing \'systemLanguage\' server environment variable')
+    }
+
+    if (!data['environment'] || typeof data['environment'] !== 'string') {
+      throw new Error('missing \'environment\' server environment variable')
     }
 
     return {
@@ -60,10 +78,15 @@ export async function getServerEnvs(): Promise<ServerConfig> {
         repositoryEventsUrl: new URL('/sse', urls['repositoryUrl'])
       } as ServerUrls,
       envs: {
-        systemLanguage: data['systemLanguage']
+        systemLanguage: data['systemLanguage'],
+        imageSearchProvider: typeof data.imageSearchProvider === 'string' ? data.imageSearchProvider : '',
+        environment: typeof data['environment'] === 'string' ? data['environment'] : ''
       },
       featureFlags: {
-        hasPrint: data['hasPrint'] ? !!data['hasPrint'] : false
+        hasPrint: data['hasPrint'] ? !!data['hasPrint'] : false,
+        hasHast: data['hasHast'] ? !!data['hasHast'] : false,
+        hasLooseSlugline: data['hasLooseSlugline'] ? !!data['hasLooseSlugline'] : false,
+        hasVignette: data['hasVignette'] ? !!data['hasVignette'] : false
       }
     }
   } catch (ex) {

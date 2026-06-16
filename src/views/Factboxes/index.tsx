@@ -10,6 +10,7 @@ import { factboxColumns } from './FactboxColumns'
 import type { Factbox } from '@/shared/schemas/factbox'
 import { FactboxList } from './FactboxList'
 import { useRegistry } from '@/hooks/useRegistry'
+import { useInitFilters } from '@/hooks/useInitFilters'
 import { useTranslation } from 'react-i18next'
 
 const meta: ViewMetadata = {
@@ -36,11 +37,17 @@ export const Factboxes = (): JSX.Element => {
   const columns = useMemo(() =>
     factboxColumns({ locale, timeZone, t }), [locale, timeZone, t])
 
+  const columnFilters = useInitFilters<Factbox>({
+    path: 'filters.Factboxes.current',
+    columns
+  })
+
   return (
     <View.Root tab={currentTab} onTabChange={setCurrentTab}>
       <TableProvider<Factbox>
         columns={columns}
         type={meta.name}
+        initialState={{ columnFilters }}
       >
         <TableCommandMenu heading='Factboxes'>
           <Commands />
@@ -58,9 +65,6 @@ export const Factboxes = (): JSX.Element => {
         <View.Content>
           <TabsContent value='list' className='mt-0'>
             <FactboxList columns={columns} />
-          </TabsContent>
-
-          <TabsContent value='grid'>
           </TabsContent>
         </View.Content>
       </TableProvider>

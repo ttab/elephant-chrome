@@ -181,7 +181,7 @@ const SelectedButton = ({ type, value }: { value: string | string[] | undefined,
       size='sm'
       className='h-8 border-dashed'
       onClick={() => {
-        setFilters({ ...filters, [type]: undefined })
+        setFilters({ ...filters, [type]: undefined, page: undefined })
         setCurrentFilters({ ...currentFilters, [type]: undefined })
       }}
     >

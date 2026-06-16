@@ -5,6 +5,7 @@ import { useLink } from '@/hooks/useLink'
 import { CalendarDaysIcon, EyeIcon, FileWarningIcon, MessageSquarePlusIcon, ZapIcon } from '@ttab/elephant-ui/icons'
 import type { StatusData } from '@/types'
 import { useSections } from '@/hooks/useSections'
+import { useRegistry } from '@/hooks/useRegistry'
 import type { StatusSpecification } from '@/defaults/workflowSpecification'
 import { AvatarGroup } from '@/components/AvatarGroup'
 import { Popover, PopoverContent, PopoverTrigger, Tooltip } from '@ttab/elephant-ui'
@@ -26,6 +27,7 @@ export const ApprovalsCard = ({ trackedDocument, assignment, isSelected, isFocus
   const openArticle = useLink('Editor')
   const openFlash = useLink('Flash')
   const { t } = useTranslation()
+  const { featureFlags } = useRegistry()
 
   const openType = (assignmentType: string) => assignmentType === 'core/flash' ? openFlash : openArticle
 
@@ -41,6 +43,10 @@ export const ApprovalsCard = ({ trackedDocument, assignment, isSelected, isFocus
   const lastUsableOrder = statusData?.heads.usable?.id
 
   const internalInfo = assignment._deliverableDocument?.meta.find((block) => block.type === 'core/note' && block.role === 'internal')?.data?.text
+
+  const isHast = !!featureFlags.hasHast && assignment._deliverableDocument?.meta.some(
+    (block) => block.type === 'ntb/hast'
+  )
 
   const cause = assignment._deliverableCause ? CAUSE_KEYS[assignment._deliverableCause as keyof typeof CAUSE_KEYS]?.short ?? '' : ''
 
@@ -68,7 +74,7 @@ export const ApprovalsCard = ({ trackedDocument, assignment, isSelected, isFocus
         <div className='flex flex-row gap-2 items-center'>
           {status.icon && <status.icon size={15} strokeWidth={1.75} className={status.className} />}
           <span className='bg-secondary inline-block px-1 rounded'>
-            {assignment._deliverableType === 'core/flash'
+            {assignment._deliverableType === 'core/flash' || isHast
               ? <ZapIcon strokeWidth={1.75} size={14} className='text-red-500' />
               : assignment._deliverableType === 'core/editorial-info'
                 ? <FileWarningIcon size={14} />

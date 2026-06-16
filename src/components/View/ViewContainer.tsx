@@ -76,6 +76,7 @@ export const ViewContainer = ({ children, colSpan: wantedColSpan }: {
         id={viewId}
         ref={sectionRef}
         className={cn(
+          'min-h-dvh',
           section({
             isActive,
             isFocused,

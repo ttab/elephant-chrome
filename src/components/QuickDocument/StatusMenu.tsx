@@ -3,7 +3,7 @@
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { useCallback } from 'react'
 import { toast } from 'sonner'
-import { useDeliverablePlanningId } from '@/hooks/index/useDeliverablePlanningId'
+import { useDeliverableInfo } from '@/hooks/useDeliverableInfo'
 import { updateAssignmentTime } from '@/lib/index/updateAssignmentPublishTime'
 import { handleLink } from '@/components/Link/lib/handleLink'
 import { useView } from '@/hooks/useView'
@@ -22,7 +22,7 @@ interface StatusMenuHeaderProps {
 
 export const StatusMenuLogic = ({ ydoc, propPlanningId, view }: StatusMenuHeaderProps) => {
   const viewConfig = getViewMap()[view] // Get view-specific configuration
-  const planningId = useDeliverablePlanningId(ydoc.id || '')
+  const planningId = useDeliverableInfo(ydoc.id || '')?.planningUuid ?? ''
   const { viewId } = useView()
   const { state, dispatch } = useNavigation()
   const history = useHistory()
@@ -30,8 +30,9 @@ export const StatusMenuLogic = ({ ydoc, propPlanningId, view }: StatusMenuHeader
   const { t } = useTranslation()
 
   const onBeforeStatusChange = useCallback(async (newStatus: string, data?: Record<string, unknown>) => {
-    if (!planningId) {
-      // Use view-specific error message
+    // Scheduling (withheld) is the only transition that requires planning.
+    // Other transitions should still work when no planning is associated.
+    if (newStatus === 'withheld' && !planningId) {
       toast.error(viewConfig.statusErrorText)
       return false
     }
@@ -83,23 +84,22 @@ export const StatusMenuLogic = ({ ydoc, propPlanningId, view }: StatusMenuHeader
       ? data.time
       : new Date()
 
-    if (ydoc.id) {
+    if (ydoc.id && planningId) {
       await updateAssignmentTime(ydoc.id, planningId, newStatus, newPublishTime, t)
     }
 
     return true
   }, [planningId, ydoc.id, dispatch, history, state.viewRegistry, viewId, workflowStatus, viewConfig.statusErrorText, viewConfig.linkTarget, t])
 
+  if (!ydoc.id) {
+    return null
+  }
+
   return (
-    <>
-      {/* Renders if planningId exists from prop or hook, AND ydoc.id exists */}
-      {!!(propPlanningId || planningId) && ydoc.id && (
-        <StatusMenu
-          ydoc={ydoc}
-          planningId={propPlanningId || planningId}
-          onBeforeStatusChange={onBeforeStatusChange}
-        />
-      )}
-    </>
+    <StatusMenu
+      ydoc={ydoc}
+      planningId={propPlanningId || planningId || undefined}
+      onBeforeStatusChange={onBeforeStatusChange}
+    />
   )
 }

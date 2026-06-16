@@ -8,14 +8,16 @@ import type * as Y from 'yjs'
 import { useYValue, type YDocument } from '@/modules/yjs/hooks'
 import { useTranslation } from 'react-i18next'
 
-export const Newsvalue = ({ ydoc, path, onValidation, validateStateRef, onChange }: {
+export const Newsvalue = ({ ydoc, path, options, onValidation, validateStateRef, onChange }: {
   ydoc: YDocument<Y.Map<unknown>>
   path: string
+  options?: typeof Newsvalues
 } & FormProps): JSX.Element => {
   const [newsvalue, setNewsvalue] = useYValue<string | undefined>(ydoc.ele, path)
   const { t } = useTranslation()
   const setFocused = useRef<(value: boolean, path: string) => void>(() => { })
-  const selectedOptions = Newsvalues.filter((type) => type.value === newsvalue)
+  const availableOptions = options ?? Newsvalues
+  const selectedOptions = availableOptions.filter((type) => type.value === newsvalue)
 
   const SelectedIcon = selectedOptions.length && selectedOptions[0].icon
 
@@ -34,7 +36,7 @@ export const Newsvalue = ({ ydoc, path, onValidation, validateStateRef, onChange
           size='xs'
           modal={true}
           variant='outline'
-          options={Newsvalues}
+          options={availableOptions}
           selectedOptions={selectedOptions}
           placeholder={`${t('common:actions.add')} ${t('core:labels.newsvalue').toLocaleLowerCase()}`}
           validation={!!onValidation}

@@ -2,7 +2,10 @@ import { type View } from '@/types/index'
 import type { Document } from '@ttab/elephant-api/newsdoc'
 import * as Templates from '@/shared/templates'
 
-export function getTemplateFromView(type: View): (id: string, payload?: Templates.TemplatePayload, text?: string) => Document {
+export function getTemplateFromView(
+  type: View,
+  options?: { useHast?: boolean }
+): (id: string, payload?: Templates.TemplatePayload, text?: string) => Document {
   switch (type) {
     case 'Planning':
       return Templates.planning
@@ -11,7 +14,7 @@ export function getTemplateFromView(type: View): (id: string, payload?: Template
     case 'Factbox':
       return Templates.factbox
     case 'Flash':
-      return Templates.flash
+      return options?.useHast ? Templates.hast : Templates.flash
     case 'QuickArticle':
       return Templates.quickArticle
     default:

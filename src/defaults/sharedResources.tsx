@@ -21,6 +21,9 @@ export const IndexedDBDefinition: IndexedDBSpecification = {
       db.createObjectStore('core/content-source', { keyPath: 'id' })
       db.createObjectStore('tt/wire-source', { keyPath: 'id' })
       db.createObjectStore('tt/editorial-info-type', { keyPath: 'id' })
+    },
+    (db) => {
+      db.createObjectStore('core/timeless-category', { keyPath: 'id' })
     }
   ]
 }

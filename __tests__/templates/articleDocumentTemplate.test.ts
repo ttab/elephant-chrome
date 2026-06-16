@@ -25,6 +25,14 @@ describe('articleDocumentTemplate', () => {
     setSystemLanguage(original)
   })
 
+  it('overrides system language when payload.language is set', () => {
+    const original = getSystemLanguage()
+    setSystemLanguage('nb-NO')
+    const doc = articleDocumentTemplate('id', { language: 'nn-no' })
+    expect(doc.language).toBe('nn-no')
+    setSystemLanguage(original)
+  })
+
   it('removes core/description from meta', () => {
     const payload: TemplatePayload = {
       meta: {
@@ -66,17 +74,35 @@ describe('articleDocumentTemplate', () => {
     expect(storyLink.rel).toBe('subject')
   })
 
-  it('includes TT content source link', () => {
+  it('passes through caller-provided content-source link', () => {
+    const payload: TemplatePayload = {
+      links: {
+        'core/content-source': [
+          Block.create({
+            type: 'core/content-source',
+            rel: 'source',
+            uri: 'tt://content-source/ntb',
+            title: 'NTB'
+          })
+        ]
+      }
+    }
+    const doc = articleDocumentTemplate('id', payload)
+    const source = doc.links.find((l: Block) => l.type === 'core/content-source')
+    expect(source?.uri).toBe('tt://content-source/ntb')
+    expect(source?.title).toBe('NTB')
+  })
+
+  it('omits content-source link when caller provides none', () => {
     const doc = articleDocumentTemplate('id')
-    const links = doc.links
-    expect(links.some((l: Block) => l.type === 'core/content-source' && l.title === 'TT')).toBe(true)
+    expect(doc.links.some((l: Block) => l.type === 'core/content-source')).toBe(false)
   })
 
   it('matches inline snapshot with fixed date', () => {
     const fixedDate = new Date('2024-06-01T10:00:00.000Z')
     vi.setSystemTime(fixedDate)
 
-    const doc = articleDocumentTemplate('test-article-id')
+    const doc = articleDocumentTemplate('test-article-id', undefined, { hasVignette: true })
 
     expect(doc).toMatchInlineSnapshot(`
       {
@@ -163,26 +189,7 @@ describe('articleDocumentTemplate', () => {
           },
         ],
         "language": "sv-se",
-        "links": [
-          {
-            "content": [],
-            "contenttype": "",
-            "data": {},
-            "id": "",
-            "links": [],
-            "meta": [],
-            "name": "",
-            "rel": "source",
-            "role": "",
-            "sensitivity": "",
-            "title": "TT",
-            "type": "core/content-source",
-            "uri": "tt://content-source/tt",
-            "url": "",
-            "uuid": "",
-            "value": "",
-          },
-        ],
+        "links": [],
         "meta": [],
         "title": "",
         "type": "core/article",

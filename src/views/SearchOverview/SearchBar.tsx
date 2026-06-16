@@ -22,7 +22,7 @@ export const SearchBar = ({ searchType, width }: {
       onSubmit={(e): void => {
         e.preventDefault()
         const text = inputRef?.current?.value
-        setQueryString({ type: searchType, query: text })
+        setQueryString({ type: searchType, query: text, page: undefined })
       }}
     >
       <Input

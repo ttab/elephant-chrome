@@ -18,7 +18,10 @@ vi.mock('@/navigation/NavigationContext', () => ({
 vi.mock('@/hooks', () => ({
   useQuery: vi.fn(() => [{}]),
   useLink: vi.fn(() => vi.fn()),
-  useWorkflowStatus: vi.fn(() => [undefined])
+  useWorkflowStatus: vi.fn(() => [undefined]),
+  // EditorWrapper (and useFeatureFlags, which reads useRegistry internally)
+  // need a registry once the editable path renders.
+  useRegistry: vi.fn(() => ({ repository: {}, featureFlags: {} }))
 }))
 
 vi.mock('@/modules/yjs/hooks', () => ({
@@ -83,12 +86,15 @@ vi.mock('@/defaults/contentMenuLabels', () => ({
 vi.mock('@ttab/textbit-plugins', () => ({
   Bold: vi.fn(() => ({})),
   Italic: vi.fn(() => ({})),
+  Image: vi.fn(() => ({})),
   Link: vi.fn(() => ({})),
   Text: vi.fn(() => ({})),
   TTVisual: vi.fn(() => ({})),
   Factbox: vi.fn(() => ({})),
   Table: vi.fn(() => ({})),
-  LocalizedQuotationMarks: vi.fn(() => ({}))
+  LocalizedQuotationMarks: vi.fn(() => ({})),
+  UnorderedList: vi.fn(() => ({})),
+  OrderedList: vi.fn(() => ({}))
 }))
 
 vi.mock('@/plugins/ImageSearch', () => ({

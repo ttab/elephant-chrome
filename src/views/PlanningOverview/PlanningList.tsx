@@ -1,4 +1,4 @@
-import { useCallback, useMemo, type JSX } from 'react'
+import { useMemo, type JSX } from 'react'
 
 import { Table } from '@/components/Table'
 import { useDocuments } from '@/hooks/index/useDocuments'
@@ -38,16 +38,6 @@ export const PlanningList = ({ columns }: {
     }
   })
 
-  const onRowSelected = useCallback((row?: Planning) => {
-    if (row) {
-      console.info(`Selected planning item ${row.id}`)
-    } else {
-      console.info('Deselected row')
-    }
-    return row
-  }, [])
-
-
   if (error) {
     console.error('Error fetching planning items:', error)
     toast.error(t('errors:toasts.getPlanningsFailed'))
@@ -58,7 +48,6 @@ export const PlanningList = ({ columns }: {
     <Table
       type='Planning'
       columns={columns}
-      onRowSelected={onRowSelected}
     />
   )
 }
