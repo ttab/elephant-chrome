@@ -1,4 +1,4 @@
-import { useEffect, useState, type JSX } from 'react'
+import { useState, type JSX } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   Button,
@@ -18,14 +18,11 @@ import {
   LoaderIcon
 } from '@ttab/elephant-ui/icons'
 import { format } from 'date-fns'
-import { QueryV1, TermQueryV1 } from '@ttab/elephant-api/index'
 import { useSession } from 'next-auth/react'
 import { Prompt } from './Prompt'
 import { useConvertArticleType } from '@/hooks/useConvertArticleType'
-import { useDocuments } from '@/hooks/index/useDocuments'
 import { useRegistry } from '@/hooks/useRegistry'
 import { fetch } from '@/lib/index/fetch-plannings-twirp'
-import type { Planning, PlanningFields } from '@/shared/schemas/planning'
 import type * as Y from 'yjs'
 
 interface ConversionPayload {
@@ -49,38 +46,8 @@ export const ConvertToArticleDialog = (
   const [targetDate, setTargetDate] = useState<Date>(() => new Date())
   const [failed, setFailed] = useState(false)
   const [searchOlder, setSearchOlder] = useState(false)
-  const [planningTouched, setPlanningTouched] = useState(false)
   const [selectedPlanning, setSelectedPlanning]
     = useState<{ value: string, label: string } | undefined>(undefined)
-
-  const { data: plannings, isLoading: planningLoading } = useDocuments<Planning, PlanningFields>({
-    documentType: 'core/planning-item',
-    query: QueryV1.create({
-      conditions: {
-        oneofKind: 'term',
-        term: TermQueryV1.create({
-          field: 'document.meta.core_assignment.rel.deliverable.uuid',
-          value: timelessId
-        })
-      }
-    }),
-    fields: ['document.title']
-  })
-
-  const sourcePlanning = plannings?.[0]
-  const sourcePlanningId = sourcePlanning?.id
-  const sourcePlanningTitle = sourcePlanning?.fields?.['document.title']?.values?.[0]
-
-  // Pre-select the planning the timeless currently lives in, until the editor
-  // touches the picker so a deliberate clear/change is not overwritten.
-  useEffect(() => {
-    if (!planningTouched && !selectedPlanning && sourcePlanningId) {
-      setSelectedPlanning({
-        value: sourcePlanningId,
-        label: sourcePlanningTitle || sourcePlanningId
-      })
-    }
-  }, [planningTouched, selectedPlanning, sourcePlanningId, sourcePlanningTitle])
 
   const formattedTarget = format(targetDate, 'yyyy-MM-dd')
 
@@ -116,7 +83,7 @@ export const ConvertToArticleDialog = (
           )
         : t('common:actions.confirm')}
       secondaryLabel={t('common:actions.abort')}
-      disablePrimary={isConverting || planningLoading}
+      disablePrimary={isConverting}
       onPrimary={handleConfirm}
       onSecondary={() => onClose()}
     >
@@ -137,7 +104,6 @@ export const ConvertToArticleDialog = (
             placeholder={t('planning:move.pickPlanning')}
             fetch={(query) => fetch(query, session, t, index, locale, timeZone, { searchOlder })}
             onSelect={(option) => {
-              setPlanningTouched(true)
               setSelectedPlanning((current) =>
                 current?.value === option.value
                   ? undefined
@@ -155,22 +121,22 @@ export const ConvertToArticleDialog = (
               className='text-muted-foreground flex h-7 w-7 p-0 shrink-0 hover:bg-accent2'
               onClick={(e) => {
                 e.preventDefault()
-                setPlanningTouched(true)
                 setSelectedPlanning(undefined)
               }}
             >
               <CircleXIcon size={18} strokeWidth={1.75} />
             </Button>
           )}
-        </div>
-
-        <div className='flex items-center gap-2'>
           <Checkbox
             id='ConvertSearchOlder'
+            className='shrink-0'
             checked={searchOlder}
             onCheckedChange={(checked: boolean) => { setSearchOlder(checked) }}
           />
-          <Label htmlFor='ConvertSearchOlder' className='text-muted-foreground'>
+          <Label
+            htmlFor='ConvertSearchOlder'
+            className='text-muted-foreground shrink-0 whitespace-nowrap'
+          >
             {t('core:labels.showOlder')}
           </Label>
         </div>

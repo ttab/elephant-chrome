@@ -4,7 +4,6 @@ import userEvent from '@testing-library/user-event'
 
 import { ConvertToArticleDialog } from '@/components/ConvertToArticleDialog'
 import { useConvertArticleType } from '@/hooks/useConvertArticleType'
-import { useDocuments } from '@/hooks/index/useDocuments'
 import { useRegistry } from '@/hooks/useRegistry'
 import { initialState } from '@/contexts/RegistryProvider'
 
@@ -12,23 +11,26 @@ vi.mock('@/hooks/useConvertArticleType', () => ({
   useConvertArticleType: vi.fn()
 }))
 
-vi.mock('@/hooks/index/useDocuments', () => ({
-  useDocuments: vi.fn()
-}))
-
 vi.mock('@/hooks/useRegistry', () => ({
   useRegistry: vi.fn()
 }))
 
-// The ComboBox's planning search hits the index; stub it out.
-vi.mock('@/lib/index/fetch-plannings-twirp', () => ({
-  fetch: vi.fn().mockResolvedValue([])
-}))
+// The picker's planning search hits the index; stub it out.
+vi.mock('@/lib/index/fetch-plannings-twirp', () => ({ fetch: vi.fn().mockResolvedValue([]) }))
 
 const mockUseConvertArticleType = vi.mocked(useConvertArticleType)
-const mockUseDocuments = vi.mocked(useDocuments)
 
-// ComboBox uses window.matchMedia internally via useMediaQuery
+// ComboBox/cmdk/vaul need these browser APIs that jsdom lacks.
+global.ResizeObserver = class {
+  observe(): void {}
+  unobserve(): void {}
+  disconnect(): void {}
+}
+Element.prototype.scrollIntoView = vi.fn()
+HTMLElement.prototype.hasPointerCapture = vi.fn()
+Element.prototype.setPointerCapture = vi.fn()
+Element.prototype.releasePointerCapture = vi.fn()
+
 beforeAll(() => {
   Object.defineProperty(window, 'matchMedia', {
     writable: true,
@@ -68,82 +70,32 @@ function primeUseConvertArticleType(
   return convert
 }
 
-function primeUseDocuments(override?: {
-  data?: Array<{ id: string, fields?: Record<string, { values: string[] }> }> | undefined
-  isLoading?: boolean
-}): void {
-  mockUseDocuments.mockReturnValue({
-    data: override?.data,
-    isLoading: override?.isLoading ?? false
-  } as never)
-}
-
-const sourcePlanning = [{
-  id: PLANNING_ID,
-  fields: { 'document.title': { values: ['Source planning'] } }
-}]
-
+// Note: driving the planning ComboBox dropdown (open -> type -> click option)
+// is not exercised here. Under jsdom the ComboBox renders as a vaul drawer and
+// selecting an option dismisses the parent Prompt, so a follow-up confirm click
+// can't be asserted (see the same caveat in TimelessCreation.test.tsx). The
+// picker->convert contract is covered instead by the empty-default test below
+// plus useConvertArticleType.test.tsx, which asserts a supplied targetPlanningId
+// is forwarded to addAssignmentWithDeliverable.
 describe('ConvertToArticleDialog', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     vi.mocked(useRegistry).mockReturnValue(initialState)
   })
 
-  it('disables confirm while the planning query is loading', () => {
-    primeUseConvertArticleType()
-    primeUseDocuments({ isLoading: true })
-
-    render(<ConvertToArticleDialog timelessId={TIMELESS_ID} onClose={vi.fn()} />)
-
-    expect(screen.getByRole('button', { name: /^klar$/i })).toBeDisabled()
-  })
-
-  it('pre-selects the detected planning and passes it as targetPlanningId', async () => {
+  it('starts with no planning selected and passes targetPlanningId undefined', async () => {
     const convert = primeUseConvertArticleType()
-    primeUseDocuments({ data: sourcePlanning })
 
     render(<ConvertToArticleDialog timelessId={TIMELESS_ID} onClose={vi.fn()} />)
 
-    expect(await screen.findByText('Source planning')).toBeInTheDocument()
+    // No clear button visible means nothing is pre-selected.
+    expect(screen.queryByRole('button', { name: /ta bort planering/i })).not.toBeInTheDocument()
 
     await userEvent.click(screen.getByRole('button', { name: /^klar$/i }))
 
     await waitFor(() => {
       expect(convert).toHaveBeenCalledWith(TIMELESS_ID, expect.objectContaining({
         targetType: 'core/article',
-        targetPlanningId: PLANNING_ID
-      }))
-    })
-  })
-
-  it('clears the pre-selected planning so a new one is created', async () => {
-    const convert = primeUseConvertArticleType()
-    primeUseDocuments({ data: sourcePlanning })
-
-    render(<ConvertToArticleDialog timelessId={TIMELESS_ID} onClose={vi.fn()} />)
-    await screen.findByText('Source planning')
-
-    // Swedish: metaSheet:convertToArticle.clearPlanning = "Ta bort planering"
-    await userEvent.click(screen.getByRole('button', { name: /ta bort planering/i }))
-    await userEvent.click(screen.getByRole('button', { name: /^klar$/i }))
-
-    await waitFor(() => {
-      expect(convert).toHaveBeenCalledWith(TIMELESS_ID, expect.objectContaining({
-        targetType: 'core/article',
-        targetPlanningId: undefined
-      }))
-    })
-  })
-
-  it('passes targetPlanningId undefined when no planning is detected', async () => {
-    const convert = primeUseConvertArticleType()
-    primeUseDocuments({ data: [] })
-
-    render(<ConvertToArticleDialog timelessId={TIMELESS_ID} onClose={vi.fn()} />)
-    await userEvent.click(screen.getByRole('button', { name: /^klar$/i }))
-
-    await waitFor(() => {
-      expect(convert).toHaveBeenCalledWith(TIMELESS_ID, expect.objectContaining({
         targetPlanningId: undefined
       }))
     })
@@ -151,7 +103,6 @@ describe('ConvertToArticleDialog', () => {
 
   it('calls onClose with the conversion payload on success', async () => {
     primeUseConvertArticleType()
-    primeUseDocuments({ data: sourcePlanning })
     const onClose = vi.fn()
 
     render(<ConvertToArticleDialog timelessId={TIMELESS_ID} onClose={onClose} />)
@@ -165,7 +116,6 @@ describe('ConvertToArticleDialog', () => {
   it('renders failure banner and does not close on {success:false}', async () => {
     const convert = vi.fn().mockResolvedValue({ success: false })
     mockUseConvertArticleType.mockReturnValue({ convert, isConverting: false } as never)
-    primeUseDocuments({ data: sourcePlanning })
     const onClose = vi.fn()
 
     render(<ConvertToArticleDialog timelessId={TIMELESS_ID} onClose={onClose} />)
@@ -182,7 +132,6 @@ describe('ConvertToArticleDialog', () => {
 
   it('shows the converting indicator when isConverting is true', () => {
     primeUseConvertArticleType({ isConverting: true })
-    primeUseDocuments({ data: sourcePlanning })
 
     render(<ConvertToArticleDialog timelessId={TIMELESS_ID} onClose={vi.fn()} />)
     expect(screen.getByRole('button', { name: /sparar/i })).toBeDisabled()
@@ -193,7 +142,6 @@ describe('ConvertToArticleDialog', () => {
       .mockResolvedValueOnce({ success: false })
       .mockResolvedValueOnce(successResult)
     mockUseConvertArticleType.mockReturnValue({ convert, isConverting: false } as never)
-    primeUseDocuments({ data: sourcePlanning })
     const onClose = vi.fn()
 
     render(<ConvertToArticleDialog timelessId={TIMELESS_ID} onClose={onClose} />)
