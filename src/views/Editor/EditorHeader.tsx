@@ -26,6 +26,8 @@ import { useYValue } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import { useTranslation } from 'react-i18next'
 import { documentTypeValueFormat } from '@/defaults/documentTypeFormats'
+import { snapshotDocument } from '@/lib/snapshotDocument'
+import { useCollaborationDocument } from '@/hooks/useCollaborationDocument'
 import { HastToggle } from '@/components/HastToggle'
 import { HastIndicator } from '@/components/HastIndicator'
 
@@ -39,6 +41,7 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
   const { state, dispatch } = useNavigation()
   const history = useHistory()
   const planningId = useDeliverableInfo(ydoc.id)?.planningUuid ?? ''
+  const planningYdoc = useCollaborationDocument({ documentId: planningId })
   const [workflowStatus] = useWorkflowStatus({ ydoc, documentId: ydoc.id })
   const { repository } = useRegistry()
   const { data: session } = useSession()
@@ -163,13 +166,20 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
         ? data.time
         : new Date()
 
-      await updateAssignmentTime(ydoc.id, planningId, newStatus, newTime, t)
+      const resolvedPlanningId = planningId || propPlanningId
+      if (!resolvedPlanningId) {
+        toast.error(t('errors:toasts.couldNotScheduleArticle'))
+        return false
+      }
+
+      await snapshotDocument(resolvedPlanningId, {}, planningYdoc.document)
+      await updateAssignmentTime(ydoc.id, resolvedPlanningId, newStatus, newTime, t)
     }
 
     return true
-  }, [planningId, dispatch, ydoc.id, history, state.viewRegistry, viewId, t, repository, session?.accessToken, workflowStatus, embargoUntil, wireUnverified])
+  }, [planningId, propPlanningId, dispatch, ydoc.id, history, state.viewRegistry, viewId, planningYdoc.document, t, repository, session?.accessToken, workflowStatus, embargoUntil, wireUnverified])
 
-  const isReadOnlyAndUpdated = workflowStatus && workflowStatus?.name !== 'usable' && readOnly
+  const isReadOnlyAndUpdated = workflowStatus && workflowStatus?.name !== 'usable' && workflowStatus?.name !== 'withheld' && readOnly
   const isUnpublished = workflowStatus?.name === 'unpublished'
   const isUsed = workflowStatus?.name === 'used'
 
