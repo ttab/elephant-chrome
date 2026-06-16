@@ -59,7 +59,7 @@ export function ConvertToArticleDialog({ timelessId, timelessDoc, onClose }: Pro
     void convert(timelessId, {
       targetType: 'core/article',
       targetDate: formattedTarget,
-      sourcePlanningId,
+      targetPlanningId: sourcePlanningId,
       sourceDocument: timelessDoc
     }).then((result) => {
       if (result.success && result.kind === 'article') {

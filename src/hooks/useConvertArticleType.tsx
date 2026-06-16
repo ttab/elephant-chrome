@@ -1,14 +1,9 @@
 import { useCallback, useState } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRegistry } from './useRegistry'
-import {
-  attachArticleAssignment,
-  buildFallbackPlanning,
-  deriveNewPlanning,
-  findArticleAssignment,
-  prepareArticleConversion
-} from '@/shared/convertArticleType'
-import type { Block, Document } from '@ttab/elephant-api/newsdoc'
+import { prepareArticleConversion } from '@/shared/convertArticleType'
+import { addAssignmentWithDeliverable } from '@/lib/index/addAssignment'
+import type { Block } from '@ttab/elephant-api/newsdoc'
 import { replaceDeliverable } from '@/lib/index/replaceDeliverable'
 import { snapshotDocument } from '@/lib/snapshotDocument'
 import { toast } from 'sonner'
@@ -31,7 +26,7 @@ export type ConvertArgs
     | {
       targetType: 'core/article'
       targetDate: string
-      sourcePlanningId?: string
+      targetPlanningId?: string
       sourceDocument?: Y.Doc
     }
 
@@ -51,11 +46,16 @@ interface UseConvertArticleTypeResult {
 }
 
 /**
- * Convert an article between its regular and timeless variants. Both
- * directions run client-side via `repository.createDerivedDocument`
- * (atomic bulkUpdate). Timeless→article additionally carries a companion
- * planning in the same bulkUpdate so the derived article is owned as a
- * deliverable from the first moment it exists.
+ * Convert an article between its regular and timeless variants.
+ *
+ * article→timeless runs as a single client-side `repository.createDerivedDocument`
+ * (atomic bulkUpdate), then re-points any owning planning at the new timeless.
+ *
+ * timeless→article is two steps: create the article and mark the source timeless
+ * `used` via `createDerivedDocument` (article only), then attach the assignment to
+ * the chosen planning (or a server-created one) via `addAssignmentWithDeliverable`.
+ * The planning step is intentionally not part of the bulkUpdate (same non-atomic
+ * window as the Flash/Wire creation flows).
  */
 export function useConvertArticleType(): UseConvertArticleTypeResult {
   const { repository } = useRegistry()
@@ -77,20 +77,9 @@ export function useConvertArticleType(): UseConvertArticleTypeResult {
 
     try {
       if (args.targetType === 'core/article') {
-        const snapshotJobs: Array<Promise<unknown>> = [
-          snapshotDocument(documentId, undefined, args.sourceDocument)
-        ]
-        if (args.sourcePlanningId) {
-          snapshotJobs.push(snapshotDocument(args.sourcePlanningId))
-        }
-        await Promise.all(snapshotJobs)
+        await snapshotDocument(documentId, undefined, args.sourceDocument)
 
-        const [sourceResponse, planningResponse] = await Promise.all([
-          repository.getDocument({ uuid: documentId, accessToken }),
-          args.sourcePlanningId
-            ? repository.getDocument({ uuid: args.sourcePlanningId, accessToken })
-            : Promise.resolve(undefined)
-        ])
+        const sourceResponse = await repository.getDocument({ uuid: documentId, accessToken })
 
         if (!sourceResponse?.document) {
           toast.error(t('views:timeless.toasts.documentNotFound'))
@@ -103,62 +92,64 @@ export function useConvertArticleType(): UseConvertArticleTypeResult {
           return { success: false }
         }
 
-        const newPlanningUuid = crypto.randomUUID()
-        let basePlanning: Document
-        let sourceAssignment: Block | undefined
-        if (args.sourcePlanningId) {
-          if (!planningResponse?.document) {
-            toast.error(t('views:timeless.toasts.conversionFailed', {
-              message: 'source planning not found'
-            }))
-            return { success: false }
-          }
-          sourceAssignment = findArticleAssignment(planningResponse.document, documentId)
-          if (!sourceAssignment) {
-            toast.error(t('views:timeless.toasts.conversionFailed', {
-              message: 'source planning does not reference the timeless article'
-            }))
-            return { success: false }
-          }
-          basePlanning = deriveNewPlanning({
-            sourcePlanning: planningResponse.document,
-            targetDate: args.targetDate,
-            newUuid: newPlanningUuid
-          })
-        } else {
-          basePlanning = buildFallbackPlanning({
-            sourceTimeless: sourceResponse.document,
-            targetDate: args.targetDate,
-            newUuid: newPlanningUuid
-          })
+        const timeless = sourceResponse.document
+        const slugline = timeless.meta.find((b) => b.type === 'tt/slugline')?.value
+        const newsvalue = timeless.meta.find((b) => b.type === 'core/newsvalue')?.value
+        const sectionLink = timeless.links.find(
+          (l) => l.type === 'core/section' && l.rel === 'section'
+        )
+        const section = sectionLink
+          ? { uuid: sectionLink.uuid, title: sectionLink.title }
+          : undefined
+
+        // The addassignment route can only build a fresh planning when it has a
+        // section and a newsvalue. Assigning into an existing planning needs
+        // neither, so only guard the create-new path.
+        if (!args.targetPlanningId && (!section || !newsvalue)) {
+          toast.error(t('views:timeless.toasts.conversionFailed', {
+            message: 'timeless has no section/newsvalue; pick an existing planning'
+          }))
+          return { success: false }
         }
 
         const { newDocument: newArticle, errors: pruneErrors } = await prepareArticleConversion({
-          sourceDocument: sourceResponse.document,
+          sourceDocument: timeless,
           targetType: 'core/article',
           repository,
           accessToken
         })
         warnOnPruneErrors(pruneErrors)
 
-        const newPlanning = attachArticleAssignment({
-          planning: basePlanning,
-          articleId: newArticle.uuid,
-          articleTitle: sourceResponse.document.title ?? '',
-          targetDate: args.targetDate,
-          sourceAssignment
-        })
-
         await repository.createDerivedDocument({
           newDocument: newArticle,
-          newPlanning,
           sourceStatusUpdate: {
-            uuid: sourceResponse.document.uuid,
+            uuid: timeless.uuid,
             name: 'used',
             version: sourceResponse.version
           },
           accessToken
         })
+
+        const updatedPlanningId = await addAssignmentWithDeliverable({
+          planningId: args.targetPlanningId,
+          type: 'text',
+          deliverableId: newArticle.uuid,
+          title: timeless.title ?? '',
+          slugline,
+          priority: newsvalue ? Number(newsvalue) : undefined,
+          publicVisibility: true,
+          localDate: args.targetDate,
+          // 09:00 UTC mirrors the assignment time the previous conversion used.
+          isoDateTime: `${args.targetDate}T09:00:00Z`,
+          section
+        })
+
+        if (!updatedPlanningId) {
+          // addAssignmentWithDeliverable already surfaced an error toast. The
+          // article now exists and the timeless is marked used, but it is not
+          // yet assigned (same non-atomic window as the Flash/Wire flows).
+          return { success: false }
+        }
 
         toast.success(t('views:timeless.toasts.articlePlanned'), {
           action: (
@@ -171,7 +162,7 @@ export function useConvertArticleType(): UseConvertArticleTypeResult {
                 target='last'
               />
               <ToastAction
-                documentId={newPlanning.uuid}
+                documentId={updatedPlanningId}
                 withView='Planning'
                 label={t('views:timeless.toasts.openPlanning')}
                 Icon={CalendarDaysIcon}
@@ -185,7 +176,7 @@ export function useConvertArticleType(): UseConvertArticleTypeResult {
           success: true,
           kind: 'article',
           newDocumentId: newArticle.uuid,
-          newPlanningId: newPlanning.uuid
+          newPlanningId: updatedPlanningId
         }
       }
 
