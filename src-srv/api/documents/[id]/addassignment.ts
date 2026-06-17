@@ -39,6 +39,7 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
     publishTime,
     section,
     author,
+    assignees,
     wires,
     quickArticleData,
     embargoUntil
@@ -62,6 +63,7 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
       id: string
       name: string
     }
+    assignees?: Array<{ uuid: string, name?: string, role?: string }>
     wires?: Wire[]
     quickArticleData?: { title?: string, text?: string, deliverableId: string }
     embargoUntil?: string
@@ -154,7 +156,8 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
       slugLine: slugline,
       title,
       assignmentData,
-      assignee: author
+      assignee: author,
+      assignees
     })
 
     // Append the deliverable to the assignment

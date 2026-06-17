@@ -4,11 +4,16 @@ import userEvent from '@testing-library/user-event'
 
 import { ConvertToArticleDialog } from '@/components/ConvertToArticleDialog'
 import { useConvertArticleType } from '@/hooks/useConvertArticleType'
+import { useDocuments } from '@/hooks/index/useDocuments'
 import { useRegistry } from '@/hooks/useRegistry'
 import { initialState } from '@/contexts/RegistryProvider'
 
 vi.mock('@/hooks/useConvertArticleType', () => ({
   useConvertArticleType: vi.fn()
+}))
+
+vi.mock('@/hooks/index/useDocuments', () => ({
+  useDocuments: vi.fn()
 }))
 
 vi.mock('@/hooks/useRegistry', () => ({
@@ -19,6 +24,7 @@ vi.mock('@/hooks/useRegistry', () => ({
 vi.mock('@/lib/index/fetch-plannings-twirp', () => ({ fetch: vi.fn().mockResolvedValue([]) }))
 
 const mockUseConvertArticleType = vi.mocked(useConvertArticleType)
+const mockUseDocuments = vi.mocked(useDocuments)
 
 // ComboBox/cmdk/vaul need these browser APIs that jsdom lacks.
 global.ResizeObserver = class {
@@ -70,6 +76,16 @@ function primeUseConvertArticleType(
   return convert
 }
 
+function primeUseDocuments(override?: {
+  data?: Array<{ id: string }> | undefined
+  isLoading?: boolean
+}): void {
+  mockUseDocuments.mockReturnValue({
+    data: override?.data,
+    isLoading: override?.isLoading ?? false
+  } as never)
+}
+
 // Note: driving the planning ComboBox dropdown (open -> type -> click option)
 // is not exercised here. Under jsdom the ComboBox renders as a vaul drawer and
 // selecting an option dismisses the parent Prompt, so a follow-up confirm click
@@ -81,6 +97,16 @@ describe('ConvertToArticleDialog', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     vi.mocked(useRegistry).mockReturnValue(initialState)
+    primeUseDocuments({ data: [] })
+  })
+
+  it('disables confirm while the source-planning lookup is loading', () => {
+    primeUseConvertArticleType()
+    primeUseDocuments({ isLoading: true })
+
+    render(<ConvertToArticleDialog timelessId={TIMELESS_ID} onClose={vi.fn()} />)
+
+    expect(screen.getByRole('button', { name: /^klar$/i })).toBeDisabled()
   })
 
   it('starts with no planning selected and passes targetPlanningId undefined', async () => {
@@ -97,6 +123,20 @@ describe('ConvertToArticleDialog', () => {
       expect(convert).toHaveBeenCalledWith(TIMELESS_ID, expect.objectContaining({
         targetType: 'core/article',
         targetPlanningId: undefined
+      }))
+    })
+  })
+
+  it('forwards the detected source planning as sourcePlanningId', async () => {
+    const convert = primeUseConvertArticleType()
+    primeUseDocuments({ data: [{ id: PLANNING_ID }] })
+
+    render(<ConvertToArticleDialog timelessId={TIMELESS_ID} onClose={vi.fn()} />)
+    await userEvent.click(screen.getByRole('button', { name: /^klar$/i }))
+
+    await waitFor(() => {
+      expect(convert).toHaveBeenCalledWith(TIMELESS_ID, expect.objectContaining({
+        sourcePlanningId: PLANNING_ID
       }))
     })
   })

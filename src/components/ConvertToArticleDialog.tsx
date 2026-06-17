@@ -18,11 +18,14 @@ import {
   LoaderIcon
 } from '@ttab/elephant-ui/icons'
 import { format } from 'date-fns'
+import { QueryV1, TermQueryV1 } from '@ttab/elephant-api/index'
 import { useSession } from 'next-auth/react'
 import { Prompt } from './Prompt'
 import { useConvertArticleType } from '@/hooks/useConvertArticleType'
+import { useDocuments } from '@/hooks/index/useDocuments'
 import { useRegistry } from '@/hooks/useRegistry'
 import { fetch } from '@/lib/index/fetch-plannings-twirp'
+import type { Planning, PlanningFields } from '@/shared/schemas/planning'
 import type * as Y from 'yjs'
 
 interface ConversionPayload {
@@ -49,6 +52,24 @@ export const ConvertToArticleDialog = (
   const [selectedPlanning, setSelectedPlanning]
     = useState<{ value: string, label: string } | undefined>(undefined)
 
+  // Detect the planning the timeless currently lives in. Not pre-selected in
+  // the picker (the editor chooses the target) but used to carry the existing
+  // assignment's assignees onto the converted article.
+  const { data: plannings, isLoading: planningLoading } = useDocuments<Planning, PlanningFields>({
+    documentType: 'core/planning-item',
+    query: QueryV1.create({
+      conditions: {
+        oneofKind: 'term',
+        term: TermQueryV1.create({
+          field: 'document.meta.core_assignment.rel.deliverable.uuid',
+          value: timelessId
+        })
+      }
+    }),
+    fields: []
+  })
+  const sourcePlanningId = plannings?.[0]?.id
+
   const formattedTarget = format(targetDate, 'yyyy-MM-dd')
 
   const handleConfirm = () => {
@@ -57,6 +78,7 @@ export const ConvertToArticleDialog = (
       targetType: 'core/article',
       targetDate: formattedTarget,
       targetPlanningId: selectedPlanning?.value,
+      sourcePlanningId,
       sourceDocument: timelessDoc
     }).then((result) => {
       if (result.success && result.kind === 'article') {
@@ -83,7 +105,7 @@ export const ConvertToArticleDialog = (
           )
         : t('common:actions.confirm')}
       secondaryLabel={t('common:actions.abort')}
-      disablePrimary={isConverting}
+      disablePrimary={isConverting || planningLoading}
       onPrimary={handleConfirm}
       onSecondary={() => onClose()}
     >

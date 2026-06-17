@@ -3,6 +3,7 @@ import { useSession } from 'next-auth/react'
 import { useRegistry } from './useRegistry'
 import { prepareArticleConversion } from '@/shared/convertArticleType'
 import { addAssignmentWithDeliverable } from '@/lib/index/addAssignment'
+import type { Repository } from '@/shared/Repository'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { replaceDeliverable } from '@/lib/index/replaceDeliverable'
 import { snapshotDocument } from '@/lib/snapshotDocument'
@@ -21,12 +22,55 @@ function warnOnPruneErrors(errors: ValidationResult[]): void {
   toast.warning(errors.map((e) => e.error).filter(Boolean).join('\n') || 'Some fields were dropped during conversion.')
 }
 
+/**
+ * Read the `core/author` `rel='assignee'` links from the timeless's current
+ * assignment so they can be carried onto the converted article's assignment.
+ * Best-effort: returns undefined (no assignees) if the source planning can't be
+ * read or has no assignment for the timeless — the conversion must not fail
+ * because assignee carry-over couldn't be resolved.
+ */
+async function readSourceAssignees({
+  repository,
+  accessToken,
+  sourcePlanningId,
+  timelessId
+}: {
+  repository: Repository
+  accessToken: string
+  sourcePlanningId?: string
+  timelessId: string
+}): Promise<Array<{ uuid: string, name?: string, role?: string }> | undefined> {
+  if (!sourcePlanningId) {
+    return undefined
+  }
+
+  try {
+    const response = await repository.getDocument({ uuid: sourcePlanningId, accessToken })
+    const sourceAssignment = response?.document?.meta.find((block) =>
+      block.type === 'core/assignment'
+      && block.links.some((l) => l.rel === 'deliverable' && l.uuid === timelessId)
+    )
+    const assignees = sourceAssignment?.links
+      .filter((l) => l.type === 'core/author' && l.rel === 'assignee')
+      .map((l) => ({ uuid: l.uuid, name: l.title || undefined, role: l.role || undefined }))
+
+    return assignees?.length ? assignees : undefined
+  } catch (err) {
+    console.warn('Could not read source assignees for conversion', err)
+    return undefined
+  }
+}
+
 export type ConvertArgs
   = | { targetType: 'core/article#timeless', category: Block }
     | {
       targetType: 'core/article'
       targetDate: string
       targetPlanningId?: string
+      // The planning the timeless currently lives in, used to carry over its
+      // assignment's assignees onto the new article. Independent of
+      // targetPlanningId (where the article is being placed).
+      sourcePlanningId?: string
       sourceDocument?: Y.Doc
     }
 
@@ -130,6 +174,16 @@ export function useConvertArticleType(): UseConvertArticleTypeResult {
           accessToken
         })
 
+        // Carry over the assignees from the timeless's current assignment so
+        // they survive the conversion (best-effort; a lookup failure must not
+        // abort the conversion the article is already created).
+        const assignees = await readSourceAssignees({
+          repository,
+          accessToken,
+          sourcePlanningId: args.sourcePlanningId,
+          timelessId: documentId
+        })
+
         const updatedPlanningId = await addAssignmentWithDeliverable({
           planningId: args.targetPlanningId,
           type: 'text',
@@ -141,7 +195,8 @@ export function useConvertArticleType(): UseConvertArticleTypeResult {
           localDate: args.targetDate,
           // 09:00 UTC mirrors the assignment time the previous conversion used.
           isoDateTime: `${args.targetDate}T09:00:00Z`,
-          section
+          section,
+          assignees
         })
 
         if (!updatedPlanningId) {

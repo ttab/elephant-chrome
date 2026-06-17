@@ -228,6 +228,66 @@ describe('useConvertArticleType', () => {
     }))
   })
 
+  it('carries over the source assignment assignees to the new assignment', async () => {
+    const SOURCE_PLANNING_ID = '66666666-6666-6666-8666-666666666666'
+    const { getDocument } = primeRegistryWithRepository()
+    getDocument.mockImplementation(({ uuid }: { uuid: string }) => {
+      if (uuid === TIMELESS_ID) {
+        return Promise.resolve({ document: timelessDoc(), version: 1n })
+      }
+      return Promise.resolve({
+        document: {
+          uuid: SOURCE_PLANNING_ID,
+          meta: [{
+            type: 'core/assignment',
+            links: [
+              { type: 'core/article', rel: 'deliverable', uuid: TIMELESS_ID },
+              { type: 'core/author', rel: 'assignee', uuid: 'author-1', title: 'Alice', role: 'primary' },
+              { type: 'core/author', rel: 'assignee', uuid: 'author-2', title: 'Bob', role: 'secondary' }
+            ]
+          }]
+        }
+      })
+    })
+
+    const { result } = renderHook(() => useConvertArticleType())
+    await act(async () => {
+      await result.current.convert(TIMELESS_ID, {
+        targetType: 'core/article',
+        targetDate: '2026-05-15',
+        targetPlanningId: PLANNING_ID,
+        sourcePlanningId: SOURCE_PLANNING_ID
+      })
+    })
+
+    expect(mockAddAssignment).toHaveBeenCalledWith(expect.objectContaining({
+      assignees: [
+        { uuid: 'author-1', name: 'Alice', role: 'primary' },
+        { uuid: 'author-2', name: 'Bob', role: 'secondary' }
+      ]
+    }))
+  })
+
+  it('does not look up assignees when no sourcePlanningId is given', async () => {
+    const { getDocument } = primeRegistryWithRepository()
+    getDocument.mockResolvedValue({ document: timelessDoc(), version: 1n })
+
+    const { result } = renderHook(() => useConvertArticleType())
+    await act(async () => {
+      await result.current.convert(TIMELESS_ID, {
+        targetType: 'core/article',
+        targetDate: '2026-05-15',
+        targetPlanningId: PLANNING_ID
+      })
+    })
+
+    // Only the timeless was fetched; assignees omitted from the payload.
+    expect(getDocument).toHaveBeenCalledTimes(1)
+    expect(mockAddAssignment).toHaveBeenCalledWith(expect.objectContaining({
+      assignees: undefined
+    }))
+  })
+
   it('blocks creating a new planning when the timeless has no section', async () => {
     const { getDocument, createDerivedDocument } = primeRegistryWithRepository()
     getDocument.mockResolvedValue({
