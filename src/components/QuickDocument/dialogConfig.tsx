@@ -7,11 +7,21 @@ import i18next from 'i18next'
 type QuickDocumentType = 'article' | 'flash' | 'hast'
 
 function getDocumentTypeLabel(type: QuickDocumentType): string {
-  switch (type) {
-    case 'article': return i18next.t('core:documentType.article')
-    case 'hast': return i18next.t('flash:hastLabel')
-    case 'flash': return i18next.t('core:documentType.flash')
+  let label = ''
+
+  if (type === 'article') {
+    label = i18next.t('core:documentType.article')
   }
+
+  if (type === 'hast') {
+    label = i18next.t('flash:hastLabel')
+  }
+
+  if (type === 'flash') {
+    label = i18next.t('core:documentType.flash')
+  }
+
+  return `${label.charAt(0).toUpperCase()}${label.slice(1)}`
 }
 
 export type PromptConfig = {
