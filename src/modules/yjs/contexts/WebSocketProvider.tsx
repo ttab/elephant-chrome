@@ -21,7 +21,7 @@ export function WebSocketProvider({ url, children }: PropsWithChildren & {
 
     wsp.current.on('error', (error: Error) => {
       console.info('⚠️ WebSocket provider error', error)
-      setIsConnected(true)
+      setIsConnected(false)
     })
 
     wsp.current.on('open', () => {
