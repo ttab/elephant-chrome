@@ -8,5 +8,6 @@ export {
   useYAwareness,
   type YAwarenessUser,
   type YAwarenessObject,
+  type YAwarenessFocus,
   type YAwarenessState
 } from './hooks/useYAwareness'
