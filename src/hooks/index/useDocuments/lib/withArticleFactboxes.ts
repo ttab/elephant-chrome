@@ -133,7 +133,11 @@ const fetchFactboxData = async (
     batches.push(articleIds.slice(i, i + BATCH_SIZE))
   }
 
-  const batchResponses = await Promise.all(
+  // allSettled isolates per-batch failures so one bad batch doesn't drop the
+  // rest. Both rejection and a null response are treated as failures and
+  // logged with the batch's article ids - previously they vanished silently
+  // and embedded factboxes for those articles disappeared from search.
+  const batchResults = await Promise.allSettled(
     batches.map((batch) => repository.getDocuments({
       documents: batch.map((uuid) => ({ uuid })),
       accessToken,
@@ -141,7 +145,22 @@ const fetchFactboxData = async (
     }))
   )
 
-  const allItems: BulkGetItem[] = batchResponses.flatMap((response) => response?.items ?? [])
+  const allItems: BulkGetItem[] = []
+
+  batchResults.forEach((result, i) => {
+    if (result.status === 'fulfilled' && result.value) {
+      allItems.push(...result.value.items)
+      return
+    }
+
+    const reason: Error | string = result.status === 'rejected'
+      ? (result.reason instanceof Error ? result.reason : new Error(String(result.reason)))
+      : 'null response'
+    console.warn(
+      '[withArticleFactboxes] bulk-get batch failed, embedded factboxes dropped:',
+      { articleIds: batches[i], reason }
+    )
+  })
 
   for (const item of allItems) {
     const articleId = item.uuid
