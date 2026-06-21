@@ -53,16 +53,22 @@ export const POST: RouteHandler = async (
     return { statusCode: 400, statusMessage: 'toArticleId is required' }
   }
 
-  const deliverableInfo = await repository.getDeliverableInfo({
-    uuid: fromArticleId,
-    accessToken
-  }).catch((ex: unknown) => {
+  let deliverableInfo: Awaited<ReturnType<typeof repository.getDeliverableInfo>>
+  try {
+    deliverableInfo = await repository.getDeliverableInfo({
+      uuid: fromArticleId,
+      accessToken
+    })
+  } catch (ex: unknown) {
     logger.error(ex, `Failed fetching deliverable info for ${fromArticleId}`)
-    return null
-  })
+    return {
+      statusCode: 502,
+      statusMessage: ex instanceof Error ? ex.message : 'deliverable-info-unavailable'
+    }
+  }
   const planningId = deliverableInfo?.planningUuid
   if (!planningId) {
-    // No owning planning — nothing to update. Treat as success.
+    // Lookup succeeded but no owning planning exists - genuine no-op.
     return { statusCode: 200, payload: { updated: false } }
   }
 
