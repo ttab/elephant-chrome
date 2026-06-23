@@ -15,7 +15,8 @@ export function assignmentPlanningTemplate({
   title,
   wires,
   assignmentData,
-  assignee
+  assignee,
+  assignees
 }: {
   assignmentType: string
   planningDate: string
@@ -24,6 +25,9 @@ export function assignmentPlanningTemplate({
   wires?: Wire[]
   assignmentData?: Block['data']
   assignee: { id: string, name: string } | null | undefined
+  // Additional assignees to carry over (e.g. when converting a timeless into an
+  // article). Appended after the optional primary `assignee`.
+  assignees?: Array<{ uuid: string, name?: string, role?: string }>
 }): Block {
   const systemNow = newLocalDate(DEFAULT_TIMEZONE)
   const systemHour = systemNow.getHours().toString()
@@ -62,7 +66,16 @@ export function assignmentPlanningTemplate({
         rel: 'assignee',
         role: 'primary'
       })
-      : undefined
+      : undefined,
+    ...(assignees ?? []).map((a) =>
+      Block.create({
+        uuid: a.uuid,
+        type: 'core/author',
+        title: a.name,
+        rel: 'assignee',
+        role: a.role || 'primary'
+      })
+    )
   ].filter((x): x is Block => x !== undefined)
 
   // Text assignments should be set with a publish_slot
