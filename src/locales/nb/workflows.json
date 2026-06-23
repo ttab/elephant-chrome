@@ -24,7 +24,7 @@
         },
         "withheld": {
           "title": "Planlegg publisering",
-          "description": "Angi dato og tid for publisering",
+          "description": "Angi tid for publisering. Flytt oppdrag/plan om en annen dato ønskes.",
           "promptTitle": "Planlegg publisering av {{label}}"
         }
       }
@@ -45,7 +45,7 @@
         },
         "withheld": {
           "title": "Planlegg publisering",
-          "description": "Angi dato og tid for publisering",
+          "description": "Angi tid for publisering. Flytt oppdrag/plan om en annen dato ønskes.",
           "promptTitle": "Planlegg publisering av {{label}}"
         },
         "draft": {
@@ -71,7 +71,7 @@
         },
         "withheld": {
           "title": "Planlegg publisering",
-          "description": "Angi dato og tid for publisering",
+          "description": "Angi tid for publisering. Flytt oppdrag/plan om en annen dato ønskes.",
           "promptTitle": "Planlegg publisering av {{label}}"
         },
         "draft": {
@@ -520,7 +520,7 @@
         },
         "withheld": {
           "title": "Planlegg publisering",
-          "description": "Angi dato og tid for publisering"
+          "description": "Angi tid for publisering. Flytt oppdrag/plan om en annen dato ønskes."
         }
       }
     },
@@ -538,7 +538,7 @@
         },
         "withheld": {
           "title": "Planlegg publisering",
-          "description": "Angi dato og tid for publisering"
+          "description": "Angi tid for publisering. Flytt oppdrag/plan om en annen dato ønskes."
         },
         "draft": {
           "title": "Til utkast",
@@ -560,7 +560,7 @@
         },
         "withheld": {
           "title": "Planlegg publisering",
-          "description": "Angi dato og tid for publisering"
+          "description": "Angi tid for publisering. Flytt oppdrag/plan om en annen dato ønskes."
         },
         "draft": {
           "title": "Til utkast",

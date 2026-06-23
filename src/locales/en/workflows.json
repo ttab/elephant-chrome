@@ -24,7 +24,7 @@
         },
         "withheld": {
           "title": "Schedule publishing",
-          "description": "Set a date and time for publishing",
+          "description": "Set the publication time. Move the assignment/planning if another date is needed.",
           "promptTitle": "Schedule publishing of {{label}}"
         }
       }
@@ -45,7 +45,7 @@
         },
         "withheld": {
           "title": "Schedule publishing",
-          "description": "Set a date and time for publishing",
+          "description": "Set the publication time. Move the assignment/planning if another date is needed.",
           "promptTitle": "Schedule publishing of {{label}}"
         },
         "draft": {
@@ -71,7 +71,7 @@
         },
         "withheld": {
           "title": "Schedule publishing",
-          "description": "Set a date and time for publishing",
+          "description": "Set the publication time. Move the assignment/planning if another date is needed.",
           "promptTitle": "Schedule publishing of {{label}}"
         },
         "draft": {
@@ -520,7 +520,7 @@
         },
         "withheld": {
           "title": "Schedule publishing",
-          "description": "Set a date and time for publishing"
+          "description": "Set the publication time. Move the assignment/planning if another date is needed."
         }
       }
     },
@@ -538,7 +538,7 @@
         },
         "withheld": {
           "title": "Schedule publishing",
-          "description": "Set a date and time for publishing"
+          "description": "Set the publication time. Move the assignment/planning if another date is needed."
         },
         "draft": {
           "title": "To draft",
@@ -560,7 +560,7 @@
         },
         "withheld": {
           "title": "Schedule publishing",
-          "description": "Set a date and time for publishing"
+          "description": "Set the publication time. Move the assignment/planning if another date is needed."
         },
         "draft": {
           "title": "To draft",
