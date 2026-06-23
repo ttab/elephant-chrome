@@ -24,7 +24,7 @@
         },
         "withheld": {
           "title": "Schemalägg publicering",
-          "description": "Ange datum och tid för publicering",
+          "description": "Ange tid för publicering. Flytta uppdrag/planering om annat datum önskas.",
           "promptTitle": "Schemalägg publicering av {{label}}"
         }
       }
@@ -45,7 +45,7 @@
         },
         "withheld": {
           "title": "Schemalägg publicering",
-          "description": "Ange datum och tid för publicering",
+          "description": "Ange tid för publicering. Flytta uppdrag/planering om annat datum önskas.",
           "promptTitle": "Schemalägg publicering av {{label}}"
         },
         "draft": {
@@ -71,7 +71,7 @@
         },
         "withheld": {
           "title": "Schemalägg publicering",
-          "description": "Ange datum och tid för publicering",
+          "description": "Ange tid för publicering. Flytta uppdrag/planering om annat datum önskas.",
           "promptTitle": "Schemalägg publicering av {{label}}"
         },
         "draft": {
@@ -520,7 +520,7 @@
         },
         "withheld": {
           "title": "Schemalägg publicering",
-          "description": "Ange datum och tid för publicering"
+          "description": "Ange tid för publicering. Flytta uppdrag/planering om annat datum önskas."
         }
       }
     },
@@ -538,7 +538,7 @@
         },
         "withheld": {
           "title": "Schemalägg publicering",
-          "description": "Ange datum och tid för publicering"
+          "description": "Ange tid för publicering. Flytta uppdrag/planering om annat datum önskas."
         },
         "draft": {
           "title": "Till utkast",
@@ -560,7 +560,7 @@
         },
         "withheld": {
           "title": "Schemalägg publicering",
-          "description": "Ange datum och tid för publicering"
+          "description": "Ange tid för publicering. Flytta uppdrag/planering om annat datum önskas."
         },
         "draft": {
           "title": "Till utkast",
