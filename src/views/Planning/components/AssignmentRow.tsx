@@ -76,9 +76,10 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
   const [inProgress] = useYValue(assignment, '__inProgress')
   const [articleId] = useYValue<string>(assignment, 'links.core/article[0].uuid')
   const [flashId] = useYValue<string>(assignment, 'links.core/flash[0].uuid')
+  const [editorialInfoId] = useYValue<string>(assignment, 'links.core/editorial-info[0].uuid')
 
-  const { data: articleStatus, mutate } = useSWR(['articlestatus', articleId, flashId], async () => {
-    const id = articleId || flashId
+  const { data: articleStatus, mutate } = useSWR(['articlestatus', articleId, flashId, editorialInfoId], async () => {
+    const id = articleId || flashId || editorialInfoId
 
     if ((id) && session?.accessToken) {
       return await repository?.getMeta({ uuid: id, accessToken: session.accessToken })
@@ -87,8 +88,6 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
 
   const workflowState = articleStatus?.meta?.workflowState
   const deliverableId = articleId || flashId
-
-  const [editorialInfoId] = useYValue<string>(assignment, 'links.core/editorial-info[0].uuid')
   const [assignmentType] = useYValue<string>(assignment, 'meta.core/assignment-type[0].value')
   const [assignmentId] = useYValue<string>(assignment, 'id')
   const [title] = useYValue<string>(assignment, 'title')
