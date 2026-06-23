@@ -7,7 +7,7 @@ import * as Y from 'yjs'
 import logger from '../../../lib/logger.js'
 
 import { type Context, isContext } from '../../../lib/context.js'
-import { getValueByYPath, setValueByYPath } from '../../../../shared/yUtils.js'
+import { deleteByYPath, getValueByYPath, setValueByYPath } from '../../../../shared/yUtils.js'
 import type { EleBlock } from '@/shared/types/index.js'
 import { getSession } from '../../../lib/context.js'
 import { snapshot } from '../../../utils/snapshot.js'
@@ -125,6 +125,7 @@ export const GET: RouteHandler = async (req: Request, { cache, repository, res }
  * Patch method, make partial updates to a document.
  * Supported edits:
  * - Set publish time for withheld.
+ * - Clear the stale publish time when leaving withheld (draft/usable).
  * - Set start time for draft
  */
 export const PATCH: RouteHandler = async (req: Request, { collaborationServer, res }) => {
@@ -155,10 +156,19 @@ export const PATCH: RouteHandler = async (req: Request, { collaborationServer, r
     time
   } = assignment || {}
 
-  if (!id || !assignment || !deliverableId || !deliverableType || !status || !time) {
+  if (!id || !assignment || !deliverableId || !deliverableType || !status) {
     return {
       statusCode: 400,
       statusMessage: 'Invalid input to document PATCH method'
+    }
+  }
+
+  // A publish time is only meaningful when scheduling. Clearing it (when leaving
+  // withheld) needs no timestamp.
+  if (status === 'withheld' && !time) {
+    return {
+      statusCode: 400,
+      statusMessage: 'A publish time is required when scheduling a document'
     }
   }
 
@@ -195,13 +205,21 @@ export const PATCH: RouteHandler = async (req: Request, { collaborationServer, r
     if (status === 'withheld') {
       // When scheduling we always set the publishTime to the given time
       setValueByYPath(yRoot, `${base}.data.publish`, time)
-    } else if (assignmentType && ['text', 'flash', 'editorial-info'].includes(assignmentType)) {
-      // If assignment type is text, flash or editorial info and the current start time is less
-      // than the given time we bump the start time.
-      const [currStartTime] = getValueByYPath<string | undefined>(yRoot, `${base}.data.start`)
+    } else {
+      // Leaving the scheduled (withheld) state: the stored publish time is now
+      // stale, so remove it entirely. structureAssignments falls back to the
+      // status modified time / start time for display and sorting.
+      deleteByYPath(yRoot, `${base}.data.publish`)
 
-      if (!currStartTime || (new Date(time) > new Date(currStartTime))) {
-        setValueByYPath(yRoot, `${base}.data.start`, time)
+      if (time && assignmentType && ['text', 'flash', 'editorial-info'].includes(assignmentType)) {
+        // If assignment type is text, flash or editorial info and the current start time is less
+        // than the given time we bump the start time. The clear-only transitions
+        // (e.g. leaving withheld for usable) send no time, so they skip this.
+        const [currStartTime] = getValueByYPath<string | undefined>(yRoot, `${base}.data.start`)
+
+        if (!currStartTime || (new Date(time) > new Date(currStartTime))) {
+          setValueByYPath(yRoot, `${base}.data.start`, time)
+        }
       }
     }
   })
