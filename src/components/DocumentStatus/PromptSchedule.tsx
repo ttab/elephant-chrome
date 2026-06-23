@@ -72,7 +72,7 @@ export const PromptSchedule = ({
   const planningDateInTz = publishDate
     ? format(toZonedTime(new Date(publishDate), DEFAULT_TIMEZONE), 'yyyy-MM-dd')
     : undefined
-  const planningInPast = !planningDateInTz || planningDateInTz < todayInTz
+  const planningInPast = !!planningDateInTz && planningDateInTz < todayInTz
   const scheduleBase = publishDate ? new Date(publishDate) : now
 
   const displayDate = time ?? scheduleBase
