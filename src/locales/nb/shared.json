@@ -37,6 +37,7 @@
     "asSavePlaceholder": "Publiser ny informasjon",
     "embargoMinTime": "Embargo: kan ikke planlegges før {{time}}",
     "timeInPast": "Valgt tid har passert",
+    "planningDateInPast": "Planens dato har passert. Flytt oppdraget til en plan for dagen du vil publisere.",
     "beforeEmbargo": "Tiden er før embargo",
     "timezoneMismatch": "Enheten din er stilt inn på en annen tidssone enn den som brukes i systemet. Angi tid for publisering i systemets tidssone (forskjell {{offset}}).",
     "publishesInDefaultTz": "Publiseres {{time}} (systemets tidssone)",

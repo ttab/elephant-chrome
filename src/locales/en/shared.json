@@ -37,6 +37,7 @@
     "asSavePlaceholder": "Publish new information",
     "embargoMinTime": "Embargo: cannot schedule before {{time}}",
     "timeInPast": "Selected time has passed",
+    "planningDateInPast": "This planning's date has passed. Move the assignment to a planning on the day you want to publish.",
     "beforeEmbargo": "Time is before embargo",
     "timezoneMismatch": "Your device is set to a different timezone than the one used by the system. Enter publication time in the system's timezone (offset {{offset}}).",
     "publishesInDefaultTz": "Publishes at {{time}} (the system's timezone)",

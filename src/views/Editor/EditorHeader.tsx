@@ -173,7 +173,13 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
       }
 
       await snapshotDocument(resolvedPlanningId, {}, planningYdoc.document)
-      await updateAssignmentTime(ydoc.id, resolvedPlanningId, newStatus, newTime, t)
+      const timeUpdated = await updateAssignmentTime(ydoc.id, resolvedPlanningId, newStatus, newTime, t)
+
+      // If scheduling and the publish time could not be written, abort the status
+      // change so the article is not left "withheld" without a stored publish time.
+      if (newStatus === 'withheld' && !timeUpdated) {
+        return false
+      }
     }
 
     return true

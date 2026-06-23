@@ -185,8 +185,11 @@ describe('PromptSchedule', () => {
     expect(payload.cause).toBeUndefined()
   })
 
-  it('schedules onto today when the planning start_date is in the past', () => {
+  it('blocks scheduling when the planning start_date is in the past', () => {
     const setStatus = vi.fn()
+    // A planning dated in the past cannot be scheduled here; scheduling is bound
+    // to the planning's date, so the assignment must be moved to a planning on
+    // the intended publish day instead.
     mockPublishDate = new Date('2024-01-01T12:00:00Z')
     render(
       <PromptSchedule
@@ -197,18 +200,13 @@ describe('PromptSchedule', () => {
       />
     )
 
-    const future = new Date(Date.now() + 60 * 60 * 1000)
-    fireEvent.change(getTimeInput(), { target: { value: toHHMM(future) } })
+    // Time input and submit are disabled, and a message explains why.
+    expect(getTimeInput()).toBeDisabled()
+    expect(getPrimaryButton()).toBeDisabled()
+    expect(screen.getByText(/passed|passerat|passert/i)).toBeInTheDocument()
 
-    expect(getPrimaryButton()).not.toBeDisabled()
     fireEvent.click(getPrimaryButton())
-
-    const [, payload] = setStatus.mock.calls[0] as [string, { time: Date }]
-    // Compare calendar day in DEFAULT_TIMEZONE so the assertion is stable
-    // regardless of the test runner's local timezone.
-    const stockholmToday = format(toZonedTime(new Date(), DEFAULT_TIMEZONE), 'yyyy-MM-dd')
-    const stockholmStored = format(toZonedTime(payload.time, DEFAULT_TIMEZONE), 'yyyy-MM-dd')
-    expect(stockholmStored).toBe(stockholmToday)
+    expect(setStatus).not.toHaveBeenCalled()
   })
 
   it('shows a timezone notice with offset when the user timezone differs from the system', () => {

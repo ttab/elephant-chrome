@@ -5,7 +5,7 @@ const BASE_URL = import.meta.env.BASE_URL || ''
 
 export async function updateAssignmentTime<Ns extends Namespace>(
   deliverableId: string, planningId: string, newStatus: string, newTime: Date, t: TFunction<Ns>
-) {
+): Promise<boolean> {
   try {
     const response = await fetch(`${BASE_URL}/api/documents/${planningId}`, {
       method: 'PATCH',
@@ -32,4 +32,6 @@ export async function updateAssignmentTime<Ns extends Namespace>(
     toast.error(t('errors:messages.changeStatusError'))
     return false
   }
+
+  return true
 }

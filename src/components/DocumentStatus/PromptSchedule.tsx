@@ -65,15 +65,15 @@ export const PromptSchedule = ({
   const timeZoneMismatch = offsetDiffMinutes !== 0
   const offsetLabel = formatOffsetDiff(offsetDiffMinutes)
 
-  // Fall back to today when the planning's start_date is in the past, so the
-  // document can still be scheduled instead of inheriting an unusable date.
+  // Scheduling is bound to the planning's date. When that date has already
+  // passed in the system timezone the document cannot be scheduled here; the
+  // assignment must be moved to a planning on the intended publish day.
   const todayInTz = format(toZonedTime(now, DEFAULT_TIMEZONE), 'yyyy-MM-dd')
   const planningDateInTz = publishDate
     ? format(toZonedTime(new Date(publishDate), DEFAULT_TIMEZONE), 'yyyy-MM-dd')
     : undefined
-  const scheduleBase = publishDate && planningDateInTz && planningDateInTz >= todayInTz
-    ? new Date(publishDate)
-    : now
+  const planningInPast = !!planningDateInTz && planningDateInTz < todayInTz
+  const scheduleBase = publishDate ? new Date(publishDate) : now
 
   const displayDate = time ?? scheduleBase
 
@@ -98,7 +98,7 @@ export const PromptSchedule = ({
         showPrompt(undefined)
       }}
       disablePrimary={
-        (requireCause && !cause) || !time || timeInPast || timeViolatesEmbargo
+        (requireCause && !cause) || !time || timeInPast || timeViolatesEmbargo || planningInPast
       }
       typeIcon={typeIcon}
     >
@@ -119,6 +119,12 @@ export const PromptSchedule = ({
           </div>
         )}
 
+        {planningInPast && (
+          <div className='text-sm text-red-600 dark:text-red-400'>
+            {t('shared:status_menu.planningDateInPast')}
+          </div>
+        )}
+
         <div className='flex flex-row justify-items-start items-start gap-6 flex-wrap pt-2'>
 
           <div className='flex flex-col items-start gap-2 w-28'>
@@ -127,6 +133,7 @@ export const PromptSchedule = ({
             <TimeInput
               id='ScheduledTime'
               autoFocus={true}
+              disabled={planningInPast}
               defaultTime={time ? format(toZonedTime(time, DEFAULT_TIMEZONE), 'HH:mm') : ''}
               handleOnChange={(value) => {
                 if (!value) return

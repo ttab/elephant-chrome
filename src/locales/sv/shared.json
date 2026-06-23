@@ -37,6 +37,7 @@
     "asSavePlaceholder": "Publicera ny information",
     "embargoMinTime": "Embargo: kan inte schemaläggas före {{time}}",
     "timeInPast": "Vald tid har passerat",
+    "planningDateInPast": "Planeringens datum har passerat. Flytta uppdraget till en planering för den dag du vill publicera.",
     "beforeEmbargo": "Tiden är före embargo",
     "timezoneMismatch": "Din enhet är inställd på en annan tidszon än den som används i systemet. Ange tid för publicering i systemets tidszon (skillnad {{offset}}).",
     "publishesInDefaultTz": "Publiceras {{time}} (systemets tidszon)",

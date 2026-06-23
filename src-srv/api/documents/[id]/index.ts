@@ -178,12 +178,18 @@ export const PATCH: RouteHandler = async (req: Request, { collaborationServer, r
 
   const connection = await collaborationServer.server.openDirectConnection(id, context)
 
+  let foundAssignment: ReturnType<typeof getAssignment> = undefined
+
   // Make the change to the document in one transaction
   await connection.transact((document) => {
     const yRoot = document.getMap('ele')
-    const { index } = getAssignment(yRoot, deliverableId, deliverableType) || {}
+    foundAssignment = getAssignment(yRoot, deliverableId, deliverableType)
 
-    const base = `meta.core/assignment[${index}]`
+    if (!foundAssignment) {
+      return
+    }
+
+    const base = `meta.core/assignment[${foundAssignment.index}]`
     const [assignmentType] = getValueByYPath<string | undefined>(yRoot, `${base}.meta.core/assignment-type[0].value`)
 
     if (status === 'withheld') {
@@ -204,6 +210,14 @@ export const PATCH: RouteHandler = async (req: Request, { collaborationServer, r
     logger.error(ex, 'Failed disconnecting after PATCH update')
   })
 
+  // No assignment links this deliverable, so nothing was written. Fail loudly
+  // instead of reporting success with no publish/start time stored.
+  if (!foundAssignment) {
+    return {
+      statusCode: 404,
+      statusMessage: 'No assignment found for the given deliverable, publish time was not updated'
+    }
+  }
 
   return snapshot(
     collaborationServer,
