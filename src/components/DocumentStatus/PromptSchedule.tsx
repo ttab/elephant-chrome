@@ -2,7 +2,6 @@ import type { WorkflowTransition } from '@/defaults/workflowSpecification'
 import { Prompt } from '../Prompt'
 import { useState } from 'react'
 import { Label } from '@ttab/elephant-ui'
-import { cn } from '@ttab/elephant-ui/utils'
 import { TimeInput } from '../TimeInput'
 import { fromZonedTime, getTimezoneOffset, toZonedTime } from 'date-fns-tz'
 import { format } from 'date-fns'
@@ -54,9 +53,6 @@ export const PromptSchedule = ({
   const activeEmbargo = embargoCandidate && embargoCandidate > now ? embargoCandidate : undefined
   const [time, setTime] = useState<Date | undefined>(activeEmbargo)
   const [cause, setCause] = useState<string | undefined>()
-  // Optional user-picked publish date. Only offered when the browser date is a
-  // day ahead of the system date (i.e. around midnight in differing timezones).
-  const [dateOverride, setDateOverride] = useState<string | undefined>(undefined)
   const { t } = useTranslation()
 
   const timeViolatesEmbargo = time !== undefined && activeEmbargo ? time < activeEmbargo : false
@@ -69,35 +65,17 @@ export const PromptSchedule = ({
   const timeZoneMismatch = offsetDiffMinutes !== 0
   const offsetLabel = formatOffsetDiff(offsetDiffMinutes)
 
-  // Fall back to today when the planning's start_date is in the past, so the
-  // document can still be scheduled instead of inheriting an unusable date.
+  // Scheduling is bound to the planning's date. When that date has already
+  // passed in the system timezone the document cannot be scheduled here; the
+  // assignment must be moved to a planning on the intended publish day.
   const todayInTz = format(toZonedTime(now, DEFAULT_TIMEZONE), 'yyyy-MM-dd')
   const planningDateInTz = publishDate
     ? format(toZonedTime(new Date(publishDate), DEFAULT_TIMEZONE), 'yyyy-MM-dd')
     : undefined
-  const scheduleBase = publishDate && planningDateInTz && planningDateInTz >= todayInTz
-    ? new Date(publishDate)
-    : now
+  const planningInPast = !planningDateInTz || planningDateInTz < todayInTz
+  const scheduleBase = publishDate ? new Date(publishDate) : now
 
   const displayDate = time ?? scheduleBase
-
-  // When the document publishes "today" and the browser's date is a day ahead of
-  // the system date (around midnight across timezones), let the user choose
-  // between those two dates. Otherwise the date stays derived as before.
-  const derivedDateInTz = format(toZonedTime(scheduleBase, DEFAULT_TIMEZONE), 'yyyy-MM-dd')
-  const localDateInTz = format(toZonedTime(now, userTimeZone), 'yyyy-MM-dd')
-  const offerDateChoice = derivedDateInTz === todayInTz && localDateInTz > todayInTz
-  const selectedDateInTz = offerDateChoice && dateOverride ? dateOverride : derivedDateInTz
-
-  // Re-combine the already picked time with the newly chosen date, keeping the
-  // time-of-day labelled in the dialog (interpreted in DEFAULT_TIMEZONE).
-  const handleDateChange = (date: string) => {
-    setDateOverride(date)
-    if (time) {
-      const hhmm = format(toZonedTime(time, DEFAULT_TIMEZONE), 'HH:mm')
-      setTime(fromZonedTime(`${date}T${hhmm}:00`, DEFAULT_TIMEZONE))
-    }
-  }
 
   return (
     <Prompt
@@ -120,7 +98,7 @@ export const PromptSchedule = ({
         showPrompt(undefined)
       }}
       disablePrimary={
-        (requireCause && !cause) || !time || timeInPast || timeViolatesEmbargo
+        (requireCause && !cause) || !time || timeInPast || timeViolatesEmbargo || planningInPast
       }
       typeIcon={typeIcon}
     >
@@ -141,6 +119,12 @@ export const PromptSchedule = ({
           </div>
         )}
 
+        {planningInPast && (
+          <div className='text-sm text-red-600 dark:text-red-400'>
+            {t('shared:status_menu.planningDateInPast')}
+          </div>
+        )}
+
         <div className='flex flex-row justify-items-start items-start gap-6 flex-wrap pt-2'>
 
           <div className='flex flex-col items-start gap-2 w-28'>
@@ -149,13 +133,16 @@ export const PromptSchedule = ({
             <TimeInput
               id='ScheduledTime'
               autoFocus={true}
+              disabled={planningInPast}
               defaultTime={time ? format(toZonedTime(time, DEFAULT_TIMEZONE), 'HH:mm') : ''}
               handleOnChange={(value) => {
                 if (!value) return
-                // Combine the selected date and picked time in DEFAULT_TIMEZONE so the
-                // stored instant matches the time labelled in the dialog regardless of
-                // browser TZ.
-                setTime(fromZonedTime(`${selectedDateInTz}T${value}:00`, DEFAULT_TIMEZONE))
+                const [hour, mins] = value.split(':').map(Number)
+                // Interpret picker input in DEFAULT_TIMEZONE so the stored instant
+                // matches the time labelled in the dialog regardless of browser TZ.
+                const baseInTz = toZonedTime(time ?? scheduleBase, DEFAULT_TIMEZONE)
+                baseInTz.setHours(hour, mins, 0, 0)
+                setTime(fromZonedTime(baseInTz, DEFAULT_TIMEZONE))
               }}
               handleOnSelect={() => { }}
               setOpen={() => { }}
@@ -184,31 +171,12 @@ export const PromptSchedule = ({
               ? (
                   <LoaderIcon size={14} strokeWidth={1.75} className='animate-spin mx-auto' />
                 )
-              : offerDateChoice
-                ? (
-                    <div className='flex flex-row gap-1'>
-                      {[todayInTz, localDateInTz].map((date) => (
-                        <button
-                          key={date}
-                          type='button'
-                          onClick={() => handleDateChange(date)}
-                          className={cn(
-                            'border py-2 px-3 h-8 text-sm rounded flex flex-row gap-2 items-center',
-                            selectedDateInTz === date ? 'bg-muted font-medium' : 'text-muted-foreground'
-                          )}
-                        >
-                          {date}
-                          {selectedDateInTz === date && <CalendarIcon size={14} strokeWidth={1.75} />}
-                        </button>
-                      ))}
-                    </div>
-                  )
-                : (
-                    <span className='border py-2 px-3 h-8 text-sm rounded flex flex-row gap-4 items-center justify-between bg-muted'>
-                      {format(toZonedTime(displayDate, DEFAULT_TIMEZONE), 'yyyy-MM-dd')}
-                      <CalendarIcon size={14} strokeWidth={1.75} />
-                    </span>
-                  )}
+              : (
+                  <span className='border py-2 px-3 h-8 text-sm rounded flex flex-row gap-4 items-center justify-between bg-muted'>
+                    {format(toZonedTime(displayDate, DEFAULT_TIMEZONE), 'yyyy-MM-dd')}
+                    <CalendarIcon size={14} strokeWidth={1.75} />
+                  </span>
+                )}
           </div>
 
           {requireCause && (
