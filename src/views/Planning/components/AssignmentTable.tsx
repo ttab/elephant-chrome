@@ -6,7 +6,7 @@ import { useFeatureFlags } from '@/hooks/useFeatureFlags'
 import { Assignment } from './Assignment'
 import type { MouseEvent, KeyboardEvent } from 'react'
 import { useMemo, useRef, useState, type JSX } from 'react'
-import { Button } from '@ttab/elephant-ui'
+import { Button, Separator } from '@ttab/elephant-ui'
 import { useActiveAuthor } from '@/hooks/useActiveAuthor'
 import { snapshotDocument } from '@/lib/snapshotDocument'
 import { toast } from 'sonner'
@@ -147,28 +147,21 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId }: {
 
   return (
     <>
-      <div className='flex flex-col pt-2 text-primary pb-4'>
-        <div className='pl-2'>
+      <Separator className='mt-4 mb-10' />
+
+      <div className='flex flex-col text-primary pb-4'>
+        <div>
           <Button
             ref={addButtonRef}
+            size='sm'
+            className='h-8 pr-4'
             disabled={newAssignment !== undefined || !ydoc.connected}
-            variant='ghost'
             onKeyDown={(event: KeyboardEvent<HTMLButtonElement>) => event.key === 'Enter'
               && handleNewAssignment(event)}
             onClick={(event: MouseEvent<HTMLButtonElement>) => handleNewAssignment(event)}
-            className='hover:bg-slate-200 dark:hover:bg-table-focused'
           >
-
-            <div className='flex flex-row items-center gap-2'>
-              <div className='bg-primary rounded-full w-5 h-5 relative'>
-                <PlusIcon
-                  size={15}
-                  strokeWidth={2.25}
-                  className='text-white dark:text-black absolute inset-0 m-auto'
-                />
-              </div>
-              {t('planning:assignment.actions.addAssignment')}
-            </div>
+            <PlusIcon size={18} strokeWidth={1.75} />
+            <span className='pl-0.5'>{t('planning:assignment.actions.addAssignment')}</span>
           </Button>
         </div>
 
@@ -231,9 +224,9 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId }: {
       )}
 
       {!!assignments?.length && (
-        <div className='border rounded-md'>
+        <div className='flex flex-col gap-2'>
           {assignments.map((assignment, index: number) => (
-            <div key={`${assignment.id}`} className='border-b last:border-0'>
+            <div key={`${assignment.id}`}>
               {selectedAssignment?.get('id') === assignment.id
                 ? (
                     <Assignment

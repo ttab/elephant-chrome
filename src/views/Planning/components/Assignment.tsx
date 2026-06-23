@@ -58,7 +58,7 @@ export const Assignment = ({ ydoc, assignment, onAbort, onClose }: {
   }
 
   return (
-    <div className='flex flex-col rounded-md border shadow-xl -mx-1 -my-1 z-10 bg-background dark:bg-table-focused' ref={formRef}>
+    <div className='@container/assform flex flex-col rounded-md border shadow-xl -mx-1 -my-1 z-10 bg-background dark:bg-table-focused' ref={formRef}>
       <Form.Root asDialog={true}>
         <Form.Content>
           <Form.Title>
@@ -97,7 +97,7 @@ export const Assignment = ({ ydoc, assignment, onAbort, onClose }: {
             )}
 
 
-          <Form.Group>
+          <Form.Group className='[&>div]:flex-wrap [&>div]:items-start @md/assform:[&>div]:flex-nowrap @md/assform:[&>div]:items-center'>
             <AssignmentType
               assignment={assignment}
               editable={!articleId && !flashId}

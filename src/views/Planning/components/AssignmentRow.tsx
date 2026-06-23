@@ -1,6 +1,5 @@
 import { AssignmentTimeDisplay } from '@/components/DataItem/AssignmentTimeDisplay'
 import { AssignmentType } from '@/components/DataItem/AssignmentType'
-import { AssigneeAvatars } from '@/components/DataItem/AssigneeAvatars'
 import type { DotDropdownMenuActionItem } from '@/components/ui/DotMenu'
 import { DotMenu } from '@/components/ui/DotMenu'
 import {
@@ -18,10 +17,9 @@ import {
   type LucideProps
 } from '@ttab/elephant-ui/icons'
 import { type MouseEvent, useMemo, useState, useCallback, useEffect, useRef, type JSX } from 'react'
-import { SluglineButton } from '@/components/DataItem/Slugline'
 import { useLink } from '@/hooks/useLink'
 import { Prompt } from '@/components'
-import { Button } from '@ttab/elephant-ui'
+import { Button, Tooltip } from '@ttab/elephant-ui'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { deleteByYPath, getValueByYPath } from '@/shared/yUtils'
 import { useOpenDocuments } from '@/hooks/useOpenDocuments'
@@ -45,7 +43,8 @@ import useSWR from 'swr'
 import { useRepositoryEvents } from '@/hooks/useRepositoryEvents'
 import { type YDocument, useYValue } from '@/modules/yjs/hooks'
 import { toast } from 'sonner'
-import { AssignmentStatus } from './AssignmentStatus'
+import { AssignmentStatus, getAssignmentStatusBorderClass, getAssignmentStatusBadgeBorderClass } from './AssignmentStatus'
+import { getDocumentStatuses } from '@/defaults/documentStatuses'
 import { useTranslation } from 'react-i18next'
 import type { TranslationKey } from '@/types/i18next.d'
 import { RelatedWires } from './RelatedWires'
@@ -86,6 +85,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
     }
   })
 
+  const workflowState = articleStatus?.meta?.workflowState
   const deliverableId = articleId || flashId
 
   const [editorialInfoId] = useYValue<string>(assignment, 'links.core/editorial-info[0].uuid')
@@ -100,6 +100,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
   const [authors = []] = useYValue<Block[]>(assignment, 'links.core/author')
   const [wires] = useYValue<Block[]>(assignment, 'links.tt/wire')
   const [slugline] = useYValue<string>(assignment, 'meta.tt/slugline[0].value')
+  const [visualStatus] = useYValue<string>(assignment, 'data.status')
 
   const [showVerifyDialog, setShowVerifyDialog] = useState<boolean>(false)
   const [showCreateDialogPayload, setShowCreateDialogPayload] = useState<boolean>(false)
@@ -173,6 +174,16 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
       }
     }
   }, [publishTime, assignmentType, startTime, endTime, publishSlot, t])
+
+  const isVisualType = isVisualAssignmentType(assignmentType)
+
+  // Small workflow-status badge overlaid on the type icon for non-visual
+  // assignments. Visual assignments surface their status as a dropdown in the
+  // body instead, since it is interactive.
+  const workflowStatusBadge = useMemo(() => {
+    if (isVisualType || !workflowState) return undefined
+    return getDocumentStatuses().find((s) => s.value === workflowState)
+  }, [isVisualType, workflowState])
 
   const TimeIcon = useMemo(() => {
     const timeIcons: Record<string, React.FC<LucideProps>> = {
@@ -340,7 +351,6 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
       : [])
   ]
   const selected = articleId && openDocuments.includes(articleId)
-  const workflowState = articleStatus?.meta?.workflowState
   const isUsedTimeless = assignmentType === 'timeless' && workflowState === 'used'
 
   useRepositoryEvents([
@@ -358,23 +368,18 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
     <div
       ref={rowRef}
       tabIndex={0}
-      className={cn(`
-        flex
-        flex-col
-        gap-2
-        text-sm
-        px-4
-        pt-4
-        pb-4
-        ring-inset
-        hover:bg-muted
-        dark:hover:bg-table-focused
-        transition-all
-        focus:outline-none
-        focus-visible:rounded-sm
-        focus-visible:ring-2
-        focus-visible:ring-table-selected
-        `, selected ? 'bg-table-selected focus-visible:outline-table-selected' : ''
+      className={cn(
+        'group/assrow @container/card relative rounded-md border border-s-[6px] bg-card text-card-foreground',
+        'flex flex-col gap-2 text-sm py-3 pl-2 pr-3 transition-colors',
+        'hover:bg-muted dark:hover:bg-table-focused',
+        'focus:outline-none focus-visible:ring-2 focus-visible:ring-table-selected',
+        'focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+        getAssignmentStatusBorderClass({
+          isVisual: isVisualType,
+          visualStatus,
+          workflowState
+        }),
+        selected && 'bg-table-selected focus-visible:outline-table-selected'
       )}
       onClick={(event) => {
         if (showCreateDialogPayload || isLinking) {
@@ -391,26 +396,102 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
         }
       }}
     >
-      <div className='flex flex-row gap-6 items-center justify-items-between justify-between'>
+      <div className={cn(
+        'absolute -top-2 -left-3 empty:hidden rounded-full leading-none bg-background border p-0.5 pointer-events-none',
+        getAssignmentStatusBadgeBorderClass({
+          isVisual: isVisualType,
+          visualStatus,
+          workflowState
+        })
+      )}
+      >
+        <HastIndicator documentId={deliverableId} size={14} />
+      </div>
 
-        <div className='flex grow gap-2 items-center'>
+      <div className='flex flex-row gap-3 items-start'>
+        <div className='relative shrink-0 pointer-events-none'>
           <AssignmentType
             assignment={assignment}
             editable={!documentId}
             readOnly
           />
-          <AssigneeAvatars assignees={authors.map((author) => author.title)} />
+          {workflowStatusBadge?.icon && (
+            <div className='absolute top-0 right-0 rounded-full leading-none bg-background border border-foreground/30'>
+              <workflowStatusBadge.icon
+                {...workflowStatusBadge.iconProps}
+                size={14}
+              />
+            </div>
+          )}
+        </div>
 
-          <div className={cn('hidden items-center @3xl/view:flex', isUsedTimeless && 'opacity-60')}>
-            <SluglineButton value={slugline} />
+        <div className='flex-1 min-w-0'>
+          <div className='flex flex-col gap-3 @md/card:flex-row @md/card:items-start @md/card:justify-between'>
+            <div className='min-w-0 flex-1'>
+              <div>
+                <span
+                  className={cn(
+                    'font-semibold leading-tight group-hover/assrow:underline',
+                    isUsedTimeless && 'text-muted-foreground'
+                  )}
+                >
+                  {title}
+                </span>
+              </div>
+
+              {(slugline || authors.length > 0) && (
+                <Tooltip
+                  content={(
+                    <div className='flex flex-col gap-0.5'>
+                      {slugline && <div>{slugline}</div>}
+                      {authors.map((a) => (
+                        <div key={a.uuid || a.title}>{a.title}</div>
+                      ))}
+                    </div>
+                  )}
+                >
+                  <div
+                    className={cn(
+                      'mt-1 text-sm text-muted-foreground truncate',
+                      isUsedTimeless && 'opacity-60'
+                    )}
+                  >
+                    {[slugline, ...authors.map((a) => a.title)].filter(Boolean).join(' · ')}
+                  </div>
+                </Tooltip>
+              )}
+
+              {!!description && (
+                <div className='mt-2 font-light text-sm line-clamp-2'>
+                  {description}
+                </div>
+              )}
+
+              <RelatedWires wires={wires} />
+            </div>
+
+            {(assignmentTime || isVisualType) && (
+              <div className='shrink-0 flex flex-col gap-2 @md/card:w-32'>
+                {assignmentTime && (
+                  <div className='whitespace-nowrap'>
+                    <AssignmentTimeDisplay date={assignmentTime} icon={TimeIcon} />
+                  </div>
+                )}
+                {isVisualType && (
+                  <AssignmentStatus
+                    isVisualAssignment
+                    ydoc={ydoc}
+                    path={`meta.core/assignment[${index}].data.status`}
+                    workflowState={workflowState}
+                  />
+                )}
+              </div>
+            )}
           </div>
         </div>
 
-        <div className='flex grow items-center justify-end gap-1.5'>
-          <div className='whitespace-nowrap flex items-center gap-1'>
-            {assignmentTime && <AssignmentTimeDisplay date={assignmentTime} icon={TimeIcon} />}
-          </div>
-
+        {/* Actions: edit pencil + dot menu */}
+        <div className='flex items-center gap-1 shrink-0'>
           <Button
             disabled={!onSelect}
             variant='ghost'
@@ -429,52 +510,6 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
 
           {!inProgress && <DotMenu items={menuItems} />}
         </div>
-      </div>
-
-      <div className='flex flex-row text-[15px] font-medium justify-between pr-2'>
-        <div className='flex items-center gap-2 px-2'>
-          <AssignmentStatus
-            isVisualAssignment={isVisualAssignmentType(assignmentType)}
-            ydoc={ydoc}
-            path={`meta.core/assignment[${index}].data.status`}
-            workflowState={workflowState}
-          />
-          <HastIndicator documentId={deliverableId} />
-          <span
-            className={cn(
-              'leading-relaxed group-hover/assrow:underline',
-              isUsedTimeless && 'text-muted-foreground'
-            )}
-          >
-            {title}
-          </span>
-        </div>
-        <div className='flex items-center gap-2'>
-          {/* FIXME: Disable until we have an idea of how this should be clear to end-user
-          <AssignmentVisibility
-            ydoc={ydoc}
-            path={`meta.core/assignment[${index}].data.public`}
-            editable={false}
-            disabled={false}
-          /> */}
-        </div>
-      </div>
-
-      {
-        !!description && (
-          <div className='flex gap-2'>
-            <div style={{ minWidth: 18, height: 18 }} className='pl-2' />
-            <div className='font-light px-2'>
-              {description}
-            </div>
-          </div>
-        )
-      }
-
-      <RelatedWires wires={wires} />
-
-      <div className='flex flex-row @3xl/view:hidden'>
-        <SluglineButton value={slugline} />
       </div>
 
       {showVerifyDialog && (

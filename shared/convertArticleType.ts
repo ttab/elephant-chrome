@@ -172,7 +172,8 @@ export function deriveNewPlanning({
  * `rel='deliverable'`. Returns a new Document proto; does not mutate.
  *
  * When `sourceAssignment` is provided, the new assignment inherits its
- * internal description so manually entered context survives conversion.
+ * internal description and any `core/author` `rel='assignee'` links so
+ * manually entered context and assignees survive conversion.
  */
 export function attachArticleAssignment({
   planning,
@@ -190,12 +191,17 @@ export function attachArticleAssignment({
   const assignmentIso = `${targetDate}T09:00:00Z`
   const slugline = planning.meta.find((m) => m.type === 'tt/slugline')?.value
   const inheritedInternalDescription = getInternalDescription(sourceAssignment)
+  const inheritedAssignees = (sourceAssignment?.links ?? [])
+    .filter((link) => link.type === 'core/author' && link.rel === 'assignee')
+    .map((link) => Block.create({ ...link }))
 
   const assignment = assignmentPlanningTemplate({
     assignmentType: 'text',
     planningDate: targetDate,
     title: articleTitle,
     slugLine: slugline,
+    // Assignees are appended directly below — the template only supports a
+    // single assignee but a source assignment can carry several authors.
     assignee: null,
     assignmentData: {
       public: 'true',
@@ -230,6 +236,7 @@ export function attachArticleAssignment({
     meta: cleanedMeta,
     links: [
       ...assignment.links,
+      ...inheritedAssignees,
       Block.create({
         type: 'core/article',
         uuid: articleId,
