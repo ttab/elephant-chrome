@@ -40,10 +40,9 @@ export function printArticlesListColumns({ printFlows = [] }: {
           </span>
         )
       },
-      accessorFn: (data) => (data.fields['workflow_state'].values[0]),
+      accessorFn: (data) => data.fields['workflow_state']?.values[0] || 'draft',
       cell: ({ row }) => {
-        const status = row.original.fields['workflow_checkpoint']?.values[0]
-          || row.original.fields['workflow_state']?.values[0] || 'draft'
+        const status = row.getValue<string>('workflowState') || 'draft'
         return <DocumentStatus type='tt/print-article' status={status} />
       },
       filterFn: (row, id, value: string[]) =>
