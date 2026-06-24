@@ -149,7 +149,9 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
       }
     }
 
-    if (publishTime) {
+    // Only a scheduled (withheld) deliverable surfaces the publish time; once
+    // published or otherwise out of withheld it falls back to start/end below.
+    if (publishTime && workflowState === 'withheld') {
       return {
         time: [new Date(publishTime)],
         tooltip: t('planning:assignment.publishTime'),
@@ -172,7 +174,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
         type: assignmentType
       }
     }
-  }, [publishTime, assignmentType, startTime, endTime, publishSlot, t])
+  }, [publishTime, workflowState, assignmentType, startTime, endTime, publishSlot, t])
 
   const isVisualType = isVisualAssignmentType(assignmentType)
 
@@ -191,10 +193,12 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
       'start-end': ClockFadingIcon
     }
 
-    const type = publishTime ? 'publish' : endTime && startTime && endTime !== startTime ? 'start-end' : 'start'
+    const type = (publishTime && workflowState === 'withheld')
+      ? 'publish'
+      : endTime && startTime && endTime !== startTime ? 'start-end' : 'start'
 
     return timeIcons[type] || <></>
-  }, [publishTime, endTime, startTime])
+  }, [publishTime, workflowState, endTime, startTime])
 
   // Open a deliverable (e.g. article, flash, editorial-info) callback helper.
   // For readOnly pass version object

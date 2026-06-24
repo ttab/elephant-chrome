@@ -75,7 +75,7 @@ function getAssignmentTime({ assignment, timeZone, locale, statusData, compareDa
     return getTimeslotLabel(parseInt(assignment.data.publish_slot), t)
   }
 
-  if (assignment.data.publish && ['withheld', 'usable'].includes(assignment._deliverableStatus || '')) {
+  if (assignment.data.publish && assignment._deliverableStatus === 'withheld') {
     return format(toZonedTime(parseISO(assignment.data.publish), timeZone), 'HH:mm')
   }
 
@@ -109,9 +109,8 @@ function getTimeTooltip({ assignment, statusData, timeZone, locale, compareDate,
   compareDate?: Date
   t: (key: string) => string
 }): string {
-  if (assignment.data.publish && ['withheld', 'usable'].includes(assignment._deliverableStatus || '')) {
-    const label = assignment._deliverableStatus === 'withheld' ? t('core:status.withheld') : t('core:status.usable')
-    return `${label} ${format(toZonedTime(parseISO(assignment.data.publish), timeZone), 'HH:mm')}`
+  if (assignment.data.publish && assignment._deliverableStatus === 'withheld') {
+    return `${t('core:status.withheld')} ${format(toZonedTime(parseISO(assignment.data.publish), timeZone), 'HH:mm')}`
   }
   if (statusData?.modified) {
     if (compareDate) {
