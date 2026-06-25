@@ -1,4 +1,4 @@
-import React, { type Dispatch, type SetStateAction, type JSX, useRef, useState, type PropsWithChildren, useCallback, useMemo, createContext } from 'react'
+import React, { type Dispatch, type SetStateAction, type JSX, useRef, useState, type PropsWithChildren, useCallback, useMemo } from 'react'
 import { ValidationAlert } from '../ValidationAlert'
 import { type ValidateState, type ValidateStateRef } from '@/types/index'
 import { cn } from '@ttab/elephant-ui/utils'
@@ -10,7 +10,6 @@ import { cloneChildrenWithProps } from './lib/cloneChildren'
  * can show regardless of document sync state. Non-dialog forms validate on mount and
  * rely on the sync state to avoid flashing errors before the document has loaded.
  */
-export const FormAsDialogContext = createContext<boolean>(false)
 
 export interface OnValidation {
   block: string
@@ -80,12 +79,12 @@ export const Root = ({ children, asDialog = false, className }: PropsWithChildre
   )
 
   return (
-    <FormAsDialogContext.Provider value={asDialog}>
+    <>
       <ValidationAlert validateStateRef={validateStateRef} />
       <div className={cn(formRootStyle, className)}>
         {cloneChildrenWithProps<FormProps>(children, inheritedProps)}
       </div>
-    </FormAsDialogContext.Provider>
+    </>
   )
 }
 
