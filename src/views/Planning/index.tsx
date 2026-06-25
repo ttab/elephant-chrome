@@ -215,9 +215,9 @@ const PlanningViewContent = (props: ViewProps & {
               />
             </Form.Title>
 
-            <div className='@container w-full'>
-              <div className='grid grid-cols-1 @3xl:grid-cols-[minmax(0,1fr)_auto] gap-x-6 gap-y-4'>
-                <div className='flex flex-col gap-4'>
+            <Form.Columns
+              left={(
+                <>
                   <TextBox
                     ydoc={ydoc}
                     value={publicDescription}
@@ -231,32 +231,30 @@ const PlanningViewContent = (props: ViewProps & {
                     icon={<MessageCircleMoreIcon size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />}
                     placeholder={t('planning:description.internal')}
                   />
-                </div>
+                </>
+              )}
+            >
+              <Form.Group icon={CalendarIcon}>
+                <PlanDate ydoc={ydoc} asDialog={!!props.asDialog} />
+              </Form.Group>
 
-                <div className='flex flex-col gap-4'>
-                  <Form.Group icon={CalendarIcon}>
-                    <PlanDate ydoc={ydoc} asDialog={!!props.asDialog} />
-                  </Form.Group>
+              <Form.Group icon={TagsIcon}>
+                {!hasLooseSlugline && (
+                  <SluglineEditable
+                    ydoc={ydoc}
+                    value={slugline}
+                    documentStatus={documentStatus?.name}
+                  />
+                )}
 
-                  <Form.Group icon={TagsIcon}>
-                    {!hasLooseSlugline && (
-                      <SluglineEditable
-                        ydoc={ydoc}
-                        value={slugline}
-                        documentStatus={documentStatus?.name}
-                      />
-                    )}
+                <Newsvalue ydoc={ydoc} path='meta.core/newsvalue[0].value' />
+              </Form.Group>
 
-                    <Newsvalue ydoc={ydoc} path='meta.core/newsvalue[0].value' />
-                  </Form.Group>
-
-                  <Form.Group icon={TagsIcon}>
-                    <Section ydoc={ydoc} path='links.core/section[0]' />
-                    <Story ydoc={ydoc} path='links.core/story[0]' />
-                  </Form.Group>
-                </div>
-              </div>
-            </div>
+              <Form.Group icon={TagsIcon}>
+                <Section ydoc={ydoc} path='links.core/section[0]' />
+                <Story ydoc={ydoc} path='links.core/story[0]' />
+              </Form.Group>
+            </Form.Columns>
           </Form.Content>
 
           <Form.Table>
