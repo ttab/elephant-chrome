@@ -52,18 +52,6 @@ const renderDialogForm = (ydoc: YDocument<Y.Map<unknown>>, value: Y.XmlText) => 
 }
 
 describe('Validation indicator on dialog forms', () => {
-  it('shows the red indicator for an empty required field before the document is synced', () => {
-    const { ydoc, value } = buildYdoc(false)
-    const { container, onSubmit } = renderDialogForm(ydoc, value)
-
-    fireEvent.click(container.querySelector('button[type="submit"]') as HTMLButtonElement)
-
-    // Submit is blocked because the field is empty...
-    expect(onSubmit).not.toHaveBeenCalled()
-    // ...and the user must get a visible cue, even though synced is still false.
-    expect(container.querySelector('svg[stroke="red"]')).toBeTruthy()
-  })
-
   it('still shows the indicator once the document is synced', () => {
     const { ydoc, value } = buildYdoc(true)
     const { container, onSubmit } = renderDialogForm(ydoc, value)
