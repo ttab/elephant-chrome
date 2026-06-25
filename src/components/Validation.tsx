@@ -1,7 +1,7 @@
 import { TriangleAlertIcon } from '@ttab/elephant-ui/icons'
-import { useEffect, useMemo, type JSX } from 'react'
+import { useContext, useEffect, useMemo, type JSX } from 'react'
 import type { OnValidation } from './Form/Root'
-import { type FormProps } from './Form/Root'
+import { FormAsDialogContext, type FormProps } from './Form/Root'
 import { useYValue, type YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 
@@ -17,6 +17,13 @@ export const Validation = (props: {
   const { ydoc, rootMap, children, path, label, block, compareValues, onValidation, validateStateRef } = props
   const [value] = useYValue<string | undefined>(rootMap ?? ydoc.ele, path)
   const { synced } = ydoc
+  const asDialog = useContext(FormAsDialogContext)
+
+  // The indicator only renders for genuinely invalid fields (isValid already accounts
+  // for validateForm). On dialog forms validation is surfaced after a submit attempt,
+  // so the indicator must show even before the document has synced. On non-dialog forms
+  // it stays gated on synced to avoid flashing errors while the document is still loading.
+  const showWhenInvalid = synced || asDialog
 
   const isValid = useMemo(() => {
     return onValidation
@@ -39,7 +46,7 @@ export const Validation = (props: {
 
   return (
     <div className='w-full relative flex items-center'>
-      {!isValid && synced && (
+      {!isValid && showWhenInvalid && (
         <div className='absolute -top-1 right-0 h-2 w-2 z-10'>
           <TriangleAlertIcon color='red' fill='#ffffff' size={15} strokeWidth={1.75} />
         </div>
