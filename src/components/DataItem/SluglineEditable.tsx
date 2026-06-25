@@ -22,7 +22,6 @@ export const SluglineEditable = ({ ydoc, rootMap, value, documentStatus, onValid
   const editable = documentStatus !== 'usable'
   const [slugLine] = useYValue<Y.XmlText | string>(ydoc.ele, path)
   const [assignments] = useYValue<Block[]>(ydoc.ele, ['meta', 'core/assignment'])
-  const [planningSlugline] = useYValue<string | undefined>(ydoc.ele, 'meta.tt/slugline[0].value')
   const { data: session } = useSession()
   const [inProgressAssignment] = useYValue<Block>(ydoc.ctx, `core/assignment.${session?.user.sub || ''}`)
   const { t } = useTranslation()
@@ -63,13 +62,8 @@ export const SluglineEditable = ({ ydoc, rootMap, value, documentStatus, onValid
       }
     }
 
-    // An assignment slugline must also differ from the planning's own slugline.
-    if (planningSlugline && planningSlugline.trim().length > 0) {
-      collected.push(planningSlugline)
-    }
-
     return collected
-  }, [assignments, planningSlugline, inProgressAssignment, compareValues, path, hasLooseSlugline])
+  }, [assignments, inProgressAssignment, compareValues, path, hasLooseSlugline])
 
   if (!editable && typeof slugLine !== 'string') {
     return <></>
