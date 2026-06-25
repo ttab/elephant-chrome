@@ -4,13 +4,6 @@ import { type ValidateState, type ValidateStateRef } from '@/types/index'
 import { cn } from '@ttab/elephant-ui/utils'
 import { cloneChildrenWithProps } from './lib/cloneChildren'
 
-/**
- * Whether the enclosing form is rendered as a dialog. Dialog forms only surface
- * validation after a submit attempt (validateForm starts false), so their indicators
- * can show regardless of document sync state. Non-dialog forms validate on mount and
- * rely on the sync state to avoid flashing errors before the document has loaded.
- */
-
 export interface OnValidation {
   block: string
   label: string
