@@ -173,7 +173,9 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
       }
 
       await snapshotDocument(resolvedPlanningId, {}, planningYdoc.document)
-      const timeUpdated = await updateAssignmentTime(ydoc.id, resolvedPlanningId, newStatus, newTime, t)
+      const timeUpdated = await updateAssignmentTime(
+        ydoc.id, resolvedPlanningId, newStatus, newTime, documentType, t
+      )
 
       // If scheduling and the publish time could not be written, abort the status
       // change so the article is not left "withheld" without a stored publish time.
@@ -183,7 +185,7 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
     }
 
     return true
-  }, [planningId, propPlanningId, dispatch, ydoc.id, history, state.viewRegistry, viewId, planningYdoc.document, t, repository, session?.accessToken, workflowStatus, embargoUntil, wireUnverified])
+  }, [planningId, propPlanningId, dispatch, ydoc.id, history, state.viewRegistry, viewId, planningYdoc.document, t, repository, session?.accessToken, workflowStatus, documentType, embargoUntil, wireUnverified])
 
   const isReadOnlyAndUpdated = workflowStatus && workflowStatus?.name !== 'usable' && workflowStatus?.name !== 'withheld' && readOnly
   const isUnpublished = workflowStatus?.name === 'unpublished'
