@@ -2,6 +2,7 @@ import { type JSX, useMemo, useCallback, useState, useRef, useEffect, useLayoutE
 import { fields, type Wire, type WireFields } from '@/shared/schemas/wire'
 import { getWireState } from '@/lib/getWireState'
 import { useDocuments } from '@/hooks/index/useDocuments'
+import { sortHits } from '@/hooks/index/useDocuments/lib/mergeSubscriptionUpdates'
 import { constructQuery } from '../lib/constructQuery'
 import { SortingV1 } from '@ttab/elephant-api/index'
 import { StreamEntry } from './StreamEntry'
@@ -190,7 +191,9 @@ export const Stream = memo(({
           byId.set(wire.id, existing ? { ...existing, fields: wire.fields } : wire)
         })
 
-        next = Array.from(byId.values())
+        // Re-sort so an updated wire (newer `modified`) moves to its correct
+        // position instead of keeping the slot the previous version had.
+        next = sortHits(Array.from(byId.values()), sort)
       }
 
       const wireStatusFilter = wireStream.filters.find((f) => f.type === 'wireStatus')
@@ -204,7 +207,7 @@ export const Stream = memo(({
     if (!isLoading) {
       loadingRef.current = false
     }
-  }, [data, isLoading, page, wireStream.filters])
+  }, [data, isLoading, page, wireStream.filters, sort])
 
   // Reset to page 1 when debounced filters change.
   // Don't clear allData here — the data effect replaces it on page 1 once the fetch completes,
