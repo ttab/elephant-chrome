@@ -13,8 +13,8 @@ import { ConvertToTimelessDialog } from './ConvertToTimelessDialog'
 
 /**
  * Convert button for article ↔ timeless article. Both directions go
- * through a dialog: timeless→article needs a target date + source planning,
- * article→timeless needs a subject category.
+ * through a dialog: timeless→article lets the editor pick a target date and an
+ * optional planning to assign into, article→timeless needs a subject category.
  */
 export const ArticleTypeConversion = ({ ydoc, documentType }: {
   ydoc: YDocument<Y.Map<unknown>>
