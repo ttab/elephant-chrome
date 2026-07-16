@@ -4,7 +4,7 @@ import { toast } from 'sonner'
 const BASE_URL = import.meta.env.BASE_URL || ''
 
 export async function updateAssignmentTime<Ns extends Namespace>(
-  deliverableId: string, planningId: string, newStatus: string, newTime: Date, t: TFunction<Ns>
+  deliverableId: string, planningId: string, newStatus: string, newTime: Date | undefined, t: TFunction<Ns>
 ): Promise<boolean> {
   try {
     const response = await fetch(`${BASE_URL}/api/documents/${planningId}`, {

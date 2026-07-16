@@ -69,6 +69,13 @@ export const StatusMenuLogic = ({ ydoc, propPlanningId, view }: StatusMenuHeader
       })
     }
 
+    // Leaving the scheduled (withheld) state clears the stale publish time stored
+    // on the planning assignment. structureAssignments falls back to the status
+    // modified time for display and sorting.
+    if (workflowStatus?.name === 'withheld' && newStatus !== 'withheld' && ydoc.id && planningId) {
+      await updateAssignmentTime(ydoc.id, planningId, newStatus, undefined, t)
+    }
+
     // The logic for updating publish time is identical for both original components
     if (newStatus !== 'withheld') {
       return true

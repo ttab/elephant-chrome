@@ -106,6 +106,15 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
       }
     }
 
+    // Publishing a scheduled article (withheld -> usable) clears the stale
+    // publish time stored on the planning assignment. structureAssignments
+    // falls back to the status modified time for display and sorting. A failed
+    // clear must not block the publish itself.
+    if (workflowStatus?.name === 'withheld' && newStatus === 'usable' && planningId) {
+      await snapshotDocument(planningId, {}, planningYdoc.document)
+      await updateAssignmentTime(ydoc.id, planningId, newStatus, undefined, t)
+    }
+
     // Transitioning from a used/readonly state needs a direct status write,
     // since the default snapshotDocument path expects a live Yjs session
     // which we don't have in the readonly editor.
