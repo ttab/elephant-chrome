@@ -195,10 +195,11 @@ export async function fetchAssignments({ index, repository, type, requireDeliver
     }
   })
 
-  // Sort assignments with fullday first, then in time order
+  // Sort assignments with fullday first, then in time order. Only a scheduled
+  // (withheld) deliverable sorts by its stored publish time.
   filteredTextAssignments.sort((a, b) => {
-    const at = a.data.publish ? parseISO(a.data.publish) : 0
-    const bt = b.data.publish ? parseISO(b.data.publish) : 0
+    const at = (a._deliverableStatus === 'withheld' && a.data.publish) ? parseISO(a.data.publish) : 0
+    const bt = (b._deliverableStatus === 'withheld' && b.data.publish) ? parseISO(b.data.publish) : 0
 
     return bt.valueOf() - at.valueOf()
   })
