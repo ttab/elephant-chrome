@@ -3,6 +3,7 @@ import type { KeyedMutator, SWRResponse } from 'swr'
 import useSWR from 'swr'
 import { useRegistry } from '@/hooks/useRegistry'
 import { fetch } from './lib/fetch'
+import { mergeSubscriptionUpdates } from './lib/mergeSubscriptionUpdates'
 import { useTable } from '@/hooks/useTable'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { SubscriptionItem, SubscriptionReference } from '@ttab/elephant-api/index'
@@ -72,6 +73,7 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
   const mutateRef = useRef<KeyedMutator<T[]> | null>(null)
   const dataRef = useRef<T[] | undefined>(undefined)
   const optionsRef = useRef(options)
+  const sortRef = useRef(sort)
   const { t } = useTranslation('common')
 
   // Options that change the fetch shape are part of the cache key so toggling
@@ -125,7 +127,8 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
     subscriptionsRef.current = subscriptions
     mutateRef.current = mutate
     dataRef.current = data
-  }, [subscriptions, mutate, data])
+    sortRef.current = sort
+  }, [subscriptions, mutate, data, sort])
 
   // Set table data after fetch
   useEffect(() => {
@@ -150,7 +153,8 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
           subscriptions: subscriptionsRef.current ?? [],
           mutate: mutateRef.current!,
           abortController,
-          options: optionsRef.current
+          options: optionsRef.current,
+          sort: sortRef.current
         })
       } catch (error) {
         if (error instanceof AbortError) {
@@ -221,7 +225,8 @@ async function pollSubscriptions<T extends HitV1>({
   data = [],
   mutate,
   abortController,
-  options
+  options,
+  sort
 }: {
   index: Index
   data?: T[]
@@ -230,6 +235,7 @@ async function pollSubscriptions<T extends HitV1>({
   mutate: KeyedMutator<T[]>
   abortController?: AbortController
   options?: useDocumentsFetchOptions
+  sort?: SortingV1[]
 }): Promise<SubscriptionReference[]> {
   try {
     const response: PollSubscriptionResponse = await index.pollSubscription({
@@ -271,19 +277,10 @@ async function pollSubscriptions<T extends HitV1>({
         await mutate()
         return newSubscriptions
       }
-      // Build a map of matched items by id for quick lookup
-      const matchedMap = new Map<string, SubscriptionItem>(
-        matchedItems.map((item) => [item.id, item])
-      )
-      // create a new array with updated fields and do a optimistic update
-      const updatedData = data.map((obj) =>
-        matchedMap.has(obj.id)
-          ? {
-              ...obj,
-              fields: { ...obj.fields, ...matchedMap.get(obj.id)?.fields }
-            }
-          : obj
-      )
+      // Optimistically patch the changed fields and re-sort, so a new wire
+      // version (which bumps `modified`) moves to its correct position instead
+      // of keeping the slot the previous version had.
+      const updatedData = mergeSubscriptionUpdates(data, matchedItems, sort)
 
       await mutate(updatedData, false)
     }
