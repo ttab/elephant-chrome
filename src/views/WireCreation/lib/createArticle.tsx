@@ -213,7 +213,10 @@ export async function createArticle({
     title: assignmentTitle || '',
     slugline: assignmentSlugline,
     priority: resolvedNewsValue ? parseInt(resolvedNewsValue) : undefined,
-    publicVisibility: false,
+    // A wire-sourced article is an ordinary text assignment, so it must be
+    // public like the ones created from the planning view. Only flash and
+    // timeless assignments are non-public.
+    publicVisibility: true,
     localDate,
     isoDateTime,
     section,

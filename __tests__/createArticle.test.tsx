@@ -212,6 +212,27 @@ describe('createArticle', () => {
     })
   })
 
+  describe('assignment visibility', () => {
+    it('creates the assignment as public, like assignments added from the planning view', async () => {
+      // Text assignments are part of the planning's published artifact. Only
+      // flash and timeless assignments are non-public — a wire-sourced article
+      // is an ordinary text assignment.
+      const repository = buildRepository()
+
+      await createArticle({
+        ...baseArgs,
+        ydoc: buildYdoc({ title: 'T' }),
+        repository,
+        session: buildSession(),
+        translationMode: undefined
+      })
+
+      expect(mockAddAssignment).toHaveBeenCalledWith(
+        expect.objectContaining({ type: 'text', publicVisibility: true })
+      )
+    })
+  })
+
   describe('translation failure', () => {
     it('throws TranslationError and does NOT save or link when translation rejects', async () => {
       const repository = buildRepository()
