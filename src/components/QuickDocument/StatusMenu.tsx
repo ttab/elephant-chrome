@@ -85,7 +85,9 @@ export const StatusMenuLogic = ({ ydoc, propPlanningId, view }: StatusMenuHeader
       : new Date()
 
     if (ydoc.id && planningId) {
-      const timeUpdated = await updateAssignmentTime(ydoc.id, planningId, newStatus, newPublishTime, t)
+      const timeUpdated = await updateAssignmentTime(
+        ydoc.id, planningId, newStatus, newPublishTime, workflowStatus?.type, t
+      )
 
       // Abort scheduling if the publish time could not be written, so the document
       // is not left "withheld" without a stored publish time.
