@@ -9,6 +9,8 @@ import { constructQuery } from '@/hooks/index/useDocuments/queries/views/factbox
 import { fields } from '@/shared/schemas/factbox'
 import { Pagination } from '@/components/Table/Pagination'
 
+const PAGE_SIZE = 50
+
 export const FactboxList = ({ columns }: {
   columns: ColumnDef<Factbox, unknown>[]
 }): JSX.Element => {
@@ -28,12 +30,12 @@ export const FactboxList = ({ columns }: {
         ? 'only'
         : true
 
-  useDocuments<Factbox, FactboxFields>({
+  const { total } = useDocuments<Factbox, FactboxFields>({
     documentType: 'core/factbox',
     fields,
     query: constructQuery(filter),
     sort: [{ field: 'modified', desc: true }],
-    size: 50,
+    size: PAGE_SIZE,
     page: currentPage,
     options: {
       subscribe: true,
@@ -49,7 +51,13 @@ export const FactboxList = ({ columns }: {
         type='Factbox'
         columns={columns}
       />
-      <Pagination />
+      {/* Only the standalone-only mode has a hit count that matches the rows on
+          screen. The article-side rows are expanded from articles and merged in,
+          so in the other two modes the page count stays unknown. */}
+      <Pagination
+        total={withArticleFactboxes === false ? total : undefined}
+        pageSize={PAGE_SIZE}
+      />
     </>
   )
 }
