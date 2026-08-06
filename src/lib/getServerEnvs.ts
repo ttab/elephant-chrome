@@ -18,6 +18,8 @@ interface ServerEnvs {
   systemLanguage: string
   imageSearchProvider: string
   environment: string
+  /** Unique identifier for the customer deploy. */
+  tenant: string
 }
 
 type FeatureFlags = Record<string, boolean>
@@ -72,6 +74,10 @@ export async function getServerEnvs(): Promise<ServerConfig> {
       throw new Error('missing \'environment\' server environment variable')
     }
 
+    if (!data['tenant'] || typeof data['tenant'] !== 'string') {
+      throw new Error('missing \'tenant\' server environment variable')
+    }
+
     return {
       urls: {
         ...urls,
@@ -80,7 +86,8 @@ export async function getServerEnvs(): Promise<ServerConfig> {
       envs: {
         systemLanguage: data['systemLanguage'],
         imageSearchProvider: typeof data.imageSearchProvider === 'string' ? data.imageSearchProvider : '',
-        environment: typeof data['environment'] === 'string' ? data['environment'] : ''
+        environment: typeof data['environment'] === 'string' ? data['environment'] : '',
+        tenant: data['tenant']
       },
       featureFlags: {
         hasPrint: data['hasPrint'] ? !!data['hasPrint'] : false,

@@ -25,6 +25,7 @@ import logger from './lib/logger.js'
 import { pinoHttp } from 'pino-http'
 import assertEnvs from './lib/assertEnvs.js'
 import { setSystemLanguage } from '@/shared/getSystemLanguage.js'
+import { setTenant } from '@/shared/getTenant.js'
 import { authSessionMiddleware } from './utils/authSession.js'
 
 import Pyroscope from '@pyroscope/nodejs'
@@ -59,6 +60,7 @@ const PYROSCOPE_URL = process.env.PYROSCOPE_URL || ''
 export async function runServer(): Promise<string> {
   assertEnvs()
   setSystemLanguage(process.env.SYSTEM_LANGUAGE ?? '')
+  setTenant(process.env.TENANT ?? '')
 
   if (TLS_CERT_PATH && !TLS_KEY_PATH) {
     throw new Error('TLS_CERT_PATH is set but TLS_KEY_PATH is empty')

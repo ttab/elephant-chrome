@@ -18,7 +18,8 @@ function assertEnvs(): void {
     'HOST',
     'PORT',
     'BASE_URL',
-    'SYSTEM_LANGUAGE'
+    'SYSTEM_LANGUAGE',
+    'TENANT'
   ]
 
   envs.forEach((env) => {

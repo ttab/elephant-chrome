@@ -39,7 +39,9 @@ function mockUrl(url: string): unknown {
         userUrl: 'https://example.com/user',
         faroUrl: 'https://example.com/faro',
         baboonUrl: 'https://example.com/baboon',
-        systemLanguage: TESTING_LANGUAGE
+        systemLanguage: TESTING_LANGUAGE,
+        environment: 'test',
+        tenant: 'test-tenant'
       }
 
     case `${BASE_URL}/api/auth/session`:
