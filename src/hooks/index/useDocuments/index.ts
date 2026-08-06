@@ -53,7 +53,8 @@ class AbortError extends Error { }
  * @param {SortingV1[]} [params.sort] - Sorting options for the documents.
  * @param {useDocumentsFetchOptions} [params.options] - Additional options for fetching documents.
  *
- * @returns {SWRResponse<T[], Error>} An object containing the fetched data, error, and SWR utilities.
+ * @returns {SWRResponse<T[], Error> & { total?: number }} An object containing the fetched data,
+ *   the total number of hits in the index for the query, error, and SWR utilities.
  */
 export const useDocuments = <T extends HitV1, F>({ documentType, query, size, page, fields, sort, options, disabled }: {
   documentType: string
@@ -64,11 +65,12 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
   sort?: SortingV1[]
   options?: useDocumentsFetchOptions
   disabled?: boolean
-}): SWRResponse<T[], Error> => {
+}): SWRResponse<T[], Error> & { total?: number } => {
   const { data: session } = useSession()
   const { index, repository } = useRegistry()
   const { setData } = useTable<T>()
   const [subscriptions, setSubscriptions] = useState<SubscriptionReference[]>()
+  const [total, setTotal] = useState<number | undefined>()
   const subscriptionsRef = useRef<SubscriptionReference[] | undefined>(subscriptions)
   const mutateRef = useRef<KeyedMutator<T[]> | null>(null)
   const dataRef = useRef<T[] | undefined>(undefined)
@@ -111,7 +113,8 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
       fields,
       sort,
       options,
-      setSubscriptions
+      setSubscriptions,
+      setTotal
     }),
   [index, repository, session, page, size, documentType, query, fields, sort, options])
 
@@ -215,7 +218,7 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index, options?.subscribe, session, subscriptions])
 
-  return { data, error, mutate, isValidating, isLoading }
+  return { data, error, mutate, isValidating, isLoading, total }
 }
 
 async function pollSubscriptions<T extends HitV1>({
