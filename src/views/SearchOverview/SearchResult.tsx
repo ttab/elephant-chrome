@@ -17,6 +17,9 @@ import { useQuery } from '@/hooks/useQuery'
 import type { ColumnDef } from '@tanstack/react-table'
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
+import { Pagination } from '@/components/Table/Pagination'
+
+const PAGE_SIZE = 100
 
 export const SearchResult = ({ searchType, page }: {
   searchType: SearchKeys
@@ -33,9 +36,10 @@ export const SearchResult = ({ searchType, page }: {
 
   const searchParams = search[searchType].params(filter)
 
-  const { error, isLoading } = useDocuments<Planning | Event | Article, PlanningFields | EventFields>({
+  const { error, isLoading, total } = useDocuments<Planning | Event | Article, PlanningFields | EventFields>({
     ...searchParams,
     page,
+    size: PAGE_SIZE,
     options: {
       setTableData: true
     }
@@ -72,6 +76,9 @@ export const SearchResult = ({ searchType, page }: {
               />
             </>
           )}
+      <div className='flex justify-center w-full'>
+        <Pagination total={total} pageSize={PAGE_SIZE} />
+      </div>
     </>
   )
 }

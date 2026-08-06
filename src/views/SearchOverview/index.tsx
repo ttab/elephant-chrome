@@ -6,7 +6,6 @@ import { SearchResult } from './SearchResult'
 import { useRegistry } from '@/hooks/useRegistry'
 import { useSections } from '@/hooks/useSections'
 import { SearchDropdown, searchTypes as validSearchTypes } from './SearchDropdown'
-import { Pagination } from '../../components/Table/Pagination'
 import { type ViewMetadata } from '@/types'
 import { useQuery } from '@/hooks/useQuery'
 import { useOrganisers } from '@/hooks/useOrganisers'
@@ -101,14 +100,7 @@ export const Search = (): JSX.Element => {
                   </div>
                 </div>
               )
-            : (
-                <>
-                  <SearchResult searchType={searchType} page={Number(query?.page || 1)} />
-                  <div className='flex justify-center w-full'>
-                    <Pagination />
-                  </div>
-                </>
-              )}
+            : <SearchResult searchType={searchType} page={Number(query?.page || 1)} />}
         </View.Content>
       </TableProvider>
     </View.Root>

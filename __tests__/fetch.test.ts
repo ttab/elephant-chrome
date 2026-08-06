@@ -98,6 +98,42 @@ describe('fetch: withArticleFactboxes "only" mode', () => {
     expect(setSubscriptions).not.toHaveBeenCalled()
   })
 
+  it('reports the index hit total through setTotal', async () => {
+    const index = makeIndex(
+      vi.fn().mockResolvedValue({ ok: true, hits: [], subscriptions: [], total: 250 })
+    )
+    const setTotal = vi.fn()
+
+    await fetch<HitV1, never>({
+      index,
+      session,
+      setTotal,
+      documentType: 'core/article'
+    })
+
+    expect(setTotal).toHaveBeenCalledWith(250)
+  })
+
+  it('clears the total when standalone is skipped in "only" mode', async () => {
+    // Otherwise the previously fetched mode's total would linger and be read as
+    // if it described the article-embedded rows.
+    const index = makeIndex()
+    const repository = {} as unknown as Repository
+    const setTotal = vi.fn()
+    vi.mocked(withArticleFactboxesMock).mockResolvedValue([])
+
+    await fetch<HitV1, never>({
+      index,
+      session,
+      repository,
+      setTotal,
+      documentType: 'core/factbox',
+      options: { withArticleFactboxes: 'only' }
+    })
+
+    expect(setTotal).toHaveBeenCalledWith(undefined)
+  })
+
   it('throws when index or accessToken is missing regardless of mode', async () => {
     await expect(
       fetch<HitV1, never>({

@@ -10,6 +10,8 @@ import { useUserTracker } from '@/hooks/useUserTracker'
 import { timelessParams } from '@/hooks/index/useDocuments/queries/views/timeless'
 import { columnFilterToQuery } from '@/lib/loadFilters'
 
+const PAGE_SIZE = 100
+
 export const TimelessList = ({ columns }: {
   columns: ColumnDef<TimelessArticle, unknown>[]
 }): JSX.Element => {
@@ -27,9 +29,10 @@ export const TimelessList = ({ columns }: {
     return Array.isArray(found?.value) ? (found.value as string[]) : undefined
   }, [columnFilters])
 
-  useDocuments<TimelessArticle, TimelessArticleFields>({
+  const { total } = useDocuments<TimelessArticle, TimelessArticleFields>({
     ...timelessParams(status),
     page: typeof filter.page === 'string' ? parseInt(filter.page) : undefined,
+    size: PAGE_SIZE,
     options: {
       subscribe: true,
       setTableData: true
@@ -43,7 +46,7 @@ export const TimelessList = ({ columns }: {
         searchType='Editor'
         columns={columns as ColumnDef<TimelessArticle>[]}
       />
-      <Pagination />
+      <Pagination total={total} pageSize={PAGE_SIZE} />
     </>
   )
 }

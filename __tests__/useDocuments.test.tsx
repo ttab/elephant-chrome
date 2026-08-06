@@ -103,3 +103,38 @@ describe('useDocuments error logging', () => {
     consoleErrorSpy.mockRestore()
   })
 })
+
+describe('useDocuments total', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('surfaces the total number of hits reported by the fetch', async () => {
+    fetchMock.mockImplementation(({ setTotal }: {
+      setTotal?: (total: number) => void
+    }) => {
+      setTotal?.(250)
+      return Promise.resolve([])
+    })
+
+    const { result } = renderHook(
+      () => useDocuments({ documentType: 'core/article' }),
+      { wrapper }
+    )
+
+    await waitFor(() => {
+      expect(result.current.total).toBe(250)
+    })
+  })
+
+  it('leaves total undefined until the fetch reports one', () => {
+    fetchMock.mockResolvedValue([])
+
+    const { result } = renderHook(
+      () => useDocuments({ documentType: 'core/article' }),
+      { wrapper }
+    )
+
+    expect(result.current.total).toBeUndefined()
+  })
+})

@@ -22,6 +22,7 @@ export async function fetch<T extends HitV1, F>({
   fields,
   sort,
   setSubscriptions,
+  setTotal,
   options
 }: {
   index: Index | undefined
@@ -34,6 +35,7 @@ export async function fetch<T extends HitV1, F>({
   fields?: F
   sort?: SortingV1[]
   setSubscriptions?: Dispatch<SetStateAction<SubscriptionReference[] | undefined>>
+  setTotal?: Dispatch<SetStateAction<number | undefined>>
   options?: useDocumentsFetchOptions
 }): Promise<T[]> {
   if (!index || !session?.accessToken) {
@@ -47,7 +49,7 @@ export async function fetch<T extends HitV1, F>({
   let result: T[] = []
 
   if (!skipStandalone) {
-    const { ok, hits, errorMessage, subscriptions } = await index.query<T, F>({
+    const { ok, hits, errorMessage, subscriptions, total } = await index.query<T, F>({
       documentType,
       fields,
       accessToken: session.accessToken,
@@ -66,7 +68,13 @@ export async function fetch<T extends HitV1, F>({
       setSubscriptions?.(subscriptions)
     }
 
+    setTotal?.(total)
+
     result = hits
+  } else {
+    // No standalone query means no hit count. Clear it rather than leaving the
+    // previous mode's total in place for the caller to read as current.
+    setTotal?.(undefined)
   }
 
   // Format planning result as assignments

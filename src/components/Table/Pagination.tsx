@@ -2,8 +2,9 @@ import { useCallback, type JSX } from 'react'
 import { ArrowLeftFromLineIcon, ArrowRightFromLineIcon } from '@ttab/elephant-ui/icons'
 import { useQuery } from '@/hooks'
 
-export const Pagination = ({ total }: {
+export const Pagination = ({ total, pageSize = 100 }: {
   total?: number
+  pageSize?: number
 }): JSX.Element => {
   const [{ page = '1' }, setQuery] = useQuery()
 
@@ -11,7 +12,11 @@ export const Pagination = ({ total }: {
     setQuery({ page: page.toString() })
   }, [setQuery])
 
-  const maxNumberOfPages = total && Math.floor((total) / 100) + 1
+  // Undefined when the caller doesn't know the number of hits, in which case
+  // the next page always stays reachable.
+  const maxNumberOfPages = total !== undefined
+    ? Math.max(1, Math.ceil(total / pageSize))
+    : undefined
 
   const buttons = [
     {
@@ -31,7 +36,7 @@ export const Pagination = ({ total }: {
       id: 'right-arrow',
       icon: ArrowRightFromLineIcon,
       onClick: () => setPage(Number(page) + 1),
-      disabled: Number(page) === maxNumberOfPages
+      disabled: maxNumberOfPages !== undefined && Number(page) >= maxNumberOfPages
     }
   ]
 
