@@ -14,7 +14,7 @@ const validPayload = {
   environment: 'stage'
 }
 
-function mockFetch(payload: Record<string, string>, ok = true, status = 200) {
+function mockFetch(payload: Record<string, string | boolean>, ok = true, status = 200) {
   vi.mocked(fetch).mockResolvedValueOnce({
     ok,
     status,
@@ -50,6 +50,47 @@ describe('getServerEnvs', () => {
     const { urls } = await getServerEnvs()
 
     expect(urls.repositoryEventsUrl.href).toBe('https://repo.example.com/sse')
+  })
+
+  it('reads feature flags as booleans', async () => {
+    mockFetch({
+      ...validPayload,
+      hasPrint: true,
+      hasHast: false,
+      hasLooseSlugline: true,
+      hasVignette: false
+    })
+
+    const { featureFlags } = await getServerEnvs()
+
+    expect(featureFlags).toEqual({
+      hasPrint: true,
+      hasHast: false,
+      hasLooseSlugline: true,
+      hasVignette: false
+    })
+  })
+
+  it('defaults feature flags to false when absent from the response', async () => {
+    mockFetch(validPayload)
+
+    const { featureFlags } = await getServerEnvs()
+
+    expect(featureFlags).toEqual({
+      hasPrint: false,
+      hasHast: false,
+      hasLooseSlugline: false,
+      hasVignette: false
+    })
+  })
+
+  it('does not treat a non-boolean flag value as enabled', async () => {
+    mockFetch({ ...validPayload, hasPrint: 'false', hasHast: 'true' })
+
+    const { featureFlags } = await getServerEnvs()
+
+    expect(featureFlags.hasPrint).toBe(false)
+    expect(featureFlags.hasHast).toBe(false)
   })
 
   it('throws on non-ok response', async () => {

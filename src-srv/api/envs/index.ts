@@ -12,11 +12,21 @@ export const GET = (): Promise<unknown> => {
       baboonUrl: process.env.BABOON_PUBLIC_URL ?? process.env.BABOON_URL ?? '',
       ntbUrl: process.env.NTB_PUBLIC_URL ?? process.env.NTB_URL ?? '',
       systemLanguage: process.env.SYSTEM_LANGUAGE ?? '',
-      hasPrint: process.env.HAS_PRINT ?? '',
-      hasHast: process.env.HAS_HAST ?? '',
-      hasLooseSlugline: process.env.HAS_LOOSE_SLUGLINE ?? '',
-      hasVignette: process.env.HAS_VIGNETTE ?? '',
+      hasPrint: isFlagEnabled(process.env.HAS_PRINT),
+      hasHast: isFlagEnabled(process.env.HAS_HAST),
+      hasLooseSlugline: isFlagEnabled(process.env.HAS_LOOSE_SLUGLINE),
+      hasVignette: isFlagEnabled(process.env.HAS_VIGNETTE),
       environment: process.env.ENVIRONMENT ?? ''
     }
   })
+}
+
+/**
+ * Feature flags arrive as strings in the environment. Only an explicit 'true' or '1' enables a
+ * flag - anything else, including 'false', disables it.
+ */
+function isFlagEnabled(value: string | undefined): boolean {
+  const normalized = value?.trim().toLowerCase()
+
+  return normalized === 'true' || normalized === '1'
 }
