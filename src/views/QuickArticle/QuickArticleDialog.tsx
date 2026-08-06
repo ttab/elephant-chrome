@@ -254,6 +254,9 @@ export const QuickArticleDialog = (props: {
                     })
                       .then(() => {
                         toast.success(getLabel(config.documentStatus, 'article'), {
+                          classNames: {
+                            title: 'whitespace-nowrap'
+                          },
                           action: (
                             <ToastAction
                               key='open-article'
