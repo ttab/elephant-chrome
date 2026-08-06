@@ -6,10 +6,9 @@ import { fromYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc.js'
 import * as Y from 'yjs'
 import logger from '../../../lib/logger.js'
 
-import { type Context, isContext } from '../../../lib/context.js'
+import { isContext, getSession, getContextFromValidSession } from '../../../lib/context.js'
 import { getValueByYPath, setValueByYPath } from '../../../../shared/yUtils.js'
 import type { EleBlock } from '@/shared/types/index.js'
-import { getSession } from '../../../lib/context.js'
 import { snapshot } from '../../../utils/snapshot.js'
 
 /**
@@ -128,13 +127,10 @@ export const GET: RouteHandler = async (req: Request, { cache, repository, res }
  * - Set start time for draft
  */
 export const PATCH: RouteHandler = async (req: Request, { collaborationServer, res }) => {
-  const { accessToken, user } = getSession(req, res)
-
-  if (!accessToken || !user) {
-    return {
-      statusCode: 401,
-      statusMessage: 'Unauthorized: Session not found, can not snapshot document'
-    }
+  const locals = res.locals as Record<string, unknown> | undefined
+  const context = getContextFromValidSession(locals?.session)
+  if (!isContext(context)) {
+    return context
   }
 
   // Validate incoming data
@@ -159,20 +155,6 @@ export const PATCH: RouteHandler = async (req: Request, { collaborationServer, r
     return {
       statusCode: 400,
       statusMessage: 'Invalid input to document PATCH method'
-    }
-  }
-
-  const context: Context = {
-    accessToken,
-    user,
-    agent: 'server',
-    units: []
-  }
-
-  if (!isContext(context)) {
-    return {
-      statusCode: 500,
-      statusMessage: 'Invalid context provided'
     }
   }
 
