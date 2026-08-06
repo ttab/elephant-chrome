@@ -10,6 +10,12 @@
     "open": "Åpne"
   },
   "usedInArticles": "Brukes i artikler",
+  "previousPage": "Forrige",
+  "nextPage": "Neste",
+  "outOfSync": "Er endret",
+  "outOfSyncTooltip": "Faktaboksen i denne artikkelen er endret fra den nåværende versjonen",
+  "inSync": "Samsvarer",
+  "inSyncTooltip": "Faktaboksen i denne artikkelen samsvarer med den nåværende versjonen",
   "prompts": {
     "approveBeforeClose": "Vil du godkjenne endringene før du lukker?",
     "savedButNotApproved": "Endringene er lagret, men faktaboksen er ikke godkjent."
