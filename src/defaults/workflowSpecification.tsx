@@ -297,6 +297,17 @@ export const getStatusSpecifications = (status: string, documentType?: string): 
   }
 }
 
+export const getUnpublishTransitionFor = (
+  documentType: string | undefined
+): WorkflowTransition | undefined => {
+  if (!documentType) return undefined
+  const spec = getWorkflowSpecifications()[documentType]
+  return spec?.usable?.transitions?.unpublished
+    ?? Object.values(spec ?? {})
+      .map((state) => state.transitions?.unpublished)
+      .find(Boolean)
+}
+
 export function getWorkflowSpecifications(): Record<string, WorkflowSpecification> {
   return {
     'core/event': {
