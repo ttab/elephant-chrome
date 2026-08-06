@@ -83,10 +83,11 @@ export async function getServerEnvs(): Promise<ServerConfig> {
         environment: typeof data['environment'] === 'string' ? data['environment'] : ''
       },
       featureFlags: {
-        hasPrint: data['hasPrint'] ? !!data['hasPrint'] : false,
-        hasHast: data['hasHast'] ? !!data['hasHast'] : false,
-        hasLooseSlugline: data['hasLooseSlugline'] ? !!data['hasLooseSlugline'] : false,
-        hasVignette: data['hasVignette'] ? !!data['hasVignette'] : false
+        // The server normalises these to real booleans, so anything else is not enabled.
+        hasPrint: data['hasPrint'] === true,
+        hasHast: data['hasHast'] === true,
+        hasLooseSlugline: data['hasLooseSlugline'] === true,
+        hasVignette: data['hasVignette'] === true
       }
     }
   } catch (ex) {

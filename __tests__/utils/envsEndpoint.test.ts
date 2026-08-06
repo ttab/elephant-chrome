@@ -1,6 +1,18 @@
 import { GET } from '../../src-srv/api/envs/index'
 
+type Payload = Record<string, string | boolean>
+
 describe('GET /api/envs', () => {
+  const originalEnv = process.env
+
+  beforeEach(() => {
+    process.env = { ...originalEnv }
+  })
+
+  afterEach(() => {
+    process.env = originalEnv
+  })
+
   it('returns all URLs and systemLanguage from env vars', async () => {
     process.env.INDEX_URL = 'https://index.example.com'
     process.env.WS_URL = 'https://ws.example.com'
@@ -14,10 +26,12 @@ describe('GET /api/envs', () => {
     process.env.SYSTEM_LANGUAGE = 'nb-NO'
     process.env.HAS_PRINT = 'true'
     process.env.HAS_HAST = 'true'
+    process.env.HAS_LOOSE_SLUGLINE = 'false'
+    process.env.HAS_VIGNETTE = 'false'
     process.env.ENVIRONMENT = 'test'
     process.env.NTB_URL = ''
 
-    const result = await GET() as { payload: Record<string, string> }
+    const result = await GET() as { payload: Payload }
 
     expect(result.payload).toEqual({
       indexUrl: 'https://index.example.com',
@@ -31,10 +45,10 @@ describe('GET /api/envs', () => {
       baboonUrl: 'https://baboon.example.com',
       ntbUrl: '',
       systemLanguage: 'nb-NO',
-      hasPrint: 'true',
-      hasHast: 'true',
-      hasLooseSlugline: '',
-      hasVignette: '',
+      hasPrint: true,
+      hasHast: true,
+      hasLooseSlugline: false,
+      hasVignette: false,
       environment: 'test'
     })
   })
@@ -52,7 +66,7 @@ describe('GET /api/envs', () => {
     process.env.BABOON_URL = 'https://baboon.example.com'
     process.env.SYSTEM_LANGUAGE = 'sv-SE'
 
-    const result = await GET() as { payload: Record<string, string> }
+    const result = await GET() as { payload: Payload }
 
     expect(result.payload.indexUrl).toBe('https://public.example.com')
     expect(result.payload.repositoryUrl).toBe('https://repo-public.example.com')
@@ -65,10 +79,53 @@ describe('GET /api/envs', () => {
     delete process.env.WS_URL
     delete process.env.SYSTEM_LANGUAGE
 
-    const result = await GET() as { payload: Record<string, string> }
+    const result = await GET() as { payload: Payload }
 
     expect(result.payload.indexUrl).toBe('')
     expect(result.payload.webSocketUrl).toBe('')
     expect(result.payload.systemLanguage).toBe('')
+  })
+
+  describe('feature flags', () => {
+    const enabled = ['true', 'TRUE', ' true ', '1']
+    const disabled = ['false', 'FALSE', '0', 'yes', 'on', 'enabled', '']
+
+    it.each(enabled)('enables the flag when HAS_PRINT is %o', async (value) => {
+      process.env.HAS_PRINT = value
+
+      const result = await GET() as { payload: Payload }
+
+      expect(result.payload.hasPrint).toBe(true)
+    })
+
+    it.each(disabled)('disables the flag when HAS_PRINT is %o', async (value) => {
+      process.env.HAS_PRINT = value
+
+      const result = await GET() as { payload: Payload }
+
+      expect(result.payload.hasPrint).toBe(false)
+    })
+
+    it('disables the flag when HAS_PRINT is unset', async () => {
+      delete process.env.HAS_PRINT
+
+      const result = await GET() as { payload: Payload }
+
+      expect(result.payload.hasPrint).toBe(false)
+    })
+
+    it('normalises every flag, not just hasPrint', async () => {
+      process.env.HAS_PRINT = 'false'
+      process.env.HAS_HAST = 'false'
+      process.env.HAS_LOOSE_SLUGLINE = 'false'
+      process.env.HAS_VIGNETTE = 'true'
+
+      const result = await GET() as { payload: Payload }
+
+      expect(result.payload.hasPrint).toBe(false)
+      expect(result.payload.hasHast).toBe(false)
+      expect(result.payload.hasLooseSlugline).toBe(false)
+      expect(result.payload.hasVignette).toBe(true)
+    })
   })
 })
