@@ -15,6 +15,7 @@ describe('GET /api/envs', () => {
     process.env.HAS_PRINT = 'true'
     process.env.HAS_HAST = 'true'
     process.env.ENVIRONMENT = 'test'
+    process.env.TENANT = 'test-tenant'
     process.env.NTB_URL = ''
 
     const result = await GET() as { payload: Record<string, string> }
@@ -31,6 +32,7 @@ describe('GET /api/envs', () => {
       baboonUrl: 'https://baboon.example.com',
       ntbUrl: '',
       systemLanguage: 'nb-NO',
+      tenant: 'test-tenant',
       hasPrint: 'true',
       hasHast: 'true',
       hasLooseSlugline: '',
@@ -64,11 +66,13 @@ describe('GET /api/envs', () => {
     delete process.env.INDEX_PUBLIC_URL
     delete process.env.WS_URL
     delete process.env.SYSTEM_LANGUAGE
+    delete process.env.TENANT
 
     const result = await GET() as { payload: Record<string, string> }
 
     expect(result.payload.indexUrl).toBe('')
     expect(result.payload.webSocketUrl).toBe('')
     expect(result.payload.systemLanguage).toBe('')
+    expect(result.payload.tenant).toBe('')
   })
 })

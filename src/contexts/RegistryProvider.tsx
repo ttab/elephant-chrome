@@ -24,6 +24,7 @@ import { DEFAULT_TIMEZONE } from '@/defaults/defaultTimezone'
 import { Collaboration } from '@/defaults'
 import { defaultLocale } from '@/defaults/locale'
 import { setEnvironment } from '@/shared/getEnvironment'
+import { setTenant } from '@/shared/getTenant'
 
 export type FeatureFlags = Record<string, boolean>
 
@@ -48,6 +49,8 @@ export interface RegistryProviderState {
   envs: {
     imageSearchProvider: string
     systemLanguage: string
+    /** Unique identifier for the customer deploy. */
+    tenant: string
   }
   repository?: Repository
   workflow?: Workflow
@@ -82,7 +85,8 @@ export const initialState: RegistryProviderState = {
   },
   envs: {
     imageSearchProvider: '',
-    systemLanguage: ''
+    systemLanguage: '',
+    tenant: ''
   },
   dispatch: () => { }
 }
@@ -106,6 +110,7 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
         const { urls: server, envs, featureFlags } = await getServerEnvs()
         setSystemLanguage(envs.systemLanguage)
         setEnvironment(envs.environment)
+        setTenant(envs.tenant)
 
         const locale = defaultLocale
 

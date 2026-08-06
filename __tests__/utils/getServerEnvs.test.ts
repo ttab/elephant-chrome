@@ -11,7 +11,8 @@ const validPayload = {
   faroUrl: 'https://faro.example.com',
   baboonUrl: 'https://baboon.example.com',
   systemLanguage: 'nb-NO',
-  environment: 'stage'
+  environment: 'stage',
+  tenant: 'tt'
 }
 
 function mockFetch(payload: Record<string, string>, ok = true, status = 200) {
@@ -42,6 +43,7 @@ describe('getServerEnvs', () => {
     expect(urls.baboonUrl.href).toBe('https://baboon.example.com/')
     expect(envs.systemLanguage).toBe('nb-NO')
     expect(envs.environment).toBe('stage')
+    expect(envs.tenant).toBe('tt')
   })
 
   it('derives repositoryEventsUrl from repositoryUrl', async () => {
@@ -81,6 +83,19 @@ describe('getServerEnvs', () => {
   it('throws when environment is missing', async () => {
     const { environment: _, ...noLang } = validPayload
     mockFetch(noLang as Record<string, string>)
+
+    await expect(getServerEnvs()).rejects.toThrow('Failed fetching server envs')
+  })
+
+  it('throws when tenant is missing', async () => {
+    const { tenant: _, ...noTenant } = validPayload
+    mockFetch(noTenant as Record<string, string>)
+
+    await expect(getServerEnvs()).rejects.toThrow('Failed fetching server envs')
+  })
+
+  it('throws when tenant is empty', async () => {
+    mockFetch({ ...validPayload, tenant: '' })
 
     await expect(getServerEnvs()).rejects.toThrow('Failed fetching server envs')
   })
