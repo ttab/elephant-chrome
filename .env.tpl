@@ -49,3 +49,7 @@ PYROSCOPE_URL=
 
 SYSTEM_LANGUAGE=
 
+# Tenant
+# Mandatory, unique per customer deploy. The server refuses to start without it.
+TENANT=
+
