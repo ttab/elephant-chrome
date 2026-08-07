@@ -24,6 +24,7 @@ import { DEFAULT_TIMEZONE } from '@/defaults/defaultTimezone'
 import { Collaboration } from '@/defaults'
 import { defaultLocale } from '@/defaults/locale'
 import { setEnvironment } from '@/shared/getEnvironment'
+import { setImageSearchProvider } from '@/shared/getImageSearchProvider'
 
 export type FeatureFlags = Record<string, boolean>
 
@@ -106,6 +107,7 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
         const { urls: server, envs, featureFlags } = await getServerEnvs()
         setSystemLanguage(envs.systemLanguage)
         setEnvironment(envs.environment)
+        setImageSearchProvider(envs.imageSearchProvider)
 
         const locale = defaultLocale
 
