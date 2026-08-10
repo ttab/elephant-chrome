@@ -52,6 +52,7 @@ export const Timeless = (): JSX.Element => {
       <TableProvider<TimelessArticle>
         columns={columns}
         type={meta.name}
+        serverSideGlobalFilter
         initialState={{
           columnFilters: savedFilters,
           globalFilter: query.query

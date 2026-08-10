@@ -27,8 +27,16 @@ export const TimelessList = ({ columns }: {
     return Array.isArray(found?.value) ? (found.value as string[]) : undefined
   }, [columnFilters])
 
+  // useQuery splits any value containing a comma into an array, so a search
+  // phrase with a comma arrives here as string[] and has to be rejoined.
+  const query = useMemo(() => {
+    return Array.isArray(filter.query)
+      ? filter.query.join(',')
+      : filter.query
+  }, [filter.query])
+
   useDocuments<TimelessArticle, TimelessArticleFields>({
-    ...timelessParams(status),
+    ...timelessParams(status, query),
     page: typeof filter.page === 'string' ? parseInt(filter.page) : undefined,
     options: {
       subscribe: true,
