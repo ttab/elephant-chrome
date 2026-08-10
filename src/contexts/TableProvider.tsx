@@ -63,11 +63,20 @@ export const TableProvider = <T,>({
   children,
   columns,
   type,
-  initialState
+  initialState,
+  serverSideGlobalFilter
 }: PropsWithChildren<{
   columns: Array<ColumnDef<T, unknown>>
   type: View
   initialState?: Partial<TableState>
+  /**
+   * Set when the view sends the free text term to the index instead of
+   * matching it in the browser. Turns off client side global filtering, which
+   * would otherwise drop every hit that matched on a field the table has no
+   * column for, and resets pagination when the term changes. The term itself is
+   * still kept in table state so the filter chip and the ?query= sync work.
+   */
+  serverSideGlobalFilter?: boolean
 }>): JSX.Element => {
   const [data, setData] = useState<T[] | null>(null)
 
@@ -113,15 +122,20 @@ export const TableProvider = <T,>({
     enableMultiRowSelection: false,
     enableSubRowSelection: true,
     enableSorting: true,
+    enableGlobalFilter: !serverSideGlobalFilter,
     onRowSelectionChange: useCallback(setRowSelection, [setRowSelection]),
     onGroupingChange: useCallback(setGrouping, [setGrouping]),
     onSortingChange: useCallback(setSorting, [setSorting]),
     onGlobalFilterChange: (updater: Updater<GlobalFilterTableState>) => {
-      setQuery({
-        query: typeof updater === 'string'
-          ? updater
-          : undefined
-      })
+      const query = typeof updater === 'string'
+        ? updater
+        : undefined
+
+      // A server side search returns a new result set, so the current page
+      // number no longer means anything - start over from the first page.
+      setQuery(serverSideGlobalFilter
+        ? { query, page: undefined }
+        : { query })
       setGlobalFilter(updater)
     },
     onColumnFiltersChange: useCallback((updater: Updater<ColumnFiltersState>) => {
