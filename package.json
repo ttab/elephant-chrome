@@ -91,7 +91,7 @@
   },
   "devDependencies": {
     "@auth/core": "^0.38.0",
-    "@eslint/compat": "^2.0.5",
+    "@eslint/compat": "^2.1.0",
     "@protobuf-ts/runtime-rpc": "^2.11.1",
     "@tailwindcss/vite": "^4.2.2",
     "@testing-library/jest-dom": "^6.9.1",
