@@ -23,7 +23,7 @@ interface RouteInitContext {
   [key: string]: unknown
 }
 
-interface RouteContext extends RouteInitContext {
+export interface RouteContext extends RouteInitContext {
   res: Response
 }
 
