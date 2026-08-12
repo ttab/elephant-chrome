@@ -107,6 +107,62 @@ describe('useDeliverableInfo', () => {
     })
   })
 
+  it('refetches on any planning event after an orphan first fetch (no planning uuid)', async () => {
+    getDeliverableInfo
+      .mockResolvedValueOnce({})
+      .mockResolvedValueOnce({ planningUuid: 'plan-adopted' })
+
+    const { result } = renderHook(
+      () => useDeliverableInfo('deliverable-1'),
+      { wrapper }
+    )
+
+    await waitFor(() => {
+      expect(result.current).toEqual({})
+    })
+    expect(getDeliverableInfo).toHaveBeenCalledTimes(1)
+
+    act(() => {
+      lastCallback?.(makeEvent('plan-other'))
+    })
+
+    await waitFor(() => {
+      expect(result.current?.planningUuid).toBe('plan-adopted')
+    })
+    expect(getDeliverableInfo).toHaveBeenCalledTimes(2)
+  })
+
+  it('reverts to strict matching once an orphan deliverable is adopted', async () => {
+    getDeliverableInfo
+      .mockResolvedValueOnce({})
+      .mockResolvedValueOnce({ planningUuid: 'plan-1' })
+
+    const { result } = renderHook(
+      () => useDeliverableInfo('deliverable-1'),
+      { wrapper }
+    )
+
+    await waitFor(() => {
+      expect(result.current).toEqual({})
+    })
+
+    act(() => {
+      lastCallback?.(makeEvent('plan-1'))
+    })
+
+    await waitFor(() => {
+      expect(result.current?.planningUuid).toBe('plan-1')
+    })
+    expect(getDeliverableInfo).toHaveBeenCalledTimes(2)
+
+    await act(async () => {
+      lastCallback?.(makeEvent('plan-other'))
+      await Promise.resolve()
+    })
+
+    expect(getDeliverableInfo).toHaveBeenCalledTimes(2)
+  })
+
   it('skips events while the first fetch has not yet resolved', async () => {
     let resolveFetch!: (v: { planningUuid: string }) => void
     const pending = new Promise<{ planningUuid: string }>((resolve) => {
