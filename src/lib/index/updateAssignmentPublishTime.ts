@@ -4,8 +4,17 @@ import { toast } from 'sonner'
 const BASE_URL = import.meta.env.BASE_URL || ''
 
 export async function updateAssignmentTime<Ns extends Namespace>(
-  deliverableId: string, planningId: string, newStatus: string, newTime: Date, t: TFunction<Ns>
+  deliverableId: string,
+  planningId: string,
+  newStatus: string,
+  newTime: Date,
+  documentType: string | undefined,
+  t: TFunction<Ns>
 ): Promise<boolean> {
+  // The server matches the deliverable by link type, so send its own type
+  // (e.g. core/editorial-info), stripping any "#timeless" variant suffix.
+  const deliverableType = (documentType || 'core/article').split('#')[0]
+
   try {
     const response = await fetch(`${BASE_URL}/api/documents/${planningId}`, {
       method: 'PATCH',
@@ -15,7 +24,7 @@ export async function updateAssignmentTime<Ns extends Namespace>(
       body: JSON.stringify({
         assignment: {
           deliverableId,
-          type: 'core/article',
+          type: deliverableType,
           status: newStatus,
           time: newTime?.toISOString()
         }
