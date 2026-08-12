@@ -13,7 +13,14 @@ export async function withPlannings<T extends HitV1>({ hits, session, index }: {
 }): Promise<T[]> {
   if (!session || !index) return hits
 
-  const eventIDs: string[] = hits.map((hit) => hit.id)
+  const eventIDs: string[] = hits.map((hit) => hit.id).filter(Boolean)
+
+  // No events means there are no related plannings to look up. Skip the query:
+  // a `terms` query with an empty `values` is serialized without `values` at
+  // all, which the index rejects with a 500 (seen on dates that have no events).
+  if (eventIDs.length === 0) {
+    return hits
+  }
 
   const plannings = await fetch<HitV1, withPlanningsFields>({
     documentType: 'core/planning-item',
