@@ -1,5 +1,5 @@
 import { getAssignmentTypes } from '@/defaults'
-import { Button, Select, SelectContent, SelectItem, SelectTrigger } from '@ttab/elephant-ui'
+import { Select, SelectContent, SelectItem, SelectTrigger } from '@ttab/elephant-ui'
 import { cn } from '@ttab/elephant-ui/utils'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import { BookmarkIcon, BookmarkPlusIcon, FilePenIcon, FilePlus2Icon } from '@ttab/elephant-ui/icons'
@@ -38,9 +38,9 @@ export const AssignmentType = ({ assignment, editable = false, readOnly = false,
 
   if (readOnly) {
     return (
-      <Button
-        variant='icon'
-        className='w-fit px-2 hover:bg-slate-200 dark:hover:bg-table-focused'
+      <span
+        title={t(`assignmentTypes.${selectedOptions[0]?.value}` as TranslationKey)}
+        className='inline-flex items-center justify-center w-fit h-10 px-2'
       >
         {SelectedIcon
           ? (
@@ -50,7 +50,7 @@ export const AssignmentType = ({ assignment, editable = false, readOnly = false,
               />
             )
           : t(`assignmentTypes.${selectedOptions[0]?.value}` as TranslationKey)}
-      </Button>
+      </span>
     )
   }
 
