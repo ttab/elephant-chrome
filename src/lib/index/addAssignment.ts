@@ -31,6 +31,7 @@ export async function addAssignmentWithDeliverable(payload: {
     id: string
     name: string
   }
+  assignees?: Array<{ uuid: string, name?: string, role?: string }>
   wires?: Wire[]
   quickArticleData?: QuickArticleData
   embargoUntil?: string
