@@ -53,6 +53,37 @@ describe('RelatedEvents', () => {
     expect(screen.queryByText('Stale headline')).not.toBeInTheDocument()
   })
 
+  it('queries the index by event uuid with a live subscription', () => {
+    mockDocuments([eventHit('event-1', 'Fresh headline')])
+
+    render(<RelatedEvents events={[eventBlock]} />)
+
+    expect(mockedUseDocuments).toHaveBeenCalledWith(
+      expect.objectContaining({
+        documentType: 'core/event',
+        disabled: false,
+        options: { subscribe: true }
+      })
+    )
+
+    const [params] = mockedUseDocuments.mock.calls[0]
+    const conditions = params.query?.conditions
+
+    if (conditions?.oneofKind !== 'bool') {
+      throw new Error('expected a bool query')
+    }
+
+    const [must] = conditions.bool.must
+    const inner = must.conditions
+
+    if (inner.oneofKind !== 'terms') {
+      throw new Error('expected a terms query')
+    }
+
+    expect(inner.terms.field).toBe('_id')
+    expect(inner.terms.values).toEqual(['event-1'])
+  })
+
   it('falls back to the stored snapshot title when the event is not resolvable', () => {
     mockDocuments([])
 
@@ -67,5 +98,15 @@ describe('RelatedEvents', () => {
     const { container } = render(<RelatedEvents events={[]} />)
 
     expect(container).toBeEmptyDOMElement()
+  })
+
+  it('skips the index query when there are no events', () => {
+    mockDocuments([])
+
+    render(<RelatedEvents events={[]} />)
+
+    expect(mockedUseDocuments).toHaveBeenCalledWith(
+      expect.objectContaining({ disabled: true })
+    )
   })
 })
