@@ -1,6 +1,6 @@
 import { createContext, useCallback, useEffect, useMemo, useState } from 'react'
 import { useIndexedDB } from '../hooks/useIndexedDB'
-import { useSession } from 'next-auth/react'
+import { useSession } from '@/contexts/SessionContext'
 import { useRegistry } from '@/hooks/useRegistry'
 import { type IDBLanguage, type SupportedLanguage } from '../types'
 

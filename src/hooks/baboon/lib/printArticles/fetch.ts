@@ -1,7 +1,7 @@
 import type { Index } from '@/shared/Index'
 import type { Repository } from '@/shared/Repository'
 import { BoolQueryV1, QueryV1, TermQueryV1 } from '@ttab/elephant-api/index'
-import type { Session } from 'next-auth'
+import type { Session } from '@/types/session'
 import type { PrintArticle } from '.'
 import { fields } from '.'
 import type { QueryParams } from '@/hooks/useQuery'

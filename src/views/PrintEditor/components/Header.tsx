@@ -14,7 +14,7 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 import type * as Y from 'yjs'
 
-import { useSession } from 'next-auth/react'
+import { useSession } from '@/contexts/SessionContext'
 import { useRegistry } from '@/hooks/useRegistry'
 import { Checking } from './Checking'
 import { useTranslation } from 'react-i18next'

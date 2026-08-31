@@ -6,7 +6,7 @@ import { SluglineButton } from './Slugline'
 import { type FormProps } from '../Form/Root'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { useYPath, useYValue, type YDocument } from '@/modules/yjs/hooks'
-import { useSession } from 'next-auth/react'
+import { useSession } from '@/contexts/SessionContext'
 import { useTranslation } from 'react-i18next'
 import { useFeatureFlags } from '@/hooks/useFeatureFlags'
 

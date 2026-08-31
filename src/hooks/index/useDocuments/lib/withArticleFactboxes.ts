@@ -7,7 +7,7 @@ import {
 } from '@ttab/elephant-api/index'
 import type { BulkGetItem } from '@ttab/elephant-api/repository'
 import type { Block } from '@ttab/elephant-api/newsdoc'
-import type { Session } from 'next-auth'
+import type { Session } from '@/types/session'
 import { fetch } from '@/hooks/index/useDocuments/lib/fetch'
 import type { Index } from '@/shared/Index'
 import type { Repository } from '@/shared/Repository'

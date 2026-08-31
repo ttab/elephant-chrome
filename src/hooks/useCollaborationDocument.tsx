@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { HocuspocusProvider, HocuspocusProviderWebsocket } from '@hocuspocus/provider'
-import { useSession } from 'next-auth/react'
+import { useSession } from '@/contexts/SessionContext'
 import type * as Y from 'yjs'
 import { useRegistry } from './useRegistry'
 

@@ -1,6 +1,6 @@
 import type { TBConsumeFunction, TBElement } from '@ttab/textbit'
 import type { Block } from '@ttab/elephant-api/newsdoc'
-import type { Session } from 'next-auth'
+import type { Session } from '@/types/session'
 import type { Repository } from '@/shared/Repository'
 import { transformFactbox } from '@/shared/transformations/newsdoc/core/factbox'
 import { toast } from 'sonner'

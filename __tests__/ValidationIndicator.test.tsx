@@ -5,7 +5,7 @@ import { SluglineEditable } from '@/components/DataItem/SluglineEditable'
 import type { YDocument } from '@/modules/yjs/hooks'
 
 vi.mock('@/hooks/useFeatureFlags', () => ({ useFeatureFlags: () => ({ hasLooseSlugline: false }) }))
-vi.mock('next-auth/react', () => ({
+vi.mock('@/contexts/SessionContext', () => ({
   useSession: () => ({ data: { user: { sub: 'sub1' } }, status: 'authenticated' })
 }))
 vi.mock('@/components/ui', () => ({

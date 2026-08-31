@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest'
-import type { Session } from 'next-auth'
+import type { Session } from '@/types/session'
 import type { SearchRequest } from '@ttab/elephant-tt-api/ntb'
 import { createNTBFetcher } from '@/views/ImageSearch/lib/ntbFetcher'
 import type { NTB } from '@/shared/NTB'

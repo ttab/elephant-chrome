@@ -6,7 +6,7 @@ import { Block } from '@ttab/elephant-api/newsdoc'
 import type { Wire as WireType } from '@/shared/schemas/wire'
 import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
 import { useDocumentDefaults } from '@/hooks'
-import { useSession } from 'next-auth/react'
+import { useSession } from '@/contexts/SessionContext'
 import { getContentSourceLink } from '@/shared/getContentSourceLink'
 
 const meta: ViewMetadata = {

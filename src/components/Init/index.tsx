@@ -1,6 +1,6 @@
 import type { PropsWithChildren, JSX } from 'react'
 import { useEffect, useState } from 'react'
-import { useSession } from 'next-auth/react'
+import { useSession } from '@/contexts/SessionContext'
 import { CoreAuthorProvider } from '../../datastore/contexts/CoreAuthorProvider'
 import { CoreCategoryProvider } from '../../datastore/contexts/CoreCategoryProvider'
 import { CoreOrganiserProvider } from '../../datastore/contexts/CoreOrganiserProvider'

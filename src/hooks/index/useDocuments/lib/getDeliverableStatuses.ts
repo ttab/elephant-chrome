@@ -1,7 +1,7 @@
 import { getAllStatuses } from '@/defaults/workflowSpecification'
 import type { Repository } from '@/shared/Repository'
 import type { HitV1 } from '@ttab/elephant-api/index'
-import type { Session } from 'next-auth'
+import type { Session } from '@/types/session'
 
 export const getDeliverableStatuses = async ({ result, repository, session }: { result: HitV1[], repository: Repository | undefined, session: Session }) => {
   if (!result || !repository || !session) {

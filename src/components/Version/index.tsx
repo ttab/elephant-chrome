@@ -2,7 +2,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger } from '@ttab/elephant
 import { useRegistry } from '@/hooks/useRegistry'
 import { useCallback, useMemo, useState } from 'react'
 import useSWR from 'swr'
-import { useSession } from 'next-auth/react'
+import { useSession } from '@/contexts/SessionContext'
 import { useModal } from '../Modal/useModal'
 import { PreviewSheet } from '../PreviewSheet'
 import { useAuthors } from '@/hooks/useAuthors'

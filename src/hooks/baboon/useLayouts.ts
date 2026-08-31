@@ -1,4 +1,4 @@
-import { useSession } from 'next-auth/react'
+import { useSession } from '@/contexts/SessionContext'
 import useSWR from 'swr'
 import { useRegistry } from '@/hooks/useRegistry'
 import type { SWRResponse } from 'swr'

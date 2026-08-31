@@ -3,7 +3,7 @@ import useSWR from 'swr'
 import { QueryV1, TermsQueryV1, type HitV1 } from '@ttab/elephant-api/index'
 import { fetch as fetchDocuments } from '@/hooks/index/useDocuments/lib/fetch'
 import { useRegistry, useLink } from '@/hooks'
-import { useSession } from 'next-auth/react'
+import { useSession } from '@/contexts/SessionContext'
 import { useTranslation } from 'react-i18next'
 
 const fields = [

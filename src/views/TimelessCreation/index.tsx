@@ -1,6 +1,6 @@
 import { type JSX, useCallback, useMemo, useState } from 'react'
 import { CategoryPicker } from '@/components/TimelessCategory'
-import { useSession } from 'next-auth/react'
+import { useSession } from '@/contexts/SessionContext'
 import { useDocumentDefaults, useRegistry, useSections } from '@/hooks'
 import { useActiveAuthor } from '@/hooks/useActiveAuthor'
 import { useFeatureFlags } from '@/hooks/useFeatureFlags'

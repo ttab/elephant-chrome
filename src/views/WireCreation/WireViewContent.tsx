@@ -17,7 +17,7 @@ import {
   TagIcon
 } from '@ttab/elephant-ui/icons'
 import { useRegistry, useSections, useHasUnit, useUserPreferences } from '@/hooks'
-import { useSession } from 'next-auth/react'
+import { useSession } from '@/contexts/SessionContext'
 import type { JSX } from 'react'
 import { Fragment, useMemo, useRef, useState } from 'react'
 import { UserMessage } from '@/components/UserMessage'

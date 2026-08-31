@@ -10,7 +10,7 @@ import { type FormProps } from '@/components/Form/Root'
 import { useEffect, useRef, type JSX } from 'react'
 import { type YDocument, useYPath, useYValue } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
-import { useSession } from 'next-auth/react'
+import { useSession } from '@/contexts/SessionContext'
 import { TextInput } from '@/components/ui/TextInput'
 import { useTranslation } from 'react-i18next'
 

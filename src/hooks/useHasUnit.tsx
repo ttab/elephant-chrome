@@ -1,4 +1,4 @@
-import { useSession } from 'next-auth/react'
+import { useSession } from '@/contexts/SessionContext'
 
 /**
  * Returns true if the current user belongs to the given unit.

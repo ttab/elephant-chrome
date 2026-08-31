@@ -8,7 +8,7 @@ import {
   type JSX
 } from 'react'
 import { HocuspocusProvider } from '@hocuspocus/provider'
-import { useSession } from 'next-auth/react'
+import { useSession } from '@/contexts/SessionContext'
 import { useWebSocket } from '@/modules/yjs/hooks'
 import { extractUserIdFromUri } from '@/shared/userUri'
 

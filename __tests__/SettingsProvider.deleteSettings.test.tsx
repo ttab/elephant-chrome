@@ -25,7 +25,7 @@ vi.mock('@protobuf-ts/twirp-transport', () => ({
   })
 }))
 
-vi.mock('next-auth/react', () => ({
+vi.mock('@/contexts/SessionContext', () => ({
   useSession: useSessionMock
 }))
 

@@ -1,6 +1,6 @@
 import type { Repository } from '@/shared/Repository'
 import { timeless as timelessTemplate } from '@/shared/templates'
-import type { Session } from 'next-auth'
+import type { Session } from '@/types/session'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import { getContentSourceLink } from '@/shared/getContentSourceLink'
 

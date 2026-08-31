@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { Block, Document } from '@ttab/elephant-api/newsdoc'
-import type { Session } from 'next-auth'
+import type { Session } from '@/types/session'
 import type { Repository } from '@/shared/Repository'
 
 // The default factbox template doesn't forward links from its payload,

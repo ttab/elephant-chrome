@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react'
-import { useSession } from 'next-auth/react'
+import { useSession } from '@/contexts/SessionContext'
 import { TwirpFetchTransport } from '@protobuf-ts/twirp-transport'
 import { SettingsClient } from '@ttab/elephant-api/user'
 import { SettingsContext } from './SettingsContext'

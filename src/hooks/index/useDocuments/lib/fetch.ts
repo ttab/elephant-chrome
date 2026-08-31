@@ -1,5 +1,5 @@
 import type { Index } from '@/shared/Index'
-import type { Session } from 'next-auth'
+import type { Session } from '@/types/session'
 import type { HitV1, QueryV1, SortingV1, SubscriptionReference } from '@ttab/elephant-api/index'
 import type { Repository } from '@/shared/Repository'
 import { withStatus } from './withStatus'

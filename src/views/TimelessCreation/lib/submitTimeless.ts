@@ -1,5 +1,5 @@
 import type { Repository } from '@/shared/Repository'
-import type { Session } from 'next-auth'
+import type { Session } from '@/types/session'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { createNewTimelessArticle } from './createNewTimelessArticle'
 import { addAssignmentWithDeliverable } from '@/lib/index/addAssignment'

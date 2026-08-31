@@ -42,21 +42,31 @@ function mockUrl(url: string): unknown {
         systemLanguage: TESTING_LANGUAGE
       }
 
-    case `${BASE_URL}/api/auth/session`:
-    case '/api/auth/session':
+    // The token endpoint: what `@ttab/tt-session`'s client polls.
+    case `${BASE_URL}/api/session/token`:
+    case '/api/session/token':
+      return {
+        accessToken: 'abc123',
+        expiresAt: 1718097380515,
+        subject: 'core://user/5558',
+        impersonating: false,
+        scope: 'openid email profile'
+      }
+
+    // The identity endpoint: name, email and roles, which the token endpoint
+    // deliberately never carries.
+    case `${BASE_URL}/api/session/me`:
+    case '/api/session/me':
       return {
         user: {
+          sub: 'core://user/5558',
           name: 'Testy Test',
           email: 'testy.test@example.com',
-          image: 'https://example.com/image.png'
+          roles: ['ROLE_TT'],
+          isAdmin: true,
+          scope: 'openid email profile'
         },
-        expires: '2024-07-11T09:11:27.385Z',
-        accessToken: 'abc123',
-        accessTokenExpires: 1718097380515,
-        refreshToken: '123abc',
-        iat: 123,
-        exp: 456,
-        jti: 'abc-124'
+        impersonating: null
       }
 
     default:
@@ -72,20 +82,41 @@ global.fetch = vi.fn().mockImplementation(async (url: string) => {
   })
 })
 
-vi.mock('next-auth/react', async () => {
-  const originalModule = await vi.importActual('next-auth/react')
+vi.mock('@/contexts/SessionContext', async () => {
+  const originalModule = await vi.importActual('@/contexts/SessionContext')
   const mockSession = {
-    expires: new Date(Date.now() + 2 * 86400).toISOString(),
-    user: { name: 'Testy Test' },
-    accessToken: 'abc123'
+    accessToken: 'abc123',
+    accessTokenExpires: Date.now() + 2 * 86400 * 1000,
+    user: {
+      sub: 'core://user/5558',
+      id: 'core://user/5558',
+      name: 'Testy Test',
+      email: 'testy.test@example.com',
+      image: ''
+    },
+    units: [],
+    org: '',
+    roles: ['ROLE_TT'],
+    isAdmin: true,
+    scope: 'openid email profile',
+    impersonating: null
   }
   return {
     __esModule: true,
     ...originalModule,
     useSession: vi.fn(() => {
-      return { data: mockSession, status: 'authenticated' }
-    }),
-    getSession: vi.fn(async () => Promise.resolve(mockSession))
+      return {
+        data: mockSession,
+        status: 'authenticated',
+        identityLoaded: true,
+        update: vi.fn(async () => Promise.resolve({ session: mockSession, status: 'authenticated' }))
+      }
+    })
   }
 })
+
+vi.mock('@/shared/getCachedSession', () => ({
+  getCachedSession: vi.fn(async () => Promise.resolve({ accessToken: 'abc123' })),
+  clearCachedSession: vi.fn()
+}))
 

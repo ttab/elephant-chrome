@@ -15,7 +15,7 @@ vi.mock('swr', () => ({
   })
 }))
 
-vi.mock('next-auth/react', () => ({
+vi.mock('@/contexts/SessionContext', () => ({
   useSession: () => ({ data: { accessToken: 'test-token' } })
 }))
 

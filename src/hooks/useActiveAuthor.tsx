@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { type Document } from '@ttab/elephant-api/newsdoc'
 import { useAuthors } from './useAuthors'
-import { useSession } from 'next-auth/react'
+import { useSession } from '@/contexts/SessionContext'
 import { type IDBAuthor } from 'src/datastore/types'
 
 const BASE_URL = import.meta.env.BASE_URL || ''

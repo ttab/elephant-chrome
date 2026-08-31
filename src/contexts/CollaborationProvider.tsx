@@ -3,7 +3,7 @@ import {
   type PropsWithChildren,
   type JSX
 } from 'react'
-import { useSession } from 'next-auth/react'
+import { useSession } from '@/contexts/SessionContext'
 import type { HocuspocusProvider } from '@hocuspocus/provider'
 import { useYDocument, type YAwarenessUser } from '@/modules/yjs/hooks'
 

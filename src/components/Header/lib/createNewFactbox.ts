@@ -1,7 +1,7 @@
 import type { Repository } from '@/shared/Repository'
 import { getTemplateFromView } from '@/shared/templates/lib/getTemplateFromView'
 import type { Document } from '@ttab/elephant-api/newsdoc'
-import type { Session } from 'next-auth'
+import type { Session } from '@/types/session'
 import i18next from 'i18next'
 
 export const createNewFactbox = async (

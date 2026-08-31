@@ -1,7 +1,7 @@
 import { NewsvalueMap } from '@/defaults/newsvalueMap'
 import type { Index } from '@/shared/Index'
 import { QueryV1, BoolQueryV1, MultiMatchQueryV1, RangeQueryV1 } from '@ttab/elephant-api/index'
-import type { Session } from 'next-auth'
+import type { Session } from '@/types/session'
 import { toast } from 'sonner'
 import type { LocaleData } from '@/types/index'
 import { dateInTimestampOrShortMonthDayYear } from '../../../shared/datetime'

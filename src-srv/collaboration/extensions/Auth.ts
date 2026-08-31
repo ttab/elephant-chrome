@@ -1,4 +1,3 @@
-import type { User } from '@auth/express'
 import type {
   onTokenSyncPayload
 } from '@hocuspocus/server'
@@ -8,7 +7,6 @@ import {
 } from '@hocuspocus/server'
 import type { FlattenedJWSInput, GetKeyFunction, JWTHeaderParameters, JWTPayload, JWTVerifyOptions } from 'jose'
 import { jwtVerify } from 'jose'
-import { type JWT } from '@auth/core/jwt'
 import { JWTClaimValidationFailed, JWTExpired } from 'jose/errors'
 
 interface KeycloakJWTPayload extends JWTPayload {
@@ -35,7 +33,7 @@ export class Auth implements Extension {
   async onAuthenticate({ token: accessToken }: onAuthenticatePayload): Promise<{
     agent: string
     accessToken: string
-    user: JWT
+    user: KeycloakJWTPayload
   }> {
     const jwt = await this.validateAccessToken(accessToken)
 
@@ -57,7 +55,7 @@ export class Auth implements Extension {
 
       const context = connection.context as {
         accessToken: string
-        user: User
+        user: KeycloakJWTPayload
       }
 
       context.accessToken = token

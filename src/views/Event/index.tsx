@@ -5,7 +5,7 @@ import type { EleDocumentResponse } from '@/shared/types'
 import {
   useQuery
 } from '@/hooks'
-import { useSession } from 'next-auth/react'
+import { useSession } from '@/contexts/SessionContext'
 import { View } from '@/components/View'
 import { Button } from '@ttab/elephant-ui'
 import { TagsIcon, CalendarClockIcon, TextIcon, KeyIcon, CalendarPlus2Icon } from '@ttab/elephant-ui/icons'

@@ -1,7 +1,7 @@
 import { useRegistry } from '@/hooks/useRegistry'
 import { useRepositoryEvents } from '@/hooks/useRepositoryEvents'
 import type { BulkGetItem } from '@ttab/elephant-api/repository'
-import { useSession } from 'next-auth/react'
+import { useSession } from '@/contexts/SessionContext'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { dateToReadableDateTime } from '@/shared/datetime'

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import type { TBElement, TBResource } from '@ttab/textbit'
-import type { Session } from 'next-auth'
+import type { Session } from '@/types/session'
 import type { Repository } from '@/shared/Repository'
 import { toast } from 'sonner'
 import { createFactboxConsume } from '../src/plugins/Factboxes/consume'

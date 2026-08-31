@@ -10,7 +10,7 @@ vi.mock('@/lib/snapshotDocument', () => ({
   snapshotDocument: (...args: unknown[]) => mockSnapshotDocument(...args) as unknown
 }))
 
-vi.mock('next-auth/react', () => ({
+vi.mock('@/contexts/SessionContext', () => ({
   useSession: () => ({ data: { user: { sub: 'test-sub' } }, status: 'authenticated' })
 }))
 

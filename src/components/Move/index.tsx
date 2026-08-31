@@ -10,7 +10,7 @@ import {
   CircleXIcon,
   GanttChartSquareIcon
 } from '@ttab/elephant-ui/icons'
-import { useSession } from 'next-auth/react'
+import { useSession } from '@/contexts/SessionContext'
 import { useMemo, useState, type JSX } from 'react'
 import type { Doc } from 'yjs'
 import { View, ViewHeader } from '../View'

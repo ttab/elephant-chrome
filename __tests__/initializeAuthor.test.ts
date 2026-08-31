@@ -4,7 +4,7 @@ import { initializeAuthor } from '../src/components/Init/lib/actions/author'
 import { Index } from '@/shared/Index'
 import type { Repository } from '@/shared/Repository'
 import { toast } from 'sonner'
-import type { Session } from 'next-auth'
+import type { Session } from '@/types/session'
 import { generateAuthorUUID } from '@/shared/userUri'
 import i18n from 'i18next'
 
@@ -29,13 +29,13 @@ describe('initializeAuthor', () => {
 
     mockSession = {
       accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiZ2l2ZW5fbmFtZSI6IkpvaG4iLCJmYW1pbHlfbmFtZSI6IkRvZSIsImlhdCI6MTUxNjIzOTAyMn0.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c',
-      refreshToken: 'mockRefreshToken',
       accessTokenExpires: 1234567890,
-      expires: 'mockExpires',
-      status: 'authenticated',
       units: [],
       org: '',
-      error: '',
+      roles: ['ROLE_TT'],
+      isAdmin: true,
+      scope: 'openid email profile',
+      impersonating: null,
       user: {
         sub: 'core://user/5558',
         email: 'mock@example.com',

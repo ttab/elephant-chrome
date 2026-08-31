@@ -1,5 +1,5 @@
 import express, { type NextFunction, type Request, type Response } from 'express'
-import type { RequestHandler, Express } from 'express-serve-static-core'
+import type { Express } from 'express-serve-static-core'
 import expressWebsockets from 'express-ws'
 import cors from 'cors'
 import path from 'node:path'
@@ -18,14 +18,13 @@ import {
   CollaborationServer
 } from './utils/index.js'
 
-import { ExpressAuth } from '@auth/express'
-import { assertAuthenticatedUser } from './utils/assertAuthenticatedUser.js'
-import { createAuthInfo } from './utils/authConfig.js'
+import { expressHandler } from '@ttab/tt-session/express'
+import { createSessionDeps, loginAuthorizationParams } from './utils/sessionDeps.js'
+import { assertAuthenticatedUser, sessionMiddleware } from './utils/sessionMiddleware.js'
 import logger from './lib/logger.js'
 import { pinoHttp } from 'pino-http'
 import assertEnvs from './lib/assertEnvs.js'
 import { setSystemLanguage } from '@/shared/getSystemLanguage.js'
-import { authSessionMiddleware } from './utils/authSession.js'
 
 import Pyroscope from '@pyroscope/nodejs'
 import { createRemoteJWKSet } from 'jose'
@@ -52,6 +51,25 @@ const AUTH_KEYCLOAK_IDP_HINT = process.env.AUTH_KEYCLOAK_IDP_HINT
 const ELEPHANT_CHROME_CLIENT_ID = process.env.ELEPHANT_CHROME_CLIENT_ID || ''
 const ELEPHANT_CHROME_CLIENT_SECRET = process.env.ELEPHANT_CHROME_CLIENT_SECRET || ''
 const PYROSCOPE_URL = process.env.PYROSCOPE_URL || ''
+const AUTH_POST_LOGOUT_URI = process.env.AUTH_POST_LOGOUT_URI || ''
+
+/*
+ * Session (@ttab/tt-session)
+ *
+ * The sid secret must be byte-identical on every replica: if replicas disagree
+ * each rejects the others' cookies, which surfaces as a random mass logout.
+ * Both values are read so a rotation can overlap — the first signs, all verify.
+*/
+const TT_SESSION_SID_SECRET = process.env.TT_SESSION_SID_SECRET || ''
+const TT_SESSION_SID_SECRET_OLD = process.env.TT_SESSION_SID_SECRET_OLD || ''
+const TT_SESSION_REDIS_URL = process.env.TT_SESSION_REDIS_URL || ''
+const TT_SESSION_TTL_SECONDS = process.env.TT_SESSION_TTL_SECONDS
+  ? parseInt(process.env.TT_SESSION_TTL_SECONDS)
+  : 86400
+// One host means one cookie, so namespace it or another TT app on the same host
+// silently takes the session over with its own client grants.
+const TT_SESSION_NAMESPACE = process.env.TT_SESSION_NAMESPACE || 'elephant-chrome'
+const APP_ORIGIN = process.env.APP_ORIGIN || ''
 
 /**
  * Run the server
@@ -83,22 +101,50 @@ export async function runServer(): Promise<string> {
     throw new Error('connect to redis cache', { cause: ex })
   })
 
-  const authInfo = await createAuthInfo(
+  const appOrigin = APP_ORIGIN || `${PROTOCOL}://${HOST}:${PORT}`
+  const secrets = [TT_SESSION_SID_SECRET, TT_SESSION_SID_SECRET_OLD].filter(Boolean)
+
+  if (!TT_SESSION_REDIS_URL) {
+    // A shared cache is workable for local development but wrong in production:
+    // the collaboration cache may run `maxmemory-policy allkeys-lru`, which
+    // would evict live sessions.
+    logger.warn('TT_SESSION_REDIS_URL is unset, falling back to REDIS_URL — use a dedicated instance in production')
+  }
+
+  const sessionDeps = await createSessionDeps({
     logger,
-    AUTH_KEYCLOAK_PROVIDER,
-    AUTH_KEYCLOAK_ID,
-    AUTH_KEYCLOAK_SECRET,
-    AUTH_KEYCLOAK_IDP_HINT
-  ).catch((e) => {
+    issuer: AUTH_KEYCLOAK_PROVIDER,
+    clientId: AUTH_KEYCLOAK_ID,
+    clientSecret: AUTH_KEYCLOAK_SECRET,
+    appOrigin,
+    basePath: `${BASE_URL}/api`,
+    redisUrl: TT_SESSION_REDIS_URL || REDIS_URL,
+    secrets,
+    ttlSeconds: TT_SESSION_TTL_SECONDS,
+    secure: appOrigin.startsWith('https://'),
+    namespace: TT_SESSION_NAMESPACE,
+    idpHint: AUTH_KEYCLOAK_IDP_HINT
+  }).catch((e) => {
     throw new Error('configure authentication', { cause: e })
   })
 
+  const { session, paths, provider } = sessionDeps
+  const oidcMetadata = provider.configuration.serverMetadata()
+
+  if (!oidcMetadata.jwks_uri) {
+    throw new Error('issuer discovery document has no jwks_uri')
+  }
+
+  if (!oidcMetadata.token_endpoint) {
+    throw new Error('issuer discovery document has no token_endpoint')
+  }
+
   const repository = new Repository(REPOSITORY_URL)
 
-  const JWKS = createRemoteJWKSet(new URL(authInfo.oidcConfig.jwks_uri))
+  const JWKS = createRemoteJWKSet(new URL(oidcMetadata.jwks_uri))
 
   const userTokenService = new TokenService(
-    authInfo.oidcConfig.token_endpoint,
+    oidcMetadata.token_endpoint,
     ELEPHANT_CHROME_CLIENT_ID,
     ELEPHANT_CHROME_CLIENT_SECRET,
     'user'
@@ -106,13 +152,29 @@ export async function runServer(): Promise<string> {
   const user = new User(USER_URL, userTokenService)
 
   app.set('trust proxy', true)
-  app.use(`${BASE_URL}/api/auth/*`, ExpressAuth(authInfo.authConfig) as RequestHandler)
-  app.use(`${BASE_URL}/api/documents`, (req, res, next) => {
-    assertAuthenticatedUser(BASE_URL, authInfo.authConfig, JWKS)(req, res, next).catch(next)
-  })
-  app.use(`${BASE_URL}/api/introspection`, (req, res, next) => {
-    assertAuthenticatedUser(BASE_URL, authInfo.authConfig, JWKS)(req, res, next).catch(next)
-  })
+
+  // The session routes come before the body parser and the session middleware:
+  // they authenticate themselves, and each answers a contracted status on every
+  // path it owns — an unreachable store included — so none of them needs a
+  // try/catch or a guard in front of it.
+  app.get(paths.login, expressHandler(
+    session.login({ authorizationParams: loginAuthorizationParams(AUTH_KEYCLOAK_IDP_HINT) }),
+    { origin: appOrigin }
+  ))
+  app.get(paths.callback, expressHandler(session.callback(), { origin: appOrigin }))
+  app.get(paths.token, expressHandler(session.token(), { origin: appOrigin }))
+  app.get(paths.identity, expressHandler(session.session(), { origin: appOrigin }))
+
+  // Federated, preserving what the old `/api/signout` route did: it ended the
+  // Keycloak SSO session and landed on AUTH_POST_LOGOUT_URI. Note this signs the
+  // user out of *every* TT app, not just this one.
+  app.post(paths.logout, expressHandler(
+    session.logout({
+      federated: true,
+      ...(AUTH_POST_LOGOUT_URI ? { postLogoutRedirectUri: AUTH_POST_LOGOUT_URI } : {})
+    }),
+    { origin: appOrigin }
+  ))
 
   app.use(cors({
     credentials: true,
@@ -120,7 +182,14 @@ export async function runServer(): Promise<string> {
 
   }))
   app.use(BASE_URL, express.json({ limit: '1mb' }))
-  app.use(authSessionMiddleware(BASE_URL, authInfo.authConfig))
+  app.use(sessionMiddleware(BASE_URL, sessionDeps))
+
+  app.use(`${BASE_URL}/api/documents`, (req, res, next) => {
+    assertAuthenticatedUser(BASE_URL, JWKS)(req, res, next).catch(next)
+  })
+  app.use(`${BASE_URL}/api/introspection`, (req, res, next) => {
+    assertAuthenticatedUser(BASE_URL, JWKS)(req, res, next).catch(next)
+  })
 
   app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
     if (err) {

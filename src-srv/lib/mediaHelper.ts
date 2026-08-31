@@ -1,6 +1,6 @@
 import { pipeline } from 'stream/promises'
 import type { Response } from 'express'
-import type { User } from '@auth/express'
+import type { User } from './context.js'
 
 type Session = { accessToken?: string | undefined, user?: User } | undefined
 

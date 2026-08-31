@@ -2,7 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { CreateDeliverablePrompt } from '@/views/Planning/components/CreateDeliverablePrompt'
 import { useRegistry } from '@/hooks/useRegistry'
-import { useSession } from 'next-auth/react'
+import { useSession } from '@/contexts/SessionContext'
 import { toast } from 'sonner'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
@@ -167,7 +167,7 @@ describe('CreateDeliverablePrompt', () => {
   describe('User Interactions', () => {
     it('calls onClose with document id when primary button is clicked', async () => {
       const user = userEvent.setup()
-      const mockId = 'test-uuid-123'
+      const mockId = '11111111-1111-4111-8111-111111111111'
       vi.spyOn(crypto, 'randomUUID').mockReturnValue(mockId)
 
       render(<CreateDeliverablePrompt {...defaultProps} />)
@@ -388,8 +388,8 @@ describe('CreateDeliverablePrompt', () => {
 
     it('generates unique UUID for each document', async () => {
       const user = userEvent.setup()
-      const mockId1 = 'uuid-1'
-      const mockId2 = 'uuid-2'
+      const mockId1 = '22222222-2222-4222-8222-222222222222'
+      const mockId2 = '33333333-3333-4333-8333-333333333333'
       const uuidSpy = vi.spyOn(crypto, 'randomUUID')
       uuidSpy.mockReturnValueOnce(mockId1).mockReturnValueOnce(mockId2)
 

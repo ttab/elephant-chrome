@@ -8,7 +8,7 @@ import {
   AvatarFallback,
   AvatarImage
 } from '@ttab/elephant-ui'
-import { type Session } from 'next-auth'
+import { type Session } from '@/types/session'
 
 const avatarVariants = cva('cursor-default text-opacity-60',
   {

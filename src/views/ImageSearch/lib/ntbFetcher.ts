@@ -1,4 +1,4 @@
-import type { Session } from 'next-auth'
+import type { Session } from '@/types/session'
 import { toast } from 'sonner'
 import type { NTB } from '@/shared/NTB'
 import { PreviewType, SearchRequest, type MediaItem } from '@ttab/elephant-tt-api/ntb'

@@ -1,6 +1,6 @@
 import { ZapIcon } from '@ttab/elephant-ui/icons'
 import { cn } from '@ttab/elephant-ui/utils'
-import { useSession } from 'next-auth/react'
+import { useSession } from '@/contexts/SessionContext'
 import { useRegistry } from '@/hooks/useRegistry'
 import { useFeatureFlags } from '@/hooks/useFeatureFlags'
 import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'

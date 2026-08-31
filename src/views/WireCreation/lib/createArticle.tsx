@@ -1,4 +1,4 @@
-import type { Session } from 'next-auth'
+import type { Session } from '@/types/session'
 import { getValueByYPath } from '@/shared/yUtils'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import type { Wire } from '@/shared/schemas/wire'

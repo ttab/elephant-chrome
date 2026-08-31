@@ -22,7 +22,7 @@ import { createFactboxConsume } from '../../plugins/Factboxes/consume'
 import { Editor as PlainEditor } from '@/components/PlainEditor'
 import { BaseEditor } from '@/components/Editor/BaseEditor'
 import type { TBConsumeFunction, TBConsumesFunction, TBPluginDefinition } from '@ttab/textbit'
-import { useSession } from 'next-auth/react'
+import { useSession } from '@/contexts/SessionContext'
 
 type WithConsumer = TBPluginDefinition & {
   consumer?: { consumes: TBConsumesFunction, consume: TBConsumeFunction }

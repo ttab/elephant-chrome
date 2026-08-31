@@ -35,7 +35,7 @@ vi.mock('@/lib/index/updateAssignmentPublishTime', () => ({
   updateAssignmentTime: vi.fn()
 }))
 
-vi.mock('next-auth/react', () => ({
+vi.mock('@/contexts/SessionContext', () => ({
   useSession: () => ({ data: undefined })
 }))
 

@@ -6,7 +6,7 @@ import {
   QueryV1,
   type HitV1
 } from '@ttab/elephant-api/index'
-import type { Session } from 'next-auth'
+import type { Session } from '@/types/session'
 import type { Repository } from '@/shared/Repository'
 import type { Index } from '@/shared/Index'
 

@@ -1,7 +1,7 @@
 import { Prompt } from '@/components'
 import { TimelessCategorySelect } from '@/components/TimelessCategory'
 import type { TemplatePayload } from '@/shared/templates/'
-import { useSession } from 'next-auth/react'
+import { useSession } from '@/contexts/SessionContext'
 import { useDocumentDefaults, useRegistry } from '@/hooks'
 import { toast } from 'sonner'
 import { getTemplateFromDeliverable } from '@/shared/templates/lib/getTemplateFromDeliverable'

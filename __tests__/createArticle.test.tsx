@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import * as Y from 'yjs'
-import type { Session } from 'next-auth'
+import type { Session } from '@/types/session'
 import type { TBElement } from '@ttab/textbit'
 import type { Document, Block } from '@ttab/elephant-api/newsdoc'
 import type { Repository } from '@/shared/Repository'

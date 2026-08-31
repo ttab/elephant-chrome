@@ -1,5 +1,5 @@
 import type { HitV1 } from '@ttab/elephant-api/index'
-import type { Session } from 'next-auth'
+import type { Session } from '@/types/session'
 import { fetch } from '@/hooks/index/useDocuments/lib/fetch'
 import type { Index } from '@/shared/Index'
 import { QueryV1, BoolQueryV1, TermsQueryV1 } from '@ttab/elephant-api/index'

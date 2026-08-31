@@ -1,4 +1,4 @@
-import type { Session } from 'next-auth'
+import type { Session } from '@/types/session'
 import { getValueByYPath } from '@/shared/yUtils'
 import { convertToISOStringInTimeZone } from '@/shared/datetime'
 import { addAssignmentWithDeliverable } from '@/lib/index/addAssignment'

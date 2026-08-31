@@ -1,6 +1,6 @@
 import useSWR from 'swr'
 import { useRegistry } from '../useRegistry'
-import { useSession } from 'next-auth/react'
+import { useSession } from '@/contexts/SessionContext'
 import { useRepositoryEvents } from '../useRepositoryEvents'
 import type { AssignmentInterface } from './lib/assignments/types'
 import { fetchAssignments } from './lib/assignments/fetchAssignments'

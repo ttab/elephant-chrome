@@ -32,7 +32,7 @@ vi.mock('@/hooks/useRegistry', () => ({
   useRegistry: () => ({ featureFlags: { hasLooseSlugline: mockHasLooseSlugline } })
 }))
 
-vi.mock('next-auth/react', () => ({
+vi.mock('@/contexts/SessionContext', () => ({
   useSession: () => ({ data: { user: { sub: 'test-sub' } } })
 }))
 

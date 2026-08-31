@@ -1,6 +1,6 @@
 import { createContext, useCallback, useEffect, useState, type JSX } from 'react'
 import { useRegistry, useRepositoryEvents } from '@/hooks'
-import { useSession } from 'next-auth/react'
+import { useSession } from '@/contexts/SessionContext'
 import { useIndexedDB } from '../hooks/useIndexedDB'
 import { fetchOrRefresh } from '../lib/fetchOrRefresh'
 import { type IDBOrganiser } from '../types'

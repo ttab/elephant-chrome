@@ -1,4 +1,4 @@
-import { useSession } from 'next-auth/react'
+import { useSession } from '@/contexts/SessionContext'
 import type { KeyedMutator, SWRResponse } from 'swr'
 import useSWR from 'swr'
 import { useRegistry } from '@/hooks/useRegistry'
@@ -11,7 +11,7 @@ import { type HitV1, type PollSubscriptionResponse, type QueryV1, type SortingV1
 import { toast } from 'sonner'
 import type { Index } from '@/shared/Index'
 import { getInterval } from '@/shared/getInterval'
-import type { Session } from 'next-auth'
+import type { Session } from '@/types/session'
 import { useTranslation } from 'react-i18next'
 
 /**

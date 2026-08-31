@@ -5,7 +5,10 @@ import { Block } from '@ttab/elephant-api/newsdoc'
 import { sortDocument } from '../utils/sortDocument'
 
 vi.spyOn(globalThis.crypto, 'randomUUID')
-  .mockImplementation(() => 'random-uuid')
+  // The cast is only about the shape of the type: `randomUUID` is declared as a
+  // dash-segmented template literal, and these tests assert on the fixed string
+  // rather than on anything UUID-like.
+  .mockImplementation(() => 'random-uuid' as ReturnType<typeof crypto.randomUUID>)
 
 const factboxNewsDoc = Block.create({
   title: 'Title',

@@ -1,21 +1,25 @@
 import type { PropsWithChildren } from 'react'
 import { LoadingText } from '@/components/LoadingText'
-import { SessionProvider as NextSessionProvider, useSession } from 'next-auth/react'
+import { SessionClientProvider, useSession } from './SessionContext'
 import { View } from '../components'
 import { Login } from '../views'
 import { useTranslation } from 'react-i18next'
 
 export const SessionProvider = ({ children }: PropsWithChildren) => (
-  <NextSessionProvider refetchOnWindowFocus={false} basePath={`${import.meta.env.BASE_URL}/api/auth`} refetchInterval={150}>
+  <SessionClientProvider>
     <Session>{children}</Session>
-  </NextSessionProvider>
+  </SessionClientProvider>
 )
 
 const Session = ({ children }: PropsWithChildren) => {
-  const { status, data: session } = useSession()
+  const { status, data: session, identityLoaded } = useSession()
   const { t } = useTranslation()
 
-  if (status === 'loading') {
+  // `loading` covers a cold start, a rate limit, a degraded store and a dropped
+  // connection — everything except a definitive 401. Waiting here rather than
+  // showing the login screen is what keeps a Redis blip from bouncing everyone
+  // through Keycloak at once.
+  if (status === 'loading' || (status === 'authenticated' && !identityLoaded)) {
     return (
       <View.Root>
         <View.Content>
@@ -29,7 +33,7 @@ const Session = ({ children }: PropsWithChildren) => {
     )
   }
 
-  if (status === 'unauthenticated' || !session || session.error) {
+  if (status === 'unauthenticated' || !session) {
     const callbackUrl = window.location.href.replace(window.location.origin, '')
     return (
       <div className='relative flex h-screen flex-col'>

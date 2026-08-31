@@ -1,4 +1,4 @@
-import { useSession } from 'next-auth/react'
+import { useSession } from '@/contexts/SessionContext'
 import useSWR from 'swr'
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { useRegistry, useRepositoryEvents } from '@/hooks'

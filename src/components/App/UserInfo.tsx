@@ -1,15 +1,15 @@
 import { Button, SheetClose } from '@ttab/elephant-ui'
 import { cn } from '@ttab/elephant-ui/utils'
 import { SettingsIcon } from '@ttab/elephant-ui/icons'
-import type { Session } from 'next-auth'
+import type { Session } from '@/types/session'
 import { Avatar } from '../Avatar'
 import { Link } from '@/components'
-import { signOut } from 'next-auth/react'
+import { signOut } from '@ttab/tt-session/react'
+import { SESSION_BASE_PATH } from '@/contexts/SessionContext'
 import type { JSX } from 'react'
 import { useTranslation } from 'react-i18next'
 import { LogOutIcon } from '@ttab/elephant-ui/icons'
 
-const BASE_URL = import.meta.env.BASE_URL
 const hasUserDoc = (obj: object | undefined) => obj && Object.keys(obj).length > 0
 
 export const UserInfo = ({ user, data }: {
@@ -50,9 +50,10 @@ export const UserInfo = ({ user, data }: {
             onClick={(event) => {
               event.preventDefault()
 
-              signOut({ redirectTo: `${BASE_URL}/api/signout`, redirect: true })
-                .catch((error) => console.error(error))
               localStorage.removeItem('trustGoogle')
+              // Federated: this ends the Keycloak SSO session and lands on
+              // AUTH_POST_LOGOUT_URI, which is what the old /api/signout did.
+              signOut({ basePath: SESSION_BASE_PATH })
             }}
             className='inline-flex items-center gap-2 rounded-md border bg-background px-3 h-9 text-sm hover:bg-accent'
           >

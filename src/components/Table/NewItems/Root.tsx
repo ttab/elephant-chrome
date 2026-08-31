@@ -1,4 +1,4 @@
-import { useSession } from 'next-auth/react'
+import { useSession } from '@/contexts/SessionContext'
 import type { JSX, PropsWithChildren } from 'react'
 
 export interface NewItem {

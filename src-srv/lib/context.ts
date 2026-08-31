@@ -1,8 +1,12 @@
-import type { User as DefaultUser } from '@auth/express'
 import type { Request, Response } from 'express'
+import type { ServerSession } from '../utils/sessionMiddleware.js'
 
-interface User extends DefaultUser {
+export interface User {
   sub: string
+  name?: string
+  email?: string
+  image?: string
+  id?: string
 }
 
 export interface Context {
@@ -93,12 +97,12 @@ export const isSession = (value: unknown): value is {
 
 export function getSession(req: Request, res: Response): { accessToken?: string, user?: User | undefined } {
   // Try to get token and user from session
-  const session: unknown = res.locals?.session
+  const session: unknown = (res.locals as { session?: ServerSession })?.session
 
   if (isSession(session)) {
     return {
-      accessToken: (session as { accessToken?: string }).accessToken,
-      user: (session as { user?: User }).user
+      accessToken: session.accessToken,
+      user: session.user
     }
   }
 

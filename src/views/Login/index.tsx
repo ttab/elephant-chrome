@@ -1,7 +1,8 @@
 import { type ViewProps, type ViewMetadata } from '@/types'
 import { useState, useEffect, type JSX } from 'react'
 import { Button, Checkbox } from '@ttab/elephant-ui'
-import { signIn } from 'next-auth/react'
+import { signIn } from '@ttab/tt-session/react'
+import { SESSION_BASE_PATH } from '@/contexts/SessionContext'
 import { LoadingText } from '@/components/LoadingText'
 import { useIndexedDB } from '../../../src/datastore/hooks/useIndexedDB'
 import { useTranslation } from 'react-i18next'
@@ -45,8 +46,7 @@ const LoginForm = ({ callbackUrl }: {
               // FIXME: Implement a better approach so we do not remove unsynced documents
               // await CollaborationClientRegistry.cleanupLocalDocuments()
             })().catch((err) => console.error(err))
-            signIn('keycloak', { callbackUrl: callbackUrl || import.meta.env.BASE_URL })
-              .catch((error) => console.error(error))
+            signIn({ basePath: SESSION_BASE_PATH, returnTo: callbackUrl || import.meta.env.BASE_URL })
           }}
           size='lg'
           className='space-x-1'
@@ -88,8 +88,7 @@ const LoginAutomatic = ({ callbackUrl }: {
 }): JSX.Element => {
   const { t } = useTranslation('views')
   useEffect(() => {
-    signIn('keycloak', { callbackUrl: callbackUrl || import.meta.env.BASE_URL })
-      .catch((error) => console.error(error))
+    signIn({ basePath: SESSION_BASE_PATH, returnTo: callbackUrl || import.meta.env.BASE_URL })
   }, [callbackUrl])
   return <LoadingText>{t('login.loggingIn')}</LoadingText>
 }

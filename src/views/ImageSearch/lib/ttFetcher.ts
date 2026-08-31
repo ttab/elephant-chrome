@@ -1,6 +1,6 @@
 import { type ttninjs } from '@ttab/api-client'
 import { Api } from '@ttab/api-client'
-import type { Session } from 'next-auth'
+import type { Session } from '@/types/session'
 import { toast } from 'sonner'
 import { productCodes } from './productCodes'
 import type { MediaTypes } from '..'

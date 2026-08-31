@@ -1,4 +1,4 @@
-import type { Session } from 'next-auth'
+import type { Session } from '@/types/session'
 import type { Repository } from '@/shared/Repository'
 import type { Wire } from '@/shared/schemas/wire'
 import { getWireStatus } from '@/lib/getWireStatus'

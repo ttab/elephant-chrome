@@ -1,6 +1,6 @@
 import { createContext, useCallback, useEffect, useRef, useState, type JSX } from 'react'
 import { useRegistry } from '@/hooks'
-import { useSession } from 'next-auth/react'
+import { useSession } from '@/contexts/SessionContext'
 import { fetchEventSource } from '@microsoft/fetch-event-source'
 import { useIndexedDB } from '../datastore/hooks/useIndexedDB'
 import type { EventlogItem } from '@ttab/elephant-api/repository'

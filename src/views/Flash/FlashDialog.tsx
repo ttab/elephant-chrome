@@ -10,7 +10,7 @@ import { CircleXIcon, TagsIcon, GanttChartSquareIcon, NewspaperIcon, ZapIcon, In
 import { Newsvalues } from '@/defaults'
 import { useDocumentDefaults, useRegistry, useSections } from '@/hooks'
 import { useFeatureFlags } from '@/hooks/useFeatureFlags'
-import { useSession } from 'next-auth/react'
+import { useSession } from '@/contexts/SessionContext'
 import type { Dispatch, SetStateAction } from 'react'
 import { type JSX, useEffect, useMemo, useRef, useState } from 'react'
 import { Form } from '@/components/Form'

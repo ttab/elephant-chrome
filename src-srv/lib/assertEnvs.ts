@@ -3,8 +3,10 @@ function assertEnvs(): void {
     'AUTH_KEYCLOAK_ISSUER',
     'AUTH_KEYCLOAK_SECRET',
     'AUTH_KEYCLOAK_ID',
-    'AUTH_TRUST_HOST',
-    'AUTH_SECRET',
+    // The sid cookie's MAC secret. Must be byte-identical on every replica —
+    // if they disagree, each rejects the others' cookies and it looks like a
+    // random mass logout.
+    'TT_SESSION_SID_SECRET',
     'ELEPHANT_CHROME_CLIENT_ID',
     'ELEPHANT_CHROME_CLIENT_SECRET',
     'REPOSITORY_URL',

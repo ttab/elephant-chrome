@@ -1,5 +1,5 @@
 import type { Repository } from '@/shared/Repository'
-import type { Session } from 'next-auth'
+import type { Session } from '@/types/session'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 const session = (accessToken: string): Session => ({ accessToken } as Session)

@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useRegistry } from '@/hooks'
-import { useSession } from 'next-auth/react'
+import { useSession } from '@/contexts/SessionContext'
 import { toast } from 'sonner'
 import type { Message } from '@ttab/elephant-api/user'
 import type { User } from '@/shared/User'

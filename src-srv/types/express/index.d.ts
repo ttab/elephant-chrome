@@ -1,9 +1,9 @@
 import type { Response as ExpressResponse } from 'express'
-import type { Session } from 'next-auth'
+import type { ServerSession } from '../../utils/sessionMiddleware.js'
 
 
 export interface Response extends ExpressResponse {
   locals: {
-    session: Session
+    session: ServerSession
   }
 }
