@@ -44,9 +44,9 @@ function buildAcl(accessToken: string): Array<{ uri: string, permissions: string
   return [{ uri: 'core://unit/redaktionen', permissions: ['r', 'w'] }]
 }
 
-// The repository rejects getStatusOverview requests carrying more than
-// 200 uuids, so larger lists have to be split into several requests.
-const STATUS_UUID_BATCH_SIZE = 200
+// The repository rejects getStatusOverview and bulkGet requests carrying more
+// than 200 documents, so larger lists have to be split into several requests.
+const UUID_BATCH_SIZE = 200
 
 function chunk<T>(items: T[], size: number): T[][] {
   const chunks: T[][] = []
@@ -98,7 +98,7 @@ export class Repository {
    * Get the status documents for the given array of uuids from the respository.
    *
    * The uuids are deduplicated and split into batches of at most
-   * STATUS_UUID_BATCH_SIZE, as the repository refuses larger requests. The
+   * UUID_BATCH_SIZE, as the repository refuses larger requests. The
    * batches are requested in parallel and their items merged into one response.
    *
    * @param options - { uuids: string[], statuses: string[], accessToken: string }
@@ -119,7 +119,7 @@ export class Repository {
       return { items: [] }
     }
 
-    const batches = chunk([...new Set(uuids)], STATUS_UUID_BATCH_SIZE)
+    const batches = chunk([...new Set(uuids)], UUID_BATCH_SIZE)
 
     try {
       const responses = await Promise.all(
@@ -142,6 +142,10 @@ export class Repository {
    * Get the latest version of the documents specified by the given
    * array of uuids from the respository.
    *
+   * The documents are split into batches of at most UUID_BATCH_SIZE, as the
+   * repository refuses larger requests. The batches are requested in parallel
+   * and their items merged into one response.
+   *
    * @param options - { uuids: string[], accessToken: string }
    * @returns Promise<BulkGetResponse | null>
    */
@@ -156,15 +160,24 @@ export class Repository {
       return null
     }
 
-    try {
-      const { response } = await this.#client.bulkGet({
-        documents: documents.filter((doc) => doc?.version !== -1n).map((document) => {
-          return ({ uuid: document.uuid, version: document.version || 0n })
-        }),
-        subset
-      }, meta(accessToken, abort))
+    const batches = chunk(
+      documents.filter((doc) => doc?.version !== -1n).map((document) => {
+        return ({ uuid: document.uuid, version: document.version || 0n })
+      }),
+      UUID_BATCH_SIZE
+    )
 
-      return response
+    try {
+      const responses = await Promise.all(
+        batches.map((batch) => this.#client.bulkGet({
+          documents: batch,
+          subset
+        }, meta(accessToken, abort)))
+      )
+
+      return {
+        items: responses.flatMap(({ response }) => response.items)
+      }
     } catch (err: unknown) {
       throw new Error(`Unable to fetch documents in bulk: ${(err as Error)?.message || 'Unknown error'}`)
     }

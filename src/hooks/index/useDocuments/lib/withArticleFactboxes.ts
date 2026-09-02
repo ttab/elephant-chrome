@@ -15,9 +15,6 @@ import type { Repository } from '@/shared/Repository'
 const SUBSET_NAME = 'factbox'
 const SUBSET_DSL = `${SUBSET_NAME}=.content(type='core/factbox')`
 
-// Repository BulkGet caps at 200 documents per call.
-const BATCH_SIZE = 200
-
 // `title` multivalue is in content order — index `i` matches the i-th
 // `core/factbox` block (same index `:embedded:N` and `consume.ts` use).
 // Source uuid and body text aren't here: flattened multivalues can't be
@@ -128,20 +125,14 @@ const fetchFactboxData = async (
   const dataByRowId = new Map<string, RowBlockData>()
   if (!articleIds.length) return dataByRowId
 
-  const batches: string[][] = []
-  for (let i = 0; i < articleIds.length; i += BATCH_SIZE) {
-    batches.push(articleIds.slice(i, i + BATCH_SIZE))
-  }
+  // getDocuments splits the request into repository sized batches on its own.
+  const response = await repository.getDocuments({
+    documents: articleIds.map((uuid) => ({ uuid })),
+    accessToken,
+    subset: [SUBSET_DSL]
+  })
 
-  const batchResponses = await Promise.all(
-    batches.map((batch) => repository.getDocuments({
-      documents: batch.map((uuid) => ({ uuid })),
-      accessToken,
-      subset: [SUBSET_DSL]
-    }))
-  )
-
-  const allItems: BulkGetItem[] = batchResponses.flatMap((response) => response?.items ?? [])
+  const allItems: BulkGetItem[] = response?.items ?? []
 
   for (const item of allItems) {
     const articleId = item.uuid
