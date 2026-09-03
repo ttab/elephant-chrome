@@ -44,6 +44,20 @@ function buildAcl(accessToken: string): Array<{ uri: string, permissions: string
   return [{ uri: 'core://unit/redaktionen', permissions: ['r', 'w'] }]
 }
 
+// The repository rejects getStatusOverview requests carrying more than
+// 200 uuids, so larger lists have to be split into several requests.
+const STATUS_UUID_BATCH_SIZE = 200
+
+function chunk<T>(items: T[], size: number): T[][] {
+  const chunks: T[][] = []
+
+  for (let i = 0; i < items.length; i += size) {
+    chunks.push(items.slice(i, i + size))
+  }
+
+  return chunks
+}
+
 export interface Status {
   name: string
   version: bigint
@@ -83,6 +97,10 @@ export class Repository {
   /**
    * Get the status documents for the given array of uuids from the respository.
    *
+   * The uuids are deduplicated and split into batches of at most
+   * STATUS_UUID_BATCH_SIZE, as the repository refuses larger requests. The
+   * batches are requested in parallel and their items merged into one response.
+   *
    * @param options - { uuids: string[], statuses: string[], accessToken: string }
    * @returns Promise<GetStatusOverviewResponse | null>
    */
@@ -101,14 +119,20 @@ export class Repository {
       return { items: [] }
     }
 
-    try {
-      const { response } = await this.#client.getStatusOverview({
-        statuses,
-        uuids,
-        getMeta: false
-      }, meta(accessToken))
+    const batches = chunk([...new Set(uuids)], STATUS_UUID_BATCH_SIZE)
 
-      return response
+    try {
+      const responses = await Promise.all(
+        batches.map((batch) => this.#client.getStatusOverview({
+          statuses,
+          uuids: batch,
+          getMeta: false
+        }, meta(accessToken)))
+      )
+
+      return {
+        items: responses.flatMap(({ response }) => response.items ?? [])
+      }
     } catch (err: unknown) {
       throw new Error(`Unable to fetch statuses: ${(err as Error)?.message || 'Unknown error'}`)
     }
