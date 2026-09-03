@@ -13,6 +13,7 @@ vi.mock('@ttab/elephant-api/repository', () => ({
 }))
 
 import { Repository } from '@/shared/Repository'
+import { meta } from '@/shared/meta'
 
 const statuses = ['usable', 'draft']
 const accessToken = 'tok'
@@ -39,11 +40,14 @@ function asItem(uuid: string): StatusOverviewItem {
 }
 
 type OverviewCall = { statuses: string[], uuids: string[], getMeta: boolean }
+type OverviewCallArgs = [OverviewCall, ReturnType<typeof meta>]
+
+function getCall(callIndex: number): OverviewCallArgs {
+  return mockGetStatusOverview.mock.calls[callIndex] as OverviewCallArgs
+}
 
 function getUuidsFromCall(callIndex: number): string[] {
-  const [request] = mockGetStatusOverview.mock.calls[callIndex] as [OverviewCall]
-
-  return request.uuids
+  return getCall(callIndex)[0].uuids
 }
 
 describe('Repository.getStatuses batching', () => {
@@ -76,6 +80,20 @@ describe('Repository.getStatuses batching', () => {
     ]).toEqual(uuids)
 
     expect(result?.items.map((item) => item.uuid)).toEqual(uuids)
+  })
+
+  it('sends the access token and the unbatched request fields with every batch', async () => {
+    await repo.getStatuses({ uuids: makeUuids(450), statuses, accessToken })
+
+    expect(mockGetStatusOverview).toHaveBeenCalledTimes(3)
+
+    // Only `uuids` differs between batches - the auth meta and the remaining
+    // request fields have to be repeated on each one.
+    for (const [request, options] of [getCall(0), getCall(1), getCall(2)]) {
+      expect(options).toEqual(meta(accessToken))
+      expect(request.statuses).toEqual(statuses)
+      expect(request.getMeta).toBe(false)
+    }
   })
 
   it('sends a single request when the uuid count is within the limit', async () => {
