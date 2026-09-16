@@ -30,12 +30,25 @@ export const useDeliverableInfo = (deliverableId: string): GetDeliverableInfoRes
   )
 
   const planningUuidRef = useRef<string | undefined>(data?.planningUuid)
+  const hasResolvedRef = useRef(data !== undefined)
   useEffect(() => {
     planningUuidRef.current = data?.planningUuid
-  }, [data?.planningUuid])
+    if (data !== undefined) {
+      hasResolvedRef.current = true
+    }
+  }, [data])
 
   const onPlanningEvent = useCallback((event: EventlogItem) => {
-    if (planningUuidRef.current && event.uuid === planningUuidRef.current) {
+    const planningUuid = planningUuidRef.current
+    if (planningUuid) {
+      if (event.uuid === planningUuid) {
+        void mutate()
+      }
+      return
+    }
+    // Orphan deliverable: first fetch resolved without a linked planning.
+    // Any planning event could be the one that adopts us, so revalidate.
+    if (hasResolvedRef.current) {
       void mutate()
     }
   }, [mutate])
