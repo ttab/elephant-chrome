@@ -90,16 +90,9 @@ export const TimelessCategory = ({ ydoc, path, asDialog, onChange }: {
  */
 export const TimelessCategorySelect = ({ value, onChange }: {
   value: Block | undefined
-  onChange: (category: Block) => void
+  onChange: (category: Block | undefined) => void
 }): JSX.Element => (
   <div className='flex flex-col gap-2'>
-    <CategoryPicker
-      value={value}
-      onChange={(block) => {
-        if (block) {
-          onChange(block)
-        }
-      }}
-    />
+    <CategoryPicker value={value} onChange={onChange} />
   </div>
 )
