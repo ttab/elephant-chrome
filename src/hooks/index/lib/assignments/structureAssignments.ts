@@ -54,8 +54,9 @@ export function structureAssignments(
     const { publish, start, publish_slot } = assignment.data
     let hour: number | undefined
 
-    if ((status === 'withheld' || status === 'usable') && publish) {
-      // When scheduled or auto-published, use the publish time.
+    if (status === 'withheld' && publish) {
+      // Only a scheduled (withheld) deliverable uses the stored publish time;
+      // anything else falls back to the modified/slot/start time below.
       hour = getHours(toZonedTime(parseISO(publish), timeZone))
     } else if (hasUsable && statusData.modified) {
       hour = getHours(parseISO(statusData.modified))
@@ -86,8 +87,8 @@ export function structureAssignments(
       if (a?._statusData && b?._statusData) {
         const aData = JSON.parse(a._statusData) as StatusData
         const bData = JSON.parse(b._statusData) as StatusData
-        const aHasPublish = ['withheld', 'usable'].includes(a._deliverableStatus || '') && a.data.publish
-        const bHasPublish = ['withheld', 'usable'].includes(b._deliverableStatus || '') && b.data.publish
+        const aHasPublish = a._deliverableStatus === 'withheld' && a.data.publish
+        const bHasPublish = b._deliverableStatus === 'withheld' && b.data.publish
 
         if (aHasPublish && bHasPublish) {
           return a.data.publish.localeCompare(b.data.publish)
@@ -104,8 +105,8 @@ export function structureAssignments(
       if (aHasSlot && !bHasSlot) return -1
       if (!aHasSlot && bHasSlot) return 1
 
-      const aHasPublish = ['withheld', 'usable'].includes(a._deliverableStatus || '') && a.data.publish
-      const bHasPublish = ['withheld', 'usable'].includes(b._deliverableStatus || '') && b.data.publish
+      const aHasPublish = a._deliverableStatus === 'withheld' && a.data.publish
+      const bHasPublish = b._deliverableStatus === 'withheld' && b.data.publish
       if (aHasPublish && bHasPublish) {
         return a.data.publish.localeCompare(b.data.publish)
       }
