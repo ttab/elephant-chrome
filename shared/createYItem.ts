@@ -67,6 +67,7 @@ export function createDocument<T>({
 export function appendAssignment(options: {
   document: Y.Doc
   assignee?: { id: string, name: string } | null | undefined
+  assignees?: Array<{ uuid: string, name?: string, role?: string }>
   type: 'text' | 'flash' | 'graphic' | 'picture' | 'video' | 'picture/video' | 'timeless'
   slugLine?: string
   title?: string
@@ -91,6 +92,7 @@ export function appendAssignment(options: {
 
 export function createNewAssignment({
   assignee,
+  assignees,
   document,
   type,
   slugLine,
@@ -100,6 +102,7 @@ export function createNewAssignment({
 }: {
   document: Y.Doc
   assignee?: { id: string, name: string } | null | undefined
+  assignees?: Array<{ uuid: string, name?: string, role?: string }>
   type: 'text' | 'flash' | 'graphic' | 'picture' | 'video' | 'picture/video' | 'timeless'
   slugLine?: string
   title?: string
@@ -125,6 +128,7 @@ export function createNewAssignment({
   // Create new assignment from template
   const assignment = assignmentPlanningTemplate({
     assignee,
+    assignees,
     assignmentType: type,
     planningDate,
     slugLine: type !== 'flash' ? slugLine || slugLineFromPlanning : undefined,

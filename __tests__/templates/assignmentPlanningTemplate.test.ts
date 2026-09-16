@@ -86,6 +86,39 @@ describe('assignmentPlanningTemplate', () => {
     expect(result.links.length).toBe(0)
   })
 
+  it('appends one assignee link per entry in assignees', () => {
+    const result = assignmentPlanningTemplate({
+      assignmentType: 'text',
+      planningDate: '2024-06-01',
+      assignee: null,
+      assignees: [
+        { uuid: 'author-1', name: 'Alice', role: 'primary' },
+        { uuid: 'author-2', name: 'Bob', role: 'secondary' }
+      ]
+    })
+
+    const assignees = result.links.filter(
+      (l: Block) => l.type === 'core/author' && l.rel === 'assignee'
+    )
+    expect(assignees).toHaveLength(2)
+    expect(assignees[0]).toMatchObject({ uuid: 'author-1', title: 'Alice', role: 'primary' })
+    expect(assignees[1]).toMatchObject({ uuid: 'author-2', title: 'Bob', role: 'secondary' })
+  })
+
+  it('defaults an assignee role to primary when none is given', () => {
+    const result = assignmentPlanningTemplate({
+      assignmentType: 'text',
+      planningDate: '2024-06-01',
+      assignee: null,
+      assignees: [{ uuid: 'author-1', name: 'Alice' }]
+    })
+
+    const assignee = result.links.find(
+      (l: Block) => l.type === 'core/author' && l.rel === 'assignee'
+    )
+    expect(assignee).toMatchObject({ uuid: 'author-1', role: 'primary' })
+  })
+
   it.each([
     ['text', 'true'],
     ['picture', 'true'],
