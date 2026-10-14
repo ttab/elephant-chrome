@@ -1,5 +1,5 @@
 import { TwirpFetchTransport } from '@protobuf-ts/twirp-transport'
-import { CheckClient } from '@ttab/elephant-api/spell'
+import { CheckClient, CorrectionLevel } from '@ttab/elephant-api/spell'
 import { meta } from './meta'
 import { getCachedSession } from './getCachedSession'
 
@@ -34,6 +34,7 @@ export class Spellchecker {
    */
   async check(text: string[], documentLanguage: string, supportedLanguages: string[]): Promise<Array<Array<{
     text: string
+    level: 'error' | 'suggestion'
     suggestions: SpellSuggestion[]
   }>>> {
     const session = await getCachedSession()
@@ -63,6 +64,7 @@ export class Spellchecker {
             ? []
             : misspelled.entries.map((entry) => ({
               text: entry.text,
+              level: toSpellingLevel(entry.level),
               suggestions: []
             }))
         })
@@ -144,4 +146,9 @@ export class Spellchecker {
 
     return lang
   }
+}
+
+// Same mapping as elephant-spell's own UI: anything not a suggestion is an error.
+function toSpellingLevel(level: CorrectionLevel): 'error' | 'suggestion' {
+  return level === CorrectionLevel.LEVEL_SUGGESTION ? 'suggestion' : 'error'
 }

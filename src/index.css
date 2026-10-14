@@ -79,3 +79,47 @@
 .dark {
   color-scheme: dark;
 }
+
+/*
+ * Spelling marks. Textbit only says what a word is - data-spelling-error on the
+ * leaf, plus data-spelling-level "error" or "suggestion" - and every editor
+ * gets its look from here.
+ *
+ * Colour never carries the meaning on its own. The levels differ in line shape
+ * (wavy against dashed) and in how strong the tint behind the word is, so they
+ * stay apart on a poor screen, for poor eyesight and without telling red from
+ * blue. In forced colours mode the colours and tint are replaced; the line
+ * shapes are what remain.
+ */
+@layer components {
+  :root {
+    --spelling-error-line: var(--color-red-600);
+    --spelling-error-tint: color-mix(in oklab, var(--color-red-500) 16%, transparent);
+    --spelling-suggestion-line: var(--color-blue-600);
+    --spelling-suggestion-tint: color-mix(in oklab, var(--color-blue-500) 13%, transparent);
+  }
+
+  .dark {
+    --spelling-error-line: var(--color-red-300);
+    --spelling-error-tint: color-mix(in oklab, var(--color-red-400) 22%, transparent);
+    --spelling-suggestion-line: var(--color-blue-300);
+    --spelling-suggestion-tint: color-mix(in oklab, var(--color-blue-400) 18%, transparent);
+  }
+
+  [data-spelling-error] {
+    text-decoration-line: underline;
+    text-decoration-style: wavy;
+    text-decoration-thickness: 2px;
+    text-decoration-color: var(--spelling-error-line);
+    text-decoration-skip-ink: none;
+    text-underline-offset: 3px;
+    background-color: var(--spelling-error-tint);
+    border-radius: 2px;
+  }
+
+  [data-spelling-level="suggestion"] {
+    text-decoration-style: dashed;
+    text-decoration-color: var(--spelling-suggestion-line);
+    background-color: var(--spelling-suggestion-tint);
+  }
+}

@@ -122,9 +122,6 @@ export const Editor = ({ id, version, textOnly = false, direct, versionStatusHis
             ps-12
             pe-12
             dark:text-slate-100
-            **:data-spelling-error:border-b-2
-            **:data-spelling-error:border-dotted
-            **:data-spelling-error:border-red-500
             grow
             pr-12
             max-w-(--breakpoint-xl)`}

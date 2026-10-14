@@ -79,9 +79,6 @@ const EditorText = (props: {
           pb-4
           ps-2
           dark:text-slate-100
-          **:data-spelling-error:border-b-2
-          **:data-spelling-error:border-dotted
-          **:data-spelling-error:border-red-500
           grow
           pr-12
           max-w-(--breakpoint-xl)`,
